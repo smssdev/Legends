@@ -1,0 +1,259 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/react/capstone/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Capstone: A Production Dashboard</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>turn a short brief into user stories and the quality goals a release must meet</li>
+<li>organise a real codebase in layers, with one place that talks to the server</li>
+<li>build five screens with routing, server data, URL state, an optimistic update and a validated form</li>
+<li>support two languages, right to left, and a dark theme from the first line</li>
+<li>prove the app works with unit tests, end-to-end tests and an accessibility audit</li>
+<li>find out why the app was too big, and fix it until it fits the budget</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter of this book taught one skill on a small example. Real work is different: all the skills are needed at once, they pull in different directions, and nobody tells you which chapter applies. In this last chapter we build one complete app, the admin dashboard of Bit’s shop, from a brief to a release. Every file is shown, every test is run, and every number is measured. When something goes wrong, as it will, you will see how it was found and fixed.</p>
+
+<aside class="bit" data-mood="happy"><p>Read this chapter twice: once for the app, and once for the decisions. Each section says which chapter a decision comes from, so you can go back whenever something feels new.</p></aside>
+
+<h2>{{n}}.1 The brief</h2>
+
+<p>The shop owner writes: <em>“I want to see how the shop is doing, find orders and mark them as shipped, and fix product prices, from my laptop or my phone, in Arabic or English.”</em> A brief like this is not yet something you can build. The first job is to turn it into <dfn>user stories</dfn>, each with a test for “done”:</p>
+
+<table>
+<thead><tr><th>As the owner, I want to…</th><th>Done when…</th></tr></thead>
+<tbody>
+<tr><td>see revenue, orders and what is waiting to ship</td><td>The overview shows four numbers and the last seven days of revenue</td></tr>
+<tr><td>find an order by status or by customer</td><td>The list filters and pages, and a filtered list can be bookmarked</td></tr>
+<tr><td>mark an order as shipped</td><td>The change shows at once, and is undone clearly if the server refuses</td></tr>
+<tr><td>fix a product’s name, price and stock</td><td>Wrong values are explained under each field; the server’s own errors too</td></tr>
+<tr><td>use it in Arabic or English, in light or dark</td><td>Every text is translated, the layout mirrors, and the choice is remembered</td></tr>
+</tbody>
+</table>
+
+<p>And the qualities that every story must also meet, which a team writes down before the first line of code:</p>
+<ul>
+<li><strong>Accessible:</strong> no violations in an automatic audit, and everything works with the keyboard (Chapter {{n-8}}).</li>
+<li><strong>Tested:</strong> the logic by unit tests, the main journeys by end-to-end tests (Chapter {{n-7}}).</li>
+<li><strong>Fast:</strong> the first load under 150 KB of compressed JavaScript (Chapter {{n-6}}).</li>
+<li><strong>Safe:</strong> every answer from the server is checked before use (Chapter {{n-5}}).</li>
+</ul>
+
+<h2>{{n}}.2 The plan</h2>
+
+<p>The folders follow the layers of Chapter {{n-3}}. Each layer may import only from the layers before it in this list:</p>
+
+<pre data-sh="find src -type f | sort"></pre>
+
+<table>
+<thead><tr><th>Folder</th><th>Holds</th><th>From chapter</th></tr></thead>
+<tbody>
+<tr><td><code>api/</code></td><td>Schemas, the client, the query hooks: the only code that talks to the server</td><td>{{n-12}}, {{n-11}}</td></tr>
+<tr><td><code>lib/</code></td><td>Pure logic: filters, pages, the overview numbers</td><td>{{n-7}}</td></tr>
+<tr><td><code>i18n/</code>, <code>settings.ts</code></td><td>Both languages, Intl formats, the language and theme store</td><td>{{n-4}}, {{n-10}}</td></tr>
+<tr><td><code>ui/</code></td><td>Small shared components</td><td>{{n-9}}</td></tr>
+<tr><td><code>features/</code></td><td>One folder per area of the app, one file per screen</td><td>{{n-14}}, {{n-13}}</td></tr>
+<tr><td><code>app/</code></td><td>Routes and the layout that holds the screens</td><td>{{n-12}}</td></tr>
+</tbody>
+</table>
+
+<h2>{{n}}.3 Talking to the server</h2>
+
+<p>First, what the server sends, as zod schemas. Each schema is also a TypeScript type, so the rest of the app never writes these shapes twice. Money is a whole number of piastres:</p>
+
+<pre data-code="src/api/schemas.ts" data-title="src/api/schemas.ts"></pre>
+
+<p>Then the client. It is the only file in the app that calls <code>fetch</code>. It parses every answer with its schema, so a server that changes a field breaks here, loudly, instead of in a random screen, and it turns failures into an <code>ApiError</code> that the screens can understand:</p>
+
+<pre data-code="src/api/client.ts" data-title="src/api/client.ts"></pre>
+
+<p>And the TanStack Query hooks that the screens use. Notice the keys: <code>["orders"]</code> and <code>["orders", 1036]</code> share a prefix, so invalidating <code>keys.orders</code> refreshes the list <em>and</em> every order. Changing a status is <dfn>optimistic</dfn>, as in Chapter {{n-12}}: the screen shows the new status before the server answers, and puts the old one back if it fails.</p>
+
+<pre data-code="src/api/queries.ts" data-title="src/api/queries.ts"></pre>
+
+<p>During development, and for this book’s screenshots and end-to-end tests, a small pretend server answers the same addresses with the same shapes. A test page puts it in place of <code>fetch</code>, and nothing else in the app knows. Real projects do the same with the library Mock Service Worker, which intercepts requests in the browser.</p>
+
+<pre data-code="page.tsx" data-title="page.tsx"></pre>
+
+<h2>{{n}}.4 Two languages from the first line</h2>
+
+<p>Adding a second language to a finished app means finding every text in every file. Starting with two costs almost nothing. All texts live in one file, <code>src/i18n/messages.ts</code>, as an English object and an Arabic one typed <code>Record&lt;Key, string&gt;</code>: if a key is missing in Arabic, the build fails. Money, dates and weekdays come from <code>Intl</code>, which writes “EGP 250” in English and “‏٢٥٠ ج.م.‏” in Arabic without a single rule of ours (Chapter {{n-4}}):</p>
+
+<pre data-code="src/i18n/format.ts" data-title="src/i18n/format.ts"></pre>
+
+<p>The language and the theme are app-wide settings that many components read and that should survive a reload: exactly the last row of the table in Chapter {{n-10}}, so they live in a small Zustand store with <code>persist</code>. The first language is the page’s own <code>lang</code>:</p>
+
+<pre data-code="src/settings.ts" data-title="src/settings.ts"></pre>
+
+<h2>{{n}}.5 The frame: routes and layout</h2>
+
+<pre data-code="src/app/routes.tsx" data-title="src/app/routes.tsx"></pre>
+
+<p>A few details in this file come straight from earlier chapters. The layout sets <code>lang</code>, <code>dir</code> and the <code>dark</code> class on <code>&lt;html&gt;</code>, so the whole page mirrors and changes colour together; all colours are CSS variables, and the dark theme only redefines them (Chapter {{n-9}}). A “skip to content” link is the first thing a keyboard user reaches. The language button is marked with the language it switches <em>to</em>, so screen readers pronounce “English” and “العربية” correctly. And the two product routes are <code>lazy</code>: we will see why in section {{n}}.9.</p>
+
+<h2>{{n}}.6 The overview</h2>
+
+<p>The numbers on the overview are pure functions of the orders. Keeping them in <code>lib/</code>, away from React and <code>fetch</code>, means they can be tested in milliseconds, and the screens stay short:</p>
+
+<pre data-code="src/lib/orders.ts" data-title="src/lib/orders.ts"></pre>
+
+<pre data-code="src/features/overview/OverviewPage.tsx" data-title="src/features/overview/OverviewPage.tsx"></pre>
+
+<p>The chart is plain HTML: a list of seven bars whose height is a percentage. Each bar carries its value as visually hidden text, so a screen reader reads “Tue: EGP 1,350” instead of nothing. A chart library would be heavier and, by default, silent.</p>
+
+<figure data-render="page.html" data-width="600" data-actions="wait:700"><figcaption><b>Figure {{n}}.1:</b> The overview. The numbers and the bars come from the same 36 orders.</figcaption></figure>
+
+<h2>{{n}}.7 The orders</h2>
+
+<pre data-code="src/features/orders/OrdersPage.tsx" data-title="src/features/orders/OrdersPage.tsx"></pre>
+
+<p>The status, the search text and the page number are all in the address, as in Chapter {{n-12}}. The page reads them with <code>readFilters</code>, which also protects against nonsense such as <code>?page=-4</code> or <code>?status=lost</code>. The status links are real links, so they can be opened in a new tab, and the current one is marked with <code>aria-current</code>, which both the CSS and screen readers understand. Typing in the search box uses <code>replace</code>, so the back button does not step back one letter at a time.</p>
+
+<figure data-render="page.html" data-width="600" data-actions="wait:700;click:.side a:nth-of-type(2);wait:700;click:.filters a:nth-child(3);wait:200"><figcaption><b>Figure {{n}}.2:</b> The paid orders, newest first. The address is now <code>/orders?status=paid</code>.</figcaption></figure>
+
+<h2>{{n}}.8 One order</h2>
+
+<pre data-code="src/features/orders/OrderPage.tsx" data-title="src/features/orders/OrderPage.tsx"></pre>
+
+<p>The buttons offer every status except the current one, and are disabled while a change is on its way, so a double click cannot send two. The status sits in an <code>aria-live</code> region, so a screen reader announces the change. If the server refuses, the optimistic status is put back by <code>useSetStatus</code>, and an alert says so: the user is never left believing something that is not true.</p>
+
+<figure data-render="page.html" data-width="600" data-actions="wait:700;click:.side a:nth-of-type(2);wait:700;click:.filters a:nth-child(3);wait:500;click:tbody tr:nth-child(1) a;wait:700;click:.actions button:nth-child(2);wait:600"><figcaption><b>Figure {{n}}.3:</b> A paid order, just marked as shipped.</figcaption></figure>
+
+<h2>{{n}}.9 The product editor</h2>
+
+<p>The form is React Hook Form with a zod schema, as in Chapter {{n-11}}, with two details that real forms need. The schema is built with the current language, so its messages are translated. And the inputs are text, so <code>z.coerce.number</code> turns them into numbers; <code>.int()</code> then refuses “85.5” instead of quietly saving it. The form takes the product and an <code>onSave</code> function, and knows nothing about the server, which makes it easy to test:</p>
+
+<pre data-code="src/features/products/ProductForm.tsx" data-title="src/features/products/ProductForm.tsx"></pre>
+
+<p>The page connects it to the server. Some errors only the server can find: here, a name that another product already uses. The server answers <code>422</code> with the field and the message; the page returns them to the form, which shows them under the right input, exactly like its own errors:</p>
+
+<pre data-code="src/features/products/ProductsPage.tsx" data-title="src/features/products/ProductsPage.tsx"></pre>
+
+<figure data-render="page.html" data-width="600" data-actions="wait:700;click:.side a:nth-of-type(3);wait:700;click:tbody tr:nth-child(2) a;wait:700;fill:#name|;fill:#price|85.5;click:form button;wait:300"><figcaption><b>Figure {{n}}.4:</b> Saving an empty name and a price with a fraction: the form explains both, and nothing is sent.</figcaption></figure>
+
+<h2>{{n}}.10 Proving that it works</h2>
+
+<h3>Unit tests</h3>
+
+<p>The pure logic and the form are tested with Vitest, as in Chapter {{n-7}}. The form test types into the real inputs, found by their labels, the way a user finds them:</p>
+
+<pre data-code="src/features/products/ProductForm.test.tsx" data-title="src/features/products/ProductForm.test.tsx"></pre>
+<pre data-sh="npx vitest run --reporter=verbose"></pre>
+
+<h3>End-to-end tests and the accessibility audit</h3>
+
+<p>Three Playwright tests open the real app in a real browser: one ships an order through the whole interface, one runs axe on the overview and the orders list, and one switches the language and checks that the page turns right to left:</p>
+
+<pre data-code="e2e/admin.spec.ts" data-title="e2e/admin.spec.ts"></pre>
+<pre data-sh="npx playwright test"></pre>
+
+<figure data-render="page.html" data-width="600" data-actions="wait:700;click:.top button:nth-child(1);click:.top button:nth-child(2);wait:400"><figcaption><b>Figure {{n}}.5:</b> The same overview after pressing “العربية” and “Dark theme”: the layout mirrors, the numbers are written the Arabic way, and the colours change together.</figcaption></figure>
+
+<h3>The size budget</h3>
+
+<p>The last quality goal was a first load under 150 KB of compressed JavaScript. This script bundles the app as production would, and checks:</p>
+
+<pre data-code="size.ts" data-title="size.ts"></pre>
+
+<p>The first time it ran, it failed. The story of how it was fixed is the most realistic part of this chapter, so here it is, with the numbers it printed each time:</p>
+
+<table>
+<thead><tr><th>Step</th><th>First load (gzip)</th><th>What we learned</th></tr></thead>
+<tbody>
+<tr><td>First version</td><td>221.7 KB</td><td>The script listed every package: zod alone was 444 KB before compression, more than React</td></tr>
+<tr><td><code>import * as z from "zod"</code></td><td>156.2 KB</td><td>We had written <code>import { z } from "zod"</code>. That imports one object that holds all of zod, so the bundler cannot leave anything out. Importing the module itself lets it keep only what we use</td></tr>
+<tr><td>Lazy product routes</td><td>142.6 KB</td><td>The form library is only needed on the product pages. Loading them on demand takes it out of the first download</td></tr>
+</tbody>
+</table>
+
+<pre data-out="size.mjs"></pre>
+
+<p>Two lessons here go far beyond this app. <strong>Measure before you optimise:</strong> nobody would have guessed that one import line cost a third of the app. And <strong>a budget only works if it runs automatically:</strong> in a real project this script runs in CI on every pull request, and a red check stops the next 70 KB from arriving unnoticed.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: a release checklist</p><p>Before every release, a short list that anyone on the team can run: all checks green in CI; the main journeys clicked by hand in both languages and both themes, on a phone and with the keyboard; the size budget met; no errors in the browser console; and a plan to undo the release if something goes wrong. Five minutes of checking is cheaper than one evening of fixing in production.</p></aside>
+
+<h2>{{n}}.11 What you built</h2>
+
+<p>Look back at the list of files in section {{n}}.2. In about 800 lines of TypeScript, not counting the tests, there is a typed, validated data layer with caching and optimistic updates; five screens with URL state, loading and error states; a validated form that merges the server’s errors; two languages with mirrored layout and real number and date formats; a dark theme; and tests, an accessibility audit and a size budget that prove it. That is not a toy. With a real server behind <code>/api</code>, it is a product.</p>
+
+<p>And more important than the app is the order in which it was made: the brief and the quality goals first, the layers next, the pure logic tested on its own, the screens kept thin, and measurement before any optimisation. That order works for apps a hundred times bigger.</p>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Turn a brief into <strong>user stories</strong> with a test for “done”, and write the <strong>quality goals</strong> (accessible, tested, fast, safe) before the code.</li>
+<li>Organise the code in <strong>layers</strong>: one place talks to the server, pure logic is separate, screens stay thin.</li>
+<li><strong>Validate</strong> every answer from the server with a schema, and give the screens errors they understand.</li>
+<li>Keep server data in <strong>TanStack Query</strong>, filters in the <strong>address</strong>, and app-wide settings in a small <strong>store</strong>.</li>
+<li>Start with <strong>two languages</strong> and <strong>Intl</strong>, and define colours as variables, so a theme is a few lines.</li>
+<li>Prove it with <strong>unit tests</strong>, <strong>end-to-end tests</strong> and an <strong>accessibility audit</strong>, all automatic.</li>
+<li><strong>Measure</strong> the bundle against a <strong>budget</strong>, find the real cause, and load what is not needed at first <strong>lazily</strong>.</li>
+</ul>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects grow the dashboard the way a real one grows: one feature at a time, each meeting the same quality goals. For every project, write the user story first, put the logic in <code>lib/</code> with a test, keep the screen thin, and run the three checks (unit tests, end-to-end tests, size) before you call it done.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A customers page</h3>
+<p class="project-goal">A page listing every customer with their number of orders, their total spent and their last order date, sorted by total, with a link to their orders.</p>
+<p class="project-skills"><strong>You will practise:</strong> deriving data with pure functions, a new route and a nav link, Intl formats, and URL state.</p>
+<ol class="steps">
+<li>Write <code>customers(orders)</code> in <code>lib/</code>: group by customer, ignore cancelled orders in the total, and sort. Test it with four orders from two customers.</li>
+<li>Add <code>/customers</code> to the routes and to the side navigation, with texts in both languages in <code>messages.ts</code>.</li>
+<li>Make each customer’s name a link to <code>/orders?q=&lt;name&gt;</code>, so the existing search does the rest.</li>
+<li>Add the page to the axe test in <code>e2e/admin.spec.ts</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> there is no new request here. The orders are already in the query cache, so <code>useOrders()</code> returns them at once, and the new page costs the server nothing.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Date ranges and a CSV export</h3>
+<p class="project-goal">Filter the orders by a date range kept in the address, and download exactly the filtered orders as a CSV file that opens correctly in Excel, in Arabic too.</p>
+<p class="project-skills"><strong>You will practise:</strong> extending <code>readFilters</code> safely, date inputs, building files in the browser, and testing pure output.</p>
+<ol class="steps">
+<li>Add <code>from</code> and <code>to</code> (as <code>YYYY-MM-DD</code>) to <code>Filters</code>. Ignore values that are not valid dates, and test that.</li>
+<li>Add two <code>&lt;input type="date"&gt;</code> fields with labels, updating the address with <code>replace</code>.</li>
+<li>Write <code>toCsv(orders)</code> in <code>lib/</code>: a header row, one row per order, values with commas or quotes wrapped in quotes and inner quotes doubled. Test it with a customer name that contains a comma.</li>
+<li>Download it with a <code>Blob</code> and a temporary link. Start the file with the byte order mark <code>"﻿"</code>, or Excel will show Arabic names as nonsense.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> export what the user is looking at, all pages of it, not only the current page. Users expect “export” to mean “these results”.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>From laptop to production</h3>
+<p class="project-goal">Turn the dashboard into a Vite project with a real CI pipeline, and serve it from a container, ready for a real <code>/api</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> Vite, GitHub Actions, required checks, Docker, Nginx, and single-page app routing on a server.</p>
+<ol class="steps">
+<li>Create a Vite React project (Chapter 3) and move <code>src/</code> into it. In development, run the pretend server only when <code>import.meta.env.DEV</code> is true.</li>
+<li>Write a workflow that, on every pull request, installs with <code>npm ci</code>, then runs the type checker, the unit tests, the end-to-end tests and the size script, and make all four required.</li>
+<li>Write a two-stage <code>Dockerfile</code>: the first stage builds with Node, the second copies <code>dist/</code> into an Nginx image.</li>
+<li>Configure Nginx to send every unknown path to <code>index.html</code>, so <code>/orders/1036</code> works after a reload, and to forward <code>/api/</code> to the real server.</li>
+<li>Add long cache headers for the hashed files in <code>assets/</code>, and none for <code>index.html</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the cache rule in the last step is what makes releases safe. Hashed files never change, so they can be cached for a year; <code>index.html</code> must always be fresh, because it is the file that points to the new hashes.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a fifth number to the overview: the number of cancelled orders. Add it to <code>overview()</code> first, with a test, and only then to the screen.</li>
+<li><span class="level">Easy</span> Add a <code>?sort=total</code> option to the orders list, read by <code>readFilters</code>, with a link in the table’s “Total” heading.</li>
+<li><span class="level">Medium</span> In the browser console of <code>page.html</code>, run <code>server.failNextChange = true</code>, then change an order’s status. Describe exactly what the user sees, and in which order. Then write a Playwright test for it.</li>
+<li><span class="level">Medium</span> Find the next biggest package in the size report, and decide whether it can be loaded later. Explain your decision even if the answer is no.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You started this book able to write JavaScript, and you finish it able to build, test, secure, ship and review a professional front end, and to help others do the same. The next book in the series moves to the other side of <code>/api</code>: the servers, databases and APIs that apps like this one talk to.</p>
+</div>
+</section>

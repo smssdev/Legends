@@ -1,0 +1,6 @@
+<ol class="exercises">
+<li>في <code>overview()</code> أضف <code>cancelled: orders.filter((o) =&gt; o.status === "cancelled").length</code>، وفي الاختبار <code>expect(result.cancelled).toBe(1)</code> للطلبات الأربعة. ثم أضف <code>[t("cancelled"), String(o.cancelled)]</code> إلى قائمة <code>kpis</code>، والمفتاح موجود أصلاً باللغتين.</li>
+<li>أضف <code>sort: params.get("sort") === "total" ? "total" : "date"</code> إلى <code>readFilters</code>، ورتّب في <code>filterOrders</code> بـ <code>b.total - a.total</code> حين تكون <code>"total"</code>. ويصير العنوان <code>&lt;Link to={link({ sort: "total", page: null })}&gt;</code>، مع <code>aria-sort="descending"</code> على <code>th</code> ما دام فعالاً. ويتأكد اختبار أن <code>?sort=nonsense</code> يعود إلى التواريخ.</li>
+<li>تظهر الحالة الجديدة فوراً وتُعطَّل الأزرار، وبعد نحو 250 ملي ثانية تعود الحالة القديمة ويظهر التنبيه «تعذّر الحفظ، فأُلغي التغيير»، ويقرؤه قارئ الشاشة بصوت. والاختبار: <code>await page.evaluate(() =&gt; { (window as any).server.failNextChange = true; })</code>، ثم اضغط حالة، وتوقّع ظهور التنبيه وعودة الشارة إلى الحالة الأصلية.</li>
+<li>الأكبر التالي <code>react-dom</code> ثم <code>react-router</code>، ولا يمكن تأجيل أي منهما: كل شاشة تحتاجهما، ولا يرسم التطبيق شيئاً قبلهما. والاتجاه المفيد هو العكس: التأكد من ألا ينضم شيء ثقيل <em>آخر</em> إلى التحميل الأول، وهذا عمل الميزانية في CI.</li>
+</ol>

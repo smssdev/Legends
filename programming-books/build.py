@@ -202,7 +202,7 @@ def fill_code(chapter, lang):
         env_path = str(ROOT / "code" / "b2" / "node_modules" / ".bin")
         r = run_cached(["bash", "-c", f'PATH="{env_path}:$PATH" NO_COLOR=1 FORCE_COLOR=0 CI=1 {cmd}'], folder / "_")
         out = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", r["out"]).replace(str(folder) + "/", "").replace(str(folder), ".")
-        noise = ("Start at", "Environment ", "create it once", "learn more", "Error Context:")
+        noise = ("Start at", "Environment ", "create it once", "learn more", "Error Context:", "(node:", "(Use `node", "[WebServer]")
         lines = [l.rstrip() for l in out.splitlines() if l.strip() and not l.strip().startswith(noise)]
         text = "\n".join([f"$ {cmd}"] + lines)
         cls = "output error" if r["code"] else "output"

@@ -41,6 +41,8 @@
 @page ch16:first { @top-center { content: none; } }
 @page ch17 { @top-center { content: "الفصل 17: مراجعة الكود والتوجيه والقرارات التقنية"; } }
 @page ch17:first { @top-center { content: none; } }
+@page ch18 { @top-center { content: "الفصل 18: المشروع الختامي: لوحة تحكم للإنتاج"; } }
+@page ch18:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -4991,9 +4993,7 @@ test(<span class="s">&quot;كلمة المرور الخاطئة تُبقي ال�
 Running 2 tests using 1 worker
   ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (424ms)
   ✓  2 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (351ms)
-  2 passed (1.7s)
-(node:5143) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
-(Use `node --trace-warnings ...` to show where the warning was created)</pre></div>
+  2 passed (1.7s)</pre></div>
 
 <p>المحددات تشبه محددات Testing Library عمداً: <code>getByLabel</code> و<code>getByRole</code>. والتأكيدات مثل <code>toBeVisible()</code> و<code>toHaveText()</code> تعيد المحاولة تلقائياً لمدة قصيرة، فتنتظر الاختبارات الصفحة بدل تخمين كم تأخذ.</p>
 
@@ -5176,11 +5176,7 @@ Running 4 tests using 2 workers
   ✓  2 e2e/a11y.spec.ts:7:1 › صفحة الدخول بلا مخالفات إتاحة (493ms)
   ✓  3 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (347ms)
   ✓  4 e2e/a11y.spec.ts:15:1 › الدخول كله يعمل بلوحة المفاتيح وحدها (307ms)
-  4 passed (1.7s)
-(node:5358) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
-(Use `node --trace-warnings ...` to show where the warning was created)
-(node:5357) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
-(Use `node --trace-warnings ...` to show where the warning was created)</pre></div>
+  4 passed (1.7s)</pre></div>
 </div>
 <!-- /projects -->
 
@@ -7867,6 +7863,1024 @@ Cypress               62
 <p>يجتمع كل ما في هذا الكتاب في مشروع أخير: لوحة تحكم للإنتاج، تُبنى وتُختبر وتُراجَع وتُطلق كما يفعل فريق محترف.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch18" data-chapter="18" data-code="b2/react/capstone/ar">
+<div class="opener"><span class="opener-num">18</span><p class="chapter-kicker">الفصل 18</p><h1>المشروع الختامي: لوحة تحكم للإنتاج</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل سوف</p>
+<ul>
+<li>تحوّل وصفاً قصيراً إلى قصص مستخدمين، وإلى أهداف الجودة التي يجب أن يحققها الإصدار</li>
+<li>تنظّم مشروعاً حقيقياً في طبقات، فيها مكان واحد يتحدث إلى الخادم</li>
+<li>تبني خمس شاشات بالتوجيه وبيانات الخادم وحالة العنوان وتحديث متفائل ونموذج مُتحقَّق منه</li>
+<li>تدعم لغتين، ومن اليمين إلى اليسار، ومظهراً داكناً من أول سطر</li>
+<li>تثبت أن التطبيق يعمل باختبارات الوحدات واختبارات من الطرف إلى الطرف وفحص للإتاحة</li>
+<li>تكتشف لماذا كان التطبيق أكبر من اللازم، وتصلحه حتى يدخل الميزانية</li>
+</ul>
+</div>
+
+<p class="lead">علّمك كل فصل في هذا الكتاب مهارة واحدة على مثال صغير. أما العمل الحقيقي فمختلف: المهارات كلها مطلوبة معاً، وتشد في اتجاهات مختلفة، ولا أحد يخبرك أي فصل ينطبق الآن. في هذا الفصل الأخير نبني تطبيقاً كاملاً واحداً، لوحة إدارة متجر بِت، من الوصف إلى الإصدار. كل ملف معروض، وكل اختبار مُشغَّل، وكل رقم مَقيس. وحين يسوء شيء، وسيسوء، سترى كيف اكتُشف وكيف أُصلح.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>اقرأ هذا الفصل مرتين: مرة من أجل التطبيق، ومرة من أجل القرارات. كل قسم يذكر من أي فصل جاء قراره، فتستطيع العودة إليه كلما بدا لك شيء جديداً.</p></div></div>
+
+<h2><span class="sec">18.1</span> <span>الوصف</span></h2>
+
+<p>يكتب صاحب المتجر: <em>«أريد أن أرى حال المتجر، وأن أجد الطلبات وأحوّلها إلى مشحونة، وأن أصلح أسعار المنتجات، من حاسوبي أو جوالي، بالعربية أو الإنجليزية.»</em> ووصف كهذا ليس شيئاً يُبنى بعد. فأول عمل أن يتحول إلى <dfn>قصص مستخدمين</dfn> (user stories)، لكل منها اختبار لمعنى «انتهى»:</p>
+
+<table>
+<thead><tr><th>بصفتي صاحب المتجر، أريد أن…</th><th>ينتهي حين…</th></tr></thead>
+<tbody>
+<tr><td>أرى الإيرادات والطلبات وما ينتظر الشحن</td><td>تعرض النظرة العامة أربعة أرقام وإيرادات آخر سبعة أيام</td></tr>
+<tr><td>أجد طلباً بحالته أو باسم العميل</td><td>ترشّح القائمة وتقسّم إلى صفحات، ويمكن حفظ القائمة المرشحة</td></tr>
+<tr><td>أحوّل طلباً إلى مشحون</td><td>يظهر التغيير فوراً، ويُلغى بوضوح إن رفض الخادم</td></tr>
+<tr><td>أصلح اسم المنتج وسعره ومخزونه</td><td>تُشرح القيم الخاطئة تحت كل حقل، وأخطاء الخادم نفسه أيضاً</td></tr>
+<tr><td>أستخدمه بالعربية أو الإنجليزية، فاتحاً أو داكناً</td><td>كل نص مترجم، والتخطيط ينعكس، والاختيار محفوظ</td></tr>
+</tbody>
+</table>
+
+<p>ومعها الصفات التي يجب أن تحققها كل قصة أيضاً، ويكتبها الفريق قبل أول سطر من الكود:</p>
+<ul>
+<li><strong>متاح:</strong> بلا مخالفات في الفحص الآلي، وكل شيء يعمل بلوحة المفاتيح (الفصل 10).</li>
+<li><strong>مُختبَر:</strong> المنطق باختبارات الوحدات، والرحلات الأساسية باختبارات من الطرف إلى الطرف (الفصل 11).</li>
+<li><strong>سريع:</strong> التحميل الأول أقل من 150 كيلوبايت من JavaScript المضغوطة (الفصل 12).</li>
+<li><strong>آمن:</strong> كل رد من الخادم يُفحص قبل استخدامه (الفصل 13).</li>
+</ul>
+
+<h2><span class="sec">18.2</span> <span>الخطة</span></h2>
+
+<p>تتبع المجلدات طبقات الفصل 15، وكل طبقة تستورد فقط من الطبقات التي قبلها في هذه القائمة:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ find src -type f | sort
+src/api/client.ts
+src/api/fake-server.ts
+src/api/queries.ts
+src/api/schemas.ts
+src/app/routes.tsx
+src/features/orders/OrderPage.tsx
+src/features/orders/OrdersPage.tsx
+src/features/overview/OverviewPage.tsx
+src/features/products/ProductForm.test.tsx
+src/features/products/ProductForm.tsx
+src/features/products/ProductsPage.tsx
+src/i18n/format.ts
+src/i18n/messages.ts
+src/lib/orders.test.ts
+src/lib/orders.ts
+src/main.tsx
+src/settings.ts
+src/ui/ui.tsx</pre></div>
+
+<table>
+<thead><tr><th>المجلد</th><th>فيه</th><th>من الفصل</th></tr></thead>
+<tbody>
+<tr><td><code>api/</code></td><td>المخططات والعميل وخطافات الاستعلام: الكود الوحيد الذي يتحدث إلى الخادم</td><td>6، 7</td></tr>
+<tr><td><code>lib/</code></td><td>منطق نقي: الترشيح والصفحات وأرقام النظرة العامة</td><td>11</td></tr>
+<tr><td><code>i18n/</code> و<code>settings.ts</code></td><td>اللغتان، وتنسيقات Intl، ومخزن اللغة والمظهر</td><td>14، 8</td></tr>
+<tr><td><code>ui/</code></td><td>مكونات مشتركة صغيرة</td><td>9</td></tr>
+<tr><td><code>features/</code></td><td>مجلد لكل جزء من التطبيق، وملف لكل شاشة</td><td>4، 5</td></tr>
+<tr><td><code>app/</code></td><td>المسارات والإطار الذي يحمل الشاشات</td><td>6</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">18.3</span> <span>الحديث إلى الخادم</span></h2>
+
+<p>أولاً ما يرسله الخادم، مخططاتِ zod. وكل مخطط نوع في TypeScript أيضاً، فلا يكتب باقي التطبيق هذه الأشكال مرتين. والأموال أعداد صحيحة من القروش:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/api/schemas.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> OrderStatus = z.enum([<span class="s">&quot;new&quot;</span>, <span class="s">&quot;paid&quot;</span>, <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;cancelled&quot;</span>]);
+<span class="k">export</span> <span class="k">type</span> OrderStatus = z.infer&lt;<span class="k">typeof</span> OrderStatus&gt;;
+
+<span class="k">export</span> <span class="k">const</span> Order = z.object({
+  id: z.number().int(),
+  customer: z.string(),
+  city: z.string(),
+  total: z.number().int().nonnegative(), <span class="c">// piastres</span>
+  status: OrderStatus,
+  createdAt: z.iso.datetime(),
+});
+<span class="k">export</span> <span class="k">type</span> Order = z.infer&lt;<span class="k">typeof</span> Order&gt;;
+
+<span class="k">export</span> <span class="k">const</span> Product = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  price: z.number().int().positive(), <span class="c">// piastres</span>
+  stock: z.number().int().nonnegative(),
+});
+<span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;</pre></div>
+
+<p>ثم العميل، وهو الملف الوحيد في التطبيق الذي يستدعي <code>fetch</code>. يفحص كل رد بمخططه، فالخادم الذي يغيّر حقلاً ينكسر هنا بصوت عالٍ، لا في شاشة عشوائية، ويحوّل الإخفاقات إلى <code>ApiError</code> تفهمه الشاشات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/api/client.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+<span class="k">import</span> { Order, Product, <span class="k">type</span> OrderStatus } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
+
+<span class="c">// المكان الوحيد الذي يستدعي fetch، وكل رد يُفحص بمخططه</span>
+<span class="k">export</span> <span class="k">class</span> ApiError <span class="k">extends</span> Error {
+  constructor(
+    <span class="k">readonly</span> status: number,
+    <span class="k">readonly</span> errors: Record&lt;string, string&gt; = {},
+  ) {
+    <span class="k">super</span>(<span class="s">`HTTP ${status}`</span>);
+  }
+}
+
+<span class="k">async</span> <span class="k">function</span> request&lt;T&gt;(path: string, schema: z.ZodType&lt;T&gt;, init?: RequestInit): Promise&lt;T&gt; {
+  <span class="k">const</span> response = <span class="k">await</span> fetch(path, { ...init, headers: { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;application/json&quot;</span> } });
+  <span class="k">const</span> body: unknown = <span class="k">await</span> response.json().<span class="k">catch</span>(() =&gt; ({}));
+  <span class="k">if</span> (!response.ok) {
+    <span class="k">const</span> errors = (body as { errors?: Record&lt;string, string&gt; }).errors;
+    <span class="k">throw</span> <span class="k">new</span> ApiError(response.status, errors);
+  }
+  <span class="k">return</span> schema.parse(body);
+}
+
+<span class="k">const</span> send = (method: string, data: unknown): RequestInit =&gt; ({ method, body: JSON.stringify(data) });
+
+<span class="k">export</span> <span class="k">const</span> api = {
+  orders: () =&gt; request(<span class="s">&quot;/api/orders&quot;</span>, z.array(Order)),
+  order: (id: number) =&gt; request(<span class="s">`/api/orders/${id}`</span>, Order),
+  setStatus: (id: number, status: OrderStatus) =&gt; request(<span class="s">`/api/orders/${id}`</span>, Order, send(<span class="s">&quot;PATCH&quot;</span>, { status })),
+  products: () =&gt; request(<span class="s">&quot;/api/products&quot;</span>, z.array(Product)),
+  product: (id: number) =&gt; request(<span class="s">`/api/products/${id}`</span>, Product),
+  saveProduct: (product: Product) =&gt; request(<span class="s">`/api/products/${product.id}`</span>, Product, send(<span class="s">&quot;PUT&quot;</span>, product)),
+};</pre></div>
+
+<p>ثم خطافات TanStack Query التي تستخدمها الشاشات. لاحظ المفاتيح: <code>["orders"]</code> و<code>["orders", 1036]</code> تشتركان في بداية واحدة، فإبطال <code>keys.orders</code> يحدّث القائمة <em>و</em>كل طلب. وتغيير الحالة <dfn>متفائل</dfn> كما في الفصل 6: تعرض الشاشة الحالة الجديدة قبل رد الخادم، وتعيد القديمة إن فشل.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/api/queries.ts</div><pre class="code"><span class="k">import</span> { useMutation, useQuery, useQueryClient } <span class="k">from</span> <span class="s">&quot;@tanstack/react-query&quot;</span>;
+<span class="k">import</span> { api } <span class="k">from</span> <span class="s">&quot;./client&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { Order, OrderStatus, Product } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
+
+<span class="c">// مكان واحد لمفاتيح الاستعلامات، فالقراءة والإبطال يستخدمان الأسماء نفسها دائماً</span>
+<span class="k">export</span> <span class="k">const</span> keys = {
+  orders: [<span class="s">&quot;orders&quot;</span>] as <span class="k">const</span>,
+  order: (id: number) =&gt; [<span class="s">&quot;orders&quot;</span>, id] as <span class="k">const</span>,
+  products: [<span class="s">&quot;products&quot;</span>] as <span class="k">const</span>,
+  product: (id: number) =&gt; [<span class="s">&quot;products&quot;</span>, id] as <span class="k">const</span>,
+};
+
+<span class="k">export</span> <span class="k">const</span> useOrders = () =&gt; useQuery({ queryKey: keys.orders, queryFn: api.orders });
+<span class="k">export</span> <span class="k">const</span> useOrder = (id: number) =&gt; useQuery({ queryKey: keys.order(id), queryFn: () =&gt; api.order(id) });
+<span class="k">export</span> <span class="k">const</span> useProducts = () =&gt; useQuery({ queryKey: keys.products, queryFn: api.products });
+<span class="k">export</span> <span class="k">const</span> useProduct = (id: number) =&gt; useQuery({ queryKey: keys.product(id), queryFn: () =&gt; api.product(id) });
+
+<span class="k">export</span> <span class="k">function</span> useSetStatus(id: number) {
+  <span class="k">const</span> client = useQueryClient();
+  <span class="k">return</span> useMutation({
+    mutationFn: (status: OrderStatus) =&gt; api.setStatus(id, status),
+    <span class="c">// اعرض الحالة الجديدة فوراً، وأعد القديمة إن رفض الخادم</span>
+    onMutate: <span class="k">async</span> (status) =&gt; {
+      <span class="k">await</span> client.cancelQueries({ queryKey: keys.order(id) });
+      <span class="k">const</span> before = client.getQueryData&lt;Order&gt;(keys.order(id));
+      <span class="k">if</span> (before) client.setQueryData&lt;Order&gt;(keys.order(id), { ...before, status });
+      <span class="k">return</span> { before };
+    },
+    onError: (_error, _status, context) =&gt; {
+      <span class="k">if</span> (context?.before) client.setQueryData(keys.order(id), context.before);
+    },
+    onSettled: () =&gt; client.invalidateQueries({ queryKey: keys.orders }),
+  });
+}
+
+<span class="k">export</span> <span class="k">function</span> useSaveProduct() {
+  <span class="k">const</span> client = useQueryClient();
+  <span class="k">return</span> useMutation({
+    mutationFn: (product: Product) =&gt; api.saveProduct(product),
+    onSuccess: (saved) =&gt; {
+      client.setQueryData(keys.product(saved.id), saved);
+      void client.invalidateQueries({ queryKey: keys.products, exact: <span class="k">true</span> });
+    },
+  });
+}</pre></div>
+
+<p>وأثناء التطوير، ولصور هذا الكتاب واختبارات الطرف إلى الطرف، يجيب خادم وهمي صغير على العناوين نفسها بالأشكال نفسها. تضعه صفحة اختبار مكان <code>fetch</code>، ولا يعرف باقي التطبيق شيئاً. والمشاريع الحقيقية تفعل ذلك بمكتبة Mock Service Worker التي تعترض الطلبات في المتصفح.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">page.tsx</div><pre class="code">// للصور واختبارات الطرف إلى الطرف فقط
+import { createRoot } from &quot;react-dom/client&quot;;
+import { createMemoryRouter, RouterProvider } from &quot;react-router&quot;;
+import { QueryClient, QueryClientProvider } from &quot;@tanstack/react-query&quot;;
+import { fakeFetch, server } from &quot;./src/api/fake-server&quot;;
+import { routes } from &quot;./src/app/routes&quot;;
+
+window.fetch = fakeFetch;
+Object.assign(window, { server }); // so a test can say: server.failNextChange = true
+
+const router = createMemoryRouter(routes);
+const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: false } } });
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(
+  &lt;QueryClientProvider client={queryClient}&gt;
+    &lt;RouterProvider router={router} /&gt;
+  &lt;/QueryClientProvider&gt;,
+);</pre></div>
+
+<h2><span class="sec">18.4</span> <span>لغتان من أول سطر</span></h2>
+
+<p>إضافة لغة ثانية إلى تطبيق مكتمل تعني البحث عن كل نص في كل ملف، أما البدء بلغتين فلا يكلف شيئاً تقريباً. كل النصوص في ملف واحد هو <code>src/i18n/messages.ts</code>: كائن إنجليزي وآخر عربي نوعه <code>Record&lt;Key, string&gt;</code>، فإن نقص مفتاح في العربية فشل البناء. والأموال والتواريخ وأيام الأسبوع من <code>Intl</code>، الذي يكتب «EGP 250» بالإنجليزية و«‏٢٥٠ ج.م.‏» بالعربية دون أي قاعدة منا (الفصل 14):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/i18n/format.ts</div><pre class="code"><span class="k">import</span> { messages, <span class="k">type</span> Key, <span class="k">type</span> Lang } <span class="k">from</span> <span class="s">&quot;./messages&quot;</span>;
+
+<span class="k">const</span> locales: Record&lt;Lang, string&gt; = { en: <span class="s">&quot;en-EG&quot;</span>, ar: <span class="s">&quot;ar-EG&quot;</span> };
+
+<span class="k">export</span> <span class="k">function</span> makeT(lang: Lang) {
+  <span class="k">const</span> money = <span class="k">new</span> Intl.NumberFormat(locales[lang], { style: <span class="s">&quot;currency&quot;</span>, currency: <span class="s">&quot;EGP&quot;</span>, maximumFractionDigits: <span class="n">0</span> });
+  <span class="k">const</span> date = <span class="k">new</span> Intl.DateTimeFormat(locales[lang], { day: <span class="s">&quot;numeric&quot;</span>, month: <span class="s">&quot;short&quot;</span>, hour: <span class="s">&quot;numeric&quot;</span>, minute: <span class="s">&quot;2-digit&quot;</span> });
+  <span class="k">const</span> weekday = <span class="k">new</span> Intl.DateTimeFormat(locales[lang], { weekday: <span class="s">&quot;short&quot;</span>, timeZone: <span class="s">&quot;UTC&quot;</span> });
+  <span class="k">const</span> number = <span class="k">new</span> Intl.NumberFormat(locales[lang]);
+  <span class="k">const</span> t = (key: Key, values: Record&lt;string, string | number&gt; = {}) =&gt;
+    messages[lang][key].replace(/\{(\w+)\}/g, (_, name: string) =&gt; {
+      <span class="k">const</span> value = values[name];
+      <span class="k">return</span> <span class="k">typeof</span> value === <span class="s">&quot;number&quot;</span> ? number.format(value) : String(value);
+    });
+  <span class="k">return</span> Object.assign(t, {
+    lang,
+    money: (piastres: number) =&gt; money.format(piastres / <span class="n">100</span>),
+    date: (iso: string) =&gt; date.format(<span class="k">new</span> Date(iso)),
+    weekday: (day: string) =&gt; weekday.format(<span class="k">new</span> Date(day)),
+  });
+}
+<span class="k">export</span> <span class="k">type</span> T = ReturnType&lt;<span class="k">typeof</span> makeT&gt;;</pre></div>
+
+<p>واللغة والمظهر إعدادات على مستوى التطبيق، تقرؤها مكونات كثيرة ويجب أن تبقى بعد إعادة التحميل: هذا بالضبط الصف الأخير من جدول الفصل 8، فتعيش في مخزن Zustand صغير مع <code>persist</code>. واللغة الأولى هي <code>lang</code> الصفحة نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/settings.ts</div><pre class="code"><span class="k">import</span> { useMemo } <span class="k">from</span> <span class="s">&quot;react&quot;</span>;
+<span class="k">import</span> { create } <span class="k">from</span> <span class="s">&quot;zustand&quot;</span>;
+<span class="k">import</span> { persist } <span class="k">from</span> <span class="s">&quot;zustand/middleware&quot;</span>;
+<span class="k">import</span> { makeT } <span class="k">from</span> <span class="s">&quot;./i18n/format&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { Lang } <span class="k">from</span> <span class="s">&quot;./i18n/messages&quot;</span>;
+
+<span class="k">type</span> Settings = { lang: Lang; dark: boolean; toggleLanguage: () =&gt; void; toggleDark: () =&gt; void };
+
+<span class="k">export</span> <span class="k">const</span> useSettings = create&lt;Settings&gt;()(
+  persist(
+    (set) =&gt; ({
+      lang: globalThis.document?.documentElement.lang === <span class="s">&quot;ar&quot;</span> ? <span class="s">&quot;ar&quot;</span> : <span class="s">&quot;en&quot;</span>,
+      dark: <span class="k">false</span>,
+      toggleLanguage: () =&gt; set((s) =&gt; ({ lang: s.lang === <span class="s">&quot;en&quot;</span> ? <span class="s">&quot;ar&quot;</span> : <span class="s">&quot;en&quot;</span> })),
+      toggleDark: () =&gt; set((s) =&gt; ({ dark: !s.dark })),
+    }),
+    { name: <span class="s">&quot;admin-settings&quot;</span> },
+  ),
+);
+
+<span class="k">export</span> <span class="k">function</span> useT() {
+  <span class="k">const</span> lang = useSettings((s) =&gt; s.lang);
+  <span class="k">return</span> useMemo(() =&gt; makeT(lang), [lang]);
+}</pre></div>
+
+<h2><span class="sec">18.5</span> <span>الإطار: المسارات والتخطيط</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app/routes.tsx</div><pre class="code">import { useEffect } from &quot;react&quot;;
+import { NavLink, Outlet } from &quot;react-router&quot;;
+import type { RouteObject } from &quot;react-router&quot;;
+import { OrderPage } from &quot;../features/orders/OrderPage&quot;;
+import { OrdersPage } from &quot;../features/orders/OrdersPage&quot;;
+import { OverviewPage } from &quot;../features/overview/OverviewPage&quot;;
+import { useSettings, useT } from &quot;../settings&quot;;
+
+function Layout() {
+  const t = useT();
+  const { lang, dark, toggleLanguage, toggleDark } = useSettings();
+
+  useEffect(() =&gt; {
+    const html = document.documentElement;
+    html.lang = lang;
+    html.dir = lang === &quot;ar&quot; ? &quot;rtl&quot; : &quot;ltr&quot;;
+    html.classList.toggle(&quot;dark&quot;, dark);
+  }, [lang, dark]);
+
+  return (
+    &lt;div className=&quot;app&quot;&gt;
+      &lt;a className=&quot;skip&quot; href=&quot;#main&quot;&gt;
+        {t(&quot;skip&quot;)}
+      &lt;/a&gt;
+      &lt;nav className=&quot;side&quot; aria-label={t(&quot;brand&quot;)}&gt;
+        &lt;span className=&quot;brand&quot;&gt;{t(&quot;brand&quot;)}&lt;/span&gt;
+        &lt;NavLink to=&quot;/&quot; end&gt;
+          {t(&quot;overview&quot;)}
+        &lt;/NavLink&gt;
+        &lt;NavLink to=&quot;/orders&quot;&gt;{t(&quot;orders&quot;)}&lt;/NavLink&gt;
+        &lt;NavLink to=&quot;/products&quot;&gt;{t(&quot;products&quot;)}&lt;/NavLink&gt;
+      &lt;/nav&gt;
+      &lt;div&gt;
+        &lt;header className=&quot;top&quot;&gt;
+          &lt;button type=&quot;button&quot; className=&quot;secondary&quot; onClick={toggleLanguage} lang={lang === &quot;en&quot; ? &quot;ar&quot; : &quot;en&quot;}&gt;
+            {t(&quot;switchLanguage&quot;)}
+          &lt;/button&gt;
+          &lt;button type=&quot;button&quot; className=&quot;secondary&quot; aria-pressed={dark} onClick={toggleDark}&gt;
+            {t(&quot;dark&quot;)}
+          &lt;/button&gt;
+        &lt;/header&gt;
+        &lt;main id=&quot;main&quot;&gt;
+          &lt;Outlet /&gt;
+        &lt;/main&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+function NotFound() {
+  const t = useT();
+  return &lt;p role=&quot;alert&quot;&gt;{t(&quot;notFound&quot;)}&lt;/p&gt;;
+}
+
+export const routes: RouteObject[] = [
+  {
+    element: &lt;Layout /&gt;,
+    children: [
+      { path: &quot;/&quot;, element: &lt;OverviewPage /&gt; },
+      { path: &quot;/orders&quot;, element: &lt;OrdersPage /&gt; },
+      { path: &quot;/orders/:id&quot;, element: &lt;OrderPage /&gt; },
+      // يُحمَّل حين يُفتح فقط: مكتبة النماذج ليست في التنزيل الأول
+      { path: &quot;/products&quot;, lazy: () =&gt; import(&quot;../features/products/ProductsPage&quot;).then((m) =&gt; ({ Component: m.ProductsPage })) },
+      { path: &quot;/products/:id&quot;, lazy: () =&gt; import(&quot;../features/products/ProductsPage&quot;).then((m) =&gt; ({ Component: m.ProductPage })) },
+      { path: &quot;*&quot;, element: &lt;NotFound /&gt; },
+    ],
+  },
+];</pre></div>
+
+<p>تفاصيل قليلة في هذا الملف آتية مباشرة من فصول سابقة. يضبط الإطار <code>lang</code> و<code>dir</code> والصنف <code>dark</code> على <code>&lt;html&gt;</code>، فتنعكس الصفحة كلها وتتغير ألوانها معاً، وكل الألوان متغيرات CSS والمظهر الداكن يعيد تعريفها فقط (الفصل 9). ورابط «تخطَّ إلى المحتوى» أول ما يصل إليه مستخدم لوحة المفاتيح. وزر اللغة معلَّم باللغة التي يحوّل <em>إليها</em>، فينطق قارئ الشاشة «English» و«العربية» صحيحتين. ومسارا المنتجات <code>lazy</code>، وسنرى السبب في القسم 18.9.</p>
+
+<h2><span class="sec">18.6</span> <span>النظرة العامة</span></h2>
+
+<p>أرقام النظرة العامة دوال نقية للطلبات. وإبقاؤها في <code>lib/</code>، بعيداً عن React و<code>fetch</code>، يعني أنها تُختبر في أجزاء من الثانية، وتبقى الشاشات قصيرة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/lib/orders.ts</div><pre class="code"><span class="k">import</span> <span class="k">type</span> { Order, OrderStatus } <span class="k">from</span> <span class="s">&quot;../api/schemas&quot;</span>;
+
+<span class="c">// دوال نقية: لا React ولا fetch، فتُختبر في أجزاء من الثانية</span>
+<span class="k">export</span> <span class="k">const</span> PAGE_SIZE = <span class="n">8</span>;
+<span class="k">export</span> <span class="k">const</span> STATUSES: OrderStatus[] = [<span class="s">&quot;new&quot;</span>, <span class="s">&quot;paid&quot;</span>, <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;cancelled&quot;</span>];
+
+<span class="k">export</span> <span class="k">type</span> Filters = { status: OrderStatus | <span class="s">&quot;all&quot;</span>; q: string; page: number };
+
+<span class="k">export</span> <span class="k">function</span> readFilters(params: URLSearchParams): Filters {
+  <span class="k">const</span> status = params.get(<span class="s">&quot;status&quot;</span>);
+  <span class="k">return</span> {
+    status: STATUSES.includes(status as OrderStatus) ? (status as OrderStatus) : <span class="s">&quot;all&quot;</span>,
+    q: params.get(<span class="s">&quot;q&quot;</span>) ?? <span class="s">&quot;&quot;</span>,
+    page: Math.max(<span class="n">1</span>, Number(params.get(<span class="s">&quot;page&quot;</span>)) || <span class="n">1</span>),
+  };
+}
+
+<span class="k">export</span> <span class="k">function</span> filterOrders(orders: <span class="k">readonly</span> Order[], { status, q, page }: Filters) {
+  <span class="k">const</span> query = q.trim().toLocaleLowerCase();
+  <span class="k">const</span> matching = orders
+    .filter((o) =&gt; status === <span class="s">&quot;all&quot;</span> || o.status === status)
+    .filter((o) =&gt; !query || o.customer.toLocaleLowerCase().includes(query))
+    .toSorted((a, b) =&gt; b.createdAt.localeCompare(a.createdAt));
+  <span class="k">const</span> pages = Math.max(<span class="n">1</span>, Math.ceil(matching.length / PAGE_SIZE));
+  <span class="k">const</span> current = Math.min(page, pages);
+  <span class="k">return</span> { rows: matching.slice((current - <span class="n">1</span>) * PAGE_SIZE, current * PAGE_SIZE), page: current, pages, count: matching.length };
+}
+
+<span class="k">export</span> <span class="k">function</span> overview(orders: <span class="k">readonly</span> Order[], now: Date) {
+  <span class="k">const</span> earning = orders.filter((o) =&gt; o.status === <span class="s">&quot;paid&quot;</span> || o.status === <span class="s">&quot;shipped&quot;</span>);
+  <span class="k">const</span> revenue = earning.reduce((sum, o) =&gt; sum + o.total, <span class="n">0</span>);
+  <span class="k">const</span> days = Array.<span class="k">from</span>({ length: <span class="n">7</span> }, (_, i) =&gt; {
+    <span class="k">const</span> date = <span class="k">new</span> Date(now);
+    date.setUTCDate(date.getUTCDate() - (<span class="n">6</span> - i));
+    <span class="k">const</span> key = date.toISOString().slice(<span class="n">0</span>, <span class="n">10</span>);
+    <span class="k">const</span> total = earning.filter((o) =&gt; o.createdAt.startsWith(key)).reduce((sum, o) =&gt; sum + o.total, <span class="n">0</span>);
+    <span class="k">return</span> { day: key, total };
+  });
+  <span class="k">return</span> {
+    revenue,
+    orders: orders.filter((o) =&gt; o.status !== <span class="s">&quot;cancelled&quot;</span>).length,
+    average: earning.length ? Math.round(revenue / earning.length) : <span class="n">0</span>,
+    toShip: orders.filter((o) =&gt; o.status === <span class="s">&quot;paid&quot;</span>).length,
+    days,
+  };
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/overview/OverviewPage.tsx</div><pre class="code">import { useOrders } from &quot;../../api/queries&quot;;
+import { overview } from &quot;../../lib/orders&quot;;
+import { useT } from &quot;../../settings&quot;;
+import { Card, LoadError, Loading } from &quot;../../ui/ui&quot;;
+
+export function OverviewPage() {
+  const t = useT();
+  const orders = useOrders();
+  if (orders.isPending) return &lt;Loading /&gt;;
+  if (orders.isError) return &lt;LoadError retry={() =&gt; void orders.refetch()} /&gt;;
+
+  const o = overview(orders.data, new Date());
+  const highest = Math.max(1, ...o.days.map((d) =&gt; d.total));
+  const kpis = [
+    [t(&quot;revenue&quot;), t.money(o.revenue)],
+    [t(&quot;ordersCount&quot;), String(o.orders)],
+    [t(&quot;average&quot;), t.money(o.average)],
+    [t(&quot;toShip&quot;), String(o.toShip)],
+  ] as const;
+
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{t(&quot;overview&quot;)}&lt;/h1&gt;
+      &lt;div className=&quot;kpis&quot;&gt;
+        {kpis.map(([label, value]) =&gt; (
+          &lt;figure key={label} className=&quot;card kpi&quot;&gt;
+            &lt;p&gt;{label}&lt;/p&gt;
+            &lt;strong&gt;{value}&lt;/strong&gt;
+          &lt;/figure&gt;
+        ))}
+      &lt;/div&gt;
+      &lt;Card title={t(&quot;lastWeek&quot;)}&gt;
+        &lt;ol className=&quot;bars&quot;&gt;
+          {o.days.map((d) =&gt; (
+            &lt;li key={d.day}&gt;
+              &lt;span className=&quot;bar&quot; style={{ blockSize: `${(d.total / highest) * 100}%` }} /&gt;
+              &lt;span aria-hidden=&quot;true&quot;&gt;{t.weekday(d.day)}&lt;/span&gt;
+              &lt;span className=&quot;sr-only&quot;&gt;{`${t.weekday(d.day)}: ${t.money(d.total)}`}&lt;/span&gt;
+            &lt;/li&gt;
+          ))}
+        &lt;/ol&gt;
+      &lt;/Card&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+
+<p>الرسم البياني HTML عادي: قائمة من سبعة أعمدة ارتفاع كل منها نسبة مئوية. وكل عمود يحمل قيمته نصاً مخفياً عن العين، فيقرأ قارئ الشاشة «الثلاثاء: ‏١٬٣٥٠ ج.م.‏» بدل لا شيء. ومكتبة رسوم ستكون أثقل، وصامتة في وضعها الافتراضي.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/react-capstone-ar-page.html-600-9c7451.png" alt=""><figcaption><b>الشكل 18.1:</b> النظرة العامة. الأرقام والأعمدة من الطلبات الـ 36 نفسها.</figcaption></figure>
+
+<h2><span class="sec">18.7</span> <span>الطلبات</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/orders/OrdersPage.tsx</div><pre class="code">import { Link, useSearchParams } from &quot;react-router&quot;;
+import { useOrders } from &quot;../../api/queries&quot;;
+import { filterOrders, readFilters, STATUSES } from &quot;../../lib/orders&quot;;
+import { useT } from &quot;../../settings&quot;;
+import { LoadError, Loading, StatusBadge } from &quot;../../ui/ui&quot;;
+
+export function OrdersPage() {
+  const t = useT();
+  const orders = useOrders();
+  // المرشحات تعيش في العنوان، فتُحفظ القائمة المرشحة وتُشارك
+  const [params, setParams] = useSearchParams();
+  const filters = readFilters(params);
+
+  const link = (changes: Record&lt;string, string | null&gt;) =&gt; {
+    const next = new URLSearchParams(params);
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null) next.delete(key);
+      else next.set(key, value);
+    }
+    return `?${next}`;
+  };
+
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{t(&quot;orders&quot;)}&lt;/h1&gt;
+      &lt;nav className=&quot;filters&quot; aria-label={t(&quot;status&quot;)}&gt;
+        {([&quot;all&quot;, ...STATUSES] as const).map((s) =&gt; (
+          &lt;Link key={s} to={link({ status: s === &quot;all&quot; ? null : s, page: null })} aria-current={filters.status === s ? &quot;page&quot; : undefined}&gt;
+            {t(s)}
+          &lt;/Link&gt;
+        ))}
+      &lt;/nav&gt;
+      &lt;label htmlFor=&quot;q&quot; className=&quot;sr-only&quot;&gt;
+        {t(&quot;search&quot;)}
+      &lt;/label&gt;
+      &lt;input
+        id=&quot;q&quot;
+        type=&quot;search&quot;
+        placeholder={t(&quot;search&quot;)}
+        value={filters.q}
+        onChange={(e) =&gt; setParams(link({ q: e.target.value || null, page: null }).slice(1), { replace: true })}
+      /&gt;
+      {orders.isPending &amp;&amp; &lt;Loading /&gt;}
+      {orders.isError &amp;&amp; &lt;LoadError retry={() =&gt; void orders.refetch()} /&gt;}
+      {orders.isSuccess &amp;&amp; &lt;OrdersTable result={filterOrders(orders.data, filters)} link={link} /&gt;}
+    &lt;/&gt;
+  );
+}
+
+type Result = ReturnType&lt;typeof filterOrders&gt;;
+
+function OrdersTable({ result, link }: { result: Result; link: (changes: Record&lt;string, string&gt;) =&gt; string }) {
+  const t = useT();
+  if (result.count === 0) return &lt;p role=&quot;status&quot;&gt;{t(&quot;none&quot;)}&lt;/p&gt;;
+  return (
+    &lt;section className=&quot;card&quot;&gt;
+      &lt;table&gt;
+        &lt;caption className=&quot;sr-only&quot;&gt;{t(&quot;found&quot;, { count: result.count })}&lt;/caption&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th scope=&quot;col&quot;&gt;{t(&quot;order&quot;)}&lt;/th&gt;
+            &lt;th scope=&quot;col&quot;&gt;{t(&quot;customer&quot;)}&lt;/th&gt;
+            &lt;th scope=&quot;col&quot;&gt;{t(&quot;total&quot;)}&lt;/th&gt;
+            &lt;th scope=&quot;col&quot;&gt;{t(&quot;status&quot;)}&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          {result.rows.map((o) =&gt; (
+            &lt;tr key={o.id}&gt;
+              &lt;td&gt;
+                &lt;Link to={`/orders/${o.id}`}&gt;#{o.id}&lt;/Link&gt;
+              &lt;/td&gt;
+              &lt;td&gt;{o.customer}&lt;/td&gt;
+              &lt;td&gt;{t.money(o.total)}&lt;/td&gt;
+              &lt;td&gt;
+                &lt;StatusBadge status={o.status} /&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          ))}
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+      &lt;div className=&quot;pager&quot;&gt;
+        {result.page &gt; 1 ? &lt;Link to={link({ page: String(result.page - 1) })}&gt;{t(&quot;previous&quot;)}&lt;/Link&gt; : &lt;span /&gt;}
+        &lt;span&gt;{t(&quot;page&quot;, { page: result.page, pages: result.pages })}&lt;/span&gt;
+        {result.page &lt; result.pages ? &lt;Link to={link({ page: String(result.page + 1) })}&gt;{t(&quot;next&quot;)}&lt;/Link&gt; : &lt;span /&gt;}
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+}</pre></div>
+
+<p>الحالة ونص البحث ورقم الصفحة كلها في العنوان، كما في الفصل 6. تقرؤها الصفحة بـ <code>readFilters</code>، التي تحمي أيضاً من قيم لا معنى لها مثل <code>?page=-4</code> أو <code>?status=lost</code>. وروابط الحالة روابط حقيقية، فتُفتح في لسان جديد، والحالي منها معلَّم بـ <code>aria-current</code> الذي يفهمه CSS وقارئ الشاشة معاً. والكتابة في مربع البحث تستخدم <code>replace</code>، فلا يرجع زر الرجوع حرفاً حرفاً.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/react-capstone-ar-page.html-600-5d1d13.png" alt=""><figcaption><b>الشكل 18.2:</b> الطلبات المدفوعة، الأحدث أولاً. والعنوان صار <code>/orders?status=paid</code>.</figcaption></figure>
+
+<h2><span class="sec">18.8</span> <span>طلب واحد</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/orders/OrderPage.tsx</div><pre class="code">import { Link, useParams } from &quot;react-router&quot;;
+import { useOrder, useSetStatus } from &quot;../../api/queries&quot;;
+import { STATUSES } from &quot;../../lib/orders&quot;;
+import { useT } from &quot;../../settings&quot;;
+import { Card, LoadError, Loading, StatusBadge } from &quot;../../ui/ui&quot;;
+
+export function OrderPage() {
+  const t = useT();
+  const id = Number(useParams().id);
+  const order = useOrder(id);
+  const setStatus = useSetStatus(id);
+  if (order.isPending) return &lt;Loading /&gt;;
+  if (order.isError) return &lt;LoadError retry={() =&gt; void order.refetch()} /&gt;;
+  const o = order.data;
+
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{t(&quot;orderTitle&quot;, { id: String(o.id) })}&lt;/h1&gt;
+      &lt;Card&gt;
+        &lt;dl&gt;
+          &lt;dt&gt;{t(&quot;customer&quot;)}&lt;/dt&gt;
+          &lt;dd&gt;{o.customer}&lt;/dd&gt;
+          &lt;dt&gt;{t(&quot;city&quot;)}&lt;/dt&gt;
+          &lt;dd&gt;{o.city}&lt;/dd&gt;
+          &lt;dt&gt;{t(&quot;date&quot;)}&lt;/dt&gt;
+          &lt;dd&gt;{t.date(o.createdAt)}&lt;/dd&gt;
+          &lt;dt&gt;{t(&quot;total&quot;)}&lt;/dt&gt;
+          &lt;dd&gt;{t.money(o.total)}&lt;/dd&gt;
+          &lt;dt&gt;{t(&quot;status&quot;)}&lt;/dt&gt;
+          &lt;dd aria-live=&quot;polite&quot;&gt;
+            &lt;StatusBadge status={o.status} /&gt;
+          &lt;/dd&gt;
+        &lt;/dl&gt;
+        &lt;p&gt;{t(&quot;markAs&quot;)}&lt;/p&gt;
+        &lt;div className=&quot;actions&quot;&gt;
+          {STATUSES.filter((s) =&gt; s !== o.status).map((s) =&gt; (
+            &lt;button key={s} type=&quot;button&quot; className=&quot;secondary&quot; disabled={setStatus.isPending} onClick={() =&gt; setStatus.mutate(s)}&gt;
+              {t(s)}
+            &lt;/button&gt;
+          ))}
+        &lt;/div&gt;
+        {setStatus.isError &amp;&amp; (
+          &lt;p role=&quot;alert&quot; className=&quot;error&quot;&gt;
+            {t(&quot;failed&quot;)}
+          &lt;/p&gt;
+        )}
+      &lt;/Card&gt;
+      &lt;Link to=&quot;/orders&quot;&gt;{t(&quot;allOrders&quot;)}&lt;/Link&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+
+<p>تعرض الأزرار كل حالة إلا الحالية، وتُعطَّل ما دام تغيير في طريقه، فلا تُرسل النقرة المزدوجة طلبين. والحالة في منطقة <code>aria-live</code>، فيعلن قارئ الشاشة التغيير. وإن رفض الخادم أعاد <code>useSetStatus</code> الحالة القديمة، وقال تنبيه ذلك: فلا يُترك المستخدم يصدّق شيئاً غير صحيح أبداً.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/react-capstone-ar-page.html-600-fe3c4f.png" alt=""><figcaption><b>الشكل 18.3:</b> طلب مدفوع حُوّل للتو إلى مشحون.</figcaption></figure>
+
+<h2><span class="sec">18.9</span> <span>محرر المنتجات</span></h2>
+
+<p>النموذج React Hook Form مع مخطط zod كما في الفصل 7، ومعه تفصيلان تحتاجهما النماذج الحقيقية. يُبنى المخطط باللغة الحالية فتُترجم رسائله. والحقول نصية، فيحوّلها <code>z.coerce.number</code> إلى أعداد، ثم يرفض <code>.int()</code> القيمة «85.5» بدل أن يحفظها بصمت. ويستلم النموذج المنتج ودالة <code>onSave</code>، ولا يعرف شيئاً عن الخادم، فيسهل اختباره:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/products/ProductForm.tsx</div><pre class="code">import { useMemo, useState } from &quot;react&quot;;
+import { useForm } from &quot;react-hook-form&quot;;
+import { zodResolver } from &quot;@hookform/resolvers/zod&quot;;
+import * as z from &quot;zod&quot;;
+import type { Product } from &quot;../../api/schemas&quot;;
+import { useT } from &quot;../../settings&quot;;
+import type { T } from &quot;../../i18n/format&quot;;
+
+const productSchema = (t: T) =&gt;
+  z.object({
+    name: z.string().trim().min(2, t(&quot;nameError&quot;)).max(40, t(&quot;nameError&quot;)),
+    price: z.coerce.number&lt;string&gt;().int(t(&quot;priceError&quot;)).positive(t(&quot;priceError&quot;)),
+    stock: z.coerce.number&lt;string&gt;().int(t(&quot;stockError&quot;)).min(0, t(&quot;stockError&quot;)),
+  });
+
+type Fields = &quot;name&quot; | &quot;price&quot; | &quot;stock&quot;;
+type Props = { product: Product; onSave: (product: Product) =&gt; Promise&lt;Partial&lt;Record&lt;Fields, string&gt;&gt; | void&gt; };
+
+export function ProductForm({ product, onSave }: Props) {
+  const t = useT();
+  const schema = useMemo(() =&gt; productSchema(t), [t]);
+  const [saved, setSaved] = useState(false);
+  const { register, handleSubmit, setError, formState } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: { name: product.name, price: String(product.price), stock: String(product.stock) },
+  });
+  const { errors, isSubmitting } = formState;
+
+  const submit = handleSubmit(async (values) =&gt; {
+    setSaved(false);
+    const serverErrors = await onSave({ ...product, ...values });
+    if (!serverErrors) return setSaved(true);
+    for (const [field, message] of Object.entries(serverErrors)) setError(field as Fields, { message });
+  });
+
+  const field = (name: Fields, label: string, inputMode?: &quot;numeric&quot;) =&gt; (
+    &lt;&gt;
+      &lt;label htmlFor={name}&gt;{label}&lt;/label&gt;
+      &lt;input id={name} inputMode={inputMode} aria-invalid={!!errors[name]} aria-describedby={`${name}-error`} {...register(name)} /&gt;
+      {errors[name] &amp;&amp; (
+        &lt;p className=&quot;error&quot; id={`${name}-error`}&gt;
+          {errors[name].message}
+        &lt;/p&gt;
+      )}
+    &lt;/&gt;
+  );
+
+  return (
+    &lt;form onSubmit={submit} noValidate&gt;
+      {field(&quot;name&quot;, t(&quot;name&quot;))}
+      {field(&quot;price&quot;, t(&quot;price&quot;), &quot;numeric&quot;)}
+      {field(&quot;stock&quot;, t(&quot;stock&quot;), &quot;numeric&quot;)}
+      &lt;p&gt;
+        &lt;button type=&quot;submit&quot; disabled={isSubmitting}&gt;
+          {isSubmitting ? t(&quot;saving&quot;) : t(&quot;save&quot;)}
+        &lt;/button&gt;
+      &lt;/p&gt;
+      {saved &amp;&amp; (
+        &lt;p role=&quot;status&quot; className=&quot;done&quot;&gt;
+          {t(&quot;saved&quot;)}
+        &lt;/p&gt;
+      )}
+    &lt;/form&gt;
+  );
+}</pre></div>
+
+<p>والصفحة تربطه بالخادم. فبعض الأخطاء لا يجدها إلا الخادم: هنا اسم يستخدمه منتج آخر. يرد الخادم بـ <code>422</code> ومعه الحقل والرسالة، فتعيدها الصفحة إلى النموذج، فيعرضها تحت الحقل الصحيح، تماماً كأخطائه هو:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/products/ProductsPage.tsx</div><pre class="code">import { Link, useParams } from &quot;react-router&quot;;
+import { useProduct, useProducts, useSaveProduct } from &quot;../../api/queries&quot;;
+import { ApiError } from &quot;../../api/client&quot;;
+import { useT } from &quot;../../settings&quot;;
+import { Card, LoadError, Loading } from &quot;../../ui/ui&quot;;
+import { ProductForm } from &quot;./ProductForm&quot;;
+
+export function ProductsPage() {
+  const t = useT();
+  const products = useProducts();
+  if (products.isPending) return &lt;Loading /&gt;;
+  if (products.isError) return &lt;LoadError retry={() =&gt; void products.refetch()} /&gt;;
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{t(&quot;products&quot;)}&lt;/h1&gt;
+      &lt;Card&gt;
+        &lt;table&gt;
+          &lt;thead&gt;
+            &lt;tr&gt;
+              &lt;th scope=&quot;col&quot;&gt;{t(&quot;name&quot;)}&lt;/th&gt;
+              &lt;th scope=&quot;col&quot;&gt;{t(&quot;price&quot;)}&lt;/th&gt;
+              &lt;th scope=&quot;col&quot;&gt;{t(&quot;stock&quot;)}&lt;/th&gt;
+            &lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            {products.data.map((p) =&gt; (
+              &lt;tr key={p.id}&gt;
+                &lt;td&gt;
+                  &lt;Link to={`/products/${p.id}`} aria-label={`${t(&quot;edit&quot;)}: ${p.name}`}&gt;
+                    {p.name}
+                  &lt;/Link&gt;
+                &lt;/td&gt;
+                &lt;td&gt;{t.money(p.price)}&lt;/td&gt;
+                &lt;td&gt;{p.stock}&lt;/td&gt;
+              &lt;/tr&gt;
+            ))}
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/Card&gt;
+    &lt;/&gt;
+  );
+}
+
+export function ProductPage() {
+  const t = useT();
+  const id = Number(useParams().id);
+  const product = useProduct(id);
+  const save = useSaveProduct();
+  if (product.isPending) return &lt;Loading /&gt;;
+  if (product.isError) return &lt;LoadError retry={() =&gt; void product.refetch()} /&gt;;
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{product.data.name}&lt;/h1&gt;
+      &lt;Card&gt;
+        &lt;ProductForm
+          key={product.data.id}
+          product={product.data}
+          onSave={async (changed) =&gt; {
+            try {
+              await save.mutateAsync(changed);
+            } catch (error) {
+              if (error instanceof ApiError &amp;&amp; error.status === 422) return error.errors;
+              throw error;
+            }
+          }}
+        /&gt;
+      &lt;/Card&gt;
+      &lt;Link to=&quot;/products&quot;&gt;{t(&quot;products&quot;)}&lt;/Link&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/react-capstone-ar-page.html-600-05dfd8.png" alt=""><figcaption><b>الشكل 18.4:</b> حفظ اسم فارغ وسعر فيه كسر: يشرح النموذج الخطأين، ولا يُرسل شيء.</figcaption></figure>
+
+<h2><span class="sec">18.10</span> <span>إثبات أنه يعمل</span></h2>
+
+<h3>اختبارات الوحدات</h3>
+
+<p>يُختبر المنطق النقي والنموذج بـ Vitest كما في الفصل 11. ويكتب اختبار النموذج في الحقول الحقيقية، ويجدها بعناوينها، كما يجدها المستخدم. (ويعمل الاختبار بالإنجليزية، لغة التطبيق حين لا تحدد الصفحة لغة.)</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/products/ProductForm.test.tsx</div><pre class="code">import { render, screen } from &quot;@testing-library/react&quot;;
+import userEvent from &quot;@testing-library/user-event&quot;;
+import { describe, expect, it, vi } from &quot;vitest&quot;;
+import { ProductForm } from &quot;./ProductForm&quot;;
+
+const mug = { id: 2, name: &quot;Bit mug&quot;, price: 8500, stock: 40 };
+
+describe(&quot;ProductForm&quot;, () =&gt; {
+  it(&quot;يعرض خطأ تحت كل حقل خاطئ، ولا يحفظ&quot;, async () =&gt; {
+    const onSave = vi.fn();
+    render(&lt;ProductForm product={mug} onSave={onSave} /&gt;);
+    await userEvent.clear(screen.getByLabelText(&quot;Name&quot;));
+    await userEvent.clear(screen.getByLabelText(&quot;Price in piastres&quot;));
+    await userEvent.type(screen.getByLabelText(&quot;Price in piastres&quot;), &quot;85.5&quot;);
+    await userEvent.click(screen.getByRole(&quot;button&quot;, { name: &quot;Save&quot; }));
+    expect(await screen.findByText(&quot;Write a name of 2 to 40 characters.&quot;)).toBeInTheDocument();
+    expect(screen.getByText(&quot;The price must be a whole number above zero.&quot;)).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it(&quot;يحفظ أعداداً صحيحة، لا النص المكتوب&quot;, async () =&gt; {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(&lt;ProductForm product={mug} onSave={onSave} /&gt;);
+    await userEvent.clear(screen.getByLabelText(&quot;Stock&quot;));
+    await userEvent.type(screen.getByLabelText(&quot;Stock&quot;), &quot;39&quot;);
+    await userEvent.click(screen.getByRole(&quot;button&quot;, { name: &quot;Save&quot; }));
+    expect(await screen.findByRole(&quot;status&quot;)).toHaveTextContent(&quot;Saved.&quot;);
+    expect(onSave).toHaveBeenCalledWith({ id: 2, name: &quot;Bit mug&quot;, price: 8500, stock: 39 });
+  });
+
+  it(&quot;يعرض أخطاء الخادم تحت الحقل الصحيح&quot;, async () =&gt; {
+    render(&lt;ProductForm product={mug} onSave={async () =&gt; ({ name: &quot;Another product already has this name.&quot; })} /&gt;);
+    await userEvent.click(screen.getByRole(&quot;button&quot;, { name: &quot;Save&quot; }));
+    expect(await screen.findByText(&quot;Another product already has this name.&quot;)).toBeInTheDocument();
+    expect(screen.getByLabelText(&quot;Name&quot;)).toHaveAttribute(&quot;aria-invalid&quot;, &quot;true&quot;);
+  });
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose
+ RUN  v5.1.1 .
+ ✓ src/lib/orders.test.ts &gt; filterOrders &gt; يرشّح بالحالة وباسم العميل 3ms
+ ✓ src/lib/orders.test.ts &gt; filterOrders &gt; يقسم النتيجة إلى صفحات من ثمانية 14ms
+ ✓ src/lib/orders.test.ts &gt; overview &gt; يحسب الإيرادات من الطلبات المدفوعة والمشحونة فقط 0ms
+ ✓ src/lib/orders.test.ts &gt; overview &gt; يعطي عموداً لكل يوم من آخر سبعة أيام 1ms
+ ✓ src/features/products/ProductForm.test.tsx &gt; ProductForm &gt; يعرض خطأ تحت كل حقل خاطئ، ولا يحفظ 182ms
+ ✓ src/features/products/ProductForm.test.tsx &gt; ProductForm &gt; يحفظ أعداداً صحيحة، لا النص المكتوب 41ms
+ ✓ src/features/products/ProductForm.test.tsx &gt; ProductForm &gt; يعرض أخطاء الخادم تحت الحقل الصحيح 19ms
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Duration  1.24s (environment 57%, setup 15%, tests 14%, transform 9%, import 5%)</pre></div>
+
+<h3>اختبارات الطرف إلى الطرف وفحص الإتاحة</h3>
+
+<p>ثلاثة اختبارات Playwright تفتح التطبيق الحقيقي في متصفح حقيقي: واحد يشحن طلباً عبر الواجهة كلها، وواحد يشغّل axe على النظرة العامة وقائمة الطلبات، وواحد يبدّل اللغة ويتأكد أن اتجاه الصفحة انقلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">e2e/admin.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test, <span class="k">type</span> Page } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">const</span> words = { orders: <span class="s">&quot;الطلبات&quot;</span>, paid: <span class="s">&quot;مدفوع&quot;</span>, shipped: <span class="s">&quot;مشحون&quot;</span>, overview: <span class="s">&quot;نظرة عامة&quot;</span> };
+
+<span class="k">async</span> <span class="k">function</span> noViolations(page: Page) {
+  <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
+  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="k">const</span> found: string[] = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
+  expect(found).toEqual([]);
+}
+
+test.beforeEach(<span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(<span class="s">&quot;page.html&quot;</span>);
+});
+
+test(<span class="s">&quot;يمكن تحويل طلب إلى مشحون&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;link&quot;</span>, { name: words.orders }).click();
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;link&quot;</span>, { name: words.paid, exact: <span class="k">true</span> }).click();
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;row&quot;</span>).nth(<span class="n">1</span>).getByRole(<span class="s">&quot;link&quot;</span>).click();
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: words.shipped }).click();
+  <span class="k">await</span> expect(page.locator(<span class="s">&quot;dd .badge&quot;</span>)).toHaveText(words.shipped);
+});
+
+test(<span class="s">&quot;النظرة العامة والطلبات بلا مخالفات إتاحة&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: words.overview })).toBeVisible();
+  <span class="k">await</span> noViolations(page);
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;link&quot;</span>, { name: words.orders }).click();
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;table&quot;</span>)).toBeVisible();
+  <span class="k">await</span> noViolations(page);
+});
+
+test(<span class="s">&quot;يتحول التطبيق كله إلى الإنجليزية، من اليسار إلى اليمين&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;English&quot;</span> }).click();
+  <span class="k">await</span> expect(page.locator(<span class="s">&quot;html&quot;</span>)).toHaveAttribute(<span class="s">&quot;dir&quot;</span>, <span class="s">&quot;ltr&quot;</span>);
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: <span class="s">&quot;Overview&quot;</span> })).toBeVisible();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx playwright test
+Running 3 tests using 1 worker
+  ✓  1 e2e/admin.spec.ts:18:1 › يمكن تحويل طلب إلى مشحون (962ms)
+  ✓  2 e2e/admin.spec.ts:26:1 › النظرة العامة والطلبات بلا مخالفات إتاحة (1.1s)
+  ✓  3 e2e/admin.spec.ts:34:1 › يتحول التطبيق كله إلى الإنجليزية، من اليسار إلى اليمين (556ms)
+  3 passed (3.5s)</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/react-capstone-ar-page.html-600-a875eb.png" alt=""><figcaption><b>الشكل 18.5:</b> النظرة العامة نفسها بعد الضغط على «المظهر الداكن»: تتغير الألوان كلها معاً، لأنها متغيرات.</figcaption></figure>
+
+<h3>ميزانية الحجم</h3>
+
+<p>كان آخر أهداف الجودة تحميلاً أول أقل من 150 كيلوبايت من JavaScript المضغوطة. وهذا السكربت يحزم التطبيق كما في الإنتاج ويتحقق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">size.ts</div><pre class="code"><span class="k">import</span> { build } <span class="k">from</span> <span class="s">&quot;esbuild&quot;</span>;
+<span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
+
+<span class="c">// يحزم التطبيق كما في الإنتاج، ويقارنه بالميزانية</span>
+<span class="k">const</span> BUDGET_KB = <span class="n">150</span>;
+
+<span class="k">const</span> result = <span class="k">await</span> build({
+  entryPoints: [<span class="s">&quot;src/main.tsx&quot;</span>],
+  bundle: <span class="k">true</span>,
+  minify: <span class="k">true</span>,
+  splitting: <span class="k">true</span>, <span class="c">// lazy routes become separate files</span>
+  format: <span class="s">&quot;esm&quot;</span>,
+  write: <span class="k">false</span>,
+  metafile: <span class="k">true</span>,
+  outdir: <span class="s">&quot;dist&quot;</span>,
+  define: { <span class="s">&quot;process.env.NODE_ENV&quot;</span>: <span class="s">&#x27;&quot;production&quot;&#x27;</span> },
+  logLevel: <span class="s">&quot;error&quot;</span>,
+});
+<span class="k">const</span> outputs = result.metafile.outputs;
+<span class="k">const</span> gzipKB = (path: string) =&gt; gzipSync(result.outputFiles.find((f) =&gt; f.path.endsWith(path))!.contents).length / <span class="n">1024</span>;
+<span class="k">const</span> packageOf = (file: string) =&gt; /node_modules\/((?:@[^/]+\/)?[^/]+)/.exec(file)?.[<span class="n">1</span>] ?? <span class="s">&quot;كودنا&quot;</span>;
+
+<span class="c">// التحميل الأول: ملف البداية وكل ملف يستورده مباشرة</span>
+<span class="k">const</span> first = <span class="k">new</span> Set&lt;string&gt;();
+<span class="k">const</span> visit = (path: string) =&gt; {
+  <span class="k">if</span> (first.has(path)) <span class="k">return</span>;
+  first.add(path);
+  <span class="k">for</span> (<span class="k">const</span> i <span class="k">of</span> outputs[path]!.imports) <span class="k">if</span> (i.kind === <span class="s">&quot;import-statement&quot;</span>) visit(i.path);
+};
+visit(<span class="s">&quot;dist/main.js&quot;</span>);
+
+<span class="k">let</span> firstKB = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> [path, info] <span class="k">of</span> Object.entries(outputs)) {
+  <span class="k">const</span> kb = gzipKB(path);
+  <span class="k">const</span> packages = [...<span class="k">new</span> Set(Object.keys(info.inputs).map(packageOf))];
+  <span class="k">if</span> (first.has(path)) firstKB += kb;
+  <span class="k">else</span> console.log(<span class="s">`يُحمَّل لاحقاً: ${kb.toFixed(1)} KB gzip (${packages.join(&quot; + &quot;)})`</span>);
+}
+console.log(<span class="s">`التحميل الأول: ${firstKB.toFixed(1)} KB gzip`</span>);
+console.log(firstKB &lt;= BUDGET_KB ? <span class="s">`✓ ضمن ميزانية ${BUDGET_KB} KB`</span> : <span class="s">`✗ فوق ميزانية ${BUDGET_KB} KB`</span>);</pre></div>
+
+<p>في أول تشغيل فشل. وقصة إصلاحه أكثر ما في هذا الفصل واقعية، فهذه هي بالأرقام التي طبعها كل مرة:</p>
+
+<table>
+<thead><tr><th>الخطوة</th><th>التحميل الأول (مضغوطاً)</th><th>ما تعلمناه</th></tr></thead>
+<tbody>
+<tr><td>النسخة الأولى</td><td>221.7 KB</td><td>سرد السكربت كل حزمة: zod وحدها 444 كيلوبايت قبل الضغط، أكثر من React</td></tr>
+<tr><td><code>import * as z from "zod"</code></td><td>156.2 KB</td><td>كنا كتبنا <code>import { z } from "zod"</code>، وهذا يستورد كائناً واحداً يحمل zod كلها، فلا تستطيع أداة الحزم أن تترك منه شيئاً. أما استيراد الوحدة نفسها فيتيح لها أن تُبقي ما نستخدمه فقط</td></tr>
+<tr><td>مسارا المنتجات كسولان</td><td>142.6 KB</td><td>مكتبة النماذج لا تلزم إلا في صفحات المنتجات، وتحميلها عند الطلب يخرجها من التنزيل الأول</td></tr>
+</tbody>
+</table>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>يُحمَّل لاحقاً: 14.6 KB gzip (كودنا + react-hook-form + @hookform/resolvers)
+التحميل الأول: 142.6 KB gzip
+✓ ضمن ميزانية 150 KB</pre></div>
+
+<p>ودرسان هنا يتجاوزان هذا التطبيق بكثير. <strong>قِس قبل أن تحسّن:</strong> ما كان أحد سيخمّن أن سطر استيراد واحداً يكلف ثلث التطبيق. و<strong>الميزانية لا تعمل إلا إن عملت وحدها:</strong> في مشروع حقيقي يعمل هذا السكربت في CI مع كل طلب دمج، فيوقف فحصٌ أحمر الـ 70 كيلوبايت التالية قبل أن تصل دون أن يلاحظها أحد.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: قائمة تحقق للإصدار</p><p>قبل كل إصدار، قائمة قصيرة يستطيع أي أحد في الفريق تنفيذها: كل الفحوص خضراء في CI، والرحلات الأساسية مجرَّبة باليد باللغتين والمظهرين، على جوال وبلوحة المفاتيح، وميزانية الحجم محققة، ولا أخطاء في وحدة تحكم المتصفح، وخطة للتراجع عن الإصدار إن ساء شيء. خمس دقائق من التحقق أرخص من أمسية من الإصلاح في الإنتاج.</p></aside>
+
+<h2><span class="sec">18.11</span> <span>ما الذي بنيته</span></h2>
+
+<p>انظر مرة أخرى إلى قائمة الملفات في القسم 18.2. في نحو 800 سطر من TypeScript، دون الاختبارات: طبقة بيانات بالأنواع ومتحقَّق منها، مع تخزين مؤقت وتحديثات متفائلة، وخمس شاشات بحالة العنوان وحالات التحميل والخطأ، ونموذج متحقَّق منه يدمج أخطاء الخادم، ولغتان بتخطيط منعكس وتنسيقات حقيقية للأرقام والتواريخ، ومظهر داكن، واختبارات وفحص إتاحة وميزانية حجم تثبت كل ذلك. هذا ليس لعبة. فمع خادم حقيقي خلف <code>/api</code> يصير منتجاً.</p>
+
+<p>وأهم من التطبيق الترتيب الذي صُنع به: الوصف وأهداف الجودة أولاً، ثم الطبقات، والمنطق النقي مُختبَراً وحده، والشاشات رفيعة، والقياس قبل أي تحسين. وهذا الترتيب يصلح لتطبيقات أكبر من هذا مئة مرة.</p>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>حوّل الوصف إلى <strong>قصص مستخدمين</strong> لكل منها اختبار لمعنى «انتهى»، واكتب <strong>أهداف الجودة</strong> (متاح، مُختبَر، سريع، آمن) قبل الكود.</li>
+<li>نظّم الكود في <strong>طبقات</strong>: مكان واحد يتحدث إلى الخادم، والمنطق النقي منفصل، والشاشات رفيعة.</li>
+<li><strong>تحقق</strong> من كل رد من الخادم بمخطط، وأعطِ الشاشات أخطاء تفهمها.</li>
+<li>بيانات الخادم في <strong>TanStack Query</strong>، والمرشحات في <strong>العنوان</strong>، وإعدادات التطبيق في <strong>مخزن</strong> صغير.</li>
+<li>ابدأ <strong>بلغتين</strong> و<strong>Intl</strong>، وعرّف الألوان متغيرات، فيصير المظهر بضعة أسطر.</li>
+<li>أثبت ذلك <strong>باختبارات الوحدات</strong> و<strong>اختبارات الطرف إلى الطرف</strong> و<strong>فحص الإتاحة</strong>، وكلها آلية.</li>
+<li><strong>قِس</strong> الحزمة مقابل <strong>ميزانية</strong>، وجد السبب الحقيقي، وحمّل ما لا يلزم أولاً <strong>بكسل</strong>.</li>
+</ul>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">تُنمّي هذه المشاريع لوحة التحكم كما تنمو اللوحات الحقيقية: ميزة بعد ميزة، وكل منها تحقق أهداف الجودة نفسها. ففي كل مشروع اكتب قصة المستخدم أولاً، وضع المنطق في <code>lib/</code> مع اختبار، وأبقِ الشاشة رفيعة، وشغّل الفحوص الثلاثة (اختبارات الوحدات، واختبارات الطرف إلى الطرف، والحجم) قبل أن تقول إنه انتهى.</p>
+
+<div class="project">
+<p class="project-label">المشروع 18.1 · سهل</p>
+<h3>صفحة العملاء</h3>
+<p class="project-goal">صفحة تسرد كل عميل مع عدد طلباته وإجمالي ما دفعه وتاريخ آخر طلب، مرتبة بالإجمالي، ومع رابط إلى طلباته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اشتقاق البيانات بدوال نقية، ومسار جديد ورابط في التنقل، وتنسيقات Intl، وحالة العنوان.</p>
+<ol class="steps">
+<li>اكتب <code>customers(orders)</code> في <code>lib/</code>: جمّع بالعميل، وتجاهل الطلبات الملغاة في الإجمالي، ورتّب. واختبرها بأربعة طلبات من عميلين.</li>
+<li>أضف <code>/customers</code> إلى المسارات وإلى التنقل الجانبي، ونصوصها باللغتين في <code>messages.ts</code>.</li>
+<li>اجعل اسم كل عميل رابطاً إلى <code>/orders?q=&lt;الاسم&gt;</code>، فيكمل البحث الموجود الباقي.</li>
+<li>أضف الصفحة إلى اختبار axe في <code>e2e/admin.spec.ts</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لا طلب جديداً هنا. فالطلبات في ذاكرة الاستعلامات أصلاً، فتُرجعها <code>useOrders()</code> فوراً، ولا تكلف الصفحة الجديدة الخادم شيئاً.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 18.2 · متوسط</p>
+<h3>نطاق التواريخ والتصدير إلى CSV</h3>
+<p class="project-goal">رشّح الطلبات بنطاق تواريخ محفوظ في العنوان، ونزّل الطلبات المرشحة بالضبط ملف CSV يُفتح صحيحاً في Excel، بالعربية أيضاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> توسيع <code>readFilters</code> بأمان، وحقول التاريخ، وبناء الملفات في المتصفح، واختبار المخرجات النقية.</p>
+<ol class="steps">
+<li>أضف <code>from</code> و<code>to</code> (بصيغة <code>YYYY-MM-DD</code>) إلى <code>Filters</code>. وتجاهل القيم التي ليست تواريخ صحيحة، واختبر ذلك.</li>
+<li>أضف حقلي <code>&lt;input type="date"&gt;</code> بعنوانيهما، يحدّثان العنوان بـ <code>replace</code>.</li>
+<li>اكتب <code>toCsv(orders)</code> في <code>lib/</code>: صف عناوين، وصف لكل طلب، والقيم التي فيها فواصل أو علامات تنصيص تُحاط بعلامات تنصيص وتُضاعف علاماتها الداخلية. واختبرها باسم عميل فيه فاصلة.</li>
+<li>نزّله بـ <code>Blob</code> ورابط مؤقت. وابدأ الملف بعلامة ترتيب البايتات <code>"﻿"</code>، وإلا عرض Excel الأسماء العربية رموزاً لا معنى لها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> صدّر ما ينظر إليه المستخدم، بكل صفحاته، لا الصفحة الحالية فقط. فالمستخدم يفهم «تصدير» على أنها «هذه النتائج».</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 18.3 · تحدٍّ</p>
+<h3>من الحاسوب إلى الإنتاج</h3>
+<p class="project-goal">حوّل لوحة التحكم إلى مشروع Vite بمسار CI حقيقي، وقدّمها من حاوية، جاهزة لـ <code>/api</code> حقيقية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> Vite، وGitHub Actions، والفحوص الإلزامية، وDocker، وNginx، وتوجيه تطبيقات الصفحة الواحدة على الخادم.</p>
+<ol class="steps">
+<li>أنشئ مشروع Vite لـ React (الفصل 3) وانقل إليه <code>src/</code>. وفي التطوير شغّل الخادم الوهمي فقط حين تكون <code>import.meta.env.DEV</code> صحيحة.</li>
+<li>اكتب مسار عمل يثبّت مع كل طلب دمج بـ <code>npm ci</code>، ثم يشغّل فاحص الأنواع واختبارات الوحدات واختبارات الطرف إلى الطرف وسكربت الحجم، واجعل الأربعة إلزامية.</li>
+<li>اكتب <code>Dockerfile</code> بمرحلتين: الأولى تبني بـ Node، والثانية تنسخ <code>dist/</code> إلى صورة Nginx.</li>
+<li>اضبط Nginx ليرسل كل مسار مجهول إلى <code>index.html</code>، فيعمل <code>/orders/1036</code> بعد إعادة التحميل، ويمرر <code>/api/</code> إلى الخادم الحقيقي.</li>
+<li>أضف ترويسات تخزين طويلة للملفات ذات البصمة في <code>assets/</code>، ولا شيء لـ <code>index.html</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قاعدة التخزين في الخطوة الأخيرة هي ما يجعل الإصدارات آمنة. فالملفات ذات البصمة لا تتغير أبداً، فتُخزَّن سنة، أما <code>index.html</code> فيجب أن يكون حديثاً دائماً، لأنه الملف الذي يشير إلى البصمات الجديدة.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف رقماً خامساً إلى النظرة العامة: عدد الطلبات الملغاة. أضفه إلى <code>overview()</code> أولاً مع اختبار، وبعدها فقط إلى الشاشة.</li>
+<li><span class="level">سهل</span> أضف خيار <code>?sort=total</code> إلى قائمة الطلبات، تقرؤه <code>readFilters</code>، مع رابط في عنوان عمود «الإجمالي».</li>
+<li><span class="level medium">متوسط</span> في وحدة تحكم المتصفح في <code>page.html</code> شغّل <code>server.failNextChange = true</code>، ثم غيّر حالة طلب. صف بالضبط ما يراه المستخدم وبأي ترتيب، ثم اكتب له اختبار Playwright.</li>
+<li><span class="level medium">متوسط</span> جد أكبر حزمة تالية في تقرير الحجم، وقرر هل يمكن تحميلها لاحقاً. واشرح قرارك حتى لو كان الجواب لا.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">إلى أين بعد هذا</p>
+<p>بدأت هذا الكتاب تعرف كتابة JavaScript، وتنهيه تعرف كيف تبني واجهة احترافية وتختبرها وتؤمّنها وتطلقها وتراجعها، وكيف تساعد غيرك على ذلك. والكتاب التالي في السلسلة ينتقل إلى الجهة الأخرى من <code>/api</code>: الخوادم وقواعد البيانات والواجهات البرمجية التي تتحدث إليها تطبيقات كهذا.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -8053,6 +9067,15 @@ Cypress               62
 <li>لكل ملف كود متغير، ابنِ اسم اختباره بـ <code>f.replace(/\.ts$/, ".test.ts")</code>، وأبلغ «تغيّر الكود ولم يتغير اختباره» لكل ملف ليس اسم اختباره في <code>changedFiles</code>. فلا يعود تغيير <code>cart.test.ts</code> عذراً لـ <code>discount.ts</code> بلا اختبار.</li>
 <li>Playwright ‏79، وCypress ‏77، واليدوي 41: لا يتغير الفائز. وما زال فحص الحساسية يُظهر فوز Cypress لو حُسب التعلم مرتين (88 مقابل 92)، أما مضاعفة «المجتمع والتوثيق» فتعطي الآن تعادلاً (87 لكل منهما)، يتركه الترتيب لـ Playwright لأنه أول خيار في القائمة. والتعادل علامة للبحث عن معيار آخر، لا للثقة بترتيب القائمة.</li>
 <li>السجل الجيد فيه سياق يفهمه القادم الجديد دون أن يسأل (المشكلة، والتاريخ، والقيود)، وبديلان حقيقيان على الأقل مع سبب خسارة كل منهما، والقرار في جملة واحدة، وعواقب صادقة، ومنها ما يجعل الفريق يعيد النظر.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 18</h2>
+<ol class="exercises">
+<li>في <code>overview()</code> أضف <code>cancelled: orders.filter((o) =&gt; o.status === "cancelled").length</code>، وفي الاختبار <code>expect(result.cancelled).toBe(1)</code> للطلبات الأربعة. ثم أضف <code>[t("cancelled"), String(o.cancelled)]</code> إلى قائمة <code>kpis</code>، والمفتاح موجود أصلاً باللغتين.</li>
+<li>أضف <code>sort: params.get("sort") === "total" ? "total" : "date"</code> إلى <code>readFilters</code>، ورتّب في <code>filterOrders</code> بـ <code>b.total - a.total</code> حين تكون <code>"total"</code>. ويصير العنوان <code>&lt;Link to={link({ sort: "total", page: null })}&gt;</code>، مع <code>aria-sort="descending"</code> على <code>th</code> ما دام فعالاً. ويتأكد اختبار أن <code>?sort=nonsense</code> يعود إلى التواريخ.</li>
+<li>تظهر الحالة الجديدة فوراً وتُعطَّل الأزرار، وبعد نحو 250 ملي ثانية تعود الحالة القديمة ويظهر التنبيه «تعذّر الحفظ، فأُلغي التغيير»، ويقرؤه قارئ الشاشة بصوت. والاختبار: <code>await page.evaluate(() =&gt; { (window as any).server.failNextChange = true; })</code>، ثم اضغط حالة، وتوقّع ظهور التنبيه وعودة الشارة إلى الحالة الأصلية.</li>
+<li>الأكبر التالي <code>react-dom</code> ثم <code>react-router</code>، ولا يمكن تأجيل أي منهما: كل شاشة تحتاجهما، ولا يرسم التطبيق شيئاً قبلهما. والاتجاه المفيد هو العكس: التأكد من ألا ينضم شيء ثقيل <em>آخر</em> إلى التحميل الأول، وهذا عمل الميزانية في CI.</li>
 </ol>
 
 </section>
