@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: Modern PHP for JavaScript Developers"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: Laravel Essentials: Routes, Controllers and Requests"; } }
+@page ch03:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -1400,6 +1402,764 @@ Note: Using configuration file phpstan.neon.</pre></div>
 <p>With modern PHP in hand, we create a Laravel project and rebuild the shop API with routes, controllers, requests and validation, and see how much of Chapter 1’s hand-written server the framework does for us.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b3/laravel/essentials/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>Laravel Essentials: Routes, Controllers and Requests</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>create a Laravel project and find your way around its folders</li>
+<li>follow a request through Laravel, from the front door to your controller and back</li>
+<li>write routes and resource controllers, and see them with Artisan</li>
+<li>validate input with form requests, with messages written for your users</li>
+<li>use the service container to give classes what they need, and swap it in tests</li>
+<li>write middleware, limit request rates, keep configuration in one place, and test the API</li>
+</ul>
+</div>
+
+<p class="lead">In Chapter 1 we built the shop’s API in one PHP file, and every line was ours: reading the method and path, checking the body, sending the status and headers, catching errors. Laravel does all of that, and does it consistently for every route you will ever add. This chapter rebuilds the same API in Laravel, so you can see exactly which of our hand-written parts each Laravel feature replaces, and where your own code now lives.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>My first Laravel project felt like magic: a controller method returned an array, and JSON came out. Magic is pleasant until it breaks. The day I followed one request through the framework, from <code>public/index.php</code> to my controller, Laravel stopped being magic and started being a tool I understood.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>A new project</span></h2>
+
+<p>Composer creates a Laravel project from the official starter, downloads the framework and its packages into <code>vendor/</code>, writes a <code>.env</code> file with a fresh secret key, and prepares a small SQLite database:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A new Laravel project (Composer downloads the framework and its packages)</span>
+<span class="c">$ </span><span class="k">composer create-project laravel/laravel shop --no-interaction --no-ansi 2&gt;&amp;1 | grep -E &#x27;Creating a|^Installing laravel|laravel/framework|Package operations|key set|Running mig&#x27;</span>
+Creating a &quot;laravel/laravel&quot; project at &quot;./shop&quot;
+Installing laravel/laravel (v13.11.0)
+  - Locking laravel/framework (v13.43.0)
+Package operations: 110 installs, 0 updates, 0 removals
+  - Installing laravel/framework (v13.43.0): Extracting archive
+   INFO  Application key set successfully.  
+   INFO  Running migrations.  
+<span class="c">$ </span><span class="k">cd shop &amp;&amp; php artisan --version</span>
+Laravel Framework 13.43.0</pre></div>
+
+<p>The folders you will work in:</p>
+<ul>
+<li><code>app/</code>: your code. Controllers, models, middleware and your own classes, under the namespace <code>App\</code>.</li>
+<li><code>routes/</code>: which URL goes to which code. <code>web.php</code> for pages, <code>api.php</code> for the API.</li>
+<li><code>config/</code>: one PHP file per subject (database, cache, mail…), each returning an array of settings.</li>
+<li><code>bootstrap/app.php</code>: how the application is put together: routes, middleware, error handling.</li>
+<li><code>public/</code>: the only folder a web server shows. Its <code>index.php</code> is the front door for every request.</li>
+<li><code>database/</code>, <code>resources/</code>, <code>storage/</code>, <code>tests/</code>: migrations, views and translations, files the app writes, and tests.</li>
+</ul>
+
+<p>A new project has no API routes yet. One Artisan command adds <code>routes/api.php</code>, and also installs Sanctum, the token authentication we use in Chapter 9:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Add the API&#x27;s routes file (and Sanctum, used in Chapter 9)</span>
+<span class="c">$ </span><span class="k">php artisan install:api --no-interaction --no-ansi 2&gt;&amp;1 | grep -E &#x27;INFO|tokens_table&#x27;</span>
+   INFO  Discovering packages.  
+   INFO  No publishable resources for tag [laravel-assets].  
+   INFO  Published API routes file.  
+   INFO  Running migrations.  
+  2026_11_19_201551_create_personal_access_tokens_table ......... 11.09ms DONE
+   INFO  API scaffolding installed. Please add the [Laravel\Sanctum\HasApiTokens] trait to your User model.  </pre></div>
+
+<p><dfn>Artisan</dfn> is Laravel’s command line, the <code>php artisan</code> you will type all day: it creates files, runs migrations and tests, and shows what the app knows about itself.</p>
+
+<h2><span class="sec">3.2</span> <span>The life of a request</span></h2>
+
+<p>Every request enters through <code>public/index.php</code>, which loads Composer’s autoloader and the application defined in <code>bootstrap/app.php</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bootstrap/app.php</div><pre class="code">&lt;?php
+
+<span class="k">use</span> App\Http\Middleware\AddServerTiming;
+<span class="k">use</span> Illuminate\Foundation\Application;
+<span class="k">use</span> Illuminate\Foundation\Configuration\Exceptions;
+<span class="k">use</span> Illuminate\Foundation\Configuration\Middleware;
+<span class="k">use</span> Illuminate\Http\Request;
+
+<span class="k">return</span> Application::configure(basePath: dirname(__DIR__))
+    -&gt;withRouting(
+        web: __DIR__.<span class="s">&#x27;/../routes/web.php&#x27;</span>,
+        api: __DIR__.<span class="s">&#x27;/../routes/api.php&#x27;</span>,
+        commands: __DIR__.<span class="s">&#x27;/../routes/console.php&#x27;</span>,
+        health: <span class="s">&#x27;/up&#x27;</span>,
+    )
+    -&gt;withMiddleware(<span class="k">function</span> (Middleware $middleware): <span class="k">void</span> {
+        $middleware-&gt;api(append: [AddServerTiming::<span class="k">class</span>]);
+        $middleware-&gt;throttleApi();
+    })
+    -&gt;withExceptions(<span class="k">function</span> (Exceptions $exceptions): <span class="k">void</span> {
+        $exceptions-&gt;shouldRenderJsonWhen(
+            <span class="k">fn</span> (Request $request) =&gt; $request-&gt;is(<span class="s">&#x27;api/*&#x27;</span>) || $request-&gt;expectsJson(),
+        );
+    })-&gt;create();</pre></div>
+
+<p>Read it as a description, not as code that does work: the app has web and API routes, a health check at <code>/up</code>, two pieces of middleware we added for the API, and a rule that API errors are answered as JSON. From there, a request goes through a <dfn>pipeline</dfn> of middleware, then the router finds the route, then the controller runs, and the response travels back out through the same middleware.</p>
+
+<p>You can see that pipeline for real. When debugging is on, Laravel’s error answers include a stack trace, the list of functions that were running. Read from the bottom, it is the path of the request. This little <code>jq</code> filter keeps only the middleware and controllers:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The trace, read from the bottom: the classes a request went through, in order</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products/9 | jq -r -f ../pipeline.jq</span>
+Illuminate\Http\Middleware\ValidatePathEncoding
+Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks
+Illuminate\Http\Middleware\TrustProxies
+Illuminate\Http\Middleware\HandleCors
+Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance
+Illuminate\Http\Middleware\ValidatePostSize
+Illuminate\Foundation\Http\Middleware\TrimStrings
+Illuminate\Foundation\Http\Middleware\TransformsRequest
+Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull
+Illuminate\Routing\Middleware\ThrottleRequests
+Illuminate\Routing\Middleware\SubstituteBindings
+App\Http\Middleware\AddServerTiming
+Illuminate\Routing\ControllerDispatcher
+App\Http\Controllers\ProductController</pre></div>
+
+<p>Every class on that list is something our Chapter 1 server did by hand, or did not do at all: proxies and CORS, maintenance mode, a body size limit, trimming spaces from input and turning empty strings into <code>null</code>, the rate limit, route parameters, our own timing middleware, and finally our controller. Each is a small class with one job, and you can add, remove or reorder them in <code>bootstrap/app.php</code>.</p>
+
+<h2><span class="sec">3.3</span> <span>Routes and controllers</span></h2>
+
+<p>The routes file says which code answers which method and path:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">&lt;?php
+
+<span class="k">use</span> App\Http\Controllers\ProductController;
+<span class="k">use</span> Illuminate\Http\Request;
+<span class="k">use</span> Illuminate\Support\Facades\Route;
+
+Route::get(<span class="s">&#x27;/user&#x27;</span>, <span class="k">function</span> (Request $request) {
+    <span class="k">return</span> $request-&gt;user();
+})-&gt;middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>);
+
+Route::apiResource(<span class="s">&#x27;products&#x27;</span>, ProductController::<span class="k">class</span>)
+    <span class="c line-bidi">// only numbers: /api/products/abc never reaches the controller</span>
+    -&gt;where([<span class="s">&#x27;product&#x27;</span> =&gt; <span class="s">&#x27;[0-9]+&#x27;</span>]);</pre></div>
+
+<p>Everything in <code>api.php</code> gets the prefix <code>/api</code> and the API middleware group. <code>Route::apiResource</code> registers the five standard routes of a resource at once, following the conventions of Chapter 1, and <code>where</code> limits <code>{product}</code> to digits. Artisan shows what Laravel made of it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Every route of the API, as Laravel sees it</span>
+<span class="c">$ </span><span class="k">php artisan route:list --path=api --except-vendor --json | jq -r -f ../routes.jq</span>
+GET|HEAD   api/products             ProductController@index
+POST       api/products             ProductController@store
+GET|HEAD   api/products/{product}   ProductController@show
+PUT|PATCH  api/products/{product}   ProductController@update
+DELETE     api/products/{product}   ProductController@destroy
+GET|HEAD   api/user                 Closure</pre></div>
+
+<p>Artisan also writes the empty classes, in the right folders and namespaces:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Artisan writes the empty classes, in the right folders</span>
+<span class="c">$ </span><span class="k">php artisan make:controller ProductController --api --no-ansi</span>
+
+   INFO  Controller [app/Http/Controllers/ProductController.php] created successfully.  
+<span class="c">$ </span><span class="k">php artisan make:request StoreProductRequest --no-ansi</span>
+
+   INFO  Request [app/Http/Requests/StoreProductRequest.php] created successfully.  
+<span class="c">$ </span><span class="k">php artisan make:request UpdateProductRequest --no-ansi</span>
+
+   INFO  Request [app/Http/Requests/UpdateProductRequest.php] created successfully.  
+<span class="c">$ </span><span class="k">php artisan make:middleware AddServerTiming --no-ansi</span>
+
+   INFO  Middleware [app/Http/Middleware/AddServerTiming.php] created successfully.  </pre></div>
+
+<p>The controller holds one method per route. It stays thin: it reads the request, asks someone else to do the work, and builds the response.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/ProductController.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> App\Http\Controllers;
+
+<span class="k">use</span> App\Catalog\ProductCatalog;
+<span class="k">use</span> App\Http\Requests\StoreProductRequest;
+<span class="k">use</span> App\Http\Requests\UpdateProductRequest;
+<span class="k">use</span> Illuminate\Http\JsonResponse;
+<span class="k">use</span> Illuminate\Http\Request;
+<span class="k">use</span> Illuminate\Http\Response;
+
+<span class="k">final</span> <span class="k">class</span> ProductController <span class="k">extends</span> Controller
+{
+    <span class="c line-bidi">// the container builds the controller and passes it a catalog</span>
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">private</span> <span class="k">readonly</span> ProductCatalog $catalog) {}
+
+    <span class="k">public</span> <span class="k">function</span> index(Request $request): JsonResponse
+    {
+        $max = $request-&gt;integer(<span class="s">&#x27;max_price&#x27;</span>, PHP_INT_MAX);
+        $products = array_filter(
+            $<span class="k">this</span>-&gt;catalog-&gt;all(),
+            <span class="k">fn</span> (<span class="k">array</span> $p) =&gt; $p[<span class="s">&#x27;price&#x27;</span>] &lt;= $max,
+        );
+
+        <span class="k">return</span> $<span class="k">this</span>-&gt;json([<span class="s">&#x27;data&#x27;</span> =&gt; array_values($products)]);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> show(<span class="k">int</span> $product): JsonResponse
+    {
+        <span class="k">return</span> $<span class="k">this</span>-&gt;json([<span class="s">&#x27;data&#x27;</span> =&gt; $<span class="k">this</span>-&gt;findOrFail($product)]);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> store(StoreProductRequest $request): JsonResponse
+    {
+        <span class="c line-bidi">// only the checked fields, nothing else the client sent</span>
+        $product = $<span class="k">this</span>-&gt;catalog-&gt;create($request-&gt;validated());
+
+        <span class="k">return</span> $<span class="k">this</span>
+            -&gt;json([<span class="s">&#x27;data&#x27;</span> =&gt; $product], <span class="n">201</span>)
+            -&gt;header(<span class="s">&#x27;Location&#x27;</span>, route(<span class="s">&#x27;products.show&#x27;</span>, $product[<span class="s">&#x27;id&#x27;</span>]));
+    }
+
+    <span class="k">public</span> <span class="k">function</span> update(UpdateProductRequest $request, <span class="k">int</span> $product): JsonResponse
+    {
+        $<span class="k">this</span>-&gt;findOrFail($product);
+        $changed = $<span class="k">this</span>-&gt;catalog-&gt;update($product, $request-&gt;validated());
+
+        <span class="k">return</span> $<span class="k">this</span>-&gt;json([<span class="s">&#x27;data&#x27;</span> =&gt; $changed]);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> destroy(<span class="k">int</span> $product): Response
+    {
+        $<span class="k">this</span>-&gt;findOrFail($product);
+        $<span class="k">this</span>-&gt;catalog-&gt;delete($product);
+
+        <span class="k">return</span> response()-&gt;noContent();
+    }
+
+    <span class="c line-bidi">// Without the flag, Laravel writes every non-English letter as \u0643 and so on.</span>
+    <span class="k">private</span> <span class="k">function</span> json(<span class="k">array</span> $data, <span class="k">int</span> $status = <span class="n">200</span>): JsonResponse
+    {
+        <span class="k">return</span> response()-&gt;json($data, $status, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    <span class="k">private</span> <span class="k">function</span> findOrFail(<span class="k">int</span> $id): <span class="k">array</span>
+    {
+        $product = $<span class="k">this</span>-&gt;catalog-&gt;find($id);
+        <span class="k">if</span> ($product === <span class="k">null</span>) {
+            abort(<span class="n">404</span>, __(<span class="s">&#x27;There is no product :id.&#x27;</span>, [<span class="s">&#x27;id&#x27;</span> =&gt; $id]));
+        }
+
+        <span class="k">return</span> $product;
+    }
+}</pre></div>
+
+<ul>
+<li>The route parameter <code>{product}</code> arrives as the argument <code>$product</code>, by name.</li>
+<li><code>$request-&gt;integer('max_price', PHP_INT_MAX)</code> reads a query value as an int, with a default: no <code>$_GET</code>, no casting by hand.</li>
+<li><code>abort(404, …)</code> stops the request with that status from anywhere, and the exception handler turns it into a JSON answer.</li>
+<li><code>route('products.show', 4)</code> builds the URL from the route’s name, so URLs are never written twice.</li>
+<li><code>$this-&gt;json</code> is a small helper of ours. By default, Laravel writes JSON with every non-English letter escaped as <code>ك</code>: valid, but unreadable for people. The flag <code>JSON_UNESCAPED_UNICODE</code> keeps Arabic as Arabic, as in Chapter 1.</li>
+</ul>
+
+<h2><span class="sec">3.4</span> <span>The service container</span></h2>
+
+<p>The controller’s constructor asks for a <code>ProductCatalog</code>, and nobody calls <code>new ProductController</code>. Laravel’s <dfn>service container</dfn> builds the controller: it reads the constructor’s types, builds what each parameter needs (and what those need, all the way down), and passes them in. This is <dfn>dependency injection</dfn>: a class says what it needs, and does not go looking for it.</p>
+
+<p><code>ProductCatalog</code> is an interface, a contract that says what a catalog can do, not how:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Catalog/ProductCatalog.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> App\Catalog;
+
+<span class="c line-bidi">// What the controllers need from a catalog, not how it stores products.</span>
+<span class="k">interface</span> ProductCatalog
+{
+    /** @<span class="k">return</span> <span class="k">list</span>&lt;<span class="k">array</span>{id: <span class="k">int</span>, name: <span class="k">string</span>, price: <span class="k">int</span>, stock: <span class="k">int</span>}&gt; */
+    <span class="k">public</span> <span class="k">function</span> all(): <span class="k">array</span>;
+
+    /** @<span class="k">return</span> <span class="k">array</span>{id: <span class="k">int</span>, name: <span class="k">string</span>, price: <span class="k">int</span>, stock: <span class="k">int</span>}|<span class="k">null</span> */
+    <span class="k">public</span> <span class="k">function</span> find(<span class="k">int</span> $id): ?<span class="k">array</span>;
+
+    /** @param <span class="k">array</span>{name: <span class="k">string</span>, price: <span class="k">int</span>, stock?: <span class="k">int</span>} $data */
+    <span class="k">public</span> <span class="k">function</span> create(<span class="k">array</span> $data): <span class="k">array</span>;
+
+    <span class="k">public</span> <span class="k">function</span> update(<span class="k">int</span> $id, <span class="k">array</span> $data): ?<span class="k">array</span>;
+
+    <span class="k">public</span> <span class="k">function</span> delete(<span class="k">int</span> $id): <span class="k">bool</span>;
+}</pre></div>
+
+<p>The container cannot build an interface, so we tell it which class to use, in a <dfn>service provider</dfn>, a class Laravel runs at start-up to register things:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> App\Providers;
+
+<span class="k">use</span> App\Catalog\JsonProductCatalog;
+<span class="k">use</span> App\Catalog\ProductCatalog;
+<span class="k">use</span> Illuminate\Cache\RateLimiting\Limit;
+<span class="k">use</span> Illuminate\Http\Request;
+<span class="k">use</span> Illuminate\Support\Facades\RateLimiter;
+<span class="k">use</span> Illuminate\Support\ServiceProvider;
+
+<span class="k">class</span> AppServiceProvider <span class="k">extends</span> ServiceProvider
+{
+    <span class="k">public</span> <span class="k">function</span> register(): <span class="k">void</span>
+    {
+        <span class="c line-bidi">// Ask for a ProductCatalog, get this one: built once per request cycle.</span>
+        $<span class="k">this</span>-&gt;app-&gt;singleton(
+            ProductCatalog::<span class="k">class</span>,
+            <span class="k">fn</span> () =&gt; <span class="k">new</span> JsonProductCatalog(config(<span class="s">&#x27;shop.catalog_file&#x27;</span>)),
+        );
+    }
+
+    <span class="k">public</span> <span class="k">function</span> boot(): <span class="k">void</span>
+    {
+        <span class="c line-bidi">// At most N requests a minute per address; N comes from config/shop.php.</span>
+        RateLimiter::<span class="k">for</span>(<span class="s">&#x27;api&#x27;</span>, <span class="k">function</span> (Request $request) {
+            $perMinute = config(<span class="s">&#x27;shop.requests_per_minute&#x27;</span>);
+
+            <span class="k">return</span> Limit::perMinute($perMinute)-&gt;by($request-&gt;ip());
+        });
+    }
+}</pre></div>
+
+<p>The real catalog keeps products in a JSON file, under a lock, exactly like Chapter 1’s server. Because PHP forgets everything between requests, storage must live outside the process:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Catalog/JsonProductCatalog.php</div><pre class="code">    <span class="k">private</span> <span class="k">function</span> change(callable $edit): <span class="k">mixed</span>
+    {
+        $file = fopen($<span class="k">this</span>-&gt;path, <span class="s">&#x27;c+&#x27;</span>);
+        <span class="c line-bidi">// the lock makes a second request wait while the first one writes</span>
+        flock($file, LOCK_EX);
+        $text = stream_get_contents($file);
+        [$store, $result] = $edit($text ? json_decode($text, <span class="k">true</span>) : <span class="k">self</span>::seed());
+        ftruncate($file, <span class="n">0</span>);
+        rewind($file);
+        fwrite($file, json_encode($store, JSON_UNESCAPED_UNICODE));
+        flock($file, LOCK_UN);
+        fclose($file);
+
+        <span class="k">return</span> $result;
+    }</pre></div>
+
+<p>Every change goes through this one method: it opens the file, waits for the lock, lets the caller edit the data, and writes it back. <code>create</code>, <code>update</code> and <code>delete</code> only describe the edit.</p>
+
+<p>Why the interface? Because the controller does not care where products are kept. In Chapter 6 we write a catalog backed by the database and change one line in the provider; no controller changes. And in tests, we can give the controller a different catalog, as you will see in 3.8.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>In the pipeline, which middleware could answer a request before the controller ever runs? Name two.</li><li>Why can <code>/api/products/abc</code> never reach <code>show(int $product)</code>?</li><li>What would you change to keep products in a database instead of a JSON file, and what would stay the same?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">3.5</span> <span>Requests and validation</span></h2>
+
+<p>Start the server in its own terminal. <code>php artisan serve</code> runs PHP’s development server from Chapter 1, pointed at <code>public/index.php</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 1</div><pre class="code"><span class="c line-bidi"># Serve the app (in its own terminal)</span>
+<span class="c">$ </span><span class="k">php artisan serve</span>
+   INFO  Server running on [http://127.0.0.1:8000].  
+  Press Ctrl+C to stop the server
+  2026-11-19 20:15:54 /api/products ................................ ~ 0.10ms
+  2026-11-19 20:15:54 /api/products ................................ ~ 0.02ms
+  2026-11-19 20:15:54 /api/products/1 .............................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/9 .............................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/products ................................ ~ 0.01ms
+  2026-11-19 20:15:54 /api/products ................................ ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/4 .............................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/4 .............................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/4 .............................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/4 .............................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/abc ............................ ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/1 .............................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/nothing ................................. ~ 0.01ms
+  2026-11-19 20:15:54 /api/products/9 .............................. ~ 0.02ms</pre></div>
+
+<p>Reading works as before:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># The list, and a filter</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products | jq -c &#x27;.data[]&#x27;</span>
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000,&quot;stock&quot;:10}
+{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000,&quot;stock&quot;:25}
+{&quot;id&quot;:3,&quot;name&quot;:&quot;Battery pack&quot;,&quot;price&quot;:12500,&quot;stock&quot;:0}
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/api/products?max_price=10000&#x27; | jq -c &#x27;.data[] | [.id, .price]&#x27;</span>
+[2,6000]
+<span class="c line-bidi"># One product, then one that does not exist</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products/1</span>
+{&quot;data&quot;:{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000,&quot;stock&quot;:10}}
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products/9 | jq -c &#x27;{message, exception}&#x27;</span>
+{&quot;message&quot;:&quot;There is no product 9.&quot;,&quot;exception&quot;:&quot;Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException&quot;}</pre></div>
+
+<p>Input is checked by a <dfn>form request</dfn>, a class that holds the rules for one kind of request. When a controller method asks for it, Laravel validates the request <em>before</em> the method runs; if anything is wrong, the method never runs, and the client gets a <code>422</code> with every error:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Requests/StoreProductRequest.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> App\Http\Requests;
+
+<span class="k">use</span> Illuminate\Foundation\Http\FormRequest;
+
+<span class="k">final</span> <span class="k">class</span> StoreProductRequest <span class="k">extends</span> FormRequest
+{
+    <span class="k">public</span> <span class="k">function</span> authorize(): <span class="k">bool</span>
+    {
+        <span class="k">return</span> <span class="k">true</span>; <span class="c line-bidi">// Chapter 9 decides who may add products</span>
+    }
+
+    <span class="k">public</span> <span class="k">function</span> rules(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="s">&#x27;name&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:80&#x27;</span>],
+            <span class="s">&#x27;price&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>],
+            <span class="s">&#x27;stock&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:0&#x27;</span>],
+        ];
+    }
+
+    <span class="k">public</span> <span class="k">function</span> messages(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="s">&#x27;name.required&#x27;</span> =&gt; <span class="s">&#x27;Give the product a name.&#x27;</span>,
+            <span class="s">&#x27;name.max&#x27;</span> =&gt; <span class="s">&#x27;A name has at most :max characters.&#x27;</span>,
+            <span class="s">&#x27;price.integer&#x27;</span> =&gt; <span class="s">&#x27;The price is a whole number of piastres.&#x27;</span>,
+            <span class="s">&#x27;price.min&#x27;</span> =&gt; <span class="s">&#x27;The price must be above 0.&#x27;</span>,
+            <span class="s">&#x27;stock.min&#x27;</span> =&gt; <span class="s">&#x27;Stock cannot be negative.&#x27;</span>,
+        ];
+    }
+}</pre></div>
+
+<p>The rules read almost like English: required, a string, at most 80 characters; an integer of at least 1. <code>sometimes</code> means “check it only if it was sent”. <code>authorize</code> answers whether this user may make this request; Chapter 9 fills it in. And <code>messages</code> replaces Laravel’s generic texts with ones written for your users:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Create a product</span>
+<span class="c">$ </span><span class="k">curl -si localhost:8000/api/products -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &quot;USB cable&quot;, &quot;price&quot;: 2500}&#x27; | grep -iE &#x27;^(HTTP|location)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+Location: http://localhost:8000/api/products/4
+{&quot;data&quot;:{&quot;id&quot;:4,&quot;stock&quot;:0,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}}
+<span class="c line-bidi"># Create one with every mistake at once</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 9.5, &quot;stock&quot;: -1}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;Give the product a name. (and 2 more errors)&quot;,
+  &quot;errors&quot;: {
+    &quot;name&quot;: [
+      &quot;Give the product a name.&quot;
+    ],
+    &quot;price&quot;: [
+      &quot;The price is a whole number of piastres.&quot;
+    ],
+    &quot;stock&quot;: [
+      &quot;Stock cannot be negative.&quot;
+    ]
+  }
+}</pre></div>
+
+<p>In the controller, <code>$request-&gt;validated()</code> returns only the fields that have rules. If a client sends <code>"id": 1</code> or <code>"is_admin": true</code> as well, it is simply not there. Never pass <code>$request-&gt;all()</code> to storage: that is how attackers set fields you never meant to accept.</p>
+
+<p>The update request allows every field to be missing, but not all of them at once. An <code>after</code> hook runs once the rules have passed, for checks that involve the whole request:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Requests/UpdateProductRequest.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> rules(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="s">&#x27;name&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:80&#x27;</span>],
+            <span class="s">&#x27;price&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>],
+            <span class="s">&#x27;stock&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:0&#x27;</span>],
+            <span class="s">&#x27;fields&#x27;</span> =&gt; [<span class="s">&#x27;prohibited&#x27;</span>],
+        ];
+    }
+
+    <span class="c line-bidi">// Runs after the rules: a body with none of the fields changes nothing.</span>
+    <span class="k">public</span> <span class="k">function</span> after(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="k">function</span> ($validator) {
+                <span class="k">if</span> ($<span class="k">this</span>-&gt;safe()-&gt;collect()-&gt;isEmpty()) {
+                    $message = __(<span class="s">&#x27;Send at least one field to change.&#x27;</span>);
+                    $validator-&gt;errors()-&gt;add(<span class="s">&#x27;fields&#x27;</span>, $message);
+                }
+            },
+        ];
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Change one field, then delete</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/products/4 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;stock&quot;: 40}&#x27;</span>
+{&quot;data&quot;:{&quot;id&quot;:4,&quot;stock&quot;:40,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}}
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/products/4 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{}&#x27;</span>
+{&quot;message&quot;:&quot;Send at least one field to change.&quot;,&quot;errors&quot;:{&quot;fields&quot;:[&quot;Send at least one field to change.&quot;]}}
+<span class="c">$ </span><span class="k">curl -s -X DELETE localhost:8000/api/products/4 -w &#x27;%{http_code}\n&#x27;</span>
+204
+<span class="c line-bidi"># Gone</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products/4 | jq -c &#x27;{message}&#x27;</span>
+{&quot;message&quot;:&quot;There is no product 4.&quot;}</pre></div>
+
+<p>And because of the <code>where</code> on the route, a product id that is not a number does not even match the route, so the controller’s <code>int</code> parameter is always safe:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Not a number: the route does not even match</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products/abc | jq -c &#x27;{message, exception}&#x27;</span>
+{&quot;message&quot;:&quot;The route api/products/abc could not be found.&quot;,&quot;exception&quot;:&quot;Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException&quot;}</pre></div>
+
+<h2><span class="sec">3.6</span> <span>Middleware and rate limits</span></h2>
+
+<p>A <dfn>middleware</dfn> wraps every request in a group. It can look at the request, refuse it, change it, and look at the response on the way back. Ours measures how long the application took and reports it in a <code>Server-Timing</code> header, which browsers’ developer tools display:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/AddServerTiming.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> App\Http\Middleware;
+
+<span class="k">use</span> Closure;
+<span class="k">use</span> Illuminate\Http\Request;
+<span class="k">use</span> Symfony\Component\HttpFoundation\Response;
+
+<span class="c line-bidi">// Adds the time the app spent on the request, which browsers&#x27; developer tools show.</span>
+<span class="k">final</span> <span class="k">class</span> AddServerTiming
+{
+    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $start = hrtime(<span class="k">true</span>);
+        $response = $next($request); <span class="c line-bidi">// everything after this middleware runs here</span>
+        $ms = (hrtime(<span class="k">true</span>) - $start) / 1_000_000;
+        $response-&gt;headers-&gt;set(<span class="s">&#x27;Server-Timing&#x27;</span>, sprintf(<span class="s">&#x27;app;dur=%.1f&#x27;</span>, $ms));
+
+        <span class="k">return</span> $response;
+    }
+}</pre></div>
+
+<p>Everything before <code>$next($request)</code> runs on the way in; everything after it runs on the way out. <code>bootstrap/app.php</code> appends it to the API group, and <code>throttleApi()</code> adds Laravel’s rate limiter, using the <code>api</code> limiter defined in the service provider:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Every API answer carries the middleware&#x27;s header</span>
+<span class="c">$ </span><span class="k">curl -si localhost:8000/api/products/1 | grep -iE &#x27;^(server-timing|x-ratelimit)&#x27;</span>
+Server-Timing: app;dur=0.5
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 49</pre></div>
+
+<p>Started with a limit of three requests a minute, the fourth is refused, with the same headers as in Chapter 1:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># A server limited to 3 requests a minute (SHOP_RATE_LIMIT=3)</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:8000/api/products; done; echo</span>
+200 200 200 
+<span class="c">$ </span><span class="k">curl -s -D - -o /dev/null localhost:8000/api/products | grep -iE &#x27;^(HTTP|x-ratelimit|retry-after)&#x27;</span>
+HTTP/1.1 429 Too Many Requests
+X-RateLimit-Limit: 3
+X-RateLimit-Remaining: 0
+Retry-After: 60
+X-RateLimit-Reset: 1795119416
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/products</span>
+{
+    &quot;message&quot;: &quot;Too Many Attempts.&quot;
+}</pre></div>
+
+<h2><span class="sec">3.7</span> <span>Configuration and the environment</span></h2>
+
+<p>Settings that change between machines live in <code>.env</code>. But application code never reads <code>.env</code> directly: it reads <code>config/</code> files, and only those read the environment, once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">config/shop.php</div><pre class="code">&lt;?php
+
+<span class="c line-bidi">// The shop&#x27;s own settings.</span>
+<span class="c line-bidi">// Read the environment here only; everywhere else, use config(&#x27;shop.…&#x27;).</span>
+<span class="k">return</span> [
+    <span class="s">&#x27;currency&#x27;</span> =&gt; env(<span class="s">&#x27;SHOP_CURRENCY&#x27;</span>, <span class="s">&#x27;EGP&#x27;</span>),
+    <span class="s">&#x27;requests_per_minute&#x27;</span> =&gt; (<span class="k">int</span>) env(<span class="s">&#x27;SHOP_RATE_LIMIT&#x27;</span>, <span class="n">60</span>),
+    <span class="s">&#x27;catalog_file&#x27;</span> =&gt; storage_path(<span class="s">&#x27;app/products.json&#x27;</span>),
+];</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Configuration, as the app sees it</span>
+<span class="c">$ </span><span class="k">php artisan config:show shop --no-ansi</span>
+
+  shop .......................................................................  
+  currency ............................................................... EGP  
+  requests_per_minute ..................................................... 60  
+  catalog_file ..................................... storage/app/products.json  </pre></div>
+
+<p>The reason is speed. In production, <code>php artisan config:cache</code> combines every config file into one cached array, and from then on <code>.env</code> is not even loaded: an <code>env()</code> call in a controller would quietly return <code>null</code>. Code that reads <code>config('shop.requests_per_minute')</code> works the same with and without the cache.</p>
+
+<p>One setting deserves special care. With <code>APP_DEBUG=true</code>, as on your machine, every error answer includes the exception class, the file, the line and the whole stack trace:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># An unknown address while APP_DEBUG=true: look at everything it tells a stranger</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/nothing | jq &#x27;{message, exception, file, line, trace: (.trace | length)}&#x27;</span>
+{
+  &quot;message&quot;: &quot;The route api/nothing could not be found.&quot;,
+  &quot;exception&quot;: &quot;Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException&quot;,
+  &quot;file&quot;: &quot;vendor/laravel/framework/src/Illuminate/Routing/AbstractRouteCollection.php&quot;,
+  &quot;line&quot;: 44,
+  &quot;trace&quot;: 30
+}</pre></div>
+
+<p>That is a gift to an attacker: file paths, versions and the internal structure of your code. With <code>APP_DEBUG=false</code>, as production must have, the same request answers only this:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># The same with APP_DEBUG=false, as in production</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/nothing</span>
+{
+    &quot;message&quot;: &quot;The route api/nothing could not be found.&quot;
+}</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: APP_DEBUG in production</p><p>A production server with <code>APP_DEBUG=true</code> shows its stack traces to everyone, and on error pages can even show environment values such as database passwords. Make it part of your deployment checklist, and check it from outside after every deployment: request an address that does not exist and read the answer.</p></aside>
+
+<h2><span class="sec">3.8</span> <span>Testing the API</span></h2>
+
+<p>Laravel’s feature tests send requests through the whole application, middleware and all, without starting a server. Each test gets a fresh application, and our <code>setUp</code> uses the container to give every test its own empty catalog file, so tests never share data:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/ProductApiTest.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> Tests\Feature;
+
+<span class="k">use</span> App\Catalog\JsonProductCatalog;
+<span class="k">use</span> App\Catalog\ProductCatalog;
+<span class="k">use</span> Tests\TestCase;
+
+<span class="k">class</span> ProductApiTest <span class="k">extends</span> TestCase
+{
+    <span class="k">protected</span> <span class="k">function</span> setUp(): <span class="k">void</span>
+    {
+        <span class="k">parent</span>::setUp();
+        <span class="c line-bidi">// every test gets its own empty file, so tests never share data</span>
+        $file = tempnam(sys_get_temp_dir(), <span class="s">&#x27;catalog&#x27;</span>);
+        unlink($file);
+        $<span class="k">this</span>-&gt;app-&gt;instance(ProductCatalog::<span class="k">class</span>, <span class="k">new</span> JsonProductCatalog($file));
+    }
+
+    <span class="k">public</span> <span class="k">function</span> test_it_lists_the_products(): <span class="k">void</span>
+    {
+        $<span class="k">this</span>-&gt;getJson(<span class="s">&#x27;/api/products&#x27;</span>)
+            -&gt;assertOk()
+            -&gt;assertJsonCount(<span class="n">3</span>, <span class="s">&#x27;data&#x27;</span>)
+            -&gt;assertJsonPath(<span class="s">&#x27;data.0.price&#x27;</span>, <span class="n">45000</span>);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> test_it_creates_a_product_and_says_where_it_is(): <span class="k">void</span>
+    {
+        $<span class="k">this</span>-&gt;postJson(<span class="s">&#x27;/api/products&#x27;</span>, [<span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;USB cable&#x27;</span>, <span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">2500</span>])
+            -&gt;assertCreated()
+            -&gt;assertHeader(<span class="s">&#x27;Location&#x27;</span>, url(<span class="s">&#x27;/api/products/4&#x27;</span>))
+            -&gt;assertJsonPath(<span class="s">&#x27;data.stock&#x27;</span>, <span class="n">0</span>);
+
+        $<span class="k">this</span>-&gt;getJson(<span class="s">&#x27;/api/products/4&#x27;</span>)-&gt;assertOk();
+    }
+
+    <span class="k">public</span> <span class="k">function</span> test_it_refuses_an_invalid_product_with_every_error(): <span class="k">void</span>
+    {
+        $<span class="k">this</span>-&gt;postJson(<span class="s">&#x27;/api/products&#x27;</span>, [<span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">0</span>, <span class="s">&#x27;stock&#x27;</span> =&gt; -<span class="n">1</span>])
+            -&gt;assertUnprocessable()
+            -&gt;assertJsonValidationErrors([<span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;stock&#x27;</span>]);
+    }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The feature tests send requests through the whole app, without a server</span>
+<span class="c">$ </span><span class="k">php artisan test --no-ansi tests/Feature/ProductApiTest.php</span>
+
+   PASS  Tests\Feature\ProductApiTest
+  ✓ it lists the products                                                0.09s  
+  ✓ it creates a product and says where it is                            0.01s  
+  ✓ it refuses an invalid product with every error                       0.01s  
+
+  Tests:    3 passed (13 assertions)
+  Duration: 0.19s</pre></div>
+
+<p><code>$this-&gt;app-&gt;instance(...)</code> replaces what the container gives for <code>ProductCatalog</code>, for this test only. That is the second reason for the interface: the controller under test does not know, and does not care, which catalog it got. Chapter 13 covers testing in depth, with Pest.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: thin controllers</p><p>A controller method should fit on a screen: read the validated input, call one service, return a response. Rules about products (stock, prices, who may do what) belong in classes the controller calls, where every route, job and command can use them and tests can reach them directly. When a controller method grows past twenty lines, the extra lines are usually a service waiting to be extracted. Chapter 15 turns this habit into an architecture.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>$request-&gt;all()</code> passed to storage</td><td>Clients set fields you never meant to accept</td><td><code>$request-&gt;validated()</code></td></tr>
+<tr><td>Validation inside the controller method</td><td>Long methods, rules repeated between create and update</td><td>Form requests</td></tr>
+<tr><td><code>env()</code> outside <code>config/</code></td><td>Returns <code>null</code> once config is cached</td><td><code>config('…')</code></td></tr>
+<tr><td><code>APP_DEBUG=true</code> in production</td><td>Stack traces and secrets shown to strangers</td><td><code>false</code>, checked after every deployment</td></tr>
+<tr><td><code>new</code> for services inside controllers</td><td>Code that cannot be swapped or tested</td><td>Ask for them in the constructor</td></tr>
+<tr><td>Route parameters without constraints</td><td>Type errors (500) for <code>/products/abc</code></td><td><code>where</code> or <code>whereNumber</code></td></tr>
+<tr><td>Default JSON escaping for Arabic</td><td><code>ك</code> instead of letters</td><td><code>JSON_UNESCAPED_UNICODE</code></td></tr>
+<tr><td>Business rules in controllers</td><td>Rules copied between routes, jobs and commands</td><td>Services the controllers call</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><code>composer create-project laravel/laravel</code> makes a project; <strong>Artisan</strong> creates files and shows routes, config and more.</li>
+<li>A request enters <code>public/index.php</code>, passes through a <strong>pipeline of middleware</strong>, reaches the <strong>router</strong> and the <strong>controller</strong>, and returns the same way. <code>bootstrap/app.php</code> describes it all.</li>
+<li><strong>Routes</strong> map method and path to code; <code>apiResource</code> registers a resource’s five routes; <code>where</code> constrains parameters.</li>
+<li><strong>Controllers</strong> stay thin. <strong>Form requests</strong> validate before the controller runs, with your own messages; <code>validated()</code> returns only checked fields.</li>
+<li>The <strong>service container</strong> builds classes from their constructors; <strong>providers</strong> bind interfaces to classes; tests swap them with <code>instance</code>.</li>
+<li><strong>Middleware</strong> wraps requests; <code>throttleApi</code> limits rates with a limiter defined in a provider.</li>
+<li>Code reads <strong>config</strong>, config reads <strong>.env</strong>. <code>APP_DEBUG</code> is false in production.</li>
+<li><strong>Feature tests</strong> send requests through the whole app without a server.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Any of them can: <code>ThrottleRequests</code> answers <code>429</code>, <code>ValidatePostSize</code> answers <code>413</code> for a body over PHP’s limit, <code>PreventRequestsDuringMaintenance</code> answers <code>503</code> during maintenance, and <code>HandleCors</code> answers browsers’ preflight requests itself. 2. The route only matches when <code>{product}</code> is digits, because of <code>where(['product' =&gt; '[0-9]+'])</code>; any other value finds no route and gets a <code>404</code> before a controller is chosen. 3. Write a second class that implements <code>ProductCatalog</code> with the database, and bind it in <code>AppServiceProvider</code> instead of <code>JsonProductCatalog</code>. The routes, controller, form requests, middleware and tests stay as they are.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project grows this chapter’s Laravel app. Create files with Artisan, keep controllers thin, and add a feature test for every rule.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>Categories</h3>
+<p class="project-goal">Add product categories as a second resource, with their own controller, form requests and catalog.</p>
+<p class="project-skills"><strong>You will practise:</strong> Artisan generators, resource routes, form requests with custom messages, and container bindings.</p>
+<ol class="steps">
+<li>Create <code>CategoryController</code> with <code>--api</code>, and register <code>Route::apiResource('categories', …)</code>.</li>
+<li>A category has a name (2 to 40 characters, unique among categories) and a slug made of lower-case letters, digits and hyphens. Write the rules, with messages for your users.</li>
+<li>Write a <code>CategoryCatalog</code> interface and a JSON implementation, and bind it in the provider.</li>
+<li>Add an optional <code>category_id</code> to products, checked against the existing categories with a closure rule or a custom rule class.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the uniqueness check runs in the form request, but two requests can pass it at the same moment. Only the storage, under its lock (or the database, with a unique index in Chapter 6), can really guarantee it.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.2 · Medium</p>
+<h3>A request ID on every log line</h3>
+<p class="project-goal">Give every request an ID, return it to the client, and attach it to everything the app logs while handling that request.</p>
+<p class="project-skills"><strong>You will practise:</strong> middleware, request and response headers, Laravel’s <code>Context</code>, and logs.</p>
+<ol class="steps">
+<li>Write a middleware that takes <code>X-Request-Id</code> from the request if a proxy sent one, or makes a new UUID with <code>Str::uuid()</code>, and adds it to the response.</li>
+<li>Store it with <code>Context::add('request_id', $id)</code>, so that Laravel adds it to every log entry written during the request.</li>
+<li>Log one line per request, with the method, path, status and duration, after <code>$next</code> returns.</li>
+<li>Add the ID to the JSON of error answers in <code>bootstrap/app.php</code>, so a user can quote it to support, and check it in <code>storage/logs/laravel.log</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> with the ID in both the user’s error message and the log, support can go from “it didn’t work” to the exact log lines in seconds. Chapter 14 builds on this.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 3.3 · Challenge</p>
+<h3>Rebuild a slice of Laravel</h3>
+<p class="project-goal">Write a tiny framework in plain PHP with a router, a middleware pipeline and a container, and run Chapter 1’s API on it.</p>
+<p class="project-skills"><strong>You will practise:</strong> how routers match, how pipelines wrap closures, and how containers build objects.</p>
+<ol class="steps">
+<li>A <code>Router</code> with <code>get</code>, <code>post</code> and friends that stores patterns such as <code>/products/{id}</code>, turns them into regular expressions, and passes the matched values to the handler.</li>
+<li>A <code>Pipeline</code> that wraps a final handler in a list of middleware, each written as <code>fn (Request $request, Closure $next)</code>, using <code>array_reduce</code> over the reversed list.</li>
+<li>The container from Chapter 2’s challenge, to build controllers from their constructors.</li>
+<li>Run the shop’s product routes on it with <code>php -S</code>, and compare the size and the behaviour with the Laravel version.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> Laravel’s own <code>Illuminate\Pipeline\Pipeline</code> is about two hundred lines, and you saw its name in the trace. Reading it after writing yours is the best way to understand it.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Using the pipeline in 3.2, name the middleware that would answer each of these requests without reaching the controller, and the status it would return: the fifth request in a minute with a limit of four; a 50 MB body; any request while <code>php artisan down</code> is active.</li>
+<li><span class="level">Easy</span> Add <code>GET /api/products/{product}/stock</code>, answered by a new controller method <code>stock</code>, returning the id, the stock and <code>in_stock</code> (true or false). Name the route <code>products.stock</code>.</li>
+<li><span class="level medium">Medium</span> Let the list accept <code>min_price</code> as well as <code>max_price</code>. Validate both (integers, not negative, and the maximum not below the minimum when both are sent), and answer <code>422</code> otherwise.</li>
+<li><span class="level medium">Medium</span> The tests in this chapter still write a file. Write an <code>ArrayProductCatalog</code> that keeps products in memory, use it in a test, and explain why the controller needed no change.</li>
+<li><span class="level hard">Challenge</span> Write a <code>RequireJson</code> middleware for the API group: it answers <code>415</code> to <code>POST</code>, <code>PUT</code> and <code>PATCH</code> requests whose body is not JSON, and makes every API answer JSON even when the client forgot <code>Accept: application/json</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>Our API returns arrays straight from storage, and its errors use Laravel’s default shape. Next we design it properly: API Resources for the representation, cursor pagination, Problem Details, idempotency keys and optimistic concurrency, and documentation generated from the code.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1435,6 +2195,16 @@ Note: Using configuration file phpstan.neon.</pre></div>
 <li>Add <code>case KWD = 'KWD'</code> with the symbol <code>KD</code>, and a method <code>decimals(): int</code> that returns 3 for KWD and 2 for the others, written with <code>match</code> and a <code>default</code> arm. In <code>format</code>, compute <code>$unit = 10 ** $decimals</code>, then the whole part with <code>intdiv($this-&gt;amount, $unit)</code> and the minor part with <code>$this-&gt;amount % $unit</code>, padded to <code>$decimals</code> digits. 123456 is then <code>KD 123.456</code> in dinars and <code>E£ 1,234.56</code> in pounds. The knowledge stays in the enum, so a fourth currency with its own decimals changes one file.</li>
 <li>The first line comes from <strong>asymmetric visibility</strong>: <code>$lines</code> is <code>private(set)</code>, so only <code>Cart</code> may assign it. The second from a <strong>readonly</strong> property: <code>Money::$amount</code> was set in the constructor and can never change. The third also from <strong>readonly</strong>: a readonly property may only be set from inside its class (it is <code>protected(set)</code> by default), and <code>clone</code> with new values follows the same rule. <code>onSale</code> works because it runs inside <code>Product</code>, so it is allowed to set the copy’s properties. That is deliberate: the class decides which copies of itself may exist.</li>
 <li>The setter: <code>public int $discountPercent = 0 { set(int $value) { if ($value &lt; 0 || $value &gt; 100) { throw new \ValueError('discountPercent must be from 0 to 100'); } $this-&gt;discountPercent = $value; } }</code>. Inside the hook, assigning to the property itself stores the value. The total after the discount: <code>public Money $payable { get =&gt; new Money(intdiv($this-&gt;total-&gt;amount * (100 - $this-&gt;discountPercent), 100), $this-&gt;currency); }</code>. Note the backslash in <code>\ValueError</code>: inside the namespace <code>Shop</code>, a plain <code>ValueError</code> would mean <code>Shop\ValueError</code>, which does not exist. In <code>answers/run.php</code>, two kits of 450.00 with 10% off cost 810.00, and setting 150 throws the <code>ValueError</code> and leaves the discount at 10.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 3</h2>
+<ol class="exercises">
+<li>The fifth request is stopped by <code>ThrottleRequests</code> with <code>429 Too Many Requests</code>. The 50 MB body is stopped by <code>ValidatePostSize</code> with <code>413 Content Too Large</code>, because it is bigger than PHP’s <code>post_max_size</code>. During <code>php artisan down</code>, <code>PreventRequestsDuringMaintenance</code> answers <code>503 Service Unavailable</code> to everything except the addresses you allow. In all three cases the controller never runs, which is the point: cheap checks first.</li>
+<li>In <code>routes/api.php</code>, before the resource: <code>Route::get('products/{product}/stock', [ProductController::class, 'stock'])-&gt;whereNumber('product')-&gt;name('products.stock');</code>. In the controller, <code>stock(int $product)</code> finds the product with <code>findOrFail</code> and returns <code>['id' =&gt; …, 'stock' =&gt; …, 'in_stock' =&gt; $found['stock'] &gt; 0]</code>. The test <code>exercise 2 stock</code> in the code repository checks the exact JSON for a product with no stock.</li>
+<li>Validate the query at the top of <code>index</code>: <code>$request-&gt;validate(['min_price' =&gt; ['sometimes', 'integer', 'min:0'], 'max_price' =&gt; ['sometimes', 'integer', 'min:0', Rule::when($request-&gt;has('min_price'), 'gte:min_price')]])</code>. <code>Rule::when</code> adds the comparison only when there is something to compare with. Then filter with both bounds, using <code>$request-&gt;integer('min_price', 0)</code>. The answer test checks a range with one product, a maximum alone, and <code>min_price=9000&amp;max_price=100</code>, which gets a <code>422</code> naming <code>max_price</code>. <code>validate</code> on the request is fine for a few query values; a form request is better once the rules grow.</li>
+<li><code>tests/Fakes/ArrayProductCatalog.php</code> implements the same interface with a plain array. The test binds it with <code>$this-&gt;app-&gt;instance(ProductCatalog::class, new ArrayProductCatalog([...]))</code> and fills it with exactly the products the test needs. The controller needed no change because it never names a class: it asks the container for a <code>ProductCatalog</code>, and the container decides which one. A fake in memory makes tests faster and lets each test state its data in its own code, where the reader can see it.</li>
+<li>The middleware sets <code>Accept: application/json</code> on the request, so Laravel’s error handling and validation answer in JSON, and then refuses a body that is not JSON with <code>abort_if($sendsBody &amp;&amp; ! $request-&gt;isJson(), 415, 'Send JSON.')</code>. Register it first in the group with <code>$middleware-&gt;api(prepend: [RequireJson::class], …)</code>, so it runs before anything reads the body. The answer test sends a form body (<code>415</code>), and an empty JSON body without an <code>Accept</code> header, which gets a <code>422</code> with <code>Content-Type: application/json</code>. All seven tests, the chapter’s and the answers’, pass together.</li>
 </ol>
 
 </section>

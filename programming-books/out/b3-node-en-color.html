@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: Node.js and TypeScript on the Server"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: Designing REST APIs"; } }
+@page ch03:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -1379,6 +1381,662 @@ test(<span class="s">&quot;streams the export as CSV&quot;</span>, <span class="
 <p>With a solid project under us, we design the API itself: resources and URLs, versions, pagination, filtering, errors, idempotency and documentation, so that other developers can use it without asking you.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b3/node/rest/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>Designing REST APIs</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>name resources and URLs so that an API can be guessed instead of memorised</li>
+<li>build a versioned API on Fastify, with every input checked by a schema</li>
+<li>page through lists with cursors that never repeat or skip a row</li>
+<li>return every error in one standard format, Problem Details</li>
+<li>make retries safe with idempotency keys, and stop lost updates with <code>If-Match</code></li>
+<li>limit request rates, and generate the API’s documentation from its code</li>
+</ul>
+</div>
+
+<p class="lead">An API is a product, and its users are developers. They judge it the way you judge a library: can I guess how it works, does it tell me clearly what I did wrong, and will it break my app next month? Chapter 1 taught you the protocol. This chapter is about the decisions on top of it, the ones that are cheap to get right at the start and very expensive to change once other teams depend on them. We rebuild Bit’s shop API properly, as version 1 of a public API.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first public API I designed had <code>/getProducts</code>, <code>/product_list</code> and <code>/Products/All</code>, written by three people in three weeks. Every client needed our help to use it, and we could never remove anything. Consistency is not about taste: it is what lets strangers use your work without asking you.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>Resources and URLs</span></h2>
+
+<p>REST organises an API around <dfn>resources</dfn>: the nouns of your domain, such as products and orders. URLs name the resources; methods say what to do with them. The rules that make an API guessable are few:</p>
+<ul>
+<li><strong>Nouns, plural, lower case:</strong> <code>/products</code>, <code>/orders</code>. The method is the verb: <code>GET /products</code>, not <code>/getProducts</code>.</li>
+<li><strong>One resource:</strong> the collection plus an id, <code>/products/2</code>.</li>
+<li><strong>Nesting for ownership, one level deep:</strong> <code>/orders/7/items</code> is fine; <code>/customers/3/orders/7/items/2</code> is not. Once a resource has its own id, give it its own top-level URL.</li>
+<li><strong>Actions that are not create, read, update or delete</strong> become a sub-resource with <code>POST</code>: <code>POST /orders/7/cancel</code>. Do not hide them in a <code>PATCH</code> that sets <code>status</code>: cancelling has rules (restore the stock, refund the payment) that a generic update would skip.</li>
+<li><strong>A version in the path:</strong> <code>/v1/...</code>. We come back to versions in 3.8.</li>
+</ul>
+
+<p>Here are the routes of this chapter’s API, read from the API’s own documentation, which Fastify generates from the code (Section 3.9):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The API&#x27;s routes, read from its own OpenAPI document</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/openapi.json | jq -r &#x27;.paths | to_entries[] | .key as $p | .value | keys[] | ascii_upcase + &quot; &quot; + $p&#x27;</span>
+GET /v1/products
+GET /v1/products/{id}
+PATCH /v1/products/{id}
+POST /v1/orders
+GET /v1/orders/{id}
+POST /v1/orders/{id}/cancel</pre></div>
+
+<h3>Representations</h3>
+
+<p>The JSON an API sends is called a <dfn>representation</dfn> of the resource. Choose its conventions once, write them down, and never mix them:</p>
+<ul>
+<li><strong>One naming style.</strong> We use <code>snake_case</code>, like most public APIs; <code>camelCase</code> is just as good. Mixing them is not.</li>
+<li><strong>Times in ISO 8601, in UTC:</strong> <code>2026-11-01T09:00:00.000Z</code>. Clients convert to the user’s time zone; the server never guesses it.</li>
+<li><strong>Money as an object:</strong> <code>{"amount": 45000, "currency": "EGP"}</code>, the amount in minor units. A bare number is ambiguous the day you sell in a second currency.</li>
+<li><strong>Lists in an object:</strong> <code>{"data": [...], "next_cursor": ...}</code>, never a bare array, so that page information can be added without breaking anyone.</li>
+</ul>
+
+<h2><span class="sec">3.2</span> <span>A framework with schemas: Fastify</span></h2>
+
+<p>Chapter 1’s server checked every input by hand. A framework does that work from a <dfn>schema</dfn>, a description of what a request may contain. We use <dfn>Fastify</dfn>, a fast Node framework built around schemas, with <code>zod</code> from the previous chapter to write them. A route declares its query, path parameters, headers, body and responses; Fastify refuses anything that does not match before the handler runs, and gives the handler fully typed values.</p>
+
+<p>The application is built by a function, so that tests can build a fresh one for each test without a network:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> buildApp(options: { rateLimit?: number } = {}) {
+  <span class="k">const</span> app = Fastify();
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);</pre></div>
+
+<p>The rest of <code>buildApp</code> registers the plugins and the routes, under the prefix <code>/v1</code>. We will read each part as we reach the feature it serves.</p>
+
+<h2><span class="sec">3.3</span> <span>Lists: filtering, sorting, pages</span></h2>
+
+<p>A list endpoint needs three things: a way to filter, a way to sort, and pages, because no client wants ten thousand products at once. Everything a client may send is in the query schema:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/products.ts</div><pre class="code"><span class="k">const</span> SORTS = {
+  id: <span class="s">&quot;id&quot;</span>,
+  price: <span class="s">&quot;price&quot;</span>,
+  <span class="s">&quot;-price&quot;</span>: <span class="s">&quot;price&quot;</span>,
+  name: <span class="s">&quot;name&quot;</span>,
+} as <span class="k">const</span>;
+<span class="k">type</span> Sort = <span class="k">keyof</span> <span class="k">typeof</span> SORTS;
+<span class="k">type</span> Position = [value: string | number, id: number];
+
+<span class="k">const</span> ListQuery = z.object({
+  limit: z.coerce.number().int().min(<span class="n">1</span>).max(<span class="n">50</span>).<span class="k">default</span>(<span class="n">5</span>),
+  cursor: z.string().optional(),
+  sort: z.enum([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;price&quot;</span>, <span class="s">&quot;-price&quot;</span>, <span class="s">&quot;name&quot;</span>]).<span class="k">default</span>(<span class="s">&quot;id&quot;</span>),
+  min_price: z.coerce.number().int().min(<span class="n">0</span>).optional(),
+  max_price: z.coerce.number().int().min(<span class="n">0</span>).optional(),
+});</pre></div>
+
+<p>Every value has limits: a page has between 1 and 50 items, prices are not negative, and only four sort orders exist. <code>z.coerce.number()</code> turns the text of the query string into a number. Anything else is refused with a list of every problem, before any code runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Values outside the rules are refused before any code runs</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=500&amp;sort=stock&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/invalid-request&quot;,
+  &quot;title&quot;: &quot;Invalid request&quot;,
+  &quot;status&quot;: 400,
+  &quot;instance&quot;: &quot;/v1/products?limit=500&amp;sort=stock&quot;,
+  &quot;errors&quot;: [
+    {
+      &quot;field&quot;: &quot;querystring.limit&quot;,
+      &quot;message&quot;: &quot;Too big: expected number to be &lt;=50&quot;
+    },
+    {
+      &quot;field&quot;: &quot;querystring.sort&quot;,
+      &quot;message&quot;: &quot;Invalid option: expected one of \&quot;id\&quot;|\&quot;price\&quot;|\&quot;-price\&quot;|\&quot;name\&quot;&quot;
+    }
+  ]
+}</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never sort or filter by any field the client names</p><p>An API that sorts by whatever field arrives in <code>?sort=</code> can be asked to sort by a field without an index, which makes a slow query that one attacker can repeat a thousand times a minute. It may also reveal fields that should stay private, through the order of results. List the allowed fields, as <code>SORTS</code> does, and add an index for each one when the data moves to a database.</p></aside>
+
+<h3>Offset pages and cursor pages</h3>
+
+<p>The obvious way to page is an <dfn>offset</dfn>: <code>?page=2</code> means “skip the first 20”. It has two problems. A database must still walk past every skipped row, so page 5000 is slow. Worse, the pages drift when data changes between two requests. This small demo pages through a “newest first” list, three at a time, while a new product arrives between page 1 and page 2:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/drift.ts</div><pre class="code"><span class="c line-bidi">// Newest first, like &quot;new arrivals&quot;. Page 1 is read, then a product is added.</span>
+<span class="k">type</span> Row = { id: number };
+<span class="c line-bidi">// 6, 5, 4, 3, 2, 1</span>
+<span class="k">let</span> rows: Row[] = Array.<span class="k">from</span>({ length: <span class="n">6</span> }, (_, i) =&gt; ({ id: <span class="n">6</span> - i }));
+<span class="k">const</span> ids = (page: Row[]) =&gt; page.map((r) =&gt; r.id).join(<span class="s">&quot;, &quot;</span>);
+
+<span class="k">const</span> byOffset = (offset: number) =&gt; rows.slice(offset, offset + <span class="n">3</span>);
+<span class="k">const</span> byCursor = (after = Infinity) =&gt; rows.filter((r) =&gt; r.id &lt; after).slice(<span class="n">0</span>, <span class="n">3</span>);
+
+<span class="k">const</span> offsetPage1 = byOffset(<span class="n">0</span>);
+<span class="k">const</span> cursorPage1 = byCursor();
+rows = [{ id: <span class="n">7</span> }, ...rows];
+<span class="k">const</span> cursorPage2 = byCursor(cursorPage1.at(-<span class="n">1</span>)?.id);
+console.log(<span class="s">&quot;a new product arrives: id 7&quot;</span>);
+console.log(<span class="s">`offset: page 1 = ${ids(offsetPage1)} | page 2 = ${ids(byOffset(3))}`</span>);
+console.log(<span class="s">`cursor: page 1 = ${ids(cursorPage1)} | page 2 = ${ids(cursorPage2)}`</span>);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same pages, with offset and with a cursor, while a product is added</span>
+<span class="c">$ </span><span class="k">node demos/drift.ts</span>
+a new product arrives: id 7
+offset: page 1 = 6, 5, 4 | page 2 = 4, 3, 2
+cursor: page 1 = 6, 5, 4 | page 2 = 3, 2, 1</pre></div>
+
+<p>With an offset, product 4 appears on both pages, because everything moved down by one. (A product deleted in between would make one disappear instead.) A <dfn>cursor</dfn> says “continue after <em>this</em> row”, so new rows before it change nothing. This is also called <dfn>keyset pagination</dfn>, because it continues from the key of the last row. Our API builds its cursors like this:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/products.ts</div><pre class="code"><span class="k">function</span> compare(row: Product, [value, id]: Position, sort: Sort): number {
+  <span class="k">const</span> own = row[SORTS[sort]];
+  <span class="k">const</span> diff = own &lt; value ? -<span class="n">1</span> : own &gt; value ? <span class="n">1</span> : row.id - id;
+  <span class="k">return</span> sort === <span class="s">&quot;-price&quot;</span> ? -diff : diff;
+}
+
+<span class="c line-bidi">// opaque to clients: base64url, so nobody builds cursors by hand</span>
+<span class="k">const</span> encode = (position: Position) =&gt;
+  Buffer.<span class="k">from</span>(JSON.stringify(position)).toString(<span class="s">&quot;base64url&quot;</span>);
+
+<span class="k">function</span> decode(cursor: string): Position {
+  <span class="k">try</span> {
+    <span class="k">const</span> position = JSON.parse(Buffer.<span class="k">from</span>(cursor, <span class="s">&quot;base64url&quot;</span>).toString());
+    <span class="k">if</span> (Array.isArray(position) &amp;&amp; position.length === <span class="n">2</span>)
+      <span class="k">return</span> position as Position;
+  } <span class="k">catch</span> {}
+  <span class="k">const</span> error = { field: <span class="s">&quot;querystring.cursor&quot;</span>, message: <span class="s">&quot;invalid cursor&quot;</span> };
+  <span class="k">throw</span> problems.invalidRequest([error]);
+}</pre></div>
+
+<p>The rows are ordered by the sort field and then by id, so that two products with the same price still have a fixed order: without that tiebreak, rows with equal values could move between pages. The cursor holds the last row’s sort value and id, encoded with base64url. Encoding is not secrecy, and the cursor can be decoded; the point is that clients treat it as an opaque token and send it back unchanged, so the server is free to change what is inside. Here is the client’s side:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The first page</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=3&#x27; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .next_cursor&#x27;</span>
+[1,&quot;Robot kit&quot;,45000]
+[2,&quot;Spare wheels&quot;,6000]
+[3,&quot;Battery pack&quot;,12500]
+&quot;WzMsM10&quot;
+<span class="c line-bidi"># The next page: send back the cursor you were given</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=3&amp;cursor=WzMsM10&#x27; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .next_cursor&#x27;</span>
+[4,&quot;USB cable&quot;,2500]
+[5,&quot;Servo motor&quot;,9000]
+[6,&quot;Sensor set&quot;,15000]
+&quot;WzYsNl0&quot;
+<span class="c line-bidi"># Filter and sort: the cursor remembers both</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&#x27; | jq -c &#x27;(.data[] | [.id, .price.amount]), .next_cursor&#x27;</span>
+[6,15000]
+[3,12500]
+&quot;WzEyNTAwLDNd&quot;
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&amp;cursor=WzEyNTAwLDNd&#x27; | jq -c &#x27;(.data[] | [.id, .price.amount]), .next_cursor&#x27;</span>
+[9,11000]
+[5,9000]
+&quot;WzkwMDAsNV0&quot;</pre></div>
+
+<p>The second request sent back the cursor from the first, and continued at product 4. With <code>sort=-price</code> and a price filter, the cursor carries the price as well, and the second page continues below 12,500. When <code>next_cursor</code> is <code>null</code>, the list is finished. Cursors cannot jump to page 37, but almost no user does that; they scroll, or press “load more”, which is exactly what cursors do well.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which URL is better for cancelling order 7: <code>PATCH /orders/7</code> with <code>{"status": "cancelled"}</code>, or <code>POST /orders/7/cancel</code>? Why?</li><li>Why are the products ordered by price <em>and</em> id, not only by price?</li><li>A client builds its own cursor by encoding <code>[0, 100]</code>. Why should the API documentation say that cursors are opaque?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">3.4</span> <span>Errors: Problem Details</span></h2>
+
+<p>In Chapter 1 our errors had a shape we invented. Every API that invents its own shape forces every client to learn it. <dfn>Problem Details</dfn> (RFC 9457) is the standard shape for HTTP API errors, sent with the content type <code>application/problem+json</code>: a <code>type</code> URL that identifies the kind of problem and leads to its documentation, a short <code>title</code>, the <code>status</code>, a <code>detail</code> for this particular case, and the <code>instance</code>, the request that failed. Extra members are allowed, such as our <code>errors</code> list.</p>
+
+<p>Every text a person reads lives in one file, so it can be reviewed and translated in one place:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/messages.ts</div><pre class="code"><span class="c line-bidi">// Every text a person reads, in one place: easy to review, easy to translate.</span>
+<span class="c line-bidi">// {placeholders} are filled in by say().</span>
+<span class="k">export</span> <span class="k">const</span> messages = {
+  invalidRequest: <span class="s">&quot;Invalid request&quot;</span>,
+  invalidBody: <span class="s">&quot;Invalid body&quot;</span>,
+  notFound: <span class="s">&quot;Not found&quot;</span>,
+  noProduct: <span class="s">&quot;There is no product {id}.&quot;</span>,
+  noOrder: <span class="s">&quot;There is no order {id}.&quot;</span>,
+  preconditionRequired: <span class="s">&quot;Precondition required&quot;</span>,
+  needIfMatch: <span class="s">&quot;Send If-Match with the ETag you last read.&quot;</span>,
+  stale: <span class="s">&quot;The product has changed&quot;</span>,
+  staleDetail: <span class="s">&quot;Someone changed it after you read it. Read it again.&quot;</span>,
+  keyReused: <span class="s">&quot;Idempotency key reused&quot;</span>,
+  keyReusedDetail: <span class="s">&quot;This key was used with a different body.&quot;</span>,
+  inProgress: <span class="s">&quot;Request in progress&quot;</span>,
+  inProgressDetail: <span class="s">&quot;A request with this key is still running.&quot;</span>,
+  outOfStock: <span class="s">&quot;Not enough stock&quot;</span>,
+  outOfStockDetail: <span class="s">&quot;Only {stock} left of product {id}.&quot;</span>,
+  unknownProduct: <span class="s">&quot;Unknown product&quot;</span>,
+  cannotCancel: <span class="s">&quot;Order cannot be cancelled&quot;</span>,
+  cannotCancelDetail: <span class="s">&quot;Order {id} is already {status}.&quot;</span>,
+  tooManyRequests: <span class="s">&quot;Too many requests&quot;</span>,
+  tooManyRequestsDetail: <span class="s">&quot;Try again in {seconds} seconds.&quot;</span>,
+  serverError: <span class="s">&quot;Server error&quot;</span>,
+  emptyPatch: <span class="s">&quot;Send at least one field to change.&quot;</span>,
+};
+
+<span class="k">export</span> <span class="k">function</span> say(
+  text: string,
+  values: Record&lt;string, string | number&gt; = {},
+): string {
+  <span class="k">return</span> text.replace(/\{(\w+)\}/g, (_, key: string) =&gt; String(values[key]));
+}</pre></div>
+
+<p>And every problem the API can return is made by one factory, so no route can invent a new status code or a new shape:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/problem.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> problems = {
+  invalidRequest: (errors: Errors) =&gt;
+    <span class="k">new</span> Problem(<span class="n">400</span>, <span class="s">&quot;invalid-request&quot;</span>, m.invalidRequest, <span class="k">undefined</span>, { errors }),
+  invalidBody: (errors: Errors) =&gt;
+    <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&quot;invalid-body&quot;</span>, m.invalidBody, <span class="k">undefined</span>, { errors }),
+  noProduct: (id: number) =&gt;
+    <span class="k">new</span> Problem(<span class="n">404</span>, <span class="s">&quot;not-found&quot;</span>, m.notFound, say(m.noProduct, { id })),
+  noOrder: (id: number) =&gt;
+    <span class="k">new</span> Problem(<span class="n">404</span>, <span class="s">&quot;not-found&quot;</span>, m.notFound, say(m.noOrder, { id })),
+  needIfMatch: () =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">428</span>,
+      <span class="s">&quot;precondition-required&quot;</span>,
+      m.preconditionRequired,
+      m.needIfMatch,
+    ),
+  stale: () =&gt; <span class="k">new</span> Problem(<span class="n">412</span>, <span class="s">&quot;stale&quot;</span>, m.stale, m.staleDetail),
+  keyReused: () =&gt;
+    <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&quot;idempotency-key-reused&quot;</span>, m.keyReused, m.keyReusedDetail),
+  inProgress: () =&gt;
+    <span class="k">new</span> Problem(<span class="n">409</span>, <span class="s">&quot;in-progress&quot;</span>, m.inProgress, m.inProgressDetail),
+  outOfStock: (id: number, stock: number) =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">409</span>,
+      <span class="s">&quot;out-of-stock&quot;</span>,
+      m.outOfStock,
+      say(m.outOfStockDetail, { id, stock }),
+    ),
+  unknownProduct: (id: number) =&gt;
+    <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&quot;unknown-product&quot;</span>, m.unknownProduct, say(m.noProduct, { id })),
+  cannotCancel: (id: number, status: string) =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">409</span>,
+      <span class="s">&quot;invalid-state&quot;</span>,
+      m.cannotCancel,
+      say(m.cannotCancelDetail, { id, status }),
+    ),
+  tooManyRequests: (seconds: number) =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">429</span>,
+      <span class="s">&quot;too-many-requests&quot;</span>,
+      m.tooManyRequests,
+      say(m.tooManyRequestsDetail, { seconds }),
+    ),
+  server: () =&gt; <span class="k">new</span> Problem(<span class="n">500</span>, <span class="s">&quot;server-error&quot;</span>, m.serverError),
+};</pre></div>
+
+<p>One error handler turns everything into a problem: our own problems as they are, validation errors as <code>422</code> for a body and <code>400</code> for the rest of the request, the rate limiter’s errors as <code>429</code>, and anything unexpected as a plain <code>500</code>, with the details in the log:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  app.setErrorHandler((error: FastifyError, request, reply) =&gt; {
+    <span class="k">let</span> problem: Problem;
+    <span class="k">if</span> (error <span class="k">instanceof</span> Problem) {
+      problem = error;
+    } <span class="k">else</span> <span class="k">if</span> (hasZodFastifySchemaValidationErrors(error)) {
+      <span class="k">const</span> where = error.validationContext ?? <span class="s">&quot;body&quot;</span>;
+      <span class="k">const</span> errors = error.validation.map((issue) =&gt; ({
+        field: [
+          where,
+          ...String(issue.instancePath).split(<span class="s">&quot;/&quot;</span>).filter(Boolean),
+        ].join(<span class="s">&quot;.&quot;</span>),
+        message: issue.message ?? <span class="s">&quot;&quot;</span>,
+      }));
+      <span class="c line-bidi">// 422: a well-formed body with wrong values</span>
+      <span class="c line-bidi">// 400: a bad query, path or header: the request itself is malformed</span>
+      problem =
+        where === <span class="s">&quot;body&quot;</span>
+          ? problems.invalidBody(errors)
+          : problems.invalidRequest(errors);
+    } <span class="k">else</span> <span class="k">if</span> (error.statusCode === <span class="n">429</span>) {
+      problem = problems.tooManyRequests(
+        Number(reply.getHeader(<span class="s">&quot;retry-after&quot;</span>) ?? <span class="n">60</span>),
+      );
+    } <span class="k">else</span> {
+      request.log.error(error); <span class="c line-bidi">// the details stay in the log</span>
+      problem = problems.server();
+    }
+    reply.code(problem.status).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>);
+    <span class="k">return</span> reply.send(problem.body(request.url));
+  });</pre></div>
+
+<h2><span class="sec">3.5</span> <span>Safe retries: idempotency keys</span></h2>
+
+<p>Chapter 1 warned that a retried <code>POST</code> can create an order twice. The standard answer, used by payment providers such as Stripe, is an <dfn>idempotency key</dfn>: the client creates a unique value (a UUID) for each <em>intended</em> operation and sends it in an <code>Idempotency-Key</code> header. If the same key arrives again, the server does not do the work again; it replays the answer it gave the first time.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/orders.ts</div><pre class="code">    app.post(
+      <span class="s">&quot;/orders&quot;</span>,
+      {
+        schema: {
+          headers: z.object({ <span class="s">&quot;idempotency-key&quot;</span>: z.string().min(<span class="n">8</span>).max(<span class="n">100</span>) }),
+          body: NewOrder,
+          response: { <span class="n">201</span>: OrderOut },
+        },
+      },
+      <span class="k">async</span> (request, reply) =&gt; {
+        <span class="k">const</span> key = request.headers[<span class="s">&quot;idempotency-key&quot;</span>];
+        <span class="k">const</span> body = JSON.stringify(request.body);
+        <span class="k">const</span> fingerprint = createHash(<span class="s">&quot;sha256&quot;</span>).update(body).digest(<span class="s">&quot;hex&quot;</span>);
+        <span class="k">const</span> saved = keys.get(key);
+        <span class="k">if</span> (saved) {
+          <span class="k">if</span> (saved.fingerprint !== fingerprint) <span class="k">throw</span> problems.keyReused();
+          <span class="k">if</span> (!saved.order) <span class="k">throw</span> problems.inProgress();
+          reply.header(<span class="s">&quot;Idempotent-Replayed&quot;</span>, <span class="s">&quot;true&quot;</span>);
+          reply.header(<span class="s">&quot;Location&quot;</span>, <span class="s">`/v1/orders/${saved.order.id}`</span>);
+          <span class="k">return</span> reply.code(<span class="n">201</span>).send(saved.order);
+        }
+        <span class="c line-bidi">// mark the key as in progress before doing the work</span>
+        keys.set(key, { fingerprint });
+
+        <span class="k">try</span> {
+          <span class="k">const</span> items = request.body.items.map(({ product_id, quantity }) =&gt; {
+            <span class="k">const</span> product = store.products.find((p) =&gt; p.id === product_id);
+            <span class="k">if</span> (!product) <span class="k">throw</span> problems.unknownProduct(product_id);
+            <span class="k">if</span> (product.stock &lt; quantity) {
+              <span class="k">throw</span> problems.outOfStock(product.id, product.stock);
+            }
+            <span class="k">return</span> { product, quantity };
+          });
+          <span class="k">for</span> (<span class="k">const</span> { product, quantity } <span class="k">of</span> items) {
+            product.stock -= quantity;
+            product.version += <span class="n">1</span>;
+          }
+          <span class="k">const</span> order: Order = {
+            id: store.nextOrderId++,
+            status: <span class="s">&quot;pending&quot;</span>,
+            <span class="c line-bidi">// the price comes from the server, never from the client</span>
+            items: items.map(({ product, quantity }) =&gt; ({
+              product_id: product.id,
+              quantity,
+              price: product.price,
+            })),
+            total: items.reduce(
+              (sum, { product, quantity }) =&gt; sum + product.price * quantity,
+              <span class="n">0</span>,
+            ),
+            created_at: <span class="k">new</span> Date().toISOString(),
+          };
+          store.orders.push(order);
+          keys.set(key, { fingerprint, order: show(order) });
+          reply.header(<span class="s">&quot;Location&quot;</span>, <span class="s">`/v1/orders/${order.id}`</span>);
+          <span class="k">return</span> reply.code(<span class="n">201</span>).send(show(order));
+        } <span class="k">catch</span> (error) {
+          keys.delete(key); <span class="c line-bidi">// a failed attempt may be tried again with the same key</span>
+          <span class="k">throw</span> error;
+        }
+      },
+    );</pre></div>
+
+<p>The details matter more than the idea:</p>
+<ul>
+<li>The server keeps a <strong>fingerprint</strong> of the body. The same key with a different body is a bug in the client, and gets a <code>422</code>, never a silent replay of a different order.</li>
+<li>The key is marked <strong>in progress</strong> before the work starts. A second request that arrives while the first is still running gets a <code>409</code> instead of starting the work twice.</li>
+<li>If the work fails, the key is <strong>forgotten</strong>, so the client may try again with it.</li>
+<li>The total is computed from the server’s prices. A client never tells the server what something costs.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Create an order, with an idempotency key</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+location: /v1/orders/1
+{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T19:45:33.808Z&quot;}
+<span class="c line-bidi"># The network failed, so the client sends exactly the same request again</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+idempotent-replayed: true
+location: /v1/orders/1
+{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T19:45:33.808Z&quot;}
+<span class="c line-bidi"># The same key with a different body is a client bug</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 3}]}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/idempotency-key-reused&quot;,&quot;title&quot;:&quot;Idempotency key reused&quot;,&quot;status&quot;:422,&quot;detail&quot;:&quot;This key was used with a different body.&quot;,&quot;instance&quot;:&quot;/v1/orders&quot;}
+<span class="c line-bidi"># The stock went down once, not twice</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/v1/products/1 | jq -c &#x27;{id, stock}&#x27;</span>
+{&quot;id&quot;:1,&quot;stock&quot;:8}</pre></div>
+
+<p>The second request got the same order, with the same id and time, and a header that says it was replayed. The stock went down by 2, not by 4. Here the keys live in a <code>Map</code>; in production they are kept in the database, in the same transaction as the order (Chapter 6), or in Redis (Chapter 7), for about a day.</p>
+
+<p>The other business rules return problems too: an order for more than the stock is a <code>409 Conflict</code> with the current situation, and so is cancelling an order twice:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># More than the stock</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0002&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 50}]}&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/out-of-stock&quot;,
+  &quot;title&quot;: &quot;Not enough stock&quot;,
+  &quot;status&quot;: 409,
+  &quot;detail&quot;: &quot;Only 8 left of product 1.&quot;,
+  &quot;instance&quot;: &quot;/v1/orders&quot;
+}
+<span class="c line-bidi"># Cancel, then cancel again</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders/1/cancel | jq -c &#x27;{id, status, total}&#x27;</span>
+{&quot;id&quot;:1,&quot;status&quot;:&quot;cancelled&quot;,&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;}}
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders/1/cancel | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/invalid-state&quot;,&quot;title&quot;:&quot;Order cannot be cancelled&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;Order 1 is already cancelled.&quot;,&quot;instance&quot;:&quot;/v1/orders/1/cancel&quot;}</pre></div>
+
+<h2><span class="sec">3.6</span> <span>Lost updates: ETag and If-Match</span></h2>
+
+<p>Two administrators open product 2 at the same time. Sara changes the price to 65.00 and saves; a minute later Omar, whose screen still shows the old product, changes it to 70.00 and saves. Sara’s change is gone, and nobody was told. This is the <dfn>lost update</dfn> problem. HTTP solves it with the ETag you met in Chapter 1: the product’s version is its ETag, and a change must send back the version it was based on in <code>If-Match</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/products.ts</div><pre class="code">    app.patch(
+      <span class="s">&quot;/products/:id&quot;</span>,
+      {
+        schema: {
+          params: IdParams,
+          body: ProductPatch,
+          response: { <span class="n">200</span>: ProductOut },
+        },
+      },
+      <span class="k">async</span> (request, reply) =&gt; {
+        <span class="k">const</span> product = find(request.params.id);
+        <span class="k">const</span> ifMatch = request.headers[<span class="s">&quot;if-match&quot;</span>];
+        <span class="k">if</span> (!ifMatch) <span class="k">throw</span> problems.needIfMatch();
+        <span class="k">if</span> (ifMatch !== <span class="s">`&quot;${product.version}&quot;`</span>) <span class="k">throw</span> problems.stale();
+        Object.assign(product, request.body, { version: product.version + <span class="n">1</span> });
+        reply.header(<span class="s">&quot;ETag&quot;</span>, <span class="s">`&quot;${product.version}&quot;`</span>);
+        <span class="k">return</span> show(product);
+      },
+    );</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Read a product: the ETag is its version</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/v1/products/2 | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+etag: &quot;1&quot;
+{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:{&quot;amount&quot;:6000,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00.000Z&quot;}
+<span class="c line-bidi"># Change it without If-Match</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:3000/v1/products/2 -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/precondition-required&quot;,&quot;title&quot;:&quot;Precondition required&quot;,&quot;status&quot;:428,&quot;detail&quot;:&quot;Send If-Match with the ETag you last read.&quot;,&quot;instance&quot;:&quot;/v1/products/2&quot;}
+<span class="c line-bidi"># Change it with the ETag just read</span>
+<span class="c">$ </span><span class="k">curl -si -X PATCH localhost:3000/v1/products/2 -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+etag: &quot;2&quot;
+{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:{&quot;amount&quot;:6500,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00.000Z&quot;}
+<span class="c line-bidi"># Someone else, still holding the old ETag, tries the same</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:3000/v1/products/2 -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 7000}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/stale&quot;,&quot;title&quot;:&quot;The product has changed&quot;,&quot;status&quot;:412,&quot;detail&quot;:&quot;Someone changed it after you read it. Read it again.&quot;,&quot;instance&quot;:&quot;/v1/products/2&quot;}</pre></div>
+
+<p>A change without <code>If-Match</code> is refused with <code>428 Precondition Required</code>: requiring it is how the API makes sure no client forgets. The change based on version 1 succeeds and creates version 2. The second change, still based on version 1, gets <code>412 Precondition Failed</code>, and the client knows to reload and show the user what changed. This is <dfn>optimistic concurrency</dfn>: nothing is locked while people look at a screen, and conflicts, which are rare, are detected when they happen. Chapter 6 does the same inside the database.</p>
+
+<h2><span class="sec">3.7</span> <span>Rate limits</span></h2>
+
+<p>Every public API limits how fast one client may call it: to keep one buggy script from hurting everybody, and to make guessing passwords or scraping slow. The <code>@fastify/rate-limit</code> plugin counts requests per client address. Started with a limit of three a minute, the fourth request is refused:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A server limited to 3 requests a minute (RATE_LIMIT=3)</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:3000/v1/products/1; done; echo</span>
+200 200 200 
+<span class="c">$ </span><span class="k">curl -si localhost:3000/v1/products/1 | grep -iE &#x27;^(HTTP|x-ratelimit|retry-after)|^\{&#x27;</span>
+HTTP/1.1 429 Too Many Requests
+x-ratelimit-limit: 3
+x-ratelimit-remaining: 0
+x-ratelimit-reset: 60
+retry-after: 60
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/too-many-requests&quot;,&quot;title&quot;:&quot;Too many requests&quot;,&quot;status&quot;:429,&quot;detail&quot;:&quot;Try again in 60 seconds.&quot;,&quot;instance&quot;:&quot;/v1/products/1&quot;}</pre></div>
+
+<p>The <code>x-ratelimit-*</code> headers tell well-behaved clients how much they have left on every answer, and <code>retry-after</code> tells them when to try again. A client that respects them never sees a 429. With several servers, the counts must be shared between them, which is another job for Redis (Chapter 7).</p>
+
+<h2><span class="sec">3.8</span> <span>Versions and change</span></h2>
+
+<p>Once other people use your API, every change is either <dfn>additive</dfn> or <dfn>breaking</dfn>. Adding an endpoint, an optional parameter or a new field to a response is additive: correct clients ignore what they do not know. Removing or renaming a field, changing its type or meaning, or adding a required parameter breaks clients. The rules:</p>
+<ul>
+<li>Make every change additive if you possibly can. Most APIs live for years on version 1.</li>
+<li>When a breaking change is unavoidable, publish <code>/v2</code> next to <code>/v1</code>, and keep <code>/v1</code> running for a stated period.</li>
+<li>Announce the end in the answers themselves, with the <code>Deprecation</code> and <code>Sunset</code> headers, in the documentation, and by email to the clients you know. Watch your logs to see who still calls the old version before you turn it off.</li>
+</ul>
+
+<h2><span class="sec">3.9</span> <span>Documentation from the code</span></h2>
+
+<p>Documentation written by hand drifts away from the code within weeks. Because every route here has a schema, the <code>@fastify/swagger</code> plugin generates an <dfn>OpenAPI</dfn> document from them: a standard, machine-readable description of every path, parameter, body and response. The API serves it at <code>/openapi.json</code>, and the routes listing in 3.1 was read from it. From the same document, tools can render documentation pages, generate typed client libraries in many languages, and check in CI that a change does not remove anything clients depend on.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: design the API before you build it</p><p>Write the request and response examples for a new endpoint first, in the pull request or in the OpenAPI document, and get a review from someone who will <em>use</em> the endpoint, such as a front-end or mobile developer. Changing an example takes minutes; changing a published API takes months of versions and deprecation emails.</p></aside>
+
+<h2><span class="sec">3.10</span> <span>Testing an API without a network</span></h2>
+
+<p>Fastify’s <code>inject</code> sends a request straight into the application, without a port or a socket, and returns the response. Tests are fast and independent, because each one builds a fresh app with its own data:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.test.ts</div><pre class="code">test(<span class="s">&quot;walks every page without repeats or gaps&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> app = <span class="k">await</span> buildApp();
+  <span class="k">const</span> seen: number[] = [];
+  <span class="k">let</span> cursor: string | <span class="k">null</span> = <span class="k">null</span>;
+  <span class="k">do</span> {
+    <span class="k">const</span> url: string = <span class="s">`/v1/products?limit=5${cursor ? `</span>&amp;cursor=${cursor}<span class="s">` : &quot;&quot;}`</span>;
+    <span class="k">const</span> page = (<span class="k">await</span> app.inject(url)).json();
+    seen.push(...page.data.map((p: ProductJson) =&gt; p.id));
+    cursor = page.next_cursor;
+  } <span class="k">while</span> (cursor);
+  assert.deepEqual(seen, [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">8</span>, <span class="n">9</span>, <span class="n">10</span>, <span class="n">11</span>, <span class="n">12</span>]);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The tests talk to the app without a network, with inject</span>
+<span class="c">$ </span><span class="k">npm test</span>
+
+<span class="c">&gt; </span><span class="k">bit-shop-api@1.0.0 test</span>
+<span class="c">&gt; </span><span class="k">node --test --test-reporter=spec</span>
+
+✔ walks every page without repeats or gaps (130.892001ms)
+✔ sorts by price, highest first (10.661887ms)
+✔ replays an order instead of creating it twice (17.569112ms)
+✔ refuses a stale update with 412 (10.551944ms)
+✔ answers 422 with every invalid field (12.697298ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 464.396611</pre></div>
+
+<p>The first test is the most valuable one in the file: it walks every page with the cursor and checks that each product appears exactly once. The others pin the behaviours a client depends on: sorting, replays, stale updates, and the error format.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Verbs in URLs, mixed naming</td><td>Every endpoint must be looked up</td><td>Plural nouns, one naming style, methods as verbs</td></tr>
+<tr><td>Bare arrays as list responses</td><td>Paging cannot be added without breaking clients</td><td><code>{"data": [...], "next_cursor": ...}</code></td></tr>
+<tr><td>Offset paging on changing data</td><td>Repeated and missing rows; slow deep pages</td><td>Cursors over a complete, indexed order</td></tr>
+<tr><td>Sorting by any field the client names</td><td>Slow queries on demand, leaked fields</td><td>A list of allowed sort fields</td></tr>
+<tr><td>A different error shape per endpoint</td><td>Clients cannot handle errors generically</td><td>Problem Details, from one factory</td></tr>
+<tr><td>Retried POSTs without keys</td><td>Double orders and payments</td><td>Idempotency keys with fingerprints</td></tr>
+<tr><td>Updates without a version check</td><td>Silent lost updates</td><td>ETag and required <code>If-Match</code></td></tr>
+<tr><td>Breaking changes in place</td><td>Apps break overnight</td><td>Additive changes; a new version with a sunset date</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Resources</strong> are plural nouns; <strong>methods</strong> are the verbs; special actions are sub-resources with <code>POST</code>. Nest one level at most.</li>
+<li>Fix the <strong>representation</strong> rules once: one naming style, UTC times, money as amount and currency, lists in an object.</li>
+<li><strong>Schemas</strong> describe every input and output; the framework refuses bad input and types the good.</li>
+<li><strong>Cursors</strong> page without drift over a complete order (sort field plus id); allowed sort fields are listed.</li>
+<li>Errors are <strong>Problem Details</strong>: <code>type</code>, <code>title</code>, <code>status</code>, <code>detail</code>, <code>instance</code>, from one factory and one handler.</li>
+<li><strong>Idempotency keys</strong> with fingerprints make retries safe; <strong>ETag and <code>If-Match</code></strong> prevent lost updates.</li>
+<li><strong>Rate limits</strong> protect everybody; their headers let good clients avoid them.</li>
+<li>Prefer <strong>additive</strong> changes; version and announce the rest. Generate <strong>OpenAPI</strong> documentation from the code.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>POST /orders/7/cancel</code>: cancelling is an action with its own rules (stock, refunds, a check that the order can still be cancelled), and a dedicated endpoint can enforce them and be documented and permitted separately; a generic <code>PATCH</code> would let a client set any status. 2. Products with the same price would otherwise have no fixed order, so a row could move from one page to another between requests, and the cursor could not say exactly where to continue. 3. So that the server can change the cursor’s contents (another sort, a signature, an encryption) without breaking clients, and so that clients do not build cursors that skip the server’s rules.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project extends this chapter’s API. Keep the conventions: schemas for every input and output, Problem Details for every error, and a test with <code>inject</code> for every rule.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>Product reviews</h3>
+<p class="project-goal">Add reviews to products: list them with cursor pages, and create them with validation.</p>
+<p class="project-skills"><strong>You will practise:</strong> nested resources, cursor pagination, validation, and <code>201</code> with <code>Location</code>.</p>
+<ol class="steps">
+<li>Design the routes first: <code>GET /v1/products/:id/reviews</code> and <code>POST /v1/products/:id/reviews</code>. Write an example request and response for each.</li>
+<li>A review has a rating from 1 to 5, a text of 10 to 1000 characters, and a creation time. Answer <code>404</code> as a problem for an unknown product.</li>
+<li>List reviews newest first, with cursors made from the creation time and the id.</li>
+<li>Add <code>average_rating</code> and <code>review_count</code> to the product’s representation. Is that an additive change?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> two reviews can be created in the same millisecond. That is exactly why the cursor needs the id as well as the time.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.2 · Medium</p>
+<h3>A client that retries correctly</h3>
+<p class="project-goal">Write a small TypeScript client for the orders endpoint that retries safely, with backoff, and test it against a server that fails on purpose.</p>
+<p class="project-skills"><strong>You will practise:</strong> idempotency keys from the client’s side, timeouts, exponential backoff, and reading <code>Retry-After</code>.</p>
+<ol class="steps">
+<li>Write <code>createOrder(items)</code>: it makes one UUID with <code>crypto.randomUUID()</code> and uses the <em>same</em> key for every attempt.</li>
+<li>Retry on network errors, timeouts (use <code>AbortSignal.timeout</code>), <code>409 in-progress</code>, <code>429</code> and <code>5xx</code>; never on other <code>4xx</code>.</li>
+<li>Wait 200 ms, 400 ms, 800 ms between attempts, plus a random part (jitter), and use <code>Retry-After</code> when the server sends it. Give up after five attempts.</li>
+<li>Add a test option to the server that drops the response of every second request after doing the work, and show with a test that the client still creates exactly one order.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the jitter matters. Without it, a thousand clients that failed at the same moment retry at the same moment too, and knock the server over again.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 3.3 · Challenge</p>
+<h3>Version 2, side by side</h3>
+<p class="project-goal">Introduce a breaking change as <code>/v2</code>, keep <code>/v1</code> working from the same code, and announce its end.</p>
+<p class="project-skills"><strong>You will practise:</strong> versioning, mapping representations, deprecation headers, and contract tests.</p>
+<ol class="steps">
+<li>In v2, prices become <code>{"amount": "450.00", "currency": "EGP"}</code> with a decimal string, and <code>created_at</code> is renamed <code>created</code>. Decide why each change is breaking.</li>
+<li>Keep one internal model, and write one mapping function per version from the model to its representation.</li>
+<li>Add <code>Deprecation</code> and <code>Sunset</code> headers to every v1 answer, with a date six months ahead, and a <code>Link</code> header to the migration guide.</li>
+<li>Write tests that save today’s v1 responses as fixtures and fail if v1 ever changes, so that v2 work cannot break v1 by accident.</li>
+<li>Generate the OpenAPI document for each version, and compare them with a tool such as <code>oasdiff</code>, which lists the breaking changes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> versions should be thin layers at the edge of the API. If v2 needs its own database tables or its own business rules, the versioning is in the wrong place.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Design the method and URL for each: list one customer’s orders; add an item to a cart; a payment provider tells you a payment succeeded; search products by name; refund an order.</li>
+<li><span class="level">Easy</span> Choose a status code for each, and say why: an email already registered; an update without <code>If-Match</code>; an update with an old ETag; JSON with a missing quote; a quantity of 0.</li>
+<li><span class="level medium">Medium</span> Add a <code>q</code> parameter to <code>GET /v1/products</code> that finds products whose name contains the text, ignoring case, with at least 2 characters. Does the cursor still work with it?</li>
+<li><span class="level medium">Medium</span> Cancelling an order twice answers <code>409</code>. A mobile app retries the cancel request after a timeout and shows an error to a user whose order was in fact cancelled. Propose two ways to fix this, and choose one.</li>
+<li><span class="level hard">Challenge</span> The idempotency keys in this chapter never expire, and two different clients that happen to choose the same key would see each other’s orders. Write an <code>IdempotencyStore</code> class that scopes keys by client and expires them after 24 hours, with a clock that tests can control, and test both rules.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>Part 2 begins. Our products and orders still live in memory; next they move into PostgreSQL. We learn SQL properly: tables, joins, grouping, indexes, and how to read a query plan.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1414,6 +2072,16 @@ test(<span class="s">&quot;streams the export as CSV&quot;</span>, <span class="
 <li><code>Promise.all</code> rejects as soon as the first promise rejects, at about 200 ms, with that error. The stock request is not cancelled: it keeps running and finishes at about 300 ms, and its result is ignored. The program in the code repository (<code>answers/all-fails.ts</code>) prints “Promise.all rejected at 201 ms: price service down” and then “stock finished anyway at 301 ms”. To really stop the other calls, give them an <code>AbortController</code>’s signal and call <code>abort()</code> in the <code>catch</code>.</li>
 <li>Read <code>Number(url.searchParams.get("rows") ?? 100000)</code>, answer <code>422</code> unless it is a whole number from 1 to 1,000,000, and pass it to <code>orderRows</code>. Memory stays flat because the generator makes one row at a time, and <code>pipeline</code> only asks for the next row when the response can take more: at no moment do all rows exist together. When the client disconnects, the response is destroyed, <code>pipeline</code> rejects, and it calls the generator’s <code>return()</code>, so the generator stops at its current <code>yield</code> (any <code>finally</code> block in it runs). The handler’s <code>catch</code> sees the error and, since the headers were already sent, destroys the response instead of writing a 500.</li>
 <li>The pool in <code>answers/pool.ts</code> keeps a list of idle workers and a queue of jobs. <code>run</code> puts a job in the queue and calls <code>#next</code>, which gives the first job to an idle worker; when the worker answers, it goes back to the idle list and <code>#next</code> runs again. A worker that crashes is replaced with a new one, because a crashed thread cannot be reused. The worker file listens with <code>parentPort.on("message", ...)</code> instead of reading <code>workerData</code> once. In the run in the code repository, 100 counts with a new thread each took about 6 seconds, and with a pool of four about 150 ms: starting a thread costs far more than these small counts.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 3</h2>
+<ol class="exercises">
+<li><code>GET /v1/customers/3/orders</code> (or <code>GET /v1/orders?customer_id=3</code>, which also works when orders are listed in other ways); <code>POST /v1/carts/5/items</code>; <code>POST /v1/webhooks/payments</code>, an endpoint the provider calls, which must check the provider’s signature and be idempotent, because providers resend webhooks; <code>GET /v1/products?q=kit</code>, a filter on the collection, not a new resource; <code>POST /v1/orders/7/refunds</code>, which creates a refund resource that can be listed and read later.</li>
+<li><code>409 Conflict</code> for the email, since the request is valid but clashes with existing data (some APIs use <code>422</code> to avoid revealing which emails exist; for a sign-up form, the security chapter discusses this choice); <code>428 Precondition Required</code>; <code>412 Precondition Failed</code>; <code>400 Bad Request</code>, because the body cannot even be read; <code>422</code>, because the body is readable and one value breaks a rule.</li>
+<li>Add <code>q: z.string().trim().min(2).max(50).optional()</code> to the query schema, read it with the other values, and add one filter: <code>.filter((p) =&gt; !q || p.name.toLowerCase().includes(q.toLowerCase()))</code>. The cursor still works, because it records a position in the sorted order, not in the filtered list: the client sends the same <code>q</code> with the cursor, and the next page continues after that position among the matching products. In the run in the code repository, <code>q=se</code> with <code>limit=1</code> returns “Servo motor”, then “Sensor set” with the cursor, and <code>q=x</code> is refused with a <code>400</code> problem. In a database, a search like this needs a suitable index, which Chapter 4 covers.</li>
+<li>One way: make cancel idempotent in its result. If the order is already cancelled, answer <code>200</code> with the order, because the client’s goal (a cancelled order) is reached. Another way: accept an <code>Idempotency-Key</code> on cancel too, and replay the first answer. The first is simpler and right here, because the second cancel changes nothing; keep <code>409</code> for orders that can no longer be cancelled because they were shipped. The general lesson: design actions so that repeating them is harmless, whenever the domain allows it.</li>
+<li>The class in <code>answers/idempotency.ts</code> keeps entries in a <code>Map</code> under the key <code>client:key</code>, so the same key from two clients is two entries. Each entry stores the time it was saved, read from a <code>now</code> function given to the constructor (by default <code>Date.now</code>); <code>get</code> deletes and ignores an entry older than the time to live. The tests pass a fake clock, <code>() =&gt; now</code>, and move <code>now</code> forward instead of waiting a day: a key is still there after 999 ms of a 1000 ms life and gone at 1000 ms. In production the client comes from authentication (Chapter 8), and the store is a database table or Redis keys with an expiry time, which also clears old entries on its own.</li>
 </ol>
 
 </section>

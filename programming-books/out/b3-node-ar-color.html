@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "الفصل 2: Node.js وTypeScript على الخادم"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "الفصل 3: تصميم واجهات REST"; } }
+@page ch03:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -1381,6 +1383,666 @@ test(<span class="s">&quot;يبث التصدير بصيغة CSV&quot;</span>, <s
 <p>بعد أن صار تحتنا مشروع متين، نصمم الواجهة البرمجية نفسها: الموارد والعناوين، والإصدارات، وتقسيم القوائم إلى صفحات، والتصفية، والأخطاء، وعدم التكرار، والتوثيق، حتى يستخدمها مطورون آخرون دون أن يسألوك.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b3/node/rest/ar">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">الفصل 3</p><h1>تصميم واجهات REST</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تسمّي الموارد والعناوين بحيث تُخمَّن الواجهة بدل أن تُحفظ</li>
+<li>تبني واجهة بإصدار على Fastify، وكل مدخل فيها يفحصه مخطط</li>
+<li>تتنقل في القوائم بمؤشرات لا تكرر صفاً ولا تقفز عنه أبداً</li>
+<li>ترد كل خطأ بصيغة قياسية واحدة، هي Problem Details</li>
+<li>تجعل إعادة المحاولة آمنة بمفاتيح عدم التكرار، وتمنع ضياع التحديثات بـ <code>If-Match</code></li>
+<li>تحدّ معدل الطلبات، وتولّد توثيق الواجهة من كودها</li>
+</ul>
+</div>
+
+<p class="lead">الواجهة البرمجية منتج، ومستخدموها مطورون. وهم يحكمون عليها كما تحكم أنت على مكتبة: هل أستطيع أن أخمّن كيف تعمل، وهل تخبرني بوضوح بما أخطأت فيه، وهل ستكسر تطبيقي في الشهر القادم؟ علّمك الفصل 1 البروتوكول. أما هذا الفصل فعن القرارات التي فوقه، تلك التي يرخص ضبطها في البداية ويغلو تغييرها جداً حين تعتمد عليها فرق أخرى. ونعيد بناء واجهة متجر Bit كما ينبغي، إصداراً أول من واجهة عامة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول واجهة عامة صممتها كان فيها <code>/getProducts</code> و<code>/product_list</code> و<code>/Products/All</code>، كتبها ثلاثة أشخاص في ثلاثة أسابيع. واحتاج كل عميل مساعدتنا ليستخدمها، ولم نستطع أن نحذف منها شيئاً أبداً. فالاتساق ليس ذوقاً: إنه ما يجعل الغرباء يستخدمون عملك دون أن يسألوك.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>الموارد والعناوين</span></h2>
+
+<p>تنظّم REST الواجهة حول <dfn>الموارد</dfn>: أسماء مجال عملك، مثل المنتجات والطلبات. والعناوين تسمّي الموارد، والطرق تقول ماذا تفعل بها. وقواعد الواجهة التي تُخمَّن قليلة:</p>
+<ul>
+<li><strong>أسماء، بالجمع، بحروف صغيرة:</strong> <code>/products</code> و<code>/orders</code>. والطريقة هي الفعل: <code>GET /products</code> لا <code>/getProducts</code>.</li>
+<li><strong>المورد الواحد:</strong> المجموعة ومعها الرقم، <code>/products/2</code>.</li>
+<li><strong>التداخل للملكية، بمستوى واحد:</strong> <code>/orders/7/items</code> مقبول، و<code>/customers/3/orders/7/items/2</code> ليس كذلك. فحين يصير للمورد رقمه الخاص أعطه عنواناً في المستوى الأعلى.</li>
+<li><strong>الأفعال التي ليست إنشاءً ولا قراءة ولا تحديثاً ولا حذفاً</strong> تصير مورداً فرعياً بـ <code>POST</code>: <code>POST /orders/7/cancel</code>. ولا تخفها في <code>PATCH</code> يضبط <code>status</code>: فللإلغاء قواعد (إرجاع المخزون، وردّ المبلغ) سيتخطاها التحديث العام.</li>
+<li><strong>الإصدار في المسار:</strong> <code>/v1/...</code>. ونعود إلى الإصدارات في القسم 3.8.</li>
+</ul>
+
+<p>وهذه مسارات واجهة الفصل، مقروءة من توثيق الواجهة نفسها، الذي يولّده Fastify من الكود (القسم 3.9):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># مسارات الواجهة، مقروءة من وثيقة OpenAPI الخاصة بها</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/openapi.json | jq -r &#x27;.paths | to_entries[] | .key as $p | .value | keys[] | ascii_upcase + &quot; &quot; + $p&#x27;</span>
+GET /v1/products
+GET /v1/products/{id}
+PATCH /v1/products/{id}
+POST /v1/orders
+GET /v1/orders/{id}
+POST /v1/orders/{id}/cancel</pre></div>
+
+<h3>التمثيلات</h3>
+
+<p>يسمى JSON الذي ترسله الواجهة <dfn>تمثيلاً</dfn> للمورد. فاختر أعرافه مرة واحدة، واكتبها، ولا تخلطها أبداً:</p>
+<ul>
+<li><strong>أسلوب تسمية واحد.</strong> نستخدم <code>snake_case</code> مثل معظم الواجهات العامة، و<code>camelCase</code> جيد بالقدر نفسه. أما الخلط بينهما فليس كذلك.</li>
+<li><strong>الأوقات بصيغة ISO 8601 وبتوقيت UTC:</strong> <code>2026-11-01T09:00:00.000Z</code>. والعملاء يحوّلونها إلى منطقة المستخدم الزمنية، والخادم لا يخمّنها أبداً.</li>
+<li><strong>المال كائناً:</strong> <code>{"amount": 45000, "currency": "EGP"}</code>، والمبلغ بالوحدات الصغرى. فالعدد المجرد ملتبس يوم تبيع بعملة ثانية.</li>
+<li><strong>القوائم داخل كائن:</strong> <code>{"data": [...], "next_cursor": ...}</code>، لا مصفوفة مجردة أبداً، كي تُضاف معلومات الصفحات دون أن ينكسر أحد.</li>
+</ul>
+
+<h2><span class="sec">3.2</span> <span>إطار عمل بالمخططات: Fastify</span></h2>
+
+<p>كان خادم الفصل 1 يفحص كل مدخل بيده. أما إطار العمل فيؤدي هذا العمل من <dfn>مخطط</dfn> (schema)، أي وصف لما يجوز أن يحويه الطلب. ونستخدم <dfn>Fastify</dfn>، إطار Node سريعاً مبنياً حول المخططات، مع <code>zod</code> من الفصل السابق لكتابتها. فالمسار يعلن استعلامه ومعاملات مساره وترويساته ومحتواه وأجوبته، ويرفض Fastify كل ما لا يطابق قبل أن يعمل المعالج، ويعطي المعالج قيماً بأنواعها الكاملة.</p>
+
+<p>ويُبنى التطبيق بدالة، كي تستطيع الاختبارات أن تبني تطبيقاً جديداً لكل اختبار دون شبكة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> buildApp(options: { rateLimit?: number } = {}) {
+  <span class="k">const</span> app = Fastify();
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);</pre></div>
+
+<p>وباقي <code>buildApp</code> يسجّل الإضافات والمسارات تحت البادئة <code>/v1</code>. وسنقرأ كل جزء منه حين نصل إلى الميزة التي يخدمها.</p>
+
+<h2><span class="sec">3.3</span> <span>القوائم: التصفية والترتيب والصفحات</span></h2>
+
+<p>يحتاج مسار القائمة ثلاثة أشياء: طريقة للتصفية، وطريقة للترتيب، وصفحات، لأن عميلاً لا يريد عشرة آلاف منتج دفعة واحدة. وكل ما يجوز للعميل أن يرسله في مخطط الاستعلام:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/products.ts</div><pre class="code"><span class="k">const</span> SORTS = {
+  id: <span class="s">&quot;id&quot;</span>,
+  price: <span class="s">&quot;price&quot;</span>,
+  <span class="s">&quot;-price&quot;</span>: <span class="s">&quot;price&quot;</span>,
+  name: <span class="s">&quot;name&quot;</span>,
+} as <span class="k">const</span>;
+<span class="k">type</span> Sort = <span class="k">keyof</span> <span class="k">typeof</span> SORTS;
+<span class="k">type</span> Position = [value: string | number, id: number];
+
+<span class="k">const</span> ListQuery = z.object({
+  limit: z.coerce.number().int().min(<span class="n">1</span>).max(<span class="n">50</span>).<span class="k">default</span>(<span class="n">5</span>),
+  cursor: z.string().optional(),
+  sort: z.enum([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;price&quot;</span>, <span class="s">&quot;-price&quot;</span>, <span class="s">&quot;name&quot;</span>]).<span class="k">default</span>(<span class="s">&quot;id&quot;</span>),
+  min_price: z.coerce.number().int().min(<span class="n">0</span>).optional(),
+  max_price: z.coerce.number().int().min(<span class="n">0</span>).optional(),
+});</pre></div>
+
+<p>لكل قيمة حدود: الصفحة بين 1 و50 عنصراً، والأسعار ليست سالبة، ولا يوجد إلا أربعة أنواع ترتيب. و<code>z.coerce.number()</code> تحوّل نص الاستعلام إلى عدد. وكل ما عدا ذلك يُرفض مع قائمة بكل مشكلة، قبل أن يعمل أي كود:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># القيم الخارجة عن القواعد تُرفض قبل أن يعمل أي كود</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=500&amp;sort=stock&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/invalid-request&quot;,
+  &quot;title&quot;: &quot;طلب غير صالح&quot;,
+  &quot;status&quot;: 400,
+  &quot;instance&quot;: &quot;/v1/products?limit=500&amp;sort=stock&quot;,
+  &quot;errors&quot;: [
+    {
+      &quot;field&quot;: &quot;querystring.limit&quot;,
+      &quot;message&quot;: &quot;Too big: expected number to be &lt;=50&quot;
+    },
+    {
+      &quot;field&quot;: &quot;querystring.sort&quot;,
+      &quot;message&quot;: &quot;Invalid option: expected one of \&quot;id\&quot;|\&quot;price\&quot;|\&quot;-price\&quot;|\&quot;name\&quot;&quot;
+    }
+  ]
+}</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا ترتّب ولا تصفّ بأي حقل يسمّيه العميل</p><p>الواجهة التي ترتّب بأي حقل يصل في <code>?sort=</code> يمكن أن يُطلب منها الترتيب بحقل بلا فهرس، فتصنع استعلاماً بطيئاً يستطيع مهاجم واحد أن يكرره ألف مرة في الدقيقة. وقد تكشف أيضاً حقولاً يجب أن تبقى خاصة، من ترتيب النتائج. فاذكر الحقول المسموحة كما تفعل <code>SORTS</code>، وأضف فهرساً لكل منها حين تنتقل البيانات إلى قاعدة بيانات.</p></aside>
+
+<h3>صفحات الإزاحة وصفحات المؤشر</h3>
+
+<p>الطريقة البديهية للصفحات هي <dfn>الإزاحة</dfn> (offset): <code>?page=2</code> تعني «تخطَّ أول 20». ولها مشكلتان. فقاعدة البيانات ما زالت تمر على كل صف متخطى، فتكون الصفحة 5000 بطيئة. والأسوأ أن الصفحات تنزلق حين تتغير البيانات بين طلبين. وهذا عرض صغير يتنقل في قائمة «الأحدث أولاً» ثلاثة ثلاثة، بينما يصل منتج جديد بين الصفحة 1 والصفحة 2:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/drift.ts</div><pre class="code"><span class="c line-bidi">// الأحدث أولاً، مثل «وصل حديثاً». تُقرأ الصفحة 1، ثم يُضاف منتج.</span>
+<span class="k">type</span> Row = { id: number };
+<span class="c line-bidi">// 6, 5, 4, 3, 2, 1</span>
+<span class="k">let</span> rows: Row[] = Array.<span class="k">from</span>({ length: <span class="n">6</span> }, (_, i) =&gt; ({ id: <span class="n">6</span> - i }));
+<span class="k">const</span> ids = (page: Row[]) =&gt; page.map((r) =&gt; r.id).join(<span class="s">&quot;, &quot;</span>);
+
+<span class="k">const</span> byOffset = (offset: number) =&gt; rows.slice(offset, offset + <span class="n">3</span>);
+<span class="k">const</span> byCursor = (after = Infinity) =&gt; rows.filter((r) =&gt; r.id &lt; after).slice(<span class="n">0</span>, <span class="n">3</span>);
+
+<span class="k">const</span> offsetPage1 = byOffset(<span class="n">0</span>);
+<span class="k">const</span> cursorPage1 = byCursor();
+rows = [{ id: <span class="n">7</span> }, ...rows];
+<span class="k">const</span> cursorPage2 = byCursor(cursorPage1.at(-<span class="n">1</span>)?.id);
+console.log(<span class="s">&quot;يصل منتج جديد: رقمه 7&quot;</span>);
+console.log(
+  <span class="s">`الإزاحة: الصفحة 1 = ${ids(offsetPage1)} | الصفحة 2 = ${ids(byOffset(3))}`</span>,
+);
+console.log(
+  <span class="s">`المؤشر: الصفحة 1 = ${ids(cursorPage1)} | الصفحة 2 = ${ids(cursorPage2)}`</span>,
+);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الصفحات نفسها، بالإزاحة وبالمؤشر، بينما يُضاف منتج</span>
+<span class="c">$ </span><span class="k">node demos/drift.ts</span>
+يصل منتج جديد: رقمه 7
+الإزاحة: الصفحة 1 = 6, 5, 4 | الصفحة 2 = 4, 3, 2
+المؤشر: الصفحة 1 = 6, 5, 4 | الصفحة 2 = 3, 2, 1</pre></div>
+
+<p>مع الإزاحة يظهر المنتج 4 في الصفحتين، لأن كل شيء نزل خطوة. (ولو حُذف منتج بين الطلبين لاختفى آخر بدلاً من ذلك.) أما <dfn>المؤشر</dfn> (cursor) فيقول «تابع بعد <em>هذا</em> الصف»، فالصفوف الجديدة قبله لا تغيّر شيئاً. ويسمى هذا أيضاً <dfn>ترقيم المفاتيح</dfn> (keyset pagination)، لأنه يتابع من مفتاح آخر صف. وهكذا تبني واجهتنا مؤشراتها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/products.ts</div><pre class="code"><span class="k">function</span> compare(row: Product, [value, id]: Position, sort: Sort): number {
+  <span class="k">const</span> own = row[SORTS[sort]];
+  <span class="k">const</span> diff = own &lt; value ? -<span class="n">1</span> : own &gt; value ? <span class="n">1</span> : row.id - id;
+  <span class="k">return</span> sort === <span class="s">&quot;-price&quot;</span> ? -diff : diff;
+}
+
+<span class="c line-bidi">// غامض للعملاء: base64url، فلا يصنع أحد المؤشرات بيده</span>
+<span class="k">const</span> encode = (position: Position) =&gt;
+  Buffer.<span class="k">from</span>(JSON.stringify(position)).toString(<span class="s">&quot;base64url&quot;</span>);
+
+<span class="k">function</span> decode(cursor: string): Position {
+  <span class="k">try</span> {
+    <span class="k">const</span> position = JSON.parse(Buffer.<span class="k">from</span>(cursor, <span class="s">&quot;base64url&quot;</span>).toString());
+    <span class="k">if</span> (Array.isArray(position) &amp;&amp; position.length === <span class="n">2</span>)
+      <span class="k">return</span> position as Position;
+  } <span class="k">catch</span> {}
+  <span class="k">const</span> error = { field: <span class="s">&quot;querystring.cursor&quot;</span>, message: <span class="s">&quot;invalid cursor&quot;</span> };
+  <span class="k">throw</span> problems.invalidRequest([error]);
+}</pre></div>
+
+<p>تُرتب الصفوف بحقل الترتيب ثم بالرقم، كي يبقى لمنتجين بالسعر نفسه ترتيب ثابت: فبدون هذا الحسم قد تنتقل الصفوف ذات القيم المتساوية بين الصفحات. ويحمل المؤشر قيمة الترتيب لآخر صف ورقمه، مرمّزين بـ base64url. والترميز ليس سرية، ويمكن فكّ المؤشر، لكن المقصود أن يعامله العملاء رمزاً غامضاً ويعيدوه كما هو، فيبقى الخادم حراً في تغيير ما بداخله. وهذا جانب العميل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الصفحة الأولى</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=3&#x27; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .next_cursor&#x27;</span>
+[1,&quot;عدة الروبوت&quot;,45000]
+[2,&quot;عجلات احتياطية&quot;,6000]
+[3,&quot;حزمة بطارية&quot;,12500]
+&quot;WzMsM10&quot;
+<span class="c line-bidi"># الصفحة التالية: أعد المؤشر الذي أُعطيته</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=3&amp;cursor=WzMsM10&#x27; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .next_cursor&#x27;</span>
+[4,&quot;كابل USB&quot;,2500]
+[5,&quot;محرك سيرفو&quot;,9000]
+[6,&quot;طقم حساسات&quot;,15000]
+&quot;WzYsNl0&quot;
+<span class="c line-bidi"># التصفية والترتيب: المؤشر يتذكر الاثنين</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&#x27; | jq -c &#x27;(.data[] | [.id, .price.amount]), .next_cursor&#x27;</span>
+[6,15000]
+[3,12500]
+&quot;WzEyNTAwLDNd&quot;
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&amp;cursor=WzEyNTAwLDNd&#x27; | jq -c &#x27;(.data[] | [.id, .price.amount]), .next_cursor&#x27;</span>
+[9,11000]
+[5,9000]
+&quot;WzkwMDAsNV0&quot;</pre></div>
+
+<p>أعاد الطلب الثاني المؤشر الذي جاء في الأول، فتابع عند المنتج 4. ومع <code>sort=-price</code> وتصفية بالسعر يحمل المؤشر السعر أيضاً، فتتابع الصفحة الثانية تحت 12,500. وحين يكون <code>next_cursor</code> هو <code>null</code> تكون القائمة قد انتهت. والمؤشرات لا تستطيع القفز إلى الصفحة 37، لكن لا يكاد مستخدم يفعل ذلك: فهو يمرر، أو يضغط «تحميل المزيد»، وهذا بالضبط ما تجيده المؤشرات.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر فهمك</p><ol><li>أي عنوان أفضل لإلغاء الطلب 7: <code>PATCH /orders/7</code> مع <code>{"status": "cancelled"}</code>، أم <code>POST /orders/7/cancel</code>؟ ولماذا؟</li><li>لماذا تُرتب المنتجات بالسعر <em>والرقم</em>، لا بالسعر وحده؟</li><li>عميل يبني مؤشره بنفسه بترميز <code>[0, 100]</code>. لماذا يجب أن يقول توثيق الواجهة إن المؤشرات غامضة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">3.4</span> <span>الأخطاء: Problem Details</span></h2>
+
+<p>كان لأخطائنا في الفصل 1 شكل اخترعناه. وكل واجهة تخترع شكلها تُجبر كل عميل على تعلّمه. أما <dfn>Problem Details</dfn> (RFC 9457) فهو الشكل القياسي لأخطاء واجهات HTTP، ويُرسل بنوع المحتوى <code>application/problem+json</code>: عنوان <code>type</code> يحدد نوع المشكلة ويقود إلى توثيقها، و<code>title</code> قصير، و<code>status</code>، و<code>detail</code> لهذه الحالة بعينها، و<code>instance</code> أي الطلب الذي فشل. ويُسمح بأعضاء إضافيين، مثل قائمة <code>errors</code> عندنا.</p>
+
+<p>وكل نص يقرؤه إنسان يعيش في ملف واحد، فيُراجع ويُترجم في مكان واحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/messages.ts</div><pre class="code"><span class="c line-bidi">// كل نص يقرؤه إنسان في مكان واحد: سهل المراجعة، سهل الترجمة.</span>
+<span class="c line-bidi">// تملأ say() الأماكن بين الأقواس {}.</span>
+<span class="k">export</span> <span class="k">const</span> messages = {
+  invalidRequest: <span class="s">&quot;طلب غير صالح&quot;</span>,
+  invalidBody: <span class="s">&quot;محتوى غير صالح&quot;</span>,
+  notFound: <span class="s">&quot;غير موجود&quot;</span>,
+  noProduct: <span class="s">&quot;لا يوجد منتج رقمه {id}.&quot;</span>,
+  noOrder: <span class="s">&quot;لا يوجد طلب رقمه {id}.&quot;</span>,
+  preconditionRequired: <span class="s">&quot;شرط مسبق مطلوب&quot;</span>,
+  needIfMatch: <span class="s">&quot;أرسل If-Match مع آخر ETag قرأته.&quot;</span>,
+  stale: <span class="s">&quot;تغيّر المنتج&quot;</span>,
+  staleDetail: <span class="s">&quot;غيّره أحد بعد أن قرأته. اقرأه من جديد.&quot;</span>,
+  keyReused: <span class="s">&quot;مفتاح عدم التكرار مستخدم&quot;</span>,
+  keyReusedDetail: <span class="s">&quot;استُخدم هذا المفتاح مع محتوى مختلف.&quot;</span>,
+  inProgress: <span class="s">&quot;الطلب قيد التنفيذ&quot;</span>,
+  inProgressDetail: <span class="s">&quot;ما زال طلب بهذا المفتاح يعمل.&quot;</span>,
+  outOfStock: <span class="s">&quot;المخزون لا يكفي&quot;</span>,
+  outOfStockDetail: <span class="s">&quot;بقي {stock} فقط من المنتج {id}.&quot;</span>,
+  unknownProduct: <span class="s">&quot;منتج مجهول&quot;</span>,
+  cannotCancel: <span class="s">&quot;لا يمكن إلغاء الطلب&quot;</span>,
+  cannotCancelDetail: <span class="s">&quot;الطلب {id} حالته {status} من قبل.&quot;</span>,
+  tooManyRequests: <span class="s">&quot;طلبات كثيرة جداً&quot;</span>,
+  tooManyRequestsDetail: <span class="s">&quot;حاول مرة أخرى بعد {seconds} ثانية.&quot;</span>,
+  serverError: <span class="s">&quot;خطأ في الخادم&quot;</span>,
+  emptyPatch: <span class="s">&quot;أرسل حقلاً واحداً على الأقل لتغييره.&quot;</span>,
+};
+
+<span class="k">export</span> <span class="k">function</span> say(
+  text: string,
+  values: Record&lt;string, string | number&gt; = {},
+): string {
+  <span class="k">return</span> text.replace(/\{(\w+)\}/g, (_, key: string) =&gt; String(values[key]));
+}</pre></div>
+
+<p>وكل مشكلة تستطيع الواجهة ردها يصنعها مصنع واحد، فلا يستطيع مسار أن يخترع رمز حالة جديداً أو شكلاً جديداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/problem.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> problems = {
+  invalidRequest: (errors: Errors) =&gt;
+    <span class="k">new</span> Problem(<span class="n">400</span>, <span class="s">&quot;invalid-request&quot;</span>, m.invalidRequest, <span class="k">undefined</span>, { errors }),
+  invalidBody: (errors: Errors) =&gt;
+    <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&quot;invalid-body&quot;</span>, m.invalidBody, <span class="k">undefined</span>, { errors }),
+  noProduct: (id: number) =&gt;
+    <span class="k">new</span> Problem(<span class="n">404</span>, <span class="s">&quot;not-found&quot;</span>, m.notFound, say(m.noProduct, { id })),
+  noOrder: (id: number) =&gt;
+    <span class="k">new</span> Problem(<span class="n">404</span>, <span class="s">&quot;not-found&quot;</span>, m.notFound, say(m.noOrder, { id })),
+  needIfMatch: () =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">428</span>,
+      <span class="s">&quot;precondition-required&quot;</span>,
+      m.preconditionRequired,
+      m.needIfMatch,
+    ),
+  stale: () =&gt; <span class="k">new</span> Problem(<span class="n">412</span>, <span class="s">&quot;stale&quot;</span>, m.stale, m.staleDetail),
+  keyReused: () =&gt;
+    <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&quot;idempotency-key-reused&quot;</span>, m.keyReused, m.keyReusedDetail),
+  inProgress: () =&gt;
+    <span class="k">new</span> Problem(<span class="n">409</span>, <span class="s">&quot;in-progress&quot;</span>, m.inProgress, m.inProgressDetail),
+  outOfStock: (id: number, stock: number) =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">409</span>,
+      <span class="s">&quot;out-of-stock&quot;</span>,
+      m.outOfStock,
+      say(m.outOfStockDetail, { id, stock }),
+    ),
+  unknownProduct: (id: number) =&gt;
+    <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&quot;unknown-product&quot;</span>, m.unknownProduct, say(m.noProduct, { id })),
+  cannotCancel: (id: number, status: string) =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">409</span>,
+      <span class="s">&quot;invalid-state&quot;</span>,
+      m.cannotCancel,
+      say(m.cannotCancelDetail, { id, status }),
+    ),
+  tooManyRequests: (seconds: number) =&gt;
+    <span class="k">new</span> Problem(
+      <span class="n">429</span>,
+      <span class="s">&quot;too-many-requests&quot;</span>,
+      m.tooManyRequests,
+      say(m.tooManyRequestsDetail, { seconds }),
+    ),
+  server: () =&gt; <span class="k">new</span> Problem(<span class="n">500</span>, <span class="s">&quot;server-error&quot;</span>, m.serverError),
+};</pre></div>
+
+<p>ومعالج أخطاء واحد يحوّل كل شيء إلى مشكلة: مشكلاتنا كما هي، وأخطاء التحقق <code>422</code> للمحتوى و<code>400</code> لباقي الطلب، وأخطاء محدِّد المعدل <code>429</code>، وكل ما هو غير متوقع <code>500</code> بسيطة، والتفاصيل في السجل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  app.setErrorHandler((error: FastifyError, request, reply) =&gt; {
+    <span class="k">let</span> problem: Problem;
+    <span class="k">if</span> (error <span class="k">instanceof</span> Problem) {
+      problem = error;
+    } <span class="k">else</span> <span class="k">if</span> (hasZodFastifySchemaValidationErrors(error)) {
+      <span class="k">const</span> where = error.validationContext ?? <span class="s">&quot;body&quot;</span>;
+      <span class="k">const</span> errors = error.validation.map((issue) =&gt; ({
+        field: [
+          where,
+          ...String(issue.instancePath).split(<span class="s">&quot;/&quot;</span>).filter(Boolean),
+        ].join(<span class="s">&quot;.&quot;</span>),
+        message: issue.message ?? <span class="s">&quot;&quot;</span>,
+      }));
+      <span class="c line-bidi">// 422: محتوى سليم الشكل بقيم خاطئة</span>
+      <span class="c line-bidi">// 400: استعلام أو مسار أو ترويسة خاطئة: الطلب نفسه مشوّه</span>
+      problem =
+        where === <span class="s">&quot;body&quot;</span>
+          ? problems.invalidBody(errors)
+          : problems.invalidRequest(errors);
+    } <span class="k">else</span> <span class="k">if</span> (error.statusCode === <span class="n">429</span>) {
+      problem = problems.tooManyRequests(
+        Number(reply.getHeader(<span class="s">&quot;retry-after&quot;</span>) ?? <span class="n">60</span>),
+      );
+    } <span class="k">else</span> {
+      request.log.error(error); <span class="c line-bidi">// التفاصيل تبقى في السجل</span>
+      problem = problems.server();
+    }
+    reply.code(problem.status).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>);
+    <span class="k">return</span> reply.send(problem.body(request.url));
+  });</pre></div>
+
+<h2><span class="sec">3.5</span> <span>إعادة محاولة آمنة: مفاتيح عدم التكرار</span></h2>
+
+<p>حذّر الفصل 1 من أن إعادة <code>POST</code> قد تُنشئ الطلب مرتين. والجواب القياسي، الذي تستخدمه مزودات الدفع مثل Stripe، هو <dfn>مفتاح عدم التكرار</dfn> (idempotency key): يصنع العميل قيمة فريدة (UUID) لكل عملية <em>مقصودة</em> ويرسلها في الترويسة <code>Idempotency-Key</code>. فإن وصل المفتاح نفسه مرة أخرى لا يعيد الخادم العمل، بل يعيد الجواب الذي أعطاه في المرة الأولى.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/orders.ts</div><pre class="code">    app.post(
+      <span class="s">&quot;/orders&quot;</span>,
+      {
+        schema: {
+          headers: z.object({ <span class="s">&quot;idempotency-key&quot;</span>: z.string().min(<span class="n">8</span>).max(<span class="n">100</span>) }),
+          body: NewOrder,
+          response: { <span class="n">201</span>: OrderOut },
+        },
+      },
+      <span class="k">async</span> (request, reply) =&gt; {
+        <span class="k">const</span> key = request.headers[<span class="s">&quot;idempotency-key&quot;</span>];
+        <span class="k">const</span> body = JSON.stringify(request.body);
+        <span class="k">const</span> fingerprint = createHash(<span class="s">&quot;sha256&quot;</span>).update(body).digest(<span class="s">&quot;hex&quot;</span>);
+        <span class="k">const</span> saved = keys.get(key);
+        <span class="k">if</span> (saved) {
+          <span class="k">if</span> (saved.fingerprint !== fingerprint) <span class="k">throw</span> problems.keyReused();
+          <span class="k">if</span> (!saved.order) <span class="k">throw</span> problems.inProgress();
+          reply.header(<span class="s">&quot;Idempotent-Replayed&quot;</span>, <span class="s">&quot;true&quot;</span>);
+          reply.header(<span class="s">&quot;Location&quot;</span>, <span class="s">`/v1/orders/${saved.order.id}`</span>);
+          <span class="k">return</span> reply.code(<span class="n">201</span>).send(saved.order);
+        }
+        <span class="c line-bidi">// علّم المفتاح بأنه قيد التنفيذ قبل أداء العمل</span>
+        keys.set(key, { fingerprint });
+
+        <span class="k">try</span> {
+          <span class="k">const</span> items = request.body.items.map(({ product_id, quantity }) =&gt; {
+            <span class="k">const</span> product = store.products.find((p) =&gt; p.id === product_id);
+            <span class="k">if</span> (!product) <span class="k">throw</span> problems.unknownProduct(product_id);
+            <span class="k">if</span> (product.stock &lt; quantity) {
+              <span class="k">throw</span> problems.outOfStock(product.id, product.stock);
+            }
+            <span class="k">return</span> { product, quantity };
+          });
+          <span class="k">for</span> (<span class="k">const</span> { product, quantity } <span class="k">of</span> items) {
+            product.stock -= quantity;
+            product.version += <span class="n">1</span>;
+          }
+          <span class="k">const</span> order: Order = {
+            id: store.nextOrderId++,
+            status: <span class="s">&quot;pending&quot;</span>,
+            <span class="c line-bidi">// السعر يأتي من الخادم، لا من العميل أبداً</span>
+            items: items.map(({ product, quantity }) =&gt; ({
+              product_id: product.id,
+              quantity,
+              price: product.price,
+            })),
+            total: items.reduce(
+              (sum, { product, quantity }) =&gt; sum + product.price * quantity,
+              <span class="n">0</span>,
+            ),
+            created_at: <span class="k">new</span> Date().toISOString(),
+          };
+          store.orders.push(order);
+          keys.set(key, { fingerprint, order: show(order) });
+          reply.header(<span class="s">&quot;Location&quot;</span>, <span class="s">`/v1/orders/${order.id}`</span>);
+          <span class="k">return</span> reply.code(<span class="n">201</span>).send(show(order));
+        } <span class="k">catch</span> (error) {
+          keys.delete(key); <span class="c line-bidi">// المحاولة الفاشلة يجوز تكرارها بالمفتاح نفسه</span>
+          <span class="k">throw</span> error;
+        }
+      },
+    );</pre></div>
+
+<p>والتفاصيل أهم من الفكرة:</p>
+<ul>
+<li>يحفظ الخادم <strong>بصمة</strong> للمحتوى. فالمفتاح نفسه مع محتوى مختلف خطأ في العميل، ويأخذ <code>422</code>، لا إعادة صامتة لطلب مختلف أبداً.</li>
+<li>يُعلَّم المفتاح بأنه <strong>قيد التنفيذ</strong> قبل أن يبدأ العمل. فالطلب الثاني الذي يصل والأول ما زال يعمل يأخذ <code>409</code> بدل أن يبدأ العمل مرتين.</li>
+<li>إن فشل العمل <strong>يُنسى</strong> المفتاح، فيجوز للعميل أن يحاول به مرة أخرى.</li>
+<li>يُحسب الإجمالي من أسعار الخادم. فالعميل لا يخبر الخادم بثمن شيء أبداً.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أنشئ طلباً، مع مفتاح عدم التكرار</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+location: /v1/orders/1
+{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T19:45:37.354Z&quot;}
+<span class="c line-bidi"># فشلت الشبكة، فأرسل العميل الطلب نفسه بالضبط مرة أخرى</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+idempotent-replayed: true
+location: /v1/orders/1
+{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T19:45:37.354Z&quot;}
+<span class="c line-bidi"># المفتاح نفسه مع محتوى مختلف خطأ في العميل</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 3}]}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/idempotency-key-reused&quot;,&quot;title&quot;:&quot;مفتاح عدم التكرار مستخدم&quot;,&quot;status&quot;:422,&quot;detail&quot;:&quot;استُخدم هذا المفتاح مع محتوى مختلف.&quot;,&quot;instance&quot;:&quot;/v1/orders&quot;}
+<span class="c line-bidi"># نقص المخزون مرة واحدة، لا مرتين</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/v1/products/1 | jq -c &#x27;{id, stock}&#x27;</span>
+{&quot;id&quot;:1,&quot;stock&quot;:8}</pre></div>
+
+<p>أخذ الطلب الثاني الطلب نفسه، بالرقم والوقت نفسيهما، ومعه ترويسة تقول إنه أُعيد. ونقص المخزون 2 لا 4. والمفاتيح هنا تعيش في <code>Map</code>، أما في الإنتاج فتُحفظ في قاعدة البيانات، في المعاملة نفسها مع الطلب (الفصل 6)، أو في Redis (الفصل 7)، نحو يوم كامل.</p>
+
+<p>وقواعد العمل الأخرى ترد مشكلات أيضاً: الطلب الذي يتجاوز المخزون <code>409 Conflict</code> مع الحال الراهنة، وكذلك إلغاء الطلب مرتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أكثر من المخزون</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0002&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 50}]}&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/out-of-stock&quot;,
+  &quot;title&quot;: &quot;المخزون لا يكفي&quot;,
+  &quot;status&quot;: 409,
+  &quot;detail&quot;: &quot;بقي 8 فقط من المنتج 1.&quot;,
+  &quot;instance&quot;: &quot;/v1/orders&quot;
+}
+<span class="c line-bidi"># ألغِ، ثم ألغِ مرة أخرى</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders/1/cancel | jq -c &#x27;{id, status, total}&#x27;</span>
+{&quot;id&quot;:1,&quot;status&quot;:&quot;cancelled&quot;,&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;}}
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/v1/orders/1/cancel | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/invalid-state&quot;,&quot;title&quot;:&quot;لا يمكن إلغاء الطلب&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;الطلب 1 حالته cancelled من قبل.&quot;,&quot;instance&quot;:&quot;/v1/orders/1/cancel&quot;}</pre></div>
+
+<h2><span class="sec">3.6</span> <span>التحديثات الضائعة: ETag وIf-Match</span></h2>
+
+<p>مديران يفتحان المنتج 2 في الوقت نفسه. تغيّر سارة السعر إلى 65.00 وتحفظ، وبعد دقيقة يغيّره عمر، الذي ما زالت شاشته تعرض المنتج القديم، إلى 70.00 ويحفظ. فيضيع تغيير سارة ولا يُخبَر أحد. هذه مشكلة <dfn>التحديث الضائع</dfn> (lost update). ويحلها HTTP بوسم ETag الذي قابلته في الفصل 1: إصدار المنتج هو وسمه، والتغيير يجب أن يعيد الإصدار الذي بُني عليه في <code>If-Match</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/products.ts</div><pre class="code">    app.patch(
+      <span class="s">&quot;/products/:id&quot;</span>,
+      {
+        schema: {
+          params: IdParams,
+          body: ProductPatch,
+          response: { <span class="n">200</span>: ProductOut },
+        },
+      },
+      <span class="k">async</span> (request, reply) =&gt; {
+        <span class="k">const</span> product = find(request.params.id);
+        <span class="k">const</span> ifMatch = request.headers[<span class="s">&quot;if-match&quot;</span>];
+        <span class="k">if</span> (!ifMatch) <span class="k">throw</span> problems.needIfMatch();
+        <span class="k">if</span> (ifMatch !== <span class="s">`&quot;${product.version}&quot;`</span>) <span class="k">throw</span> problems.stale();
+        Object.assign(product, request.body, { version: product.version + <span class="n">1</span> });
+        reply.header(<span class="s">&quot;ETag&quot;</span>, <span class="s">`&quot;${product.version}&quot;`</span>);
+        <span class="k">return</span> show(product);
+      },
+    );</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># اقرأ منتجاً: الوسم ETag هو إصداره</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/v1/products/2 | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+etag: &quot;1&quot;
+{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:{&quot;amount&quot;:6000,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00.000Z&quot;}
+<span class="c line-bidi"># غيّره دون If-Match</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:3000/v1/products/2 -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/precondition-required&quot;,&quot;title&quot;:&quot;شرط مسبق مطلوب&quot;,&quot;status&quot;:428,&quot;detail&quot;:&quot;أرسل If-Match مع آخر ETag قرأته.&quot;,&quot;instance&quot;:&quot;/v1/products/2&quot;}
+<span class="c line-bidi"># غيّره مع الوسم الذي قرأته للتو</span>
+<span class="c">$ </span><span class="k">curl -si -X PATCH localhost:3000/v1/products/2 -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+etag: &quot;2&quot;
+{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:{&quot;amount&quot;:6500,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00.000Z&quot;}
+<span class="c line-bidi"># شخص آخر ما زال يحمل الوسم القديم يحاول الشيء نفسه</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:3000/v1/products/2 -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 7000}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/stale&quot;,&quot;title&quot;:&quot;تغيّر المنتج&quot;,&quot;status&quot;:412,&quot;detail&quot;:&quot;غيّره أحد بعد أن قرأته. اقرأه من جديد.&quot;,&quot;instance&quot;:&quot;/v1/products/2&quot;}</pre></div>
+
+<p>التغيير بلا <code>If-Match</code> يُرفض بـ <code>428 Precondition Required</code>: فاشتراطه هو طريقة الواجهة في التأكد ألا ينساه عميل. والتغيير المبني على الإصدار 1 ينجح ويصنع الإصدار 2. أما التغيير الثاني، المبني على الإصدار 1 أيضاً، فيأخذ <code>412 Precondition Failed</code>، فيعرف العميل أن عليه إعادة التحميل وأن يُري المستخدم ما تغيّر. وهذا هو <dfn>التزامن المتفائل</dfn> (optimistic concurrency): لا شيء يُقفل بينما ينظر الناس إلى شاشة، والتعارضات، وهي نادرة، تُكتشف حين تحدث. والفصل 6 يفعل الشيء نفسه داخل قاعدة البيانات.</p>
+
+<h2><span class="sec">3.7</span> <span>حدود المعدل</span></h2>
+
+<p>كل واجهة عامة تحدّ سرعة استدعاء العميل الواحد لها: كي لا يؤذي سكربت معطوب واحد الجميع، وكي يصير تخمين كلمات المرور أو نسخ البيانات بطيئاً. والإضافة <code>@fastify/rate-limit</code> تعدّ الطلبات لكل عنوان عميل. وحين يبدأ الخادم بحد ثلاثة طلبات في الدقيقة، يُرفض الطلب الرابع:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># خادم محدود بثلاثة طلبات في الدقيقة (RATE_LIMIT=3)</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:3000/v1/products/1; done; echo</span>
+200 200 200 
+<span class="c">$ </span><span class="k">curl -si localhost:3000/v1/products/1 | grep -iE &#x27;^(HTTP|x-ratelimit|retry-after)|^\{&#x27;</span>
+HTTP/1.1 429 Too Many Requests
+x-ratelimit-limit: 3
+x-ratelimit-remaining: 0
+x-ratelimit-reset: 60
+retry-after: 60
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/too-many-requests&quot;,&quot;title&quot;:&quot;طلبات كثيرة جداً&quot;,&quot;status&quot;:429,&quot;detail&quot;:&quot;حاول مرة أخرى بعد 60 ثانية.&quot;,&quot;instance&quot;:&quot;/v1/products/1&quot;}</pre></div>
+
+<p>ترويسات <code>x-ratelimit-*</code> تخبر العملاء المهذبين مع كل جواب بما بقي لهم، و<code>retry-after</code> تخبرهم متى يحاولون مرة أخرى. والعميل الذي يحترمها لا يرى 429 أبداً. ومع خوادم عدة يجب أن تُشارك العدّادات بينها، وهذا عمل آخر لـ Redis (الفصل 7).</p>
+
+<h2><span class="sec">3.8</span> <span>الإصدارات والتغيير</span></h2>
+
+<p>حين يستخدم آخرون واجهتك يصير كل تغيير إما <dfn>إضافياً</dfn> وإما <dfn>كاسراً</dfn>. إضافة مسار، أو معامل اختياري، أو حقل جديد في الجواب تغيير إضافي: فالعملاء الصحيحون يتجاهلون ما لا يعرفونه. أما حذف حقل أو إعادة تسميته، أو تغيير نوعه أو معناه، أو إضافة معامل إلزامي، فيكسر العملاء. والقواعد:</p>
+<ul>
+<li>اجعل كل تغيير إضافياً إن استطعت بأي طريقة. فمعظم الواجهات تعيش سنوات على الإصدار 1.</li>
+<li>وحين لا مفر من تغيير كاسر انشر <code>/v2</code> بجوار <code>/v1</code>، وأبقِ <code>/v1</code> يعمل مدة معلنة.</li>
+<li>وأعلن النهاية في الأجوبة نفسها بترويستي <code>Deprecation</code> و<code>Sunset</code>، وفي التوثيق، وبالبريد للعملاء الذين تعرفهم. وراقب سجلاتك لترى من ما زال يستدعي الإصدار القديم قبل أن تطفئه.</li>
+</ul>
+
+<h2><span class="sec">3.9</span> <span>التوثيق من الكود</span></h2>
+
+<p>التوثيق المكتوب باليد يبتعد عن الكود في أسابيع. ولأن لكل مسار هنا مخططاً، تولّد الإضافة <code>@fastify/swagger</code> منها وثيقة <dfn>OpenAPI</dfn>: وصفاً قياسياً تقرؤه الآلات لكل مسار ومعامل ومحتوى وجواب. وتقدّمها الواجهة على <code>/openapi.json</code>، ومنها قُرئت قائمة المسارات في القسم 3.1. ومن الوثيقة نفسها تستطيع الأدوات أن ترسم صفحات توثيق، وأن تولّد مكتبات عملاء بأنواعها بلغات كثيرة، وأن تتحقق في CI أن التغيير لا يحذف شيئاً يعتمد عليه العملاء.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: صمّم الواجهة قبل أن تبنيها</p><p>اكتب أمثلة الطلب والجواب للمسار الجديد أولاً، في طلب الدمج أو في وثيقة OpenAPI، واطلب مراجعة من شخص <em>سيستخدم</em> المسار، مثل مطور واجهة أمامية أو تطبيق جوال. فتغيير المثال يستغرق دقائق، وتغيير واجهة منشورة يستغرق شهوراً من الإصدارات ورسائل الإيقاف.</p></aside>
+
+<h2><span class="sec">3.10</span> <span>اختبار الواجهة بلا شبكة</span></h2>
+
+<p>يرسل <code>inject</code> في Fastify الطلب مباشرة إلى التطبيق، بلا منفذ ولا مقبس، ويُرجع الجواب. فتكون الاختبارات سريعة ومستقلة، لأن كل واحد منها يبني تطبيقاً جديداً ببياناته الخاصة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.test.ts</div><pre class="code">test(<span class="s">&quot;يمر على كل الصفحات بلا تكرار ولا فجوات&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> app = <span class="k">await</span> buildApp();
+  <span class="k">const</span> seen: number[] = [];
+  <span class="k">let</span> cursor: string | <span class="k">null</span> = <span class="k">null</span>;
+  <span class="k">do</span> {
+    <span class="k">const</span> url: string = <span class="s">`/v1/products?limit=5${cursor ? `</span>&amp;cursor=${cursor}<span class="s">` : &quot;&quot;}`</span>;
+    <span class="k">const</span> page = (<span class="k">await</span> app.inject(url)).json();
+    seen.push(...page.data.map((p: ProductJson) =&gt; p.id));
+    cursor = page.next_cursor;
+  } <span class="k">while</span> (cursor);
+  assert.deepEqual(seen, [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">8</span>, <span class="n">9</span>, <span class="n">10</span>, <span class="n">11</span>, <span class="n">12</span>]);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تتحدث الاختبارات إلى التطبيق بلا شبكة، بـ inject</span>
+<span class="c">$ </span><span class="k">npm test</span>
+
+<span class="c">&gt; </span><span class="k">bit-shop-api@1.0.0 test</span>
+<span class="c">&gt; </span><span class="k">node --test --test-reporter=spec</span>
+
+✔ يمر على كل الصفحات بلا تكرار ولا فجوات (139.700507ms)
+✔ يرتب بالسعر، الأعلى أولاً (9.248907ms)
+✔ يعيد جواب الطلب بدل أن ينشئه مرتين (18.880553ms)
+✔ يرفض التحديث القديم بـ 412 (11.230359ms)
+✔ يرد بـ 422 مع كل حقل غير صالح (8.972413ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 468.75764</pre></div>
+
+<p>الاختبار الأول أثمن ما في الملف: يمر على كل الصفحات بالمؤشر ويتحقق أن كل منتج يظهر مرة واحدة بالضبط. والباقي يثبّت السلوك الذي يعتمد عليه العميل: الترتيب، والإعادة، والتحديث القديم، وشكل الخطأ.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>أفعال في العناوين، وتسمية مختلطة</td><td>يجب البحث عن كل مسار</td><td>أسماء بالجمع، وأسلوب تسمية واحد، والطرق أفعال</td></tr>
+<tr><td>مصفوفات مجردة جواباً للقوائم</td><td>لا تُضاف الصفحات دون كسر العملاء</td><td><code>{"data": [...], "next_cursor": ...}</code></td></tr>
+<tr><td>صفحات بالإزاحة على بيانات متغيرة</td><td>صفوف مكررة وناقصة، وصفحات عميقة بطيئة</td><td>مؤشرات على ترتيب كامل مفهرس</td></tr>
+<tr><td>الترتيب بأي حقل يسمّيه العميل</td><td>استعلامات بطيئة عند الطلب، وحقول مكشوفة</td><td>قائمة بحقول الترتيب المسموحة</td></tr>
+<tr><td>شكل خطأ مختلف لكل مسار</td><td>لا يعالج العملاء الأخطاء بطريقة عامة</td><td>Problem Details من مصنع واحد</td></tr>
+<tr><td>إعادة POST بلا مفاتيح</td><td>طلبات ومدفوعات مكررة</td><td>مفاتيح عدم التكرار مع البصمات</td></tr>
+<tr><td>تحديثات بلا فحص للإصدار</td><td>تحديثات تضيع بصمت</td><td>ETag و<code>If-Match</code> إلزامية</td></tr>
+<tr><td>تغييرات كاسرة في المكان نفسه</td><td>تنكسر التطبيقات بين ليلة وضحاها</td><td>تغييرات إضافية، وإصدار جديد بتاريخ نهاية</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الموارد</strong> أسماء بالجمع، و<strong>الطرق</strong> هي الأفعال، والأفعال الخاصة موارد فرعية بـ <code>POST</code>. ولا تداخل بأكثر من مستوى.</li>
+<li>ثبّت قواعد <strong>التمثيل</strong> مرة واحدة: أسلوب تسمية واحد، وأوقات UTC، والمال مبلغاً وعملة، والقوائم داخل كائن.</li>
+<li><strong>المخططات</strong> تصف كل مدخل ومخرج، وإطار العمل يرفض المدخل الخاطئ ويعطي الصحيح أنواعه.</li>
+<li><strong>المؤشرات</strong> تتنقل بلا انزلاق على ترتيب كامل (حقل الترتيب والرقم)، وحقول الترتيب المسموحة مذكورة.</li>
+<li>الأخطاء <strong>Problem Details</strong>: <code>type</code> و<code>title</code> و<code>status</code> و<code>detail</code> و<code>instance</code>، من مصنع واحد ومعالج واحد.</li>
+<li><strong>مفاتيح عدم التكرار</strong> مع البصمات تجعل الإعادة آمنة، و<strong>ETag مع <code>If-Match</code></strong> يمنعان التحديثات الضائعة.</li>
+<li><strong>حدود المعدل</strong> تحمي الجميع، وترويساتها تسمح للعملاء الجيدين بتجنبها.</li>
+<li>فضّل التغييرات <strong>الإضافية</strong>، وضع للباقي إصداراً وأعلنه. وولّد توثيق <strong>OpenAPI</strong> من الكود.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. <code>POST /orders/7/cancel</code>: فالإلغاء فعل له قواعده (المخزون، وردّ المبالغ، والتحقق أن الطلب ما زال قابلاً للإلغاء)، والمسار المخصص يستطيع أن يفرضها، وأن يوثَّق وتُمنح صلاحيته وحده. أما <code>PATCH</code> العام فيسمح للعميل أن يضع أي حالة. 2. لأن المنتجات بالسعر نفسه لن يكون لها بغير ذلك ترتيب ثابت، فقد ينتقل صف من صفحة إلى أخرى بين الطلبات، ولا يستطيع المؤشر أن يقول بالضبط أين يتابع. 3. كي يستطيع الخادم أن يغيّر محتوى المؤشر (ترتيب آخر، أو توقيع، أو تشفير) دون أن يكسر العملاء، وكي لا يبني العملاء مؤشرات تتخطى قواعد الخادم.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يوسّع واجهة هذا الفصل. فالتزم بالأعراف: مخططات لكل مدخل ومخرج، وProblem Details لكل خطأ، واختبار بـ <code>inject</code> لكل قاعدة.</p>
+
+<div class="project">
+<p class="project-label">المشروع 3.1 · سهل</p>
+<h3>مراجعات المنتجات</h3>
+<p class="project-goal">أضف المراجعات إلى المنتجات: اعرضها بصفحات المؤشر، وأنشئها مع التحقق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الموارد المتداخلة، وصفحات المؤشر، والتحقق، و<code>201</code> مع <code>Location</code>.</p>
+<ol class="steps">
+<li>صمّم المسارات أولاً: <code>GET /v1/products/:id/reviews</code> و<code>POST /v1/products/:id/reviews</code>، واكتب مثال طلب وجواب لكل منهما.</li>
+<li>للمراجعة تقييم من 1 إلى 5، ونص من 10 إلى 1000 حرف، ووقت إنشاء. ورد بـ <code>404</code> مشكلةً للمنتج المجهول.</li>
+<li>اعرض المراجعات الأحدث أولاً، بمؤشرات من وقت الإنشاء والرقم.</li>
+<li>أضف <code>average_rating</code> و<code>review_count</code> إلى تمثيل المنتج. هل هذا تغيير إضافي؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قد تُنشأ مراجعتان في الملّي ثانية نفسها. ولهذا بالضبط يحتاج المؤشر الرقم مع الوقت.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 3.2 · متوسط</p>
+<h3>عميل يعيد المحاولة كما ينبغي</h3>
+<p class="project-goal">اكتب عميلاً صغيراً بـ TypeScript لمسار الطلبات يعيد المحاولة بأمان مع تراجع متزايد، واختبره على خادم يفشل عمداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مفاتيح عدم التكرار من جهة العميل، والمهل، والتراجع الأسي، وقراءة <code>Retry-After</code>.</p>
+<ol class="steps">
+<li>اكتب <code>createOrder(items)</code>: تصنع UUID واحداً بـ <code>crypto.randomUUID()</code> وتستخدم المفتاح <em>نفسه</em> في كل محاولة.</li>
+<li>أعد المحاولة مع أخطاء الشبكة، والمهل (استخدم <code>AbortSignal.timeout</code>)، و<code>409 in-progress</code>، و<code>429</code>، و<code>5xx</code>، ولا تعدها أبداً مع باقي <code>4xx</code>.</li>
+<li>انتظر 200 ms ثم 400 ثم 800 بين المحاولات، مع جزء عشوائي (jitter)، واستخدم <code>Retry-After</code> حين يرسلها الخادم. واستسلم بعد خمس محاولات.</li>
+<li>أضف إلى الخادم خيار اختبار يُسقط جواب كل طلب ثانٍ بعد أن يؤدي العمل، وأثبت باختبار أن العميل ما زال يُنشئ طلباً واحداً بالضبط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الجزء العشوائي مهم. فبدونه يعيد ألف عميل فشلوا في اللحظة نفسها المحاولة في اللحظة نفسها أيضاً، فيُسقطون الخادم مرة أخرى.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 3.3 · تحدٍّ</p>
+<h3>الإصدار 2 بجوار الأول</h3>
+<p class="project-goal">أدخل تغييراً كاسراً بالإصدار <code>/v2</code>، وأبقِ <code>/v1</code> يعمل من الكود نفسه، وأعلن نهايته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الإصدارات، وتحويل التمثيلات، وترويسات الإيقاف، واختبارات العقد.</p>
+<ol class="steps">
+<li>في الإصدار 2 تصير الأسعار <code>{"amount": "450.00", "currency": "EGP"}</code> بنص عشري، ويُسمى <code>created_at</code> باسم <code>created</code>. وحدّد لماذا كل تغيير منهما كاسر.</li>
+<li>احتفظ بنموذج داخلي واحد، واكتب دالة تحويل واحدة لكل إصدار من النموذج إلى تمثيله.</li>
+<li>أضف ترويستي <code>Deprecation</code> و<code>Sunset</code> إلى كل جواب في الإصدار 1 بتاريخ بعد ستة أشهر، وترويسة <code>Link</code> إلى دليل الانتقال.</li>
+<li>اكتب اختبارات تحفظ أجوبة الإصدار 1 اليوم كنماذج ثابتة، وتفشل إن تغيّر الإصدار 1 أبداً، فلا يكسره العمل على الإصدار 2 دون قصد.</li>
+<li>ولّد وثيقة OpenAPI لكل إصدار، وقارن بينهما بأداة مثل <code>oasdiff</code>، التي تسرد التغييرات الكاسرة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يجب أن تكون الإصدارات طبقات رقيقة على حافة الواجهة. فإن احتاج الإصدار 2 جداول خاصة به في قاعدة البيانات أو قواعد عمل خاصة، فالإصدار في المكان الخطأ.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> صمّم الطريقة والعنوان لكل من: عرض طلبات عميل واحد، وإضافة عنصر إلى سلة، ومزوّد دفع يخبرك أن دفعة نجحت، والبحث عن المنتجات بالاسم، وردّ مبلغ طلب.</li>
+<li><span class="level">سهل</span> اختر رمز حالة لكل مما يلي، وقل لماذا: بريد مسجل من قبل، وتحديث بلا <code>If-Match</code>، وتحديث بوسم ETag قديم، وJSON تنقصه علامة تنصيص، وكمية 0.</li>
+<li><span class="level medium">متوسط</span> أضف معاملاً <code>q</code> إلى <code>GET /v1/products</code> يجد المنتجات التي يحوي اسمها النص، دون اعتبار لحالة الحروف، وبحرفين على الأقل. هل يبقى المؤشر يعمل معه؟</li>
+<li><span class="level medium">متوسط</span> إلغاء الطلب مرتين يرد بـ <code>409</code>. وتطبيق جوال يعيد طلب الإلغاء بعد انتهاء المهلة، فيُري خطأً لمستخدم أُلغي طلبه فعلاً. اقترح طريقتين لإصلاح ذلك، واختر إحداهما.</li>
+<li><span class="level hard">تحدٍّ</span> مفاتيح عدم التكرار في هذا الفصل لا تنتهي أبداً، وعميلان مختلفان يختاران المفتاح نفسه مصادفةً سيرى كل منهما طلبات الآخر. اكتب صنفاً <code>IdempotencyStore</code> يجعل المفاتيح خاصة بكل عميل وينهيها بعد 24 ساعة، بساعة تستطيع الاختبارات التحكم فيها، واختبر القاعدتين.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 4</p>
+<p>يبدأ الجزء الثاني. ما زالت منتجاتنا وطلباتنا تعيش في الذاكرة، وستنتقل الآن إلى PostgreSQL. ونتعلم SQL كما ينبغي: الجداول، والربط، والتجميع، والفهارس، وكيف نقرأ خطة الاستعلام.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1416,6 +2078,16 @@ test(<span class="s">&quot;يبث التصدير بصيغة CSV&quot;</span>, <s
 <li>تُرفض <code>Promise.all</code> بمجرد أن يُرفض أول وعد، عند نحو 200 ms، بذلك الخطأ. أما طلب المخزون فلا يُلغى: يستمر في العمل وينتهي عند نحو 300 ms، وتُتجاهل نتيجته. والبرنامج في مستودع الكود (<code>answers/all-fails.ts</code>) يطبع «Promise.all rejected at 201 ms: price service down» ثم «stock finished anyway at 301 ms». ولإيقاف الاستدعاءات الأخرى فعلاً أعطها إشارة <code>AbortController</code> واستدعِ <code>abort()</code> في <code>catch</code>.</li>
 <li>اقرأ <code>Number(url.searchParams.get("rows") ?? 100000)</code>، ورد بـ <code>422</code> ما لم يكن عدداً صحيحاً من 1 إلى 1,000,000، ومرّره إلى <code>orderRows</code>. وتبقى الذاكرة ثابتة لأن المولّد يصنع صفاً واحداً في كل مرة، و<code>pipeline</code> لا تطلب الصف التالي إلا حين يستطيع الجواب أن يأخذ المزيد: فلا توجد كل الصفوف معاً في أي لحظة. وحين ينقطع العميل يُدمَّر الجواب، فتُرفض <code>pipeline</code> وتستدعي <code>return()</code> على المولّد، فيتوقف عند <code>yield</code> الحالية (وتعمل أي كتلة <code>finally</code> فيه). ويرى <code>catch</code> في المعالج الخطأ، ولأن الترويسات أُرسلت من قبل، يدمّر الجواب بدل أن يكتب 500.</li>
 <li>المجمّع في <code>answers/pool.ts</code> يحتفظ بقائمة من العمال المتفرغين وطابور من الأعمال. تضع <code>run</code> العمل في الطابور وتستدعي <code>#next</code>، التي تعطي أول عمل لعامل متفرغ، وحين يجيب العامل يعود إلى قائمة المتفرغين وتعمل <code>#next</code> من جديد. والعامل الذي ينهار يُستبدل بعامل جديد، لأن الخيط المنهار لا يُعاد استخدامه. وملف العامل يستمع بـ <code>parentPort.on("message", ...)</code> بدل أن يقرأ <code>workerData</code> مرة واحدة. وفي التشغيل في مستودع الكود استغرق 100 عدّ بخيط جديد لكل واحد نحو 6 ثوانٍ، وبمجمّع من أربعة نحو 150 ms: فبدء الخيط يكلف أكثر بكثير من هذه الأعداد الصغيرة.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 3</h2>
+<ol class="exercises">
+<li><code>GET /v1/customers/3/orders</code> (أو <code>GET /v1/orders?customer_id=3</code>، التي تصلح أيضاً حين تُعرض الطلبات بطرق أخرى)، و<code>POST /v1/carts/5/items</code>، و<code>POST /v1/webhooks/payments</code>، وهو مسار يستدعيه المزوّد ويجب أن يتحقق من توقيعه وأن يكون متساوي الأثر، لأن المزوّدين يعيدون إرسال هذه الإشعارات، و<code>GET /v1/products?q=kit</code>، وهي تصفية على المجموعة لا مورد جديد، و<code>POST /v1/orders/7/refunds</code>، التي تُنشئ مورد ردّ يمكن عرضه وقراءته لاحقاً.</li>
+<li><code>409 Conflict</code> للبريد، فالطلب صالح لكنه يتعارض مع بيانات موجودة (وبعض الواجهات تستخدم <code>422</code> كي لا تكشف أي البريد موجود، وفصل الأمان يناقش هذا الاختيار لنموذج التسجيل)، و<code>428 Precondition Required</code>، و<code>412 Precondition Failed</code>، و<code>400 Bad Request</code> لأن المحتوى لا يمكن حتى قراءته، و<code>422</code> لأن المحتوى مقروء وقيمة فيه تخالف قاعدة.</li>
+<li>أضف <code>q: z.string().trim().min(2).max(50).optional()</code> إلى مخطط الاستعلام، واقرأه مع القيم الأخرى، وأضف تصفية واحدة: <code>.filter((p) =&gt; !q || p.name.toLowerCase().includes(q.toLowerCase()))</code>. ويبقى المؤشر يعمل، لأنه يسجل موضعاً في الترتيب لا في القائمة المصفّاة: يرسل العميل <code>q</code> نفسها مع المؤشر، فتتابع الصفحة التالية بعد ذلك الموضع بين المنتجات المطابقة. وفي التشغيل في مستودع الكود (بالإنجليزية) يُرجع <code>q=se</code> مع <code>limit=1</code> «Servo motor»، ثم «Sensor set» مع المؤشر، ويُرفض <code>q=x</code> بمشكلة <code>400</code>. وفي قاعدة البيانات يحتاج بحث كهذا فهرساً مناسباً، يتناوله الفصل 4.</li>
+<li>طريقة: اجعل الإلغاء متساوي الأثر في نتيجته. فإن كان الطلب ملغى من قبل فرد بـ <code>200</code> مع الطلب، لأن هدف العميل (طلب ملغى) تحقق. وطريقة أخرى: اقبل <code>Idempotency-Key</code> في الإلغاء أيضاً وأعد الجواب الأول. والأولى أبسط وأصح هنا، لأن الإلغاء الثاني لا يغيّر شيئاً، وأبقِ <code>409</code> للطلبات التي لم يعد إلغاؤها ممكناً لأنها شُحنت. والدرس العام: صمّم الأفعال بحيث لا يضر تكرارها، كلما سمح مجال العمل بذلك.</li>
+<li>الصنف في <code>answers/idempotency.ts</code> يحفظ المدخلات في <code>Map</code> تحت المفتاح <code>client:key</code>، فالمفتاح نفسه من عميلين مدخلان مختلفان. وكل مدخل يحفظ وقت تخزينه، مقروءاً من دالة <code>now</code> تُعطى للمُنشئ (وهي افتراضياً <code>Date.now</code>)، و<code>get</code> تحذف المدخل الأقدم من مدة الحياة وتتجاهله. وتمرر الاختبارات ساعة مزيفة، <code>() =&gt; now</code>، وتقدّم <code>now</code> بدل أن تنتظر يوماً: فالمفتاح ما زال موجوداً بعد 999 ms من حياة مدتها 1000 ms، ويختفي عند 1000 ms. وفي الإنتاج يأتي العميل من التحقق من الهوية (الفصل 8)، والمخزن جدول في قاعدة البيانات أو مفاتيح Redis بوقت انتهاء، فتُمسح المدخلات القديمة وحدها أيضاً.</li>
 </ol>
 
 </section>
