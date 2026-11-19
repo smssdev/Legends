@@ -1,0 +1,53 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابدأ كل مشروع بالمسارات، مكتوبة بيانات، قبل أي مكوّن. فإن استطعت قراءة التطبيق كله من مصفوفة <code>routes</code>، فالتصميم صحيح.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>مدونة صغيرة بعناوين جميلة</h3>
+<p class="project-goal">قائمة تدوينات وصفحة لكل تدوينة، على عناوين مثل <code>/posts/rules-for-state</code>، مع رسالة لطيفة للتدوينات غير الموجودة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المسارات المتداخلة والمسماة، ومعاملات المسار خصائصَ، و<code>RouterLink</code>، ومعالجة غير الموجود.</p>
+<ol class="steps">
+<li>أعطِ كل تدوينة <dfn>اسماً مختصراً</dfn> (slug): معرّفاً قصيراً مقروءاً من العنوان مثل <code>keys-explained</code>. فالعناوين المقروءة أفضل للمستخدمين ولمحركات البحث.</li>
+<li>اكتب إطاراً فيه اسم المدونة، و<code>RouterLink</code> إلى القائمة، و<code>RouterView</code>.</li>
+<li>سمِّ المسارين <code>posts</code> و<code>post</code>، واربط بـ <code>{ name: "post", params: { slug } }</code>: فإن تغيّر عنوان لاحقاً لا يتغير أي رابط.</li>
+<li>مرّر الاسم المختصر خاصيةً بـ <code>props: true</code>، وجد التدوينة في <code>computed</code>. وإن لم توجد فقل ذلك واربط إلى الرئيسية.</li>
+<li>جرّب عنواناً خطأً باليد، مثل <code>/posts/nothing</code>، وتحقق من الرسالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البيانات هنا ثابتة، فلا حاجة لاستعلام. فليست كل صفحة تحتاج TanStack Query، استخدمها حين تأتي البيانات من خادم.</p>
+<pre data-code="projects/blog-routes.ts" data-title="blog-routes.ts"></pre>
+<figure data-render="projects/blog-page.html" data-width="560" data-actions="click:ul.list li:nth-child(2) a"><figcaption><b>المشروع {{n}}.1:</b> صفحة تدوينة، من القائمة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>قائمة منتجات تُشارك</h3>
+<p class="project-goal">وسّع متجر هذا الفصل لتعيش الفئة <em>و</em>نص البحث في العنوان، ويمكن مشاركة كل تركيبة منهما رابطاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة استعلام المسار وكتابته، ومفاتيح الاستعلام ذات الأجزاء التفاعلية، وإبقاء العنوان متوافقاً مع حقل إدخال.</p>
+<ol class="steps">
+<li>اجعل <code>category</code> و<code>q</code> قيماً محسوبة من <code>route.query</code>، وكلاهما قد يغيب.</li>
+<li>ضعهما في مفتاح الاستعلام: <code>["products", category, q]</code>، ومرّرهما إلى دالة الواجهة.</li>
+<li>اجعل حقل البحث يتبع العنوان: قيمة محسوبة قابلة للكتابة، <code>get</code> فيها تقرأ <code>q</code>، و<code>set</code> تستدعي <code>router.replace</code> بالنص الجديد مع إبقاء الفئة.</li>
+<li>استخدم <code>replace</code> لا <code>push</code> أثناء الكتابة، فلا يصير كل حرف خطوة جديدة في سجل زر الرجوع.</li>
+<li>افتح العنوان نفسه في لسان جديد، وتأكد أنك ترى القائمة نفسها بالضبط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لتغيير معامل واحد وإبقاء الباقي انشرها: <code>router.replace({ query: { ...route.query, q: text || undefined } })</code>. والقيمة <code>undefined</code> تحذف المعامل.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>زر مفضلة متفائل</h3>
+<p class="project-goal">قلب يمتلئ لحظة الضغط، ويحفظ في الخلفية، ويعيد الأمور بهدوء إن رفض الخادم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useMutation</code>، وقراءة ذاكرة الاستعلامات والكتابة فيها، والتراجع بقيمة سياق، والإبطال.</p>
+<ol class="steps">
+<li>حمّل المنتج بـ <code>useQuery</code> تحت المفتاح <code>["product", id]</code>.</li>
+<li>أنشئ تعديلاً تستدعي <code>mutationFn</code> فيه <code>setFavourite(id, value)</code>.</li>
+<li>في <code>onMutate</code> ألغِ استعلامات المفتاح (فلا يكتب رد قديم فوقك)، واحفظ القيمة الحالية بـ <code>getQueryData</code>، واكتب الجديدة بـ <code>setQueryData</code>، وأرجع <code>{ previous }</code>.</li>
+<li>في <code>onError</code> أعد كتابة <code>context.previous</code>، وفي <code>onSettled</code> أبطل المفتاح، فتنتهي الشاشة بحقيقة الخادم.</li>
+<li>اختبر الفشل: في الواجهة الوهمية مفتاح <code>server.failNextSave</code>. شاهد القلب يمتلئ ثم يفرغ مع رسالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> استخدم التحديثات المتفائلة للأفعال الصغيرة المتكررة القابلة للتراجع، كالإعجابات وعلامات الإنجاز وإعادة الترتيب. أما المدفوعات وكل ما يصعب التراجع عنه فاعرض فيه حالة «جارٍ الحفظ…» واضحة وانتظر الخادم.</p>
+<pre data-code="projects/FavouriteButton.vue" data-title="FavouriteButton.vue"></pre>
+<figure data-render="projects/fav-fail-page.html" data-width="560" data-actions="wait:500;click:button;wait:100"><figcaption><b>المشروع {{n}}.3:</b> بعد 100 ملي ثانية من الضغط: القلب ممتلئ، والحفظ في طريقه…</figcaption></figure>
+<figure data-render="projects/fav-fail-page.html" data-width="560" data-actions="wait:500;click:button;wait:900"><figcaption>…وبعد رفض الخادم: تراجع التغيير، وأُخبر المستخدم.</figcaption></figure>
+</div>

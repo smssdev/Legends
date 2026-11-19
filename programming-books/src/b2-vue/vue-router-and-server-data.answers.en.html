@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>Add <code>{ path: "about", component: About }</code> to the children of the layout route, and <code>&lt;RouterLink to="/about"&gt;About&lt;/RouterLink&gt;</code> to the navigation bar. The active class is added by itself.</li>
+<li><code>const client = useQueryClient(); const position = computed(() =&gt; { const list = client.getQueryData&lt;Product[]&gt;(["products", null]); const i = list?.findIndex((p) =&gt; p.id === props.id) ?? -1; return list &amp;&amp; i &gt;= 0 ? `Product ${i + 1} of ${list.length}` : ""; });</code>. Reading the cache makes no request.</li>
+<li><code>const q = computed(() =&gt; (typeof route.query.q === "string" ? route.query.q : ""))</code>, add <code>q</code> to the key, and filter with <code>p.name.toLowerCase().includes(q.value.toLowerCase())</code>. Update it as in Project {{n}}.2, with <code>router.replace</code> and the other parameters spread.</li>
+<li>Add <code>meta: { title: "Products" }</code> to each route, and <code>router.afterEach((to) =&gt; { document.title = `${to.meta.title ?? "Bit's shop"} · Bit's shop`; })</code>. To make <code>to.meta.title</code> typed, extend the <code>RouteMeta</code> interface in a <code>.d.ts</code> file.</li>
+<li><code>const client = useQueryClient(); watchEffect(() =&gt; client.prefetchQuery({ queryKey: ["product", props.id + 1], queryFn: () =&gt; getProduct(props.id + 1) }));</code> and <code>&lt;RouterLink :to="`/products/${id + 1}`"&gt;</code>. When the user clicks, the query finds the product in the cache and shows it without a skeleton.</li>
+</ol>

@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: Composables: Reusing Logic"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Vue Router and Server Data"; } }
+@page ch07:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Design Systems and Component Libraries"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Accessibility (WCAG) in Practice"; } }
@@ -3264,6 +3266,412 @@ it(<span class="s">&quot;never goes past the last page&quot;</span>, () =&gt; {
 <p>Real apps have many screens and talk to real servers. The next chapter adds Vue Router for addresses and navigation, and TanStack Query, a library of composables that handles server data, caching and refetching better than anything we could write by hand.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b2/vue/routing/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Vue Router and Server Data</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>give every screen of an app its own address with Vue Router</li>
+<li>share a layout between pages with nested routes and <code>RouterView</code></li>
+<li>read route parameters as typed props, and keep filters in the address so they can be shared</li>
+<li>load server data with TanStack Query: caching, loading and error states, retries</li>
+<li>change server data with mutations, including optimistic updates that roll back on failure</li>
+<li>protect pages with navigation guards, and load each page only when it is needed</li>
+</ul>
+</div>
+
+<p class="lead">A real app is many screens: a list, a details page, a basket, a profile. Users expect each one to have an address they can bookmark, share and reach with the back button. And almost every screen shows data that lives on a server, which arrives late, sometimes fails, and changes while the user looks at it. This chapter adds the two libraries that most Vue teams use for these jobs: <strong>Vue Router</strong>, Vue’s official router, and <strong>TanStack Query</strong> for server data.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>In the last chapter you wrote <code>useSearch</code>, with cancellation and loading and error states. TanStack Query is a set of composables that does that work, and much more, for every request in the app. Now you know what it does inside.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>Routes</span></h2>
+
+<p>An app with a router is still one HTML page, a <dfn>single-page application</dfn>. The router reads the address, decides which components to show, and, when the user clicks a link, changes the address without reloading the page. The routes are plain data: a tree of objects, each with a <code>path</code> and a <code>component</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.ts</div><pre class="code"><span class="k">import</span> <span class="k">type</span> { RouteRecordRaw } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
+<span class="k">import</span> Layout <span class="k">from</span> <span class="s">&quot;./views/Layout.vue&quot;</span>;
+<span class="k">import</span> Home <span class="k">from</span> <span class="s">&quot;./views/Home.vue&quot;</span>;
+<span class="k">import</span> Products <span class="k">from</span> <span class="s">&quot;./views/Products.vue&quot;</span>;
+<span class="k">import</span> Product <span class="k">from</span> <span class="s">&quot;./views/Product.vue&quot;</span>;
+<span class="k">import</span> NotFound <span class="k">from</span> <span class="s">&quot;./views/NotFound.vue&quot;</span>;
+
+<span class="c">// Each route maps an address to a component; children are drawn inside their parent&#x27;s RouterView</span>
+<span class="k">export</span> <span class="k">const</span> routes: RouteRecordRaw[] = [
+  {
+    path: <span class="s">&quot;/&quot;</span>,
+    component: Layout,
+    children: [
+      { path: <span class="s">&quot;&quot;</span>, component: Home },
+      {
+        path: <span class="s">&quot;products&quot;</span>,
+        children: [
+          { path: <span class="s">&quot;&quot;</span>, component: Products },
+          <span class="c">// Pass the id as a typed prop, so the component does not need to know about the router</span>
+          { path: <span class="s">&quot;:id(\\d+)&quot;</span>, component: Product, props: (route) =&gt; ({ id: Number(route.params.id) }) },
+        ],
+      },
+      { path: <span class="s">&quot;:path(.*)*&quot;</span>, component: NotFound },
+    ],
+  },
+];</pre></div>
+
+<ul>
+<li>The route <code>/</code> shows <code>Layout</code>. Its <code>children</code> are drawn <em>inside</em> it, where <code>Layout</code> places <code>&lt;RouterView /&gt;</code>. The navigation bar is written once and every page gets it. These are <dfn>nested routes</dfn>. A child with an empty path is shown at exactly its parent’s address.</li>
+<li><code>:id(\d+)</code> is a <dfn>route parameter</dfn> that matches digits only, so <code>/products/2</code> matches and <code>/products/abc</code> does not. Parameters are strings, so the <code>props</code> function turns the id into a number and passes it as a normal prop. The component never touches the router, which makes it easy to reuse and to test.</li>
+<li><code>:path(.*)*</code> matches anything the other routes did not, so mistyped addresses get a friendly page instead of an empty screen.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">views/Layout.vue</div><pre class="code">&lt;template&gt;
+  &lt;div class=&quot;layout&quot;&gt;
+    &lt;nav&gt;
+      &lt;span class=&quot;brand&quot;&gt;Bit&#x27;s shop&lt;/span&gt;
+      &lt;RouterLink to=&quot;/&quot; exact-active-class=&quot;router-link-active&quot; active-class=&quot;&quot;&gt;Home&lt;/RouterLink&gt;
+      &lt;RouterLink to=&quot;/products&quot;&gt;Products&lt;/RouterLink&gt;
+    &lt;/nav&gt;
+    &lt;RouterView /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The app starts in <code>main.ts</code>, which installs the router and TanStack Query as <dfn>plugins</dfn>, so every component can use them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">main.ts</div><pre class="code"><span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { createRouter, createWebHistory } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
+<span class="k">import</span> { VueQueryPlugin } <span class="k">from</span> <span class="s">&quot;@tanstack/vue-query&quot;</span>;
+<span class="k">import</span> App <span class="k">from</span> <span class="s">&quot;./App.vue&quot;</span>;
+<span class="k">import</span> { routes } <span class="k">from</span> <span class="s">&quot;./routes&quot;</span>;
+
+<span class="k">const</span> router = createRouter({ history: createWebHistory(), routes });
+
+createApp(App)
+  .use(router)
+  .use(VueQueryPlugin, { queryClientConfig: { defaultOptions: { queries: { staleTime: 30_000 } } } })
+  .mount(<span class="s">&quot;#app&quot;</span>);</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>About the screenshots</p><p><code>createWebHistory</code> reads the real address of the page. The screenshots in this chapter are taken from files, not from a site, so they start the same <code>routes</code> with <code>createMemoryHistory</code>, which keeps its address in memory, and then click the links exactly as a user would.</p></aside>
+
+<h2><span class="sec">7.2</span> <span>Links and navigation</span></h2>
+
+<p>Inside the app, never write <code>&lt;a href&gt;</code> for your own pages: it would reload the whole page and lose all state. Use <code>&lt;RouterLink to="/products"&gt;</code>, which changes the address and redraws only what changed. A <code>RouterLink</code> also knows whether it points to the current page: it adds the class <code>router-link-active</code> when its route is part of the current one, and <code>router-link-exact-active</code> when it is exactly the current one, so the navigation bar can highlight it. In code, after saving a form for example, <code>const router = useRouter()</code> and then <code>router.push("/products")</code> move the user.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/vue-routing-en-page.html-560-8b290c.png" alt=""><figcaption><b>Figure 7.1:</b> The details page at <code>/products/2</code>, reached by clicking “Products” and then the mug. “Products” stays highlighted, because the details route is inside the products route.</figcaption></figure>
+
+<h3>The address is state too</h3>
+
+<p>Look at how the product list filters by category. It has no <code>ref</code> for the filter: the category lives in the address, as a <dfn>query parameter</dfn>, <code>/products?category=gifts</code>, read from <code>useRoute().query</code>. The filter links point to <code>{ query: { category: "gifts" } }</code>. This costs nothing and gives users three things for free: they can share the filtered list, bookmark it, and use the back button to undo a filter. Search text, sorting, the current page of results and the selected tab are all good candidates for the address.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">views/Products.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed } from &quot;vue&quot;;
+import { useRoute } from &quot;vue-router&quot;;
+import { useQuery } from &quot;@tanstack/vue-query&quot;;
+import { getProducts } from &quot;../api&quot;;
+import Skeleton from &quot;./Skeleton.vue&quot;;
+
+const CATEGORIES = [
+  { value: null, label: &quot;All&quot; },
+  { value: &quot;books&quot;, label: &quot;Books&quot; },
+  { value: &quot;gifts&quot;, label: &quot;Gifts&quot; },
+];
+
+const route = useRoute();
+const category = computed(() =&gt; (typeof route.query.category === &quot;string&quot; ? route.query.category : null));
+
+// The key names the data: a computed category in it refetches when the address changes
+const query = useQuery({
+  queryKey: [&quot;products&quot;, category],
+  queryFn: () =&gt; getProducts(category.value),
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;div class=&quot;filters&quot;&gt;
+      &lt;RouterLink
+        v-for=&quot;c in CATEGORIES&quot;
+        :key=&quot;c.label&quot;
+        :to=&quot;{ query: c.value ? { category: c.value } : {} }&quot;
+        :class=&quot;{ on: c.value === category }&quot;
+      &gt;
+        {{ c.label }}
+      &lt;/RouterLink&gt;
+    &lt;/div&gt;
+    &lt;Skeleton v-if=&quot;query.isPending.value&quot; /&gt;
+    &lt;p v-else-if=&quot;query.isError.value&quot; class=&quot;error&quot;&gt;Something went wrong: {{ query.error.value?.message }}&lt;/p&gt;
+    &lt;ul v-else class=&quot;list&quot;&gt;
+      &lt;li v-for=&quot;p in query.data.value&quot; :key=&quot;p.id&quot;&gt;
+        &lt;RouterLink :to=&quot;`/products/${p.id}`&quot;&gt;{{ p.name }}&lt;/RouterLink&gt;
+        &lt;span class=&quot;price&quot;&gt;{{ p.price }} EGP&lt;/span&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/vue-routing-en-page.html-560-a96198.png" alt=""><figcaption><b>Figure 7.2:</b> <code>/products?category=gifts</code>. The highlighted filter is computed from the address.</figcaption></figure>
+
+<h2><span class="sec">7.3</span> <span>Server data with TanStack Query</span></h2>
+
+<p>Data from a server is not like state that your app owns. Someone else can change it at any time, you only ever have a copy, and getting that copy takes time and can fail. A composable like <code>useSearch</code> works for one screen, but a real app soon needs much more:</p>
+<ul>
+<li>A <strong>cache</strong>, so going back to a page shows it instantly instead of loading again.</li>
+<li><strong>Deduplication</strong>, so two components asking for the same data make one request.</li>
+<li><strong>Retries</strong> when the network fails for a moment.</li>
+<li><strong>Refreshing</strong> stale data when the user comes back to the tab.</li>
+<li>Protection from the <strong>race</strong> between old and new requests.</li>
+</ul>
+
+<p>TanStack Query provides all of these through one composable. You give <code>useQuery</code> a <dfn>query key</dfn>, an array that names the data, and a <dfn>query function</dfn> that returns a promise:</p>
+
+<ul>
+<li>The key is a name in a cache: <code>["products", "gifts"]</code> and <code>["products", null]</code> are cached separately. In Vue, the key can contain refs and computed values; <code>["products", category]</code> is <em>reactive</em>. When the address changes, <code>category</code> changes, the key changes, and the right data is loaded, or shown at once if it is already cached.</li>
+<li>The result holds refs: <code>isPending</code>, <code>isError</code> with <code>error</code>, and <code>data</code>, which TypeScript knows is a <code>Product[]</code>. These are the four states of Chapter 4, ready-made. Templates only unwrap refs at the top level, which is why <code>Products.vue</code> writes <code>query.isPending.value</code>, while <code>Product.vue</code> destructures the result and writes <code>isPending</code>.</li>
+<li><code>staleTime: 30_000</code> in <code>main.ts</code> says data stays fresh for 30 seconds; inside that time, visiting the page again makes no request at all.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">views/Product.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useQuery } from &quot;@tanstack/vue-query&quot;;
+import { getProduct, NotFoundError } from &quot;../api&quot;;
+import Skeleton from &quot;./Skeleton.vue&quot;;
+
+const props = defineProps&lt;{ id: number }&gt;();
+
+const { data, error, isPending } = useQuery({
+  queryKey: [&quot;product&quot;, () =&gt; props.id],
+  queryFn: () =&gt; getProduct(props.id),
+  // Retry network errors twice, but never a product that does not exist
+  retry: (count, e) =&gt; !(e instanceof NotFoundError) &amp;&amp; count &lt; 2,
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;Skeleton v-if=&quot;isPending&quot; /&gt;
+  &lt;p v-else-if=&quot;error&quot; class=&quot;card error&quot;&gt;
+    {{ error instanceof NotFoundError ? &quot;There is no product with this number.&quot; : error.message }}
+  &lt;/p&gt;
+  &lt;article v-else-if=&quot;data&quot; class=&quot;card&quot;&gt;
+    &lt;h2&gt;{{ data.name }}&lt;/h2&gt;
+    &lt;p&gt;{{ data.description }}&lt;/p&gt;
+    &lt;p class=&quot;price&quot;&gt;{{ data.price }} EGP&lt;/p&gt;
+    &lt;RouterLink to=&quot;/products&quot;&gt;← Back to products&lt;/RouterLink&gt;
+  &lt;/article&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The details page receives <code>id</code> as a prop and puts a getter, <code>() =&gt; props.id</code>, in its key, so moving from one product to another refetches. It uses <code>retry</code> to try twice on network errors, but never on <code>NotFoundError</code>: retrying a product that does not exist is pointless.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/vue-routing-en-page.html-560-e772d1.png" alt=""><figcaption><b>Figure 7.3:</b> The first moment on the products page: grey “skeleton” lines show where the list will appear, so the page does not jump when it arrives.</figcaption></figure>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: skeletons instead of spinners</p><p>A skeleton that has roughly the shape of the coming content feels faster than a spinner, and stops the layout from jumping. Mark it with <code>aria-busy="true"</code> and a label, so screen readers know that content is on its way.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why should an app use <code>&lt;RouterLink&gt;</code> instead of <code>&lt;a href&gt;</code> for its own pages?</li><li>What happens at the address <code>/products/abc</code> with the routes of this chapter?</li><li>Two components call <code>useQuery</code> with the key <code>["product", 2]</code> at the same time. How many requests are sent?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>Changing server data</span></h2>
+
+<p>Reading uses queries; writing uses <dfn>mutations</dfn>. <code>useMutation</code> wraps a function that changes data on the server, and gives you <code>mutate</code> to call it, plus <code>isPending</code> and <code>isError</code> for the screen. After a successful change, the cached copies are out of date, so you <dfn>invalidate</dfn> them: <code>queryClient.invalidateQueries({ queryKey: ["products"] })</code> marks every query whose key starts with <code>"products"</code> as stale, and the ones on screen reload.</p>
+
+<p>Waiting for the server makes small actions, like a heart or a tick, feel slow. An <dfn>optimistic update</dfn> changes the screen at once, assuming the server will agree, and puts the old value back if it does not. Project 7.3 builds one, in three short steps: change the cache and remember the old value; restore it on error; reload the truth from the server either way.</p>
+
+<h2><span class="sec">7.5</span> <span>Guards and lazy routes</span></h2>
+
+<p>Some pages are only for signed-in users. A <dfn>navigation guard</dfn> runs before every navigation and can let it pass, cancel it, or send the user elsewhere. Routes carry the information in <code>meta</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">router.ts</div><pre class="code">{ path: "account", component: Account, meta: { requiresAuth: true } }
+
+router.beforeEach((to) =&gt; {
+  if (to.meta.requiresAuth &amp;&amp; !session.signedIn) {
+    return { path: "/sign-in", query: { next: to.fullPath } };
+  }
+});</pre></div>
+
+<p>After signing in, the sign-in page sends the user to <code>route.query.next</code>, back where they wanted to go. Remember that a guard only protects the <em>screen</em>: the server must still check every request, because anyone can call an API without your app (Chapter 14).</p>
+
+<p>Each route is also a natural place to split the code (Chapter 13): users who never open the admin pages should never download them. Give a route a function that imports its component, instead of the component itself:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.ts</div><pre class="code">{ path: "admin", component: () =&gt; import("./views/Admin.vue") }</pre></div>
+
+<p>The build puts the admin page in its own file, and the router loads it the first time someone visits the route.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: every page needs four states and a way out</p><p>For each route, ask: what does the user see while it loads, when it is empty, when it fails, and when the address is wrong? Each answer should offer a way forward: a retry button, a link to the list, a link home. Nobody should ever reach a blank screen.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;a href="/products"&gt;</code> inside the app</td><td>The page reloads and all state is lost</td><td><code>&lt;RouterLink to="/products"&gt;</code></td></tr>
+<tr><td>Forgetting <code>&lt;RouterView /&gt;</code> in a layout</td><td>Child routes never appear</td><td>Place it where children should go</td></tr>
+<tr><td>Using a route parameter as a number</td><td><code>"2" === 2</code> is false</td><td>Convert it in a <code>props</code> function, and constrain it with <code>(\d+)</code></td></tr>
+<tr><td>A query key that misses a variable, or holds <code>category.value</code></td><td>Changing the filter shows the old data</td><td>Put the ref or computed itself in the key</td></tr>
+<tr><td>Copying query data into a <code>ref</code></td><td>The copy goes stale</td><td>Read <code>data</code> directly, or <code>computed</code> from it</td></tr>
+<tr><td>Forgetting to invalidate after a mutation</td><td>The screen shows the old data</td><td><code>invalidateQueries</code> in <code>onSettled</code></td></tr>
+<tr><td>Trusting a guard for security</td><td>Data reachable without the app</td><td>Check permissions on the server too</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Vue Router</strong> maps addresses to components. Routes are data; <strong>nested routes</strong> share a layout through <code>&lt;RouterView /&gt;</code>.</li>
+<li>Pass <strong>route parameters</strong> to components as typed props; keep filters and other shareable state in the <strong>query</strong> of the address.</li>
+<li>Navigate with <code>RouterLink</code> and <code>router.push</code>; style the current link with <code>router-link-active</code>.</li>
+<li><strong>TanStack Query</strong> caches server data by <strong>query key</strong>, which can be reactive; it removes duplicate requests, retries and refreshes, and reports pending, error and success.</li>
+<li><strong>Mutations</strong> change server data; <strong>invalidate</strong> the affected queries afterwards. <strong>Optimistic updates</strong> change the screen first and roll back on failure.</li>
+<li><strong>Guards</strong> redirect before navigation; <strong>lazy routes</strong> load each page on its first visit.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A plain link reloads the whole page and loses the app’s state; <code>RouterLink</code> only changes the address and the parts of the screen that differ. 2. <code>:id(\d+)</code> does not match letters, so the catch-all route shows the “Page not found” message, and no request is made. 3. One: queries with the same key share a single request and a single cache entry.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Start each project from the routes, written as data, before any component. If you can read the whole app from the <code>routes</code> array, the design is right.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>A small blog with pretty addresses</h3>
+<p class="project-goal">A list of posts and a page for each post, at addresses like <code>/posts/rules-for-state</code>, with a kind message for posts that do not exist.</p>
+<p class="project-skills"><strong>You will practise:</strong> nested routes, named routes, route parameters as props, <code>RouterLink</code>, and not-found handling.</p>
+<ol class="steps">
+<li>Give each post a <dfn>slug</dfn>: a short, readable id made from the title, such as <code>keys-explained</code>. Readable addresses are better for users and for search engines.</li>
+<li>Write a layout with the blog’s name, a <code>RouterLink</code> to the list, and a <code>RouterView</code>.</li>
+<li>Give the routes names, <code>posts</code> and <code>post</code>, and link with <code>{ name: "post", params: { slug } }</code>: if an address changes later, no link has to.</li>
+<li>Pass the slug as a prop with <code>props: true</code>, and find the post in a <code>computed</code>. If it does not exist, say so and link back home.</li>
+<li>Try a wrong address by hand, such as <code>/posts/nothing</code>, and check the message.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the data here is a constant, so no query is needed. Not every page needs TanStack Query; use it when the data comes from a server.</p>
+<div class="listing" dir="ltr"><div class="listing-title">blog-routes.ts</div><pre class="code"><span class="k">import</span> <span class="k">type</span> { RouteRecordRaw } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
+<span class="k">import</span> BlogLayout <span class="k">from</span> <span class="s">&quot;./BlogLayout.vue&quot;</span>;
+<span class="k">import</span> PostList <span class="k">from</span> <span class="s">&quot;./PostList.vue&quot;</span>;
+<span class="k">import</span> PostPage <span class="k">from</span> <span class="s">&quot;./PostPage.vue&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> routes: RouteRecordRaw[] = [
+  {
+    path: <span class="s">&quot;/&quot;</span>,
+    component: BlogLayout,
+    children: [
+      { path: <span class="s">&quot;&quot;</span>, name: <span class="s">&quot;posts&quot;</span>, component: PostList },
+      { path: <span class="s">&quot;posts/:slug&quot;</span>, name: <span class="s">&quot;post&quot;</span>, component: PostPage, props: <span class="k">true</span> },
+    ],
+  },
+];</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>blog-page.html</span><b>560px</b></div><img src="img/vue-routing-en-projects-blog-page.html-560-9576b8.png" alt=""><figcaption><b>Project 7.1:</b> a post page, reached from the list.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>A product list you can share</h3>
+<p class="project-goal">Extend the shop from this chapter so that the category <em>and</em> a search text live in the address, and every combination can be shared as a link.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading and writing the route’s query, query keys with several reactive parts, and keeping the address in step with an input.</p>
+<ol class="steps">
+<li>Make <code>category</code> and <code>q</code> computed values from <code>route.query</code>. Both may be missing.</li>
+<li>Put both in the query key: <code>["products", category, q]</code>, and pass both to the API function.</li>
+<li>Make the search input follow the address: a writable computed whose <code>get</code> reads <code>q</code>, and whose <code>set</code> calls <code>router.replace</code> with the new text, keeping the category.</li>
+<li>Use <code>replace</code>, not <code>push</code>, while typing, so every letter does not become a new entry in the back button’s history.</li>
+<li>Open the same address in a new tab and check that you see exactly the same list.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> to change one query parameter and keep the others, spread them: <code>router.replace({ query: { ...route.query, q: text || undefined } })</code>. A value of <code>undefined</code> removes the parameter.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>An optimistic favourite button</h3>
+<p class="project-goal">A heart that fills the moment it is pressed, saves in the background, and quietly puts things back if the server refuses.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useMutation</code>, reading and writing the query cache, rolling back with a context value, and invalidating.</p>
+<ol class="steps">
+<li>Load the product with <code>useQuery</code> under the key <code>["product", id]</code>.</li>
+<li>Create a mutation whose <code>mutationFn</code> calls <code>setFavourite(id, value)</code>.</li>
+<li>In <code>onMutate</code>, cancel queries for the key (so an old answer cannot overwrite you), save the current value with <code>getQueryData</code>, write the new value with <code>setQueryData</code>, and return <code>{ previous }</code>.</li>
+<li>In <code>onError</code>, write <code>context.previous</code> back. In <code>onSettled</code>, invalidate the key, so the screen ends with the server’s truth.</li>
+<li>Test the failure: the pretend API has a <code>server.failNextSave</code> switch. Watch the heart fill, then empty, with a message.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> use optimistic updates for small, frequent, reversible actions, such as likes, ticks and reordering. For payments and anything hard to undo, show a clear “Saving…” state and wait for the server instead.</p>
+<div class="listing" dir="ltr"><div class="listing-title">FavouriteButton.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useMutation, useQuery, useQueryClient } from &quot;@tanstack/vue-query&quot;;
+import { getProduct, setFavourite, type Product } from &quot;../api&quot;;
+
+const props = defineProps&lt;{ id: number }&gt;();
+const client = useQueryClient();
+const key = [&quot;product&quot;, props.id];
+const product = useQuery({ queryKey: key, queryFn: () =&gt; getProduct(props.id) });
+
+const mutation = useMutation({
+  mutationFn: (favourite: boolean) =&gt; setFavourite(props.id, favourite),
+  // 1. Before the server answers: change the cache, and remember the old value
+  onMutate: async (favourite) =&gt; {
+    await client.cancelQueries({ queryKey: key });
+    const previous = client.getQueryData&lt;Product&gt;(key);
+    client.setQueryData&lt;Product&gt;(key, (old) =&gt; (old ? { ...old, favourite } : old));
+    return { previous };
+  },
+  // 2. If it fails: put the old value back
+  onError: (_error, _favourite, context) =&gt; client.setQueryData(key, context?.previous),
+  // 3. Either way: ask the server for the truth
+  onSettled: () =&gt; client.invalidateQueries({ queryKey: key }),
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p v-if=&quot;!product.data.value&quot; class=&quot;muted&quot;&gt;Loading…&lt;/p&gt;
+  &lt;div v-else class=&quot;card&quot;&gt;
+    &lt;h2&gt;{{ product.data.value.name }}&lt;/h2&gt;
+    &lt;button
+      type=&quot;button&quot;
+      :aria-pressed=&quot;product.data.value.favourite&quot;
+      :class=&quot;{ secondary: !product.data.value.favourite }&quot;
+      @click=&quot;mutation.mutate(!product.data.value.favourite)&quot;
+    &gt;
+      {{ product.data.value.favourite ? &quot;♥&quot; : &quot;♡&quot; }} Favourite
+    &lt;/button&gt;
+    &lt;span v-if=&quot;mutation.isPending.value&quot; class=&quot;muted&quot;&gt; Saving…&lt;/span&gt;
+    &lt;p v-if=&quot;mutation.isError.value&quot; class=&quot;error&quot; role=&quot;alert&quot;&gt;Could not save. The change was undone.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>fav-fail-page.html</span><b>560px</b></div><img src="img/vue-routing-en-projects-fav-fail-page.html-560-8bbb72.png" alt=""><figcaption><b>Project 7.3:</b> 100 ms after pressing: the heart is already full, and the save is on its way…</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>fav-fail-page.html</span><b>560px</b></div><img src="img/vue-routing-en-projects-fav-fail-page.html-560-be2a4b.png" alt=""><figcaption>…and after the server refused: the change was rolled back, and the user is told.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an “About” page at <code>/about</code> with a <code>RouterLink</code> in the navigation bar.</li>
+<li><span class="level">Easy</span> On the details page, show “Product 2 of 4” using the cached list, if it is already in the cache, with <code>useQueryClient().getQueryData(["products", null])</code>.</li>
+<li><span class="level medium">Medium</span> Add a search box to the products page that keeps its text in the address as <code>?q=</code>, together with the category, and filters the list by name.</li>
+<li><span class="level medium">Medium</span> Give every route a <code>meta.title</code>, and set <code>document.title</code> after each navigation with <code>router.afterEach</code>.</li>
+<li><span class="level hard">Challenge</span> Add a “Next product” link to the details page, and make it feel instant: when the page loads, call <code>queryClient.prefetchQuery</code> for the next product, so it is already cached when the user clicks.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>Users do not only read data; they send it, through forms. In the next chapter you will build forms that validate as the user types, show helpful errors, describe their rules once in a schema shared with TypeScript, and send the result to the server safely.</p>
+</div>
+</section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/en">
 <div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>Design Systems and Component Libraries</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6446,6 +6854,16 @@ on the team will pair with the others on the first tests.
 <li><code>const list = matchMedia(query); const matches = ref(list.matches); const update = (e: MediaQueryListEvent) =&gt; (matches.value = e.matches); list.addEventListener("change", update); onScopeDispose(() =&gt; list.removeEventListener("change", update)); return matches;</code>. In the template: <code>{{ wide ? "wide" : "narrow" }}</code>.</li>
 <li>Inside <code>effectScope</code> and with fake timers: set the query to “b”, <code>await nextTick()</code>, advance 100 ms, set it to “bit”, <code>await nextTick()</code>, then advance 500 ms and <code>await</code> the promises (<code>await vi.runAllTimersAsync()</code>). Expect <code>results.value</code> to hold only names containing “bit”. The test fails if you remove <code>onCleanup(() =&gt; controller.abort())</code> and make the first search slower.</li>
 <li><code>useAsync&lt;I, O&gt;(fn: (input: I, signal: AbortSignal) =&gt; Promise&lt;O&gt;, input: MaybeRefOrGetter&lt;I&gt;)</code> holds the watcher, the controller, <code>data</code>, <code>loading</code> and <code>error</code>. Then <code>useSearch = (q) =&gt; useAsync((text, signal) =&gt; (text ? searchProducts(text, signal) : Promise.resolve([])), () =&gt; toValue(q).trim())</code>. This is the idea that TanStack Query, in the next chapter, takes much further.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 7</h2>
+<ol class="exercises">
+<li>Add <code>{ path: "about", component: About }</code> to the children of the layout route, and <code>&lt;RouterLink to="/about"&gt;About&lt;/RouterLink&gt;</code> to the navigation bar. The active class is added by itself.</li>
+<li><code>const client = useQueryClient(); const position = computed(() =&gt; { const list = client.getQueryData&lt;Product[]&gt;(["products", null]); const i = list?.findIndex((p) =&gt; p.id === props.id) ?? -1; return list &amp;&amp; i &gt;= 0 ? `Product ${i + 1} of ${list.length}` : ""; });</code>. Reading the cache makes no request.</li>
+<li><code>const q = computed(() =&gt; (typeof route.query.q === "string" ? route.query.q : ""))</code>, add <code>q</code> to the key, and filter with <code>p.name.toLowerCase().includes(q.value.toLowerCase())</code>. Update it as in Project 7.2, with <code>router.replace</code> and the other parameters spread.</li>
+<li>Add <code>meta: { title: "Products" }</code> to each route, and <code>router.afterEach((to) =&gt; { document.title = `${to.meta.title ?? "Bit's shop"} · Bit's shop`; })</code>. To make <code>to.meta.title</code> typed, extend the <code>RouteMeta</code> interface in a <code>.d.ts</code> file.</li>
+<li><code>const client = useQueryClient(); watchEffect(() =&gt; client.prefetchQuery({ queryKey: ["product", props.id + 1], queryFn: () =&gt; getProduct(props.id + 1) }));</code> and <code>&lt;RouterLink :to="`/products/${id + 1}`"&gt;</code>. When the user clicks, the query finds the product in the cache and shows it without a skeleton.</li>
 </ol>
 
 
