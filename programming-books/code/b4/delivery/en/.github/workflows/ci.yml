@@ -1,0 +1,41 @@
+name: ci
+
+# every push and pull request runs the same pipeline as a developer's machine
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: sh ci.sh
+
+  image:
+    # only main builds the image, tagged with the commit it came from
+    if: github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+      - run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+  deploy:
+    needs: image
+    runs-on: ubuntu-24.04
+    # production waits for a person to approve, in the environment's settings
+    environment: production
+    steps:
+      - run: ./deploy.sh ${{ github.sha }}
