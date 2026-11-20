@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "الفصل 5: المدفوعات والبريد والملفات"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "الفصل 6: أساسيات تصميم الأنظمة"; } }
+@page ch06:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -2197,6 +2199,308 @@ sent 1 to sara@example.com
 <div class="next">
 <p class="next-title">في الفصل 6</p>
 <p>صار «بِت للحجوزات» يعمل من طرفه إلى طرفه. والجزء التالي يرجع خطوة لينظر إليه نظاماً: كيف تتلاءم قطعه، وأين سينكسر أولاً حين يكبر، وكيف تفكر في الأرقام قبل كتابة الكود.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b4/design/ar">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">الفصل 6</p><h1>أساسيات تصميم الأنظمة</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تصف نظاماً بمكوناته، والحالة التي يحفظها كلٌّ منها، والبيانات التي تتدفق بينها</li>
+<li>تفكر بالكلفة الحقيقية للعمليات الشائعة، مقيسةً لا محفوظة</li>
+<li>تفهم الإنتاجية وزمن الاستجابة والتزامن، والقانون الذي يربطها</li>
+<li>ترى لماذا ينفجر زمن الاستجابة حين يقترب الخادم من حده، وماذا تفعل حياله</li>
+<li>تتوسع أفقياً بنسخ بلا حالة خلف موزّع حمل، وتعرف متى يتوقف ذلك عن النفع</li>
+<li>تكتب وثيقة تصميم قصيرة تجعل المفاضلات صريحة</li>
+</ul>
+</div>
+
+<p class="lead">بنى الجزء الأول «بِت للحجوزات» قطعة قطعة: مواصفات، وعقد، وصفحات، وحسابات، ومدفوعات، وبريد، وملفات. ويرجع الجزء الثاني خطوة لينظر إلى الكل <dfn>نظاماً</dfn>: أجزاء تحفظ حالة، وصلات بينها، وحدود لا تظهر إلا تحت الحمل. وتصميم الأنظمة ليس رسم صناديق لمقابلة عمل؛ إنه عادة أن تسأل، قبل أن تصل الحركة، <em>ماذا يحدث حين يستعمل هذا عشرة أضعاف الناس؟</em> وأن تجيب بالأرقام. وهذا الفصل يعطيك الأرقام، مقيسة على الآلة التي بنت هذا الكتاب، والقوانين القليلة التي تحوّلها إلى قرارات.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الأرقام في هذا الفصل قيست أثناء بناء الكتاب، لا نُسخت من جدول شهير. شغّل السكربتات نفسها على حاسوبك: ستختلف أرقامك، ويبقى الشكل نفسه تماماً.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>المكونات والحالة والتدفق</span></h2>
+
+<p>صِف النظام بثلاثة أشياء: <strong>المكونات</strong>، و<strong>الحالة</strong> التي يحفظها كلٌّ منها، و<strong>تدفقات</strong> البيانات بينها. وهذا «بِت للحجوزات» اليوم:</p>
+
+<table>
+<thead><tr><th>المكوّن</th><th>عمله</th><th>الحالة التي يحفظها</th><th>كيف يكبر</th></tr></thead>
+<tbody>
+<tr><td>تطبيق Next.js</td><td>الصفحات وإجراءات الخادم ومسارات الواجهة البرمجية</td><td>لا شيء: الجلسات في قاعدة البيانات</td><td>نسخ أكثر</td></tr>
+<tr><td>PostgreSQL</td><td>الحجوزات والحسابات والمدفوعات والصندوق الصادر</td><td>كل الحالة المهمة</td><td>آلة أكبر، ثم نسخ للقراءة (الفصل 8)</td></tr>
+<tr><td>المرسِل</td><td>يرسل الصندوق الصادر</td><td>لا شيء</td><td>نسخ أكثر، بأمان (<code>SKIP LOCKED</code>)</td></tr>
+<tr><td>مخزن الكائنات</td><td>الشعارات والملفات</td><td>الملفات</td><td>يُشترى خدمةً</td></tr>
+<tr><td>مزوّد الدفع</td><td>صفحات الدفع والـ webhooks</td><td>بيانات البطاقات، ليست لنا أبداً</td><td>ليس مشكلتنا، لكن أعطاله مشكلتنا</td></tr>
+</tbody>
+</table>
+
+<p>ملاحظتان تقرران الكثير من الآن. أولاً، التطبيق لا يحفظ حالة، فأي نسخة تستطيع إجابة أي طلب: وتوسيعه سهل، كما يُظهر القسم 6.4. وثانياً، كل الحالة المهمة تعيش في قاعدة بيانات واحدة، فهناك سيكون أول حد حقيقي. والعمل التصميمي الجيد يبدأ بإيجاد ذلك الحد على الورق، قبل أن يجدك هو في الإنتاج.</p>
+
+<h2><span class="sec">6.2</span> <span>كم تستغرق الأشياء</span></h2>
+
+<p>قرارات التصميم تقارن الكلف: هل يستحق الأمر ذاكرة مؤقتة، أو طابوراً، أو خادماً آخر؟ ولا تستطيع أن تقارن ما لا تستطيع تقديره. وهذا السكربت يقيس عمليات شائعة، كلاً منها آلاف المرات، ويحتفظ بالوسيط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">latency.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span> median(times: number, work: () =&gt; unknown) {
+  <span class="k">const</span> runs: number[] = [];
+  <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; times; i++) {
+    <span class="k">const</span> start = process.hrtime.bigint();
+    <span class="k">await</span> work();
+    runs.push(Number(process.hrtime.bigint() - start));
+  }
+  <span class="k">return</span> runs.sort((a, b) =&gt; a - b)[Math.floor(runs.length / <span class="n">2</span>)]!;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># كم تستغرق الأشياء، على هذه الآلة</span>
+<span class="c">$ </span><span class="k">node --env-file=.env latency.ts</span>
+العملية                                الوسيط
+البحث عن مفتاح في Map                  197 ns
+تحليل 1 KB من JSON                     4.4 µs
+SHA-256 لـ 1 KB                        2.2 µs
+قراءة 4 KB من ملف في الذاكرة المؤقتة   4.8 µs
+طلب HTTP إلى localhost                 490.2 µs
+SELECT 1 في PostgreSQL (localhost)     87.9 µs
+كتابة 4 KB وfsync إلى القرص            266.0 µs
+بصمة كلمة مرور بـ scrypt               84.6 ms</pre></div>
+
+<p>اقرأ الجدول مراتبَ قدر، من أعلاه إلى أسفله. العمل في الذاكرة يكلّف <em>نانوثواني</em> إلى بضع <em>ميكروثوانٍ</em>. وأي شيء يعبر حد عملية، حتى على الآلة نفسها، يكلّف عشرات إلى مئات الميكروثواني: <code>SELECT 1</code> في PostgreSQL رحلة ذهاب وإياب، وطلب HTTP أبطأ منه لأن كل نداء يفتح آلية أكثر ويغلقها. وحفظ البيانات على القرص حفظاً دائماً يكلّف ربع ميلي ثانية. وبصمة كلمة المرور، البطيئة عمداً، تكلّف قرابة <em>عُشر ثانية</em> من نواة معالج.</p>
+
+<p>ثلاث نتائج تلزم لـ «بِت للحجوزات». الصفحة التي تصنع 30 نداء متتالياً لقاعدة البيانات تقضي بضع ميلي ثوانٍ في الرحلات وحدها، فعدد أقل من الاستعلامات الأكبر أهم من كود أسرع. وكل دخول يكلّف عُشر ثانية من المعالج، فدفعة من محاولات الدخول تستطيع أن تجوّع كل شيء آخر على ذلك الخادم: يحتاج الدخول حدّ معدل من أجل السعة، لا من أجل الأمان فقط. وعبر شبكة حقيقية، بين مراكز بيانات، تكلّف كل رحلة ميلي ثوانٍ لا ميكروثوانٍ: والنداءات الثلاثون نفسها ستكلّف جزءاً ظاهراً من الثانية.</p>
+
+<h2><span class="sec">6.3</span> <span>الإنتاجية وزمن الاستجابة والطابور</span></h2>
+
+<p>ثلاث كلمات تُستعمل بإهمال ويجب ألا تُستعمل كذلك. <dfn>زمن الاستجابة</dfn> كم يستغرق طلب واحد. و<dfn>الإنتاجية</dfn> كم طلباً يكتمل في الثانية. و<dfn>التزامن</dfn> كم طلباً قيد التنفيذ في الوقت نفسه. ولترى كيف ترتبط، هذا خادم يكلّف كل طلب فيه 10 ms من المعالج، ويعالج طلباً واحداً في كل مرة، كما تفعل عملية Node.js واحدة مع عمل المعالج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">queue.ts</div><pre class="code"><span class="k">function</span> busy(ms: number) {
+  <span class="k">const</span> end = performance.now() + ms;
+  <span class="k">while</span> (performance.now() &lt; end);
+}
+
+createServer((_request, response) =&gt; {
+  busy(work);
+  response.end(<span class="s">&quot;ok&quot;</span>);
+}).listen(port);</pre></div>
+
+<p>ويقوده سكربت صغير بعميل واحد، ثم 4، ثم 16، ثم 64، يرسل كلٌّ منها طلباً حالما يُجاب طلبه السابق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># نسخة واحدة، وعملاء يزيدون</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 1 4 16 64</span>
+العملاء         طلب/ث   p50 ms   p99 ms
+1                  95       10       11
+4                  97       30       72
+16                 97      153      716
+64                 95      225     3752</pre></div>
+
+<p>الإنتاجية لا تتحرك: نحو 95 طلباً في الثانية، أقصى ما تسمح به 10 ms من العمل لكل طلب. وما يكبر هو زمن الاستجابة. كل عميل إضافي ينتظر في الطابور فقط. والعلاقة هي <dfn>قانون ليتل</dfn> (Little’s law): عدد الطلبات في النظام يساوي الإنتاجية ضرب الوقت الذي يقضيه كلٌّ منها فيه، <em>L = λ × W</em>. فمع 16 عميلاً و97 طلباً في الثانية، يجب أن يقضي كل طلب 16 ÷ 97 ≈ 0.165 ثانية، والوسيط المقيس 153 ms. والقانون يصح لأي نظام مستقر، من خادم إلى طابور سوبرماركت، ويحوّل سؤال التصميم إلى حساب: لتخدم 400 طلب في الثانية بـ 50 ms لكلٍّ منها، يجب أن يكون نحو 20 قيد التنفيذ في وقت واحد.</p>
+
+<p>وانظر أيضاً إلى الصف الأخير. عند 64 عميلاً يكون الوسيط 225 ms لكن أبطأ 1% ينتظر قرابة أربع ثوانٍ: الطابور ليس عادلاً، وبعض الطلبات سيئة الحظ تنتظر خلف كثير غيرها. ولهذا المتوسطات مضللة، ولهذا تُكتب المتطلبات بالمئينات (p95 وp99)، كما فعل الفصل 1.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: قرب الحد، لا سقف لزمن الاستجابة</p><p>حين تصل الطلبات أبطأ قليلاً مما يستطيع الخادم إنهاءه، يبقى الطابور قصيراً. وحين تصل بالمعدل نفسه أو أسرع، يكبر الطابور ما دام الحمل الزائد، ويكبر معه زمن الاستجابة، حتى تنتهي مهل العملاء فيعيدون المحاولة، فيزيد الحمل أكثر. الخادم عند 95% من سعته ليس «بخير ومعه 5% احتياطاً»: إنه على بُعد قفزة صغيرة واحدة من طوابير طويلة. خطّط للعمل دون السعة بكثير، وارفض العمل الزائد مبكراً (حدود المعدل، والطوابير القصيرة، والمهل) بدل أن تقبله وتجيب متأخراً.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>خدمة تعالج 200 طلب في الثانية، ويقضي كل طلب فيها 80 ms. كم طلباً قيد التنفيذ في أي لحظة؟</li><li>إضافة عملاء إلى خادم الـ 10 ms لم ترفع الإنتاجية. ماذا فعلت، ولماذا؟</li><li>لماذا يهم حدّ معدل الدخول للسعة، بحسب جدول الأزمنة؟</li></ol></aside>
+
+<h2><span class="sec">6.4</span> <span>التوسع الأفقي</span></h2>
+
+<p>النسخة الواحدة لا تستطيع أكثر من نحو 95 طلباً في الثانية. والنسختان تستطيعان، إن وزّع شيء الطلبات بينهما: <dfn>موزّع حمل</dfn>. والموزّعات الحقيقية (Nginx، أو موزّع سحابي) تفعل أكثر بكثير، لكن اللب بضعة أسطر: اقبل طلباً، ووجّهه إلى النسخة التالية بالدور، وأعد الإجابة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">balancer.ts</div><pre class="code"><span class="k">import</span> { Agent, createServer, request } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+
+<span class="k">const</span> ports = process.argv.slice(<span class="n">2</span>).map(Number);
+<span class="c line-bidi">// أبقِ الاتصالات بالنسخ مفتوحة، كما تفعل موزّعات الحمل الحقيقية</span>
+<span class="k">const</span> agent = <span class="k">new</span> Agent({ keepAlive: <span class="k">true</span> });
+<span class="k">let</span> next = <span class="n">0</span>;
+
+createServer((incoming, outgoing) =&gt; {
+  <span class="c line-bidi">// التناوب الدائري: كل طلب إلى النسخة التالية، بالدور</span>
+  <span class="k">const</span> port = ports[next++ % ports.length];
+  <span class="k">const</span> upstream = request(
+    {
+      host: <span class="s">&quot;127.0.0.1&quot;</span>,
+      port,
+      path: incoming.url,
+      method: incoming.method,
+      headers: incoming.headers,
+      agent,
+    },
+    (answer) =&gt; {
+      outgoing.writeHead(answer.statusCode ?? <span class="n">502</span>, answer.headers);
+      answer.pipe(outgoing);
+    },
+  );
+  upstream.on(<span class="s">&quot;error&quot;</span>, () =&gt; outgoing.writeHead(<span class="n">502</span>).end());
+  incoming.pipe(upstream);
+}).listen(<span class="n">3000</span>);</pre></div>
+
+<p>العملاء الستة عشر أنفسهم، عبر الموزّع، إلى نسخة ثم نسختين ثم ثلاث:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># العملاء الستة عشر أنفسهم، عبر موزّع حمل</span>
+<span class="c line-bidi"># نسخة واحدة</span>
+<span class="c">$ </span><span class="k">PORT=3001 node queue.ts &amp;</span>
+<span class="c">$ </span><span class="k">node balancer.ts 3001 &amp;</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 16</span>
+العملاء         طلب/ث   p50 ms   p99 ms
+16                 97      153      703
+<span class="c line-bidi"># نسختان</span>
+<span class="c">$ </span><span class="k">PORT=3001 node queue.ts &amp; PORT=3002 node queue.ts &amp;</span>
+<span class="c">$ </span><span class="k">node balancer.ts 3001 3002 &amp;</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 16</span>
+العملاء         طلب/ث   p50 ms   p99 ms
+16                194       71      147
+<span class="c line-bidi"># ثلاث نسخ</span>
+<span class="c">$ </span><span class="k">PORT=3001 node queue.ts &amp; PORT=3002 node queue.ts &amp; PORT=3003 node queue.ts &amp;</span>
+<span class="c">$ </span><span class="k">node balancer.ts 3001 3002 3003 &amp;</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 16</span>
+العملاء         طلب/ث   p50 ms   p99 ms
+16                289       46      106</pre></div>
+
+<p>النسختان تضاعفان الإنتاجية وتنصّفان وسيط زمن الاستجابة؛ والثلاث تكاد تضاعفها ثلاثاً. وهذا يعمل فقط لأن كل نسخة قابلة للتبديل: لا نسخة تحفظ جلسات أو ملفات مرفوعة في ذاكرتها أو قرصها. ولهذا حفظ الفصل 4 الجلسات في قاعدة البيانات، ولهذا تذهب الملفات إلى مخزن الكائنات. أما التطبيق الذي يحفظ حالة في ذاكرته فيحتاج <em>جلسات لاصقة</em>، ترسل كل مستخدم إلى النسخة نفسها، فتوزّع الحمل بغير عدل وتفقد حالة ذلك المستخدم حين تُعاد النسخة.</p>
+
+<p>وللتوسع الأفقي حدود أيضاً. الآلة التي بنت هذا الكتاب لها أربع نوى، والموزّع ومولّد الحمل يحتاجان بعضها، فلن تضيف نسخة رابعة إلا قليلاً: ستتنافس النسخ على المعالج نفسه. وفي الإنتاج لكل نسخة مواردها، فينتقل الحد إلى مكان آخر، وغالباً جداً إلى الحالة المشتركة. عشر نسخ من التطبيق ترسل عشرة أضعاف الاستعلامات إلى قاعدة البيانات الواحدة.</p>
+
+<h2><span class="sec">6.5</span> <span>إلى أين ينتقل الحد</span></h2>
+
+<p>الحد التالي في «بِت للحجوزات» واضح من القسم 6.1: PostgreSQL. ولا توجد إلا طرق قليلة لدفعه إلى الوراء، والفصول التالية تعالج كلاً منها:</p>
+<ul>
+<li><strong>اعمل أقل لكل طلب:</strong> الفهارس، واستعلامات أقل، وبلا N+1 (الكتاب الثالث).</li>
+<li><strong>اقرأ من نسخ:</strong> نسخ للقراءة للقراءات الكثيرة (صفحات المواعيد العامة)، والنسخة الرئيسية للكتابة (الفصل 8).</li>
+<li><strong>تذكّر الإجابات:</strong> ذاكرة مؤقتة لبيانات تُقرأ أكثر بكثير مما تتغير، مع إجابة صادقة عن «كم يجوز أن تكون قديمة؟» (الفصل 8).</li>
+<li><strong>أخرج العمل من الطلب:</strong> طوابير وعمال لكل ما لا ينتظره المستخدم (الكتاب الثالث، والصندوق الصادر).</li>
+<li><strong>اقسم البيانات:</strong> التقسيم، حسب العمل مثلاً، حين لا تعود آلة واحدة تتحمل الكتابات. أقوى الخيارات، وأغلاها إلغاءً.</li>
+</ul>
+<p>وتقول أرقام الفصل 1 إن «بِت للحجوزات» لا يحتاج أياً منها بعد: أقل من مئة طلب في الثانية في الذروة. ومعرفة الخيارات، وترتيب استعمالها، هي ما يتيح للفريق أن ينتظر بهدوء حتى تقول القياسات غير ذلك.</p>
+
+<h2><span class="sec">6.6</span> <span>كل اختيار مفاضلة</span></h2>
+
+<p>في تصميم الأنظمة إجابات صحيحة قليلة ومفاضلات كثيرة. وأشهرها:</p>
+<ul>
+<li><strong>الاتساق أو التوافر.</strong> حين تقسم الشبكةُ نظاماً، يجب على كل جزء إما أن يرفض الطلبات أو يجيب ببيانات قد تكون قديمة. ولا يجوز أن يُباع الحجز مرتين أبداً، فيختار «بِت للحجوزات» الاتساق للحجوزات؛ وقائمة المواعيد المتاحة العامة يجوز أن تتأخر ثوانيَ.</li>
+<li><strong>الآن أو لاحقاً.</strong> العمل داخل الطلب يعطي إجابة فورية ويربط المستخدم بكل اعتمادية؛ والطابور يفصلهما ويجعل النتيجة تصل لاحقاً.</li>
+<li><strong>البساطة أو القابلية للتوسع.</strong> كل خطوة في القسم 6.5 تضيف قطعة متحركة تُشغَّل وتُراقب وتُصحَّح. خذها حين تفرضها الأرقام، لا قبل ذلك.</li>
+<li><strong>البناء أو الشراء.</strong> توصيل البريد والمدفوعات والتخزين تُشترى: صعبة، وليست ما يميز «بِت للحجوزات». وقواعد الحجز تُبنى: هي المنتج.</li>
+</ul>
+
+<h2><span class="sec">6.7</span> <span>وثيقة التصميم</span></h2>
+
+<p>التغييرات الكبيرة تستحق صفحة تُكتب قبل الكود: <dfn>وثيقة تصميم</dfn>. لها شكل قصير معتاد: <strong>السياق</strong> (ما الموجود، وما الخطأ فيه)؛ و<strong>الأهداف وما ليس هدفاً</strong>؛ و<strong>الأرقام</strong> (الحمل، وحجم البيانات، وأهداف زمن الاستجابة، من القياسات)؛ و<strong>التصميم</strong> (المكونات والحالة والتدفقات)؛ و<strong>البدائل</strong> التي نُظر فيها ولماذا خسرت؛ و<strong>المخاطر</strong> وكيف يكون التراجع. وقيمتها الكبرى المراجعة: يجد مهندسون آخرون الثغرة في الخطة وهي تكلّف عصراً، لا ربع سنة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: قدّر، ثم قِس، ثم قرّر</p><p>قبل أن تقترح ذاكرة مؤقتة أو طابوراً أو خدمة جديدة، اكتب أرقام الحساب السريع: الطلبات في الثانية، والبيانات في اليوم، وزمن كل خطوة. ثم قِس النظام الحقيقي تحت حمل واقعي، كما فعل هذا الفصل. معظم نقاشات الأداء تنتهي عند القياس الأول؛ والباقي يحسمه القياس الثاني.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>التصميم بالحدس</td><td>ذاكرات مؤقتة وخدمات حيث لا حاجة</td><td>قدّر، ثم قِس</td></tr>
+<tr><td>ذكر المتوسطات</td><td>الأطراف البطيئة مخفية عن الجميع</td><td>المئينات: p50 وp95 وp99</td></tr>
+<tr><td>العمل قرب السعة الكاملة</td><td>القفزات الصغيرة تصير طوابير طويلة ومهلاً منتهية</td><td>هامش، وحدود معدل، وطوابير قصيرة</td></tr>
+<tr><td>الحالة في ذاكرة التطبيق</td><td>النسخ لا يحل بعضها محل بعض</td><td>الحالة في مخازن مشتركة؛ ونسخ بلا حالة</td></tr>
+<tr><td>نداءات صغيرة متتالية كثيرة</td><td>الرحلات تهيمن على زمن الاستجابة</td><td>استعلامات أقل وأكبر؛ ونداءات متوازية</td></tr>
+<tr><td>توسيع التطبيق لا قاعدة البيانات</td><td>نسخ أكثر، والحد نفسه، وحمل أكبر عليه</td><td>جد عنق الزجاجة المشترك أولاً</td></tr>
+<tr><td>تقسيم البيانات مبكراً</td><td>تعقيد يصعب جداً إلغاؤه</td><td>الخيارات الأبسط أولاً، بالترتيب</td></tr>
+<tr><td>لا تصميم مكتوب للتغييرات الكبيرة</td><td>ثغرات تُكتشف في الإنتاج</td><td>وثيقة تصميم من صفحة، مراجَعة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>صِف النظام <strong>بمكوناته</strong>، و<strong>الحالة</strong> التي يحفظها كلٌّ منها، و<strong>التدفقات</strong> بينها؛ والحالة المشتركة هي حيث تظهر الحدود أولاً.</li>
+<li>فكّر <strong>بكلف مقيسة</strong>: الذاكرة بالنانوثواني، والرحلات بعشرات الميكروثواني إلى الميلي ثواني، ومزامنة القرص وبصمات كلمات المرور أكثر بكثير.</li>
+<li><strong>قانون ليتل</strong>، L = λ × W، يربط التزامن والإنتاجية وزمن الاستجابة.</li>
+<li>بعد السعة، <strong>تبقى الإنتاجية ثابتة ويكبر زمن الاستجابة</strong> بلا حد؛ فأبقِ هامشاً وارفض العمل الزائد مبكراً.</li>
+<li><strong>النسخ بلا حالة</strong> خلف <strong>موزّع حمل</strong> تتوسع أفقياً بشكل شبه خطي، حتى يصير مورد مشترك هو الحد.</li>
+<li>ادفع حد قاعدة البيانات إلى الوراء بالترتيب: عمل أقل، ونسخ للقراءة، وذاكرات مؤقتة، وطوابير، وبعدها فقط التقسيم.</li>
+<li>اجعل <strong>المفاضلات</strong> صريحة، واكتب <strong>وثيقة تصميم</strong> قصيرة لكل تغيير كبير.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. بقانون ليتل، L = λ × W = 200 × 0.08 = 16 طلباً قيد التنفيذ في المتوسط. وهذا الرقم يحدد أحجام أشياء مثل مجمعات الاتصالات وعدد العمال. 2. جعلت كل طلب ينتظر أطول. الخادم ينهي طلباً كل 10 ms مهما حدث، فالإنتاجية محدودة قرب 100 في الثانية؛ والعملاء الإضافيون يضيفون إلى الطابور فقط، وبقانون ليتل يكبر الوقت في النظام بنسبة عدد العملاء. 3. لأن بصمة كلمة مرور واحدة تكلّف قرابة عُشر ثانية من نواة معالج، أي ألف ضعف كل ما يفعله الطلب غيرها. ودفعة من محاولات الدخول، من مستخدمين حقيقيين أو من مهاجم يخمّن كلمات المرور، تستطيع أن تشغل كل النوى، فتنتظر كل صفحة أخرى. وحدّ المعدل يضع سقفاً لهذه الكلفة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">تبني هذه المشاريع عادة القياس. شغّل كلاً منها على آلتك، واكتب أرقامك بجانب أرقام الكتاب.</p>
+
+<div class="project">
+<p class="project-label">المشروع 6.1 · سهل</p>
+<h3>جدول أزمنتك أنت</h3>
+<p class="project-goal">وسّع <code>latency.ts</code> بالعمليات التي تستعملها مشاريعك.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القياس بعناية، والوسيط، وقراءة مراتب القدر.</p>
+<ol class="steps">
+<li>أضف: استعلاماً يستعمل فهرساً على 100,000 صف؛ والاستعلام نفسه بلا فهرس؛ و<code>GET</code> في Redis؛ وطلب HTTP إلى موقع عام.</li>
+<li>شغّله ثلاث مرات وتحقق أن الوسيط مستقر.</li>
+<li>اكتب لكل سطر قرار تصميم واحداً يدعمه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أبعد التشغيل الأول لكل عملية عن الأرقام: فهو يدفع ثمن ذاكرات مؤقتة واتصالات وترجمة لا تدفعها التشغيلات التالية.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 6.2 · متوسط</p>
+<h3>ارفض الحمل بدل أن تضعه في طابور</h3>
+<p class="project-goal">أبقِ زمن الاستجابة محدوداً حين يُحمَّل خادم الـ 10 ms فوق طاقته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> رفض الحمل، والمهل، وقراءة المئينات.</p>
+<ol class="steps">
+<li>أضف حداً إلى <code>queue.ts</code>: حين ينتظر أكثر من 4 طلبات، أجب 503 فوراً.</li>
+<li>شغّل اختبار الحمل بـ 64 عميلاً قبل ذلك وبعده. وقارن الإنتاجية وp50 وp99 وعدد إجابات 503.</li>
+<li>اشرح لماذا يحسّن رفضُ بعض الطلبات التجربةَ للباقي.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> عدّ الطلبات قيد التنفيذ بمتغير تزيده عند الوصول وتنقصه حين تنتهي الإجابة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 6.3 · تحدٍّ</p>
+<h3>وثيقة تصميم لعشرين ألف عمل</h3>
+<p class="project-goal">اكتب تصميم «بِت للحجوزات» بعشرة أضعاف حجم سنته الأولى وراجعه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التقدير، وإيجاد عنق الزجاجة، وكتابة المفاضلات.</p>
+<ol class="steps">
+<li>استعمل <code>budget.ts</code> من الفصل 1 بـ 20,000 عمل ومعامل ذروة 10.</li>
+<li>جد أول مكوّن يبلغ حده، بأرقام من قياسات هذا الفصل.</li>
+<li>اقترح أصغر تغيير يدفع الحد إلى الوراء، وبديلين رفضتهما.</li>
+<li>اطلب من شخصين مراجعتها، وسجّل ما تغيّر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> افصل القراءات عن الكتابات في أرقامك؛ فموقع الحجز يقرأ مواعيده المتاحة مرات كثيرة لكل حجز يكتبه.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> صفحة تصنع 12 استعلاماً متتالياً، كلٌّ منها 0.5 ms على الخادم، عبر شبكة رحلتها 1 ms. كم تقضي الصفحة تقريباً في قاعدة البيانات؟ وماذا تغيّر أولاً؟</li>
+<li><span class="level">سهل</span> لماذا كادت ثلاث نسخ من خادم الـ 10 ms تضاعف الإنتاجية ثلاثاً، بينما لن تفيد رابعة على الآلة نفسها كثيراً؟</li>
+<li><span class="level medium">متوسط</span> مجمع عمال يعالج مهاماً تستغرق كلٌّ منها ثانيتين. وتصل المهام بمعدل 30 في الثانية. كم عاملاً يلزم على الأقل، ولماذا يجب أن يكونوا أكثر؟</li>
+<li><span class="level medium">متوسط</span> كان تطبيق «بِت للحجوزات» يحفظ الشعارات المرفوعة على قرص الخادم نفسه. صِف ما الذي يخطئ حين تضيف نسخة ثانية خلف موزّع الحمل.</li>
+<li><span class="level hard">تحدٍّ</span> قائمة المواعيد المتاحة تُقرأ 50 مرة لكل حجز يُصنع. اقترح كيف تقدّمها من ذاكرة مؤقتة، وحدّد بالضبط كم يجوز أن تكون قديمة، واشرح لماذا لا تستطيع قائمة مواعيد قديمة أن تسبب حجزاً مزدوجاً.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 7</p>
+<p>الحمل خطر؛ والعطل الخطر الآخر. والفصل التالي يفترض أن كل جزء من «بِت للحجوزات» سيتعطل في وقت ما، ويصمم بحيث لا يكاد الزبائن يلاحظون.</p>
 </div>
 </section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
