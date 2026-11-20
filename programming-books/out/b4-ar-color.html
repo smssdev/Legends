@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "الفصل 6: أساسيات تصميم الأنظمة"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "الفصل 7: التصميم على افتراض الفشل"; } }
+@page ch07:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -2503,6 +2505,340 @@ createServer((incoming, outgoing) =&gt; {
 <p>الحمل خطر؛ والعطل الخطر الآخر. والفصل التالي يفترض أن كل جزء من «بِت للحجوزات» سيتعطل في وقت ما، ويصمم بحيث لا يكاد الزبائن يلاحظون.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b4/failure/ar">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">الفصل 7</p><h1>التصميم على افتراض الفشل</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تسرد كيف يمكن أن يفشل كل جزء من النظام، وتقرر ماذا يرى الزبائن حين يفشل</li>
+<li>تضع مهلة على كل نداء لنظام آخر</li>
+<li>تعيد المحاولة فقط لما قد ينجح، بتراجع وتشويش</li>
+<li>تتعرف على عاصفة إعادة المحاولات، وتوقفها بقاطع دائرة</li>
+<li>تعطي الزبائن إجابة مفيدة حين تتعطل اعتمادية، بدل صفحة خطأ</li>
+<li>تزيل نقاط الفشل الوحيدة، وتتدرب على الأعطال قبل أن تحدث فعلاً</li>
+</ul>
+</div>
+
+<p class="lead">سأل الفصل الماضي ماذا يحدث حين يصل عشرة أضعاف الناس. وهذا الفصل يسأل ماذا يحدث حين ينكسر شيء، لأن شيئاً ينكسر دائماً: مزوّد يمر بساعة سيئة، أو قرص يمتلئ، أو نشر يفشل، أو كابل شبكة يُقطع. والنظام الذي لا يعمل إلا حين يعمل كل شيء سيتوقف أكثر بكثير من أي جزء من أجزائه. والتصميم على افتراض الفشل يعني أن تختار، مسبقاً وعمداً، كيف سيبدو كل عطل للزبون، وأن تمنع جزءاً مكسوراً من أن يُسقط الباقي معه. وتضع أمثلة هذا الفصل مزوّد الدفع في «بِت للحجوزات» في يوم سيئ ثم في عطل كامل، وتقيس ما تغيّره كل وسيلة دفاع.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>معظم الأعطال الكبيرة التي قرأت عنها لم تبدأ بفشل كبير. بدأت بفشل صغير تصرّف معه كل جزء آخر تصرفاً سيئاً: انتظر إلى الأبد، أو أعاد المحاولة دفعة واحدة، أو ملأ الطوابير بلا حد. ووسائل الدفاع في هذا الفصل معظمها عن حسن التصرف.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>كيف تفشل الأشياء</span></h2>
+
+<p>ابدأ بسرد الأعطال، كما تسرد المواصفات القصص. ولكل اعتمادية، اسأل كيف يمكن أن تفشل وماذا يجب أن يرى الزبائن:</p>
+
+<table>
+<thead><tr><th>الجزء</th><th>كيف يفشل</th><th>ما يجب أن يراه الزبائن</th></tr></thead>
+<tbody>
+<tr><td>مزوّد الدفع</td><td>أخطاء، وإجابات بطيئة، وعطل كامل</td><td>الحجز ممكن، والعربون لاحقاً، والموعد محجوز</td></tr>
+<tr><td>خدمة البريد</td><td>ترفض البريد أو تؤخره</td><td>لا شيء: الصندوق الصادر ينتظر ويعيد</td></tr>
+<tr><td>مخزن الكائنات</td><td>يفشل الرفع</td><td>يفشل رفع الشعار بوضوح؛ والحجوزات لا تتأثر</td></tr>
+<tr><td>نسخة واحدة من التطبيق</td><td>تتعطل، أو تتجمد</td><td>لا شيء: يكف موزّع الحمل عن الإرسال إليها</td></tr>
+<tr><td>PostgreSQL</td><td>متوقف، أو ينتقل إلى البديل</td><td>صفحة واضحة «أعد المحاولة بعد دقيقة»، لثوانٍ لا لساعات</td></tr>
+</tbody>
+</table>
+
+<p>نوعان من الفشل يتصرفان بشكل مختلف جداً. الفشل <em>السريع</em> (إجابة خطأ، أو اتصال مرفوض) يكلّف المنادي قليلاً. أما الفشل <em>البطيء</em> (إجابة لا تأتي أبداً) فأسوأ بكثير: كل طلب ينتظر يمسك اتصالاً وذاكرة وغالباً معاملة قاعدة بيانات، والانتظار ينتشر إلى كل ما ينتظره. ومعظم هذا الفصل يحوّل الأعطال البطيئة إلى سريعة.</p>
+
+<h2><span class="sec">7.2</span> <span>يوم سيئ لمزوّد</span></h2>
+
+<p>لنرى وسائل الدفاع تعمل، نحتاج مزوّداً يسيء التصرف عند الطلب. هذا البديل يفشل في كل رابع طلب ويستغرق ثلاث ثوانٍ في كل عاشر؛ وفي وضع «down» يفشل في كل طلب. ويعدّ أيضاً ما يستقبله، لأن الحمل الذي يضعه المنادون على خدمة متعثرة جزء من القصة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">provider.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { setTimeout as sleep } <span class="k">from</span> <span class="s">&quot;node:timers/promises&quot;</span>;
+
+<span class="c line-bidi">// flaky: كل رابع طلب يفشل، وكل عاشر يستغرق 3 ثوانٍ؛ down: كل طلب يفشل</span>
+<span class="k">let</span> mode = process.env.MODE ?? <span class="s">&quot;flaky&quot;</span>;
+<span class="k">let</span> seen = <span class="n">0</span>;
+
+createServer(<span class="k">async</span> (request, response) =&gt; {
+  <span class="k">if</span> (request.url === <span class="s">&quot;/stats&quot;</span>) <span class="k">return</span> response.end(JSON.stringify({ seen }));
+  <span class="k">if</span> (request.url?.startsWith(<span class="s">&quot;/mode/&quot;</span>)) {
+    mode = request.url.slice(<span class="n">6</span>);
+    seen = <span class="n">0</span>;
+    <span class="k">return</span> response.end(mode);
+  }
+  <span class="k">const</span> n = ++seen;
+  <span class="k">if</span> (mode === <span class="s">&quot;down&quot;</span>) {
+    <span class="k">await</span> sleep(<span class="n">20</span>);
+    <span class="k">return</span> response.writeHead(<span class="n">503</span>).end(<span class="s">&quot;down&quot;</span>);
+  }
+  <span class="k">if</span> (n % <span class="n">10</span> === <span class="n">0</span>) <span class="k">await</span> sleep(<span class="n">3000</span>);
+  <span class="k">if</span> (n % <span class="n">4</span> === <span class="n">0</span>) <span class="k">return</span> response.writeHead(<span class="n">500</span>).end(<span class="s">&quot;error&quot;</span>);
+  response.end(JSON.stringify({ checkout: <span class="s">`cs_${n}`</span> }));
+}).listen(<span class="n">4000</span>);</pre></div>
+
+<p>ويصنع المنادي 40 نداء عربون، أربعة في كل مرة، بإستراتيجية واحدة في كل مرة، ويبلّغ بما حصل عليه الزبائن وما اضطر المزوّد إلى تحمله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">caller.ts</div><pre class="code"><span class="k">const</span> attempt: Record&lt;string, () =&gt; Promise&lt;unknown&gt;&gt; = {
+  none: () =&gt; call(URL),
+  timeout: () =&gt; call(URL, <span class="n">500</span>),
+  retry: () =&gt; retry(() =&gt; call(URL, <span class="n">500</span>)),
+  breaker: () =&gt; breaker.run(() =&gt; retry(() =&gt; call(URL, <span class="n">500</span>))),
+};</pre></div>
+
+<h2><span class="sec">7.3</span> <span>المهل</span></h2>
+
+<p>أول وسيلة دفاع <dfn>المهلة</dfn>: موعد نهائي يكف المنادي بعده عن الانتظار ويعدّ النداء فاشلاً. و<code>fetch</code> تأخذ إشارة إلغاء لهذا بالضبط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">resilience.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> call(url: string, timeoutMs?: number) {
+  <span class="k">const</span> signal = timeoutMs ? AbortSignal.timeout(timeoutMs) : <span class="k">undefined</span>;
+  <span class="k">const</span> response = <span class="k">await</span> fetch(url, { method: <span class="s">&quot;POST&quot;</span>, signal });
+  <span class="k">if</span> (!response.ok) <span class="k">throw</span> <span class="k">new</span> HttpError(response.status);
+  <span class="k">return</span> response.json();
+}</pre></div>
+
+<p>اختر المهلة من سلوك الاعتمادية المعتاد: أعلى قليلاً من p99 لها في يوم جيد، وهنا 500 ms. ثم تحقق أن المهل تتجمع بشكل معقول: إن كان يجب أن تجيب صفحة في ثانيتين، فلا يجوز أن يُعطى كل نداء فيها ثانيتين. وتذكّر أن المهلة لا تلغي العمل في الطرف الآخر: قد ينشئ المزوّد جلسة الدفع بعد أن استسلمت، ولهذا مفاتيح منع التكرار في الكتاب الثالث مهمة.</p>
+
+<h2><span class="sec">7.4</span> <span>إعادة المحاولة، بحذر</span></h2>
+
+<p>كثير من الأعطال لحظية، فالمحاولة ثانية تنجح غالباً. لكن إعادة المحاولة خطرة بثلاث طرق، ويجب أن يعالج الكود كلاً منها:</p>
+<ul>
+<li><strong>فقط ما قد ينجح.</strong> الـ 500 أو انتهاء المهلة قد يمر في المرة التالية؛ أما 400 أو 401 فلن تمر أبداً. وإعادتها تضيف حملاً فقط.</li>
+<li><strong>فقط ما يجوز تكراره.</strong> طلب الدفع المعاد يجب أن يحمل مفتاح منع التكرار نفسه، وإلا صار النجاح البطيء خصماً مزدوجاً.</li>
+<li><strong>لا دفعة واحدة.</strong> العملاء الذين فشلوا معاً ويعيدون بعد التأخير الثابت نفسه يفشلون معاً من جديد. والانتظار العشوائي، الذي يكبر مع كل محاولة (<dfn>التراجع الأُسّي مع التشويش</dfn>)، يفرّقهم.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">resilience.ts</div><pre class="code"><span class="k">const</span> retryable = (error: unknown) =&gt;
+  !(error <span class="k">instanceof</span> HttpError) || error.status &gt;= <span class="n">500</span> || error.status === <span class="n">429</span>;
+
+<span class="c line-bidi">// أعد فقط ما قد ينجح في المرة التالية، وانتظر أطول في كل مرة</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> retry&lt;T&gt;(
+  work: () =&gt; Promise&lt;T&gt;,
+  attempts = <span class="n">3</span>,
+  baseMs = <span class="n">100</span>,
+): Promise&lt;T&gt; {
+  <span class="k">for</span> (<span class="k">let</span> attempt = <span class="n">1</span>; ; attempt++) {
+    <span class="k">try</span> {
+      <span class="k">return</span> <span class="k">await</span> work();
+    } <span class="k">catch</span> (error) {
+      <span class="k">if</span> (attempt === attempts || !retryable(error)) <span class="k">throw</span> error;
+      <span class="c line-bidi">// تشويش كامل: انتظار عشوائي، كي لا يعيد معاً العملاءُ الذين فشلوا معاً</span>
+      <span class="k">await</span> sleep(Math.random() * baseMs * <span class="n">2</span> ** attempt);
+    }
+  }
+}</pre></div>
+
+<p>وهذا يوم المزوّد السيئ، بلا دفاع، ثم بمهلة، ثم بمهلة وإعادة محاولة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المزوّد في يوم سيئ</span>
+الإستراتيجية نجح     فشل    الأبطأ   المجموع  رأى المزوّد
+<span class="c">$ </span><span class="k">node caller.ts none</span>
+none       30      10   3005 ms   3106 ms           40
+<span class="c">$ </span><span class="k">node caller.ts timeout</span>
+timeout    28      12    503 ms    618 ms           40
+<span class="c">$ </span><span class="k">node caller.ts retry</span>
+retry      40       0    937 ms   1838 ms           57</pre></div>
+
+<p>بلا مهلة، حصل ربع الزبائن على خطأ وانتظر بعضهم ثلاث ثوانٍ لإجابة. والمهلة حدّت الانتظار بنصف ثانية، مقابل أعطال أكثر قليلاً (فالنداءات البطيئة تفشل الآن أيضاً). وإعادة المحاولة حوّلت كل تلك الأعطال اللحظية إلى نجاح، وانتظر أبطأ زبون أقل من ثانية. والكلفة في العمود الأخير: استقبل المزوّد 57 طلباً لأربعين عربوناً.</p>
+
+<h2><span class="sec">7.5</span> <span>حين تجعل إعادة المحاولة الأمر أسوأ</span></h2>
+
+<p>ذلك الحمل الإضافي لا يضر في يوم سيئ، ويصير خطراً في العطل الكامل. وهذا المنادي نفسه والمزوّد متوقف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المزوّد معطل</span>
+الإستراتيجية نجح     فشل    الأبطأ   المجموع  رأى المزوّد
+<span class="c">$ </span><span class="k">node caller.ts none</span>
+none        0      40     88 ms    305 ms           40
+<span class="c">$ </span><span class="k">node caller.ts retry</span>
+retry       0      40    622 ms   3878 ms          120</pre></div>
+
+<p>كل عربون يفشل في الحالين، لكن مع إعادة المحاولة يستقبل المزوّد ثلاثة أضعاف الطلبات وهو يحاول التعافي، والأعطال الأربعون نفسها تستغرق أكثر من عشرة أضعاف الوقت لتصل. واضرب ذلك في كل عملاء مزوّد كبير تحصل على <dfn>عاصفة إعادة المحاولات</dfn>: تسحق الخدمةَ المتعافية مناديها أنفسهم. والعلاج أن تكف عن مناداة اعتمادية متوقفة بوضوح، وأن تحاول من جديد بين حين وآخر فقط. وهذا <dfn>قاطع الدائرة</dfn> (circuit breaker):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">resilience.ts</div><pre class="code"><span class="k">export</span> <span class="k">class</span> CircuitBreaker {
+  private failures = <span class="n">0</span>;
+  private openedAt = <span class="n">0</span>;
+  private state: <span class="s">&quot;closed&quot;</span> | <span class="s">&quot;open&quot;</span> | <span class="s">&quot;half-open&quot;</span> = <span class="s">&quot;closed&quot;</span>;
+  private threshold: number;
+  private cooldownMs: number;
+
+  constructor(threshold = <span class="n">5</span>, cooldownMs = <span class="n">2000</span>) {
+    <span class="k">this</span>.threshold = threshold;
+    <span class="k">this</span>.cooldownMs = cooldownMs;
+  }
+
+  <span class="k">async</span> run&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;): Promise&lt;T&gt; {
+    <span class="k">if</span> (<span class="k">this</span>.state === <span class="s">&quot;open&quot;</span>) {
+      <span class="c line-bidi">// مفتوح: افشل فوراً، دون أن تلمس المزوّد</span>
+      <span class="k">if</span> (Date.now() - <span class="k">this</span>.openedAt &lt; <span class="k">this</span>.cooldownMs)
+        <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;circuit open&quot;</span>);
+      <span class="c line-bidi">// نصف مفتوح: نداء تجريبي واحد يقرر هل يُغلق من جديد</span>
+      <span class="k">this</span>.state = <span class="s">&quot;half-open&quot;</span>;
+    }
+    <span class="k">try</span> {
+      <span class="k">const</span> result = <span class="k">await</span> work();
+      <span class="k">this</span>.failures = <span class="n">0</span>;
+      <span class="k">this</span>.state = <span class="s">&quot;closed&quot;</span>;
+      <span class="k">return</span> result;
+    } <span class="k">catch</span> (error) {
+      <span class="k">this</span>.failures++;
+      <span class="k">if</span> (<span class="k">this</span>.state === <span class="s">&quot;half-open&quot;</span> || <span class="k">this</span>.failures &gt;= <span class="k">this</span>.threshold) {
+        <span class="k">this</span>.state = <span class="s">&quot;open&quot;</span>;
+        <span class="k">this</span>.openedAt = Date.now();
+      }
+      <span class="k">throw</span> error;
+    }
+  }
+}</pre></div>
+
+<p>يكون <em>مغلقاً</em> ما دامت النداءات تنجح. وبعد عدد من الأعطال المتتالية <em>ينفتح</em>: تفشل النداءات فوراً، دون أن تلمس المزوّد. وبعد فترة تهدئة يدع نداءً تجريبياً واحداً يمر، <em>نصف مفتوح</em>؛ فالنجاح يغلقه، والفشل يفتحه من جديد. ومع القاطع أمام إعادة المحاولات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c">$ </span><span class="k">node caller.ts breaker</span>
+breaker     0      40    484 ms    807 ms           24</pre></div>
+
+<p>يستقبل المزوّد 24 طلباً بدل 120، وتصل الأعطال نفسها إلى الزبائن في ربع الوقت أو أقل. وحين يعود المزوّد، يلاحظ النداء التجريبي ذلك خلال فترة التهدئة، فتعود النداءات تتدفق.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا الفشل البطيء أسوأ من السريع للمنادي؟</li><li>أيٌّ من هذه يجب أن يُعاد: انتهاء مهلة، و503، و422، و429؟ ولماذا؟</li><li>أثناء العطل، ماذا يغيّر قاطع الدائرة للزبون، وماذا للمزوّد؟</li></ol></aside>
+
+<h2><span class="sec">7.6</span> <span>إجابة مفيدة بدل الخطأ</span></h2>
+
+<p>النداء الفاشل لا يعني بالضرورة صفحة فاشلة. قرّر ما يجب أن يحصل عليه الزبون حين تكون كل اعتمادية غير متاحة، وأعد ذلك: <dfn>البديل</dfn> (fallback). وللعربون، تسمح المواصفات للحجز بأن ينتظر عربونه 30 دقيقة، فيحجز البديل الموعد ويقول ذلك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما يراه الزبون والقاطع مفتوح</span>
+<span class="c">$ </span><span class="k">node customer.ts | sed -n &#x27;1,4p&#x27;</span>
+1 {&quot;error&quot;:&quot;العربون غير متاح الآن؛ موعدك محجوز 30 دقيقة.&quot;,&quot;cause&quot;:&quot;HTTP 503&quot;}
+2 {&quot;error&quot;:&quot;العربون غير متاح الآن؛ موعدك محجوز 30 دقيقة.&quot;,&quot;cause&quot;:&quot;HTTP 503&quot;}
+3 {&quot;error&quot;:&quot;العربون غير متاح الآن؛ موعدك محجوز 30 دقيقة.&quot;,&quot;cause&quot;:&quot;circuit open&quot;}
+4 {&quot;error&quot;:&quot;العربون غير متاح الآن؛ موعدك محجوز 30 دقيقة.&quot;,&quot;cause&quot;:&quot;circuit open&quot;}</pre></div>
+
+<p>ينتظر أول زبونين أخطاء المزوّد؛ ثم ينفتح القاطع، فيحصل التالون على الإجابة المفيدة نفسها فوراً. وبدائل أخرى تتبع الفكرة نفسها: اعرض القائمة المخزنة مؤقتاً للمواعيد، معلَّمة بأنها قد تكون قديمة ببضع دقائق، حين تبطؤ قاعدة البيانات؛ واقبل الحجز وضع بريد التأكيد في الطابور حين تتعطل خدمة البريد. وكل بديل قرار منتج يُكتب في المواصفات، لا ارتجال في <code>catch</code>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: البدائل يجب ألا تكذب</p><p>البديل الذي يخفي عطلاً أسوأ من الخطأ. لا تعرض «استُلمت الدفعة» لأن المزوّد لم يُجب أبداً، ولا تعرض قائمة حجوزات فارغة لأن مهلة قاعدة البيانات انتهت (سيظن صاحب العمل أن اليوم فارغ)، وسجّل دائماً أن بديلاً استُعمل، بمقياس وتنبيه، كي لا يبقى نظام متدهور متدهوراً أسبوعاً دون أن يعلم أحد.</p></aside>
+
+<h2><span class="sec">7.7</span> <span>لا نقطة فشل وحيدة</span></h2>
+
+<p>المهل وإعادة المحاولة والقواطع تحمي المنادي من اعتمادية تفشل. والنصف الآخر من العمل جعل كل جزء أصعب سقوطاً:</p>
+<ul>
+<li><strong>التكرار الاحتياطي.</strong> نسختان على الأقل من كل جزء بلا حالة، في أماكن مختلفة (آلات مختلفة، والأفضل مراكز بيانات مختلفة)، خلف موزّع حمل يفحص صحتها ويكف عن إرسال الحركة إلى نسخة تفشل (<code>/ready</code> في الكتاب الثالث).</li>
+<li><strong>الأجزاء ذات الحالة هي الصعبة.</strong> يحتاج PostgreSQL نسخة احتياطية جاهزة تستطيع أن تحل محله، وانتقالاً إليها مُجرَّباً؛ وقواعد البيانات المُدارة تبيع هذا بالضبط. والنسخ الاحتياطية ليست تكراراً: الاستعادة تستغرق ساعات، ويجب أن تكون قد جربتها.</li>
+<li><strong>الحواجز.</strong> مجمعات منفصلة لأعمال منفصلة، كي لا تستطيع مهمة جامحة استعمال كل الاتصالات: يجب ألا يتشارك المرسِل وتطبيق الويب مجمع اتصالات قاعدة البيانات نفسه، ويجب ألا يمسك تقرير بطيء الاتصالاتِ التي تحتاجها الحجوزات.</li>
+<li><strong>الإيقاف اللطيف.</strong> تنهي كل نسخة طلباتها الجارية قبل أن تتوقف (الكتاب الثالث)، فلا يكون النشر أعطالاً صغيرة.</li>
+</ul>
+
+<p>وأخيراً، تدرّب. العطل الذي لم تره قط ستتعامل معه بسوء. أوقف المزوّد في بيئة اختبار وراقب ما يراه الزبائن؛ واقتل نسخة من التطبيق أثناء اختبار حمل؛ وانقل قاعدة البيانات إلى بديلها عمداً، عصر يوم عمل، والجميع يراقب. وتسمي الفرق هذا <dfn>يوم المناورة</dfn> (game day)، ونتائجه أرخص من أي حادثة حقيقية.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اكتب العطل في المواصفات</p><p>لكل اعتمادية جديدة، أضف سطراً إلى المواصفات قبل الكود: «إن كان X غير متاح، يرى الزبائن Y، ونُنبَّه بـ Z.» فإن لم يستطع أحد كتابة السطر، فالفريق لم يقرر، وسيقرر الكود بالمصادفة، بصفحة خطأ غالباً.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>نداءات بلا مهل</td><td>اعتمادية بطيئة واحدة تجمّد كل شيء</td><td>مهلة على كل نداء</td></tr>
+<tr><td>إعادة كل خطأ</td><td>حمل يُضاف لأخطاء لا يمكن أن تنجح أبداً</td><td>أعد انتهاء المهل و5xx و429 فقط</td></tr>
+<tr><td>تأخيرات إعادة ثابتة</td><td>العملاء يعيدون بخطى واحدة ويفشلون معاً</td><td>تراجع أُسّي مع تشويش</td></tr>
+<tr><td>إعادة بلا منع تكرار</td><td>نجاح بطيء يتكرر: خصم مزدوج</td><td>مفاتيح منع التكرار على الكتابات المعادة</td></tr>
+<tr><td>إعادة المحاولة أثناء العطل</td><td>عاصفة إعادة تُبقي الاعتمادية متوقفة</td><td>قاطع دائرة</td></tr>
+<tr><td>صفحات خطأ لكل عطل</td><td>عطل المزوّد يصير عطلك</td><td>بدائل مقررة في المواصفات</td></tr>
+<tr><td>بدائل صامتة</td><td>تدهور أياماً دون أن يعلم أحد</td><td>مقاييس وتنبيهات على كل بديل</td></tr>
+<tr><td>أعطال لم يُتدرب عليها قط</td><td>أول عطل حقيقي فوضى</td><td>أيام مناورة، عمداً</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>اسرد كيف يفشل كل جزء وماذا يجب أن يرى الزبائن؛ وحوّل <strong>الأعطال البطيئة إلى سريعة</strong>.</li>
+<li>ضع <strong>مهلة</strong> على كل نداء، مختارة من زمن استجابة الاعتمادية المعتاد، واجعل المهل تتجمع بشكل معقول.</li>
+<li><strong>أعد المحاولة</strong> فقط لما قد ينجح ويجوز تكراره، <strong>بتراجع أُسّي وتشويش</strong>.</li>
+<li>أثناء العطل تصير إعادة المحاولات <strong>عاصفة</strong>؛ و<strong>قاطع الدائرة</strong> يفشل بسرعة ويدع نداءً تجريبياً يمر بين حين وآخر.</li>
+<li>أجب <strong>ببديل</strong> مقرر في المواصفات، لا يكذب أبداً، ومقيس دائماً.</li>
+<li>أزل <strong>نقاط الفشل الوحيدة</strong> بالتكرار الاحتياطي والحواجز والإيقاف اللطيف، و<strong>تدرّب</strong> على الأعطال في أيام المناورة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن الفشل السريع يحرر المنادي فوراً، بينما يُبقي البطيء كل ما يمسكه الطلب (اتصالاً، وذاكرة، وعاملاً، وأحياناً معاملة قاعدة بيانات وأقفالها) ما دام الانتظار. ومع طلبات كثيرة منتظرة، تنفد هذه الموارد من المنادي فيبدأ يفشل هو أيضاً، فينتشر البطء في السلسلة. 2. انتهاء المهلة و503 و429 قد تنجح لاحقاً: الأولان عطلان مؤقتان في الطرف الآخر، و429 تعني «طلبات كثيرة، تمهّل» (واحترم <code>Retry-After</code> فيها). أما 422 فتعني أن الطلب نفسه غير صالح؛ وإرسال الطلب نفسه ثانية سيُرفض ثانية، فإعادته تضيف حملاً فقط. 3. للزبون، يصل الفشل فوراً بدل أن يصل بعد عدة إعادات انتهت مهلها، ويمكن عرض البديل مباشرة. وللمزوّد، يهبط سيل الطلبات إلى نداء تجريبي بين حين وآخر، فيجد متسعاً ليتعافى بدل أن تسحقه إعادات المحاولة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يجعل «بِت للحجوزات» أصمد. قِس قبل وبعد بالمزوّد البديل، كما فعل الفصل.</p>
+
+<div class="project">
+<p class="project-label">المشروع 7.1 · سهل</p>
+<h3>جدول أعطال لـ «بِت للحجوزات»</h3>
+<p class="project-goal">اكتب جدول الأعطال الكامل لكل اعتمادية، وأضفه إلى المواصفات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تحليل الأعطال، وقرارات المنتج، والتنبيه.</p>
+<ol class="steps">
+<li>لكل اعتمادية، اسرد طريقتين على الأقل لفشلها.</li>
+<li>لكل عطل، اكتب ما يراه الزبائن، وما يراه أصحاب العمل، وأي تنبيه يعمل.</li>
+<li>علّم الأعطال التي تعطي اليوم صفحة خطأ، واختر أولها إصلاحاً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ضمّن أعطال أجزاء «بِت للحجوزات» نفسها أيضاً: قرص ممتلئ على خادم قاعدة البيانات، وشهادة TLS منتهية، ونشر لا يصير جاهزاً أبداً.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 7.2 · متوسط</p>
+<h3>احترم المزوّد</h3>
+<p class="project-goal">اجعل إعادة المحاولة تحترم <code>Retry-After</code>، وحدّد سقفاً للوقت الكلي.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> دلالات HTTP، ومهل تتجمع بمعقولية، والاختبار ببديل.</p>
+<ol class="steps">
+<li>علّم المزوّد البديل أن يجيب 429 مع <code>Retry-After: 1</code> في كل خامس طلب.</li>
+<li>اجعل <code>retry</code> تنتظر ذلك الوقت عند 429 بدل تراجعها الخاص.</li>
+<li>أعطِ حلقة إعادة المحاولة كلها مهلة كلية من ثانيتين، تستسلم بعدها.</li>
+<li>أظهر بالمنادي أن لا زبون ينتظر أكثر من ثانيتين.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مرر <code>AbortSignal.timeout(2000)</code> واحدة للعملية كلها، واجمعها بمهلة كل نداء بـ <code>AbortSignal.any</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 7.3 · تحدٍّ</p>
+<h3>يوم مناورة</h3>
+<p class="project-goal">نفّذ تمرين أعطال مخططاً على «بِت للحجوزات»، وحوّل نتائجه إلى إصلاحات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختبار الفوضى، والملاحظة، وكتابة مراجعة حادثة.</p>
+<ol class="steps">
+<li>شغّل التطبيق وقاعدة البيانات والمزوّد البديل وحملاً ثابتاً (سكربت الحمل من الفصل 6).</li>
+<li>اكتب التوقعات أولاً: ماذا سيرى الزبائن حين يتوقف المزوّد، وحين تُقتل نسخة من التطبيق، وحين تُعاد قاعدة البيانات.</li>
+<li>سبّب كل عطل بدوره، وسجّل ما حدث فعلاً، بالأرقام.</li>
+<li>اكتب مراجعة من صفحة: التوقعات، والواقع، وثلاثة تغييرات، مرتبة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أثمن النتائج المفاجآت؛ فاكتب التوقعات قبل أن تبدأ، وإلا ستتذكر أنك توقعت ما رأيت.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> صفحة تنادي ثلاث خدمات واحدة بعد أخرى، ويجب أن تجيب خلال 1.5 ثانية. وp99 لكل خدمة 200 ms. اقترح مهلة لكل نداء، واشرح أرقامك.</li>
+<li><span class="level">سهل</span> لماذا تنتظر دالة إعادة المحاولة وقتاً عشوائياً، بدل 100 و200 و400 ms بالضبط؟</li>
+<li><span class="level medium">متوسط</span> يُعاد نداء العربون في «بِت للحجوزات» بعد انتهاء مهلة. صِف كيف يمكن أن يُخصم من الزبون مرتين، وما الذي يمنع ذلك.</li>
+<li><span class="level medium">متوسط</span> ينفتح قاطع الدائرة بعد 5 أعطال متتالية وينتظر ثانيتين. ما الذي سيخطئ بحد 1؟ وبفترة تهدئة 10 دقائق؟</li>
+<li><span class="level hard">تحدٍّ</span> قاعدة البيانات بطيئة لا متوقفة: الاستعلامات تستغرق 4 ثوانٍ بدل 4 ms. صِف خطوة بخطوة ما يحدث لنسخ التطبيق وموزّع الحمل والزبائن، وأي وسائل دفاع هذا الفصل تنطبق.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 8</p>
+<p>الحمل والعطل ينتهيان كلاهما إلى المكان نفسه: البيانات. والفصل التالي عن البيانات على نطاق واسع: نسخ القراءة، والذاكرات المؤقتة، والتقسيمات، والاتساق الذي يكلّفه كلٌّ منها.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2588,6 +2924,16 @@ export async function GET(request: Request) {
 <li>يبقى <code>sent_at</code> فارغاً في الصف، فيرسل التشغيل التالي البريد ثانية: التسليم مرة على الأقل، ويتلقى الزبون رسالتين. ولتجعله يتلقى واحدة، أعطِ خدمة البريد مفتاح منع تكرار، وكثير منها يقبله (ورقم الصندوق الصادر هو المفتاح الطبيعي؛ ومرسِلنا يرسله أصلاً في ترويسة <code>X-Outbox-Id</code>)، فتُسقط الخدمة الإرسال الثاني. وبلا هذا الدعم، صغّر النافذة: علّم الصف <code>sending</code> مع وقت قبل الإرسال، ولا تعد إرسال إلا الصفوف التي قدمت محاولتها. ويبقى تكرار نادر ممكناً، ولهذا فـ «مرة على الأقل» هو الوعد الصادق للبريد.</li>
 <li>في خطوة العربون يفشل <code>fetch</code> أو تنتهي مهلته: اليوم يرمي <code>startDeposit</code> استثناء، ويرى الزبون خطأ، ويبقى صف الدفعة المعلّقة بلا جلسة دفع. والأفضل: أعطِ النداء مهلة قصيرة وإعادة محاولة؛ فإن ظل يفشل، أبقِ الحجز <code>awaiting_deposit</code>، وتراجع عن الدفعة أو علّمها <code>failed</code>، واعرض على الزبون «الدفع غير متاح الآن؛ موعدك محجوز 30 دقيقة، أعد المحاولة من الرابط في بريدك»، ويرسل الصندوق الصادر ذلك الرابط. ولا تضيع الـ webhooks أثناء العطل: يعيدها المزوّد حين يعود، والمعالج الذي لا يتأثر بالتكرار يطبّقها مرة.</li>
 <li>لا تثق بترتيب الوصول؛ قرّر بالحالة التي يستطيع الحدث أن ينطبق عليها، وبوقت المزوّد نفسه. يسمّي كل تحديث الحالة التي ينقل منها: <code>paid</code> من <code>pending</code> فقط، و<code>refunded</code> من <code>paid</code> فقط. فإن وصل <code>checkout.refunded</code> أولاً، فلا دفعة مدفوعة لتُسترد: احفظ الحدث (هو في <code>webhook_events</code> أصلاً بحمولته) <em>مؤجَّلاً</em> بدل إسقاطه، وحين يُطبَّق <code>checkout.paid</code>، ابحث عن الأحداث المؤجلة لجلسة الدفع نفسها وطبّقها بترتيب وقت <code>created</code> عند المزوّد. والبديل الأبسط، الذي يوصي به معظم المزوّدين: مع أي حدث، اجلب الحالة الحالية لجلسة الدفع من واجهة المزوّد واضبط الدفعة لتطابقها، فلا يعود ترتيب الـ webhooks مهماً.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 7</h2>
+<ol class="exercises">
+<li>أعلى قليلاً من p99 لكل خدمة، كي لا تصطدم بها النداءات العادية أبداً: نحو 300 ms لكلٍّ منها. فتكلّف الثلاثة متتالية 900 ms على الأكثر، ويبقى 600 ms لعمل الصفحة نفسها ولإعادة محاولة واحدة لنداء واحد. وإن كان يجب أن تتسع إعادة لكل نداء، فالميزانية لا تكفي (3 × 2 × 300 = 1.8 ثانية)، وهذا يقول لك أن تجعل النداءات متوازية حيث تكون مستقلة، أو أن تعطي الصفحة كلها مهلة كلية توقف الإعادات حين تنفد.</li>
+<li>لأن الأعطال مشتركة عادة: حين يتعثر المزوّد، يفشل عملاء كثيرون في اللحظة نفسها. وبتأخيرات ثابتة يعيدون كلهم معاً بعد 100 ms بالضبط، فيضربون المزوّد في اللحظة نفسها، ويفشلون معاً من جديد، موجةً بعد موجة. والانتظار العشوائي يفرّق الإعادات على الفترة كلها، فيرى المزوّد تدفقاً هادئاً يستطيع معالجته، وتنجح معظم الإعادات.</li>
+<li>يصل الطلب الأول إلى المزوّد وينشئ خصماً، لكن الإجابة بطيئة فتمر مهلة العميل (500 ms) أولاً. فيرى العميل انتهاء مهلة ويعيد؛ ويستقبل المزوّد طلباً ثانياً مطابقاً فيخصم ثانية. والذي يمنع ذلك مفتاح منع التكرار: يولّد العميل مفتاحاً واحداً لكل عربون (رقم صف الدفعة مثلاً) ويرسله في كل محاولة؛ فيعرف المزوّد الطلب الثاني تكراراً ويعيد النتيجة الأولى بدل أن يخصم ثانية. ومعالجة الـ webhooks في الفصل 5 الفكرة نفسها في طريق العودة.</li>
+<li>بحد 1، عطل لحظي واحد (انتهاء مهلة واحد بين آلاف النجاحات) يفتح القاطع، فيحصل كل زبون في الثانيتين التاليتين على البديل والمزوّد سليم: يسبب القاطع أعطالاً. وبفترة تهدئة 10 دقائق، يتصرف القاطع جيداً حين يتوقف المزوّد، لكن بعد تعافيه يظل الزبائن يحصلون على البديل حتى 10 دقائق أخرى، لأنه لا نداء تجريبياً قبل ذلك. والحدود وفترات التهدئة تُضبط من معدل أخطاء المزوّد المعتاد ومدة تعافيه المعتادة، وتُراقب على لوحة.</li>
+<li>كل طلب يمسك الآن اتصال قاعدة بيانات 4 ثوانٍ بدل 4 ms، أي أطول بألف مرة، فيُستهلك مجمع كل نسخة فوراً تقريباً. وتصطف الطلبات الجديدة على اتصال، وتكبر ذاكرة النسخ وطلباتها المفتوحة، وتبدأ فحوص جاهزيتها (التي تستعلم قاعدة البيانات أيضاً) تفشل؛ فقد يُخرج موزّع الحمل كل النسخ، فتصير قاعدة بيانات بطيئة عطلاً كاملاً. ويرى الزبائن أولاً صفحات بطيئة جداً، ثم أخطاء. ووسائل الدفاع: مهلة قصيرة للاستعلام (<code>statement_timeout</code>) ومهلة لانتظار اتصال من المجمع، فتفشل الطلبات بسرعة بدل أن تتكدس؛ وفحص جاهزية لا يعلن كل نسخة ميتة لأن اعتمادية مشتركة بطيئة؛ وبديل لصفحات القراءة (قوائم مواعيد مخزنة مؤقتاً، معلَّمة بأنها قد تكون قديمة)؛ ورفض الحمل حين ينفد المجمع؛ وبشكل منفصل، إيجاد سبب بطء قاعدة البيانات (الفصل التالي).</li>
 </ol>
 
 </section>
