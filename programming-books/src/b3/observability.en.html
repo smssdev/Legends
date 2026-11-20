@@ -1,0 +1,269 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/observability/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Observability: Logs, Metrics and Traces</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write structured logs that machines can search and people can read</li>
+<li>follow one request across services with a trace id</li>
+<li>count requests, errors and durations as metrics, and read them like Prometheus</li>
+<li>answer health and readiness checks so platforms know what to do with each server</li>
+<li>turn signals into alerts that wake people only when users are affected</li>
+</ul>
+</div>
+
+<p class="lead">Tests prove the code worked on the day it shipped. In production, things go wrong that no test imagined: a partner’s API slows down, a disk fills, one query becomes slow when a table grows. <dfn>Observability</dfn> is the ability to answer “what is happening, and why?” from the outside, without adding code and redeploying first. It rests on three kinds of signal: <dfn>logs</dfn> (what happened, event by event), <dfn>metrics</dfn> (how much and how fast, as numbers over time) and <dfn>traces</dfn> (where the time of one request went, across services). This chapter adds all three to a small shop service<!-- node -->, written with Fastify<!-- /node --><!-- laravel -->, written in plain PHP so that every moving part is visible, with the Laravel equivalents at the end<!-- /laravel -->.</p>
+
+<aside class="bit" data-mood="think"><p>The worst night of my first job began with a customer email: “checkout has been broken for three hours”. Our logs were lines like <code>Error occurred</code>, with no order, no user and no time zone. We spent two hours finding which server, and one minute fixing the bug. Since then I log as if I will be reading it at three in the morning, tired, in a hurry. Because I will.</p></aside>
+
+<h2>{{n}}.1 Structured logs</h2>
+
+<p>A log line like <code>Order failed for sara</code> is easy to write and hard to use: you cannot count them, filter them by order or join them to other lines. A <dfn>structured log</dfn> writes each event as one JSON object per line, with named fields. Tools such as Loki, Elasticsearch or a cloud provider’s log service can then answer questions like “all errors for this order in the last hour”, and people can still read it.</p>
+
+<!-- node -->
+<p>Fastify logs with <dfn>pino</dfn>, one of the fastest JSON loggers for Node, built in. A few options make its lines shorter and safer:</p>
+
+<pre data-code="node/server.ts" data-from="const app = Fastify" data-to="^});" data-title="node/server.ts"></pre>
+<!-- /node -->
+<!-- laravel -->
+<p>PHP applications log with <dfn>Monolog</dfn>, the library under Laravel’s <code>Log</code> facade. A <dfn>formatter</dfn> decides how each record is written; this one writes a short JSON object per line:</p>
+
+<pre data-code="php/router.php" data-from="final class JsonLines" data-to="^}" data-title="php/router.php"></pre>
+<!-- /laravel -->
+
+<p>Three requests, one of which brings its own trace id from a caller:</p>
+
+<!-- node -->
+<pre data-code="node-requests.sh" data-title="Terminal"></pre>
+
+<pre data-code="node-logs.sh" data-title="Server terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php-requests.sh" data-title="Terminal"></pre>
+
+<pre data-code="php-logs.sh" data-title="Server terminal"></pre>
+<!-- /laravel -->
+
+<p>Every line carries the same fields: the time, the <dfn>level</dfn> (debug, info, warn, error), the service that wrote it, and the request’s trace id. The start and the end of each request are logged with its method, address, status and response time. Good habits for what goes into logs:</p>
+<ul>
+<li><strong>Log events, with context.</strong> “order placed” with the order id and total, not “done”. Every line of a request carries its id, so one search shows the whole story.</li>
+<li><strong>Choose levels honestly.</strong> <code>error</code> for something that needs a person; <code>warn</code> for something odd that the code handled; <code>info</code> for normal events. Production usually keeps <code>info</code> and above.</li>
+<li><strong>Never log secrets or personal data.</strong> No passwords, tokens, card numbers or whole request bodies. The serializers above log the method and address only, not the headers with their <code>Authorization</code>.</li>
+<li><strong>Write to standard output</strong>, and let the platform collect, store and search. The application should not manage log files.</li>
+</ul>
+
+<h2>{{n}}.2 Errors</h2>
+
+<p>When something fails, two audiences need different things. The client needs a short answer that reveals nothing (Chapter {{n-4}}); the team needs every detail. The trace id connects them:</p>
+
+<!-- node -->
+<pre data-code="node/server.ts" data-from="app.setErrorHandler" data-to="^});" data-title="node/server.ts"></pre>
+
+<pre data-code="node-error.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/router.php" data-from="} catch (Throwable" data-to="^}" data-title="php/router.php"></pre>
+
+<pre data-code="php-error.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<p>The customer sees “Server error” and a trace id they can quote to support; the log has the message, the type and the line, under the same id. With an error tracker (Sentry, or the free GlitchTip), errors are also grouped, counted and sent to the team with the full stack, which is better than reading logs for them.</p>
+
+<h2>{{n}}.3 Traces across services</h2>
+
+<p>Once a request crosses from one service to another, a request id is no longer enough: each service would make up its own. The <dfn>W3C Trace Context</dfn> standard defines a header, <code>traceparent</code>, that carries a <dfn>trace id</dfn> from service to service: <code>00-</code>, 32 hex characters of trace id, 16 of the caller’s span id, and flags. Each service takes the trace id from the incoming header (or starts a new trace), logs with it, and passes it on:</p>
+
+<!-- node -->
+<pre data-code="node/server.ts" data-from="app.get(&quot;/checkout&quot;" data-to="^});" data-title="node/server.ts"></pre>
+
+<pre data-code="node-trace.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/router.php" data-from="} elseif ($path === '/checkout')" data-to="reply(200, ['ok'" data-title="php/router.php"></pre>
+
+<pre data-code="php-trace.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<p>The two services wrote to different terminals; merged by time, their lines form one story under one trace id: the checkout started, called the stock service, which answered in a few milliseconds, and the checkout finished. This is the core idea of <dfn>distributed tracing</dfn>. Full tracing systems go further: each step becomes a <dfn>span</dfn> with a start, a duration and a parent, sent to a tracing backend (Jaeger, Tempo, or a cloud service) that draws the whole request as a timeline. <dfn>OpenTelemetry</dfn>, the open standard for this, provides libraries for every language that create spans for HTTP calls, database queries and queue jobs automatically, using the same <code>traceparent</code> header.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why is a JSON log line more useful than <code>Order 1001 failed for sara@example.com</code>?</li><li>The client of the failing request received a trace id. What is it for?</li><li>Why does the checkout send <code>traceparent</code> to the stock service instead of letting it create its own id?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Metrics</h2>
+
+<p>Logs tell you about individual events; <dfn>metrics</dfn> are numbers about all of them, cheap to store for months and fast to chart: requests per second, errors per minute, how slow the slowest requests are. For a web service, three numbers per route cover most needs, often called <dfn>RED</dfn>: the <strong>R</strong>ate of requests, the <strong>E</strong>rrors among them, and their <strong>D</strong>uration. <dfn>Prometheus</dfn>, the most common open-source metrics system, collects them by reading a <code>/metrics</code> page from each server every few seconds.</p>
+
+<!-- node -->
+<p>The <code>prom-client</code> library keeps the numbers in the process’s memory and writes the page:</p>
+
+<pre data-code="node/server.ts" data-from="const requests" data-to="^});#3" data-title="node/server.ts"></pre>
+
+<pre data-code="node-metrics.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<p>A Node process keeps counters in memory, but a PHP process forgets everything when its request ends, so the counters live in Redis (Chapter {{n-6}}), updated after the response has been sent:</p>
+
+<pre data-code="php/router.php" data-from="register_shutdown_function" data-to="^});" data-title="php/router.php"></pre>
+
+<pre data-code="php-metrics.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<ul>
+<li>A <dfn>counter</dfn> only goes up: <code>http_requests_total</code> by method, route and status. Prometheus computes rates from it (“errors per minute”) by comparing readings over time.</li>
+<li>A <dfn>histogram</dfn> counts durations into <dfn>buckets</dfn>: how many requests took at most 10 ms, 50 ms, and so on. From it, Prometheus estimates <dfn>percentiles</dfn>: the 95th percentile (p95) is the time under which 95% of requests finish. Percentiles matter more than averages, because an average hides the customers who waited ten seconds.</li>
+<li>Labels use the route <em>pattern</em>, never the real address or a user id: <code>/products/:id</code> is one series, while one series per product would multiply without end (<dfn>high cardinality</dfn>) and overload the metrics system.</li>
+</ul>
+
+<h2>{{n}}.5 Health and readiness</h2>
+
+<p>Load balancers and container platforms keep asking each server whether it is well, and act on the answer. Two different questions deserve two endpoints:</p>
+
+<!-- node -->
+<pre data-code="node/server.ts" data-from="app.get(&quot;/health&quot;" data-to="^});" data-title="node/server.ts"></pre>
+
+<pre data-code="node-health.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/router.php" data-from="} elseif ($path === '/health')" data-to="database unavailable" data-title="php/router.php"></pre>
+
+<pre data-code="php-health.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<ul>
+<li><dfn>Liveness</dfn> (<code>/health</code>): is the process alive and answering? If not, the platform restarts it. It must not check the database: when the database is down, restarting every web server makes things worse, not better.</li>
+<li><dfn>Readiness</dfn> (<code>/ready</code>): can this server do useful work right now? If not, the load balancer stops sending it traffic until it can. Here it checks the database with a short timeout, and answered 503 as soon as the database stopped, while liveness stayed 200.</li>
+</ul>
+
+<!-- node -->
+<p>Note the line that keeps the server alive when the database goes away. A pool of connections emits an <code>error</code> event when an idle connection is cut; without a listener, Node treats it as an unhandled error and the whole process crashes, which is exactly what happened in the first version of this example:</p>
+
+<pre data-code="node/server.ts" data-from="db.on(&quot;error&quot;" data-to="db.on(&quot;error&quot;" data-title="node/server.ts"></pre>
+<!-- /node -->
+
+<h2>{{n}}.6 From signals to alerts</h2>
+
+<p>Dashboards are for looking; <dfn>alerts</dfn> are for being told. The art is alerting on what users feel, not on every cause:</p>
+<ul>
+<li><strong>Service level objectives.</strong> Decide what “working” means, in numbers: “99.5% of checkout requests succeed, and 95% finish within 500 ms, over 30 days”. That is an <dfn>SLO</dfn>; the 0.5% of allowed failures is the <dfn>error budget</dfn>. Alert when the budget is burning fast, not at every error.</li>
+<li><strong>Symptoms over causes.</strong> “Checkout errors above 2% for 5 minutes” wakes someone; “CPU at 80%” goes to a dashboard. High CPU with happy users is not an emergency; a broken checkout at 20% CPU is.</li>
+<li><strong>Every alert is actionable.</strong> It says what is wrong, links to the dashboard and to a short guide (a <dfn>runbook</dfn>) for what to check first. An alert that people learn to ignore is worse than none.</li>
+<li><strong>Watch the background too.</strong> Queue length and failed jobs (Chapter {{n-3}}), disk space, certificate expiry, and the time since the last successful backup.</li>
+</ul>
+
+<!-- laravel -->
+<h2>{{n}}.7 In Laravel</h2>
+
+<p>Everything above exists in Laravel, ready to switch on:</p>
+<ul>
+<li><strong>Structured logs.</strong> In <code>config/logging.php</code>, give the <code>stderr</code> channel Monolog’s <code>JsonFormatter</code> and set <code>LOG_CHANNEL=stderr</code>. <code>Log::withContext(['trace' =&gt; $id])</code> in a middleware adds the trace id to every line of the request; the <code>Context</code> facade does the same and also passes it on to queued jobs.</li>
+<li><strong>Errors.</strong> <code>APP_DEBUG=false</code>, and <code>-&gt;withExceptions()</code> in <code>bootstrap/app.php</code> to report to an error tracker; Sentry has an official Laravel package.</li>
+<li><strong>Health.</strong> Laravel already answers <code>/up</code> (the <code>health</code> route in <code>bootstrap/app.php</code>); add a readiness route that checks the database and Redis with short timeouts.</li>
+<li><strong>Insight.</strong> <dfn>Pulse</dfn>, Laravel’s free dashboard, shows slow requests, slow queries, failed jobs and busy users from inside the application; <dfn>Telescope</dfn> records every request, query and job in development. For Prometheus, community exporters publish the same counters and histograms as this chapter, and OpenTelemetry’s PHP libraries add tracing.</li>
+</ul>
+<!-- /laravel -->
+<!-- node -->
+<h2>{{n}}.7 Going further in Node</h2>
+
+<ul>
+<li><strong>Logs.</strong> pino writes to standard output; in development, pipe it through <code>pino-pretty</code> for colours. Use <code>request.log</code> in routes so that every line carries the request id, and pino’s <code>redact</code> option to remove fields such as <code>password</code> wherever they appear.</li>
+<li><strong>Errors.</strong> Sentry and GlitchTip have Node SDKs that hook into Fastify.</li>
+<li><strong>Tracing.</strong> OpenTelemetry’s Node SDK, with its automatic instrumentation, creates spans for incoming requests, <code>fetch</code> calls, PostgreSQL queries and Redis commands without changing the routes, and propagates <code>traceparent</code> for you.</li>
+<li><strong>Metrics.</strong> <code>prom-client</code>’s <code>collectDefaultMetrics()</code> adds the process’s memory, CPU and event loop delay, which is the first sign of blocking code (Chapter {{n+1}}).</li>
+</ul>
+<!-- /node -->
+
+<aside class="box rule"><p class="box-title">Professional habit: debug production from the signals first</p><p>When something goes wrong, resist adding <code>console.log</code><!-- laravel --> or <code>dd()</code><!-- /laravel --> and redeploying. Start from the alert, open the dashboard, find the trace id of a failing request, and read its logs. Each time the signals were not enough to answer the question, add the missing field, metric or span, so that next time they are. Observability is built one incident at a time.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Free-text logs</td><td>Nothing can be searched, counted or joined</td><td>One JSON object per line, with named fields</td></tr>
+<tr><td>No request or trace id</td><td>The lines of one request cannot be found together</td><td>An id on every line, passed in <code>traceparent</code></td></tr>
+<tr><td>Secrets and personal data in logs</td><td>Logs become a data leak</td><td>Log ids, not bodies; redact sensitive fields</td></tr>
+<tr><td>Stack traces sent to clients</td><td>Attackers learn the code</td><td>A title and a trace id outside; details in the log</td></tr>
+<tr><td>Averages instead of percentiles</td><td>Slow requests hidden behind fast ones</td><td>Histograms and p95/p99</td></tr>
+<tr><td>User ids or full URLs as metric labels</td><td>Millions of series; the metrics system falls over</td><td>Route patterns and small fixed sets</td></tr>
+<tr><td>Liveness that checks the database</td><td>Every server restarted when the database blips</td><td>Liveness for the process, readiness for dependencies</td></tr>
+<tr><td>Alerts on causes, for everything</td><td>Alert fatigue; real alerts ignored</td><td>Alerts on symptoms and SLOs, with runbooks</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Logs</strong> say what happened, <strong>metrics</strong> how much and how fast, <strong>traces</strong> where one request’s time went.</li>
+<li>Structured logs are <strong>one JSON object per line</strong>, with a level, the service and a <strong>trace id</strong>, and no secrets.</li>
+<li>Errors give the client a title and the trace id; the <strong>details go to the log</strong> or an error tracker.</li>
+<li>The <strong><code>traceparent</code></strong> header carries the trace id between services; OpenTelemetry turns it into full traces.</li>
+<li><strong>RED metrics</strong> per route: rate, errors and duration as a <strong>histogram</strong>, read by Prometheus; labels stay low-cardinality.</li>
+<li><strong>Liveness</strong> and <strong>readiness</strong> are different checks; <strong>alerts</strong> follow SLOs and symptoms, each with a runbook.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Its fields can be searched and counted by tools (“all errors for order 1001”, “errors per minute by route”), it carries the request’s trace id so it can be joined with the other lines of the same request, and it can leave out personal data such as the email, which the free-text line puts in every copy of the logs. 2. It is the key to the logs: when the customer or the support team quotes it, the team can find every line about that request, across services, without guessing from times and addresses, while the client learns nothing about the code. 3. So that all the lines written about one checkout, in both services, share one id and can be shown together; with separate ids nobody could tell which stock request belonged to which checkout.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project makes the shop easier to run. Prove each one by breaking something on purpose and finding it with the signals.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Logs that answer questions</h3>
+<p class="project-goal">Make the shop’s API from the earlier chapters log like this chapter’s service.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured logging, trace ids, redaction, and searching logs with <code>jq</code>.</p>
+<ol class="steps">
+<li>Log in JSON with a trace id taken from <code>traceparent</code> or created, returned to clients in a response header.</li>
+<li>Log one <code>info</code> line for each business event (order placed, order cancelled) with the order id and total, and make sure passwords and tokens never appear.</li>
+<li>Generate a hundred requests, then answer with <code>jq</code> alone: how many orders were placed, which routes returned errors, and the full story of one trace id.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>jq -c 'select(.level == "error")'</code> and <code>jq -s 'group_by(.msg) | map({msg: .[0].msg, count: length})'</code> answer most questions about a log file.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A dashboard with Prometheus and Grafana</h3>
+<p class="project-goal">Collect the shop’s metrics with a real Prometheus, and chart them in Grafana.</p>
+<p class="project-skills"><strong>You will practise:</strong> running Prometheus, PromQL, percentiles from histograms, and dashboards.</p>
+<ol class="steps">
+<li>Run Prometheus and Grafana in Docker, with Prometheus reading the service’s <code>/metrics</code> every 5 seconds.</li>
+<li>Chart requests per second by route: <code>sum by (route) (rate(http_requests_total[1m]))</code>.</li>
+<li>Chart the error ratio and the p95 duration with <code>histogram_quantile(0.95, …)</code>.</li>
+<li>Add a slow route, send traffic to it, and watch the p95 move while the average barely does.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> rates are always computed over a window (<code>[1m]</code>): a counter by itself only grows, and its slope is what matters.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Full tracing with OpenTelemetry</h3>
+<p class="project-goal">See one checkout as a timeline of spans across two services, the database and Redis.</p>
+<p class="project-skills"><strong>You will practise:</strong> OpenTelemetry SDKs, automatic instrumentation, context propagation, and reading traces.</p>
+<ol class="steps">
+<li>Run Jaeger in Docker, and add the OpenTelemetry SDK with automatic instrumentation to both services.</li>
+<li>Call the checkout and find its trace in Jaeger: the incoming request, the call to the stock service, and each SQL query.</li>
+<li>Add one manual span around a business step (“price the basket”) with the order id as an attribute.</li>
+<li>Make the stock service slow for one product, and use the traces to prove where the time goes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> put the trace id in every log line as well; then you can jump from a trace to its logs and back, which is where the two signals become more than the sum of their parts.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Rewrite these as structured log events, with a level and fields: “Starting…”; “User sara@example.com logged in with password hunter2”; “ERROR!!! order failed”.</li>
+<li><span class="level">Easy</span> A histogram says that of 1,000 requests, 940 took at most 100 ms, 990 at most 500 ms, and all at most 1 s. Roughly what are the p95 and p99?</li>
+<li><span class="level">Medium</span> Someone adds a label <code>customer_id</code> to <code>http_requests_total</code>. What happens to the metrics system after a month, and how should the question they wanted to answer be answered instead?</li>
+<li><span class="level">Medium</span> The readiness check queries the database with a one-second timeout. What could go wrong if it had no timeout, and what if it also checked a slow partner API?</li>
+<li><span class="level">Challenge</span> Write the SLO and two alerts for the shop’s checkout: one that pages someone at night and one that only opens a ticket. Explain the difference.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The signals show where the shop is slow; now we make it fast. Performance: measuring under load, finding the bottleneck, indexes and query plans, and <!-- node -->the event loop<!-- /node --><!-- laravel -->PHP workers<!-- /laravel -->.</p>
+</div>
+</section>

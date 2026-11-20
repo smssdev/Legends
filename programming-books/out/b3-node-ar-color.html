@@ -31,6 +31,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "الفصل 12: اختبار الخادم"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "الفصل 13: السجلات والمقاييس والتتبع"; } }
+@page ch13:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -6027,6 +6029,353 @@ end of coverage report</pre></div>
 <p>الاختبارات تثبت أن الكود يعمل قبل أن يُشحن؛ والإنتاج يحتاج دليلاً على أنه يبقى يعمل. قابلية الملاحظة: سجلات منظمة، ومقاييس، وتتبعات، وتنبيهات تخبرك بما هو خطأ قبل أن يخبرك الزبائن.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b3/observability/ar">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">الفصل 13</p><h1>قابلية الملاحظة: السجلات والمقاييس والتتبعات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تكتب سجلات منظمة تبحث فيها الآلات ويقرؤها الناس</li>
+<li>تتبع طلباً واحداً عبر الخدمات برقم تتبع</li>
+<li>تعدّ الطلبات والأخطاء والمدد مقاييسَ، وتقرؤها كما يقرؤها Prometheus</li>
+<li>تجيب عن فحوص الحياة والجاهزية فتعرف المنصات ما تفعله بكل خادم</li>
+<li>تحوّل الإشارات إلى تنبيهات لا توقظ الناس إلا حين يتأثر المستخدمون</li>
+</ul>
+</div>
+
+<p class="lead">الاختبارات تثبت أن الكود عمل يوم شُحن. وفي الإنتاج تسوء أمور لم يتخيلها أي اختبار: API شريك يتباطأ، وقرص يمتلئ، واستعلام يصير بطيئاً حين يكبر جدول. و<dfn>قابلية الملاحظة</dfn> (observability) هي القدرة على الإجابة عن «ماذا يحدث، ولماذا؟» من الخارج، دون إضافة كود وإعادة النشر أولاً. وتقوم على ثلاثة أنواع من الإشارات: <dfn>السجلات</dfn> (ما حدث، حدثاً بحدث)، و<dfn>المقاييس</dfn> (كم وبأي سرعة، أرقاماً عبر الزمن)، و<dfn>التتبعات</dfn> (أين ذهب وقت طلب واحد، عبر الخدمات). وهذا الفصل يضيف الثلاثة إلى خدمة متجر صغيرة، مكتوبة بـ Fastify.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أسوأ ليلة في عملي الأول بدأت ببريد من زبون: «الدفع معطل منذ ثلاث ساعات». وكانت سجلاتنا أسطراً مثل <code>Error occurred</code>، بلا طلب ولا مستخدم ولا منطقة زمنية. قضينا ساعتين نبحث عن الخادم، ودقيقة نصلح الخطأ. ومنذ ذلك الحين أكتب السجل كأني سأقرؤه في الثالثة فجراً، متعباً، على عجل. لأني سأفعل.</p></div></div>
+
+<h2><span class="sec">13.1</span> <span>السجلات المنظمة</span></h2>
+
+<p>سطر سجل مثل <code>Order failed for sara</code> سهل الكتابة وصعب الاستخدام: لا تستطيع عدّها، ولا ترشيحها بالطلب، ولا ربطها بأسطر أخرى. و<dfn>السجل المنظم</dfn> (structured log) يكتب كل حدث كائنَ JSON واحداً في كل سطر، بحقول مسمّاة. فتستطيع أدوات مثل Loki أو Elasticsearch أو خدمة سجلات مزوّد سحابي الإجابة عن أسئلة مثل «كل الأخطاء لهذا الطلب في الساعة الأخيرة»، ويبقى الناس قادرين على قراءته.</p>
+
+
+<p>يسجّل Fastify بـ <dfn>pino</dfn>، من أسرع مسجّلات JSON في Node، مبنياً فيه. وخيارات قليلة تجعل أسطره أقصر وأأمن:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code"><span class="k">const</span> app = Fastify({
+  <span class="c line-bidi">// كائن JSON واحد في كل سطر: تستطيع الآلات البحث فيه، ويستطيع الناس قراءته</span>
+  logger: {
+    base: { service: <span class="s">`shop:${port}`</span> },
+    timestamp: () =&gt; <span class="s">`,&quot;time&quot;:&quot;${new Date().toISOString().slice(11, 23)}&quot;`</span>,
+    formatters: {
+      level: (label) =&gt; ({ level: label }),
+      log: (line) =&gt; ({ ...line, responseTime: round(line.responseTime) }),
+    },
+    <span class="c line-bidi">// المفيد وحده: الطريقة والعنوان، لا كل ترويسة</span>
+    serializers: {
+      req: (req) =&gt; ({ method: req.method, url: req.url }),
+      res: (res) =&gt; ({ status: res.statusCode }),
+      err: (err) =&gt; ({ <span class="k">type</span>: err.name, message: err.message, at: where(err) }),
+    },
+  },
+  <span class="c line-bidi">// رقم التتبع يأتي من ترويسة traceparent عند المنادي، أو يبدأ هنا</span>
+  genReqId: (req) =&gt; String(req.headers.traceparent ?? <span class="s">&quot;&quot;</span>).split(<span class="s">&quot;-&quot;</span>)[<span class="n">1</span>] ?? hex(<span class="n">16</span>),
+});</pre></div>
+
+<p>ثلاثة طلبات، أحدها يحمل رقم تتبعه من منادٍ:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># بضعة طلبات، أحدها برقم تتبع خاص به</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products/1 | jq -c</span>
+{&quot;id&quot;:1,&quot;name&quot;:&quot;عدة الروبوت&quot;,&quot;price&quot;:45000}
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products/9 | jq -c</span>
+{&quot;title&quot;:&quot;Not found&quot;}
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products/1 -H &#x27;traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;name&quot;:&quot;عدة الروبوت&quot;,&quot;price&quot;:45000}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">طرفية الخادم</div><pre class="code"><span class="c">$ </span><span class="k">node node/server.ts</span>
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:45.400&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;msg&quot;:&quot;Server listening at http://127.0.0.1:3000&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.464&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;fbaf118e0bb76b3a99b7e6db5e4cf2fb&quot;,&quot;req&quot;:{&quot;method&quot;:&quot;GET&quot;,&quot;url&quot;:&quot;/products/1&quot;},&quot;msg&quot;:&quot;incoming request&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.479&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;fbaf118e0bb76b3a99b7e6db5e4cf2fb&quot;,&quot;res&quot;:{&quot;status&quot;:200},&quot;responseTime&quot;:14.15,&quot;msg&quot;:&quot;request completed&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.488&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;a46c2cd59f9355190766d89ff06e9fe7&quot;,&quot;req&quot;:{&quot;method&quot;:&quot;GET&quot;,&quot;url&quot;:&quot;/products/9&quot;},&quot;msg&quot;:&quot;incoming request&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.491&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;a46c2cd59f9355190766d89ff06e9fe7&quot;,&quot;res&quot;:{&quot;status&quot;:404},&quot;responseTime&quot;:1.77,&quot;msg&quot;:&quot;request completed&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.500&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;4bf92f3577b34da6a3ce929d0e0e4736&quot;,&quot;req&quot;:{&quot;method&quot;:&quot;GET&quot;,&quot;url&quot;:&quot;/products/1&quot;},&quot;msg&quot;:&quot;incoming request&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.501&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;4bf92f3577b34da6a3ce929d0e0e4736&quot;,&quot;res&quot;:{&quot;status&quot;:200},&quot;responseTime&quot;:1.48,&quot;msg&quot;:&quot;request completed&quot;}</pre></div>
+
+<p>كل سطر يحمل الحقول نفسها: الوقت، و<dfn>المستوى</dfn> (debug وinfo وwarn وerror)، والخدمة التي كتبته، ورقم تتبع الطلب. وتُسجَّل بداية كل طلب ونهايته بطريقته وعنوانه وحالته وزمن استجابته. وعادات جيدة لما يدخل السجلات:</p>
+<ul>
+<li><strong>سجّل أحداثاً، بسياقها.</strong> «تم الطلب» برقم الطلب ومجموعه، لا «انتهى». وكل سطر من الطلب يحمل رقمه، فيعرض بحث واحد القصة كلها.</li>
+<li><strong>اختر المستويات بأمانة.</strong> <code>error</code> لما يحتاج إنساناً؛ و<code>warn</code> لشيء غريب عالجه الكود؛ و<code>info</code> للأحداث العادية. والإنتاج يُبقي عادة <code>info</code> وما فوقها.</li>
+<li><strong>لا تسجّل أسراراً ولا بيانات شخصية أبداً.</strong> لا كلمات مرور، ولا رموز، ولا أرقام بطاقات، ولا أجسام طلبات كاملة. والمسلسِلات أعلاه تسجّل الطريقة والعنوان وحدهما، لا الترويسات بما فيها <code>Authorization</code>.</li>
+<li><strong>اكتب إلى المخرج القياسي</strong>، ودع المنصة تجمع وتخزّن وتبحث. فلا ينبغي للتطبيق أن يدير ملفات السجلات.</li>
+</ul>
+
+<h2><span class="sec">13.2</span> <span>الأخطاء</span></h2>
+
+<p>حين يفشل شيء، يحتاج جمهوران أشياء مختلفة. العميل يحتاج جواباً قصيراً لا يكشف شيئاً (الفصل 9)؛ والفريق يحتاج كل تفصيلة. ورقم التتبع يصل بينهما:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code">app.setErrorHandler((err, request, reply) =&gt; {
+  request.log.error({ err }, err.message);
+  <span class="k">return</span> reply.code(<span class="n">500</span>).send({ title: <span class="s">&quot;Server error&quot;</span>, trace: request.id });
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># طلب يفشل</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/boom | jq -c</span>
+{&quot;title&quot;:&quot;Server error&quot;,&quot;trace&quot;:&quot;5a90163cc58100d984c70fd1decd3cf4&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.712&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;5a90163cc58100d984c70fd1decd3cf4&quot;,&quot;req&quot;:{&quot;method&quot;:&quot;GET&quot;,&quot;url&quot;:&quot;/boom&quot;},&quot;msg&quot;:&quot;incoming request&quot;}
+{&quot;level&quot;:&quot;error&quot;,&quot;time&quot;:&quot;14:15:46.713&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;5a90163cc58100d984c70fd1decd3cf4&quot;,&quot;err&quot;:{&quot;type&quot;:&quot;Error&quot;,&quot;message&quot;:&quot;payment provider timed out&quot;,&quot;at&quot;:&quot;server.ts:84&quot;},&quot;msg&quot;:&quot;payment provider timed out&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.714&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;5a90163cc58100d984c70fd1decd3cf4&quot;,&quot;res&quot;:{&quot;status&quot;:500},&quot;responseTime&quot;:1.44,&quot;msg&quot;:&quot;request completed&quot;}</pre></div>
+
+<p>يرى الزبون «Server error» ورقم تتبع يستطيع ذكره للدعم؛ والسجل فيه الرسالة والنوع والسطر، تحت الرقم نفسه. ومع متتبّع أخطاء (Sentry، أو GlitchTip المجاني)، تُجمَّع الأخطاء أيضاً وتُعدّ وتُرسل إلى الفريق بالمكدس كاملاً، وهذا أفضل من قراءة السجلات بحثاً عنها.</p>
+
+<h2><span class="sec">13.3</span> <span>التتبعات عبر الخدمات</span></h2>
+
+<p>بمجرد أن يعبر الطلب من خدمة إلى أخرى، لا يعود رقم الطلب كافياً: فكل خدمة ستخترع رقمها. ومعيار <dfn>W3C Trace Context</dfn> يعرّف ترويسة، <code>traceparent</code>، تحمل <dfn>رقم تتبع</dfn> من خدمة إلى خدمة: <code>00-</code>، و32 حرفاً ست عشرياً لرقم التتبع، و16 لرقم امتداد المنادي، والأعلام. وكل خدمة تأخذ رقم التتبع من الترويسة الواردة (أو تبدأ تتبعاً جديداً)، وتسجّل به، وتمرره:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code">app.get(<span class="s">&quot;/checkout&quot;</span>, <span class="k">async</span> (request) =&gt; {
+  request.log.info(<span class="s">&quot;checkout started&quot;</span>);
+  <span class="c line-bidi">// الخدمة التالية تأخذ رقم التتبع نفسه، فتنضم سجلاتها إلى سجلات هذا الطلب</span>
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">`http://localhost:${process.env.STOCK_PORT}/stock/1`</span>, {
+    headers: { traceparent: <span class="s">`00-${request.id}-${hex(8)}-01`</span> },
+  });
+  <span class="k">const</span> { stock } = (<span class="k">await</span> res.json()) as { stock: number };
+  request.log.info({ stock }, <span class="s">&quot;stock checked&quot;</span>);
+  <span class="k">return</span> { ok: stock &gt; <span class="n">0</span> };
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عملية دفع واحدة، وخدمتان، ورقم تتبع واحد</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/checkout | jq -c</span>
+{&quot;ok&quot;:true}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.928&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;921d141fe2c375954995b46e916bae2e&quot;,&quot;req&quot;:{&quot;method&quot;:&quot;GET&quot;,&quot;url&quot;:&quot;/checkout&quot;},&quot;msg&quot;:&quot;incoming request&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.928&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;921d141fe2c375954995b46e916bae2e&quot;,&quot;msg&quot;:&quot;checkout started&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.948&quot;,&quot;service&quot;:&quot;shop:3001&quot;,&quot;reqId&quot;:&quot;921d141fe2c375954995b46e916bae2e&quot;,&quot;req&quot;:{&quot;method&quot;:&quot;GET&quot;,&quot;url&quot;:&quot;/stock/1&quot;},&quot;msg&quot;:&quot;incoming request&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.965&quot;,&quot;service&quot;:&quot;shop:3001&quot;,&quot;reqId&quot;:&quot;921d141fe2c375954995b46e916bae2e&quot;,&quot;res&quot;:{&quot;status&quot;:200},&quot;responseTime&quot;:15.66,&quot;msg&quot;:&quot;request completed&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.972&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;921d141fe2c375954995b46e916bae2e&quot;,&quot;stock&quot;:3,&quot;msg&quot;:&quot;stock checked&quot;}
+{&quot;level&quot;:&quot;info&quot;,&quot;time&quot;:&quot;14:15:46.973&quot;,&quot;service&quot;:&quot;shop:3000&quot;,&quot;reqId&quot;:&quot;921d141fe2c375954995b46e916bae2e&quot;,&quot;res&quot;:{&quot;status&quot;:200},&quot;responseTime&quot;:45.13,&quot;msg&quot;:&quot;request completed&quot;}</pre></div>
+
+<p>كتبت الخدمتان في طرفيتين مختلفتين؛ ومدموجةً بالوقت، تكوّن أسطرهما قصة واحدة تحت رقم تتبع واحد: بدأ الدفع، ونادى خدمة المخزون، التي أجابت في بضع مللي ثوانٍ، وانتهى الدفع. هذه هي الفكرة الأساسية لـ <dfn>التتبع الموزّع</dfn> (distributed tracing). وأنظمة التتبع الكاملة تذهب أبعد: كل خطوة تصير <dfn>امتداداً</dfn> (span) له بداية ومدة وأب، يُرسل إلى خلفية تتبع (Jaeger، أو Tempo، أو خدمة سحابية) ترسم الطلب كله خطاً زمنياً. و<dfn>OpenTelemetry</dfn>، المعيار المفتوح لهذا، يقدّم مكتبات لكل لغة تنشئ امتدادات لاستدعاءات HTTP واستعلامات قاعدة البيانات ومهام الطوابير تلقائياً، بترويسة <code>traceparent</code> نفسها.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يفيد سطر سجل JSON أكثر من <code>Order 1001 failed for sara@example.com</code>؟</li><li>أخذ عميل الطلب الفاشل رقم تتبع. لأي شيء هو؟</li><li>لماذا يرسل الدفع <code>traceparent</code> إلى خدمة المخزون بدل أن يدعها تنشئ رقمها؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">13.4</span> <span>المقاييس</span></h2>
+
+<p>السجلات تخبرك عن الأحداث المفردة؛ و<dfn>المقاييس</dfn> أرقام عنها كلها، رخيصة الحفظ لأشهر وسريعة الرسم: الطلبات في الثانية، والأخطاء في الدقيقة، وكم تبطئ أبطأ الطلبات. ولخدمة ويب، ثلاثة أرقام لكل مسار تغطي أغلب الحاجات، تُسمّى كثيراً <dfn>RED</dfn>: <strong>م</strong>عدل الطلبات (Rate)، و<strong>ا</strong>لأخطاء بينها (Errors)، و<strong>م</strong>دتها (Duration). و<dfn>Prometheus</dfn>، أشيع أنظمة المقاييس المفتوحة المصدر، يجمعها بقراءة صفحة <code>/metrics</code> من كل خادم كل بضع ثوانٍ.</p>
+
+
+<p>مكتبة <code>prom-client</code> تحفظ الأرقام في ذاكرة العملية وتكتب الصفحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code"><span class="k">const</span> requests = <span class="k">new</span> client.Counter({
+  name: <span class="s">&quot;http_requests_total&quot;</span>,
+  help: <span class="s">&quot;Requests by route and status&quot;</span>,
+  labelNames: [<span class="s">&quot;method&quot;</span>, <span class="s">&quot;route&quot;</span>, <span class="s">&quot;status&quot;</span>],
+});
+<span class="k">const</span> duration = <span class="k">new</span> client.Histogram({
+  name: <span class="s">&quot;http_request_duration_seconds&quot;</span>,
+  help: <span class="s">&quot;How long requests took&quot;</span>,
+  labelNames: [<span class="s">&quot;route&quot;</span>],
+  buckets: [<span class="n">0.01</span>, <span class="n">0.05</span>, <span class="n">0.1</span>, <span class="n">0.5</span>, <span class="n">1</span>],
+});
+app.addHook(<span class="s">&quot;onResponse&quot;</span>, <span class="k">async</span> (request, reply) =&gt; {
+  <span class="c line-bidi">// نمط المسار، لا العنوان: /products/1 و/products/2 سلسلة واحدة</span>
+  <span class="k">const</span> route = request.routeOptions.url ?? <span class="s">&quot;unknown&quot;</span>;
+  <span class="k">if</span> ([<span class="s">&quot;/health&quot;</span>, <span class="s">&quot;/ready&quot;</span>, <span class="s">&quot;/metrics&quot;</span>].includes(route)) <span class="k">return</span>;
+  requests.inc({ method: request.method, route, status: reply.statusCode });
+  duration.observe({ route }, reply.elapsedTime / <span class="n">1000</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المقاييس، كما يقرؤها Prometheus</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/metrics | grep -E &#x27;^http_requests_total|duration_seconds_(bucket|sum).*products&#x27;</span>
+http_requests_total{method=&quot;GET&quot;,route=&quot;/products/:id&quot;,status=&quot;200&quot;} 2
+http_requests_total{method=&quot;GET&quot;,route=&quot;/products/:id&quot;,status=&quot;404&quot;} 1
+http_requests_total{method=&quot;GET&quot;,route=&quot;/boom&quot;,status=&quot;500&quot;} 1
+http_requests_total{method=&quot;GET&quot;,route=&quot;/checkout&quot;,status=&quot;200&quot;} 1
+http_request_duration_seconds_bucket{le=&quot;0.01&quot;,route=&quot;/products/:id&quot;} 2
+http_request_duration_seconds_bucket{le=&quot;0.05&quot;,route=&quot;/products/:id&quot;} 3
+http_request_duration_seconds_bucket{le=&quot;0.1&quot;,route=&quot;/products/:id&quot;} 3
+http_request_duration_seconds_bucket{le=&quot;0.5&quot;,route=&quot;/products/:id&quot;} 3
+http_request_duration_seconds_bucket{le=&quot;1&quot;,route=&quot;/products/:id&quot;} 3
+http_request_duration_seconds_bucket{le=&quot;+Inf&quot;,route=&quot;/products/:id&quot;} 3
+http_request_duration_seconds_sum{route=&quot;/products/:id&quot;} 0.017403509999999872</pre></div>
+
+<ul>
+<li><dfn>العدّاد</dfn> (counter) لا يزيد إلا: <code>http_requests_total</code> بالطريقة والمسار والحالة. ويحسب Prometheus منه المعدلات («الأخطاء في الدقيقة») بمقارنة القراءات عبر الزمن.</li>
+<li><dfn>المدرّج</dfn> (histogram) يعدّ المدد في <dfn>دلاء</dfn> (buckets): كم طلباً استغرق 10 مللي ثانية على الأكثر، و50، وهكذا. ومنه يقدّر Prometheus <dfn>المئينات</dfn> (percentiles): المئين 95 (p95) هو الزمن الذي ينتهي تحته 95% من الطلبات. والمئينات أهم من المتوسطات، لأن المتوسط يخفي الزبائن الذين انتظروا عشر ثوانٍ.</li>
+<li>التسميات تستخدم <em>نمط</em> المسار، لا العنوان الحقيقي ولا رقم مستخدم أبداً: <code>/products/:id</code> سلسلة واحدة، بينما سلسلة لكل منتج تتضاعف بلا نهاية (<dfn>تعدد كبير</dfn>، high cardinality) وتُثقل نظام المقاييس.</li>
+</ul>
+
+<h2><span class="sec">13.5</span> <span>الحياة والجاهزية</span></h2>
+
+<p>موازنات الحمل ومنصات الحاويات تسأل كل خادم باستمرار هل هو بخير، وتتصرف بالجواب. وسؤالان مختلفان يستحقان مسارين:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code">app.get(<span class="s">&quot;/health&quot;</span>, { logLevel: <span class="s">&quot;silent&quot;</span> }, <span class="k">async</span> () =&gt; ({ status: <span class="s">&quot;ok&quot;</span> }));
+<span class="c line-bidi">// جاهز: يستطيع أداء عمله، فأرسل إليه الزيارات (وتوقف إن لم يكن)</span>
+app.get(<span class="s">&quot;/ready&quot;</span>, { logLevel: <span class="s">&quot;silent&quot;</span> }, <span class="k">async</span> (request, reply) =&gt; {
+  <span class="k">try</span> {
+    <span class="k">await</span> db.query({ text: <span class="s">&quot;SELECT 1&quot;</span>, query_timeout: <span class="n">1000</span> });
+    <span class="k">return</span> { status: <span class="s">&quot;ready&quot;</span> };
+  } <span class="k">catch</span> {
+    <span class="k">return</span> reply.code(<span class="n">503</span>).send({ status: <span class="s">&quot;database unavailable&quot;</span> });
+  }
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الحياة والجاهزية، وقاعدة البيانات تعمل</span>
+<span class="c">$ </span><span class="k">curl -s -w &#x27; %{http_code}\n&#x27; localhost:3000/health</span>
+{&quot;status&quot;:&quot;ok&quot;} 200
+<span class="c">$ </span><span class="k">curl -s -w &#x27; %{http_code}\n&#x27; localhost:3000/ready</span>
+{&quot;status&quot;:&quot;ready&quot;} 200
+<span class="c line-bidi"># قاعدة البيانات تتوقف</span>
+<span class="c">$ </span><span class="k">docker stop b3-pg</span>
+<span class="c">$ </span><span class="k">curl -s -w &#x27; %{http_code}\n&#x27; localhost:3000/health</span>
+{&quot;status&quot;:&quot;ok&quot;} 200
+<span class="c">$ </span><span class="k">curl -s -w &#x27; %{http_code}\n&#x27; localhost:3000/ready</span>
+{&quot;status&quot;:&quot;database unavailable&quot;} 503</pre></div>
+
+<ul>
+<li><dfn>الحياة</dfn> (liveness، <code>/health</code>): هل العملية حية وتجيب؟ فإن لم تكن، تعيد المنصة تشغيلها. ويجب ألا تفحص قاعدة البيانات: فحين تتعطل قاعدة البيانات، إعادة تشغيل كل خوادم الويب تزيد الأمور سوءاً لا تحسّنها.</li>
+<li><dfn>الجاهزية</dfn> (readiness، <code>/ready</code>): هل يستطيع هذا الخادم أداء عمل مفيد الآن؟ فإن لم يستطع، يكف موازن الحمل عن إرسال الزيارات إليه حتى يستطيع. وهنا تفحص قاعدة البيانات بمهلة قصيرة، وأجابت 503 لحظة توقف قاعدة البيانات، بينما بقيت الحياة 200.</li>
+</ul>
+
+
+<p>ولاحظ السطر الذي يُبقي الخادم حياً حين تختفي قاعدة البيانات. فمجمّع الاتصالات يطلق حدث <code>error</code> حين يُقطع اتصال خامل؛ وبلا مستمع، يعامله Node خطأً غير معالَج فتنهار العملية كلها، وهذا بالضبط ما حدث في النسخة الأولى من هذا المثال:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code">db.on(<span class="s">&quot;error&quot;</span>, (err) =&gt; app.log.warn({ err }, <span class="s">&quot;database connection lost&quot;</span>));</pre></div>
+
+<h2><span class="sec">13.6</span> <span>من الإشارات إلى التنبيهات</span></h2>
+
+<p>لوحات المتابعة للنظر؛ و<dfn>التنبيهات</dfn> لأن تُخبَر. والفن أن تنبّه على ما يشعر به المستخدمون، لا على كل سبب:</p>
+<ul>
+<li><strong>أهداف مستوى الخدمة.</strong> قرر ما يعنيه «يعمل»، بالأرقام: «99.5% من طلبات الدفع تنجح، و95% تنتهي خلال 500 مللي ثانية، على مدى 30 يوماً». هذا <dfn>SLO</dfn>؛ والـ 0.5% المسموحة من الإخفاقات هي <dfn>ميزانية الأخطاء</dfn>. ونبّه حين تحترق الميزانية بسرعة، لا عند كل خطأ.</li>
+<li><strong>الأعراض قبل الأسباب.</strong> «أخطاء الدفع فوق 2% مدة 5 دقائق» توقظ أحداً؛ و«المعالج عند 80%» تذهب إلى لوحة متابعة. فالمعالج المرتفع مع مستخدمين سعداء ليس طارئاً؛ والدفع المعطل عند 20% معالج طارئ.</li>
+<li><strong>كل تنبيه قابل للتصرف.</strong> يقول ما الخطأ، ويربط بلوحة المتابعة وبدليل قصير (<dfn>runbook</dfn>) لما يُفحص أولاً. والتنبيه الذي يتعلم الناس تجاهله أسوأ من لا شيء.</li>
+<li><strong>راقب الخلفية أيضاً.</strong> طول الطوابير والمهام الفاشلة (الفصل 10)، ومساحة القرص، وانتهاء الشهادات، والوقت منذ آخر نسخة احتياطية ناجحة.</li>
+</ul>
+
+
+<h2><span class="sec">13.7</span> <span>أبعد في Node</span></h2>
+
+<ul>
+<li><strong>السجلات.</strong> يكتب pino إلى المخرج القياسي؛ وأثناء التطوير، مرّره عبر <code>pino-pretty</code> للألوان. واستخدم <code>request.log</code> في المسارات فيحمل كل سطر رقم الطلب، وخيار <code>redact</code> في pino لإزالة حقول مثل <code>password</code> أينما ظهرت.</li>
+<li><strong>الأخطاء.</strong> لـ Sentry وGlitchTip حِزَم Node تتصل بـ Fastify.</li>
+<li><strong>التتبع.</strong> حزمة OpenTelemetry لـ Node، بأدواتها التلقائية، تنشئ امتدادات للطلبات الواردة، واستدعاءات <code>fetch</code>، واستعلامات PostgreSQL، وأوامر Redis دون تغيير المسارات، وتمرر <code>traceparent</code> عنك.</li>
+<li><strong>المقاييس.</strong> <code>collectDefaultMetrics()</code> في <code>prom-client</code> تضيف ذاكرة العملية ومعالجها وتأخر حلقة الأحداث، وهو أول علامة على كود معطِّل (الفصل 14).</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: صحّح الإنتاج من الإشارات أولاً</p><p>حين يسوء شيء، قاوم إضافة <code>console.log</code> وإعادة النشر. ابدأ من التنبيه، وافتح لوحة المتابعة، وجد رقم تتبع طلب فاشل، واقرأ سجلاته. وفي كل مرة لم تكفِ الإشارات للإجابة عن السؤال، أضف الحقل أو المقياس أو الامتداد الناقص، فتكفي في المرة القادمة. فقابلية الملاحظة تُبنى حادثةً بعد حادثة.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>سجلات نصية حرة</td><td>لا شيء يمكن البحث فيه أو عدّه أو ربطه</td><td>كائن JSON واحد في كل سطر، بحقول مسمّاة</td></tr>
+<tr><td>بلا رقم طلب أو تتبع</td><td>لا يمكن إيجاد أسطر طلب واحد معاً</td><td>رقم في كل سطر، يُمرَّر في <code>traceparent</code></td></tr>
+<tr><td>أسرار وبيانات شخصية في السجلات</td><td>تصير السجلات تسريباً للبيانات</td><td>سجّل الأرقام لا الأجسام؛ وأخفِ الحقول الحساسة</td></tr>
+<tr><td>تتبعات المكدس تُرسل إلى العملاء</td><td>يتعلم المهاجمون الكود</td><td>عنوان ورقم تتبع في الخارج؛ والتفاصيل في السجل</td></tr>
+<tr><td>المتوسطات بدل المئينات</td><td>طلبات بطيئة مختبئة خلف السريعة</td><td>المدرّجات وp95 وp99</td></tr>
+<tr><td>أرقام المستخدمين أو العناوين الكاملة تسميات للمقاييس</td><td>ملايين السلاسل؛ ونظام المقاييس يسقط</td><td>أنماط المسارات ومجموعات صغيرة ثابتة</td></tr>
+<tr><td>فحص حياة يفحص قاعدة البيانات</td><td>إعادة تشغيل كل خادم حين ترتجف قاعدة البيانات</td><td>الحياة للعملية، والجاهزية للاعتماديات</td></tr>
+<tr><td>تنبيهات على الأسباب، لكل شيء</td><td>إرهاق من التنبيهات؛ وتجاهل الحقيقية منها</td><td>تنبيهات على الأعراض وأهداف الخدمة، مع أدلة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>السجلات</strong> تقول ما حدث، و<strong>المقاييس</strong> كم وبأي سرعة، و<strong>التتبعات</strong> أين ذهب وقت طلب واحد.</li>
+<li>السجلات المنظمة <strong>كائن JSON واحد في كل سطر</strong>، بمستوى، والخدمة، و<strong>رقم تتبع</strong>، وبلا أسرار.</li>
+<li>الأخطاء تعطي العميل عنواناً ورقم التتبع؛ و<strong>التفاصيل تذهب إلى السجل</strong> أو متتبّع الأخطاء.</li>
+<li>ترويسة <strong><code>traceparent</code></strong> تحمل رقم التتبع بين الخدمات؛ وOpenTelemetry تحوّله تتبعات كاملة.</li>
+<li><strong>مقاييس RED</strong> لكل مسار: المعدل، والأخطاء، والمدة <strong>مدرّجاً</strong>، يقرؤها Prometheus؛ والتسميات قليلة التعدد.</li>
+<li><strong>الحياة</strong> و<strong>الجاهزية</strong> فحصان مختلفان؛ و<strong>التنبيهات</strong> تتبع أهداف الخدمة والأعراض، ولكل منها دليل.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. حقوله يمكن البحث فيها وعدّها بالأدوات («كل الأخطاء للطلب 1001»، «الأخطاء في الدقيقة لكل مسار»)، ويحمل رقم تتبع الطلب فيمكن ربطه بأسطر الطلب نفسه الأخرى، ويستطيع ترك البيانات الشخصية كالبريد، الذي يضعه السطر النصي الحر في كل نسخة من السجلات. 2. هو مفتاح السجلات: حين يذكره الزبون أو فريق الدعم، يجد الفريق كل سطر عن ذلك الطلب، عبر الخدمات، دون تخمين من الأوقات والعناوين، بينما لا يعرف العميل شيئاً عن الكود. 3. كي تتشارك كل الأسطر المكتوبة عن عملية دفع واحدة، في الخدمتين، رقماً واحداً وتُعرض معاً؛ ومع أرقام منفصلة لا يستطيع أحد أن يعرف أي طلب مخزون يخص أي عملية دفع.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يجعل تشغيل المتجر أسهل. أثبت كلاً منها بكسر شيء عمداً وإيجاده بالإشارات.</p>
+
+<div class="project">
+<p class="project-label">المشروع 13.1 · سهل</p>
+<h3>سجلات تجيب عن الأسئلة</h3>
+<p class="project-goal">اجعل API المتجر من الفصول السابقة يسجّل كخدمة هذا الفصل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التسجيل المنظم، وأرقام التتبع، والإخفاء، والبحث في السجلات بـ <code>jq</code>.</p>
+<ol class="steps">
+<li>سجّل بـ JSON برقم تتبع يؤخذ من <code>traceparent</code> أو يُنشأ، ويُعاد للعملاء في ترويسة رد.</li>
+<li>سجّل سطر <code>info</code> واحداً لكل حدث عمل (تم الطلب، أُلغي الطلب) برقم الطلب ومجموعه، وتأكد ألا تظهر كلمات المرور والرموز أبداً.</li>
+<li>ولّد مئة طلب، ثم أجب بـ <code>jq</code> وحدها: كم طلباً تم، وأي المسارات أعادت أخطاء، والقصة الكاملة لرقم تتبع واحد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>jq -c 'select(.level == "error")'</code> و<code>jq -s 'group_by(.msg) | map({msg: .[0].msg, count: length})'</code> تجيبان عن أغلب الأسئلة عن ملف سجل.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 13.2 · متوسط</p>
+<h3>لوحة متابعة بـ Prometheus وGrafana</h3>
+<p class="project-goal">اجمع مقاييس المتجر بـ Prometheus حقيقي، وارسمها في Grafana.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تشغيل Prometheus، وPromQL، والمئينات من المدرّجات، ولوحات المتابعة.</p>
+<ol class="steps">
+<li>شغّل Prometheus وGrafana في Docker، وPrometheus يقرأ <code>/metrics</code> من الخدمة كل 5 ثوانٍ.</li>
+<li>ارسم الطلبات في الثانية لكل مسار: <code>sum by (route) (rate(http_requests_total[1m]))</code>.</li>
+<li>ارسم نسبة الأخطاء والمدة p95 بـ <code>histogram_quantile(0.95, …)</code>.</li>
+<li>أضف مساراً بطيئاً، وأرسل إليه زيارات، وراقب p95 يتحرك بينما لا يكاد المتوسط يتحرك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المعدلات تُحسب دائماً على نافذة (<code>[1m]</code>): فالعدّاد وحده يكبر فقط، وميله هو المهم.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 13.3 · تحدٍّ</p>
+<h3>تتبع كامل بـ OpenTelemetry</h3>
+<p class="project-goal">انظر إلى عملية دفع واحدة خطاً زمنياً من الامتدادات عبر خدمتين وقاعدة البيانات وRedis.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حِزَم OpenTelemetry، والأدوات التلقائية، وتمرير السياق، وقراءة التتبعات.</p>
+<ol class="steps">
+<li>شغّل Jaeger في Docker، وأضف حزمة OpenTelemetry بأدواتها التلقائية إلى الخدمتين.</li>
+<li>نادِ الدفع وجد تتبعه في Jaeger: الطلب الوارد، والاستدعاء إلى خدمة المخزون، وكل استعلام SQL.</li>
+<li>أضف امتداداً يدوياً واحداً حول خطوة عمل («تسعير السلة») برقم الطلب سمةً.</li>
+<li>اجعل خدمة المخزون بطيئة لمنتج واحد، واستخدم التتبعات لتثبت أين يذهب الوقت.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ضع رقم التتبع في كل سطر سجل أيضاً؛ فتستطيع القفز من تتبع إلى سجلاته والعودة، وهنا تصير الإشارتان أكثر من مجموعهما.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أعد كتابة هذه أحداثَ سجل منظمة، بمستوى وحقول: «Starting…»؛ و«User sara@example.com logged in with password hunter2»؛ و«ERROR!!! order failed».</li>
+<li><span class="level">سهل</span> يقول مدرّج إنه من 1000 طلب، استغرق 940 على الأكثر 100 مللي ثانية، و990 على الأكثر 500، والكل على الأكثر ثانية. ما p95 وp99 تقريباً؟</li>
+<li><span class="level medium">متوسط</span> أضاف أحدهم تسمية <code>customer_id</code> إلى <code>http_requests_total</code>. ماذا يحدث لنظام المقاييس بعد شهر، وكيف ينبغي الإجابة عن السؤال الذي أراد الإجابة عنه بدلاً من ذلك؟</li>
+<li><span class="level medium">متوسط</span> فحص الجاهزية يستعلم قاعدة البيانات بمهلة ثانية. ما الذي قد يسوء لو لم تكن له مهلة، وماذا لو فحص أيضاً API شريك بطيئاً؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب هدف الخدمة وتنبيهين لدفع المتجر: واحداً يوقظ أحداً ليلاً وآخر يفتح تذكرة فقط. واشرح الفرق.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 14</p>
+<p>الإشارات تبيّن أين المتجر بطيء؛ والآن نجعله سريعاً. الأداء: القياس تحت الحمل، وإيجاد عنق الزجاجة، والفهارس وخطط الاستعلام، وحلقة الأحداث.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6243,6 +6592,16 @@ order-1004 أُعيدت
 <li>(1) بيانات مشتركة: ملف اختبار آخر، أو اختبار سابق، يُدخل طلبات في الجدول نفسه؛ افحص هل يعيد الاختبار ضبط بياناته وهل تتشارك الملفات مخططاً. (2) ترتيب التنفيذ: الاختبار يعدّ طلبات أنشأها اختبار يعمل قبله أو معه؛ شغّله وحده بـ <code>--test-name-pattern</code> مرات كثيرة، ثم مع المجموعة كلها. (3) شيء غير متزامن ما زال يعمل: طلب أنشأه طلب أو مهمة لم يُنتظر يصل بعد إعادة الضبط؛ ابحث عن <code>await</code> ناقصة ومهام أو مؤقتات بقيت تعمل. وتشغيل الاختبار وحده مئة مرة وفحص هل يفشل أبداً يفصل (3) عن (1) و(2).</li>
 <li>اختبار التكامل الثاني، «يرفض طلباً أكبر من المخزون، ولا يغيّر شيئاً»، يتحقق أصلاً أن <code>mailer.send.mock.callCount()</code> تساوي 0 بعد 409. ولا يستطيع التقاط بريد يُرسل داخل معاملة تتراجع بعدها، لأن البديل لا يسجّل إلا أن <code>send</code> استُدعيت؛ وفي ذلك الخطأ يُرسل البريد (يسجّل البديل استدعاءً واحداً) ويختفي الطلب بعدها، فالاختبار الذي يلتقطه هو العكس: أجبر المعاملة على الفشل بعد النقطة التي يُرسل فيها البريد (بإدخال يفشل مثلاً)، وتحقق أن <code>send</code> لم تُستدعَ. والإصلاح الأفضل في التصميم: أرسل بعد التثبيت، أو عبر صندوق صادر.</li>
 <li>مستوى الوحدة: دالة نقية <code>isUnpaidTooLong(order, now)</code> تُختبر بجدول أوقات على جانبي 15 دقيقة، بلا أي ساعة. ومستوى التكامل: المهمة أو الأمر المجدول الذي يلغي الطلبات، يعمل مقابل قاعدة بيانات حقيقية، بطلبات يضبط الاختبار <code>created_at</code> لها في الماضي (بدل الانتظار)، ويتحقق أن القديمة غير المدفوعة وحدها تُلغى وأن المخزون يعود. والساعة يُتحكم فيها بتمرير <code>now</code> (أو بـ <code>mock.timers</code> لـ <code>Date</code>)، لا بالنوم أبداً. وفحص واحد من الطرف إلى الطرف على الأكثر، إن كان الإلغاء ظاهراً للزبائن، بالأوقات الماضية نفسها. والطابور نفسه لا يحتاج اختباراً لتوقيته: ثق بالمكتبة، واختبر كودك.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 13</h2>
+<ol class="exercises">
+<li><code>{"level":"info","msg":"server started","port":3000}</code>: الحدث، مع ما يجعله مفيداً. و<code>{"level":"info","msg":"signed in","user_id":42}</code>: رقم المستخدم بدل البريد، ولا كلمة المرور أبداً (يجب ألا تظهر في أي مكان؛ وإن سُجّلت، غيّر التسجيل وعامل السجلات تسريباً). و<code>{"level":"error","msg":"order failed","order_id":1001,"reason":"payment declined","trace":"…"}</code>: مستوى واحد أمين بدل الأحرف الكبيرة وعلامات التعجب، والطلب والسبب حقلان.</li>
+<li>المئين 95 هو الزمن الذي ينتهي تحته 950 من الطلبات الألف. انتهى 940 خلال 100 مللي ثانية و990 خلال 500، فيقع الطلب رقم 950 بين 100 و500؛ ويستوفي Prometheus داخل الدلو فيبلغ عن نحو 180 مللي ثانية. والمئين 99 (الطلب رقم 990) نحو 500 مللي ثانية. ومع دلاء بهذا الاتساع، أضف دلواً عند 250 إن كانت القيمة الدقيقة مهمة.</li>
+<li>كل زبون ينشئ سلسلة جديدة لكل مسار وحالة، فيكبر عدد السلاسل مع قاعدة الزبائن: بعد شهر، مئات آلاف السلاسل، وتنفجر الذاكرة والتخزين في نظام المقاييس، وتصير الاستعلامات بطيئة أو تفشل. والسؤال («أي الزبائن يصادفون أخطاء؟» أو «كم طلباً يرسل هذا الزبون؟») مكانه السجلات أو التتبعات، التي تحمل رقم الزبون في كل حدث ويمكن البحث فيها وعدّها عند الحاجة؛ أو جدول عمل مخصص إن سُئل كثيراً.</li>
+<li>بلا مهلة، قاعدة بيانات تعلق (بدل أن ترفض الاتصالات) تجعل كل فحص جاهزية يعلق؛ فتنتهي مهلة فحص المنصة، لكن الخادم يراكم فحوصاً واتصالات مفتوحة، ويصير التعافي أبطأ. وفحص API شريك بطيء أسوأ: حين يبطؤ الشريك، يبلغ كل خادم «غير جاهز»، فيزيلها موازن الحمل كلها، ويسقط المتجر كله لأن ميزة اختيارية واحدة متعثرة. وينبغي أن تفحص الجاهزية ما لا يستطيع هذا الخادم العمل بدونه وحده، بمهل قصيرة؛ والشركاء يُراقبون بالمقاييس والتنبيهات بدلاً من ذلك.</li>
+<li>هدف الخدمة: على مدى 30 يوماً، تنجح 99.5% من طلبات الدفع (أي حالة تحت 500) وتكتمل 95% خلال 800 مللي ثانية. وتنبيه الإيقاظ: ميزانية الأخطاء تحترق بسرعة، مثلاً أكثر من 5% من عمليات الدفع تفشل في آخر 5 دقائق وفي آخر ساعة (كلاهما، فلا توقظ رجفة واحدة أحداً)؛ وهذا يعني أن الزبائن يخسرون طلبات الآن. وتنبيه التذكرة: الميزانية تحترق ببطء، مثلاً p95 فوق 800 مللي ثانية ثلاث ساعات، أو 1% من عمليات الدفع تفشل على مدى يوم؛ وهذا يحتاج اهتماماً في ساعات العمل، لا ليلاً. والفرق هو إلحاحه على المستخدمين: أيقظ أحداً فقط حين يتأثر الناس الآن ويجب أن يتصرف أحد في الحال.</li>
 </ol>
 
 </section>
