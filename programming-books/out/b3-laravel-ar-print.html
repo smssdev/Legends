@@ -5343,7 +5343,24 @@ Route::patch(<span class="s">&#x27;users/{user}&#x27;</span>, <span class="k">fu
 
 <p>تقديم الملفات من مجلد بأسمائها يبدو بريئاً. لكن الاسم مدخل، و<code>..</code> معناها «المجلد الأعلى»:</p>
 
-<pre data-code="shop/routes/api.php" data-from="Route::get('unsafe/files" data-to="^})->where('path', '.*');#2" data-title="routes/api.php"></pre>
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">Route::get(<span class="s">&#x27;unsafe/files/{path}&#x27;</span>, <span class="k">function</span> (<span class="k">string</span> $path) {
+    <span class="c line-bidi">// خطر: &#x27;../&#x27; تصعد خارج المجلد</span>
+    $text = file_get_contents(storage_path(<span class="s">&quot;app/files/$path&quot;</span>));
+
+    <span class="k">return</span> response($text)-&gt;header(<span class="s">&#x27;Content-Type&#x27;</span>, <span class="s">&#x27;text/plain&#x27;</span>);
+})-&gt;where(<span class="s">&#x27;path&#x27;</span>, <span class="s">&#x27;.*&#x27;</span>);
+
+Route::get(<span class="s">&#x27;files/{path}&#x27;</span>, <span class="k">function</span> (<span class="k">string</span> $path) {
+    <span class="c line-bidi">// قرص جذره المجلد: Flysystem ترفض المسارات التي تصعد خارجه</span>
+    $files = Storage::build([<span class="s">&#x27;driver&#x27;</span> =&gt; <span class="s">&#x27;local&#x27;</span>, <span class="s">&#x27;root&#x27;</span> =&gt; storage_path(<span class="s">&#x27;app/files&#x27;</span>)]);
+    <span class="k">try</span> {
+        $text = $files-&gt;get($path) ?? abort(<span class="n">404</span>, <span class="s">&#x27;Not Found&#x27;</span>);
+    } <span class="k">catch</span> (PathTraversalDetected) {
+        abort(<span class="n">404</span>, <span class="s">&#x27;Not Found&#x27;</span>);
+    }
+
+    <span class="k">return</span> response($text)-&gt;header(<span class="s">&#x27;Content-Type&#x27;</span>, <span class="s">&#x27;text/plain&#x27;</span>);
+})-&gt;where(<span class="s">&#x27;path&#x27;</span>, <span class="s">&#x27;.*&#x27;</span>);</pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ملف عام</span>
 <span class="c">$ </span><span class="k">curl -s localhost:8000/api/unsafe/files/terms.txt</span>

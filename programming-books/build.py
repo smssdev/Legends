@@ -292,7 +292,7 @@ def fill_code(chapter, lang):
 
     chapter = re.sub(r'<figure (data-img="[^"]+"[^>]*)>', image, chapter)
     chapter = re.sub(r'<figure (data-render="[^"]+"[^>]*)>', page, chapter)
-    chapter = re.sub(r'<pre (data-code="[^"]+"[^>]*)></pre>', code, chapter)
+    chapter = re.sub(r'<pre (data-code="[^"]+"(?:[^>"]|"[^"]*")*)></pre>', code, chapter)  # ">" may appear inside a quoted value
     chapter = re.sub(r'<pre (data-out="[^"]+"[^>]*)></pre>', out, chapter)
     chapter = re.sub(r'<pre (data-check="[^"]+"[^>]*)></pre>', check, chapter)
     chapter = re.sub(r'<pre (data-sh="[^"]+"[^>]*)></pre>', shell, chapter)
