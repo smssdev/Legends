@@ -3,6 +3,8 @@
   python3 plan.py && node render.cjs series-plan
 """
 import json
+import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -50,11 +52,56 @@ def book(b):
       <div class="parts">{parts}</div></section>"""
 
 
+def progress(b):
+    """What exists for a book, read from the files themselves: chapters written in both languages, and PDFs."""
+    chapters = [ch for p in b["parts"] for ch in p["chapters"]]
+    written = sum(1 for k, ch in enumerate(chapters, 1) if all(
+        (ROOT / "src" / f'{ch.get("src") or b["id"] + f"/ch{k:02d}"}.{lang}.html').exists() for lang in ("en", "ar")))
+    pages = {}
+    for lang in ("ar", "en"):
+        pdf = ROOT / "out" / f'{b["id"]}-{lang}-color.pdf'
+        if pdf.exists():
+            info = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True).stdout
+            pages[lang] = re.search(r"Pages:\s+(\d+)", info).group(1)
+    done = written == len(chapters) and len(pages) == 2
+    return written, len(chapters), pages, done
+
+
+def progress_table():
+    rows = ""
+    for b in S["books"]:
+        written, total, pages, done = progress(b)
+        name = b["title"]["ar"] + ((" · " + b["edition"]["ar"]) if b.get("edition") else "")
+        if done:
+            state = "مكتمل"
+            files = f'out/{b["id"]}-ar-color.pdf وprint وcover، ومثلها بالإنجليزية'
+            size = f'{pages["ar"]} صفحة بالعربية، و{pages["en"]} بالإنجليزية'
+        elif written:
+            state, files, size = f"جارٍ: {written} من {total} فصلاً", "", ""
+        else:
+            state, files, size = "لم يبدأ: الخطة فقط", "", ""
+        rows += (f'<tr><td>{b["number"]}</td><td>{name}</td><td>{state}</td><td>{size}</td>'
+                 f'<td dir="ltr" style="font-size:8pt">{files}</td></tr>')
+    done = [b for b in S["books"] if progress(b)[3]]
+    nxt = next((b for b in S["books"] if not progress(b)[3]), None)
+    note = (f'<p>اكتمل {len(done)} من {len(S["books"])} كتاباً وإصداراً. ولكل كتاب مكتمل في كل لغة ثلاثة ملفات في مجلد '
+            f'<span dir="ltr">programming-books/out</span>: PDF ملون للتصفح (color)، وداخل أبيض وأسود للطباعة (print)، '
+            f'وغلاف ملون كامل (cover). وكل مثال في الكتب شُغّل فعلاً عند بنائها، وكوده ومخرجاته في '
+            f'<span dir="ltr">programming-books/code</span>.')
+    if nxt:
+        note += (f' والتالي: الكتاب {nxt["number"]} «{nxt["title"]["ar"]}»، وخطته (فصوله وأجزاؤه) في صفحته أدناه، '
+                 f'ويبدأ بطلب المؤلف.')
+    note += '</p>'
+    return ('<table><tr><th>#</th><th>الكتاب</th><th>الحالة</th><th>الصفحات</th><th>الملفات</th></tr>'
+            + rows + '</table>' + note)
+
+
 def main():
     total = sum(len(p["chapters"]) for b in S["books"] for p in b["parts"])
     specs = "".join(f"<tr><th>{a}</th><td>{b}</td></tr>" for a, b in SPECS)
     opens = "".join(f"<li><strong>{a}:</strong> {b}</li>" for a, b in OPEN)
     books = "".join(book(b) for b in S["books"])
+    progress_html = progress_table()
     standards = "".join(f"<li>{x}</li>" for x in S.get("standards", {}).get("ar", []))
     names = {"foundations": "الأساس", "frontend": "الواجهات", "backend": "الخوادم", "fullstack": "البرمجة الشاملة",
              "mobile": "الموبايل", "tools": "أدوات المحترف", "craft": "صنعة البرمجة", "career": "المسيرة المهنية",
@@ -112,8 +159,8 @@ ul.open li {{ margin-bottom: 4pt; }}
 <table>{specs}</table>
 <h3>قرارات تنتظر رأيك</h3>
 <ul class="open">{opens}</ul>
-<h3>ما أُنجز</h3>
-<p>الكتاب الأول «البرمجة من الصفر» مكتمل بالعربية والإنجليزية: المقدمة، والفصول الثمانية عشر، وملحق حلول التمارين، والمحتويات بأرقام الصفحات. ولكل لغة ثلاثة ملفات: PDF ملون للتصفح، وداخل أبيض وأسود للطباعة، وغلاف ملون كامل. والخطوة التالية بطلب المؤلف: إضافة مشروعين أو ثلاثة مشاريع تطبيقية موجهة لكل فصل في الكتاب الأول حسب معايير السلسلة، ثم الكتاب التالي.</p>
+<h3>أين وصلنا</h3>
+{progress_html}
 {books}
 </body></html>"""
     (ROOT / "out").mkdir(exist_ok=True)
