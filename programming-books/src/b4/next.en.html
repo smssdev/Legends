@@ -1,0 +1,205 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/next/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Full Stack with Next.js</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide when the front end and the back end belong in one project</li>
+<li>keep database code and secrets on the server, and let the build enforce it</li>
+<li>read data in Server Components and write it with Server Actions</li>
+<li>turn a refusal from the database into a clear, fresh answer on the screen</li>
+<li>serve the same business function to the web form and to other clients</li>
+<li>draw the boundaries that keep a full-stack codebase easy to change</li>
+</ul>
+</div>
+
+<p class="lead">In the last chapter the front end and the back end were two applications joined by a contract. That is the right shape when several clients share an API, or when separate teams own each side. But for a product’s own web app, built by one team, the two halves change together all the time, and every change crosses the network, the contract and two deployments. A <dfn>full-stack framework</dfn> such as Next.js puts both sides in one project: the page and the query that feeds it live a few lines apart, and calling the server is calling a function. This chapter builds Bit Booking’s booking page that way, on the PostgreSQL schema of Chapter {{n-2}}.</p>
+
+<aside class="bit" data-mood="happy"><p>Book 2 showed Next.js as a way to render pages on the server. Here we use it for the whole product: database, rules, forms and API. Same tool, a much bigger job.</p></aside>
+
+<h2>{{n}}.1 One project, both sides</h2>
+
+<p>Putting both sides together removes a lot of ceremony. There is no API to design for the page’s own needs, no client to generate, no second deployment to keep in step: a type change in a query is a compile error in the component that shows it. What does <em>not</em> go away is the network. The code still runs in two places, the server and the browser, and everything the browser sends can be forged. A full-stack framework makes the boundary easier to cross, which also makes it easier to forget. Most of this chapter is about keeping it visible.</p>
+
+<p>The project is an ordinary Next.js app with fixed versions, because every listing in the book must build exactly as printed:</p>
+
+<pre data-code="package.json" data-title="package.json"></pre>
+
+<p><code>server-only</code> is a tiny package with a big job, shown in the next section, and <code>output: "standalone"</code> in <code>next.config.ts</code> makes the build produce a self-contained server, ready for the container of Chapter {{n+7}}. Here is what <code>next build</code> makes of the app:</p>
+
+<pre data-code="build.sh" data-title="Terminal"></pre>
+
+<p>Every route is <code>ƒ</code>, rendered on demand: free times change with every booking, so nothing here may be served from a page built in advance.</p>
+
+<h2>{{n}}.2 What only the server may touch</h2>
+
+<p>The database connection holds a password, and the queries hold the business’s rules. Neither may ever reach the browser. In Next.js, a module ends up in the browser’s bundle if any Client Component imports it, directly or through another file, and nothing in TypeScript prevents that. So the database module says so itself, on its first line:</p>
+
+<pre data-code="lib/db.ts" data-title="lib/db.ts"></pre>
+
+<p>Importing <code>server-only</code> does nothing on the server, and makes the build fail if the file is ever pulled into the browser. To see it work, a Client Component imports the pool by mistake:</p>
+
+<pre data-code="leak.sh" data-title="Terminal"></pre>
+
+<p>The build stops and prints the chain of imports that led there. (The message mentions the Pages Router because Next.js reuses one error for every place where server-only code is not allowed.) The same rule applies to settings: <code>DATABASE_URL</code> is read only in this file, and only variables named <code>NEXT_PUBLIC_…</code> are ever copied into the browser’s code. Never give a secret that prefix.</p>
+
+<h2>{{n}}.3 Reading with Server Components</h2>
+
+<p>The free times come from one query. The database generates the day’s slots in the business’s own time zone (the warning of Chapter {{n-2}}), and keeps those that overlap no confirmed booking:</p>
+
+<pre data-code="lib/bookings.ts" data-from="export async function freeSlots" data-to="^}" data-title="lib/bookings.ts"></pre>
+
+<p>A Server Component calls it like any other function. It runs on the server, awaits the query, and sends the browser the finished HTML plus the data the interactive part needs:</p>
+
+<pre data-code="app/book/[staff]/page.tsx" data-title="app/book/[staff]/page.tsx"></pre>
+
+<figure data-img="shots/book.png" data-url="localhost:3000/book/1"><figcaption><b>Figure {{n}}.1:</b> The booking page. The times were computed by PostgreSQL in Cairo time, and the page was rendered on the server.</figcaption></figure>
+
+<p>Notice what crosses into <code>BookForm</code>: an id and a list of plain objects. Props of a Client Component are serialised and sent to the browser, so they must be plain data (no functions, no database rows with hidden fields), and everything in them is visible to anyone who opens the page’s source. Choosing those props is choosing what to publish.</p>
+
+<h2>{{n}}.4 Writing with a Server Action</h2>
+
+<p>Booking is one function too. It inserts the row, and it turns the exclusion constraint’s refusal into an ordinary result instead of an exception, because “taken” is an expected outcome, not a failure:</p>
+
+<pre data-code="lib/bookings.ts" data-from="export async function book(" data-to="^}" data-title="lib/bookings.ts"></pre>
+
+<p>The form calls it through a <dfn>Server Action</dfn>: a function marked <code>"use server"</code> that the browser can call, which Next.js turns into a POST request behind the scenes. It is easy to read it as an internal function call. It is not: anyone can send that request with any data. So the action does exactly what an API handler in Book 3 did, it validates every field, then calls the business function, then decides the answer:</p>
+
+<pre data-code="app/book/actions.ts" data-from="const Input" data-title="app/book/actions.ts"></pre>
+
+<p>The form is a Client Component only because it shows a pending state and the error. <code>useActionState</code> calls the action with the form’s data and keeps what it returns:</p>
+
+<pre data-code="app/book/[staff]/BookForm.tsx" data-from="export function BookForm" data-to="^}" data-title="app/book/[staff]/BookForm.tsx"></pre>
+
+<p>The form is a real HTML form with a real action, so it even works before JavaScript has loaded; JavaScript only makes it nicer. On success the action redirects to the confirmation page, another Server Component that reads the booking back from the database:</p>
+
+<figure data-img="shots/done.png" data-url="localhost:3000/booking/1"><figcaption><b>Figure {{n}}.2:</b> Sara’s booking, read back from PostgreSQL after the redirect.</figcaption></figure>
+
+<h2>{{n}}.5 When two customers want the same time</h2>
+
+<p>Karim opened the same page a minute before Sara booked, and his page still offers 10:00. He chooses it and presses Book. His request reaches the server, passes validation, and the insert fails on the constraint. The action returns the message, and because it calls <code>revalidatePath</code> whatever the result, the page is rendered again with the answer:</p>
+
+<figure data-img="shots/taken.png" data-url="localhost:3000/book/1"><figcaption><b>Figure {{n}}.3:</b> Karim’s page after his attempt: the message, his email kept, and a fresh list in which 10:00 no longer appears.</figcaption></figure>
+
+<p>This is the criterion we wrote in Chapter {{n-2}}, now visible on a screen: exactly one booking is made, and the other customer is told, kindly, with the information to choose again. Nothing in the page had to know about concurrency; the database decided, and each layer passed its answer up in its own words: an error code, a result, a message.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does <code>lib/db.ts</code> import <code>server-only</code>, when no Client Component imports it today?</li><li>A colleague says the Server Action needs no validation, “because only our form calls it”. What is wrong with that?</li><li>Why does <code>book()</code> return <code>{ ok: false }</code> for a taken slot instead of throwing?</li></ol></aside>
+
+<h2>{{n}}.6 The second door</h2>
+
+<p>The web form is not the only client. The mobile app planned in the spec, and any partner integration, need the free times through the public API that Chapter {{n-1}} described in its contract. A <dfn>route handler</dfn> serves it from the same project, calling the same function:</p>
+
+<pre data-code="app/api/slots/route.ts" data-title="app/api/slots/route.ts"></pre>
+<pre data-code="api.sh" data-title="Terminal"></pre>
+
+<p>The answer has the shape the contract promised, and after Sara’s booking 10:00 is gone here too, because both doors open onto one function and one database. That is the design to aim for: <strong>business functions in <code>lib/</code>, and thin doors in <code>app/</code></strong> (pages, actions, route handlers) that only translate between their callers and those functions. The contract test of Chapter {{n-1}} can run against <code>/api/slots</code> unchanged.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: every Server Action is a public endpoint</p><p>Each exported function in a <code>"use server"</code> file becomes an HTTP endpoint that anyone can call, with any arguments, whether or not a page uses it any more. Validate every argument, check who is calling (the next chapter), and never export a helper from such a file: a function that “just updates a status” is now a public API to update any status.</p></aside>
+
+<h2>{{n}}.7 Boundaries in a full-stack codebase</h2>
+
+<p>The convenience of one project becomes a tangle if everything may import everything. Three rules keep Bit Booking’s code in shape as it grows:</p>
+<ul>
+<li><strong>Folders by role.</strong> <code>lib/</code> holds the business functions and data access, marked <code>server-only</code>; <code>app/</code> holds the doors; shared code that must run in the browser (such as <code>lib/time.ts</code>) has no server imports at all.</li>
+<li><strong>Plain data across the line.</strong> What a Server Component passes to a Client Component, and what an action returns, are small, serialisable objects chosen on purpose, never whole database rows.</li>
+<li><strong>One function per business action.</strong> The page, the action and the route handler call <code>book()</code>; none of them writes its own <code>INSERT</code>. When the rule changes, it changes once.</li>
+</ul>
+<p>And know when to split. If the API grows into a product of its own, with its own team, its own scaling or other consumers that matter more than the web app, move <code>lib/</code> into a separate service behind the contract of Chapter {{n-1}}. Because the doors were thin, that move is mostly cutting and pasting.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: read the network tab once a week</p><p>Open the browser’s developer tools on your own app and read what is sent: every request an action makes, every prop serialised into the page, every script in the bundle. Full-stack frameworks hide the boundary on purpose; looking at it regularly is how you notice the extra field in a prop, or the library that slipped into the browser bundle, before an attacker or a slow phone does.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Database module without <code>server-only</code></td><td>One wrong import ships secrets and queries to the browser</td><td>Mark it; the build refuses the import</td></tr>
+<tr><td>A secret in a <code>NEXT_PUBLIC_</code> variable</td><td>It is in every visitor’s JavaScript</td><td>Server-only names for secrets</td></tr>
+<tr><td>Server Actions without validation</td><td>Anyone posts anything</td><td>Validate as in any API handler</td></tr>
+<tr><td>Whole rows passed as props</td><td>Hidden fields published in the page</td><td>Pass small objects chosen on purpose</td></tr>
+<tr><td>Queries written in pages and actions</td><td>Rules duplicated and drifting</td><td>Business functions in <code>lib/</code></td></tr>
+<tr><td>Expected outcomes thrown as errors</td><td>Generic error pages instead of answers</td><td>Return results; throw only for the unexpected</td></tr>
+<tr><td>No refresh after a write</td><td>The page shows times that are gone</td><td><code>revalidatePath</code> after every change</td></tr>
+<tr><td>Prerendering pages with live data</td><td>Customers see a stale schedule</td><td>Render on demand where data changes</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A <strong>full-stack framework</strong> puts both sides in one project; the network boundary remains, and must stay visible.</li>
+<li>Mark data access <strong><code>server-only</code></strong>, keep secrets out of <code>NEXT_PUBLIC_</code>, and let the build enforce both.</li>
+<li><strong>Server Components</strong> read data directly; what they pass to <strong>Client Components</strong> is published plain data.</li>
+<li>A <strong>Server Action</strong> is a public endpoint: validate, call the business function, decide the answer.</li>
+<li>Turn the database’s refusal into a <strong>result</strong>, and <strong>revalidate</strong> so the page shows the truth.</li>
+<li>Serve other clients through a <strong>route handler</strong> that calls the <strong>same function</strong>, under the same contract.</li>
+<li>Keep <strong>business functions in <code>lib/</code></strong> and <strong>thin doors in <code>app/</code></strong>, so the back end can be split out when it needs to be.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. To make the rule permanent rather than accidental. Today nothing imports it from the browser; tomorrow someone adds a Client Component that imports a helper that imports the pool, and without the marker the build happily bundles the module and the connection setup for the browser. With it, that change fails the build, the day it is made. 2. A Server Action is an HTTP endpoint. Anyone can find its id in the page and send it their own form data: a nonsense date, another staff member’s id, a ten-megabyte email. “Only our form calls it” describes the intended caller, not the possible ones. 3. Because a taken slot is a normal, expected outcome of a booking attempt, and the caller must handle it: the action shows a message, the route handler would answer 409. Exceptions are for the unexpected, and an uncaught one turns into a generic error page. Returning a result also makes the possibility visible in the function’s type, so no caller can forget it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project extends the Next.js app. Keep business logic in <code>lib/</code>, keep the doors thin, and try every change both in the browser and through the API.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Choose the day</h3>
+<p class="project-goal">Let the customer move between days on the booking page.</p>
+<p class="project-skills"><strong>You will practise:</strong> search parameters, Server Components, and links that keep state in the address.</p>
+<ol class="steps">
+<li>Show the date in the page title, and add “previous day” and “next day” links that change <code>?date=</code>.</li>
+<li>Default to today in Cairo time, not the server’s time zone.</li>
+<li>Refuse dates in the past and more than 60 days ahead, in <code>lib/</code>, so the API refuses them too.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> compute “today in Cairo” with <code>Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Cairo" })</code>, which formats dates as <code>YYYY-MM-DD</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>The owner’s day</h3>
+<p class="project-goal">Build US-5: a page listing today’s bookings for every staff member, with a cancel button.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading joined data, a second Server Action, and revalidation across pages.</p>
+<ol class="steps">
+<li>Add <code>bookingsForDay(date)</code> to <code>lib/bookings.ts</code>, grouped by staff member.</li>
+<li>Render it at <code>/owner</code> as a Server Component.</li>
+<li>Add a <code>cancel(id)</code> function and a Server Action that calls it, and revalidate both <code>/owner</code> and the booking page.</li>
+<li>Check that a cancelled time reappears for customers immediately.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> anyone can call the cancel action; write a note in the code that the next chapter must add an owner check before this goes live.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Test the whole stack</h3>
+<p class="project-goal">Prove the booking flow with automated tests at three levels.</p>
+<p class="project-skills"><strong>You will practise:</strong> testing business functions against PostgreSQL, contract tests for route handlers, and end-to-end tests with Playwright.</p>
+<ol class="steps">
+<li>Test <code>freeSlots</code> and <code>book</code> against a test database, including the taken case.</li>
+<li>Run Chapter {{n-1}}’s contract test against <code>/api/slots</code> of the running app.</li>
+<li>Write a Playwright test for the two-customer story of section {{n}}.5, with two browser contexts.</li>
+<li>Run all three in one command, as CI would.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the screenshots in this chapter were made by exactly such a script: open the page twice before the first booking, then submit both.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Which of these may a Client Component import: <code>lib/time.ts</code>, <code>lib/db.ts</code>, <code>lib/bookings.ts</code>, the type <code>Slot</code> from <code>lib/bookings.ts</code>? Explain the last one.</li>
+<li><span class="level">Easy</span> Why does the slot query generate times with <code>AT TIME ZONE 'Africa/Cairo'</code> rather than using the server’s clock?</li>
+<li><span class="level">Medium</span> Remove <code>revalidatePath</code> from the action. Describe exactly what Karim sees after his failed attempt, and why that is worse.</li>
+<li><span class="level">Medium</span> The confirmation page is at <code>/booking/1</code>. What is wrong with that address for a real product, and how would you fix it?</li>
+<li><span class="level">Challenge</span> Bit Booking grows: the mobile app sends ten times more traffic than the website, and a separate team will own it. Describe what you would move out of the Next.js project, what stays, and the order of the steps.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Anyone can still cancel anyone’s booking. The next chapter adds identity across the whole stack: owners and staff who sign in, customers who do not, and the checks that run on every door.</p>
+</div>
+</section>
