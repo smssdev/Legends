@@ -196,9 +196,13 @@ def fill_code(chapter, lang):
             # data-to, to the end of the file.
             lines = src.split("\n")
             # data-from="^// " is a line that starts with it (a comment at the top level, not inside a function)
+            # data-from="^  app.post(#2" is the second such line.
             first = html.unescape(part.group(1))
-            start = next(i for i, l in enumerate(lines)
-                         if (l.startswith(first[1:]) if first.startswith("^") else first in l))
+            nth = re.search(r"#(\d+)$", first)
+            first = first[:nth.start()] if nth else first
+            starts = [i for i, l in enumerate(lines)
+                      if (l.startswith(first[1:]) if first.startswith("^") else first in l)]
+            start = starts[int(nth.group(1)) - 1 if nth else 0]
             end = len(lines) - 1
             to = re.search(r'data-to="([^"]+)"', attrs)
             if to:

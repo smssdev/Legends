@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Caching with Redis"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "Chapter 8: Authentication and Authorisation"; } }
+@page ch08:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -3869,6 +3871,659 @@ request 8 via server B: refused, 429, try again in 10 s</pre></div>
 <p>The shop is correct and fast; now it needs to know who is calling. Authentication: passwords stored properly, sessions and tokens, and the rules that decide what each user may do.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b3/node/auth/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Authentication and Authorization</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell authentication (who are you?) from authorization (may you do this?)</li>
+<li>store passwords so that a stolen database does not reveal them</li>
+<li>register and sign users in, without telling attackers which emails exist</li>
+<li>issue session tokens you can revoke, and understand when a JWT is the better choice</li>
+<li>protect routes by role and by ownership</li>
+<li>slow down password guessing, and test all of it automatically</li>
+</ul>
+</div>
+
+<p class="lead">Until now, anyone could call every route of the shop’s API. A real shop needs to know who is calling: a customer sees their own orders and no one else’s, and only staff may see the list of customers. Getting this right is not hard, but almost every mistake in it is a security incident, and the mistakes are invisible until someone exploits them. This chapter builds it step by step with Node’s own crypto module, PostgreSQL and Fastify, and runs every request against the real server.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Years ago a site I used was breached, and the attackers published its user table. My password was right there, in plain text, next to my email. It was the same password I used on two other sites. That afternoon I changed seven passwords, and I promised myself that no table I build would ever hold one.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>Two questions</span></h2>
+
+<p>Every protected request answers two separate questions, in order:</p>
+<ul>
+<li><dfn>Authentication</dfn>: <em>who is calling?</em> The client proves an identity, with a password once and then with a token on every request. If it cannot, the answer is <code>401 Unauthorized</code> (a confusing name: it means “not authenticated”).</li>
+<li><dfn>Authorization</dfn>: <em>may this user do this?</em> The identity is known; the rules decide. If they say no, the answer is <code>403 Forbidden</code>, or <code>404 Not Found</code> when even the existence of the thing is private.</li>
+</ul>
+<p>Keeping them apart keeps the code clear: one function finds the user, and the rules about what each user may do live next to the routes they protect.</p>
+
+<h2><span class="sec">8.2</span> <span>Storing passwords</span></h2>
+
+<p>A password must never be stored as it is, and never with an ordinary hash such as SHA-256 either. A fast hash is the problem: a graphics card computes billions of SHA-256 hashes a second, so an attacker with a stolen table tries every common password against every row in minutes. Password storage needs a hash that is <em>slow on purpose</em> and needs a lot of memory, so that each guess costs real time: <dfn>scrypt</dfn>, <dfn>Argon2</dfn> or <dfn>bcrypt</dfn>. Node has scrypt built in:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/password.ts</div><pre class="code"><span class="k">import</span> { randomBytes, scrypt, timingSafeEqual } <span class="k">from</span> <span class="s">&quot;node:crypto&quot;</span>;
+
+<span class="c line-bidi">// N = 2^15: tens of milliseconds and 32 MB per hash, slow on purpose; raise it as computers get faster</span>
+<span class="k">const</span> COST = <span class="n">2</span> ** <span class="n">15</span>;
+
+<span class="k">function</span> derive(password: string, salt: Buffer, cost: number) {
+  <span class="k">return</span> <span class="k">new</span> Promise&lt;Buffer&gt;((resolve, reject) =&gt; {
+    <span class="k">const</span> options = { N: cost, r: <span class="n">8</span>, p: <span class="n">1</span>, maxmem: <span class="n">64</span> * <span class="n">1024</span> * <span class="n">1024</span> };
+    scrypt(password.normalize(<span class="s">&quot;NFKC&quot;</span>), salt, <span class="n">32</span>, options, (error, key) =&gt;
+      error ? reject(error) : resolve(key),
+    );
+  });
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> hashPassword(password: string) {
+  <span class="c line-bidi">// a new random salt for every hash: the same password never gives the same hash</span>
+  <span class="k">const</span> salt = randomBytes(<span class="n">16</span>);
+  <span class="k">const</span> key = <span class="k">await</span> derive(password, salt, COST);
+  <span class="c line-bidi">// algorithm, cost, salt and key in one string: old hashes still verify after the cost changes</span>
+  <span class="k">return</span> [
+    <span class="s">&quot;scrypt&quot;</span>,
+    COST,
+    salt.toString(<span class="s">&quot;base64url&quot;</span>),
+    key.toString(<span class="s">&quot;base64url&quot;</span>),
+  ].join(<span class="s">&quot;$&quot;</span>);
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> verifyPassword(password: string, stored: string) {
+  <span class="k">const</span> [, cost, salt, key] = stored.split(<span class="s">&quot;$&quot;</span>);
+  <span class="k">const</span> expected = Buffer.<span class="k">from</span>(key ?? <span class="s">&quot;&quot;</span>, <span class="s">&quot;base64url&quot;</span>);
+  <span class="k">const</span> actual = <span class="k">await</span> derive(
+    password,
+    Buffer.<span class="k">from</span>(salt ?? <span class="s">&quot;&quot;</span>, <span class="s">&quot;base64url&quot;</span>),
+    Number(cost),
+  );
+  <span class="c line-bidi">// compares every byte, so the time taken does not reveal where the first difference is</span>
+  <span class="k">return</span> timingSafeEqual(actual, expected);
+}</pre></div>
+
+<ul>
+<li>The <dfn>salt</dfn> is 16 random bytes, different for every hash, stored next to it. Two users with the same password get different hashes, so an attacker must attack each row separately, and precomputed tables of hashes are useless.</li>
+<li>The <strong>cost</strong> is stored inside the string. When computers get faster you raise <code>COST</code>; old hashes still verify with the cost they were made with, and can be upgraded when the user next signs in (exercise 3).</li>
+<li><code>timingSafeEqual</code> compares all 32 bytes every time. An ordinary comparison stops at the first different byte, and the time it takes can leak information.</li>
+<li><code>normalize("NFKC")</code> makes passwords typed on different keyboards compare equal when they look the same, which matters for Arabic and other non-Latin passwords.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Two hashes of the same password</span>
+<span class="c">$ </span><span class="k">node demos/hash.ts</span>
+hash 1 scrypt$32768$h1DPlXc_E5z0hNDZOH1U2g$yZQql2677IvnTVPLIFiU7-Sq8zzhgGWk-D0kCEYPPDw
+hash 2 scrypt$32768$AdpZgg4H03YAcnFf6owdEg$U52yHx90PRGHdwiV_TjQS5wk46p2ySCOWQzGQTc8xcc
+right password: true
+wrong password: false
+one hash took 111 ms</pre></div>
+
+<p>The same password gave two different strings, both verify, and one hash took tens of milliseconds: nothing for a user signing in, a great deal for an attacker trying a billion guesses.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never write your own crypto</p><p>This chapter uses scrypt, HMAC and random bytes from Node’s <code>crypto</code> module, all written and reviewed by specialists. Combining well-known pieces in the standard way is fine; inventing your own hashing scheme, your own encryption or your own random token generator is not. <code>Math.random()</code> is never acceptable for anything secret: it is predictable. Use <code>randomBytes</code>.</p></aside>
+
+<h2><span class="sec">8.3</span> <span>Registering and signing in</span></h2>
+
+<p>The users table follows Chapter 5’s migrations. Emails are compared without their capitals, so the unique index is on <code>lower(email)</code>, not on the column:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">migrations/2026_11_08_001_users.ts</div><pre class="code">  <span class="k">await</span> db.schema
+    .createTable(<span class="s">&quot;users&quot;</span>)
+    .addColumn(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;bigint&quot;</span>, (c) =&gt; c.primaryKey().generatedAlwaysAsIdentity())
+    .addColumn(<span class="s">&quot;email&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt; c.notNull())
+    .addColumn(<span class="s">&quot;name&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt; c.notNull())
+    .addColumn(<span class="s">&quot;password_hash&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt; c.notNull())
+    .addColumn(<span class="s">&quot;role&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt;
+      c
+        .notNull()
+        .defaultTo(<span class="s">&quot;customer&quot;</span>)
+        .check(sql<span class="s">`role IN (&#x27;customer&#x27;, &#x27;admin&#x27;)`</span>),
+    )
+    .addColumn(<span class="s">&quot;created_at&quot;</span>, <span class="s">&quot;timestamptz&quot;</span>, (c) =&gt;
+      c.notNull().defaultTo(sql<span class="s">`now()`</span>),
+    )
+    .execute();
+  <span class="c line-bidi">// one account per email, whatever its capitals</span>
+  <span class="k">await</span> db.schema
+    .createIndex(<span class="s">&quot;users_email_key&quot;</span>)
+    .on(<span class="s">&quot;users&quot;</span>)
+    .unique()
+    .expression(sql<span class="s">`lower(email)`</span>)
+    .execute();</pre></div>
+
+<p>Registration validates the body, hashes the password and inserts the user. The unique index, not a check in code, decides whether the email is taken: <code>ON CONFLICT DO NOTHING</code> returns no row when it is, and two simultaneous registrations with the same email cannot both succeed (the lesson of Chapter 6):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/auth.ts</div><pre class="code"><span class="k">const</span> Email = z.email().max(<span class="n">254</span>).toLowerCase();
+<span class="k">const</span> Login = z.strictObject({ email: Email, password: z.string().max(<span class="n">128</span>) });
+<span class="c line-bidi">// an unknown email still costs one hash, so the response time does not reveal which emails exist</span>
+<span class="k">const</span> DUMMY = <span class="k">await</span> hashPassword(<span class="s">&quot;not anyone&#x27;s password&quot;</span>);
+
+<span class="k">export</span> <span class="k">const</span> authRoutes: FastifyPluginAsyncZod = <span class="k">async</span> (app) =&gt; {
+  app.post(
+    <span class="s">&quot;/auth/register&quot;</span>,
+    {
+      schema: {
+        body: z.strictObject({
+          email: Email,
+          name: z.string().trim().min(<span class="n">1</span>).max(<span class="n">100</span>),
+          password: z.string().min(<span class="n">12</span>).max(<span class="n">128</span>),
+        }),
+        response: { <span class="n">201</span>: UserOut },
+      },
+    },
+    <span class="k">async</span> (request, reply) =&gt; {
+      <span class="k">const</span> { email, name, password } = request.body;
+      <span class="k">const</span> user = <span class="k">await</span> db
+        .insertInto(<span class="s">&quot;users&quot;</span>)
+        .values({ email, name, password_hash: <span class="k">await</span> hashPassword(password) })
+        .onConflict((c) =&gt; c.expression(sql<span class="s">`lower(email)`</span>).doNothing())
+        .returning([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;email&quot;</span>, <span class="s">&quot;name&quot;</span>, <span class="s">&quot;role&quot;</span>])
+        .executeTakeFirst();
+      <span class="k">if</span> (!user) <span class="k">throw</span> problems.emailTaken();
+      <span class="k">return</span> reply.code(<span class="n">201</span>).send(user);
+    },
+  );</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Registering</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:3000/auth/register -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;Lina@Example.com&quot;,&quot;name&quot;:&quot;Lina&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27;</span>
+HTTP/1.1 201 Created
+content-type: application/json; charset=utf-8
+
+{&quot;id&quot;:4,&quot;email&quot;:&quot;lina@example.com&quot;,&quot;name&quot;:&quot;Lina&quot;,&quot;role&quot;:&quot;customer&quot;}
+<span class="c line-bidi"># The same email again</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/register -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;name&quot;:&quot;Lina&quot;,&quot;password&quot;:&quot;another long sentence&quot;}&#x27; | jq</span>
+{
+  &quot;title&quot;: &quot;Email already registered&quot;,
+  &quot;status&quot;: 409,
+  &quot;instance&quot;: &quot;/auth/register&quot;
+}
+<span class="c line-bidi"># A password that is too short</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/register -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sam@example.com&quot;,&quot;name&quot;:&quot;Sam&quot;,&quot;password&quot;:&quot;short&quot;}&#x27; | jq</span>
+{
+  &quot;title&quot;: &quot;Invalid body&quot;,
+  &quot;status&quot;: 422,
+  &quot;instance&quot;: &quot;/auth/register&quot;,
+  &quot;errors&quot;: [
+    {
+      &quot;field&quot;: &quot;password&quot;,
+      &quot;message&quot;: &quot;Too small: expected string to have &gt;=12 characters&quot;
+    }
+  ]
+}</pre></div>
+
+<p>Signing in is where attackers probe. Two details stop the login route from telling them which emails have accounts:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/auth.ts</div><pre class="code">  app.post(
+    <span class="s">&quot;/auth/login&quot;</span>,
+    {
+      <span class="c line-bidi">// 5 attempts a minute per address and email, counted before the password is checked</span>
+      config: {
+        rateLimit: {
+          max: <span class="n">5</span>,
+          timeWindow: <span class="s">&quot;1 minute&quot;</span>,
+          hook: <span class="s">&quot;preHandler&quot;</span>,
+          keyGenerator: (request) =&gt;
+            <span class="s">`${request.ip}:${(request.body as { email?: string }).email}`</span>,
+        },
+      },
+      schema: {
+        body: Login,
+        response: { <span class="n">200</span>: z.object({ token: z.string(), expires_in: z.number() }) },
+      },
+    },
+    <span class="k">async</span> (request) =&gt; {
+      <span class="k">const</span> { email, password } = request.body;
+      <span class="k">const</span> user = <span class="k">await</span> db
+        .selectFrom(<span class="s">&quot;users&quot;</span>)
+        .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;password_hash&quot;</span>])
+        .where(sql<span class="s">`lower(email)`</span>, <span class="s">&quot;=&quot;</span>, email)
+        .executeTakeFirst();
+      <span class="k">const</span> ok = <span class="k">await</span> verifyPassword(password, user?.password_hash ?? DUMMY);
+      <span class="c line-bidi">// the same answer for a wrong email and a wrong password</span>
+      <span class="k">if</span> (!user || !ok) <span class="k">throw</span> problems.badLogin();
+      <span class="k">return</span> { token: <span class="k">await</span> startSession(user.id), expires_in: <span class="n">30</span> * <span class="n">24</span> * <span class="n">3600</span> };
+    },
+  );
+
+  app.post(<span class="s">&quot;/auth/logout&quot;</span>, { onRequest: authenticate }, <span class="k">async</span> (request, reply) =&gt; {
+    <span class="k">await</span> endSession(request.token ?? <span class="s">&quot;&quot;</span>);
+    <span class="k">return</span> reply.code(<span class="n">204</span>).send();
+  });</pre></div>
+
+<ul>
+<li><strong>The same answer</strong> for an unknown email and a wrong password: “email or password is wrong”, never “no such user”.</li>
+<li><strong>The same time.</strong> Without the <code>DUMMY</code> hash, an unknown email would answer at once and a known one after a slow hash, and the time alone would reveal which emails exist. Verifying against a dummy hash makes both cost one hash.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Signing in</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27; | jq</span>
+{
+  &quot;token&quot;: &quot;d1Yb2eg4GpvgtBzashBAhPQuFWOR-rAoULstx3_BFmQ&quot;,
+  &quot;expires_in&quot;: 2592000
+}
+<span class="c line-bidi"># A wrong password, and an unknown email: the same answer</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a wrong sentence&quot;}&#x27; | jq</span>
+{
+  &quot;title&quot;: &quot;Email or password is wrong&quot;,
+  &quot;status&quot;: 401,
+  &quot;instance&quot;: &quot;/auth/login&quot;
+}
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;nobody@example.com&quot;,&quot;password&quot;:&quot;a wrong sentence&quot;}&#x27; | jq</span>
+{
+  &quot;title&quot;: &quot;Email or password is wrong&quot;,
+  &quot;status&quot;: 401,
+  &quot;instance&quot;: &quot;/auth/login&quot;
+}</pre></div>
+
+<p>(Registration still reveals that an email is taken; that is usually accepted for usability. Sites that must hide it send an email in both cases instead of answering differently.)</p>
+
+<h2><span class="sec">8.4</span> <span>Sessions and tokens</span></h2>
+
+<p>After a successful sign-in the server gives the client a <dfn>session token</dfn>: proof of identity for the next requests, so the password is sent once. Our tokens are 32 random bytes, and the database stores only their SHA-256 hash:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/sessions.ts</div><pre class="code"><span class="k">const</span> digest = (token: string) =&gt; createHash(<span class="s">&quot;sha256&quot;</span>).update(token).digest(<span class="s">&quot;hex&quot;</span>);
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> startSession(userId: number) {
+  <span class="c line-bidi">// 32 random bytes: impossible to guess, and meaningless without the database</span>
+  <span class="k">const</span> token = randomBytes(<span class="n">32</span>).toString(<span class="s">&quot;base64url&quot;</span>);
+  <span class="k">await</span> db
+    .insertInto(<span class="s">&quot;sessions&quot;</span>)
+    <span class="c line-bidi">// only the hash is stored: a leaked sessions table opens no account</span>
+    .values({
+      token_hash: digest(token),
+      user_id: userId,
+      expires_at: sql<span class="s">`now() + interval &#x27;30 days&#x27;`</span>,
+    })
+    .execute();
+  <span class="k">return</span> token;
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> userForToken(token: string) {
+  <span class="k">return</span> db
+    .selectFrom(<span class="s">&quot;sessions&quot;</span>)
+    .innerJoin(<span class="s">&quot;users&quot;</span>, <span class="s">&quot;users.id&quot;</span>, <span class="s">&quot;sessions.user_id&quot;</span>)
+    .select([<span class="s">&quot;users.id&quot;</span>, <span class="s">&quot;users.email&quot;</span>, <span class="s">&quot;users.name&quot;</span>, <span class="s">&quot;users.role&quot;</span>])
+    .where(<span class="s">&quot;sessions.token_hash&quot;</span>, <span class="s">&quot;=&quot;</span>, digest(token))
+    .where(<span class="s">&quot;sessions.expires_at&quot;</span>, <span class="s">&quot;&gt;&quot;</span>, sql&lt;Date&gt;<span class="s">`now()`</span>)
+    .executeTakeFirst();
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> endSession(token: string) {
+  <span class="k">await</span> db.deleteFrom(<span class="s">&quot;sessions&quot;</span>).where(<span class="s">&quot;token_hash&quot;</span>, <span class="s">&quot;=&quot;</span>, digest(token)).execute();
+}</pre></div>
+
+<p>A fast hash is right here, unlike for passwords: the token is 32 random bytes, not a word a person chose, so there is nothing to guess, and the hash only ensures that someone who reads the sessions table cannot use what they read. On every request, a <dfn>preHandler</dfn> reads the <code>Authorization</code> header and finds the user:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/auth.ts</div><pre class="code"><span class="c line-bidi">// Authentication: who is calling? (Authorization: Bearer &lt;token&gt;)</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> authenticate(request: FastifyRequest) {
+  <span class="k">const</span> [scheme, token] = (request.headers.authorization ?? <span class="s">&quot;&quot;</span>).split(<span class="s">&quot; &quot;</span>);
+  <span class="k">const</span> user = scheme === <span class="s">&quot;Bearer&quot;</span> &amp;&amp; token ? <span class="k">await</span> userForToken(token) : <span class="k">undefined</span>;
+  <span class="k">if</span> (!user) <span class="k">throw</span> problems.unauthenticated();
+  request.user = user;
+  request.token = token;
+}
+
+<span class="c line-bidi">// authorization: the user is known; may they do this?</span>
+<span class="k">export</span> <span class="k">function</span> requireRole(role: Role) {
+  <span class="k">return</span> <span class="k">async</span> (request: FastifyRequest) =&gt; {
+    <span class="k">if</span> (request.user?.role !== role) <span class="k">throw</span> problems.forbidden(role);
+  };
+}
+
+<span class="k">export</span> <span class="k">function</span> currentUser(request: FastifyRequest): User {
+  <span class="k">if</span> (!request.user) <span class="k">throw</span> problems.unauthenticated();
+  <span class="k">return</span> request.user;
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Without a token</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/me | jq</span>
+{
+  &quot;title&quot;: &quot;Not signed in&quot;,
+  &quot;status&quot;: 401,
+  &quot;detail&quot;: &quot;Send a valid token: Authorization: Bearer &lt;token&gt;.&quot;,
+  &quot;instance&quot;: &quot;/me&quot;
+}
+<span class="c line-bidi"># With the token</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27; | jq -r .token)</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/me -H &quot;authorization: Bearer $TOKEN&quot; | jq</span>
+{
+  &quot;id&quot;: 4,
+  &quot;email&quot;: &quot;lina@example.com&quot;,
+  &quot;name&quot;: &quot;Lina&quot;,
+  &quot;role&quot;: &quot;customer&quot;
+}</pre></div>
+
+<p>Because sessions live in the database, signing out is a <code>DELETE</code>, and the token stops working at once. The database keeps only hashes, of passwords and of tokens:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Signing out</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -X POST localhost:3000/auth/logout -H &quot;authorization: Bearer $TOKEN&quot;</span>
+204
+<span class="c line-bidi"># The same token afterwards</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/me -H &quot;authorization: Bearer $TOKEN&quot; | jq .title</span>
+&quot;Not signed in&quot;
+<span class="c line-bidi"># What the database keeps</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT email, left(password_hash, 40) AS password_hash FROM users ORDER BY id&#x27;</span>
+       email       |              password_hash               
+-------------------+------------------------------------------
+ sara@example.com  | scrypt$32768$Bhn1h7EoWOGZ7lU5t1g6Eg$Kgh3
+ omar@example.com  | scrypt$32768$WsBZfR6lWttaUYGzPfXEAQ$ZVpu
+ admin@example.com | scrypt$32768$8Nt9qiHM-EjSITep5Xm69A$vSvz
+ lina@example.com  | scrypt$32768$MmmRiCEaSxwtwDPDT_woAA$gh1_
+(4 rows)
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT user_id, left(token_hash, 16) AS token_hash, expires_at::date FROM sessions&#x27;</span>
+ user_id |    token_hash    | expires_at 
+---------+------------------+------------
+       4 | 6c598c6d78a38d53 | 2026-12-20
+       2 | 22aad72542c31eee | 2026-12-20
+       3 | 0db92fa024403f65 | 2026-12-20
+(3 rows)</pre></div>
+
+<h3>What about JWTs?</h3>
+
+<p>A <dfn>JSON Web Token</dfn> takes the opposite approach: instead of a random key into a table, the token <em>contains</em> the data (the user id, the role, the expiry), signed with the server’s secret so that it cannot be changed. Here is one made by hand, to see what is inside:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/jwt.ts</div><pre class="code"><span class="c line-bidi">// a JWT: header and payload in base64url, then an HMAC of both with the server&#x27;s secret</span>
+<span class="k">const</span> header = b64({ alg: <span class="s">&quot;HS256&quot;</span>, typ: <span class="s">&quot;JWT&quot;</span> });
+<span class="k">const</span> payload = b64({ sub: <span class="n">2</span>, role: <span class="s">&quot;customer&quot;</span>, exp: <span class="n">1795000000</span> });
+<span class="k">const</span> token = <span class="s">`${header}.${payload}.${sign(`</span>${header}.${payload}<span class="s">`)}`</span>;
+console.log(<span class="s">&quot;token:&quot;</span>, token);
+
+<span class="c line-bidi">// anyone can read the payload: it is encoded, not encrypted</span>
+<span class="k">const</span> read = (part: string) =&gt;
+  JSON.parse(Buffer.<span class="k">from</span>(part, <span class="s">&quot;base64url&quot;</span>).toString());
+console.log(<span class="s">&quot;payload, read without the key:&quot;</span>, read(token.split(<span class="s">&quot;.&quot;</span>)[<span class="n">1</span>] ?? <span class="s">&quot;&quot;</span>));
+
+<span class="k">const</span> valid = (jwt: string) =&gt; {
+  <span class="k">const</span> [h, p, signature = <span class="s">&quot;&quot;</span>] = jwt.split(<span class="s">&quot;.&quot;</span>);
+  <span class="k">const</span> expected = Buffer.<span class="k">from</span>(sign(<span class="s">`${h}.${p}`</span>));
+  <span class="k">const</span> given = Buffer.<span class="k">from</span>(signature);
+  <span class="k">return</span> given.length === expected.length &amp;&amp; timingSafeEqual(given, expected);
+};
+console.log(<span class="s">&quot;signature valid:&quot;</span>, valid(token));
+<span class="c line-bidi">// change the payload, keep the signature</span>
+<span class="k">const</span> forged = b64({ sub: <span class="n">2</span>, role: <span class="s">&quot;admin&quot;</span>, exp: <span class="n">1795000000</span> });
+console.log(
+  <span class="s">&quot;tampered token valid:&quot;</span>,
+  valid(<span class="s">`${header}.${forged}.${token.split(&quot;.&quot;)[2]}`</span>),
+);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Inside a JWT</span>
+<span class="c">$ </span><span class="k">node demos/jwt.ts</span>
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInJvbGUiOiJjdXN0b21lciIsImV4cCI6MTc5NTAwMDAwMH0.FIARINURub56u1m-5b1qFNKR31jo58HiVsulPiTmtkU
+payload, read without the key: { sub: 2, role: &#x27;customer&#x27;, exp: 1795000000 }
+signature valid: true
+tampered token valid: false</pre></div>
+
+<p>Changing the role to <code>admin</code> broke the signature, so a JWT cannot be forged. But anyone can read it, and the server checks it without looking anything up, which is both its strength and its weakness: it cannot be revoked. A user who signs out, changes their password or loses their role keeps a valid token until it expires. JWTs fit messages between your own services and short-lived tokens (minutes); for users of your own apps, opaque tokens in a table, or in Redis from Chapter 7, are simpler and safer. Never put a secret in a JWT payload.</p>
+
+<aside class="box note"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Note: tokens in browsers</p><p>A mobile app keeps the token in the phone’s secure storage and sends it in the <code>Authorization</code> header, as <code>curl</code> does here. A website should not keep it in <code>localStorage</code>, where any injected script can read it. Instead the server sets it in a cookie with <code>HttpOnly</code> (scripts cannot read it), <code>Secure</code> (HTTPS only) and <code>SameSite=Lax</code> (not sent with most requests from other sites), and reads the cookie instead of the header. Cookies bring a risk of their own, cross-site request forgery, which Chapter 9 deals with.</p></aside>
+
+<h2><span class="sec">8.5</span> <span>Authorization: roles and ownership</span></h2>
+
+<p>Authentication found the user; now the routes decide what that user may do. Two kinds of rule cover most applications: a <dfn>role</dfn> (customer or admin) for whole areas, and <dfn>ownership</dfn> for single records:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/orders.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> orderRoutes: FastifyPluginAsyncZod = <span class="k">async</span> (app) =&gt; {
+  <span class="c line-bidi">// every route in this plugin needs a signed-in user</span>
+  app.addHook(<span class="s">&quot;onRequest&quot;</span>, authenticate);
+
+  app.get(<span class="s">&quot;/orders&quot;</span>, <span class="k">async</span> (request) =&gt;
+    db
+      .selectFrom(<span class="s">&quot;orders&quot;</span>)
+      .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;total&quot;</span>])
+      .where(<span class="s">&quot;user_id&quot;</span>, <span class="s">&quot;=&quot;</span>, currentUser(request).id)
+      .orderBy(<span class="s">&quot;id&quot;</span>)
+      .execute(),
+  );
+
+  app.get(
+    <span class="s">&quot;/orders/:id&quot;</span>,
+    { schema: { params: z.object({ id: z.coerce.number().int() }) } },
+    <span class="k">async</span> (request) =&gt; {
+      <span class="k">const</span> user = currentUser(request);
+      <span class="k">const</span> order = <span class="k">await</span> db
+        .selectFrom(<span class="s">&quot;orders&quot;</span>)
+        .selectAll()
+        .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, request.params.id)
+        .executeTakeFirst();
+      <span class="c line-bidi">// someone else&#x27;s order is &#x27;not found&#x27;, not &#x27;forbidden&#x27;: its existence is not revealed</span>
+      <span class="k">if</span> (!order || (order.user_id !== user.id &amp;&amp; user.role !== <span class="s">&quot;admin&quot;</span>)) {
+        <span class="k">throw</span> problems.noOrder(request.params.id);
+      }
+      <span class="k">return</span> order;
+    },
+  );
+
+  app.get(<span class="s">&quot;/admin/users&quot;</span>, { preHandler: requireRole(<span class="s">&quot;admin&quot;</span>) }, <span class="k">async</span> () =&gt;
+    db.selectFrom(<span class="s">&quot;users&quot;</span>).select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;email&quot;</span>, <span class="s">&quot;role&quot;</span>]).orderBy(<span class="s">&quot;id&quot;</span>).execute(),
+  );
+};</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Omar signs in</span>
+<span class="c">$ </span><span class="k">OMAR=$(curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;omar@example.com&quot;,&quot;password&quot;:&quot;omar-password-2026&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># His own orders</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &quot;authorization: Bearer $OMAR&quot; | jq -c</span>
+[{&quot;id&quot;:3,&quot;total&quot;:12000}]
+<span class="c line-bidi"># Sara&#x27;s order</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders/1 -H &quot;authorization: Bearer $OMAR&quot; | jq</span>
+{
+  &quot;title&quot;: &quot;Not found&quot;,
+  &quot;status&quot;: 404,
+  &quot;detail&quot;: &quot;There is no order 1.&quot;,
+  &quot;instance&quot;: &quot;/orders/1&quot;
+}
+<span class="c line-bidi"># The admin list, as Omar</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/admin/users -H &quot;authorization: Bearer $OMAR&quot; | jq</span>
+{
+  &quot;title&quot;: &quot;Not allowed&quot;,
+  &quot;status&quot;: 403,
+  &quot;detail&quot;: &quot;This needs the admin role.&quot;,
+  &quot;instance&quot;: &quot;/admin/users&quot;
+}
+<span class="c line-bidi"># The admin list, as an admin</span>
+<span class="c">$ </span><span class="k">ADMIN=$(curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;admin@example.com&quot;,&quot;password&quot;:&quot;admin-password-2026&quot;}&#x27; | jq -r .token)</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/admin/users -H &quot;authorization: Bearer $ADMIN&quot; | jq -c &quot;.[]&quot;</span>
+{&quot;id&quot;:1,&quot;email&quot;:&quot;sara@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}
+{&quot;id&quot;:2,&quot;email&quot;:&quot;omar@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}
+{&quot;id&quot;:3,&quot;email&quot;:&quot;admin@example.com&quot;,&quot;role&quot;:&quot;admin&quot;}
+{&quot;id&quot;:4,&quot;email&quot;:&quot;lina@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}</pre></div>
+
+<ul>
+<li><code>addHook("onRequest", authenticate)</code> protects every route of the plugin, including routes added to it later. A rule that each route must remember will one day be forgotten.</li>
+<li>The list of orders is <strong>filtered in the query</strong>: <code>WHERE user_id = …</code>. Fetching everything and filtering in code risks returning too much the day someone changes it.</li>
+<li>Omar asking for Sara’s order gets <strong>404</strong>, exactly as for an order that does not exist. A 403 would confirm that order 1 exists, and ids that count up would let him learn how many orders the shop has.</li>
+<li>The admin list returns 403: Omar knows the route exists, and he is told he lacks the role.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is SHA-256 fine for session tokens but not for passwords?</li><li>A signed-in customer asks for <code>/admin/users</code>. Which status, and why not 401?</li><li>Why does the login route verify a dummy hash when the email does not exist?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">8.6</span> <span>Slowing down guessing</span></h2>
+
+<p>A slow hash protects a stolen table; the running server needs protection too, against a script that tries passwords one after another. The login route has its own rate limit (from Chapter 3’s plugin), keyed on the client’s address <em>and</em> the email, so one attacker cannot try thousands of passwords on one account:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Six wrong passwords in a row</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess number one&quot;}&#x27;; done; echo</span>
+401 401 401 401 401 429 
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess number seven&quot;}&#x27; | jq</span>
+{
+  &quot;title&quot;: &quot;Too many attempts&quot;,
+  &quot;status&quot;: 429,
+  &quot;detail&quot;: &quot;Try again in 60 seconds.&quot;,
+  &quot;instance&quot;: &quot;/auth/login&quot;
+}</pre></div>
+
+<p>The sixth attempt was refused before its password was even checked. In production the counters belong in Redis, shared by every server. Locking the account after a few failures is tempting but lets anyone lock out any user by typing wrong passwords for them; rate limits slow the attacker without punishing the owner. Adding a second factor (a code from an app) is the strongest protection of all.</p>
+
+<h2><span class="sec">8.7</span> <span>Testing it</span></h2>
+
+<p>Security rules are exactly the kind of code that breaks silently, so each rule gets a test. Fastify’s <code>app.inject</code> sends requests to the application without a network, so the tests run fast:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/auth.test.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span> signIn(email: string, password: string) {
+  <span class="k">const</span> res = <span class="k">await</span> app.inject({
+    method: <span class="s">&quot;POST&quot;</span>,
+    url: <span class="s">&quot;/auth/login&quot;</span>,
+    payload: { email, password },
+  });
+  <span class="k">return</span> res.json().token as string;
+}
+<span class="k">const</span> as = (token: string) =&gt; ({ authorization: <span class="s">`Bearer ${token}`</span> });
+
+test(<span class="s">&quot;registers, signs in and reads /me&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> email = <span class="s">`test-${Date.now()}@example.com`</span>;
+  <span class="k">const</span> password = <span class="s">&quot;a long test password&quot;</span>;
+  <span class="k">const</span> created = <span class="k">await</span> app.inject({
+    method: <span class="s">&quot;POST&quot;</span>,
+    url: <span class="s">&quot;/auth/register&quot;</span>,
+    payload: { email, name: <span class="s">&quot;Test&quot;</span>, password },
+  });
+  assert.equal(created.statusCode, <span class="n">201</span>);
+  <span class="k">const</span> me = <span class="k">await</span> app.inject({
+    url: <span class="s">&quot;/me&quot;</span>,
+    headers: as(<span class="k">await</span> signIn(email, password)),
+  });
+  assert.equal(me.json().email, email);
+});
+
+test(<span class="s">&quot;refuses /me without a token&quot;</span>, <span class="k">async</span> () =&gt; {
+  assert.equal((<span class="k">await</span> app.inject({ url: <span class="s">&quot;/me&quot;</span> })).statusCode, <span class="n">401</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The tests</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ registers, signs in and reads /me (…ms)
+✔ refuses /me without a token (…ms)
+✔ refuses the admin list to a customer (…ms)
+✔ hides other customers&#x27; orders (…ms)
+✔ a token stops working after sign-out (…ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0</pre></div>
+
+<p>Note what is tested: not only that the right user gets in, but that the wrong ones are kept out. A test suite that checks only the happy path would pass for an API with no security at all.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: test the “no” for every route</p><p>For every protected route, write at least two tests: one without a token (401) and one as a user who must not have access (403 or 404). Add them in the same pull request as the route. The day someone removes a hook or changes a query, these tests fail, which is far cheaper than finding out from a customer who saw someone else’s order.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Passwords in plain text, or with SHA-256 or MD5</td><td>A stolen table reveals most passwords</td><td>scrypt, Argon2 or bcrypt, with a salt</td></tr>
+<tr><td>“No such user” on login</td><td>Attackers learn which emails have accounts</td><td>One message, and a dummy hash for the same time</td></tr>
+<tr><td>Tokens from <code>Math.random()</code> or a counter</td><td>Tokens can be guessed</td><td><code>randomBytes(32)</code></td></tr>
+<tr><td>Tokens stored as they are</td><td>A leaked table opens every account</td><td>Store their hash</td></tr>
+<tr><td>Long-lived JWTs for sign-in</td><td>No way to sign a user out</td><td>Revocable tokens, or JWTs of minutes</td></tr>
+<tr><td>Checking the user in some routes only</td><td>The forgotten route is open</td><td>A hook on the whole plugin</td></tr>
+<tr><td>Loading a record, then checking the owner in code</td><td>Easy to forget; 403 reveals the record exists</td><td>Filter by owner in the query; 404</td></tr>
+<tr><td>No limit on login attempts</td><td>Password guessing at full speed</td><td>A rate limit per address and account</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Authentication</strong> finds out who is calling (401 if unknown); <strong>authorization</strong> decides what they may do (403, or 404 to hide existence).</li>
+<li>Passwords are stored with a <strong>slow, salted hash</strong> (scrypt here), compared in constant time.</li>
+<li>Sign-in gives <strong>the same answer and the same time</strong> for a wrong email and a wrong password.</li>
+<li><strong>Session tokens</strong> are random bytes, stored only as a hash, and revoked by deleting the row.</li>
+<li>A <strong>JWT</strong> carries signed data that anyone can read and nobody can revoke: good between services and for minutes, not for user sessions.</li>
+<li>Protect whole plugins with a hook, filter records by owner in the query, rate-limit login, and <strong>test every “no”</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A session token is 32 random bytes: there are far too many possibilities to try, so the hash only needs to stop someone who reads the table from using the values directly, and a fast hash does that. A password is chosen by a person from a small set of likely words, so an attacker can try the likely ones quickly unless each try is made deliberately slow. 2. 403 Forbidden: the server knows exactly who is calling (the token is valid), so the problem is not authentication; the user lacks the admin role. 3. So that the response takes the same time whether or not the email exists; otherwise an unknown email would be answered much faster, and the time would reveal which emails have accounts.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project extends this chapter’s API. Every new rule comes with tests for the users who must be refused.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>Change your password</h3>
+<p class="project-goal">Let a signed-in user change their password safely.</p>
+<p class="project-skills"><strong>You will practise:</strong> verifying the current password, hashing, and revoking sessions.</p>
+<ol class="steps">
+<li>Add <code>POST /me/password</code> with <code>current_password</code> and <code>new_password</code> (at least 12 characters).</li>
+<li>Refuse with 401 if the current password is wrong, and with 422 if the new one equals the old one.</li>
+<li>After the change, delete every other session of the user, keeping the one making the request.</li>
+<li>Test the three cases, and that a second device’s token stops working.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> asking for the current password stops someone who finds an unlocked, signed-in laptop from taking over the account.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>Staff with permissions</h3>
+<p class="project-goal">Replace the two fixed roles with permissions that can be combined.</p>
+<p class="project-skills"><strong>You will practise:</strong> modelling permissions, migrations, and a reusable authorization hook.</p>
+<ol class="steps">
+<li>Add tables for <code>roles</code>, <code>permissions</code> and the links between them and users, in a migration.</li>
+<li>Write <code>requirePermission("orders.refund")</code>, loading the user’s permissions once per request.</li>
+<li>Create a “support” role that may read every order and refund, but not see the user list.</li>
+<li>Test each route with a user who has the permission and one who does not.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> check permissions, not role names, in the routes. Roles are only a convenient way to give a set of permissions to many users at once.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>Forgotten password</h3>
+<p class="project-goal">Build a password reset that cannot be used to take over someone else’s account.</p>
+<p class="project-skills"><strong>You will practise:</strong> single-use tokens, expiry, not leaking account existence, and side effects through an outbox.</p>
+<ol class="steps">
+<li><code>POST /auth/forgot</code> takes an email and always answers 202, whether or not the account exists.</li>
+<li>For an existing account, store the hash of a random token with a 30-minute expiry, and put the reset link in the outbox from Chapter 6 instead of sending it inside the request.</li>
+<li><code>POST /auth/reset</code> takes the token and a new password, works once, and deletes all the user’s sessions.</li>
+<li>Test an expired token, a reused token, and that the answer for an unknown email is identical.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the reset token is a password for 30 minutes. Treat it exactly like a session token: random, hashed in the database, and deleted when used.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A colleague proposes storing <code>sha256(salt + password)</code> with a random salt per user. What does the salt protect against, and what does it not?</li>
+<li><span class="level">Easy</span> Choose the status for each: no <code>Authorization</code> header; an expired token; a customer deleting a product; a customer reading another customer’s address.</li>
+<li><span class="level medium">Medium</span> You raise <code>COST</code> from <code>2 ** 15</code> to <code>2 ** 16</code>. How do the existing users’ hashes get the new cost, without asking anyone to reset their password?</li>
+<li><span class="level medium">Medium</span> Add “sign out on every device”, and show that a token from a second device stops working.</li>
+<li><span class="level hard">Challenge</span> Design (without code) an access token of 10 minutes as a JWT plus a refresh token in the database. What does each request check, what happens at sign-out, and what is gained compared with this chapter’s sessions?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>Users can sign in; now the API must survive people who try to break it. Security: injection, cross-site attacks, secrets, headers, dependencies, and the OWASP list of what goes wrong most often.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3991,6 +4646,34 @@ request 4: refused, 429
 (2 seconds later)
 request 5: allowed</pre></div>
 Each request adds a member scored by its time in milliseconds (with a random suffix, so two requests in the same millisecond stay distinct). The transaction first removes members older than the window, then counts what is left. This version also records refused requests, so a client that keeps hammering stays blocked; to count only accepted requests, check the count before adding, in a Lua script.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 8</h2>
+<ol class="exercises">
+<li>The salt makes every user’s hash different, so identical passwords do not show as identical hashes, one computation cannot attack every row at once, and precomputed tables are useless. It does not make each guess slower: SHA-256 is still billions of guesses a second, so a weak password in any single row falls in seconds. The fix is a slow, memory-hard function (scrypt, Argon2, bcrypt), with a salt.</li>
+<li>No header: 401. An expired token: 401, since the server can no longer tell who is calling; the client should sign in again. A customer deleting a product: 403, as the customer is known and lacks the role. Another customer’s address: 404, as for an order, so that the response does not confirm that the address exists.</li>
+<li>Upgrade on sign-in, when the plain password is available for a moment: after a successful <code>verifyPassword</code>, read the cost from the stored string (its second part), and if it is lower than <code>COST</code>, compute <code>hashPassword(password)</code> and update the user’s row. Users who sign in get the new cost; for accounts that never sign in, you can wait, or force a reset after a long time.</li>
+<li>The route deletes every session of the current user:
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/auth.ts</div><pre class="code">  <span class="c line-bidi">// exercise 4: sign out on every device</span>
+  app.post(
+    <span class="s">&quot;/auth/logout-all&quot;</span>,
+    { onRequest: authenticate },
+    <span class="k">async</span> (request, reply) =&gt; {
+      <span class="k">await</span> db
+        .deleteFrom(<span class="s">&quot;sessions&quot;</span>)
+        .where(<span class="s">&quot;user_id&quot;</span>, <span class="s">&quot;=&quot;</span>, currentUser(request).id)
+        .execute();
+      <span class="k">return</span> reply.code(<span class="n">204</span>).send();
+    },
+  );</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Signed in on two devices, then out of both</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -X POST localhost:3000/auth/logout-all -H &quot;authorization: Bearer $PHONE&quot;</span>
+204
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; localhost:3000/me -H &quot;authorization: Bearer $LAPTOP&quot;</span>
+401</pre></div>
+The request came from the phone’s token, and the laptop’s token, which was never used in it, now answers 401.</li>
+<li>Sign-in returns two tokens: an access token, a JWT valid for 10 minutes carrying the user id and role, and a refresh token, random bytes stored as a hash in the database with a long expiry. Every API request checks only the JWT’s signature and expiry, without a database query. When the access token expires, the client sends the refresh token to <code>POST /auth/refresh</code>, which checks it in the database, replaces it with a new one (so a stolen refresh token works only once), and returns a new JWT. Sign-out deletes the refresh token; the access token stays valid for up to 10 minutes, which is the price. The gain is no database lookup on most requests, which matters when many services check tokens; for a single API with a database already involved in every request, this chapter’s sessions are simpler.</li>
 </ol>
 
 </section>
