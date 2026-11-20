@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "Chapter 5: Payments, Email and Files"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "Chapter 6: System Design Fundamentals"; } }
+@page ch06:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2100,6 +2102,308 @@ sent 1 to sara@example.com
 <p>Bit Booking now works end to end. The next part steps back to look at it as a system: how its pieces fit, where it will break first as it grows, and how to reason about the numbers before writing code.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b4/design/en">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">Chapter 6</p><h1>System Design Fundamentals</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe a system as components, the state each one holds, and the data that flows between them</li>
+<li>reason with the real cost of common operations, measured rather than remembered</li>
+<li>understand throughput, latency and concurrency, and the law that ties them together</li>
+<li>see why latency explodes as a server approaches its limit, and what to do about it</li>
+<li>scale out with stateless copies behind a load balancer, and know when that stops helping</li>
+<li>write a short design document that makes the trade-offs explicit</li>
+</ul>
+</div>
+
+<p class="lead">Part 1 built Bit Booking piece by piece: a spec, a contract, pages, accounts, payments, email and files. Part 2 steps back and looks at the whole as a <dfn>system</dfn>: parts that hold state, connections between them, and limits that appear only under load. System design is not drawing boxes for an interview; it is the habit of asking, before the traffic arrives, <em>what happens when ten times more people use this?</em> and answering with numbers. This chapter gives you the numbers, measured on the machine that built this book, and the few laws that turn them into decisions.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The numbers in this chapter were measured while the book was being built, not copied from a famous table. Run the same scripts on your own laptop: your numbers will differ, and the shape will be exactly the same.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>Components, state and flow</span></h2>
+
+<p>Describe a system by three things: the <strong>components</strong>, the <strong>state</strong> each one keeps, and the <strong>flows</strong> of data between them. Here is Bit Booking today:</p>
+
+<table>
+<thead><tr><th>Component</th><th>Job</th><th>State it keeps</th><th>How it grows</th></tr></thead>
+<tbody>
+<tr><td>Next.js app</td><td>Pages, Server Actions, API routes</td><td>None: sessions are in the database</td><td>More copies</td></tr>
+<tr><td>PostgreSQL</td><td>Bookings, accounts, payments, the outbox</td><td>All of the important state</td><td>Bigger machine, then replicas (Chapter 8)</td></tr>
+<tr><td>Mailer</td><td>Sends the outbox</td><td>None</td><td>More copies, safely (<code>SKIP LOCKED</code>)</td></tr>
+<tr><td>Object storage</td><td>Logos and files</td><td>The files</td><td>Bought as a service</td></tr>
+<tr><td>Payment provider</td><td>Checkout and webhooks</td><td>Card data, never ours</td><td>Not our problem, but its failures are</td></tr>
+</tbody>
+</table>
+
+<p>Two observations already decide a lot. First, the application holds no state, so any copy can answer any request: scaling it is easy, as section 6.4 shows. Second, all the important state lives in one database, which therefore is where the first real limit will be. Good design work starts by finding that limit on paper, before it finds you in production.</p>
+
+<h2><span class="sec">6.2</span> <span>How long things take</span></h2>
+
+<p>Design decisions compare costs: is it worth a cache, a queue, another server? You cannot compare what you cannot estimate. This script measures common operations, each thousands of times, keeping the median:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">latency.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span> median(times: number, work: () =&gt; unknown) {
+  <span class="k">const</span> runs: number[] = [];
+  <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; times; i++) {
+    <span class="k">const</span> start = process.hrtime.bigint();
+    <span class="k">await</span> work();
+    runs.push(Number(process.hrtime.bigint() - start));
+  }
+  <span class="k">return</span> runs.sort((a, b) =&gt; a - b)[Math.floor(runs.length / <span class="n">2</span>)]!;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># How long things take, on this machine</span>
+<span class="c">$ </span><span class="k">node --env-file=.env latency.ts</span>
+operation                              median
+look up a key in a Map                 194 ns
+parse 1 KB of JSON                     2.8 µs
+SHA-256 of 1 KB                        2.2 µs
+read 4 KB from a cached file           4.2 µs
+HTTP request to localhost              605.6 µs
+PostgreSQL SELECT 1 (localhost)        68.9 µs
+write 4 KB and fsync to disk           266.1 µs
+hash a password with scrypt            92.4 ms</pre></div>
+
+<p>Read the table as orders of magnitude, from top to bottom. Work in memory costs <em>nanoseconds</em> to a few <em>microseconds</em>. Anything that crosses a process boundary, even on the same machine, costs tens to hundreds of microseconds: PostgreSQL’s <code>SELECT 1</code> is a round trip, and the HTTP request is slower still because each call opens and closes more machinery. Making data durable on disk costs a quarter of a millisecond. And a password hash, slow on purpose, costs close to a <em>tenth of a second</em> of a CPU core.</p>
+
+<p>Three conclusions follow for Bit Booking. A page that makes 30 sequential database calls spends a few milliseconds on round trips alone, so fewer, larger queries matter more than faster code. Every login costs a tenth of a second of CPU, so a burst of logins can starve everything else on that server: login needs a rate limit for capacity, not only for security. And across a real network, between data centres, every round trip costs milliseconds, not microseconds: the same 30 calls would cost a visible fraction of a second.</p>
+
+<h2><span class="sec">6.3</span> <span>Throughput, latency and the queue</span></h2>
+
+<p>Three words are used carelessly and must not be. <dfn>Latency</dfn> is how long one request takes. <dfn>Throughput</dfn> is how many requests are completed per second. <dfn>Concurrency</dfn> is how many are in progress at once. To see how they relate, here is a server whose every request costs 10 ms of CPU, handling one request at a time, as a single Node.js process does with CPU work:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">queue.ts</div><pre class="code"><span class="k">function</span> busy(ms: number) {
+  <span class="k">const</span> end = performance.now() + ms;
+  <span class="k">while</span> (performance.now() &lt; end);
+}
+
+createServer((_request, response) =&gt; {
+  busy(work);
+  response.end(<span class="s">&quot;ok&quot;</span>);
+}).listen(port);</pre></div>
+
+<p>A small script drives it with 1, 4, 16 and 64 clients, each sending a request as soon as its previous one is answered:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># One copy, more and more clients</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 1 4 16 64</span>
+clients    requests/s   p50 ms   p99 ms
+1                  95       10       11
+4                  97       30       72
+16                 97      153      710
+64                 95      223     3733</pre></div>
+
+<p>Throughput does not move: about 95 requests a second, the most that 10 ms of work per request allows. What grows is latency. Every extra client simply waits in the queue. The relation is <dfn>Little’s law</dfn>: the number of requests in the system equals throughput times the time each spends there, <em>L = λ × W</em>. With 16 clients and 97 requests a second, each request should spend 16 ÷ 97 ≈ 0.165 s, and the median measured is 153 ms. The law holds for any system that is stable, from a server to a supermarket queue, and it turns a design question into arithmetic: to serve 400 requests a second at 50 ms each, about 20 must be in progress at once.</p>
+
+<p>Look also at the last row. At 64 clients the median is 223 ms but the slowest 1% wait almost four seconds: the queue is not fair, and some unlucky requests wait behind many others. This is why averages are misleading and why requirements are written as percentiles (p95, p99), as Chapter 1 did.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: near the limit, latency has no ceiling</p><p>When requests arrive slightly slower than the server can finish them, the queue stays short. When they arrive at the same rate or faster, the queue grows for as long as the overload lasts, and latency with it, until clients time out and retry, which adds even more load. A server at 95% of its capacity is not “fine with 5% to spare”: it is one small spike away from long queues. Plan to run at well under capacity, and refuse excess work early (rate limits, short queues, timeouts) rather than accept it and answer late.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>A service handles 200 requests a second, and each spends 80 ms inside it. How many requests are in progress at any moment?</li><li>Adding clients to the 10 ms server did not raise throughput. What did it do, and why?</li><li>Why does the login rate limit matter for capacity, according to the latency table?</li></ol></aside>
+
+<h2><span class="sec">6.4</span> <span>Scaling out</span></h2>
+
+<p>One copy cannot do more than about 95 requests a second. Two copies can, if something spreads the requests between them: a <dfn>load balancer</dfn>. Real ones (Nginx, a cloud balancer) do much more, but the core is a few lines: accept a request, forward it to the next copy in turn, and pass the answer back:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">balancer.ts</div><pre class="code"><span class="k">import</span> { Agent, createServer, request } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+
+<span class="k">const</span> ports = process.argv.slice(<span class="n">2</span>).map(Number);
+<span class="c line-bidi">// keep connections to the copies open, as real load balancers do</span>
+<span class="k">const</span> agent = <span class="k">new</span> Agent({ keepAlive: <span class="k">true</span> });
+<span class="k">let</span> next = <span class="n">0</span>;
+
+createServer((incoming, outgoing) =&gt; {
+  <span class="c line-bidi">// round robin: each request to the next copy, in turn</span>
+  <span class="k">const</span> port = ports[next++ % ports.length];
+  <span class="k">const</span> upstream = request(
+    {
+      host: <span class="s">&quot;127.0.0.1&quot;</span>,
+      port,
+      path: incoming.url,
+      method: incoming.method,
+      headers: incoming.headers,
+      agent,
+    },
+    (answer) =&gt; {
+      outgoing.writeHead(answer.statusCode ?? <span class="n">502</span>, answer.headers);
+      answer.pipe(outgoing);
+    },
+  );
+  upstream.on(<span class="s">&quot;error&quot;</span>, () =&gt; outgoing.writeHead(<span class="n">502</span>).end());
+  incoming.pipe(upstream);
+}).listen(<span class="n">3000</span>);</pre></div>
+
+<p>The same 16 clients, through the balancer, to one, two and three copies:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same 16 clients, through a load balancer</span>
+<span class="c line-bidi"># one copy</span>
+<span class="c">$ </span><span class="k">PORT=3001 node queue.ts &amp;</span>
+<span class="c">$ </span><span class="k">node balancer.ts 3001 &amp;</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 16</span>
+clients    requests/s   p50 ms   p99 ms
+16                 97      153      702
+<span class="c line-bidi"># two copies</span>
+<span class="c">$ </span><span class="k">PORT=3001 node queue.ts &amp; PORT=3002 node queue.ts &amp;</span>
+<span class="c">$ </span><span class="k">node balancer.ts 3001 3002 &amp;</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 16</span>
+clients    requests/s   p50 ms   p99 ms
+16                194       76      164
+<span class="c line-bidi"># three copies</span>
+<span class="c">$ </span><span class="k">PORT=3001 node queue.ts &amp; PORT=3002 node queue.ts &amp; PORT=3003 node queue.ts &amp;</span>
+<span class="c">$ </span><span class="k">node balancer.ts 3001 3002 3003 &amp;</span>
+<span class="c">$ </span><span class="k">node load.ts http://localhost:3000 16</span>
+clients    requests/s   p50 ms   p99 ms
+16                289       56      157</pre></div>
+
+<p>Two copies double the throughput and halve the median latency; three almost triple it. This only works because every copy is interchangeable: no copy keeps sessions or uploads in its own memory or disk. That is why Chapter 4 stored sessions in the database, and why files go to object storage. An application with state in its memory needs <em>sticky sessions</em>, sending each user to the same copy, which spreads load unevenly and loses that user’s state when the copy restarts.</p>
+
+<p>Scaling out has limits too. The machine that built this book has four cores, and the balancer and the load generator need some of them, so a fourth copy would add little: the copies would compete for the same CPU. In production each copy has its own resources, and the limit moves elsewhere, almost always to the shared state. Ten application copies send ten times as many queries to the one database.</p>
+
+<h2><span class="sec">6.5</span> <span>Where the limit moves</span></h2>
+
+<p>For Bit Booking the next limit is clear from section 6.1: PostgreSQL. There are only a few ways to push it back, and later chapters treat each:</p>
+<ul>
+<li><strong>Do less work per request:</strong> indexes, fewer queries, no N+1 (Book 3).</li>
+<li><strong>Read from copies:</strong> read replicas for the many reads (the public slot pages), the primary for writes (Chapter 8).</li>
+<li><strong>Remember answers:</strong> a cache for data that is read far more than it changes, with an honest answer to “how stale may it be?” (Chapter 8).</li>
+<li><strong>Move work out of the request:</strong> queues and workers for anything the user does not wait for (Book 3, and the outbox).</li>
+<li><strong>Split the data:</strong> partitioning, by business for example, when one machine can no longer hold the writes. The most powerful option, and the most expensive to undo.</li>
+</ul>
+<p>Chapter 1’s numbers say Bit Booking needs none of these yet: under a hundred requests a second at peak. Knowing the options, and the order to use them in, is what lets a team wait calmly until the measurements say otherwise.</p>
+
+<h2><span class="sec">6.6</span> <span>Every choice is a trade-off</span></h2>
+
+<p>System design has few right answers and many trade-offs. The common ones:</p>
+<ul>
+<li><strong>Consistency or availability.</strong> When a network splits a system, each part must either refuse requests or answer with data that may be stale. A booking must never be double-sold, so Bit Booking chooses consistency for bookings; the public list of free slots can be a few seconds stale.</li>
+<li><strong>Now or later.</strong> Doing work inside the request gives an immediate answer and couples the user to every dependency; a queue decouples them and makes the result arrive later.</li>
+<li><strong>Simple or scalable.</strong> Each step of section 6.5 adds a moving part to run, monitor and debug. Take it when the numbers require it, not before.</li>
+<li><strong>Build or buy.</strong> Email delivery, payments and storage are bought: they are hard, and not what makes Bit Booking different. Booking rules are built: they are the product.</li>
+</ul>
+
+<h2><span class="sec">6.7</span> <span>The design document</span></h2>
+
+<p>Big changes deserve a page written before the code: a <dfn>design document</dfn>. It has a short, standard shape: the <strong>context</strong> (what exists, what is wrong); <strong>goals and non-goals</strong>; the <strong>numbers</strong> (load, data size, latency targets, from measurements); the <strong>design</strong> (components, state, flows); the <strong>alternatives</strong> considered and why they lost; and the <strong>risks</strong> and how to roll back. Its main value is the review: other engineers find the hole in the plan while it costs an afternoon, not a quarter.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: estimate, then measure, then decide</p><p>Before proposing a cache, a queue or a new service, write the back-of-the-envelope numbers: requests per second, data per day, the latency of each step. Then measure the real system under realistic load, as this chapter did. Most performance arguments end at the first measurement; the rest are settled by the second.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Designing from intuition</td><td>Caches and services where none were needed</td><td>Estimate, then measure</td></tr>
+<tr><td>Quoting averages</td><td>Slow tails hidden from everyone</td><td>Percentiles: p50, p95, p99</td></tr>
+<tr><td>Running near full capacity</td><td>Small spikes become long queues and timeouts</td><td>Headroom, rate limits, short queues</td></tr>
+<tr><td>State in the application’s memory</td><td>Copies cannot replace each other</td><td>State in shared stores; stateless copies</td></tr>
+<tr><td>Many small sequential calls</td><td>Round trips dominate the response time</td><td>Fewer, larger queries; parallel calls</td></tr>
+<tr><td>Scaling the app, not the database</td><td>More copies, same limit, more load on it</td><td>Find the shared bottleneck first</td></tr>
+<tr><td>Splitting data early</td><td>Complexity that is very hard to undo</td><td>Simpler options first, in order</td></tr>
+<tr><td>No written design for big changes</td><td>Holes found in production</td><td>A one-page design document, reviewed</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Describe a system by its <strong>components</strong>, the <strong>state</strong> each holds, and the <strong>flows</strong> between them; the shared state is where limits appear first.</li>
+<li>Reason with <strong>measured costs</strong>: memory in nanoseconds, round trips in tens of microseconds to milliseconds, disk syncs and password hashes far more.</li>
+<li><strong>Little’s law</strong>, L = λ × W, ties concurrency, throughput and latency together.</li>
+<li>Past capacity, <strong>throughput stays flat and latency grows</strong> without limit; keep headroom and refuse excess work early.</li>
+<li><strong>Stateless copies</strong> behind a <strong>load balancer</strong> scale out almost linearly, until a shared resource becomes the limit.</li>
+<li>Push the database limit back in order: less work, read copies, caches, queues, and only then partitioning.</li>
+<li>Make <strong>trade-offs</strong> explicit, and write a short <strong>design document</strong> for every big change.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. By Little’s law, L = λ × W = 200 × 0.08 = 16 requests in progress on average. That number sizes things such as connection pools and worker counts. 2. It made every request wait longer. The server finishes one request every 10 ms whatever happens, so throughput is capped near 100 a second; extra clients only add to the queue, and by Little’s law the time in the system grows in proportion to the number of clients. 3. Because one password hash costs almost a tenth of a second of a CPU core, a thousand times more than everything else a request does. A burst of logins, from real users or from an attacker guessing passwords, can occupy every core, and then every other page waits. A rate limit caps that cost.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects build the habit of measuring. Run each on your own machine, and write down your numbers next to the book’s.</p>
+
+<div class="project">
+<p class="project-label">Project 6.1 · Easy</p>
+<h3>Your own latency table</h3>
+<p class="project-goal">Extend <code>latency.ts</code> with the operations your own projects use.</p>
+<p class="project-skills"><strong>You will practise:</strong> measuring carefully, medians, and reading orders of magnitude.</p>
+<ol class="steps">
+<li>Add: a query that uses an index on 100,000 rows; the same query without the index; a Redis <code>GET</code>; an HTTP request to a public website.</li>
+<li>Run it three times and check that the medians are stable.</li>
+<li>Write, for each line, one design decision it supports.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> keep the first run of each operation out of the numbers: it pays for caches, connections and compilation that later runs do not.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 6.2 · Medium</p>
+<h3>Shed load instead of queueing it</h3>
+<p class="project-goal">Keep latency bounded when the 10 ms server is overloaded.</p>
+<p class="project-skills"><strong>You will practise:</strong> load shedding, timeouts, and reading percentiles.</p>
+<ol class="steps">
+<li>Add a limit to <code>queue.ts</code>: when more than 4 requests are waiting, answer 503 at once.</li>
+<li>Run the load test with 64 clients before and after. Compare throughput, p50, p99 and the number of 503s.</li>
+<li>Explain why refusing some requests makes the experience better for the rest.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> count requests in progress with a variable that you increase on arrival and decrease when the response finishes.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 6.3 · Challenge</p>
+<h3>A design document for 20,000 businesses</h3>
+<p class="project-goal">Write and review the design for Bit Booking at ten times its first-year size.</p>
+<p class="project-skills"><strong>You will practise:</strong> estimation, finding the bottleneck, and writing trade-offs.</p>
+<ol class="steps">
+<li>Use Chapter 1’s <code>budget.ts</code> with 20,000 businesses and a peak factor of 10.</li>
+<li>Find the first component to hit its limit, with numbers from this chapter’s measurements.</li>
+<li>Propose the smallest change that pushes the limit back, and two alternatives you rejected.</li>
+<li>Have two people review it, and record what changed.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> separate reads from writes in your numbers; a booking site reads its free slots many times for each booking it writes.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A page makes 12 database queries one after another, each taking 0.5 ms on the server, across a network round trip of 1 ms. Roughly how long does the page spend on the database? What would you change first?</li>
+<li><span class="level">Easy</span> Why did three copies of the 10 ms server almost triple the throughput, while a fourth on the same machine would not help much?</li>
+<li><span class="level medium">Medium</span> A worker pool processes jobs that take 2 seconds each. Jobs arrive at 30 per second. How many workers are needed at least, and why should there be more?</li>
+<li><span class="level medium">Medium</span> Bit Booking’s app stored uploaded logos on the server’s own disk. Describe what goes wrong when you add a second copy behind the load balancer.</li>
+<li><span class="level hard">Challenge</span> The list of free slots is read 50 times for every booking made. Propose how to serve it from a cache, state exactly how stale it may be, and explain why a stale slot list cannot cause a double booking.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 7</p>
+<p>Load is one danger; failure is the other. The next chapter assumes that every part of Bit Booking will fail at some point, and designs so that customers barely notice.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2185,6 +2489,16 @@ export async function GET(request: Request) {
 <li>The row still has <code>sent_at</code> empty, so the next run sends the email again: delivery is at least once, and the customer receives two. To make them receive one, give the email service an idempotency key, which many services accept (the outbox id is the natural one; our mailer already sends it as the <code>X-Outbox-Id</code> header), so the service drops the second send. Without such support, keep the window small: mark the row as <code>sending</code> with a time before sending, and only resend rows whose attempt is old. A rare duplicate remains possible, which is why at-least-once is the honest promise for email.</li>
 <li>At the deposit step, <code>fetch</code> fails or times out: today <code>startDeposit</code> throws, the customer sees an error, and the pending payment row stays behind with no checkout. Better: give the call a short timeout and a retry; if it still fails, keep the booking in <code>awaiting_deposit</code>, roll back or mark the payment <code>failed</code>, and show the customer “Payments are unavailable right now; your time is held for 30 minutes, try again from the link in your email”, with the outbox sending that link. Webhooks during the outage are not lost: the provider retries them when it is back, and the idempotent handler applies them once.</li>
 <li>Do not trust arrival order; decide by the state the event can apply to, and by the provider’s own time. Each update names the state it moves from: <code>paid</code> only from <code>pending</code>, <code>refunded</code> only from <code>paid</code>. If <code>checkout.refunded</code> arrives first, there is no paid payment to refund: store the event (it is already in <code>webhook_events</code> with its payload) as <em>deferred</em> rather than dropping it, and when <code>checkout.paid</code> is applied, look for deferred events for the same checkout and apply them in the order of the provider’s <code>created</code> time. The simpler alternative, which most providers recommend: on any event, fetch the checkout’s current state from the provider’s API and set the payment to match it, so the order of webhooks stops mattering.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 6</h2>
+<ol class="exercises">
+<li>Each query costs its round trip plus its work: 1 + 0.5 = 1.5 ms, and twelve of them in sequence cost about 18 ms, of which 12 ms is pure waiting on the network. First, cut the number of round trips: combine queries (a join, or <code>WHERE id = ANY($1)</code> instead of one query per item), and run the independent ones in parallel (<code>Promise.all</code>), which brings the time close to that of the slowest single query. Making each query faster would save at most the 6 ms of work.</li>
+<li>Each copy is a separate process, and on a machine with four cores the operating system runs up to four of them truly in parallel, so three copies each delivered their 95 requests a second. A fourth copy would share the four cores with the other copies, the balancer and the load generator, which already use some of the CPU, so the copies would take turns on the same cores instead of adding new capacity. In production each copy runs on its own resources, and this limit disappears (the next one appears elsewhere).</li>
+<li>By Little’s law, the jobs in progress are L = λ × W = 30 × 2 = 60, so at least 60 workers are busy all the time just to keep up. There should be more, because at 100% utilisation any burst or slower job makes the queue grow without limit (section 6.3): aim for perhaps 75 to 90, or as many as keep utilisation around 70 to 80%, and measure the queue length to adjust.</li>
+<li>A logo uploaded through one copy lands on that copy’s disk. Requests for it that the balancer sends to the other copy find nothing and return 404, at random, depending on which copy answers. When a copy is replaced (a deployment, a crash), its logos disappear for good, and backups of “the server” miss them. Shared object storage, as in Chapter 5, fixes all three: every copy reads and writes the same files.</li>
+<li>Cache the slot list per staff member and day, for a short time such as 10 to 30 seconds, and delete the entry whenever a booking for that staff member and day is made or cancelled; the time limit covers anything the deletion misses. It may be stale by at most that time limit: a slot may appear free for a few seconds after it was taken. That cannot cause a double booking, because the list only <em>offers</em> slots; the booking itself is an insert checked by the exclusion constraint in the database, which does not read the cache. The worst a stale list can do is the “just taken” message of Chapter 3, which the page already handles.</li>
 </ol>
 
 </section>

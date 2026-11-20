@@ -918,7 +918,8 @@
           "chapters": [
             {
               "en": "System Design Fundamentals",
-              "ar": "أساسيات تصميم الأنظمة"
+              "ar": "أساسيات تصميم الأنظمة",
+              "src": "b4/design"
             },
             {
               "en": "Designing for Failure",
