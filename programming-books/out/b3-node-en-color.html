@@ -37,6 +37,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "Chapter 15: Architecture: Monolith, Modules and Services"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "Chapter 16: Docker and Deployment"; } }
+@page ch16:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -7122,6 +7124,286 @@ AssertionError [ERR_ASSERTION]: order.ts must not import ../db.ts</pre></div>
 <p>The code is ready; now it must run the same everywhere. Docker: images, containers, Compose for the whole stack, and shipping to production.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b3/docker/en">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">Chapter 16</p><h1>Docker: Shipping the Same Thing Everywhere</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain images, containers and layers, and why they end “it works on my machine”</li>
+<li>write a production Dockerfile for the Node service, small and safe</li>
+<li>run the service and its database together with Docker Compose, with health checks</li>
+<li>run one-off commands such as migrations in the same image</li>
+<li>prepare containers for production: configuration, secrets, logs, workers and releases</li>
+</ul>
+</div>
+
+<p class="lead">The shop now needs a precise list of things to run: a particular version of Node, its dependencies, PostgreSQL, Redis, environment variables, a worker. On a developer’s laptop that list lives in someone’s memory; on a server, in a setup document that is always slightly out of date. <dfn>Docker</dfn> turns the list into a file that a machine follows exactly. The result, an <dfn>image</dfn>, runs the same on a laptop, in CI and in production. Every example in this book has quietly used it: PostgreSQL and Redis ran in containers from the first chapter. Now the shop itself goes into one.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>My first deployment checklist had 41 steps, and a new server took a day. One step was “install the image library, version 2.x (not 3!)”. When we moved to Docker, the checklist became one command, and the “not 3” lived in a file that CI checked on every change. I have not missed the checklist once.</p></div></div>
+
+<h2><span class="sec">16.1</span> <span>Images and containers</span></h2>
+
+<ul>
+<li>An <dfn>image</dfn> is a read-only package: a minimal operating system, the runtime, your code and its dependencies, and the command to start it. It is built once and copied anywhere.</li>
+<li>A <dfn>container</dfn> is a running instance of an image, isolated from the host and from other containers: its own files, processes and network address, sharing the host’s kernel. Containers start in a second and are thrown away freely; nothing written inside one survives its removal unless it is in a <dfn>volume</dfn>.</li>
+<li>An image is a stack of <dfn>layers</dfn>, one per instruction of its <dfn>Dockerfile</dfn>. Docker caches each layer and rebuilds only from the first instruction whose inputs changed, which is why the order of instructions matters.</li>
+</ul>
+
+<h2><span class="sec">16.2</span> <span>A production Dockerfile</span></h2>
+
+
+<p>The service is a small Fastify app that reads the products from PostgreSQL. Its Dockerfile has two <dfn>stages</dfn>: the first installs the production dependencies, the second copies only what is needed to run:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Dockerfile</div><pre class="code"># stage 1: the production dependencies only, from the lock file
+FROM node:22-slim AS deps
+WORKDIR /app
+# copied before the code: this layer is rebuilt only when the dependencies change
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+# stage 2: the image that runs; nothing from stage 1 except node_modules
+FROM node:22-slim
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json ./
+COPY src ./src
+# never run as root inside the container
+USER node
+EXPOSE 3000
+# Docker asks the app itself whether it is healthy
+HEALTHCHECK --interval=5s --timeout=2s \
+  CMD node -e &quot;fetch(&#x27;http://localhost:3000/health&#x27;).then(r =&gt; process.exit(r.ok ? 0 : 1)).catch(() =&gt; process.exit(1))&quot;
+CMD [&quot;node&quot;, &quot;src/server.ts&quot;]</pre></div>
+
+<ul>
+<li><strong>Dependencies before code.</strong> <code>package.json</code> and the lock file are copied first and <code>npm ci</code> runs on them alone; editing the code then rebuilds only the last layers, in seconds. <code>npm ci</code> installs exactly the lock file’s versions, and <code>--omit=dev</code> leaves out TypeScript, test tools and the rest.</li>
+<li><strong>No build step.</strong> Node 22 runs TypeScript files directly by stripping their types (Chapter 2), so the image runs <code>src/server.ts</code> as it is. Projects that compile add a build stage whose output is copied in the same way.</li>
+<li><strong>Not as root.</strong> The official image provides a <code>node</code> user; if an attacker found a hole in the app, they would not be root inside the container.</li>
+<li><strong>A health check.</strong> Docker asks the app’s own <code>/health</code> route (Chapter 13) every five seconds, and reports the container as healthy or not.</li>
+<li><strong>A <code>.dockerignore</code></strong> keeps <code>node_modules</code>, <code>.env</code> and <code>.git</code> out of the build, so local files and secrets never end up in the image.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Build the image</span>
+<span class="c">$ </span><span class="k">docker build -t shop-node .</span>
+<span class="c line-bidi"># What was built</span>
+<span class="c">$ </span><span class="k">docker image ls shop-node --format &#x27;{{.Repository}}:{{.Tag}}  {{.Size}}&#x27;</span>
+shop-node:latest  345MB</pre></div>
+
+<p>Size matters: every image is downloaded by every server that runs it, and every package inside is something that may need a security update. Slim base images, multi-stage builds and deleting build tools in the layer that used them all keep it down (exercise 3).</p>
+
+<h2><span class="sec">16.3</span> <span>Compose: the whole stack</span></h2>
+
+<p>An app is rarely alone. <dfn>Docker Compose</dfn> describes several containers, their configuration and their network in one file, and starts them together:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">compose.yaml</div><pre class="code">name: shop
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: shop
+      # for a demo only: real passwords come from a secret store, never from this file
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: shop
+    volumes:
+      - db-data:/var/lib/postgresql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;pg_isready&quot;, &quot;-U&quot;, &quot;shop&quot;, &quot;-d&quot;, &quot;shop&quot;]
+      interval: 2s
+      retries: 15
+
+  app:
+    build: .
+    image: shop-node
+    ports:
+      - &quot;3000:3000&quot;
+    environment:
+      DATABASE_URL: postgres://shop:secret@db:5432/shop
+    depends_on:
+      db:
+        # start the app only when the database answers
+        condition: service_healthy
+
+volumes:
+  db-data:</pre></div>
+
+<ul>
+<li><strong>Services find each other by name.</strong> Compose puts them on one private network, where the database’s address is simply <code>db</code>. Only the app’s port is published to the host; the database is reachable from the app, not from outside.</li>
+<li><strong>A named volume</strong> keeps the database’s files when its container is replaced. The first time the database starts, it runs the SQL files mounted in <code>/docker-entrypoint-initdb.d</code>.</li>
+<li><strong>Health checks drive the start order.</strong> <code>condition: service_healthy</code> starts the app only once PostgreSQL answers, and <code>--wait</code> returns only when every container is healthy.</li>
+</ul>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The whole stack, with one command</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait</span>
+Volume shop_db-data Created
+Network shop_default Created
+Container shop-db-1 Created
+Container shop-app-1 Created
+Container shop-db-1 Healthy
+Container shop-app-1 Healthy
+<span class="c line-bidi"># What is running, and is it healthy?</span>
+<span class="c">$ </span><span class="k">docker compose ps --format &#x27;table {{.Service}}\t{{.Status}}\t{{.Ports}}&#x27;</span>
+SERVICE   STATUS                   PORTS
+app       Up 5 seconds (healthy)   0.0.0.0:3000-&gt;3000/tcp
+db        Up 8 seconds (healthy)   5432/tcp
+<span class="c line-bidi"># The app, from the host</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products | jq -c</span>
+[{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000},{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000}]
+<span class="c line-bidi"># A one-off command in a new container</span>
+<span class="c">$ </span><span class="k">docker compose run --rm --no-deps app npm run --silent count 2&gt;/dev/null</span>
+{ products: 2 }
+<span class="c line-bidi"># The app&#x27;s logs</span>
+<span class="c">$ </span><span class="k">docker compose logs app</span>
+{&quot;level&quot;:30,&quot;msg&quot;:&quot;incoming request&quot;,&quot;url&quot;:&quot;/products&quot;}
+<span class="c line-bidi"># Stop and remove everything</span>
+<span class="c">$ </span><span class="k">docker compose down -v</span>
+Container shop-app-1 Removed 
+Container shop-db-1 Removed 
+Volume shop_db-data Removed 
+Network shop_default Removed </pre></div>
+
+<p>One command started the database, waited for it, started the app and waited for it too. The products came from PostgreSQL inside the stack. <code>docker compose run</code> started a new container from the same image for a one-off command, the way migrations and maintenance scripts run in production. The logs went to standard output, where Docker collects them (Chapter 13). And <code>down -v</code> removed everything, the volume included, leaving the machine as it was.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why are the dependency files copied before the rest of the code?</li><li>Why is the database’s port not published to the host?</li><li>What happens to the products if the stack is stopped with <code>down</code> without <code>-v</code>, and started again?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">16.4</span> <span>Containers in production</span></h2>
+
+<p>A container platform (a server with Compose, Kubernetes, or a cloud service that runs containers) takes the image and runs it. A few rules make that safe:</p>
+<ul>
+<li><strong>Configuration from the environment.</strong> The same image goes to staging and production; only environment variables differ (Chapter 9). Secrets come from the platform’s secret store, never from the image or a committed file.</li>
+<li><strong>One concern per container.</strong> The web app, the queue worker (Chapter 10) and the scheduler run as separate containers from <em>the same image</em> with different commands, so each can be scaled and restarted on its own.</li>
+<li><strong>Stateless containers.</strong> Anything that must survive goes to the database, Redis, object storage or a volume. A container can then be replaced at any moment, which is what deployments and autoscaling do.</li>
+<li><strong>Graceful shutdown.</strong> The platform sends <code>SIGTERM</code> and waits a little before killing; the app finishes its requests and the worker its jobs, as earlier chapters prepared.</li>
+<li><strong>Releases in steps.</strong> Build the image in CI, tag it with the commit (never only <code>latest</code>), scan it for known vulnerabilities, push it to a registry, run the migrations as a one-off container, then replace the running containers gradually while health checks confirm each new one.</li>
+</ul>
+
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: the same image from CI to production</p><p>Build the image once, in CI, from a clean checkout, and promote that exact image through staging to production by its tag. Never build on the production server, and never change a running container by hand: the next deployment would silently undo it. If something must change, change the Dockerfile or the configuration, and ship a new image.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Copying all the code before installing dependencies</td><td>Every code change reinstalls everything</td><td>Dependency files first, code last</td></tr>
+<tr><td>No <code>.dockerignore</code></td><td>Secrets and local files baked into the image</td><td>Ignore <code>.env</code>, dependencies and <code>.git</code></td></tr>
+<tr><td>Running as root</td><td>A hole in the app gives root in the container</td><td>A non-root user</td></tr>
+<tr><td>Secrets in the Dockerfile or the image</td><td>Anyone who pulls the image has them</td><td>Environment variables from a secret store</td></tr>
+<tr><td>Data inside the container</td><td>Lost at the next deployment</td><td>Volumes and external services</td></tr>
+<tr><td>Only the <code>latest</code> tag</td><td>Nobody knows what is running; no rollback</td><td>Tags per commit or version</td></tr>
+<tr><td>No health checks</td><td>Traffic sent to containers that are not ready</td><td>Health checks and <code>service_healthy</code></td></tr>
+<tr><td>Several processes in one container</td><td>Scaling and restarts affect everything together</td><td>One concern per container, same image</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>An <strong>image</strong> packages the runtime, code and dependencies; a <strong>container</strong> runs it, isolated and disposable; <strong>volumes</strong> keep data.</li>
+<li>A good Dockerfile orders layers for the <strong>cache</strong>, installs production dependencies only, runs as <strong>non-root</strong>, and has a <strong>health check</strong> and a <code>.dockerignore</code>.</li>
+<li><strong>Compose</strong> starts the app and its services on a private network, in order, with health checks; <code>run</code> executes one-off commands in the same image.</li>
+<li>In production: configuration and <strong>secrets from the environment</strong>, one concern per container, stateless containers, graceful shutdown.</li>
+<li>Release by building <strong>once in CI</strong>, tagging, scanning, migrating, and replacing containers gradually.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Docker rebuilds from the first instruction whose inputs changed. Copying only the dependency files first means the expensive install layer is reused as long as dependencies do not change, so an ordinary code change rebuilds in seconds instead of reinstalling everything. 2. Only the app needs to reach it, through the private network; publishing it would expose the database to anything that can reach the host, and nothing outside the stack has a reason to connect. 3. They are still there: <code>down</code> removes the containers and the network, but keeps the named volume, so the new database container finds the same files (and does not run the initialisation scripts again, since the database already exists). <code>-v</code> removes the volume too.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project puts more of the shop into containers. Start everything from a clean machine with one command to prove it works.</p>
+
+<div class="project">
+<p class="project-label">Project 16.1 · Easy</p>
+<h3>The whole shop in Compose</h3>
+<p class="project-goal">Run the shop API of the earlier chapters with PostgreSQL and Redis in one Compose file.</p>
+<p class="project-skills"><strong>You will practise:</strong> Dockerfiles, Compose services, health checks and one-off migrations.</p>
+<ol class="steps">
+<li>Write a Dockerfile for the API and a Compose file with <code>app</code>, <code>db</code> and <code>redis</code>, each with a health check.</li>
+<li>Add a <code>migrate</code> service that runs the migrations once and exits, and make <code>app</code> wait for it with <code>condition: service_completed_successfully</code>.</li>
+<li>Add the queue <code>worker</code> as another service from the same image with a different command.</li>
+<li>Delete everything with <code>down -v</code> and start again from nothing with one command.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> keep the development settings in <code>compose.override.yaml</code>, which Compose reads automatically, so the main file stays close to production.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 16.2 · Medium</p>
+<h3>Build, scan and publish in CI</h3>
+<p class="project-goal">Make CI produce a tested, scanned, tagged image for every commit.</p>
+<p class="project-skills"><strong>You will practise:</strong> CI pipelines, image tags, registries and vulnerability scanning.</p>
+<ol class="steps">
+<li>In GitHub Actions, build the image, run the tests inside it (or against it with Compose), and fail the build when they fail.</li>
+<li>Scan the image with Trivy, and fail on high and critical vulnerabilities.</li>
+<li>Tag it with the commit SHA and push it to GitHub’s container registry.</li>
+<li>Show that pulling that tag on another machine runs exactly the tested code.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> cache the build layers between CI runs (<code>cache-from</code>), or every pipeline reinstalls all the dependencies.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 16.3 · Challenge</p>
+<h3>A zero-downtime deployment</h3>
+<p class="project-goal">Deploy a new version of the shop on a server without failing a single request.</p>
+<p class="project-skills"><strong>You will practise:</strong> reverse proxies, health checks, graceful shutdown and backward-compatible migrations.</p>
+<ol class="steps">
+<li>Put a reverse proxy (Caddy or Traefik) in front of two app containers, with HTTPS.</li>
+<li>Write a deploy script: pull the new image, run migrations, start a new container, wait until it is healthy, then stop an old one, and repeat.</li>
+<li>Run a load test during a deployment and show zero failed requests.</li>
+<li>Deploy a version with a database change, using the expand and contract steps of Chapter 5 so old and new code work side by side.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> requests fail during deployments when a container is killed with requests in flight, or receives traffic before it is ready; graceful shutdown and readiness checks fix both.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In which order would you write these Dockerfile instructions, and why: copy the source code; install the dependencies; copy the dependency files; set the working directory?</li>
+<li><span class="level">Easy</span> A colleague puts <code>ENV DATABASE_PASSWORD=…</code> in the Dockerfile “to make deployment simpler”. What is wrong, and what should be done instead?</li>
+<li><span class="level medium">Medium</span> The image is 345 MB. Propose three changes that make it smaller, and the trade-off of each.</li>
+<li><span class="level medium">Medium</span> After <code>docker compose up</code>, the app crashes because it cannot reach the database, but a minute later everything works. Explain, and fix it in the Compose file.</li>
+<li><span class="level hard">Challenge</span> Describe the steps of a release that adds a required column to a table, from merging the pull request to all containers running the new code, without downtime.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 17</p>
+<p>Everything is in place. The final project brings the whole book together: a complete, secure, tested and observable shop API, built from an empty folder to a running container.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -7368,6 +7650,16 @@ The message published while nobody was subscribed went nowhere: pub/sub does not
 <li>The rule (“members get 5% off the total”) is a pure function in the domain, next to <code>totalOf</code>, with unit tests for members and non-members and for rounding. Whether a customer is a member is data, so the use case asks a port (<code>Customers.isMember(email)</code>) implemented by an adapter that queries the database, and passes the answer to the rule; the store saves the discounted total. Tests: domain unit tests for the arithmetic; a use-case test with a fake <code>Customers</code> port returning true and false; an adapter test for the membership query; and one HTTP integration test that a member’s order total is discounted.</li>
 <li>Costs: network calls that fail or time out between orders and the rest; no shared transactions, so stock and orders can disagree and need sagas or outboxes; separate deployments, monitoring, tracing and on-call; data duplicated or fetched across the network; slower development while the boundary settles. Questions first: Which concrete problem would the split solve? Does orders need to scale differently from the rest, or be deployed by a separate team? Is the boundary already clean inside the monolith (could we split it tomorrow without rewriting)? If the answers are vague, keep a well-divided module and revisit when there is a measured need.</li>
 <li>Add a rule that walks every file under <code>src/</code> and fails when a file imports <code>kysely-store.ts</code> unless it is <code>src/server.ts</code>. It matters because the store adapter is a detail: if routes, jobs or other modules import it directly, they bypass the use case and its rules, couple themselves to Kysely, and make it impossible to replace the adapter or test them with fakes. Keeping the concrete adapter visible only to the composition root keeps every other file depending on the port.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 16</h2>
+<ol class="exercises">
+<li>Set the working directory; copy the dependency files; install the dependencies; copy the source code. The working directory comes first because every later path is relative to it. The dependency files and the install come before the code so that their layers are reused whenever only code changes; copying the code last means an ordinary change rebuilds only that final, cheap layer.</li>
+<li>Everything in a Dockerfile ends up in the image, and anyone who can pull the image (CI, other teams, a leaked registry token) can read it with <code>docker history</code> or by running the image; the password is also committed to the repository with the Dockerfile, and the same image cannot be used with a different password in another environment. Pass it at run time instead, from the platform’s secret store: <code>environment</code> entries filled from secrets in Compose or Kubernetes, or an <code>.env</code> file that is never committed.</li>
+<li>(1) A smaller base image, such as an Alpine variant or a “distroless” one: often half the size, but Alpine uses a different C library that some native modules or extensions do not support, and distroless images have no shell for debugging. (2) Remove build tools in the same layer that used them (install native build tools only in the dependency stage): smaller and fewer packages to patch, but a slightly more complex Dockerfile. (3) Fewer dependencies: check what <code>node_modules</code> holds with <code>npm ls --omit=dev</code> and remove packages the app does not need; the trade-off is time spent, and sometimes features of the bigger option.</li>
+<li>Compose starts the containers in dependency order but, with a plain <code>depends_on</code>, it waits only until the database container has <em>started</em>, not until PostgreSQL accepts connections, which takes a few seconds; the app starts, fails to connect, and crashes (it works later after a restart or a retry). Give the database a health check (<code>pg_isready</code>) and make the app wait for it with <code>depends_on: db: condition: service_healthy</code>, as this chapter’s Compose file does; the app should also retry its connection at start-up, since databases restart in production too.</li>
+<li>Expand and contract (Chapter 5). Release 1: a migration adds the column as nullable (or with a default), and the code writes it for new rows while still working without it; CI builds, tests and scans the image; the migration runs as a one-off container (old code is unaffected by a new nullable column); the new containers replace the old ones gradually behind health checks. Then a backfill fills the column for existing rows, in batches. Release 2: a migration makes the column required (now safe, since every row has a value), and the code starts relying on it; deployed the same way. At every moment, the running code and the database schema are compatible, so no request fails.</li>
 </ol>
 
 </section>

@@ -1,0 +1,32 @@
+name: shop
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: shop
+      # for a demo only: real passwords come from a secret store, never from this file
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: shop
+    volumes:
+      - db-data:/var/lib/postgresql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "shop", "-d", "shop"]
+      interval: 2s
+      retries: 15
+
+  app:
+    build: .
+    image: shop-node
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://shop:secret@db:5432/shop
+    depends_on:
+      db:
+        # start the app only when the database answers
+        condition: service_healthy
+
+volumes:
+  db-data:

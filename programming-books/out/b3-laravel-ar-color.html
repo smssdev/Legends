@@ -39,6 +39,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "الفصل 16: المعمارية: الوحدات والأفعال والمجالات"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "الفصل 17: Docker والنشر"; } }
+@page ch17:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -7755,6 +7757,284 @@ arch(<span class="s">&#x27;lets the action use only the domain and the ports&#x2
 <p>الكود جاهز؛ والآن يجب أن يعمل بالطريقة نفسها في كل مكان. Docker: الصور، والحاويات، وCompose للمنظومة كلها، والشحن إلى الإنتاج.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b3/docker/ar">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">الفصل 17</p><h1>Docker: شحن الشيء نفسه إلى كل مكان</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تشرح الصور والحاويات والطبقات، ولماذا تُنهي «يعمل على جهازي»</li>
+<li>تكتب Dockerfile إنتاجياً لخدمة PHP، صغيراً وآمناً</li>
+<li>تشغّل الخدمة وقاعدة بياناتها معاً بـ Docker Compose، مع فحوص الحالة</li>
+<li>تنفذ أوامر لمرة واحدة، كالترحيلات، في الصورة نفسها</li>
+<li>تجهّز الحاويات للإنتاج: الإعدادات، والأسرار، والسجلات، والعمّال، والإصدارات</li>
+</ul>
+</div>
+
+<p class="lead">صار المتجر يحتاج قائمة دقيقة من الأشياء ليعمل: نسخة بعينها من PHP بإضافات بعينها، واعتمادياته، وPostgreSQL، وRedis، ومتغيرات البيئة، وعاملاً. وعلى حاسوب مطوّر تعيش تلك القائمة في ذاكرة أحدهم؛ وعلى خادم، في وثيقة إعداد قديمة قليلاً دائماً. و<dfn>Docker</dfn> يحوّل القائمة إلى ملف تتبعه الآلة بالضبط. والنتيجة، <dfn>صورة</dfn> (image)، تعمل بالطريقة نفسها على حاسوب محمول، وفي CI، وفي الإنتاج. وكل مثال في هذا الكتاب استخدمه بهدوء: PostgreSQL وRedis عملا في حاويات منذ الفصل الأول. والآن يدخل المتجر نفسه في واحدة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كانت قائمة النشر الأولى عندي 41 خطوة، والخادم الجديد يستغرق يوماً. وإحدى الخطوات «ثبّت مكتبة الصور، النسخة 2.x (لا 3!)». وحين انتقلنا إلى Docker، صارت القائمة أمراً واحداً، وعاشت «لا 3» في ملف يفحصه CI مع كل تغيير. ولم أشتق إلى القائمة مرة.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>الصور والحاويات</span></h2>
+
+<ul>
+<li><dfn>الصورة</dfn> حزمة للقراءة فقط: نظام تشغيل مصغّر، وبيئة التشغيل، وكودك واعتمادياته، والأمر الذي يشغّلها. تُبنى مرة وتُنسخ إلى أي مكان.</li>
+<li><dfn>الحاوية</dfn> (container) نسخة عاملة من صورة، معزولة عن المضيف وعن الحاويات الأخرى: ملفاتها وعملياتها وعنوان شبكتها، تتشارك نواة المضيف. تبدأ الحاويات في ثانية وتُرمى بحرية؛ ولا ينجو شيء كُتب داخل واحدة من حذفها إلا إن كان في <dfn>مجلد دائم</dfn> (volume).</li>
+<li>الصورة كومة من <dfn>الطبقات</dfn> (layers)، طبقة لكل تعليمة في <dfn>Dockerfile</dfn> الخاص بها. ويخزّن Docker كل طبقة، ولا يعيد البناء إلا من أول تعليمة تغيرت مدخلاتها، ولهذا يهم ترتيب التعليمات.</li>
+</ul>
+
+<h2><span class="sec">17.2</span> <span>Dockerfile إنتاجي</span></h2>
+
+
+<p>الخدمة تطبيق PHP صغير يقرأ المنتجات من PostgreSQL عبر PDO. ويبدأ Dockerfile الخاص به من الصورة الرسمية بـ Apache وPHP، ويضيف مشغّل PostgreSQL:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Dockerfile</div><pre class="code">FROM php:8.5-apache
+# مشغّل PostgreSQL، مترجماً داخل PHP
+RUN apt-get update \
+ &amp;&amp; apt-get install -y --no-install-recommends libpq-dev \
+ &amp;&amp; docker-php-ext-install pdo_pgsql \
+ &amp;&amp; rm -rf /var/lib/apt/lists/*
+RUN mv &quot;$PHP_INI_DIR/php.ini-production&quot; &quot;$PHP_INI_DIR/php.ini&quot;
+# كل عنوان يذهب إلى index.php
+RUN echo &quot;FallbackResource /index.php&quot; &gt; /etc/apache2/conf-enabled/fallback.conf \
+ &amp;&amp; sed -i &#x27;s#/var/www/html#/var/www/html/public#&#x27; /etc/apache2/sites-available/000-default.conf
+COPY --chown=www-data:www-data . /var/www/html
+# يسأل Docker التطبيق نفسه هل هو بخير
+HEALTHCHECK --interval=5s --timeout=2s CMD curl -fs http://localhost/health || exit 1</pre></div>
+
+<ul>
+<li><strong>الإضافات تُترجم داخل PHP.</strong> <code>docker-php-ext-install</code> تبني <code>pdo_pgsql</code> داخل PHP؛ والمكتبة التي تحتاجها تأتي من حزم نظام التشغيل، وتُحذف قوائم الحزم في الطبقة نفسها فلا تنفخ الصورة.</li>
+<li><strong>إعدادات الإنتاج.</strong> الصورة الرسمية تأتي بـ <code>php.ini-production</code> (لا أخطاء تُعرض للزوار، وحدود معقولة)؛ ويجعلها Dockerfile الإعداد الفعّال.</li>
+<li><strong><code>public/</code> وحده يُقدَّم.</strong> جذر وثائق Apache يشير إلى <code>public/</code>، فلا يمكن تنزيل ملفات مثل <code>bin/count.php</code> أو <code>.env</code> أبداً، وكل عنوان يرجع إلى <code>index.php</code>.</li>
+<li><strong>فحص حالة.</strong> يسأل Docker مسار <code>/health</code> في التطبيق نفسه (الفصل 14) كل خمس ثوانٍ.</li>
+<li><strong>ملف <code>.dockerignore</code></strong> يُبقي <code>vendor</code> و<code>.env</code> و<code>.git</code> خارج البناء، فلا تنتهي الملفات المحلية والأسرار في الصورة أبداً.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ابنِ الصورة</span>
+<span class="c">$ </span><span class="k">docker build -t shop-php .</span>
+<span class="c line-bidi"># ما الذي بُني</span>
+<span class="c">$ </span><span class="k">docker image ls shop-php --format &#x27;{{.Repository}}:{{.Tag}}  {{.Size}}&#x27;</span>
+shop-php:latest  763MB</pre></div>
+
+<p>والحجم مهم: كل صورة ينزّلها كل خادم يشغّلها، وكل حزمة داخلها شيء قد يحتاج تحديثاً أمنياً. والصور الأساسية النحيفة، والبناء متعدد المراحل، وحذف أدوات البناء في الطبقة التي استخدمتها، كلها تبقيه صغيراً (التمرين 3).</p>
+
+<h2><span class="sec">17.3</span> <span>Compose: المنظومة كلها</span></h2>
+
+<p>نادراً ما يكون التطبيق وحده. و<dfn>Docker Compose</dfn> يصف عدة حاويات وإعداداتها وشبكتها في ملف واحد، ويشغّلها معاً:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">compose.yaml</div><pre class="code">name: shop
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: shop
+      # للعرض فقط: كلمات المرور الحقيقية تأتي من مخزن أسرار، لا من هذا الملف أبداً
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: shop
+    volumes:
+      - db-data:/var/lib/postgresql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;pg_isready&quot;, &quot;-U&quot;, &quot;shop&quot;, &quot;-d&quot;, &quot;shop&quot;]
+      interval: 2s
+      retries: 15
+
+  app:
+    build: .
+    image: shop-php
+    ports:
+      - &quot;8080:80&quot;
+    environment:
+      DATABASE_URL: pgsql:host=db;dbname=shop
+      DATABASE_USER: shop
+      DATABASE_PASSWORD: secret
+    depends_on:
+      db:
+        # لا يبدأ التطبيق إلا حين تجيب قاعدة البيانات
+        condition: service_healthy
+
+volumes:
+  db-data:</pre></div>
+
+<ul>
+<li><strong>الخدمات تجد بعضها بالاسم.</strong> يضعها Compose على شبكة خاصة واحدة، عنوان قاعدة البيانات فيها ببساطة <code>db</code>. ولا يُنشر إلى المضيف إلا منفذ التطبيق؛ فقاعدة البيانات يصلها التطبيق، لا الخارج.</li>
+<li><strong>مجلد دائم مسمّى</strong> يحفظ ملفات قاعدة البيانات حين تُستبدل حاويتها. وأول مرة تبدأ فيها قاعدة البيانات، تنفذ ملفات SQL الموصولة في <code>/docker-entrypoint-initdb.d</code>.</li>
+<li><strong>فحوص الحالة تقود ترتيب البدء.</strong> <code>condition: service_healthy</code> لا تبدأ التطبيق إلا حين تجيب PostgreSQL، و<code>--wait</code> لا تعود إلا حين تكون كل حاوية بخير.</li>
+</ul>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المنظومة كلها، بأمر واحد</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait</span>
+Volume shop_db-data Created
+Network shop_default Created
+Container shop-db-1 Created
+Container shop-app-1 Created
+Container shop-db-1 Healthy
+Container shop-app-1 Healthy
+<span class="c line-bidi"># ما الذي يعمل، وهل هو بخير؟</span>
+<span class="c">$ </span><span class="k">docker compose ps --format &#x27;table {{.Service}}\t{{.Status}}\t{{.Ports}}&#x27;</span>
+SERVICE   STATUS                   PORTS
+app       Up 5 seconds (healthy)   0.0.0.0:8080-&gt;80/tcp
+db        Up 8 seconds (healthy)   5432/tcp
+<span class="c line-bidi"># التطبيق، من الجهاز المضيف</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/products | jq -c</span>
+[{&quot;id&quot;:1,&quot;name&quot;:&quot;عدة الروبوت&quot;,&quot;price&quot;:45000},{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:6000}]
+<span class="c line-bidi"># أمر لمرة واحدة في حاوية جديدة</span>
+<span class="c">$ </span><span class="k">docker compose run --rm --no-deps app php bin/count.php 2&gt;/dev/null</span>
+{&quot;products&quot;:2}
+<span class="c line-bidi"># سجلات التطبيق</span>
+<span class="c">$ </span><span class="k">docker compose logs app</span>
+172.18.0.1 - - […] &quot;GET /products HTTP/1.1&quot; 200 281 &quot;-&quot; &quot;curl/8.5.0&quot;
+<span class="c line-bidi"># أوقف كل شيء واحذفه</span>
+<span class="c">$ </span><span class="k">docker compose down -v</span>
+Container shop-app-1 Removed 
+Container shop-db-1 Removed 
+Network shop_default Removed 
+Volume shop_db-data Removed </pre></div>
+
+<p>أمر واحد شغّل قاعدة البيانات، وانتظرها، وشغّل التطبيق وانتظره أيضاً. وجاءت المنتجات من PostgreSQL داخل المنظومة. وشغّلت <code>docker compose run</code> حاوية جديدة من الصورة نفسها لأمر لمرة واحدة، بالطريقة التي تعمل بها الترحيلات وسكربتات الصيانة في الإنتاج. وذهبت السجلات إلى المخرج القياسي، حيث يجمعها Docker (الفصل 14). وحذفت <code>down -v</code> كل شيء، بما فيه المجلد الدائم، تاركة الجهاز كما كان.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا تُنسخ ملفات الاعتماديات قبل باقي الكود؟</li><li>لماذا لا يُنشر منفذ قاعدة البيانات إلى المضيف؟</li><li>ماذا يحدث للمنتجات إن أُوقفت المنظومة بـ <code>down</code> بلا <code>-v</code>، ثم شُغّلت مرة أخرى؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">17.4</span> <span>الحاويات في الإنتاج</span></h2>
+
+<p>منصة الحاويات (خادم بـ Compose، أو Kubernetes، أو خدمة سحابية تشغّل الحاويات) تأخذ الصورة وتشغّلها. وقواعد قليلة تجعل ذلك آمناً:</p>
+<ul>
+<li><strong>الإعدادات من البيئة.</strong> الصورة نفسها تذهب إلى بيئة التجربة والإنتاج؛ ولا تختلف إلا متغيرات البيئة (الفصل 10). والأسرار تأتي من مخزن أسرار المنصة، لا من الصورة ولا من ملف مودَع أبداً.</li>
+<li><strong>شأن واحد لكل حاوية.</strong> تطبيق الويب، وعامل الطابور (الفصل 11)، والمجدول تعمل حاويات منفصلة من <em>الصورة نفسها</em> بأوامر مختلفة، فيمكن توسيع كل منها وإعادة تشغيله وحده.</li>
+<li><strong>حاويات بلا حالة.</strong> كل ما يجب أن ينجو يذهب إلى قاعدة البيانات، أو Redis، أو تخزين الكائنات، أو مجلد دائم. فيمكن استبدال الحاوية في أي لحظة، وهذا ما يفعله النشر والتوسيع التلقائي.</li>
+<li><strong>إيقاف لطيف.</strong> ترسل المنصة <code>SIGTERM</code> وتنتظر قليلاً قبل القتل؛ فينهي التطبيق طلباته والعامل مهامه، كما أعدّت الفصول السابقة.</li>
+<li><strong>إصدارات على خطوات.</strong> ابنِ الصورة في CI، ووسمها بالإيداع (لا بـ <code>latest</code> وحدها أبداً)، وافحصها بحثاً عن ثغرات معروفة، وادفعها إلى سجل صور، ونفّذ الترحيلات في حاوية لمرة واحدة، ثم استبدل الحاويات العاملة تدريجياً بينما تؤكد فحوص الحالة كل حاوية جديدة.</li>
+</ul>
+
+
+<h3>صورة Laravel</h3>
+
+<p>لتطبيق Laravel كامل تنطبق الأفكار نفسها، بمراحل أكثر قليلاً. مرحلة Composer تنفذ <code>composer install --no-dev --optimize-autoloader</code>؛ ومرحلة Node تبني ملفات الواجهة بـ <code>npm run build</code>؛ والصورة الأخيرة تنسخ الاثنين، وتنفذ عند البدء <code>php artisan optimize</code> لتخزين الإعدادات والمسارات والعروض. وخوادم الويب الشائعة Apache كما هنا، أو nginx مع PHP-FPM في حاويتين، أو <dfn>FrankenPHP</dfn>، خادم واحد يستطيع تشغيل Octane أيضاً. وعامل الطابور (<code>php artisan queue:work</code>)، والمجدول (<code>php artisan schedule:work</code>)، وReverb (<code>php artisan reverb:start</code>) خدمات أخرى من الصورة نفسها، و<code>php artisan migrate --force</code> تعمل حاويةً لمرة واحدة في كل إصدار. و<dfn>Laravel Sail</dfn> يقدّم إعداد Compose جاهزاً للتطوير.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: الصورة نفسها من CI إلى الإنتاج</p><p>ابنِ الصورة مرة واحدة، في CI، من نسخة نظيفة، وارفع تلك الصورة بالضبط عبر بيئة التجربة إلى الإنتاج بوسمها. ولا تبنِ على خادم الإنتاج أبداً، ولا تغيّر حاوية عاملة باليد أبداً: فالنشر التالي سيلغي ذلك بصمت. وإن وجب أن يتغير شيء، غيّر Dockerfile أو الإعدادات، واشحن صورة جديدة.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>نسخ الكود كله قبل تثبيت الاعتماديات</td><td>كل تغيير في الكود يعيد تثبيت كل شيء</td><td>ملفات الاعتماديات أولاً، والكود أخيراً</td></tr>
+<tr><td>بلا <code>.dockerignore</code></td><td>أسرار وملفات محلية داخل الصورة</td><td>تجاهل <code>.env</code> والاعتماديات و<code>.git</code></td></tr>
+<tr><td>التشغيل بصلاحيات root</td><td>ثغرة في التطبيق تعطي root في الحاوية</td><td>مستخدم بلا صلاحيات root</td></tr>
+<tr><td>أسرار في Dockerfile أو الصورة</td><td>كل من يسحب الصورة يملكها</td><td>متغيرات بيئة من مخزن أسرار</td></tr>
+<tr><td>البيانات داخل الحاوية</td><td>تضيع مع النشر التالي</td><td>مجلدات دائمة وخدمات خارجية</td></tr>
+<tr><td>الوسم <code>latest</code> وحده</td><td>لا أحد يعرف ما يعمل؛ ولا رجوع</td><td>وسوم لكل إيداع أو نسخة</td></tr>
+<tr><td>بلا فحوص حالة</td><td>زيارات تُرسل إلى حاويات غير جاهزة</td><td>فحوص الحالة و<code>service_healthy</code></td></tr>
+<tr><td>عدة عمليات في حاوية واحدة</td><td>التوسيع وإعادة التشغيل يمسان كل شيء معاً</td><td>شأن واحد لكل حاوية، والصورة نفسها</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>الصورة</strong> تحزم بيئة التشغيل والكود والاعتماديات؛ و<strong>الحاوية</strong> تشغّلها معزولة وقابلة للرمي؛ و<strong>المجلدات الدائمة</strong> تحفظ البيانات.</li>
+<li>Dockerfile الجيد يرتب الطبقات لأجل <strong>التخزين المؤقت</strong>، ويثبّت اعتماديات الإنتاج وحدها، ويعمل <strong>بلا root</strong>، وله <strong>فحص حالة</strong> و<code>.dockerignore</code>.</li>
+<li><strong>Compose</strong> يشغّل التطبيق وخدماته على شبكة خاصة، بالترتيب، مع فحوص الحالة؛ و<code>run</code> تنفذ أوامر لمرة واحدة في الصورة نفسها.</li>
+<li>في الإنتاج: الإعدادات و<strong>الأسرار من البيئة</strong>، وشأن واحد لكل حاوية، وحاويات بلا حالة، وإيقاف لطيف.</li>
+<li>أصدِر بالبناء <strong>مرة في CI</strong>، والوسم، والفحص، والترحيل، واستبدال الحاويات تدريجياً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. يعيد Docker البناء من أول تعليمة تغيرت مدخلاتها. ونسخ ملفات الاعتماديات وحدها أولاً يعني أن طبقة التثبيت الغالية يُعاد استخدامها ما دامت الاعتماديات لم تتغير، فيُعاد بناء تغيير عادي في الكود في ثوانٍ بدل إعادة تثبيت كل شيء. 2. التطبيق وحده يحتاج الوصول إليها، عبر الشبكة الخاصة؛ ونشره سيكشف قاعدة البيانات لكل ما يصل إلى المضيف، ولا سبب لشيء خارج المنظومة أن يتصل. 3. تبقى موجودة: <code>down</code> تحذف الحاويات والشبكة، لكنها تُبقي المجلد الدائم المسمّى، فتجد حاوية قاعدة البيانات الجديدة الملفات نفسها (ولا تنفذ سكربتات التهيئة مرة أخرى، لأن قاعدة البيانات موجودة). و<code>-v</code> تحذف المجلد الدائم أيضاً.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يضع جزءاً أكبر من المتجر في الحاويات. ابدأ كل شيء من جهاز نظيف بأمر واحد لتثبت أنه يعمل.</p>
+
+<div class="project">
+<p class="project-label">المشروع 17.1 · سهل</p>
+<h3>المتجر كله في Compose</h3>
+<p class="project-goal">شغّل API المتجر من الفصول السابقة مع PostgreSQL وRedis في ملف Compose واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات Dockerfile، وخدمات Compose، وفحوص الحالة، والترحيلات لمرة واحدة.</p>
+<ol class="steps">
+<li>اكتب Dockerfile لـ API وملف Compose فيه <code>app</code> و<code>db</code> و<code>redis</code>، لكل منها فحص حالة.</li>
+<li>أضف خدمة <code>migrate</code> تنفذ الترحيلات مرة وتخرج، واجعل <code>app</code> تنتظرها بـ <code>condition: service_completed_successfully</code>.</li>
+<li>أضف <code>worker</code> الطابور خدمةً أخرى من الصورة نفسها بأمر مختلف.</li>
+<li>احذف كل شيء بـ <code>down -v</code> وابدأ من جديد من لا شيء بأمر واحد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> احفظ إعدادات التطوير في <code>compose.override.yaml</code>، الذي يقرؤه Compose تلقائياً، فيبقى الملف الرئيسي قريباً من الإنتاج.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 17.2 · متوسط</p>
+<h3>ابنِ وافحص وانشر في CI</h3>
+<p class="project-goal">اجعل CI ينتج صورة مختبرة ومفحوصة وموسومة لكل إيداع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> خطوط CI، ووسوم الصور، وسجلات الصور، وفحص الثغرات.</p>
+<ol class="steps">
+<li>في GitHub Actions، ابنِ الصورة، وشغّل الاختبارات داخلها (أو مقابلها بـ Compose)، وأفشل البناء حين تفشل.</li>
+<li>افحص الصورة بـ Trivy، وأفشل عند الثغرات العالية والحرجة.</li>
+<li>وسمها بـ SHA الإيداع وادفعها إلى سجل حاويات GitHub.</li>
+<li>بيّن أن سحب ذلك الوسم على جهاز آخر يشغّل الكود المختبَر بالضبط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> خزّن طبقات البناء مؤقتاً بين تشغيلات CI (<code>cache-from</code>)، وإلا أعاد كل خط تثبيت كل الاعتماديات.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 17.3 · تحدٍّ</p>
+<h3>نشر بلا توقف</h3>
+<p class="project-goal">انشر نسخة جديدة من المتجر على خادم دون أن يفشل طلب واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الوسطاء العكسيين، وفحوص الحالة، والإيقاف اللطيف، والترحيلات المتوافقة مع ما قبلها.</p>
+<ol class="steps">
+<li>ضع وسيطاً عكسياً (Caddy أو Traefik) أمام حاويتي تطبيق، مع HTTPS.</li>
+<li>اكتب سكربت نشر: اسحب الصورة الجديدة، ونفّذ الترحيلات، وابدأ حاوية جديدة، وانتظر حتى تصير بخير، ثم أوقف قديمة، وكرر.</li>
+<li>شغّل اختبار حمل أثناء النشر وبيّن صفر طلبات فاشلة.</li>
+<li>انشر نسخة فيها تغيير في قاعدة البيانات، باستخدام خطوات التوسيع والتقليص من الفصل 6 فيعمل الكود القديم والجديد جنباً إلى جنب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> تفشل الطلبات أثناء النشر حين تُقتل حاوية وفيها طلبات قيد التنفيذ، أو تستقبل زيارات قبل أن تجهز؛ والإيقاف اللطيف وفحوص الجاهزية يصلحان الاثنين.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> بأي ترتيب تكتب تعليمات Dockerfile هذه، ولماذا: انسخ الكود المصدري؛ وثبّت الاعتماديات؛ وانسخ ملفات الاعتماديات؛ واضبط مجلد العمل؟</li>
+<li><span class="level">سهل</span> يضع زميل <code>ENV DATABASE_PASSWORD=…</code> في Dockerfile «لتبسيط النشر». ما الخطأ، وماذا ينبغي فعله بدلاً من ذلك؟</li>
+<li><span class="level medium">متوسط</span> حجم الصورة 763 MB. اقترح ثلاثة تغييرات تجعلها أصغر، والمقايضة في كل منها.</li>
+<li><span class="level medium">متوسط</span> بعد <code>docker compose up</code>، ينهار التطبيق لأنه لا يصل إلى قاعدة البيانات، لكن بعد دقيقة يعمل كل شيء. اشرح، وأصلحه في ملف Compose.</li>
+<li><span class="level hard">تحدٍّ</span> صف خطوات إصدار يضيف عموداً إلزامياً إلى جدول، من دمج طلب الدمج حتى تعمل كل الحاويات بالكود الجديد، بلا توقف.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 18</p>
+<p>كل شيء في مكانه. والمشروع الختامي يجمع الكتاب كله: API متجر كامل، آمن، ومختبر، وقابل للملاحظة، يُبنى من مجلد فارغ إلى حاوية عاملة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -8011,6 +8291,16 @@ Access-Control-Max-Age: 0</pre></div>
 <li>الحساب («الأعضاء يأخذون خصم 5% من المجموع») قاعدة مجال عادية بجانب <code>total()</code>، باختبارات وحدة للأعضاء وغيرهم وللتقريب. وكون الزبون عضواً بيانات، فيسأل الفعل منفذاً (<code>Customers::isMember($email)</code>)، مربوطاً في المزوّد بمحوّل يستعلم قاعدة البيانات، ويمرر الجواب إلى القاعدة؛ ويحفظ المخزن المجموع بعد الخصم. والاختبارات: اختبارات وحدة في المجال للحساب؛ واختبارات للفعل ببديل <code>Customers</code> يعيد صحيح وخطأ؛ واختبار ميزة لاستعلام المحوّل مقابل PostgreSQL؛ واختبار ميزة HTTP واحد أن مجموع طلب العضو مخصوم.</li>
 <li>الكلف: استدعاءات شبكة تفشل أو تنتهي مهلتها بين الطلبات والباقي؛ ولا معاملات مشتركة، فقد يختلف المخزون والطلبات ويحتاجان sagas أو صناديق صادر؛ ونشر ومراقبة وتتبع ومناوبة منفصلة؛ وبيانات مكررة أو تُجلب عبر الشبكة؛ وتطوير أبطأ حتى تستقر الحدود. والأسئلة أولاً: أي مشكلة ملموسة سيحلها التقسيم؟ هل تحتاج الطلبات أن تتوسع بشكل مختلف، أو أن ينشرها فريق منفصل؟ هل الوحدة نظيفة أصلاً داخل التطبيق الموحّد، لا تستخدم إلا جداولها وتكلم غيرها عبر الأفعال؟ وإن كانت الأجوبة مبهمة، أبقِ وحدة مقسّمة جيداً وعُد إلى الأمر حين توجد حاجة مقيسة.</li>
 <li><code>arch('the store adapter is wired only in the provider')-&gt;expect('App\Orders\Infrastructure\QueryBuilderOrderStore')-&gt;toOnlyBeUsedIn('App\Providers')</code>. وتهم لأن المحوّل تفصيلة: فإن استخدمته المتحكمات أو المهام أو الوحدات الأخرى مباشرة، تتخطى الفعل وقواعده، وتربط نفسها بباني الاستعلامات، ولا يمكن اختبارها ببديل للمخزن. وإبقاء الصنف الحقيقي ظاهراً لجذر التركيب وحده يُبقي كل صنف آخر معتمداً على المنفذ.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 17</h2>
+<ol class="exercises">
+<li>اضبط مجلد العمل؛ وانسخ ملفات الاعتماديات؛ وثبّت الاعتماديات؛ وانسخ الكود المصدري. يأتي مجلد العمل أولاً لأن كل مسار لاحق نسبي إليه. وتأتي ملفات الاعتماديات والتثبيت قبل الكود فيُعاد استخدام طبقاتها كلما تغير الكود وحده؛ ونسخ الكود أخيراً يعني أن التغيير العادي لا يعيد بناء إلا تلك الطبقة الأخيرة الرخيصة.</li>
+<li>كل ما في Dockerfile ينتهي في الصورة، وكل من يستطيع سحب الصورة (CI، وفرق أخرى، ورمز سجل مسرّب) يستطيع قراءته بـ <code>docker history</code> أو بتشغيل الصورة؛ وكلمة المرور مودَعة أيضاً في المستودع مع Dockerfile، ولا يمكن استخدام الصورة نفسها بكلمة مرور مختلفة في بيئة أخرى. مرّرها وقت التشغيل بدلاً من ذلك، من مخزن أسرار المنصة: مدخلات <code>environment</code> تُملأ من الأسرار في Compose أو Kubernetes، أو ملف <code>.env</code> لا يُودَع أبداً.</li>
+<li>(1) صورة أساسية أصغر، كنسخة Alpine أو صورة «distroless»: كثيراً نصف الحجم، لكن Alpine تستخدم مكتبة C مختلفة لا تدعمها بعض الوحدات أو الإضافات الأصلية، وصور distroless بلا صدفة للتصحيح. (2) احذف أدوات البناء في الطبقة نفسها التي استخدمتها (أزل <code>libpq-dev</code> وأبقِ <code>libpq5</code> اللازمة للتشغيل وحدها، أو ابنِ الإضافة في مرحلة منفصلة): أصغر وحزم أقل تحتاج ترقيعاً، لكن Dockerfile أعقد قليلاً. (3) اعتماديات أقل: استخدم صورة خادم ويب أخف (FrankenPHP مثلاً أو PHP-FPM بلا Apache) وثبّت الإضافات التي يستخدمها التطبيق وحدها؛ والمقايضة وقت يُبذل، وأحياناً ميزات الخيار الأكبر.</li>
+<li>يشغّل Compose الحاويات بترتيب الاعتماديات، لكنه مع <code>depends_on</code> العادية لا ينتظر إلا حتى <em>تبدأ</em> حاوية قاعدة البيانات، لا حتى تقبل PostgreSQL الاتصالات، وهذا يستغرق بضع ثوانٍ؛ فيبدأ التطبيق، ويفشل في الاتصال، وينهار (ويعمل لاحقاً بعد إعادة تشغيل أو إعادة محاولة). أعطِ قاعدة البيانات فحص حالة (<code>pg_isready</code>) واجعل التطبيق ينتظرها بـ <code>depends_on: db: condition: service_healthy</code>، كما يفعل ملف Compose في هذا الفصل؛ وينبغي أيضاً أن يعيد التطبيق محاولة الاتصال عند البدء، لأن قواعد البيانات تُعاد تشغيلها في الإنتاج أيضاً.</li>
+<li>التوسيع والتقليص (الفصل 6). الإصدار 1: ترحيل يضيف العمود قابلاً لأن يكون فارغاً (أو بقيمة افتراضية)، والكود يكتبه للصفوف الجديدة ويبقى يعمل بدونه؛ وCI يبني الصورة ويختبرها ويفحصها؛ ويعمل الترحيل حاويةً لمرة واحدة (الكود القديم لا يتأثر بعمود جديد قابل لأن يكون فارغاً)؛ وتحل الحاويات الجديدة محل القديمة تدريجياً خلف فحوص الحالة. ثم يملأ تعبئة العمود للصفوف الموجودة، على دفعات. والإصدار 2: ترحيل يجعل العمود إلزامياً (آمن الآن، لأن لكل صف قيمة)، ويبدأ الكود في الاعتماد عليه؛ ويُنشر بالطريقة نفسها. وفي كل لحظة، الكود العامل ومخطط قاعدة البيانات متوافقان، فلا يفشل أي طلب.</li>
 </ol>
 
 </section>

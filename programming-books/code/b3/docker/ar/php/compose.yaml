@@ -1,0 +1,34 @@
+name: shop
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: shop
+      # للعرض فقط: كلمات المرور الحقيقية تأتي من مخزن أسرار، لا من هذا الملف أبداً
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: shop
+    volumes:
+      - db-data:/var/lib/postgresql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "shop", "-d", "shop"]
+      interval: 2s
+      retries: 15
+
+  app:
+    build: .
+    image: shop-php
+    ports:
+      - "8080:80"
+    environment:
+      DATABASE_URL: pgsql:host=db;dbname=shop
+      DATABASE_USER: shop
+      DATABASE_PASSWORD: secret
+    depends_on:
+      db:
+        # لا يبدأ التطبيق إلا حين تجيب قاعدة البيانات
+        condition: service_healthy
+
+volumes:
+  db-data:
