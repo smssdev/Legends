@@ -37,6 +37,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "Chapter 15: Performance and Scaling"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "Chapter 16: Architecture: Modules, Actions and Domains"; } }
+@page ch16:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -7342,6 +7344,413 @@ CREATE INDEX
 <p>The code works, is secure, observable and fast; now it must stay easy to change as it grows. Architecture: layers, modules, and where business rules belong.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b3/laravel/architecture/en">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">Chapter 16</p><h1>Architecture: Keeping Code Easy to Change</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise the signs of a Laravel app that is getting hard to change</li>
+<li>separate business rules from controllers, Eloquent and facades</li>
+<li>write actions that orchestrate a use case through interfaces (ports)</li>
+<li>use the service container as the composition root</li>
+<li>organise code by feature, and enforce the boundaries with Pest architecture tests</li>
+<li>know when a monolith is the right answer, and when to split</li>
+</ul>
+</div>
+
+<p class="lead">Laravel makes the first version of everything quick: a controller, a model, a facade call, done. That speed is a strength, and for small apps it is enough. As the shop grows, the same habits produce controllers that validate, query, price, email and format in one method, and a pricing rule that appears again, slightly different, in a job. Such code works; it is just harder to change every month. <dfn>Architecture</dfn> is the set of decisions about where each kind of code lives, so that the shop’s rules can be understood, tested and changed without touching everything else. This chapter rebuilds the order feature as one module with clear layers, small enough to read whole.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The most expensive bug I have seen was a discount rule copied into four controllers. Marketing changed the rule; we updated three of them. For two weeks, orders through the mobile app got a discount that the website refused. No single line was wrong. The rule simply had no home.</p></div></div>
+
+<h2><span class="sec">16.1</span> <span>Signs that structure is needed</span></h2>
+
+<ul>
+<li><strong>Fat controllers and fat models.</strong> A controller method that does five jobs, or a model with forty methods mixing queries, rules and formatting.</li>
+<li><strong>Rules in several places.</strong> The same check written in a controller, a job and a console command.</li>
+<li><strong>Tests that need everything.</strong> To test a pricing rule you must migrate a database and fake three facades.</li>
+<li><strong>Afraid to change the infrastructure.</strong> Replacing the mail provider, or moving one table, means editing business code everywhere.</li>
+</ul>
+
+<p>The cure is the same idea at several sizes: separate what the business decides from how it is delivered and stored. The decisions, the <dfn>domain</dfn>, change when the business changes; HTTP, the database and the mail provider change for technical reasons. Laravel does not force a structure, which leaves the choice to you.</p>
+
+<h2><span class="sec">16.2</span> <span>Layers, from the inside out</span></h2>
+
+<p>The order feature now lives in one folder, <code>app/Orders</code>, with one folder per layer:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The order module</span>
+<span class="c">$ </span><span class="k">find app/Orders -name &#x27;*.php&#x27; | sort</span>
+app/Orders/Actions/PlaceOrder.php
+app/Orders/Domain/OrderError.php
+app/Orders/Domain/OrderRules.php
+app/Orders/Domain/OutOfStock.php
+app/Orders/Domain/PlacedOrder.php
+app/Orders/Domain/TooMany.php
+app/Orders/Domain/UnknownProduct.php
+app/Orders/Http/PlaceOrderController.php
+app/Orders/Infrastructure/LogMailer.php
+app/Orders/Infrastructure/QueryBuilderOrderStore.php
+app/Orders/Ports/Mailer.php
+app/Orders/Ports/OrderStore.php</pre></div>
+
+<p><strong>The domain</strong> holds the shop’s rules and words, in plain PHP: no facades, no Eloquent, no request objects:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Domain/OrderRules.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> OrderRules
+{
+    <span class="c line-bidi">// a rule of the business, not of the database or the API</span>
+    <span class="k">public</span> <span class="k">const</span> MAX_PER_PRODUCT = <span class="n">10</span>;
+
+    /** @param <span class="k">list</span>&lt;<span class="k">array</span>{product_id: <span class="k">int</span>, quantity: <span class="k">int</span>}&gt; $items */
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> checkQuantities(<span class="k">array</span> $items): <span class="k">void</span>
+    {
+        <span class="k">foreach</span> ($items <span class="k">as</span> $item) {
+            <span class="k">if</span> ($item[<span class="s">&#x27;quantity&#x27;</span>] &gt; <span class="k">self</span>::MAX_PER_PRODUCT) {
+                <span class="k">throw</span> <span class="k">new</span> TooMany(<span class="s">&#x27;At most 10 of one product per order&#x27;</span>);
+            }
+        }
+    }
+
+    /** @param <span class="k">list</span>&lt;<span class="k">array</span>{quantity: <span class="k">int</span>, price: <span class="k">int</span>}&gt; $lines */
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> total(<span class="k">array</span> $lines): <span class="k">int</span>
+    {
+        <span class="k">return</span> array_sum(array_map(<span class="k">fn</span> ($l) =&gt; $l[<span class="s">&#x27;quantity&#x27;</span>] * $l[<span class="s">&#x27;price&#x27;</span>], $lines));
+    }
+}</pre></div>
+
+<p>Its errors use the business’s words. A small hierarchy lets adapters catch them all at once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Domain/OrderError.php</div><pre class="code"><span class="c line-bidi">// errors that speak the business&#x27;s language; each adapter decides what they become</span>
+<span class="k">abstract</span> <span class="k">class</span> OrderError <span class="k">extends</span> DomainException {}</pre></div>
+
+<p><strong>The ports</strong> describe what the use case needs from the outside world, as interfaces written by the inside for the outside to implement:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Ports/OrderStore.php</div><pre class="code"><span class="c line-bidi">// a port: what the action needs, described by the action</span>
+<span class="k">interface</span> OrderStore
+{
+    /**
+     * Takes the stock and saves the order, all or nothing; prices come <span class="k">from</span> the store.
+     *
+     * @param  <span class="k">list</span>&lt;<span class="k">array</span>{product_id: <span class="k">int</span>, quantity: <span class="k">int</span>}&gt;  $items
+     */
+    <span class="k">public</span> <span class="k">function</span> place(<span class="k">string</span> $email, <span class="k">array</span> $items, DateTimeImmutable $placedAt): PlacedOrder;
+}</pre></div>
+
+<p><strong>The action</strong> is one thing the shop does, from start to finish: place an order. Laravel developers often call such a class an <dfn>action</dfn> (one public method, often <code>__invoke</code>); elsewhere it is called a <dfn>use case</dfn>. It checks the rules, asks the store to save, then sends the email, through its ports only:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Actions/PlaceOrder.php</div><pre class="code"><span class="c line-bidi">// the action: one thing the shop does, start to finish, through its ports</span>
+<span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> PlaceOrder
+{
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">private</span> OrderStore $store, <span class="k">private</span> Mailer $mailer) {}
+
+    /** @param <span class="k">list</span>&lt;<span class="k">array</span>{product_id: <span class="k">int</span>, quantity: <span class="k">int</span>}&gt; $items */
+    <span class="k">public</span> <span class="k">function</span> __invoke(<span class="k">string</span> $email, <span class="k">array</span> $items, DateTimeImmutable $now): PlacedOrder
+    {
+        OrderRules::checkQuantities($items);
+        $order = $<span class="k">this</span>-&gt;store-&gt;place($email, $items, $now);
+        <span class="c line-bidi">// the email after the order is saved, never inside its transaction</span>
+        $<span class="k">this</span>-&gt;mailer-&gt;send($email, <span class="s">&quot;Order {$order-&gt;id}: &quot;</span>.($order-&gt;total / <span class="n">100</span>).<span class="s">&#x27; EGP&#x27;</span>);
+
+        <span class="k">return</span> $order;
+    }
+}</pre></div>
+
+<p>Read it as a description of the business process: no SQL, no status code, no facade. Its dependencies arrive in the constructor, which is what makes it replaceable piece by piece.</p>
+
+<h2><span class="sec">16.3</span> <span>Adapters</span></h2>
+
+<p><dfn>Adapters</dfn> connect the ports to real technology; this design is often called <dfn>ports and adapters</dfn>, or <dfn>hexagonal architecture</dfn>. The store adapter implements <code>OrderStore</code> with Laravel’s query builder, including the transaction and the atomic stock update of Chapter 7:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Infrastructure/QueryBuilderOrderStore.php</div><pre class="code"><span class="c line-bidi">// an adapter: the OrderStore port, implemented with Laravel&#x27;s query builder</span>
+<span class="k">final</span> <span class="k">class</span> QueryBuilderOrderStore <span class="k">implements</span> OrderStore
+{
+    <span class="k">public</span> <span class="k">function</span> place(<span class="k">string</span> $email, <span class="k">array</span> $items, DateTimeImmutable $placedAt): PlacedOrder
+    {
+        <span class="k">return</span> DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($email, $items, $placedAt) {
+            $lines = [];
+            <span class="k">foreach</span> ($items <span class="k">as</span> [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity]) {
+                $taken = DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $id)
+                    -&gt;where(<span class="s">&#x27;stock&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $quantity)-&gt;decrement(<span class="s">&#x27;stock&#x27;</span>, $quantity);
+                <span class="k">if</span> ($taken === <span class="n">0</span>) {
+                    <span class="k">throw</span> DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $id)-&gt;exists()
+                        ? <span class="k">new</span> OutOfStock(<span class="s">&#x27;Not enough stock&#x27;</span>)
+                        : <span class="k">new</span> UnknownProduct(<span class="s">&#x27;Unknown product&#x27;</span>);
+                }
+                $price = DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $id)-&gt;value(<span class="s">&#x27;price&#x27;</span>);
+                $lines[] = [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity, <span class="s">&#x27;price&#x27;</span> =&gt; $price];
+            }
+            $total = OrderRules::total($lines);
+            $orderId = DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;insertGetId(
+                [<span class="s">&#x27;email&#x27;</span> =&gt; $email, <span class="s">&#x27;total&#x27;</span> =&gt; $total, <span class="s">&#x27;placed_at&#x27;</span> =&gt; $placedAt],
+            );
+            DB::table(<span class="s">&#x27;order_items&#x27;</span>)-&gt;insert(
+                array_map(<span class="k">fn</span> ($line) =&gt; [<span class="s">&#x27;order_id&#x27;</span> =&gt; $orderId] + $line, $lines),
+            );
+
+            <span class="k">return</span> <span class="k">new</span> PlacedOrder($orderId, $email, $total);
+        });
+    }
+}</pre></div>
+
+<p>The transaction belongs here: “take the stock and save the order, all or nothing” is the port’s promise, and how the database keeps it is the adapter’s business. Facades and the query builder are welcome in adapters; they are what adapters are for. The controller is the HTTP adapter: validated input in, the action’s result or error out:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Http/PlaceOrderController.php</div><pre class="code"><span class="c line-bidi">// the HTTP adapter: validated input in, a response or an error out</span>
+<span class="k">final</span> <span class="k">class</span> PlaceOrderController
+{
+    <span class="k">public</span> <span class="k">function</span> __invoke(Request $request, PlaceOrder $placeOrder): JsonResponse
+    {
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;email&#x27;</span>],
+            <span class="s">&#x27;items&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;array&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:20&#x27;</span>],
+            <span class="s">&#x27;items.*.product_id&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>],
+            <span class="s">&#x27;items.*.quantity&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>],
+        ]);
+        <span class="k">try</span> {
+            $order = $placeOrder($data[<span class="s">&#x27;email&#x27;</span>], $data[<span class="s">&#x27;items&#x27;</span>], now()-&gt;toDateTimeImmutable());
+        } <span class="k">catch</span> (OrderError $error) {
+            $status = $error <span class="k">instanceof</span> OutOfStock ? <span class="n">409</span> : <span class="n">422</span>;
+
+            <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;title&#x27;</span> =&gt; $error-&gt;getMessage(), <span class="s">&#x27;status&#x27;</span> =&gt; $status], $status);
+        }
+
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;id&#x27;</span> =&gt; $order-&gt;id, <span class="s">&#x27;total&#x27;</span> =&gt; $order-&gt;total], <span class="n">201</span>);
+    }
+}</pre></div>
+
+<p>Deciding that “out of stock” means 409 is an HTTP concern, so it lives in the controller. An Artisan command or a queued job could call the same action and translate the same errors its own way.</p>
+
+<h2><span class="sec">16.4</span> <span>The container as composition root</span></h2>
+
+<p>Somewhere, real classes must be chosen for each port. In Laravel that place is a service provider, and the <dfn>service container</dfn> does the wiring: when the controller asks for <code>PlaceOrder</code>, the container builds it, sees that its constructor needs an <code>OrderStore</code> and a <code>Mailer</code>, and looks up which classes answer those interfaces:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code"><span class="k">class</span> AppServiceProvider <span class="k">extends</span> ServiceProvider
+{
+    <span class="c line-bidi">// the composition root: which concrete class answers each port</span>
+    <span class="k">public</span> <span class="k">array</span> $bindings = [
+        OrderStore::<span class="k">class</span> =&gt; QueryBuilderOrderStore::<span class="k">class</span>,
+        Mailer::<span class="k">class</span> =&gt; LogMailer::<span class="k">class</span>,
+    ];
+}</pre></div>
+
+<p>Here the mailer writes to the log, which is enough for a demonstration; using a real provider is a change to this one line. Running it shows the layers working together:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An order</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;total&quot;:114000}
+<span class="c line-bidi"># Eleven of one product</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;product_id&quot;:2,&quot;quantity&quot;:11}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;At most 10 of one product per order&quot;,&quot;status&quot;:422}
+<span class="c line-bidi"># More than the stock</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;Not enough stock&quot;,&quot;status&quot;:409}
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT id, stock FROM products ORDER BY id&#x27;</span>
+ id | stock 
+----+-------
+  1 |     3
+  2 |    46
+(2 rows)
+<span class="c">$ </span><span class="k">grep -o &#x27;mail to.*&#x27; storage/logs/laravel.log</span>
+mail to sara@example.com: Order 1: 1140 EGP  </pre></div>
+
+<p>The rule refused eleven wheels before the database was touched; the store refused four kits, rolled back, and left the stock as it was; and one email went out, for the one order that was saved.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does the domain use no facades, not even <code>DB</code> or <code>Log</code>?</li><li>Who decides that <code>OutOfStock</code> becomes a 409, and why there?</li><li>What has to change to send real emails instead of logging them?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">16.5</span> <span>Testing by layer</span></h2>
+
+<p>The reward for this structure shows in the tests. The action can be tested with in-memory fakes for its ports, as a plain unit test, without a database, the framework or a mail provider:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Unit/PlaceOrderTest.php</div><pre class="code">$now = <span class="k">new</span> DateTimeImmutable(<span class="s">&#x27;2026-11-20 10:00:00&#x27;</span>);
+
+it(<span class="s">&#x27;places an order, saves it and sends one email&#x27;</span>, <span class="k">function</span> () <span class="k">use</span> ($now) {
+    $mailer = fakeMailer();
+    $store = fakeStore(<span class="k">fn</span> ($email) =&gt; <span class="k">new</span> PlacedOrder(<span class="n">7</span>, $email, <span class="n">12000</span>));
+    $order = (<span class="k">new</span> PlaceOrder($store, $mailer))(<span class="s">&#x27;sara@example.com&#x27;</span>, [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">2</span>]], $now);
+
+    expect($order-&gt;total)-&gt;toBe(<span class="n">12000</span>)
+        -&gt;and($mailer-&gt;sent)-&gt;toBe([<span class="s">&#x27;sara@example.com&#x27;</span>]);
+});
+
+it(<span class="s">&#x27;refuses more than 10 of one product, before touching the store&#x27;</span>, <span class="k">function</span> () <span class="k">use</span> ($now) {
+    $store = fakeStore(<span class="k">fn</span> () =&gt; <span class="k">throw</span> <span class="k">new</span> LogicException(<span class="s">&#x27;the store must not be called&#x27;</span>));
+    (<span class="k">new</span> PlaceOrder($store, fakeMailer()))(<span class="s">&#x27;a@b.c&#x27;</span>, [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">11</span>]], $now);
+})-&gt;throws(TooMany::<span class="k">class</span>);
+
+it(<span class="s">&#x27;sends no email when the store reports too little stock&#x27;</span>, <span class="k">function</span> () <span class="k">use</span> ($now) {
+    $mailer = fakeMailer();
+    $store = fakeStore(<span class="k">fn</span> () =&gt; <span class="k">throw</span> <span class="k">new</span> OutOfStock(<span class="s">&#x27;no&#x27;</span>));
+
+    expect(<span class="k">fn</span> () =&gt; (<span class="k">new</span> PlaceOrder($store, $mailer))(<span class="s">&#x27;a@b.c&#x27;</span>, [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">9</span>]], $now))
+        -&gt;toThrow(OutOfStock::<span class="k">class</span>)
+        -&gt;and($mailer-&gt;sent)-&gt;toBe([]);
+});</pre></div>
+
+<p>The fakes are small anonymous classes implementing the ports; each test builds the situation it needs: a store that succeeds, one that reports too little stock, one that must not be called. The adapter is tested against the real PostgreSQL test database, as in Chapter 13, and only for what it adds.</p>
+
+<p>Boundaries that only exist in people’s heads erode under deadlines. Pest’s <dfn>architecture tests</dfn> (Chapter 13) make them part of the build:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Unit/ArchTest.php</div><pre class="code"><span class="c line-bidi">// the layers, checked on every run</span>
+arch(<span class="s">&#x27;keeps the domain free of Laravel and of the adapters&#x27;</span>)
+    -&gt;expect(<span class="s">&#x27;App\Orders\Domain&#x27;</span>)
+    -&gt;not-&gt;toUse([<span class="s">&#x27;Illuminate&#x27;</span>, <span class="s">&#x27;App\Orders\Infrastructure&#x27;</span>, <span class="s">&#x27;App\Orders\Http&#x27;</span>]);
+
+arch(<span class="s">&#x27;lets the action use only the domain and the ports&#x27;</span>)
+    -&gt;expect(<span class="s">&#x27;App\Orders\Actions&#x27;</span>)
+    -&gt;toOnlyUse([<span class="s">&#x27;App\Orders\Domain&#x27;</span>, <span class="s">&#x27;App\Orders\Ports&#x27;</span>]);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The tests: an action without a database, and the layers</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest tests/Unit</span>
+
+   PASS  Tests\Unit\ArchTest
+  ✓ keeps the domain free of Laravel and of the adapters
+  ✓ lets the action use only the domain and the ports
+
+   PASS  Tests\Unit\PlaceOrderTest
+  ✓ it places an order, saves it and sends one email
+  ✓ it refuses more than 10 of one product, before touching the store
+  ✓ it sends no email when the store reports too little stock
+
+  Tests:    5 passed (12 assertions)
+  Duration: …</pre></div>
+
+<p>When someone, in a hurry, reaches for the <code>DB</code> facade inside the domain, the build says so:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Someone uses the DB facade in the domain</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest tests/Unit/ArchTest.php</span>
+   FAILED  Tests\Unit\ArchTest &gt; keeps the domain free of Laravel and of the…   
+  Expecting &#x27;App\Orders\Domain&#x27; not to use &#x27;Illuminate&#x27;.</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: architecture is a cost too</p><p>Every interface and adapter is a file to read and an indirection to follow. For a page that lists products, a controller with an Eloquent query and a resource is the right amount of structure; wrapping it in an action, a port and a repository is ceremony. Introduce layers where they pay: where business rules live, where several entry points share behaviour, where tests are slow because everything is tangled. Using Eloquent directly in simple places is not a failure of architecture; it is good judgement.</p></aside>
+
+<h2><span class="sec">16.6</span> <span>Modules, monoliths and services</span></h2>
+
+<ul>
+<li><strong>Organise by feature, not by kind.</strong> <code>app/Orders</code>, <code>app/Catalog</code>, <code>app/Accounts</code>, each with its domain, actions and adapters, rather than every controller in <code>app/Http/Controllers</code> and every model in <code>app/Models</code>. A change to ordering then touches one folder. Laravel finds classes anywhere under <code>app/</code>, so no configuration is needed.</li>
+<li><strong>Modules talk through their actions.</strong> <code>Orders</code> may call <code>Catalog</code>’s actions, but must not query its tables or use its models directly; Pest’s <code>toOnlyBeUsedIn</code> can enforce it. Events (Chapter 11) let a module react to another without depending on it.</li>
+<li><strong>A modular monolith first.</strong> One Laravel application, well divided into modules, is the right shape for almost every team: one deployment, one database, transactions that span modules, and simple debugging.</li>
+<li><strong>Services when there is a reason.</strong> Splitting into separate services pays off when parts must scale very differently, be deployed by different teams independently, or be isolated for safety. The cost is real: network calls that fail, data spread across databases without shared transactions, and the tracing of Chapter 14 becoming a necessity. Clear modules make a later split easy; a tangle split into services is a distributed tangle.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: write decisions down</p><p>When you make a structural decision (“orders do not use catalog models”, “actions for every use case with business rules”), write a short <dfn>architecture decision record</dfn>: the context, the decision, the alternatives and the consequences, one page in <code>docs/decisions/</code>. A year later, the next developer, often yourself, will know why, and can change the decision on purpose instead of by accident.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Business rules in controllers and jobs</td><td>Rules copied, tested only through HTTP</td><td>Domain classes and actions</td></tr>
+<tr><td>Facades and Eloquent inside the domain</td><td>Rules tied to the framework; slow tests</td><td>Ports owned by the inside; adapters outside</td></tr>
+<tr><td>Status codes or <code>abort()</code> in business code</td><td>Business code speaks HTTP</td><td>Domain exceptions, translated by adapters</td></tr>
+<tr><td><code>new</code> for services inside classes</td><td>Nothing can be replaced in tests</td><td>Constructor injection; bindings in a provider</td></tr>
+<tr><td>Only <code>Controllers/</code> and <code>Models/</code> for a large app</td><td>Every change touches every folder</td><td>Folders by feature</td></tr>
+<tr><td>Repositories wrapping every Eloquent call</td><td>Ceremony that hides simple code</td><td>Structure where rules and reuse live</td></tr>
+<tr><td>Microservices on day one</td><td>Network failures and distributed data for no gain</td><td>A modular monolith, split when needed</td></tr>
+<tr><td>Boundaries only in people’s heads</td><td>They erode under deadlines</td><td>Pest architecture tests</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Architecture</strong> decides where each kind of code lives, so rules can change without touching delivery and storage.</li>
+<li>The <strong>domain</strong> holds rules and words in plain PHP, using no facades; its exceptions speak the business’s language.</li>
+<li><strong>Actions</strong> orchestrate a use case through <strong>ports</strong> (interfaces); <strong>adapters</strong> implement them with Laravel’s tools.</li>
+<li>The <strong>service container</strong>, configured in a provider, is the composition root: one line per port.</li>
+<li>Actions are tested with <strong>fakes</strong> as unit tests; adapters against the real database; boundaries with <strong>Pest arch tests</strong>.</li>
+<li>Organise <strong>by feature</strong>; prefer a <strong>modular monolith</strong>; split into services only for a concrete reason.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that the shop’s rules depend on nothing that changes for technical reasons: they can be read without knowing Laravel, tested as plain PHP without booting the framework, and reused by any entry point. A facade would tie the rule to the container and to a particular database or log. 2. The controller, the HTTP adapter: a status code is part of HTTP, not of the business. An Artisan command would translate the same exception into a message and an exit code. 3. Only the binding in <code>AppServiceProvider</code>: write a class that implements <code>Mailer</code> with a Mailable or the provider’s SDK, and bind it instead of <code>LogMailer</code>. The domain, the action and their tests do not change.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project restructures part of the shop. Keep the tests green at every step: refactoring changes structure, not behaviour.</p>
+
+<div class="project">
+<p class="project-label">Project 16.1 · Easy</p>
+<h3>Cancel an order</h3>
+<p class="project-goal">Add “cancel an order” in the same layered style.</p>
+<p class="project-skills"><strong>You will practise:</strong> domain rules, an action with ports, and testing with fakes.</p>
+<ol class="steps">
+<li>Write the rule in the domain: only pending or paid orders can be cancelled, and only within 24 hours of placing them.</li>
+<li>Add a <code>cancel</code> method to the store port that returns the stock, and implement it in the adapter.</li>
+<li>Write the action, unit tests with fakes for every rule, and an invokable controller.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> pass the current time into the action, as <code>PlaceOrder</code> does, and the 24-hour rule needs no clock fake at all.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 16.2 · Medium</p>
+<h3>Untangle the shop</h3>
+<p class="project-goal">Refactor the shop API of the earlier chapters into feature modules.</p>
+<p class="project-skills"><strong>You will practise:</strong> refactoring safely, feature folders, module boundaries, and arch tests.</p>
+<ol class="steps">
+<li>Make sure the feature tests of Chapter 13 cover the main routes; they are your safety net.</li>
+<li>Move code into <code>app/Catalog</code>, <code>app/Orders</code> and <code>app/Accounts</code>, one module at a time, running the tests after each step.</li>
+<li>Replace direct use of another module’s models with calls to its actions, or with events.</li>
+<li>Add arch tests that keep each module’s models used only inside it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> move code first and improve it second; mixing the two makes a failing test hard to explain.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 16.3 · Challenge</p>
+<h3>Same action, three entry points</h3>
+<p class="project-goal">Prove the structure by calling the same action from HTTP, Artisan and a queue.</p>
+<p class="project-skills"><strong>You will practise:</strong> adapters for different deliveries, error translation, and contextual bindings.</p>
+<ol class="steps">
+<li>Write <code>php artisan orders:place sara@example.com 1:2 2:4</code>, calling the action and printing errors with an exit code.</li>
+<li>Write a queued job (Chapter 11) that places orders from an imported file through the same action.</li>
+<li>Use a contextual binding so the job gets a different <code>Mailer</code> (a queued one) while the controller keeps the default.</li>
+<li>Show that none of these changes touched the domain or the action.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>$this-&gt;app-&gt;when(ImportOrders::class)-&gt;needs(Mailer::class)-&gt;give(QueuedMailer::class)</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, say which layer it belongs to: the validation rules for the request; “a customer may have at most 3 unpaid orders”; the query that counts unpaid orders; sending a push notification.</li>
+<li><span class="level">Easy</span> Why does the email go after <code>$this-&gt;store-&gt;place()</code> in the action, and not inside the store’s transaction?</li>
+<li><span class="level medium">Medium</span> The business adds a rule: customers in the loyalty programme get 5% off. Where does each part of the change go, and what tests do you write?</li>
+<li><span class="level medium">Medium</span> A colleague proposes splitting orders into a separate service now, “to be ready for scale”. List the costs, and the questions you would ask first.</li>
+<li><span class="level hard">Challenge</span> Write an arch test that allows <code>QueryBuilderOrderStore</code> to be used only by the service provider. Explain why that rule matters.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 17</p>
+<p>The code is ready; now it must run the same everywhere. Docker: images, containers, Compose for the whole stack, and shipping to production.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -7588,6 +7997,16 @@ Without a signed-in user, <code>/broadcasting/auth</code> answers 403 before the
 <li>About 4096 ÷ 80 ≈ 50 workers, minus a margin for the operating system and the PHP-FPM master: set <code>pm.max_children</code> to about 45. When all 45 are busy, new requests wait in the listen queue of PHP-FPM (and in nginx) until a worker frees up; if the wait is long, they time out with a 502 or 504. More workers than memory allows would be worse: the server would swap and every request would slow down. The real fix for a long queue is to make requests shorter (no waiting on slow calls) or to add servers.</li>
 <li>The bottleneck is the database, not the web servers: every web server sends the same expensive queries to the same database, so adding servers only sends it more work at the same time (and more connections). Find the expensive queries (the slow query log, <code>pg_stat_statements</code>, <code>EXPLAIN ANALYZE</code>), fix them with indexes and better queries, remove N+1 patterns, cache what is shared, and only then consider read replicas or a bigger database server.</li>
 <li>Measure first: a load test of the page with realistic data, p50/p95/p99, and a trace of one request showing the 12 queries and their times. (1) Do less: combine the queries with eager loading or joins, add indexes for the slow ones, select only the columns shown; measure again. (2) Do later: anything not needed to render the page (view counts, recommendations computed per visit) goes to a background job or is loaded separately. (3) Do once: cache the product data shared by all visitors in Redis with invalidation on change, and set <code>Cache-Control</code> so a CDN can serve the page or its API for a few seconds; measure the hit rate and the latency. (4) Only if the page is still too slow under the target load, add servers, checking the database stays healthy. Each step is kept only if the numbers improved.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 16</h2>
+<ol class="exercises">
+<li>The validation rules: the HTTP adapter (the controller or a Form Request), because they describe the shape of a request. “At most 3 unpaid orders”: the domain, as a plain rule such as <code>OrderRules::checkUnpaidLimit($count)</code>. The query that counts unpaid orders: an adapter, behind a port method such as <code>OrderStore::countUnpaid($email)</code>, called by the action. Sending a push notification: an adapter behind a port (<code>Notifier</code>), called by the action after the order is saved; in Laravel it could wrap a Notification.</li>
+<li>Because the transaction may still fail or roll back after the email is sent, and an email cannot be unsent (Chapter 7). After <code>place()</code> returns, the order is committed. If the process dies between the two, no email is sent; when that matters, the store writes to an outbox inside its transaction, or dispatches a queued mail job with <code>afterCommit()</code>.</li>
+<li>The arithmetic (“members get 5% off the total”) is a plain domain rule next to <code>total()</code>, with unit tests for members, non-members and rounding. Whether a customer is a member is data, so the action asks a port (<code>Customers::isMember($email)</code>), bound in the provider to an adapter that queries the database, and passes the answer to the rule; the store saves the discounted total. Tests: domain unit tests for the arithmetic; action tests with a fake <code>Customers</code> returning true and false; a feature test for the adapter’s query against PostgreSQL; and one HTTP feature test that a member’s order total is discounted.</li>
+<li>Costs: network calls that fail or time out between orders and the rest; no shared transactions, so stock and orders can disagree and need sagas or outboxes; separate deployments, monitoring, tracing and on-call; data duplicated or fetched across the network; slower development while the boundary settles. Questions first: Which concrete problem would the split solve? Does ordering need to scale differently, or be deployed by a separate team? Is the module already clean inside the monolith, using only its own tables and talking to others through actions? If the answers are vague, keep a well-divided module and revisit when there is a measured need.</li>
+<li><code>arch('the store adapter is wired only in the provider')-&gt;expect('App\Orders\Infrastructure\QueryBuilderOrderStore')-&gt;toOnlyBeUsedIn('App\Providers')</code>. It matters because the adapter is a detail: if controllers, jobs or other modules use it directly, they skip the action and its rules, couple themselves to the query builder, and cannot be tested with a fake store. Keeping the concrete class visible only to the composition root keeps every other class depending on the port.</li>
 </ol>
 
 </section>

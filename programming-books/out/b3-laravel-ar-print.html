@@ -37,6 +37,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "الفصل 15: الأداء والتوسع"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "الفصل 16: المعمارية: الوحدات والأفعال والمجالات"; } }
+@page ch16:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -7244,6 +7246,413 @@ CREATE INDEX
 <p>الكود يعمل، وآمن، وقابل للملاحظة، وسريع؛ والآن يجب أن يبقى سهل التغيير وهو يكبر. البنية: الطبقات، والوحدات، وأين مكان قواعد العمل.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b3/laravel/architecture/ar">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">الفصل 16</p><h1>البنية: إبقاء الكود سهل التغيير</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تتعرف على علامات تطبيق Laravel يصير تغييره صعباً</li>
+<li>تفصل قواعد العمل عن المتحكمات وEloquent والواجهات</li>
+<li>تكتب أفعالاً تنسّق حالة استخدام عبر واجهات (منافذ)</li>
+<li>تستخدم حاوي الخدمات جذراً للتركيب</li>
+<li>تنظّم الكود بالميزة، وتفرض الحدود باختبارات بنية Pest</li>
+<li>تعرف متى يكون التطبيق الموحّد الجواب الصحيح، ومتى تقسّم</li>
+</ul>
+</div>
+
+<p class="lead">يجعل Laravel النسخة الأولى من كل شيء سريعة: متحكم، ونموذج، ونداء واجهة، وانتهى. وتلك السرعة قوة، وللتطبيقات الصغيرة تكفي. ومع كبر المتجر، تنتج العادات نفسها متحكمات تتحقق وتستعلم وتسعّر وترسل البريد وتنسّق في دالة واحدة، وقاعدة تسعير تظهر مرة أخرى، مختلفة قليلاً، في مهمة. مثل هذا الكود يعمل؛ لكنه يصير أصعب تغييراً كل شهر. و<dfn>البنية</dfn> (architecture) مجموعة القرارات عن مكان كل نوع من الكود، كي تُفهم قواعد المتجر وتُختبر وتُغيَّر دون لمس كل شيء آخر. وهذا الفصل يعيد بناء ميزة الطلبات وحدةً واحدة بطبقات واضحة، صغيرة بما يكفي لتُقرأ كلها.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أغلى خطأ رأيته كان قاعدة خصم منسوخة في أربعة متحكمات. غيّر التسويق القاعدة؛ فحدّثنا ثلاثة منها. وطوال أسبوعين، أخذت الطلبات من تطبيق الجوال خصماً رفضه الموقع. لم يكن أي سطر خاطئاً. ببساطة لم يكن للقاعدة بيت.</p></div></div>
+
+<h2><span class="sec">16.1</span> <span>علامات الحاجة إلى بنية</span></h2>
+
+<ul>
+<li><strong>متحكمات سمينة ونماذج سمينة.</strong> دالة متحكم تؤدي خمسة أعمال، أو نموذج بأربعين دالة تخلط الاستعلامات والقواعد والتنسيق.</li>
+<li><strong>قواعد في أماكن عدة.</strong> الفحص نفسه مكتوب في متحكم، ومهمة، وأمر طرفية.</li>
+<li><strong>اختبارات تحتاج كل شيء.</strong> لتختبر قاعدة تسعير يجب أن ترحّل قاعدة بيانات وتوهّم ثلاث واجهات.</li>
+<li><strong>الخوف من تغيير البنية التحتية.</strong> استبدال مزوّد البريد، أو نقل جدول واحد، يعني تعديل كود العمل في كل مكان.</li>
+</ul>
+
+<p>والعلاج الفكرة نفسها بأحجام عدة: افصل ما يقرره العمل عن طريقة تقديمه وحفظه. فالقرارات، أي <dfn>المجال</dfn> (domain)، تتغير حين يتغير العمل؛ وHTTP وقاعدة البيانات ومزوّد البريد تتغير لأسباب تقنية. ولا يفرض Laravel بنية، فيترك الخيار لك.</p>
+
+<h2><span class="sec">16.2</span> <span>الطبقات، من الداخل إلى الخارج</span></h2>
+
+<p>ميزة الطلبات تعيش الآن في مجلد واحد، <code>app/Orders</code>، بمجلد لكل طبقة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># وحدة الطلبات</span>
+<span class="c">$ </span><span class="k">find app/Orders -name &#x27;*.php&#x27; | sort</span>
+app/Orders/Actions/PlaceOrder.php
+app/Orders/Domain/OrderError.php
+app/Orders/Domain/OrderRules.php
+app/Orders/Domain/OutOfStock.php
+app/Orders/Domain/PlacedOrder.php
+app/Orders/Domain/TooMany.php
+app/Orders/Domain/UnknownProduct.php
+app/Orders/Http/PlaceOrderController.php
+app/Orders/Infrastructure/LogMailer.php
+app/Orders/Infrastructure/QueryBuilderOrderStore.php
+app/Orders/Ports/Mailer.php
+app/Orders/Ports/OrderStore.php</pre></div>
+
+<p><strong>المجال</strong> يحفظ قواعد المتجر وكلماته، بـ PHP عادية: بلا واجهات، ولا Eloquent، ولا كائنات طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Domain/OrderRules.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> OrderRules
+{
+    <span class="c line-bidi">// قاعدة من قواعد العمل، لا من قواعد قاعدة البيانات ولا API</span>
+    <span class="k">public</span> <span class="k">const</span> MAX_PER_PRODUCT = <span class="n">10</span>;
+
+    /** @param <span class="k">list</span>&lt;<span class="k">array</span>{product_id: <span class="k">int</span>, quantity: <span class="k">int</span>}&gt; $items */
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> checkQuantities(<span class="k">array</span> $items): <span class="k">void</span>
+    {
+        <span class="k">foreach</span> ($items <span class="k">as</span> $item) {
+            <span class="k">if</span> ($item[<span class="s">&#x27;quantity&#x27;</span>] &gt; <span class="k">self</span>::MAX_PER_PRODUCT) {
+                <span class="k">throw</span> <span class="k">new</span> TooMany(<span class="s">&#x27;10 على الأكثر من المنتج الواحد في الطلب&#x27;</span>);
+            }
+        }
+    }
+
+    /** @param <span class="k">list</span>&lt;<span class="k">array</span>{quantity: <span class="k">int</span>, price: <span class="k">int</span>}&gt; $lines */
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> total(<span class="k">array</span> $lines): <span class="k">int</span>
+    {
+        <span class="k">return</span> array_sum(array_map(<span class="k">fn</span> ($l) =&gt; $l[<span class="s">&#x27;quantity&#x27;</span>] * $l[<span class="s">&#x27;price&#x27;</span>], $lines));
+    }
+}</pre></div>
+
+<p>وأخطاؤه تستخدم كلمات العمل. وتسلسل صغير يتيح للمحوّلات التقاطها كلها معاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Domain/OrderError.php</div><pre class="code"><span class="c line-bidi">// أخطاء تتكلم لغة العمل؛ وكل محوّل يقرر ماذا تصير</span>
+<span class="k">abstract</span> <span class="k">class</span> OrderError <span class="k">extends</span> DomainException {}</pre></div>
+
+<p><strong>المنافذ</strong> (ports) تصف ما تحتاجه حالة الاستخدام من العالم الخارجي، واجهاتٍ يكتبها الداخل ليطبّقها الخارج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Ports/OrderStore.php</div><pre class="code"><span class="c line-bidi">// منفذ: ما يحتاجه الفعل، كما يصفه هو</span>
+<span class="k">interface</span> OrderStore
+{
+    /**
+     * Takes the stock and saves the order, all or nothing; prices come <span class="k">from</span> the store.
+     *
+     * @param  <span class="k">list</span>&lt;<span class="k">array</span>{product_id: <span class="k">int</span>, quantity: <span class="k">int</span>}&gt;  $items
+     */
+    <span class="k">public</span> <span class="k">function</span> place(<span class="k">string</span> $email, <span class="k">array</span> $items, DateTimeImmutable $placedAt): PlacedOrder;
+}</pre></div>
+
+<p><strong>الفعل</strong> شيء واحد يفعله المتجر، من البداية إلى النهاية: تقديم طلب. ويسمّي مطوّرو Laravel مثل هذا الصنف كثيراً <dfn>فعلاً</dfn> (action، دالة عامة واحدة، كثيراً <code>__invoke</code>)؛ ويُسمّى في أماكن أخرى <dfn>حالة استخدام</dfn> (use case). يفحص القواعد، ويطلب من المخزن الحفظ، ثم يرسل البريد، عبر منافذه وحدها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Actions/PlaceOrder.php</div><pre class="code"><span class="c line-bidi">// الفعل: شيء واحد يفعله المتجر، من البداية إلى النهاية، عبر منافذه</span>
+<span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> PlaceOrder
+{
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">private</span> OrderStore $store, <span class="k">private</span> Mailer $mailer) {}
+
+    /** @param <span class="k">list</span>&lt;<span class="k">array</span>{product_id: <span class="k">int</span>, quantity: <span class="k">int</span>}&gt; $items */
+    <span class="k">public</span> <span class="k">function</span> __invoke(<span class="k">string</span> $email, <span class="k">array</span> $items, DateTimeImmutable $now): PlacedOrder
+    {
+        OrderRules::checkQuantities($items);
+        $order = $<span class="k">this</span>-&gt;store-&gt;place($email, $items, $now);
+        <span class="c line-bidi">// البريد بعد حفظ الطلب، لا داخل معاملته أبداً</span>
+        $<span class="k">this</span>-&gt;mailer-&gt;send($email, <span class="s">&quot;Order {$order-&gt;id}: &quot;</span>.($order-&gt;total / <span class="n">100</span>).<span class="s">&#x27; EGP&#x27;</span>);
+
+        <span class="k">return</span> $order;
+    }
+}</pre></div>
+
+<p>اقرأه وصفاً لعملية العمل: لا SQL، ولا رمز حالة، ولا واجهة. واعتمادياته تصل في الباني، وهذا ما يجعله قابلاً للاستبدال قطعة قطعة.</p>
+
+<h2><span class="sec">16.3</span> <span>المحوّلات</span></h2>
+
+<p><dfn>المحوّلات</dfn> (adapters) توصل المنافذ بالتقنية الحقيقية؛ ويُسمّى هذا التصميم كثيراً <dfn>المنافذ والمحوّلات</dfn>، أو <dfn>البنية السداسية</dfn> (hexagonal architecture). ومحوّل المخزن يطبّق <code>OrderStore</code> بباني الاستعلامات في Laravel، بما فيه المعاملة وتحديث المخزون الذري من الفصل 7:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Infrastructure/QueryBuilderOrderStore.php</div><pre class="code"><span class="c line-bidi">// محوّل: المنفذ OrderStore، مطبَّقاً بباني الاستعلامات في Laravel</span>
+<span class="k">final</span> <span class="k">class</span> QueryBuilderOrderStore <span class="k">implements</span> OrderStore
+{
+    <span class="k">public</span> <span class="k">function</span> place(<span class="k">string</span> $email, <span class="k">array</span> $items, DateTimeImmutable $placedAt): PlacedOrder
+    {
+        <span class="k">return</span> DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($email, $items, $placedAt) {
+            $lines = [];
+            <span class="k">foreach</span> ($items <span class="k">as</span> [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity]) {
+                $taken = DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $id)
+                    -&gt;where(<span class="s">&#x27;stock&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $quantity)-&gt;decrement(<span class="s">&#x27;stock&#x27;</span>, $quantity);
+                <span class="k">if</span> ($taken === <span class="n">0</span>) {
+                    <span class="k">throw</span> DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $id)-&gt;exists()
+                        ? <span class="k">new</span> OutOfStock(<span class="s">&#x27;المخزون لا يكفي&#x27;</span>)
+                        : <span class="k">new</span> UnknownProduct(<span class="s">&#x27;منتج مجهول&#x27;</span>);
+                }
+                $price = DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $id)-&gt;value(<span class="s">&#x27;price&#x27;</span>);
+                $lines[] = [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity, <span class="s">&#x27;price&#x27;</span> =&gt; $price];
+            }
+            $total = OrderRules::total($lines);
+            $orderId = DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;insertGetId(
+                [<span class="s">&#x27;email&#x27;</span> =&gt; $email, <span class="s">&#x27;total&#x27;</span> =&gt; $total, <span class="s">&#x27;placed_at&#x27;</span> =&gt; $placedAt],
+            );
+            DB::table(<span class="s">&#x27;order_items&#x27;</span>)-&gt;insert(
+                array_map(<span class="k">fn</span> ($line) =&gt; [<span class="s">&#x27;order_id&#x27;</span> =&gt; $orderId] + $line, $lines),
+            );
+
+            <span class="k">return</span> <span class="k">new</span> PlacedOrder($orderId, $email, $total);
+        });
+    }
+}</pre></div>
+
+<p>والمعاملة مكانها هنا: «خذ المخزون واحفظ الطلب، كله أو لا شيء» وعد المنفذ، وكيف تفي قاعدة البيانات به شأن المحوّل. والواجهات وباني الاستعلامات مرحَّب بها في المحوّلات؛ فهي ما وُجدت المحوّلات لأجله. والمتحكم هو محوّل HTTP: مدخلات مُتحقق منها إلى الداخل، ونتيجة الفعل أو خطؤه إلى الخارج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Orders/Http/PlaceOrderController.php</div><pre class="code"><span class="c line-bidi">// محوّل HTTP: مدخلات مُتحقق منها إلى الداخل، ورد أو خطأ إلى الخارج</span>
+<span class="k">final</span> <span class="k">class</span> PlaceOrderController
+{
+    <span class="k">public</span> <span class="k">function</span> __invoke(Request $request, PlaceOrder $placeOrder): JsonResponse
+    {
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;email&#x27;</span>],
+            <span class="s">&#x27;items&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;array&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:20&#x27;</span>],
+            <span class="s">&#x27;items.*.product_id&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>],
+            <span class="s">&#x27;items.*.quantity&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>],
+        ]);
+        <span class="k">try</span> {
+            $order = $placeOrder($data[<span class="s">&#x27;email&#x27;</span>], $data[<span class="s">&#x27;items&#x27;</span>], now()-&gt;toDateTimeImmutable());
+        } <span class="k">catch</span> (OrderError $error) {
+            $status = $error <span class="k">instanceof</span> OutOfStock ? <span class="n">409</span> : <span class="n">422</span>;
+
+            <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;title&#x27;</span> =&gt; $error-&gt;getMessage(), <span class="s">&#x27;status&#x27;</span> =&gt; $status], $status);
+        }
+
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;id&#x27;</span> =&gt; $order-&gt;id, <span class="s">&#x27;total&#x27;</span> =&gt; $order-&gt;total], <span class="n">201</span>);
+    }
+}</pre></div>
+
+<p>وتقرير أن «نفد المخزون» يعني 409 شأن من شؤون HTTP، فيعيش في المتحكم. وأمر Artisan أو مهمة في طابور يستطيع نداء الفعل نفسه وترجمة الأخطاء نفسها بطريقته.</p>
+
+<h2><span class="sec">16.4</span> <span>الحاوي جذراً للتركيب</span></h2>
+
+<p>في مكان ما، يجب اختيار أصناف حقيقية لكل منفذ. وفي Laravel ذلك المكان مزوّد خدمة، و<dfn>حاوي الخدمات</dfn> (service container) يتولى الربط: حين يطلب المتحكم <code>PlaceOrder</code>، يبنيه الحاوي، ويرى أن بانيه يحتاج <code>OrderStore</code> و<code>Mailer</code>، فيبحث أي الأصناف تجيب تلك الواجهات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code"><span class="k">class</span> AppServiceProvider <span class="k">extends</span> ServiceProvider
+{
+    <span class="c line-bidi">// جذر التركيب: أي صنف حقيقي يجيب كل منفذ</span>
+    <span class="k">public</span> <span class="k">array</span> $bindings = [
+        OrderStore::<span class="k">class</span> =&gt; QueryBuilderOrderStore::<span class="k">class</span>,
+        Mailer::<span class="k">class</span> =&gt; LogMailer::<span class="k">class</span>,
+    ];
+}</pre></div>
+
+<p>هنا يكتب مرسل البريد في السجل، وهذا يكفي للعرض؛ واستخدام مزوّد حقيقي تغيير في هذا السطر وحده. وتشغيله يبيّن الطبقات تعمل معاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># طلب</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;total&quot;:114000}
+<span class="c line-bidi"># أحد عشر من منتج واحد</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;product_id&quot;:2,&quot;quantity&quot;:11}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;10 على الأكثر من المنتج الواحد في الطلب&quot;,&quot;status&quot;:422}
+<span class="c line-bidi"># أكثر من المخزون</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;المخزون لا يكفي&quot;,&quot;status&quot;:409}
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT id, stock FROM products ORDER BY id&#x27;</span>
+ id | stock 
+----+-------
+  1 |     3
+  2 |    46
+(2 rows)
+<span class="c">$ </span><span class="k">grep -o &#x27;mail to.*&#x27; storage/logs/laravel.log</span>
+mail to sara@example.com: Order 1: 1140 EGP  </pre></div>
+
+<p>رفضت القاعدة إحدى عشرة عجلة قبل أن تُلمس قاعدة البيانات؛ ورفض المخزن أربع عُدد، وتراجع، وترك المخزون كما كان؛ وخرج بريد واحد، للطلب الوحيد الذي حُفظ.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا لا يستخدم المجال أي واجهة، ولا حتى <code>DB</code> أو <code>Log</code>؟</li><li>من يقرر أن <code>OutOfStock</code> يصير 409، ولماذا هناك؟</li><li>ماذا يجب أن يتغير لإرسال بريد حقيقي بدل تسجيله؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">16.5</span> <span>الاختبار بالطبقة</span></h2>
+
+<p>ومكافأة هذه البنية تظهر في الاختبارات. يمكن اختبار الفعل ببدائل في الذاكرة لمنافذه، اختبارَ وحدة عادياً، بلا قاعدة بيانات ولا إطار ولا مزوّد بريد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Unit/PlaceOrderTest.php</div><pre class="code">$now = <span class="k">new</span> DateTimeImmutable(<span class="s">&#x27;2026-11-20 10:00:00&#x27;</span>);
+
+it(<span class="s">&#x27;places an order, saves it and sends one email&#x27;</span>, <span class="k">function</span> () <span class="k">use</span> ($now) {
+    $mailer = fakeMailer();
+    $store = fakeStore(<span class="k">fn</span> ($email) =&gt; <span class="k">new</span> PlacedOrder(<span class="n">7</span>, $email, <span class="n">12000</span>));
+    $order = (<span class="k">new</span> PlaceOrder($store, $mailer))(<span class="s">&#x27;sara@example.com&#x27;</span>, [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">2</span>]], $now);
+
+    expect($order-&gt;total)-&gt;toBe(<span class="n">12000</span>)
+        -&gt;and($mailer-&gt;sent)-&gt;toBe([<span class="s">&#x27;sara@example.com&#x27;</span>]);
+});
+
+it(<span class="s">&#x27;refuses more than 10 of one product, before touching the store&#x27;</span>, <span class="k">function</span> () <span class="k">use</span> ($now) {
+    $store = fakeStore(<span class="k">fn</span> () =&gt; <span class="k">throw</span> <span class="k">new</span> LogicException(<span class="s">&#x27;the store must not be called&#x27;</span>));
+    (<span class="k">new</span> PlaceOrder($store, fakeMailer()))(<span class="s">&#x27;a@b.c&#x27;</span>, [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">11</span>]], $now);
+})-&gt;throws(TooMany::<span class="k">class</span>);
+
+it(<span class="s">&#x27;sends no email when the store reports too little stock&#x27;</span>, <span class="k">function</span> () <span class="k">use</span> ($now) {
+    $mailer = fakeMailer();
+    $store = fakeStore(<span class="k">fn</span> () =&gt; <span class="k">throw</span> <span class="k">new</span> OutOfStock(<span class="s">&#x27;no&#x27;</span>));
+
+    expect(<span class="k">fn</span> () =&gt; (<span class="k">new</span> PlaceOrder($store, $mailer))(<span class="s">&#x27;a@b.c&#x27;</span>, [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">9</span>]], $now))
+        -&gt;toThrow(OutOfStock::<span class="k">class</span>)
+        -&gt;and($mailer-&gt;sent)-&gt;toBe([]);
+});</pre></div>
+
+<p>البدائل أصناف مجهولة صغيرة تطبّق المنافذ؛ وكل اختبار يبني الموقف الذي يحتاجه: مخزن ينجح، وآخر يبلغ عن مخزون غير كافٍ، وآخر يجب ألا يُنادى. والمحوّل يُختبر مقابل قاعدة اختبار PostgreSQL الحقيقية، كما في الفصل 13، ولما يضيفه وحده.</p>
+
+<p>والحدود التي لا توجد إلا في رؤوس الناس تتآكل تحت ضغط المواعيد. و<dfn>اختبارات البنية</dfn> في Pest (الفصل 13) تجعلها جزءاً من البناء:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Unit/ArchTest.php</div><pre class="code"><span class="c line-bidi">// الطبقات، تُفحص في كل تشغيل</span>
+arch(<span class="s">&#x27;keeps the domain free of Laravel and of the adapters&#x27;</span>)
+    -&gt;expect(<span class="s">&#x27;App\Orders\Domain&#x27;</span>)
+    -&gt;not-&gt;toUse([<span class="s">&#x27;Illuminate&#x27;</span>, <span class="s">&#x27;App\Orders\Infrastructure&#x27;</span>, <span class="s">&#x27;App\Orders\Http&#x27;</span>]);
+
+arch(<span class="s">&#x27;lets the action use only the domain and the ports&#x27;</span>)
+    -&gt;expect(<span class="s">&#x27;App\Orders\Actions&#x27;</span>)
+    -&gt;toOnlyUse([<span class="s">&#x27;App\Orders\Domain&#x27;</span>, <span class="s">&#x27;App\Orders\Ports&#x27;</span>]);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الاختبارات: فعل بلا قاعدة بيانات، والطبقات</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest tests/Unit</span>
+
+   PASS  Tests\Unit\ArchTest
+  ✓ keeps the domain free of Laravel and of the adapters
+  ✓ lets the action use only the domain and the ports
+
+   PASS  Tests\Unit\PlaceOrderTest
+  ✓ it places an order, saves it and sends one email
+  ✓ it refuses more than 10 of one product, before touching the store
+  ✓ it sends no email when the store reports too little stock
+
+  Tests:    5 passed (12 assertions)
+  Duration: …</pre></div>
+
+<p>وحين يمد أحدهم يده، على عجل، إلى واجهة <code>DB</code> داخل المجال، يقول البناء ذلك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أحدهم يستخدم واجهة DB في المجال</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest tests/Unit/ArchTest.php</span>
+   FAILED  Tests\Unit\ArchTest &gt; keeps the domain free of Laravel and of the…   
+  Expecting &#x27;App\Orders\Domain&#x27; not to use &#x27;Illuminate&#x27;.</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: البنية كلفة أيضاً</p><p>كل واجهة ومحوّل ملف يُقرأ وتحويلة تُتبع. ولصفحة تسرد المنتجات، متحكم باستعلام Eloquent ومورد هو القدر الصحيح من البنية؛ ولفّها في فعل ومنفذ ومستودع طقوس بلا فائدة. أدخل الطبقات حيث تؤتي ثمارها: حيث تعيش قواعد العمل، وحيث تتشارك عدة نقاط دخول سلوكاً، وحيث تبطؤ الاختبارات لأن كل شيء متشابك. واستخدام Eloquent مباشرة في الأماكن البسيطة ليس فشلاً للبنية؛ إنه حسن تقدير.</p></aside>
+
+<h2><span class="sec">16.6</span> <span>الوحدات، والتطبيقات الموحّدة، والخدمات</span></h2>
+
+<ul>
+<li><strong>نظّم بالميزة، لا بالنوع.</strong> <code>app/Orders</code> و<code>app/Catalog</code> و<code>app/Accounts</code>، لكل منها مجاله وأفعاله ومحوّلاته، بدل كل متحكم في <code>app/Http/Controllers</code> وكل نموذج في <code>app/Models</code>. فيمس التغيير في الطلبات مجلداً واحداً. ويجد Laravel الأصناف في أي مكان تحت <code>app/</code>، فلا حاجة لأي إعداد.</li>
+<li><strong>الوحدات تتكلم عبر أفعالها.</strong> يجوز لـ <code>Orders</code> نداء أفعال <code>Catalog</code>، ولا يجوز لها الاستعلام من جداولها ولا استخدام نماذجها مباشرة؛ وتستطيع <code>toOnlyBeUsedIn</code> في Pest فرض ذلك. والأحداث (الفصل 11) تتيح لوحدة أن تتفاعل مع أخرى دون أن تعتمد عليها.</li>
+<li><strong>تطبيق موحّد مقسّم إلى وحدات أولاً.</strong> تطبيق Laravel واحد، مقسّم جيداً إلى وحدات، هو الشكل الصحيح لكل فريق تقريباً: نشر واحد، وقاعدة بيانات واحدة، ومعاملات تمتد عبر الوحدات، وتصحيح بسيط.</li>
+<li><strong>الخدمات حين يوجد سبب.</strong> التقسيم إلى خدمات منفصلة يؤتي ثماره حين يجب أن تتوسع الأجزاء بشكل مختلف جداً، أو تنشرها فرق مختلفة باستقلال، أو تُعزل للأمان. والكلفة حقيقية: استدعاءات شبكة تفشل، وبيانات موزعة عبر قواعد بيانات بلا معاملات مشتركة، والتتبع من الفصل 14 يصير ضرورة. والوحدات الواضحة تجعل التقسيم اللاحق سهلاً؛ أما التشابك المقسّم إلى خدمات فتشابك موزّع.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اكتب القرارات</p><p>حين تتخذ قراراً بنيوياً («الطلبات لا تستخدم نماذج الكتالوج»، «أفعال لكل حالة استخدام فيها قواعد عمل»)، اكتب <dfn>سجل قرار بنيوي</dfn> قصيراً: السياق، والقرار، والبدائل، والعواقب، صفحة واحدة في <code>docs/decisions/</code>. وبعد سنة، سيعرف المطوّر التالي، وكثيراً ما يكون أنت، لماذا، فيستطيع تغيير القرار عمداً لا مصادفة.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>قواعد العمل في المتحكمات والمهام</td><td>قواعد منسوخة، تُختبر عبر HTTP وحده</td><td>أصناف المجال والأفعال</td></tr>
+<tr><td>الواجهات وEloquent داخل المجال</td><td>قواعد مربوطة بالإطار؛ واختبارات بطيئة</td><td>منافذ يملكها الداخل؛ ومحوّلات في الخارج</td></tr>
+<tr><td>رموز حالة أو <code>abort()</code> في كود العمل</td><td>كود العمل يتكلم HTTP</td><td>استثناءات المجال، تترجمها المحوّلات</td></tr>
+<tr><td><code>new</code> للخدمات داخل الأصناف</td><td>لا شيء يمكن استبداله في الاختبارات</td><td>الحقن في الباني؛ والربط في مزوّد</td></tr>
+<tr><td><code>Controllers/</code> و<code>Models/</code> وحدها لتطبيق كبير</td><td>كل تغيير يمس كل مجلد</td><td>مجلدات بالميزة</td></tr>
+<tr><td>مستودعات تلف كل نداء Eloquent</td><td>طقوس تخفي كوداً بسيطاً</td><td>بنية حيث تعيش القواعد وإعادة الاستخدام</td></tr>
+<tr><td>خدمات مصغّرة من اليوم الأول</td><td>إخفاقات شبكة وبيانات موزعة بلا مكسب</td><td>تطبيق موحّد مقسّم إلى وحدات، ويُقسّم عند الحاجة</td></tr>
+<tr><td>حدود في رؤوس الناس وحدها</td><td>تتآكل تحت ضغط المواعيد</td><td>اختبارات بنية Pest</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>البنية</strong> تقرر مكان كل نوع من الكود، فتتغير القواعد دون مس التقديم والحفظ.</li>
+<li><strong>المجال</strong> يحفظ القواعد والكلمات بـ PHP عادية، بلا واجهات؛ واستثناءاته تتكلم لغة العمل.</li>
+<li><strong>الأفعال</strong> تنسّق حالة استخدام عبر <strong>منافذ</strong> (واجهات)؛ و<strong>المحوّلات</strong> تطبّقها بأدوات Laravel.</li>
+<li><strong>حاوي الخدمات</strong>، مضبوطاً في مزوّد، هو جذر التركيب: سطر واحد لكل منفذ.</li>
+<li>تُختبر الأفعال بـ <strong>بدائل</strong> اختباراتِ وحدة؛ والمحوّلات مقابل قاعدة البيانات الحقيقية؛ والحدود بـ <strong>اختبارات بنية Pest</strong>.</li>
+<li>نظّم <strong>بالميزة</strong>؛ وفضّل <strong>تطبيقاً موحّداً مقسّماً إلى وحدات</strong>؛ وقسّم إلى خدمات لسبب ملموس وحده.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. كي لا تعتمد قواعد المتجر على شيء يتغير لأسباب تقنية: تُقرأ دون معرفة Laravel، وتُختبر PHP عادية دون إقلاع الإطار، وتعيد استخدامها أي نقطة دخول. والواجهة تربط القاعدة بالحاوي وبقاعدة بيانات أو سجل بعينه. 2. المتحكم، محوّل HTTP: رمز الحالة جزء من HTTP، لا من العمل. وأمر Artisan سيترجم الاستثناء نفسه إلى رسالة ورمز خروج. 3. الربط في <code>AppServiceProvider</code> وحده: اكتب صنفاً يطبّق <code>Mailer</code> بـ Mailable أو حزمة المزوّد، واربطه بدل <code>LogMailer</code>. ولا يتغير المجال ولا الفعل ولا اختباراتهما.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يعيد هيكلة جزء من المتجر. أبقِ الاختبارات خضراء في كل خطوة: إعادة الهيكلة تغيّر البنية، لا السلوك.</p>
+
+<div class="project">
+<p class="project-label">المشروع 16.1 · سهل</p>
+<h3>إلغاء طلب</h3>
+<p class="project-goal">أضف «إلغاء طلب» بالأسلوب الطبقي نفسه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قواعد المجال، وفعل بمنافذ، والاختبار بالبدائل.</p>
+<ol class="steps">
+<li>اكتب القاعدة في المجال: لا يُلغى إلا الطلب المعلّق أو المدفوع، وخلال 24 ساعة من تقديمه فقط.</li>
+<li>أضف دالة <code>cancel</code> إلى منفذ المخزن تعيد المخزون، وطبّقها في المحوّل.</li>
+<li>اكتب الفعل، واختبارات وحدة بالبدائل لكل قاعدة، ومتحكماً قابلاً للنداء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مرّر الوقت الحالي إلى الفعل، كما يفعل <code>PlaceOrder</code>، فلا تحتاج قاعدة الأربع والعشرين ساعة أي بديل للساعة.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 16.2 · متوسط</p>
+<h3>فكّ تشابك المتجر</h3>
+<p class="project-goal">أعد هيكلة API المتجر من الفصول السابقة إلى وحدات بالميزة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إعادة الهيكلة بأمان، ومجلدات الميزات، وحدود الوحدات، واختبارات البنية.</p>
+<ol class="steps">
+<li>تأكد أن اختبارات الميزات من الفصل 13 تغطي المسارات الرئيسية؛ إنها شبكة أمانك.</li>
+<li>انقل الكود إلى <code>app/Catalog</code> و<code>app/Orders</code> و<code>app/Accounts</code>، وحدةً بعد وحدة، مشغّلاً الاختبارات بعد كل خطوة.</li>
+<li>استبدل الاستخدام المباشر لنماذج وحدة أخرى بنداءات لأفعالها، أو بأحداث.</li>
+<li>أضف اختبارات بنية تُبقي نماذج كل وحدة مستخدمة داخلها وحدها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> انقل الكود أولاً وحسّنه ثانياً؛ فخلط الاثنين يجعل الاختبار الفاشل صعب التفسير.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 16.3 · تحدٍّ</p>
+<h3>الفعل نفسه، وثلاث نقاط دخول</h3>
+<p class="project-goal">أثبت البنية بنداء الفعل نفسه من HTTP وArtisan والطابور.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> محوّلات لطرق تقديم مختلفة، وترجمة الأخطاء، والربط السياقي.</p>
+<ol class="steps">
+<li>اكتب <code>php artisan orders:place sara@example.com 1:2 2:4</code>، ينادي الفعل ويطبع الأخطاء برمز خروج.</li>
+<li>اكتب مهمة في طابور (الفصل 11) تقدّم طلبات من ملف مستورد عبر الفعل نفسه.</li>
+<li>استخدم ربطاً سياقياً فتأخذ المهمة <code>Mailer</code> مختلفاً (في طابور) بينما يُبقي المتحكم الافتراضي.</li>
+<li>بيّن أن أياً من هذه التغييرات لم يمس المجال ولا الفعل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>$this-&gt;app-&gt;when(ImportOrders::class)-&gt;needs(Mailer::class)-&gt;give(QueuedMailer::class)</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> لكل مما يلي، قل إلى أي طبقة ينتمي: قواعد التحقق للطلب؛ و«يجوز للزبون 3 طلبات غير مدفوعة على الأكثر»؛ والاستعلام الذي يعدّ الطلبات غير المدفوعة؛ وإرسال إشعار دفع.</li>
+<li><span class="level">سهل</span> لماذا يأتي البريد بعد <code>$this-&gt;store-&gt;place()</code> في الفعل، لا داخل معاملة المخزن؟</li>
+<li><span class="level medium">متوسط</span> يضيف العمل قاعدة: زبائن برنامج الولاء يأخذون خصم 5%. أين يذهب كل جزء من التغيير، وأي اختبارات تكتب؟</li>
+<li><span class="level medium">متوسط</span> يقترح زميل فصل الطلبات في خدمة منفصلة الآن، «لنكون مستعدين للتوسع». اسرد الكلف، والأسئلة التي تسألها أولاً.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب اختبار بنية لا يسمح باستخدام <code>QueryBuilderOrderStore</code> إلا من مزوّد الخدمة. واشرح لماذا تهم تلك القاعدة.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 17</p>
+<p>الكود جاهز؛ والآن يجب أن يعمل بالطريقة نفسها في كل مكان. Docker: الصور، والحاويات، وCompose للمنظومة كلها، والشحن إلى الإنتاج.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -7490,6 +7899,16 @@ Access-Control-Max-Age: 0</pre></div>
 <li>نحو 4096 ÷ 80 ≈ 50 عاملاً، ناقص هامش لنظام التشغيل ولعملية PHP-FPM الرئيسية: اضبط <code>pm.max_children</code> على نحو 45. وحين ينشغل الخمسة والأربعون كلهم، تنتظر الطلبات الجديدة في طابور استماع PHP-FPM (وفي nginx) حتى يتحرر عامل؛ وإن طال الانتظار، تنتهي مهلتها بـ 502 أو 504. والعمّال أكثر مما تسمح به الذاكرة أسوأ: سيلجأ الخادم إلى التبديل ويبطؤ كل طلب. والإصلاح الحقيقي لطابور طويل أن تجعل الطلبات أقصر (بلا انتظار استدعاءات بطيئة) أو تضيف خوادم.</li>
 <li>عنق الزجاجة قاعدة البيانات، لا خوادم الويب: كل خادم ويب يرسل الاستعلامات الغالية نفسها إلى قاعدة البيانات نفسها، فإضافة الخوادم ترسل إليها عملاً أكثر في الوقت نفسه فقط (واتصالات أكثر). جد الاستعلامات الغالية (سجل الاستعلامات البطيئة، و<code>pg_stat_statements</code>، و<code>EXPLAIN ANALYZE</code>)، وأصلحها بالفهارس واستعلامات أفضل، وأزل أنماط N+1، وخزّن مؤقتاً ما هو مشترك، وبعدها فقط فكّر في نسخ القراءة أو خادم قاعدة بيانات أكبر.</li>
 <li>قِس أولاً: اختبار حمل للصفحة ببيانات واقعية، وp50 وp95 وp99، وتتبع لطلب واحد يبيّن الاستعلامات الاثني عشر وأوقاتها. (1) عمل أقل: اجمع الاستعلامات بالتحميل المسبق أو الربط، وأضف فهارس للبطيئة، واختر الأعمدة المعروضة وحدها؛ وقِس مرة أخرى. (2) عمل لاحق: كل ما لا يلزم لعرض الصفحة (عدّادات المشاهدة، والتوصيات المحسوبة لكل زيارة) يذهب إلى مهمة خلفية أو يُحمَّل منفصلاً. (3) عمل مرة: خزّن بيانات المنتج المشتركة بين كل الزوار في Redis مع إبطال عند التغيير، واضبط <code>Cache-Control</code> فتستطيع شبكة توصيل محتوى تقديم الصفحة أو API الخاص بها بضع ثوانٍ؛ وقِس نسبة الإصابة وزمن الاستجابة. (4) فقط إن بقيت الصفحة أبطأ من اللازم تحت الحمل المستهدف، أضف خوادم، متحققاً أن قاعدة البيانات تبقى سليمة. وتُبقى كل خطوة فقط إن تحسنت الأرقام.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 16</h2>
+<ol class="exercises">
+<li>قواعد التحقق: محوّل HTTP (المتحكم أو Form Request)، لأنها تصف شكل طلب. و«3 طلبات غير مدفوعة على الأكثر»: المجال، قاعدة عادية مثل <code>OrderRules::checkUnpaidLimit($count)</code>. والاستعلام الذي يعدّ الطلبات غير المدفوعة: محوّل، خلف دالة منفذ مثل <code>OrderStore::countUnpaid($email)</code>، يناديها الفعل. وإرسال إشعار دفع: محوّل خلف منفذ (<code>Notifier</code>)، يناديه الفعل بعد حفظ الطلب؛ وفي Laravel قد يلف Notification.</li>
+<li>لأن المعاملة قد تفشل أو تتراجع بعد إرسال البريد، والبريد لا يمكن استرجاعه (الفصل 7). وبعد أن تعود <code>place()</code>، يكون الطلب قد ثُبّت. وإن ماتت العملية بين الاثنين، لا يُرسل بريد؛ وحين يهم ذلك، يكتب المخزن في صندوق صادر داخل معاملته، أو يرسل مهمة بريد في طابور بـ <code>afterCommit()</code>.</li>
+<li>الحساب («الأعضاء يأخذون خصم 5% من المجموع») قاعدة مجال عادية بجانب <code>total()</code>، باختبارات وحدة للأعضاء وغيرهم وللتقريب. وكون الزبون عضواً بيانات، فيسأل الفعل منفذاً (<code>Customers::isMember($email)</code>)، مربوطاً في المزوّد بمحوّل يستعلم قاعدة البيانات، ويمرر الجواب إلى القاعدة؛ ويحفظ المخزن المجموع بعد الخصم. والاختبارات: اختبارات وحدة في المجال للحساب؛ واختبارات للفعل ببديل <code>Customers</code> يعيد صحيح وخطأ؛ واختبار ميزة لاستعلام المحوّل مقابل PostgreSQL؛ واختبار ميزة HTTP واحد أن مجموع طلب العضو مخصوم.</li>
+<li>الكلف: استدعاءات شبكة تفشل أو تنتهي مهلتها بين الطلبات والباقي؛ ولا معاملات مشتركة، فقد يختلف المخزون والطلبات ويحتاجان sagas أو صناديق صادر؛ ونشر ومراقبة وتتبع ومناوبة منفصلة؛ وبيانات مكررة أو تُجلب عبر الشبكة؛ وتطوير أبطأ حتى تستقر الحدود. والأسئلة أولاً: أي مشكلة ملموسة سيحلها التقسيم؟ هل تحتاج الطلبات أن تتوسع بشكل مختلف، أو أن ينشرها فريق منفصل؟ هل الوحدة نظيفة أصلاً داخل التطبيق الموحّد، لا تستخدم إلا جداولها وتكلم غيرها عبر الأفعال؟ وإن كانت الأجوبة مبهمة، أبقِ وحدة مقسّمة جيداً وعُد إلى الأمر حين توجد حاجة مقيسة.</li>
+<li><code>arch('the store adapter is wired only in the provider')-&gt;expect('App\Orders\Infrastructure\QueryBuilderOrderStore')-&gt;toOnlyBeUsedIn('App\Providers')</code>. وتهم لأن المحوّل تفصيلة: فإن استخدمته المتحكمات أو المهام أو الوحدات الأخرى مباشرة، تتخطى الفعل وقواعده، وتربط نفسها بباني الاستعلامات، ولا يمكن اختبارها ببديل للمخزن. وإبقاء الصنف الحقيقي ظاهراً لجذر التركيب وحده يُبقي كل صنف آخر معتمداً على المنفذ.</li>
 </ol>
 
 </section>
