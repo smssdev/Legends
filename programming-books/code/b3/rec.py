@@ -31,7 +31,7 @@ class Server:
     def __init__(self, cmd, cwd, url, env=None):
         """url is only used to check that the server is up; its request is left out of log()."""
         self.cmd, self.cwd, self.url, self.env = cmd, Path(cwd), url, env or CLEAN
-        self.out = self.cwd / ".server.log"
+        self.out = self.cwd / f".server-{sum(map(ord, cmd))}.log"  # one log per command: two servers may run at once
         self.head, self.skip = "", 0
 
     def __enter__(self):
