@@ -1,0 +1,207 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/failure/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Designing for Failure</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>list how each part of a system can fail, and decide what customers should see when it does</li>
+<li>put a deadline on every call to another system</li>
+<li>retry only what may succeed, with backoff and jitter</li>
+<li>recognise a retry storm, and stop it with a circuit breaker</li>
+<li>give customers a useful answer when a dependency is down, instead of an error page</li>
+<li>remove single points of failure, and practise failures before they happen for real</li>
+</ul>
+</div>
+
+<p class="lead">The last chapter asked what happens when ten times more people arrive. This one asks what happens when something breaks, because something always does: a provider has a bad hour, a disk fills, a deployment goes wrong, a network cable is cut. A system that works only when everything works will be down far more often than any of its parts. Designing for failure means choosing, in advance and on purpose, how each failure will look to the customer, and keeping one broken part from taking the rest down with it. The examples in this chapter put Bit Booking’s payment provider through a bad day and an outage, and measure what each defence changes.</p>
+
+<aside class="bit" data-mood="think"><p>Most outages I have read about did not start with a big failure. They started with a small one that every other part reacted to badly: waiting forever, retrying all at once, queueing without limit. The defences in this chapter are mostly about reacting well.</p></aside>
+
+<h2>{{n}}.1 How things fail</h2>
+
+<p>Start by listing failures, the way a spec lists stories. For each dependency, ask how it can fail and what customers should see:</p>
+
+<table>
+<thead><tr><th>Part</th><th>How it fails</th><th>What customers should see</th></tr></thead>
+<tbody>
+<tr><td>Payment provider</td><td>Errors, slow answers, a full outage</td><td>Booking still possible, deposit later, held slot</td></tr>
+<tr><td>Email service</td><td>Rejects or delays mail</td><td>Nothing: the outbox waits and retries</td></tr>
+<tr><td>Object storage</td><td>Uploads fail</td><td>Logo upload fails clearly; bookings unaffected</td></tr>
+<tr><td>One application copy</td><td>Crashes, or hangs</td><td>Nothing: the load balancer stops sending to it</td></tr>
+<tr><td>PostgreSQL</td><td>Down, or failing over</td><td>A clear “try again in a minute” page, for seconds, not hours</td></tr>
+</tbody>
+</table>
+
+<p>Two kinds of failure behave very differently. A <em>fast</em> failure (an error answer, a refused connection) costs the caller little. A <em>slow</em> failure (an answer that never comes) is far worse: every request that waits holds a connection, memory and often a database transaction, and the waiting spreads to everything that waits for it. Most of this chapter turns slow failures into fast ones.</p>
+
+<h2>{{n}}.2 A provider’s bad day</h2>
+
+<p>To see the defences work, we need a provider that misbehaves on demand. This stand-in fails every fourth request and takes three seconds on every tenth; in “down” mode it fails every request. It also counts what it receives, because the load that callers put on a struggling service is part of the story:</p>
+
+<pre data-code="provider.ts" data-from="createServer" data-title="provider.ts"></pre>
+
+<p>The caller makes 40 deposit calls, four at a time, with one strategy at a time, and reports what the customers got and what the provider had to absorb:</p>
+
+<pre data-code="caller.ts" data-from="const attempt" data-to="^};" data-title="caller.ts"></pre>
+
+<h2>{{n}}.3 Deadlines</h2>
+
+<p>The first defence is a <dfn>timeout</dfn>: a deadline after which the caller stops waiting and treats the call as failed. <code>fetch</code> takes an abort signal for exactly this:</p>
+
+<pre data-code="resilience.ts" data-from="export async function call" data-to="^}" data-title="resilience.ts"></pre>
+
+<p>Choose the deadline from the dependency’s normal behaviour: a little above its p99 on a good day, here 500 ms. Then check that the deadlines add up: if a page must answer in 2 seconds, its calls cannot each be allowed 2 seconds. And remember that a timeout does not cancel the work on the other side: the provider may still create the checkout after you gave up, which is why the idempotency keys of Book 3 matter.</p>
+
+<h2>{{n}}.4 Retries, done carefully</h2>
+
+<p>Many failures are momentary, so trying again often works. But retries are dangerous in three ways, and the code must handle each:</p>
+<ul>
+<li><strong>Only what may succeed.</strong> A 500 or a timeout may pass next time; a 400 or a 401 never will. Retrying those only adds load.</li>
+<li><strong>Only what is safe to repeat.</strong> A retried payment request must carry the same idempotency key, or a slow success becomes a double charge.</li>
+<li><strong>Not all at once.</strong> Clients that failed together and retry after the same fixed delay fail together again. A random wait, growing with each attempt (<dfn>exponential backoff with jitter</dfn>), spreads them out.</li>
+</ul>
+
+<pre data-code="resilience.ts" data-from="const retryable" data-to="^}" data-title="resilience.ts"></pre>
+
+<p>Here is the provider’s bad day, with no defence, with a timeout, and with a timeout and retries:</p>
+
+<pre data-code="flaky.sh" data-title="Terminal"></pre>
+
+<p>Without a deadline, a quarter of the customers got an error and some waited three seconds for an answer. The timeout capped the wait at half a second, at the price of a few more failures (the slow calls now fail too). Retries turned every one of those momentary failures into a success, while the slowest customer waited well under a second. The cost is in the last column: the provider received 57 requests for 40 deposits.</p>
+
+<h2>{{n}}.5 When retries make it worse</h2>
+
+<p>That extra load is harmless on a bad day, and dangerous during an outage. Here is the same caller when the provider is down:</p>
+
+<pre data-code="down.sh" data-from="^# " data-to="retry " data-title="Terminal"></pre>
+
+<p>Every deposit fails either way, but with retries the provider receives three times as many requests while it is trying to recover, and the same 40 failures take more than ten times as long to arrive. Multiply by every client of a large provider and you get a <dfn>retry storm</dfn>: the recovering service is flattened by its own callers. The cure is to stop calling a dependency that is clearly down, and to try again only now and then. That is a <dfn>circuit breaker</dfn>:</p>
+
+<pre data-code="resilience.ts" data-from="export class CircuitBreaker" data-to="^}" data-title="resilience.ts"></pre>
+
+<p>It is <em>closed</em> while calls succeed. After a number of consecutive failures it <em>opens</em>: calls fail at once, without touching the provider. After a cool-down it lets one trial call through, <em>half-open</em>; success closes it, failure opens it again. With the breaker in front of the retries:</p>
+
+<pre data-code="down.sh" data-from="breaker" data-title="Terminal"></pre>
+
+<p>The provider receives 24 requests instead of 120, and the same failures reach customers in a quarter of the time or less. When the provider comes back, the half-open trial notices within the cool-down, and calls flow again.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why is a slow failure worse than a fast one for the caller?</li><li>Which of these should be retried: a timeout, a 503, a 422, a 429? Why?</li><li>During an outage, what does a circuit breaker change for the customer, and what for the provider?</li></ol></aside>
+
+<h2>{{n}}.6 A useful answer instead of an error</h2>
+
+<p>A failed call does not have to mean a failed page. Decide what the customer should get when each dependency is unavailable, and return that: a <dfn>fallback</dfn>. For deposits, the spec allows a booking to wait 30 minutes for its deposit, so the fallback holds the slot and says so:</p>
+
+<pre data-code="fallback.sh" data-title="Terminal"></pre>
+
+<p>The first two customers wait for the provider’s errors; then the breaker opens, and the next ones get the same helpful answer at once. Other fallbacks follow the same idea: show the cached list of slots, marked as possibly a few minutes old, when the database is slow to answer; accept the booking and queue the confirmation email when the email service is down. Each fallback is a product decision written in the spec, not an improvisation in a <code>catch</code>.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: fallbacks must not lie</p><p>A fallback that hides a failure is worse than an error. Never show “payment received” because the provider did not answer, never show an empty list of bookings because the database timed out (the owner will think the day is free), and always record that a fallback was used, with a metric and an alert, so that a degraded system does not stay degraded for a week without anyone knowing.</p></aside>
+
+<h2>{{n}}.7 No single point of failure</h2>
+
+<p>Timeouts, retries and breakers protect a caller from a failing dependency. The other half of the work is making each part harder to take down:</p>
+<ul>
+<li><strong>Redundancy.</strong> At least two copies of every stateless part, in different places (different machines, ideally different data centres), behind a load balancer that checks their health and stops sending traffic to a copy that fails (Book 3’s <code>/ready</code>).</li>
+<li><strong>Stateful parts are the hard ones.</strong> PostgreSQL needs a standby replica that can take over, and a tested failover; managed databases sell exactly this. Backups are not redundancy: restoring takes hours, and you must have tried it.</li>
+<li><strong>Bulkheads.</strong> Separate pools for separate jobs, so one runaway job cannot use every connection: the mailer and the web app should not share the same database connection pool, and a slow report should not hold the connections that bookings need.</li>
+<li><strong>Graceful shutdown.</strong> Each copy finishes its requests in flight before stopping (Book 3), so deployments are not small outages.</li>
+</ul>
+
+<p>Finally, practise. A failure you have never seen is one you will handle badly. Turn off the provider in a test environment and watch what customers see; kill an application copy during a load test; fail over the database on purpose, on a weekday afternoon, with everyone watching. Teams call this a <dfn>game day</dfn>, and its findings are cheaper than any real incident.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: write the failure into the spec</p><p>For every new dependency, add a line to the spec before the code: “If X is unavailable, customers see Y, and we are alerted by Z.” If nobody can write the line, the team has not decided, and the code will decide by accident, usually with an error page.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Calls without timeouts</td><td>One slow dependency freezes everything</td><td>A deadline on every call</td></tr>
+<tr><td>Retrying every error</td><td>Load added for errors that can never succeed</td><td>Retry only timeouts, 5xx and 429</td></tr>
+<tr><td>Fixed retry delays</td><td>Clients retry in lockstep and fail together</td><td>Exponential backoff with jitter</td></tr>
+<tr><td>Retrying without idempotency</td><td>A slow success repeated: double charges</td><td>Idempotency keys on retried writes</td></tr>
+<tr><td>Retries during an outage</td><td>A retry storm keeps the dependency down</td><td>A circuit breaker</td></tr>
+<tr><td>Error pages for every failure</td><td>A provider’s outage becomes yours</td><td>Fallbacks decided in the spec</td></tr>
+<tr><td>Silent fallbacks</td><td>Degraded for days without anyone knowing</td><td>Metrics and alerts on every fallback</td></tr>
+<tr><td>Failures never practised</td><td>The first real one is chaos</td><td>Game days, on purpose</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>List how each part fails and what customers should see; turn <strong>slow failures into fast ones</strong>.</li>
+<li>Put a <strong>timeout</strong> on every call, chosen from the dependency’s normal latency, and make the deadlines add up.</li>
+<li><strong>Retry</strong> only what may succeed and is safe to repeat, with <strong>exponential backoff and jitter</strong>.</li>
+<li>During an outage, retries become a <strong>storm</strong>; a <strong>circuit breaker</strong> fails fast and lets one trial call through now and then.</li>
+<li>Answer with a <strong>fallback</strong> decided in the spec, that never lies, and is always measured.</li>
+<li>Remove <strong>single points of failure</strong> with redundancy, bulkheads and graceful shutdown, and <strong>practise</strong> failures on game days.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because a fast failure frees the caller at once, while a slow one keeps everything the request holds (a connection, memory, a worker, sometimes a database transaction and its locks) for as long as the wait lasts. With many requests waiting, the caller runs out of those resources and starts failing too, so the slowness spreads up the chain. 2. A timeout, a 503 and a 429 may succeed later: the first two are temporary failures of the other side, and a 429 means “too many requests, slow down” (respect its <code>Retry-After</code>). A 422 means the request itself is invalid; sending the same request again will be refused again, so retrying only adds load. 3. For the customer, the failure arrives at once instead of after several timed-out retries, and the fallback can be shown immediately. For the provider, the stream of requests drops to an occasional trial call, giving it room to recover instead of being flattened by retries.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project makes Bit Booking more resilient. Measure before and after with the provider stand-in, as the chapter did.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A failure table for Bit Booking</h3>
+<p class="project-goal">Write the full failure table for every dependency, and add it to the spec.</p>
+<p class="project-skills"><strong>You will practise:</strong> failure analysis, product decisions, and alerting.</p>
+<ol class="steps">
+<li>For each dependency, list at least two ways it can fail.</li>
+<li>For each failure, write what customers see, what owners see, and which alert fires.</li>
+<li>Mark the failures that today give an error page, and choose the first to fix.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> include the failures of Bit Booking’s own parts too: a full disk on the database server, an expired TLS certificate, a deployment that never becomes ready.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Respect the provider</h3>
+<p class="project-goal">Make the retries honour <code>Retry-After</code>, and cap the total time spent.</p>
+<p class="project-skills"><strong>You will practise:</strong> HTTP semantics, deadlines that add up, and testing with a stand-in.</p>
+<ol class="steps">
+<li>Teach the stand-in provider to answer 429 with <code>Retry-After: 1</code> on every fifth request.</li>
+<li>Make <code>retry</code> wait for that time on a 429 instead of its own backoff.</li>
+<li>Give the whole retry loop an overall deadline of 2 seconds, after which it gives up.</li>
+<li>Show with the caller that no customer waits more than 2 seconds.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> pass a single <code>AbortSignal.timeout(2000)</code> to the whole operation, and combine it with each call’s own timeout using <code>AbortSignal.any</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Game day</h3>
+<p class="project-goal">Run a planned failure exercise on Bit Booking, and turn its findings into fixes.</p>
+<p class="project-skills"><strong>You will practise:</strong> chaos testing, observation, and writing an incident review.</p>
+<ol class="steps">
+<li>Run the app, the database, the provider stand-in and a steady load (Chapter {{n-1}}’s load script).</li>
+<li>Write predictions first: what customers will see when the provider goes down, when one app copy is killed, when the database restarts.</li>
+<li>Cause each failure in turn, and record what really happened, with numbers.</li>
+<li>Write a one-page review: predictions, reality, and three changes, ranked.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the most valuable findings are the surprises; write the predictions down before you start, or you will remember having expected what you saw.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A page calls three services one after another, and must answer within 1.5 seconds. Each service’s p99 is 200 ms. Propose a timeout for each call, and explain your numbers.</li>
+<li><span class="level">Easy</span> Why does the retry function wait a random time, rather than exactly 100, 200 and 400 ms?</li>
+<li><span class="level">Medium</span> Bit Booking’s deposit call is retried after a timeout. Describe how a customer could be charged twice, and what prevents it.</li>
+<li><span class="level">Medium</span> The circuit breaker opens after 5 consecutive failures and waits 2 seconds. What would go wrong with a threshold of 1? With a cool-down of 10 minutes?</li>
+<li><span class="level">Challenge</span> The database is slow, not down: queries take 4 seconds instead of 4 ms. Describe step by step what happens to the application copies, the load balancer and the customers, and which defences from this chapter apply.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Both load and failure end up at the same place: the data. The next chapter is about data at scale: replicas, caches, partitions, and the consistency each one costs.</p>
+</div>
+</section>

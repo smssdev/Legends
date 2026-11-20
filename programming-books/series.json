@@ -923,7 +923,8 @@
             },
             {
               "en": "Designing for Failure",
-              "ar": "التصميم على افتراض الفشل"
+              "ar": "التصميم على افتراض الفشل",
+              "src": "b4/failure"
             },
             {
               "en": "Data at Scale",
