@@ -189,15 +189,18 @@
           "chapters": [
             {
               "en": "Modern JavaScript in Depth",
-              "ar": "JavaScript الحديثة بعمق"
+              "ar": "JavaScript الحديثة بعمق",
+              "src": "b2/js"
             },
             {
               "en": "TypeScript for Real Projects",
-              "ar": "TypeScript في المشاريع الحقيقية"
+              "ar": "TypeScript في المشاريع الحقيقية",
+              "src": "b2/typescript"
             },
             {
               "en": "Modules, Tooling and Build Systems",
-              "ar": "الوحدات والأدوات وأنظمة البناء"
+              "ar": "الوحدات والأدوات وأنظمة البناء",
+              "src": "b2/tooling"
             }
           ]
         },
@@ -209,23 +212,28 @@
           "chapters": [
             {
               "en": "Components and Rendering",
-              "ar": "المكونات والرسم"
+              "ar": "المكونات والرسم",
+              "src": "b2-react/components-and-rendering"
             },
             {
               "en": "State, Effects and Data Flow",
-              "ar": "الحالة والتأثيرات وتدفق البيانات"
+              "ar": "الحالة والتأثيرات وتدفق البيانات",
+              "src": "b2-react/state-effects-and-data-flow"
             },
             {
               "en": "Routing and Server Data",
-              "ar": "التوجيه وبيانات الخادم"
+              "ar": "التوجيه وبيانات الخادم",
+              "src": "b2-react/routing-and-server-data"
             },
             {
               "en": "Forms and Validation",
-              "ar": "النماذج والتحقق"
+              "ar": "النماذج والتحقق",
+              "src": "b2-react/forms-and-validation"
             },
             {
               "en": "Global State without Pain",
-              "ar": "الحالة العامة بلا ألم"
+              "ar": "الحالة العامة بلا ألم",
+              "src": "b2-react/global-state-without-pain"
             }
           ]
         },
@@ -237,27 +245,33 @@
           "chapters": [
             {
               "en": "Design Systems and Component Libraries",
-              "ar": "أنظمة التصميم ومكتبات المكونات"
+              "ar": "أنظمة التصميم ومكتبات المكونات",
+              "src": "b2/design-systems"
             },
             {
               "en": "Accessibility (WCAG) in Practice",
-              "ar": "الوصول (WCAG) عملياً"
+              "ar": "الوصول (WCAG) عملياً",
+              "src": "b2/accessibility"
             },
             {
               "en": "Testing: Unit, Component and End-to-End",
-              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف"
+              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف",
+              "src": "b2/testing"
             },
             {
               "en": "Performance and Core Web Vitals",
-              "ar": "الأداء وCore Web Vitals"
+              "ar": "الأداء وCore Web Vitals",
+              "src": "b2/performance"
             },
             {
               "en": "Frontend Security",
-              "ar": "أمان الواجهات"
+              "ar": "أمان الواجهات",
+              "src": "b2/security"
             },
             {
               "en": "Internationalisation and RTL",
-              "ar": "تعدد اللغات والاتجاه من اليمين"
+              "ar": "تعدد اللغات والاتجاه من اليمين",
+              "src": "b2/i18n"
             }
           ]
         },
@@ -269,19 +283,23 @@
           "chapters": [
             {
               "en": "Frontend Architecture at Scale",
-              "ar": "معمارية الواجهات على نطاق واسع"
+              "ar": "معمارية الواجهات على نطاق واسع",
+              "src": "b2/architecture"
             },
             {
               "en": "Server Rendering with Next.js",
-              "ar": "الرسم على الخادم بـ Next.js"
+              "ar": "الرسم على الخادم بـ Next.js",
+              "src": "b2-react/server-rendering-with-next-js"
             },
             {
               "en": "Code Review, Mentoring and Technical Decisions",
-              "ar": "مراجعة الكود والتوجيه والقرارات التقنية"
+              "ar": "مراجعة الكود والتوجيه والقرارات التقنية",
+              "src": "b2/code-review"
             },
             {
               "en": "Capstone: A Production Dashboard",
-              "ar": "المشروع الختامي: لوحة تحكم للإنتاج"
+              "ar": "المشروع الختامي: لوحة تحكم للإنتاج",
+              "src": "b2-react/capstone"
             }
           ]
         }
@@ -298,7 +316,24 @@
       ],
       "number": 2,
       "status": "approved",
-      "track": "frontend"
+      "track": "frontend",
+      "shared": "b2",
+      "learn": {
+        "en": [
+          "Write modern JavaScript and TypeScript the way large teams do",
+          "Build React apps with components, state, routing, server data and forms",
+          "Make them accessible, tested, fast, secure and ready for two languages",
+          "Render on the server with Next.js, and keep big codebases easy to change",
+          "Review code, mentor others, and ship a complete production dashboard"
+        ],
+        "ar": [
+          "تكتب JavaScript وTypeScript الحديثتين كما تكتبهما الفرق الكبيرة",
+          "تبني تطبيقات React بالمكونات والحالة والتوجيه وبيانات الخادم والنماذج",
+          "تجعلها متاحة للجميع ومختبرة وسريعة وآمنة وجاهزة للغتين",
+          "تعرض على الخادم بـ Next.js، وتُبقي قواعد الكود الكبيرة سهلة التغيير",
+          "تراجع الكود وتوجّه غيرك، وتشحن لوحة تحكم كاملة للإنتاج"
+        ]
+      }
     },
     {
       "id": "b2-vue",
@@ -328,15 +363,18 @@
           "chapters": [
             {
               "en": "Modern JavaScript in Depth",
-              "ar": "JavaScript الحديثة بعمق"
+              "ar": "JavaScript الحديثة بعمق",
+              "src": "b2/js"
             },
             {
               "en": "TypeScript for Real Projects",
-              "ar": "TypeScript في المشاريع الحقيقية"
+              "ar": "TypeScript في المشاريع الحقيقية",
+              "src": "b2/typescript"
             },
             {
               "en": "Modules, Tooling and Build Systems",
-              "ar": "الوحدات والأدوات وأنظمة البناء"
+              "ar": "الوحدات والأدوات وأنظمة البناء",
+              "src": "b2/tooling"
             }
           ]
         },
@@ -348,27 +386,33 @@
           "chapters": [
             {
               "en": "Components and Templates",
-              "ar": "المكونات والقوالب"
+              "ar": "المكونات والقوالب",
+              "src": "b2-vue/components-and-templates"
             },
             {
               "en": "Reactivity and the Composition API",
-              "ar": "التفاعلية وComposition API"
+              "ar": "التفاعلية وواجهة التركيب",
+              "src": "b2-vue/reactivity-and-the-composition"
             },
             {
               "en": "Composables: Reusing Logic",
-              "ar": "Composables: إعادة استخدام المنطق"
+              "ar": "الـ composables: إعادة استخدام المنطق",
+              "src": "b2-vue/composables-reusing-logic"
             },
             {
               "en": "Vue Router and Server Data",
-              "ar": "Vue Router وبيانات الخادم"
+              "ar": "Vue Router وبيانات الخادم",
+              "src": "b2-vue/vue-router-and-server-data"
             },
             {
               "en": "Forms and Validation",
-              "ar": "النماذج والتحقق"
+              "ar": "النماذج والتحقق",
+              "src": "b2-vue/forms-and-validation"
             },
             {
               "en": "Global State with Pinia",
-              "ar": "الحالة العامة بـ Pinia"
+              "ar": "الحالة العامة بـ Pinia",
+              "src": "b2-vue/global-state-with-pinia"
             }
           ]
         },
@@ -380,27 +424,33 @@
           "chapters": [
             {
               "en": "Design Systems and Component Libraries",
-              "ar": "أنظمة التصميم ومكتبات المكونات"
+              "ar": "أنظمة التصميم ومكتبات المكونات",
+              "src": "b2/design-systems"
             },
             {
               "en": "Accessibility (WCAG) in Practice",
-              "ar": "الوصول (WCAG) عملياً"
+              "ar": "الوصول (WCAG) عملياً",
+              "src": "b2/accessibility"
             },
             {
               "en": "Testing: Unit, Component and End-to-End",
-              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف"
+              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف",
+              "src": "b2/testing"
             },
             {
               "en": "Performance and Core Web Vitals",
-              "ar": "الأداء وCore Web Vitals"
+              "ar": "الأداء وCore Web Vitals",
+              "src": "b2/performance"
             },
             {
               "en": "Frontend Security",
-              "ar": "أمان الواجهات"
+              "ar": "أمان الواجهات",
+              "src": "b2/security"
             },
             {
               "en": "Internationalisation and RTL",
-              "ar": "تعدد اللغات والاتجاه من اليمين"
+              "ar": "تعدد اللغات والاتجاه من اليمين",
+              "src": "b2/i18n"
             }
           ]
         },
@@ -412,19 +462,23 @@
           "chapters": [
             {
               "en": "Frontend Architecture at Scale",
-              "ar": "معمارية الواجهات على نطاق واسع"
+              "ar": "معمارية الواجهات على نطاق واسع",
+              "src": "b2/architecture"
             },
             {
               "en": "Server Rendering with Nuxt",
-              "ar": "الرسم على الخادم بـ Nuxt"
+              "ar": "الرسم على الخادم بـ Nuxt",
+              "src": "b2-vue/server-rendering-with-nuxt"
             },
             {
               "en": "Code Review, Mentoring and Technical Decisions",
-              "ar": "مراجعة الكود والتوجيه والقرارات التقنية"
+              "ar": "مراجعة الكود والتوجيه والقرارات التقنية",
+              "src": "b2/code-review"
             },
             {
               "en": "Capstone: A Production Dashboard",
-              "ar": "المشروع الختامي: لوحة تحكم للإنتاج"
+              "ar": "المشروع الختامي: لوحة تحكم للإنتاج",
+              "src": "b2-vue/capstone"
             }
           ]
         }
@@ -441,7 +495,24 @@
       ],
       "number": 2,
       "status": "approved",
-      "track": "frontend"
+      "track": "frontend",
+      "shared": "b2",
+      "learn": {
+        "en": [
+          "Write modern JavaScript and TypeScript the way large teams do",
+          "Build Vue apps with components, reactivity, composables, routing and Pinia",
+          "Make them accessible, tested, fast, secure and ready for two languages",
+          "Render on the server with Nuxt, and keep big codebases easy to change",
+          "Review code, mentor others, and ship a complete production dashboard"
+        ],
+        "ar": [
+          "تكتب JavaScript وTypeScript الحديثتين كما تكتبهما الفرق الكبيرة",
+          "تبني تطبيقات Vue بالمكونات والتفاعلية والـ composables والتوجيه وPinia",
+          "تجعلها متاحة للجميع ومختبرة وسريعة وآمنة وجاهزة للغتين",
+          "تعرض على الخادم بـ Nuxt، وتُبقي قواعد الكود الكبيرة سهلة التغيير",
+          "تراجع الكود وتوجّه غيرك، وتشحن لوحة تحكم كاملة للإنتاج"
+        ]
+      }
     },
     {
       "id": "b3-node",
@@ -471,15 +542,18 @@
           "chapters": [
             {
               "en": "How Servers Work: HTTP in Depth",
-              "ar": "كيف تعمل الخوادم: HTTP بعمق"
+              "ar": "كيف تعمل الخوادم: HTTP بعمق",
+              "src": "b3/http"
             },
             {
               "en": "Node.js and TypeScript on the Server",
-              "ar": "Node.js وTypeScript على الخادم"
+              "ar": "Node.js وTypeScript على الخادم",
+              "src": "b3-node/node-and-typescript"
             },
             {
               "en": "Designing REST APIs",
-              "ar": "تصميم واجهات REST"
+              "ar": "تصميم واجهات REST",
+              "src": "b3-node/rest-apis"
             }
           ]
         },
@@ -491,19 +565,23 @@
           "chapters": [
             {
               "en": "SQL and PostgreSQL",
-              "ar": "SQL وPostgreSQL"
+              "ar": "SQL وPostgreSQL",
+              "src": "b3/sql"
             },
             {
               "en": "Data Modelling and Migrations",
-              "ar": "نمذجة البيانات والترحيلات"
+              "ar": "نمذجة البيانات والترحيلات",
+              "src": "b3-node/data-modelling"
             },
             {
               "en": "Transactions, Locks and Consistency",
-              "ar": "المعاملات والأقفال والاتساق"
+              "ar": "المعاملات والأقفال والاتساق",
+              "src": "b3/transactions"
             },
             {
-              "en": "Caching with Redis",
-              "ar": "التخزين المؤقت بـ Redis"
+              "en": "Redis: Caching, Rate Limits and Locks",
+              "ar": "Redis: التخزين المؤقت وحدود المعدل والأقفال",
+              "src": "b3/redis"
             }
           ]
         },
@@ -514,28 +592,34 @@
           },
           "chapters": [
             {
-              "en": "Authentication and Authorisation",
-              "ar": "التحقق من الهوية والصلاحيات"
+              "en": "Authentication and Authorization",
+              "ar": "المصادقة والتفويض",
+              "src": "b3-node/auth"
             },
             {
-              "en": "Security: The OWASP Top 10",
-              "ar": "الأمان: أخطر عشر ثغرات (OWASP)"
+              "en": "Security: Attacks and Defences",
+              "ar": "الأمان: الهجمات والدفاعات",
+              "src": "b3-node/security"
             },
             {
               "en": "Background Jobs and Queues",
-              "ar": "المهام الخلفية والطوابير"
+              "ar": "المهام الخلفية والطوابير",
+              "src": "b3-node/jobs-and-queues"
             },
             {
-              "en": "Real-Time with WebSockets",
-              "ar": "الزمن الحقيقي بـ WebSockets"
+              "en": "Real-time Features",
+              "ar": "الميزات الفورية",
+              "src": "b3-node/real-time"
             },
             {
-              "en": "Testing the Backend",
-              "ar": "اختبار الخادم"
+              "en": "Testing",
+              "ar": "الاختبار",
+              "src": "b3-node/testing"
             },
             {
-              "en": "Logging, Metrics and Tracing",
-              "ar": "السجلات والمقاييس والتتبع"
+              "en": "Observability: Logs, Metrics and Traces",
+              "ar": "قابلية الملاحظة: السجلات والمقاييس والتتبعات",
+              "src": "b3/observability"
             }
           ]
         },
@@ -546,20 +630,24 @@
           },
           "chapters": [
             {
-              "en": "Performance and Scaling",
-              "ar": "الأداء والتوسع"
+              "en": "Performance",
+              "ar": "الأداء",
+              "src": "b3/performance"
             },
             {
-              "en": "Architecture: Monolith, Modules and Services",
-              "ar": "المعمارية: الكتلة الواحدة والوحدات والخدمات"
+              "en": "Architecture: Keeping Code Easy to Change",
+              "ar": "البنية: إبقاء الكود سهل التغيير",
+              "src": "b3-node/architecture"
             },
             {
-              "en": "Docker and Deployment",
-              "ar": "Docker والنشر"
+              "en": "Docker: Shipping the Same Thing Everywhere",
+              "ar": "Docker: شحن الشيء نفسه إلى كل مكان",
+              "src": "b3/docker"
             },
             {
               "en": "Capstone: A Production API",
-              "ar": "المشروع الختامي: واجهة برمجية للإنتاج"
+              "ar": "المشروع الختامي: واجهة برمجية للإنتاج",
+              "src": "b3-node/capstone"
             }
           ]
         }
@@ -576,7 +664,24 @@
       ],
       "number": 3,
       "status": "approved",
-      "track": "backend"
+      "track": "backend",
+      "shared": "b3",
+      "learn": {
+        "en": [
+          "Design REST APIs on a deep understanding of HTTP",
+          "Model data in PostgreSQL, and keep it correct with transactions and locks",
+          "Secure accounts and APIs, and run work in queues and in real time",
+          "Test, observe and measure a service, and make it fast where it matters",
+          "Ship it with Docker, and build a complete production API from an empty folder"
+        ],
+        "ar": [
+          "تصمم واجهات REST على فهم عميق لـ HTTP",
+          "تنمذج البيانات في PostgreSQL، وتحفظ صحتها بالمعاملات والأقفال",
+          "تؤمّن الحسابات والواجهات، وتشغّل العمل في الطوابير وفي الزمن الحقيقي",
+          "تختبر الخدمة وتراقبها وتقيسها، وتجعلها سريعة حيث يهم ذلك",
+          "تشحنها بـ Docker، وتبني واجهة برمجية كاملة للإنتاج من مجلد فارغ"
+        ]
+      }
     },
     {
       "id": "b3-laravel",
@@ -606,19 +711,23 @@
           "chapters": [
             {
               "en": "How Servers Work: HTTP in Depth",
-              "ar": "كيف تعمل الخوادم: HTTP بعمق"
+              "ar": "كيف تعمل الخوادم: HTTP بعمق",
+              "src": "b3/http"
             },
             {
               "en": "Modern PHP for JavaScript Developers",
-              "ar": "PHP الحديثة لمطوري JavaScript"
+              "ar": "PHP الحديثة لمطوري JavaScript",
+              "src": "b3-laravel/modern-php"
             },
             {
               "en": "Laravel Essentials: Routes, Controllers and Requests",
-              "ar": "أساسيات Laravel: المسارات والمتحكمات والطلبات"
+              "ar": "أساسيات Laravel: المسارات والمتحكمات والطلبات",
+              "src": "b3-laravel/laravel-essentials"
             },
             {
               "en": "Designing REST APIs with API Resources",
-              "ar": "تصميم واجهات REST بـ API Resources"
+              "ar": "تصميم واجهات REST بـ API Resources",
+              "src": "b3-laravel/rest-apis"
             }
           ]
         },
@@ -630,19 +739,23 @@
           "chapters": [
             {
               "en": "SQL and PostgreSQL",
-              "ar": "SQL وPostgreSQL"
+              "ar": "SQL وPostgreSQL",
+              "src": "b3/sql"
             },
             {
               "en": "Eloquent, Relationships and Migrations",
-              "ar": "Eloquent والعلاقات والترحيلات"
+              "ar": "Eloquent والعلاقات والترحيلات",
+              "src": "b3-laravel/eloquent"
             },
             {
               "en": "Transactions, Locks and Consistency",
-              "ar": "المعاملات والأقفال والاتساق"
+              "ar": "المعاملات والأقفال والاتساق",
+              "src": "b3/transactions"
             },
             {
-              "en": "Caching with Redis",
-              "ar": "التخزين المؤقت بـ Redis"
+              "en": "Redis: Caching, Rate Limits and Locks",
+              "ar": "Redis: التخزين المؤقت وحدود المعدل والأقفال",
+              "src": "b3/redis"
             }
           ]
         },
@@ -653,28 +766,34 @@
           },
           "chapters": [
             {
-              "en": "Authentication with Sanctum and Policies",
-              "ar": "الهوية بـ Sanctum والصلاحيات بـ Policies"
+              "en": "Authentication and Authorization with Sanctum",
+              "ar": "المصادقة والتفويض بـ Sanctum",
+              "src": "b3-laravel/auth"
             },
             {
-              "en": "Security: The OWASP Top 10 in Laravel",
-              "ar": "الأمان: أخطر عشر ثغرات (OWASP) في Laravel"
+              "en": "Security: Attacks and Defences",
+              "ar": "الأمان: الهجمات والدفاعات",
+              "src": "b3-laravel/security"
             },
             {
-              "en": "Queues, Jobs and the Scheduler",
-              "ar": "الطوابير والمهام والمجدول"
+              "en": "Queues and Jobs",
+              "ar": "الطوابير والمهام",
+              "src": "b3-laravel/queues"
             },
             {
-              "en": "Real-Time with Laravel Reverb",
-              "ar": "الزمن الحقيقي بـ Laravel Reverb"
+              "en": "Real-time with Reverb",
+              "ar": "الميزات الفورية بـ Reverb",
+              "src": "b3-laravel/real-time"
             },
             {
               "en": "Testing with Pest",
-              "ar": "الاختبار بـ Pest"
+              "ar": "الاختبار بـ Pest",
+              "src": "b3-laravel/testing"
             },
             {
-              "en": "Logging, Metrics and Tracing",
-              "ar": "السجلات والمقاييس والتتبع"
+              "en": "Observability: Logs, Metrics and Traces",
+              "ar": "قابلية الملاحظة: السجلات والمقاييس والتتبعات",
+              "src": "b3/observability"
             }
           ]
         },
@@ -685,20 +804,24 @@
           },
           "chapters": [
             {
-              "en": "Performance and Scaling",
-              "ar": "الأداء والتوسع"
+              "en": "Performance",
+              "ar": "الأداء",
+              "src": "b3/performance"
             },
             {
-              "en": "Architecture: Modules, Actions and Domains",
-              "ar": "المعمارية: الوحدات والأفعال والمجالات"
+              "en": "Architecture: Keeping Code Easy to Change",
+              "ar": "البنية: إبقاء الكود سهل التغيير",
+              "src": "b3-laravel/architecture"
             },
             {
-              "en": "Docker and Deployment",
-              "ar": "Docker والنشر"
+              "en": "Docker: Shipping the Same Thing Everywhere",
+              "ar": "Docker: شحن الشيء نفسه إلى كل مكان",
+              "src": "b3/docker"
             },
             {
               "en": "Capstone: A Production API",
-              "ar": "المشروع الختامي: واجهة برمجية للإنتاج"
+              "ar": "المشروع الختامي: واجهة برمجية للإنتاج",
+              "src": "b3-laravel/capstone"
             }
           ]
         }
@@ -715,7 +838,24 @@
       ],
       "number": 3,
       "status": "approved",
-      "track": "backend"
+      "track": "backend",
+      "shared": "b3",
+      "learn": {
+        "en": [
+          "Design REST APIs on a deep understanding of HTTP",
+          "Model data in PostgreSQL, and keep it correct with transactions and locks",
+          "Secure accounts and APIs, and run work in queues and in real time",
+          "Test, observe and measure a service, and make it fast where it matters",
+          "Ship it with Docker, and build a complete production API from an empty folder"
+        ],
+        "ar": [
+          "تصمم واجهات REST على فهم عميق لـ HTTP",
+          "تنمذج البيانات في PostgreSQL، وتحفظ صحتها بالمعاملات والأقفال",
+          "تؤمّن الحسابات والواجهات، وتشغّل العمل في الطوابير وفي الزمن الحقيقي",
+          "تختبر الخدمة وتراقبها وتقيسها، وتجعلها سريعة حيث يهم ذلك",
+          "تشحنها بـ Docker، وتبني واجهة برمجية كاملة للإنتاج من مجلد فارغ"
+        ]
+      }
     },
     {
       "id": "b4",

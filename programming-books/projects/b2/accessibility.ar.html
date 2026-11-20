@@ -1,0 +1,59 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">بعد كل مشروع نفّذ طبقات الاختبار الثلاث من القسم {{n}}.2: شغّل الفحص، واجرِ جولة لوحة المفاتيح، واستمع إليه بقارئ شاشة. واكتب كل ما فات الفحص الآلي.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>بوابة إتاحة للبناء</h3>
+<p class="project-goal">افحص كل صفحات الموقع بأمر واحد، واجعل الأمر يفشل حين تكون في أي صفحة مخالفة، فلا يُصدر أحد واحدة بالخطأ.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إعادة استخدام وحدة، والحلقة مع <code>await</code>، ورموز الخروج، وربط فحص بـ <code>npm run check</code>.</p>
+<ol class="steps">
+<li>أعد استخدام <code>audit(page)</code> من <code>audit-lib.ts</code>، التي تُرجع عدد المخالفات.</li>
+<li>اسرد الصفحات التي تُفحص. وفي المشروع الحقيقي اقرأها من الموجّه أو من مجلد <code>dist</code> المبني.</li>
+<li>افحصها واحدة واحدة، واطبع عنواناً لكل صفحة والمخالفات تحته.</li>
+<li>اضبط <code>process.exitCode = 1</code> حين لا يكون المجموع صفراً.</li>
+<li>أضفه إلى سكربت <code>check</code> بعد البناء، وراقبه يفشل على الصفحة المكسورة وينجح على المصلحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ابدأ بالقواعد الخطيرة والحرجة فقط إن كان في مشروع قديم مئات المشكلات، وشدّد البوابة كلما أصلحتها. فالبوابة التي تفشل إلى الأبد سرعان ما تُطفأ.</p>
+<pre data-code="projects/audit-all.ts" data-title="audit-all.ts"></pre>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/audit-all.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>زر قائمة كما في المرجع</h3>
+<p class="project-goal">زر يفتح قائمة قصيرة من الإجراءات، مبني بالضبط على نمط زر القائمة في WAI-ARIA: كل مفتاح يفعل ما يتوقعه مستخدمو قارئ الشاشة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>aria-haspopup</code> و<code>aria-expanded</code>، و<code>role="menu"</code> و<code>menuitem</code>، والتركيز المتجول، وإعادة التركيز.</p>
+<ol class="steps">
+<li>للزر <code>aria-haspopup="menu"</code> و<code>aria-expanded</code> و<code>aria-controls</code>. والسهم لأسفل يفتح القائمة على العنصر الأول، والسهم لأعلى على الأخير.</li>
+<li>القائمة لائحة بـ <code>role="menu"</code>، وكل عنصر زر بـ <code>role="menuitem"</code> و<code>tabIndex={-1}</code>، داخل <code>li</code> بـ <code>role="none"</code>.</li>
+<li>احفظ رقم العنصر الفعّال في الحالة، وانقل التركيز الحقيقي إليه في تأثير. والسهمان لأعلى ولأسفل يلتفّان، وHome وEnd يقفزان.</li>
+<li>Escape وTab يغلقان القائمة ويعيدان التركيز إلى الزر. واختيار عنصر ينفذه ويعيد التركيز أيضاً.</li>
+<li>علّم العنصر المدمّر بالأحمر <em>وضعه</em> في الأخير، بعيداً عن الباقي.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> «القائمة» في ARIA تعني لائحة <em>إجراءات</em>، مثل قائمة تطبيق سطح المكتب. أما لائحة الروابط للتنقل فليست قائمة: هي <code>&lt;nav&gt;</code> فيها روابط، ولا تحتاج شيئاً من هذا.</p>
+<!-- react -->
+<pre data-code="react/projects/MenuButton.tsx" data-title="MenuButton.tsx"></pre>
+<!-- /react -->
+<figure data-render="react/projects/menu.html" data-width="560" data-actions="click:.menu-wrap > button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>مشروع {{n}}.2:</b> القائمة مفتوحة، بعد ضغط السهم لأسفل مرتين.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>تنقّل يلاحظه قارئ الشاشة</h3>
+<p class="project-goal">مكوّن صغير يحدّث، بعد كل تغيّر في المسار، عنوان الصفحة، وينقل التركيز إلى عنوان الصفحة الجديدة، ويعلنه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التفاعل مع تغيّر المسار في تأثير، وإدارة التركيز على عناصر غير تفاعلية، ومنطقة حية موجودة قبل رسالتها.</p>
+<ol class="steps">
+<li>اقرأ الموقع الحالي من الموجّه، وشغّل تأثيراً حين يتغير مساره.</li>
+<li>تخطَّ الرسم الأول تماماً: ففي التحميل الأول يعلن المتصفح الصفحة بنفسه.</li>
+<li>جِد <code>main h1</code>، واضبط <code>document.title</code> من نصه، وأعطه <code>tabIndex = -1</code>، وركّز عليه.</li>
+<li>ضع نص العنوان في فقرة <code>role="status"</code> مخفية بصرياً، موجودة دائماً في الصفحة.</li>
+<li>اختبر بقارئ شاشة: اتبع رابطاً، وتحقق أنك تسمع اسم الصفحة الجديدة، وأن Tab يكمل من العنوان.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أعطِ العنوان الذي عليه التركيز إطاراً ظاهراً أيضاً. فمستخدمو لوحة المفاتيح المبصرون يحتاجون أن يروا أين ذهب التركيز.</p>
+<!-- react -->
+<pre data-code="react/projects/RouteFocus.tsx" data-title="RouteFocus.tsx"></pre>
+<!-- /react -->
+<figure data-render="react/projects/route-focus.html" data-width="560" data-actions="click:nav a:nth-child(2);wait:200"><figcaption><b>مشروع {{n}}.3:</b> بعد اتباع الرابط، صار التركيز على العنوان الجديد.</figcaption></figure>
+</div>

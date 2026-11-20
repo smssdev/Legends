@@ -1,0 +1,232 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/testing/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Testing: Unit, Component and End-to-End</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain why professional teams write tests, and which kinds to write</li>
+<li>write unit tests with Vitest, including table tests, errors and fake timers</li>
+<li>test components the way users use them, with Testing Library</li>
+<li>replace the network and other slow things with fakes</li>
+<li>drive a real browser through a whole flow with Playwright</li>
+<li>check accessibility automatically in end-to-end tests</li>
+</ul>
+</div>
+
+<p class="lead">Every time you change code, you might break something that used to work. Without tests, the only way to know is to click through the whole app by hand, every time, and nobody does. So bugs slip out, and developers become afraid to improve old code. <strong>Automated tests</strong> are small programs that check your program. They run in seconds, on every change, on your computer and in CI, and they turn “I hope this still works” into “I know it does”.</p>
+
+<aside class="bit" data-mood="think"><p>A test is also documentation that cannot lie. When I want to know what a function is supposed to do with an empty cart or a negative number, I read its tests. If the code changes and the tests do not, they fail and tell me.</p></aside>
+
+<h2>{{n}}.1 Three kinds of tests</h2>
+
+<table>
+<thead><tr><th>Kind</th><th>Checks</th><th>Speed</th><th>Tool in this book</th></tr></thead>
+<tbody>
+<tr><td><dfn>Unit</dfn></td><td>One function or module, alone</td><td>Milliseconds</td><td>Vitest</td></tr>
+<tr><td><dfn>Component</dfn> (integration)</td><td>A component with its children, in a pretend browser</td><td>Tens of milliseconds</td><td>Vitest and Testing Library</td></tr>
+<tr><td><dfn>End-to-end</dfn> (E2E)</td><td>A whole flow in a real browser, as a user</td><td>Seconds</td><td>Playwright</td></tr>
+</tbody>
+</table>
+
+<p>Each kind catches different bugs. Unit tests are fast and pinpoint exactly what broke, but cannot see whether the pieces fit together. End-to-end tests prove that the app really works for a user, but are slower and, when they fail, take longer to diagnose. A healthy project has many unit and component tests and a smaller number of end-to-end tests for the most important flows: sign-in, checkout, the things that make money.</p>
+
+<h2>{{n}}.2 Unit tests with Vitest</h2>
+
+<p><strong>Vitest</strong> is a test runner built for Vite projects: it understands TypeScript and the same configuration out of the box. A test file sits next to the code it tests and ends in <code>.test.ts</code>. Here is a small module of shop logic, and its tests:</p>
+
+<pre data-code="price.ts" data-title="price.ts"></pre>
+<pre data-code="price.test.ts" data-title="price.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose price.test.ts"></pre>
+
+<ul>
+<li><code>describe</code> groups tests; <code>it</code> (or <code>test</code>) is one test, with a sentence that says what should happen. Read the output aloud: it is a specification of the module.</li>
+<li><code>expect(value).toBe(expected)</code> is an <dfn>assertion</dfn>: if it is not true, the test fails and shows both values.</li>
+<li><code>it.each</code> runs the same test for several rows of data, a <dfn>table test</dfn>. Adding a case is adding one line.</li>
+<li><code>expect(() =&gt; …).toThrow(RangeError)</code> checks that bad input is refused. Testing the sad paths is as important as the happy one.</li>
+</ul>
+
+<p>A good unit test follows three steps, often called <dfn>Arrange, Act, Assert</dfn>: prepare the data, run the code, check the result. Each test checks one behaviour and does not depend on any other test.</p>
+
+<h3>Fakes: controlling time and functions</h3>
+
+<p>Some code waits, or calls other code. Tests must be fast and give the same result every time, so they replace those things with <dfn>fakes</dfn>. Here, Vitest’s fake timers move the clock forward instantly, and <code>vi.fn()</code> creates a function that records how it was called:</p>
+
+<pre data-code="debounce.test.ts" data-title="debounce.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose debounce.test.ts"></pre>
+
+<p>Three hundred milliseconds of waiting took no time at all, and the test proves both that nothing happened during typing and that exactly one call happened afterwards, with the last value.</p>
+
+<h2>{{n}}.3 Component tests</h2>
+
+<p>A component test renders a component into <dfn>jsdom</dfn>, a pretend browser that runs inside Node, and then uses it. The key idea of <strong>Testing Library</strong> is in its motto: <em>the more your tests resemble the way your software is used, the more confidence they can give you</em>. So tests find elements the way users do, by their role and their visible name, and act the way users do, by typing and clicking:</p>
+
+<!-- react --><pre data-code="vitest.config.ts" data-title="vitest.config.ts"></pre><!-- /react --><!-- vue --><pre data-code="vue/vitest.config.ts" data-title="vitest.config.ts"></pre>
+<pre data-code="vue/vitest.setup.ts" data-title="vitest.setup.ts"></pre><!-- /vue -->
+
+<!-- react -->
+<pre data-code="react/LoginForm.tsx" data-title="LoginForm.tsx"></pre>
+<pre data-code="react/LoginForm.test.tsx" data-title="LoginForm.test.tsx"></pre>
+<pre data-sh="npx vitest run --reporter=verbose react/LoginForm.test.tsx"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/LoginForm.vue" data-title="LoginForm.vue"></pre>
+<pre data-code="vue/LoginForm.test.ts" data-title="LoginForm.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose LoginForm.test.ts" data-in="vue"></pre>
+<!-- /vue -->
+
+<ul>
+<li><code>getByRole("button", { name: "Sign in" })</code> fails if there is no such button, or if it has no accessible name. Your component tests check accessibility for free: an icon button without a label cannot be found.</li>
+<li><code>userEvent</code> types and clicks like a person: focus, key presses, input events, in order.</li>
+<li><code>findByRole</code> waits for something to appear, which is how tests handle asynchronous updates. Never wait a fixed number of milliseconds.</li>
+<li>The component accepts its <code>signIn</code> function as a prop, with the real one as default. The test passes a fake made with <code>vi.fn()</code>, so it controls the answer and checks the call. This is called <dfn>dependency injection</dfn>, and it makes code easy to test.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">Tip: which query to use</p><p>Prefer, in this order: <code>getByRole</code> (with a name), <code>getByLabelText</code> for form fields, <code>getByText</code> for plain content. Use <code>getByTestId</code> only when nothing a user can see identifies the element. Never select by CSS class: classes change for styling reasons, and the test breaks for nothing.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which kind of test would catch a broken link between the checkout page and the payment page?</li><li>Why should a test use fake timers instead of really waiting 300 ms?</li><li>A component test cannot find an icon button with <code>getByRole("button", { name: "Delete" })</code>. What is probably wrong with the component?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 End-to-end tests with Playwright</h2>
+
+<p><strong>Playwright</strong> drives real browsers: Chromium, Firefox and WebKit, the engine of Safari. Its tests start the site, open pages, and use them exactly as a person would. The configuration tells it where the tests are and how to start the site:</p>
+
+<!-- react -->
+<pre data-code="playwright.config.ts" data-title="playwright.config.ts"></pre>
+<pre data-code="e2e/login.spec.ts" data-title="e2e/login.spec.ts"></pre>
+<pre data-sh="npx playwright test e2e/login.spec.ts"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/playwright.config.ts" data-title="playwright.config.ts"></pre>
+<pre data-code="vue/e2e/login.spec.ts" data-title="e2e/login.spec.ts"></pre>
+<pre data-sh="npx playwright test e2e/login.spec.ts" data-in="vue"></pre>
+<!-- /vue -->
+
+<p>The locators look like Testing Library’s on purpose: <code>getByLabel</code>, <code>getByRole</code>. Assertions such as <code>toBeVisible()</code> and <code>toHaveText()</code> retry automatically for a short time, so tests wait for the page instead of guessing how long it takes.</p>
+
+<p>When an end-to-end test fails, Playwright can record a <dfn>trace</dfn>: a step-by-step film of the test with the page, the network and the console at every moment. Run <code>npx playwright test --trace on</code>, then open the trace with <code>npx playwright show-trace</code>. It is the fastest way to understand a failure that only happens in CI.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: flaky tests</p><p>A <dfn>flaky</dfn> test passes and fails without any change to the code, usually because it depends on timing, on data left by another test, or on a real external service. Flaky tests are worse than no tests: people learn to ignore failures. Never use fixed waits, give each test its own data, and fake the services you do not control.</p></aside>
+
+<h2>{{n}}.5 What to test</h2>
+
+<p>You cannot test everything, and you should not try. Test <strong>behaviour</strong>, what a user or a caller can observe, not implementation details such as the name of a state variable. Tests of behaviour survive refactoring; tests of details break every time you improve the code, and teach the team to hate tests. Spend the most effort where a bug would hurt most: money, data, sign-in, and the logic that is easy to get wrong.</p>
+
+<p>Tools can measure <dfn>coverage</dfn>, the share of lines that tests run. It is a useful warning (“nothing tests the coupon code”), but a poor goal: a test that runs a line without checking its result covers it and proves nothing.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: a bug report starts with a failing test</p><p>When a bug is reported, first write a test that reproduces it, and watch it fail. Then fix the code and watch the test pass. The bug can never come back unnoticed, and the test explains to future readers why that odd line exists.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Testing implementation details</td><td>Tests break on every refactoring</td><td>Test what users and callers can observe</td></tr>
+<tr><td>Selecting elements by CSS class</td><td>Style changes break tests</td><td>Queries by role, label and text</td></tr>
+<tr><td>Fixed waits: <code>setTimeout(…, 1000)</code></td><td>Slow and flaky tests</td><td><code>findBy…</code>, auto-retrying assertions, fake timers</td></tr>
+<tr><td>Tests that depend on each other</td><td>One failure causes many; order matters</td><td>Each test prepares its own data</td></tr>
+<tr><td>Calling real services in tests</td><td>Slow, flaky, and sometimes costly</td><td>Fakes and dependency injection</td></tr>
+<tr><td>Only happy-path tests</td><td>Errors and edge cases break in production</td><td>Test empty, invalid and failing cases too</td></tr>
+<tr><td>Chasing 100% coverage</td><td>Many tests that check nothing</td><td>Test behaviour where bugs would hurt</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Automated tests</strong> check your code on every change, and make it safe to improve.</li>
+<li><strong>Unit</strong> tests check functions alone, <strong>component</strong> tests check components in jsdom, and <strong>end-to-end</strong> tests check whole flows in real browsers. Have many of the first two and a few of the last.</li>
+<li><strong>Vitest</strong> runs tests with <code>describe</code>, <code>it</code>, <code>expect</code> and <code>it.each</code>. Follow Arrange, Act, Assert, and test errors as well as successes.</li>
+<li><strong>Fakes</strong>, such as <code>vi.fn()</code> and fake timers, make tests fast and repeatable. Inject dependencies so tests can replace them.</li>
+<li><strong>Testing Library</strong> finds elements by role, label and text and acts with <code>userEvent</code>, so tests resemble real use and check accessibility on the way.</li>
+<li><strong>Playwright</strong> runs real browsers against the real site, with auto-waiting assertions and traces for debugging.</li>
+<li>Test behaviour, not details; avoid flakiness; start every bug fix with a failing test.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. An end-to-end test: only it moves between real pages like a user. 2. Real waiting makes the test slow and can make it flaky; fake timers move the clock instantly and exactly. 3. The button has no accessible name, probably an icon without an <code>aria-label</code>: the test found an accessibility bug.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">For each project, write the tests <em>before</em> you look at the code they test, from the description of what it should do. Run them, watch them fail if the code is missing, then make them pass. This order, called <dfn>test-driven development</dfn>, is a useful habit even when you do not follow it every day.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Table tests for the password checker</h3>
+<p class="project-goal">Take the password strength checker from Book 1, rewritten in TypeScript, and pin its behaviour down with one table of examples.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>it.each</code>, <code>as const</code> for typed rows, and choosing interesting cases.</p>
+<ol class="steps">
+<li>Write one row per interesting case: empty, very short, long but simple, with a digit, with a capital, and a long sentence without digits.</li>
+<li>Use <code>it.each([...] as const)</code>, so TypeScript knows each row is a password and one of the three results.</li>
+<li>Put the values in the test name with <code>%s</code>, so the output reads as a list of rules.</li>
+<li>Change one rule in <code>strength</code> (for example, 10 characters instead of 8) and see which rows fail.</li>
+<li>Decide whether the failures are bugs in the code or outdated expectations, and fix the right one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the last row. A long, memorable sentence is a strong password in real life, but this checker calls it only “okay”. Tests do not just catch bugs; writing them makes you question whether the rules are right.</p>
+<pre data-code="projects/password.test.ts" data-title="password.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects/password.test.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Component tests for a task list</h3>
+<p class="project-goal">Test a task list the way a user uses it: add a task from the form, tick it off, and make sure blank tasks are refused.</p>
+<p class="project-skills"><strong>You will practise:</strong> rendering with initial data, <code>userEvent</code> typing with special keys, queries by role and name, and live regions in tests.</p>
+<ol class="steps">
+<li>Let the component accept <code>initial</code> tasks as a prop, so each test can start from the state it needs.</li>
+<li>Add a task by typing into the textbox named “New task” and pressing Enter with <code>{Enter}</code> inside <code>user.type</code>.</li>
+<li>Find the new task as a checkbox whose accessible name is the task text. Check that it is not ticked and that the input is empty again.</li>
+<li>Tick a task off, and check the count in the <code>role="status"</code> region.</li>
+<li>Type only spaces and press Enter: <code>queryAllByRole("checkbox")</code> must still be empty. (<code>queryBy…</code> returns nothing instead of failing.)</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because the label wraps the checkbox, the checkbox’s accessible name is the task text. If a test can find it by that name, so can a screen reader. Tests and accessibility pull in the same direction.</p>
+<!-- react -->
+<pre data-code="react/projects/Tasks.test.tsx" data-title="Tasks.test.tsx"></pre>
+<pre data-sh="npx vitest run --reporter=verbose react/projects/Tasks.test.tsx"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Tasks.test.ts" data-title="Tasks.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects/Tasks.test.ts" data-in="vue"></pre>
+<!-- /vue -->
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Accessibility checks in the end-to-end suite</h3>
+<p class="project-goal">Add two end-to-end tests that protect accessibility: no axe violations on the sign-in page, and a complete sign-in with the keyboard only.</p>
+<p class="project-skills"><strong>You will practise:</strong> injecting a script into a page, <code>page.evaluate</code>, the keyboard API, and reading a failure that points at a real problem.</p>
+<ol class="steps">
+<li>In a new spec, open the sign-in page, add axe with <code>page.addScriptTag</code>, run it with <code>page.evaluate</code>, and expect the list of violation ids to be empty.</li>
+<li>Write a second test that signs in using only <code>page.keyboard</code>: Tab, type, Tab, type, Enter.</li>
+<li>Run the suite. When this book was made, the first test failed on the book’s own page, with <code>landmark-one-main</code>, <code>page-has-heading-one</code> and <code>region</code>: the form had no <code>main</code> and no <code>h1</code>.</li>
+<li>Fix the page, not the test: wrap it in <code>&lt;main&gt;</code> with an <code>&lt;h1&gt;</code>, and make the welcome message an <code>&lt;h2&gt;</code>.</li>
+<li>Run the whole suite again, unit, component and end-to-end, and see everything pass.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the keyboard test proves something axe cannot: that the order of Tab stops makes sense and that Enter submits the form. Together, the two tests cover a large part of the “operable” principle of WCAG.</p>
+<!-- react -->
+<pre data-code="e2e/a11y.spec.ts" data-title="e2e/a11y.spec.ts"></pre>
+<pre data-sh="npx playwright test"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/e2e/a11y.spec.ts" data-title="e2e/a11y.spec.ts"></pre>
+<pre data-sh="npx playwright test" data-in="vue"></pre>
+<!-- /vue -->
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a test to <code>price.test.ts</code> for a cart with a quantity of 0, and decide what the right answer is before you run it.</li>
+<li><span class="level">Easy</span> Break <code>cartTotal</code> on purpose (for example, forget the coupon) and read the failure message. Which test failed, and what did it show?</li>
+<li><span class="level">Medium</span> Add a test to the login form that checks the button is disabled and says “Signing in…” while the request is running. Use a fake <code>signIn</code> that never resolves.</li>
+<li><span class="level">Medium</span> Write unit tests for the <code>tasksReducer</code> from the state chapter: one per action, plus one that checks the original array is never changed.</li>
+<li><span class="level">Challenge</span> Write an end-to-end test for the checkout of the forms chapter: fill in every step, check the review screen, and place the order. Then run it with <code>--trace on</code> and open the trace.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Your app now works, is accessible, and is tested. The next question users ask, without words, is: is it fast? The next chapter measures speed the way Google does, with Core Web Vitals, and shows how to make pages load and respond quickly.</p>
+</div>
+</section>

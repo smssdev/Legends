@@ -1,0 +1,206 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/eloquent/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>Eloquent والعلاقات والترحيلات</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تصل Laravel بـ PostgreSQL، وتغيّر المخطط بترحيلات تستطيع التراجع عنها</li>
+<li>تغيّر مخططاً حياً دون توقف، بالتوسيع ثم التقليص</li>
+<li>تنمذج مجال العمل بـ Eloquent: العلاقات، وبيانات جدول الربط، وتحويل التعدادات، والنطاقات، والخصائص المحسوبة</li>
+<li>ترى SQL التي يرسلها Eloquent، وتعدّها</li>
+<li>تجد مشكلة N+1، وتصلحها بالتحميل المسبق، وتجعل Laravel يرفضها أثناء التطوير</li>
+<li>تحمي النماذج من الإسناد الجماعي</li>
+</ul>
+</div>
+
+<p class="lead">استخدم الفصل {{n-2}} Eloquent دقائق قليلة، وأظهر الفصل {{n-1}} SQL التي تحته. وEloquent هو <dfn>الـ ORM</dfn> في Laravel (رابط الكائنات بالجداول): كل جدول صنف، وكل صف كائن، والعلاقات دوال. وهو ممتع الاستخدام وسهل الإساءة، لأن سطراً واحداً بريئاً قد يرسل مئات الاستعلامات. وهذا الفصل يستخدمه كما ينبغي، على PostgreSQL، وعينه على SQL طوال الوقت.</p>
+
+<aside class="bit" data-mood="think"><p>أبطأ صفحة نشرتها كان فيها اثنا عشر سطراً من Blade، وكانت ترسل 1,400 استعلام. كل سطر بدا بريئاً: <code>$order-&gt;customer-&gt;name</code> و<code>$item-&gt;product-&gt;price</code>. لم يكن في Eloquent عيب، بل لم أنظر يوماً إلى ما يرسله. والآن أعدّ الاستعلامات قبل أن أثق بصفحة.</p></aside>
+
+<h2>{{n}}.1 PostgreSQL والترحيلات</h2>
+
+<p>يستخدم مشروع Laravel الجديد SQLite. وتوجيهه إلى PostgreSQL مسألة إعدادات في <code>.env</code>:</p>
+
+<pre data-code="env.sh" data-title="الطرفية"></pre>
+
+<p><dfn>الترحيل</dfn> (migration) تغيير واحد في المخطط مكتوب كوداً، فيه <code>up</code> تُحدثه و<code>down</code> تتراجع عنه. وكل جهاز يشغّل الترحيلات التي لم يشغّلها بعد، بالترتيب، ويسجّل Laravel ما عمل منها في جدول <code>migrations</code>. وهذا هو المتجر:</p>
+
+<pre data-code="shop/database/migrations/2026_11_01_000001_create_shop_tables.php" data-from="    public function up" data-to="^    }" data-title="database/migrations/…_create_shop_tables.php"></pre>
+
+<p>يخفي منشئ المخطط في Laravel تفاصيل SQL. فـ<code>id()</code> مفتاح أساسي <code>bigint</code>، و<code>foreignId('customer_id')-&gt;constrained()</code> تضيف المفتاح الأجنبي. وفي PostgreSQL لا يأخذ المفتاح الأجنبي فهرساً وحده (بخلاف MySQL)، فتضيفه <code>-&gt;index()</code>: فكل استعلام «طلبات هذا العميل» يحتاجه. وقيمة افتراضية واحدة تحتاج تصحيحاً: <code>timestamps()</code> تُنشئ أعمدة <em>بلا</em> منطقة زمنية، وهو النوع الذي حذّر منه الفصل {{n-1}}. أما <code>timestampsTz()</code> فتُنشئ <code>timestamptz</code>.</p>
+
+<pre data-code="migrate.sh" data-title="الطرفية"></pre>
+
+<pre data-code="table.sh" data-title="الطرفية"></pre>
+
+<p>ويمكن التراجع عن كل ترحيل، وعليك أن تجرّب ذلك مرة لكل ترحيل جديد على جهازك، لأن <code>down</code> التي لم تعمل أبداً <code>down</code> لا تعمل:</p>
+
+<pre data-code="rollback.sh" data-title="الطرفية"></pre>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: لا تعدّل ترحيلاً عمل في مكان آخر</p><p>حين يُدمج الترحيل تكون أجهزة أخرى قد شغّلته، وتغيير ملفه لا يغيّر شيئاً هناك: فتختلف قاعدتهم عن قاعدتك بصمت. فأصلح الأخطاء بترحيل جديد. وفي CI شغّل <code>php artisan migrate</code>، ثم <code>migrate:rollback</code> حتى البداية، ثم <code>migrate</code> مرة أخرى على قاعدة فارغة، فهذا يستغرق ثواني ويكشف دوال <code>down</code> المعطوبة.</p></aside>
+
+<h2>{{n}}.2 تغيير مخطط حي: التوسيع ثم التقليص</h2>
+
+<p>يحتاج كل منتج رمز SKU، رمز مخزون، إلزامياً وفريداً. وإضافة عمود إلزامي بخطوة واحدة تفشل على نظام حي: فالصفوف الموجودة بلا قيمة، والكود الذي ما زال يعمل في الإنتاج لا يرسلها. والنمط الآمن هو <dfn>التوسيع ثم التقليص</dfn>:</p>
+<ol>
+<li><strong>التوسيع:</strong> أضف العمود قابلاً لأن يكون فارغاً. والكود العامل يتجاهله.</li>
+<li><strong>انشر كوداً يكتبه</strong>، واملأه للصفوف الموجودة.</li>
+<li><strong>التقليص:</strong> اجعله إلزامياً وفريداً.</li>
+</ol>
+
+<pre data-code="shop/database/migrations/2026_11_02_000001_add_sku_to_products.php" data-from="return new class" data-title="database/migrations/…_add_sku_to_products.php"></pre>
+
+<pre data-code="shop/database/migrations/2026_11_03_000001_require_product_sku.php" data-from="    public function up" data-to="^    }" data-title="database/migrations/…_require_product_sku.php"></pre>
+
+<p>تملأ <code>chunkById</code> الصفوف 500 في كل مرة، فلا يُحمَّل جدول كبير في الذاكرة دفعة واحدة. وفي جدول من ملايين الصفوف شغّل الملء أمراً منفصلاً أو مهمة، لا داخل الترحيل. والنمط نفسه يعيد تسمية عمود (أضف الجديد، واكتب الاثنين، واملأ، واقرأ الجديد، واحذف القديم) دون أن يتوقف المتجر أبداً.</p>
+
+<h2>{{n}}.3 النماذج والعلاقات</h2>
+
+<p>لكل جدول نموذج. والعلاقات دوال تُرجع كائنات علاقات:</p>
+
+<pre data-code="shop/app/Models/Order.php" data-from="class Order" data-title="app/Models/Order.php"></pre>
+
+<ul>
+<li><strong><code>belongsTo</code></strong> على الجهة التي فيها المفتاح الأجنبي (الطلب ينتمي إلى عميل)، و<strong><code>hasMany</code></strong> على الجهة الأخرى (للعميل طلبات كثيرة).</li>
+<li><strong><code>belongsToMany</code></strong> للكثير إلى كثير، عبر <code>order_items</code>. و<code>withPivot</code> تجلب حقائق جدول الربط الخاصة، الكمية والسعر وقتها، إلى كل منتج على شكل <code>$product-&gt;pivot</code>.</li>
+<li><strong>التحويل</strong> (cast) يحوّل العمود حين يُقرأ ويُكتب. فعمود الحالة يحمل نصاً، والنموذج يعطيك التعداد <code>OrderStatus</code> من الفصل 2، بأوصافه.</li>
+<li><strong>النطاق</strong> (scope) شرط مسمّى قابل لإعادة الاستخدام، يُميَّز بـ <code>#[Scope]</code>: <code>Order::shipped()</code>.</li>
+<li><strong>الخاصية</strong> (attribute) مثل <code>total</code> تُحسب من العناصر حين تُقرأ: <code>$order-&gt;total</code>. وهي غير مخزنة، فلا يمكن أن تختلف عنها.</li>
+</ul>
+
+<h2>{{n}}.4 رؤية SQL</h2>
+
+<p>كل استعلام يرسله Laravel يمر بطبقة قاعدة البيانات، و<code>DB::listen</code> تستطيع أن تراقبه. وأوامر Artisan في الكتاب تجمع SQL لكل عمل:</p>
+
+<pre data-code="shop/routes/console.php" data-from="function countQueries" data-to="^}" data-title="routes/console.php"></pre>
+
+<pre data-code="order.sh" data-title="الطرفية"></pre>
+
+<p>تطلب <code>Order::with(['customer', 'products'])</code> العلاقات مسبقاً: استعلام للطلب، وواحد لعميله، وواحد لمنتجاته بأعمدة جدول الربط. ثلاثة استعلامات مهما كان عدد المنتجات. واقرأ SQL التي يكتبها Eloquent بين حين وآخر: فهي أفضل طريقة لتفهم ما يكلفه كودك.</p>
+
+<h2>{{n}}.5 مشكلة N+1</h2>
+
+<p>تقرير يعرض كل طلب مشحون مع منتجاته. ومكتوباً بالطريقة الطبيعية يحمّل الطلبات، ثم يلمس <code>$order-&gt;products</code> لكل واحد منها، فيحمّلها Eloquent <em>بكسل</em>، طلباً طلباً:</p>
+
+<pre data-code="shop/routes/console.php" data-from="Artisan::command('shop:report" data-to="^});" data-title="routes/console.php"></pre>
+
+<pre data-code="n-plus-one.sh" data-title="الطرفية"></pre>
+
+<p>الكسول: استعلام للطلبات وآخر لكل طلب من المئتين، 201 استعلام. والمسبق بـ <code>with('products')</code>: استعلامان، الطلبات ثم كل منتجاتها بـ <code>WHERE order_id IN (…)</code>. أسرع بمرات مع قاعدة بيانات على الجهاز نفسه، وعبر الشبكة يكبر الفرق إلى ثوانٍ. وهذه هي <dfn>مشكلة N+1</dfn>، أشيع خطأ أداء في تطبيقات Laravel، لأن كل سطر يبدو بريئاً.</p>
+
+<p>ويستطيع Laravel أن يحوّلها إلى خطأ. في مزوّد الخدمات:</p>
+
+<pre data-code="shop/app/Providers/AppServiceProvider.php" data-from="    public function boot" data-to="^    }" data-title="app/Providers/AppServiceProvider.php"></pre>
+
+<pre data-code="strict.sh" data-title="الطرفية"></pre>
+
+<p>أثناء التطوير والاختبارات تفشل النسخة الكسولة الآن فوراً، مسمّية العلاقة والنموذج، فيُصلح N+1 قبل أن يُشحن. وفي الإنتاج يكون الإعداد مطفأ، فالحالة الفائتة تبطئ الصفحة بدل أن تكسرها.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر فهمك</p><ol><li>ما الفرق بين <code>$order-&gt;products</code> و<code>$order-&gt;products()</code>؟</li><li>صفحة تعرض 50 طلباً بأسماء عملائها. كم استعلاماً ترسل دون تحميل مسبق، وكم معه؟</li><li>لماذا يستخدم الترحيل <code>timestampsTz()</code> بدل <code>timestamps()</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.6 الإسناد الجماعي</h2>
+
+<p><code>Product::create($request-&gt;all())</code> ستسمح للعميل أن يضبط أي عمود يسمّيه، ومنها أعمدة لا يجوز أن يلمسها أبداً. و<code>$fillable</code> تذكر الخصائص التي يجوز ضبطها من مصفوفة، وكل ما عداها يُتجاهل، أو مع <code>preventSilentlyDiscardingAttributes</code> يُرفض بصوت عالٍ:</p>
+
+<pre data-code="mass.sh" data-title="الطرفية"></pre>
+
+<p>يُظهر السطر الأول الخصائص المسموحة وقد ضُبطت. وحاول الاستدعاء الثاني أن يضبط <code>id</code>، فرفض Laravel أثناء التطوير بدل أن يحذفها بصمت، فيُلاحظ الخطأ الإملائي أو الحقل المنسي في <code>$fillable</code> فوراً. واجمعه بقاعدة الفصل {{n-3}}: مرّر <code>$request-&gt;validated()</code>، ولا تمرر <code>$request-&gt;all()</code> أبداً.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة: Model::shouldBeStrict()</p><p>استدعاء واحد، <code>Model::shouldBeStrict(! app()-&gt;isProduction())</code>، يشغّل ثلاث حمايات معاً: لا تحميل كسول، ولا خصائص تُحذف بصمت، وخطأ حين تقرأ خاصية لم تُختر. ضعه في مزوّد خدمات كل مشروع جديد.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>علاقات في حلقات بلا <code>with</code></td><td>1 + N استعلام</td><td>التحميل المسبق، و<code>preventLazyLoading</code> أثناء التطوير</td></tr>
+<tr><td><code>timestamps()</code> على PostgreSQL</td><td>أوقات بلا منطقة زمنية</td><td><code>timestampsTz()</code></td></tr>
+<tr><td>مفتاح أجنبي بلا فهرس على PostgreSQL</td><td>مرور كامل مع كل بحث</td><td><code>-&gt;index()</code></td></tr>
+<tr><td>تعديل ترحيل عمل</td><td>تتباعد القواعد بصمت</td><td>ترحيل جديد</td></tr>
+<tr><td>عمود إلزامي بخطوة واحدة</td><td>أعطال أثناء عمل الكود القديم</td><td>وسّع، واملأ، ثم قلّص</td></tr>
+<tr><td><code>$guarded = []</code> أو <code>$request-&gt;all()</code></td><td>يضبط العملاء أي عمود</td><td><code>$fillable</code> و<code>validated()</code></td></tr>
+<tr><td>نصوص للحالات في الكود</td><td>أخطاء إملائية تُخزن حالات</td><td>تحويل التعدادات</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>يتحدث Laravel إلى PostgreSQL بإعدادات <code>.env</code>، و<strong>الترحيلات</strong> تغييرات مرتبة ومسجلة وقابلة للتراجع. لا تعدّل ما عمل منها.</li>
+<li><strong>التوسيع ثم التقليص</strong> يغيّر مخططاً حياً بخطوات متوافقة، و<code>chunkById</code> تملأ بأمان.</li>
+<li>تعلن النماذج <strong>العلاقات</strong>: <code>belongsTo</code> و<code>hasMany</code> و<code>belongsToMany</code> مع <code>withPivot</code>.</li>
+<li><strong>التحويلات</strong> و<strong>النطاقات</strong> و<strong>الخصائص</strong> المحسوبة تُبقي قواعد المجال على النموذج.</li>
+<li><strong><code>DB::listen</code></strong> تُظهر SQL، فعُدّ الاستعلامات قبل أن تثق بصفحة.</li>
+<li><strong>N+1</strong>: استعلام لكل صف. و<strong><code>with()</code></strong> تحمّل العلاقات معاً، و<strong><code>preventLazyLoading</code></strong> تجعل الخطأ استثناءً أثناء التطوير.</li>
+<li><strong><code>$fillable</code></strong> و<code>preventSilentlyDiscardingAttributes</code> توقفان الإسناد الجماعي.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. <code>$order-&gt;products</code> مجموعة المنتجات المحمّلة (تُحمَّل الآن بكسل إن لم تُحمَّل مسبقاً)، و<code>$order-&gt;products()</code> كائن العلاقة، منشئ استعلامات تضيف إليه شروطاً مثل <code>$order-&gt;products()-&gt;where('price', '&gt;', 10000)-&gt;get()</code>. 2. دون تحميل مسبق 1 + 50 = 51، ومع <code>with('customer')</code> استعلامان. 3. <code>timestamps()</code> تُنشئ أعمدة <code>timestamp</code> بلا منطقة زمنية، تحفظ قراءة ساعة دون أن تقول أين، و<code>timestampsTz()</code> تُنشئ <code>timestamptz</code>، لحظة دقيقة.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يكمل مشروع هذا الفصل على PostgreSQL. وكل تغيير في المخطط ترحيل بـ <code>down</code> تعمل، وكل صفحة أو أمر يُفحص عدد استعلاماته.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>المراجعات</h3>
+<p class="project-goal">أضف مراجعات المنتجات بالعلاقات والأعداد والمتوسطات، بعدد ثابت من الاستعلامات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الترحيلات، و<code>hasMany</code> و<code>belongsTo</code>، و<code>withCount</code> و<code>withAvg</code>، وقواعد التفرد.</p>
+<ol class="steps">
+<li>أنشئ نموذج <code>Review</code> بترحيله: منتج، وعميل، وتقييم من 1 إلى 5، ونص، و<code>timestampsTz</code>. ولا يراجع العميل المنتج إلا مرة: أضف فهرساً فريداً على الزوج.</li>
+<li>أضف العلاقات على <code>Product</code> و<code>Customer</code> و<code>Review</code>.</li>
+<li>اكتب أمراً يعرض كل منتج بعدد مراجعاته ومتوسط تقييمه، بـ <code>withCount</code> و<code>withAvg</code>، وتحقق أنه يرسل استعلاماً واحداً.</li>
+<li>أضف مصنعاً لـ <code>Review</code>، وازرع 5,000 مراجعة لتتحقق أن الأمر يبقى استعلاماً واحداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>withCount</code> و<code>withAvg</code> تضيفان استعلامات فرعية إلى الاستعلام الرئيسي، فتصل الأرقام مع المنتجات دون تحميل مراجعة واحدة.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>ميزانية استعلامات في الاختبارات</h3>
+<p class="project-goal">اجعل مجموعة الاختبارات تفشل حين ترسل صفحة أو مسار في الواجهة استعلامات أكثر من ميزانيته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>DB::listen</code> في الاختبارات، والتأكيدات الخاصة، ومنع تراجع الأداء.</p>
+<ol class="steps">
+<li>اكتب دالة مساعدة <code>assertQueryCount(int $max, callable $work)</code> في صنف الاختبار الأساسي، بـ <code>DB::enableQueryLog()</code> و<code>DB::getQueryLog()</code>.</li>
+<li>أضف واجهة الفصل {{n-2}} إلى هذا المشروع، واختبر أن عرض الطلبات يرسل 3 استعلامات على الأكثر مع 10 طلبات ومع 100.</li>
+<li>احذف <code>with()</code> عمداً، وتحقق أن الاختبار يفشل ويسمّي الاستعلامات.</li>
+<li>شغّل <code>Model::shouldBeStrict()</code> في الاختبارات، واشرح ما يكتشفه ولا تكتشفه الميزانية.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الاختبار بـ 10 صفوف وبـ 100 هو ما يكشف N+1: فالصفحة الصحيحة ترسل عدد الاستعلامات نفسه في الحالتين.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>إعادة تسمية دون توقف</h3>
+<p class="project-goal">أعد تسمية <code>customers.name</code> إلى <code>full_name</code> بينما يقرأ سكربت العملاء ويكتبهم في حلقة، دون خطأ واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التوسيع ثم التقليص، والقراءة المزدوجة، والملء على دفعات، والتحقق من التوافق.</p>
+<ol class="steps">
+<li>اكتب أمراً يُنشئ العملاء ويقرؤهم في حلقة لا تنتهي، ويبلغ عن أي استثناء.</li>
+<li>التوسيع: أضف <code>full_name</code>. وغيّر النموذج ليكتب العمودين (حدث نموذج في <code>booted()</code>) وما زال يقرأ <code>name</code>.</li>
+<li>املأ <code>full_name</code> بـ <code>chunkById</code> في أمر منفصل.</li>
+<li>حوّل القراءة إلى <code>full_name</code>، ثم قلّص: اجعله إلزامياً واحذف <code>name</code>.</li>
+<li>أبقِ الحلقة تعمل عبر كل الخطوات، وتحقق أنها لم تبلغ عن خطأ أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في كل خطوة اسأل: «لو كانت النسخة السابقة من الكود ما زالت تعمل، هل ستعمل؟» والخطوة التي تفشل في هذا السؤال تحتاج أن تُقسم.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب ترحيلاً يضيف عموداً اختيارياً <code>city</code> إلى <code>customers</code> مع <code>down</code>. شغّله، وتراجع عنه، وشغّله مرة أخرى.</li>
+<li><span class="level">سهل</span> عُدّ الطلبات المشحونة بالنطاق <code>shipped</code>، واشرح أي SQL يرسل.</li>
+<li><span class="level">متوسط</span> خطط الخطوات لإعادة تسمية <code>products.name</code> إلى <code>title</code> دون توقف، وقل أي نسخ الكود تعمل أثناء كل خطوة.</li>
+<li><span class="level">متوسط</span> اعرض كل منتج مع الكمية الكلية المبيعة، في استعلام واحد، ومنها المنتجات التي لم تُبع (بصفر).</li>
+<li><span class="level">تحدٍّ</span> اكتب خطوة CI تثبت أن كل الترحيلات تعمل في الاتجاهين على قاعدة فارغة.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>عميلان يطلبان آخر عدّة روبوت في اللحظة نفسها. ونرى تالياً ما يحدث فعلاً داخل قاعدة البيانات حين تعمل الطلبات في الوقت نفسه، ونستخدم المعاملات ومستويات العزل والأقفال لنُبقي البيانات صحيحة.</p>
+</div>
+</section>

@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>phone: z.union([z.literal(""), z.string().regex(/^\d{11}$/, "Please enter 11 digits.")])</code>. The empty string is allowed explicitly, and anything else must be 11 digits. With <code>.optional()</code> as well, the field may also be missing entirely.</li>
+<li>For example <code>{ name: "", … }</code>, an email without a dot, and an age of <code>"twelve"</code>. For <code>"twelve"</code>, <code>z.coerce.number()</code> produces <code>NaN</code>, and Zod reports that a number was expected: the type check fails before <code>int()</code> or <code>min()</code> run.</li>
+<li><code>const message = watch("message") ?? "";</code> and <code>&lt;p className="muted"&gt;{message.length} / 500&lt;/p&gt;</code>, with <code>.max(500, "…")</code> added to the schema. <code>watch</code> re-renders the form when that field changes, so use it only for fields the screen really shows.</li>
+<li>Keep <code>sent</code> in state; the thank-you screen gets a button with <code>onClick={() =&gt; { reset(); setSent(false); }}</code>. <code>reset()</code> also clears the errors and the “touched” flags.</li>
+<li><code>function handleContact(body: unknown) { const r = contactSchema.safeParse(body); if (r.success) return { status: 201 }; const errors: Record&lt;string, string&gt; = {}; for (const issue of r.error.issues) errors[issue.path.join(".")] ??= issue.message; return { status: 422, errors }; }</code>. The <code>??=</code> keeps only the first message for each field.</li>
+</ol>

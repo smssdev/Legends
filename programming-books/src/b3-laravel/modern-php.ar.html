@@ -1,0 +1,289 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/php/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>PHP الحديثة لمطوري JavaScript</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقرأ PHP 8.5 وتكتبها بمقارنتها بـ JavaScript التي تعرفها</li>
+<li>تستخدم الأنواع بصرامة، وتعرف بالضبط متى تحوّل PHP القيم من تلقاء نفسها</li>
+<li>تعمل بمصفوفات PHP ودوالها المغلقة ومعاملاتها المسماة، وتتجنب فخاخها</li>
+<li>تنمذج مجال العمل بالأصناف للقراءة فقط والتعدادات وخطّافات الخصائص والاستثناءات</li>
+<li>تنظّم الكود في فضاءات أسماء يحمّلها Composer تلقائياً</li>
+<li>تفحص الأنواع قبل تشغيل أي شيء، بـ PHPStan</li>
+</ul>
+</div>
+
+<p class="lead">ما زال كثير من المطورين يتخيلون PHP عام 2005: بلا أنواع، وغير متسقة، ومخلوطة بـ HTML. أما اللغة التي يعمل عليها Laravel اليوم فلغة أخرى. فيها أنواع تُفحص حين يعمل الكود، وتعدادات، وكائنات للقراءة فقط، ودوال من الدرجة الأولى، ومحلل ثابت صارم صرامة مترجم TypeScript. ومعظم الأفكار تعرفها من JavaScript وTypeScript. وهذا الفصل يضعها على PHP، ويقضي وقته في الأماكن التي تتصرف فيها PHP بطريقة مختلفة، لأن الأخطاء تأتي من هناك.</p>
+
+<aside class="bit" data-mood="think"><p>أول خطأ كتبته في PHP كان دالة مغلقة تضيف إلى إجمالي، فبقي الإجمالي صفراً. وفي JavaScript كان الكود نفسه يعمل. ولم يكن في PHP عيب: إنها تنسخ حيث تشارك JavaScript. وحين تعلمت حفنة من القواعد مثل هذه، توقفت PHP عن مفاجأتي.</p></aside>
+
+<h2>{{n}}.1 أول سكربت</h2>
+
+<p>كل ملف PHP يبدأ بـ <code>&lt;?php</code>. (توجد هذه العلامة لأن PHP بدأت لغة تُخلط بـ HTML، وفي ملف لا يحمل إلا كوداً تظهر مرة واحدة في أعلاه ولا تُغلق أبداً.) والأمر <code>php</code> يشغّل الملف، كما يفعل <code>node</code>:</p>
+
+<pre data-code="demos/hello.php" data-title="demos/hello.php"></pre>
+
+<pre data-code="hello.sh" data-title="الطرفية"></pre>
+
+<p>وأول الفروق ظاهر من الآن:</p>
+<ul>
+<li>كل متغير يبدأ بـ <code>$</code>، ولا توجد <code>let</code> ولا <code>const</code> للمتغيرات المحلية: أول إسناد يصنع المتغير.</li>
+<li>تُوصل النصوص بالنقطة (<code>.</code>) لا بـ <code>+</code>. ففي PHP لا تكون <code>+</code> إلا للأعداد.</li>
+<li>علامات التنصيص المزدوجة تضع قيم المتغيرات داخل النص، مثل قالب النص في JavaScript: <code>"Hello, $name!"</code>، أو <code>{$items}</code> بالأقواس حين يكون التعبير أكثر من اسم بسيط. أما المفردة فتأخذ النص كما كُتب تماماً.</li>
+<li><code>echo</code> تطبع، والجمل تنتهي بفاصلة منقوطة دائماً.</li>
+</ul>
+
+<p>كل كود PHP في هذا الكتاب يعمل على PHP 8.5، الإصدار الحالي. ويحتاج Laravel 13 الإصدار 8.3 أو ما بعده، وسنذكر مع بعض ميزات هذا الفصل الإصدار الذي جاءت فيه.</p>
+
+<h2>{{n}}.2 الأنواع، والوضع الصارم</h2>
+
+<p>تفحص PHP الأنواع حين يعمل الكود. والدالة تعلن أنواع معاملاتها ونتيجتها، كما في TypeScript تقريباً. لكن PHP تحاول افتراضياً أن <em>تحوّل</em> القيمة ذات النوع الخاطئ قبل أن تستسلم:</p>
+
+<pre data-code="demos/loose.php" data-title="demos/loose.php"></pre>
+
+<p>النص <code>"45000"</code>، كما يصل من نموذج HTML، صار العدد 45000، وحتى <code>true</code> صارت 1. وعمل الاستدعاءان دون كلمة. وسطر واحد في أعلى الملف يوقف هذا لكل استدعاء يخرج <em>من ذلك الملف</em>:</p>
+
+<pre data-code="demos/strict.php" data-title="demos/strict.php"></pre>
+
+<pre data-code="strict.sh" data-title="الطرفية"></pre>
+
+<p>صار الاستدعاء الخاطئ الآن <code>TypeError</code> يسمّي الدالة والمعامل والنوع المتوقع والسطر. فابدأ كل ملف PHP بـ <code>declare(strict_types=1);</code>: فأنت تريد أن تعرف بوجود نص في مكان عدد، لا أن يُخمَّن نيابة عنك. (يحوّل Laravel مدخلات الطلبات عن قصد، في طبقة التحقق، وهذا هو المكان الصحيح لذلك.)</p>
+
+<p>والأنواع التي ستكتبها أكثر من غيرها:</p>
+
+<table>
+<thead><tr><th>PHP</th><th>TypeScript</th><th>ملاحظات</th></tr></thead>
+<tbody>
+<tr><td><code>int</code> و<code>float</code></td><td><code>number</code></td><td>نوعان منفصلان، واستخدم <code>int</code> للمال بالوحدات الصغرى</td></tr>
+<tr><td><code>string</code> و<code>bool</code></td><td><code>string</code> و<code>boolean</code></td><td></td></tr>
+<tr><td><code>array</code></td><td>المصفوفات والكائنات العادية</td><td>نوع واحد للاثنين، انظر القسم {{n}}.4</td></tr>
+<tr><td><code>?int</code></td><td><code>number | null</code></td><td>علامة <code>?</code> تعني «أو null»</td></tr>
+<tr><td><code>int|string</code></td><td><code>number | string</code></td><td>أنواع الاتحاد</td></tr>
+<tr><td><code>mixed</code></td><td><code>unknown</code></td><td>أي شيء، وتجنّبه ما استطعت</td></tr>
+<tr><td><code>void</code> و<code>never</code></td><td><code>void</code> و<code>never</code></td><td><code>never</code>: الدالة ترمي أو تُنهي البرنامج دائماً</td></tr>
+<tr><td><code>static</code></td><td><code>this</code></td><td>تُرجع كائناً من الصنف الذي استُدعيت عليه</td></tr>
+</tbody>
+</table>
+
+<h2>{{n}}.3 المقارنة: ثلاث علامات يساوي دائماً</h2>
+
+<p>في PHP المقارنتان نفسهما كما في JavaScript. <code>===</code> تقارن النوع والقيمة، و<code>==</code> تحوّل أولاً. وقواعد التحويل في PHP تختلف عن قواعد JavaScript، وبعضها مفاجئ:</p>
+
+<pre data-code="demos/equality.php" data-title="demos/equality.php"></pre>
+
+<pre data-code="equality.sh" data-title="الطرفية"></pre>
+
+<p>النصان اللذان يبدوان كعددين يُقارنان <em>كعددين</em>: <code>"10" == "1e1"</code> صحيحة، لأن <code>1e1</code> هي 10 بالترميز العلمي. وقد سبب هذا ثغرات أمنية حقيقية، في كود قارن بصمات كلمات المرور بـ <code>==</code>. و<code>null</code> و<code>false</code> والمصفوفة الفارغة كلها متساوية في المقارنة المرنة. والقاعدة هي نفسها في JavaScript، وهي هنا أهم: استخدم <code>===</code> و<code>!==</code>، ومرّر <code>true</code> معاملاً أخيراً لدوال مثل <code>in_array</code>، التي تقارن مقارنة مرنة ما لم تطلب منها غير ذلك.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر فهمك</p><ol><li>ماذا تفعل <code>"Total: " + $total</code> في PHP، وماذا يجب أن تكتب؟</li><li>ملف بلا <code>declare(strict_types=1)</code> يستدعي <code>total("3 kits", 2)</code>. ماذا يحدث؟</li><li>لماذا <code>"10" == "1e1"</code> صحيحة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.4 المصفوفات: القوائم والخرائط في نوع واحد</h2>
+
+<p>في PHP نوع <code>array</code> واحد لما تقسمه JavaScript إلى مصفوفات وكائنات عادية. ومفاتيحه أعداد صحيحة أو نصوص، ويحفظها بالترتيب الذي تضيفها به:</p>
+
+<pre data-code="demos/arrays.php" data-title="demos/arrays.php"></pre>
+
+<pre data-code="arrays.sh" data-title="الطرفية"></pre>
+
+<p>سطراً سطراً، هذه النقاط التي تُوقع مطوري JavaScript:</p>
+<ul>
+<li><code>$prices[] = 2500</code> تضيف إلى الآخر، مثل <code>push</code>. و<code>??</code> تعطي قيمة افتراضية حين يغيب المفتاح (أو يكون null)، كما في JavaScript تماماً.</li>
+<li><strong>المصفوفات قيم.</strong> <code>$copy = $prices</code> تصنع نسخة، والإضافة إلى النسخة تركت الأصل بأربعة عناصر. وفي JavaScript يشير الاسمان إلى المصفوفة نفسها. أما الكائنات فمشتركة في PHP كما في JavaScript.</li>
+<li>التفكيك يستخدم الأقواس المربعة للنوعين: <code>[$first, $second]</code> بالموضع، و<code>['name' =&gt; $name]</code> بالمفتاح.</li>
+<li>دوال المصفوفات تأخذ معاملاتها بترتيب مختلف: <code>array_map(callback, array)</code> لكن <code>array_filter(array, callback)</code>. وسيذكّرك المحرر، فلا منطق هنا تحفظه.</li>
+<li><code>array_filter</code> <strong>تحتفظ بالمفاتيح</strong>: الأسعار الرخيصة عند المفتاحين 1 و3. والمصفوفة التي في مفاتيحها فجوات تصير في JSON <em>كائناً</em> لا قائمة. فمرّر النتيجة عبر <code>array_values</code>، كما يفعل السطر التالي، كلما احتجت قائمة من جديد.</li>
+<li>أضافت PHP 8.4 الدوال <code>array_find</code> و<code>array_any</code> و<code>array_all</code>، ونظائرها <code>find</code> و<code>some</code> و<code>every</code>.</li>
+<li>وأضافت PHP 8.5 <dfn>عامل الأنبوب</dfn> <code>|&gt;</code>: يمرر القيمة التي على يساره إلى الدالة التي على يمينه، فتُقرأ سلسلة الخطوات من اليسار إلى اليمين بدل أن تُقرأ من الداخل إلى الخارج. و<code>trim(...)</code> بثلاث نقاط <dfn>دالة من الدرجة الأولى</dfn>: الدالة نفسها، كأنك تكتب <code>trim</code> دون استدعائها في JavaScript.</li>
+</ul>
+
+<h2>{{n}}.5 الدوال والدوال المغلقة</h2>
+
+<p>الدالة المكتوبة داخل كود آخر تستطيع أن تستخدم المتغيرات التي حولها. وJavaScript تشاركها ببساطة، أما PHP فأكثر حذراً، وهذه قاعدة قصة Bit:</p>
+
+<pre data-code="demos/closures.php" data-title="demos/closures.php"></pre>
+
+<pre data-code="closures.sh" data-title="الطرفية"></pre>
+
+<ul>
+<li><dfn>الدالة السهمية</dfn>، <code>fn (...) =&gt; expression</code>، تلتقط المتغيرات التي تستخدمها تلقائياً، <strong>بالقيمة</strong>، لحظة صنعها. فتغيير <code>$discount</code> بعد ذلك لا يغيّر شيئاً: السعر 40500، بخصم 10%.</li>
+<li>أما <code>function () { ... }</code> الكاملة فلا تلتقط شيئاً ما لم تذكر المتغيرات في <code>use</code>، وبالقيمة أيضاً. ولهذا بقي <code>$count</code> صفراً: كل استدعاء زاد نسخة الدالة المغلقة.</li>
+<li>ولتشارك المتغير على طريقة JavaScript، التقطه <strong>بالمرجع</strong> بـ <code>&amp;</code>. واستخدم هذا نادراً، فالدالة التي تُرجع قيمة جديدة أسهل في المتابعة.</li>
+<li><dfn>المعاملات المسماة</dfn> تسمح لك أن تمرر المعاملات بأسمائها، بأي ترتيب، متجاوزاً الاختيارية التي لا تحتاجها. وLaravel يستخدمها كثيراً، وهي تجعل الاستدعاءات الطويلة مقروءة.</li>
+</ul>
+
+<h2>{{n}}.6 أصناف لمجال حقيقي</h2>
+
+<p>يُنظَّم كود PHP الأكبر في أصناف، صنف واحد في كل ملف، وتُجمع في <dfn>فضاءات أسماء</dfn> (namespaces): نسخة PHP من المجلدات للأسماء. فالصنف <code>Money</code> في الفضاء <code>Shop</code> اسمه الكامل <code>Shop\Money</code>، وتجلبه الملفات الأخرى بـ <code>use Shop\Money;</code>، مثل <code>import</code>. ولا أحد يكتب <code>require</code> لكل ملف صنف: فـ<dfn>Composer</dfn>، مدير حزم PHP (نظير npm)، يولّد <dfn>محمّلاً تلقائياً</dfn> يجد الملف أول مرة يُستخدم فيها الصنف. وقاعدة واحدة في <code>composer.json</code> تقول إن أصناف الفضاء <code>Shop</code> تعيش في المجلد <code>src/</code>، ويسمى هذا العرف <dfn>PSR-4</dfn>:</p>
+
+<pre data-code="composer.json" data-title="composer.json"></pre>
+
+<pre data-code="autoload.sh" data-title="الطرفية"></pre>
+
+<p>والآن الأصناف. يحتاج متجر Bit مالاً لا يضيع منه قرش، وعملات لا يمكن أن تُكتب خطأ. والعملة مجموعة ثابتة من القيم، وهذا بالضبط ما هو <dfn>التعداد</dfn> (enum):</p>
+
+<pre data-code="src/Currency.php" data-title="src/Currency.php"></pre>
+
+<p>لكل حالة في <dfn>التعداد المدعوم</dfn> (backed enum) قيمة (هنا رمز ISO)، فيمكن حفظه في قاعدة بيانات وقراءته مرة أخرى. وللتعدادات دوال. و<code>match</code> أشد صرامة من <code>switch</code>: تقارن بـ <code>===</code>، وتُرجع قيمة، ولا تنزلق من حالة إلى أخرى، وترمي خطأ إن لم تطابق أي حالة، فلا تُنسى عملة جديدة بصمت.</p>
+
+<pre data-code="src/Money.php" data-title="src/Money.php"></pre>
+
+<ul>
+<li><dfn>ترقية المُنشئ</dfn> (constructor promotion): المعاملات الموصوفة بـ <code>public</code> في المُنشئ تصير خصائص. فتختفي ستة أسطر من الكود المكرر.</li>
+<li><code>readonly class</code>: كل خاصية تُضبط مرة واحدة في المُنشئ ولا تتغير بعدها أبداً. فقيمة <code>Money</code> لا تتغير: <code>plus</code> و<code>times</code> تُرجعان كائنات جديدة. وهذه هي الثباتية نفسها التي استخدمتها في حالة React وVue، وهي تزيل عائلة كاملة من الأخطاء.</li>
+<li><code>final</code>: لا أحد يستطيع أن يرث الصنف. واجعل الأصناف نهائية ما لم تُصمَّم لتُورث.</li>
+<li>يرفض المُنشئ المبلغ السالب، وترفض <code>plus</code> جمع عملتين مختلفتين. والكائن الذي يفحص قواعده بنفسه لا يمكن أن يوجد في حال معطوبة أبداً.</li>
+</ul>
+
+<p>وخطأ العملة صنف خاص به، كي يستطيع الكود أن يلتقط هذا الخطأ بعينه ولا شيء غيره:</p>
+
+<pre data-code="src/CurrencyMismatch.php" data-title="src/CurrencyMismatch.php"></pre>
+
+<p>وحالة الطلب تعداد آخر، فيه وصف للناس وقاعدة من قواعد العمل:</p>
+
+<pre data-code="src/OrderStatus.php" data-title="src/OrderStatus.php"></pre>
+
+<p>وتستخدم السلة ميزتين من PHP 8.4:</p>
+
+<pre data-code="src/Cart.php" data-title="src/Cart.php"></pre>
+
+<ul>
+<li><code>public private(set)</code> هي <dfn>الرؤية غير المتماثلة</dfn>: يستطيع أي أحد أن يقرأ <code>$lines</code>، ولا يغيّرها إلا الصنف. وقبل PHP 8.4 كان هذا يحتاج خاصية خاصة ودالة قراءة.</li>
+<li>ولـ <code>$total</code> و<code>$count</code> <dfn>خطّافات خصائص</dfn> (property hooks): تُقرآن كخاصيتين (<code>$cart-&gt;total</code>) لكن كود <code>get</code> يحسبهما في كل مرة، مثل دالة القراءة في صنف JavaScript. فالإجمالي صحيح دائماً، لأنه لا يُخزَّن أبداً.</li>
+<li>تُرجع <code>add</code> النوع <code>static</code>، أي السلة نفسها، فيمكن ربط الاستدعاءات بعضها ببعض.</li>
+</ul>
+
+<p>وأخيراً المنتج، ومعه ميزة أخرى من PHP 8.5:</p>
+
+<pre data-code="src/Product.php" data-title="src/Product.php"></pre>
+
+<p>المنتج للقراءة فقط، فلا يستطيع التخفيض أن يغيّره. و<code>clone($this, [...])</code> تصنع نسخة تتغير فيها بعض الخصائص، وهي نسخة PHP من <code>{ ...product, price }</code>. وهذا كل شيء يعمل:</p>
+
+<pre data-code="demos/shop.php" data-title="demos/shop.php"></pre>
+
+<pre data-code="shop.sh" data-title="الطرفية"></pre>
+
+<p>اقرأ الناتج أمام الكود. تعدّ السلة 3 قطع بقيمة 570.00 (450 + 2 × 60). وتحوّل <code>from</code> القيمة المخزنة إلى حالة من التعداد، و<code>tryFrom</code> تُرجع <code>null</code> بدل أن ترمي مع القيمة المجهولة، وهذا ما تريده لمدخلات تأتي من الخارج. ثم تُظهر الأخطاء الثلاثة قواعد تفرضها <em>اللغة نفسها</em>: لا يمكن استبدال أسطر السلة من الخارج، ولا تغيير مبلغ المال، وحتى <code>clone</code> بقيم جديدة مرفوضة من خارج الصنف، لأن خاصية readonly لا تُضبط إلا من داخله. ولهذا كانت <code>onSale</code> دالة في <code>Product</code>: فالصنف هو من يقرر كيف تُصنع نسخه.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة: Exception وError</p><p>كل ما يمكن رميه يحقق <code>Throwable</code>. و<code>Exception</code> وأصنافها الفرعية للمشكلات التي يتوقعها برنامجك ويستطيع معالجتها: معامل غير صالح، أو سجل غير موجود، أو عملتان مختلفتان. أما <code>Error</code> وأصنافها (<code>TypeError</code> و<code>ValueError</code> وأخطاء الرؤية أعلاه) فتعني أن الكود نفسه خاطئ. التقط الاستثناءات حيث تستطيع أن تفعل بها شيئاً مفيداً، ودع الأخطاء تصل إلى إطار العمل الذي يسجّلها ويرد بـ 500، كما فعل خادمنا في الفصل {{n-1}}.</p></aside>
+
+<h2>{{n}}.7 الفحص قبل التشغيل: PHPStan</h2>
+
+<p>تفحص PHP الأنواع حين يعمل السطر، فيبقى الخطأ في فرع نادر التشغيل مختبئاً حتى اليوم الذي يعمل فيه في الإنتاج. أما <dfn>PHPStan</dfn> فيقرأ الكود دون تشغيله ويبلغ عن أخطاء الأنواع، كما يفعل <code>tsc</code> مع TypeScript. وقد ثُبّت مع المشروع اعتماداً للتطوير، وإعداده يطلب أشد المستويات صرامة:</p>
+
+<pre data-code="phpstan.neon" data-title="phpstan.neon"></pre>
+
+<p>في هذه الدالة خطآن، ولن يظهر أي منهما في تجربة يدوية سريعة:</p>
+
+<pre data-code="demos/bug.php" data-title="demos/bug.php"></pre>
+
+<pre data-code="phpstan.sh" data-title="الطرفية"></pre>
+
+<p>يفحص <code>php -l</code> فقط أن الملف PHP صالحة، وهو كذلك. أما PHPStan فوجد الخطأين: <code>$status</code> قد تكون <code>null</code>، فاستدعاء دالة عليها سينهار، و<code>'0'</code> نص في مكان يحتاج فيه المُنشئ <code>int</code>. ولاحظ تعليق PHPDoc في <code>Cart.php</code>، <code>@var array&lt;int, array{product: Product, quantity: int}&gt;</code>: فأنواع PHP نفسها لا تستطيع أن تصف ما داخل المصفوفة، لكن PHPStan يقرأ هذه التعليقات ويفحصها أيضاً. وفي مشاريع Laravel يعلّم الامتداد Larastan أداةَ PHPStan أعراف إطار العمل.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: الصرامة من أول سطر</p><p>كل ملف يبدأ بـ <code>declare(strict_types=1);</code>. ويعمل PHPStan بأعلى مستوى يستطيع مشروعك اجتيازه، في CI، مع كل طلب دمج، والمستوى لا يرتفع إلا صعوداً. ومنسّق الكود (Laravel Pint، الذي يتبع أسلوب PER المعتمد في المجتمع) يحسم كل أسئلة الشكل آلياً. ومع هذه الثلاثة تصير المراجعات عن التصميم، لا عن الأنواع والمسافات.</p></aside>
+
+<h2>{{n}}.8 كيف تعمل PHP على الخادم</h2>
+
+<p>رأيت في الفصل {{n-1}} أن PHP تبدأ كل طلب بذاكرة فارغة وتنسى كل شيء حين ينتهي. وتفصيلتان تكملان الصورة. الأولى أن PHP لا تحلل ملفاتك من جديد مع كل طلب: فـ<dfn>OPcache</dfn> يحتفظ بالكود المترجَم في ذاكرة مشتركة، فلا يتكرر إلا عمل كودك، لا التحليل. والثانية أن خوادم مثل FrankenPHP (مع Laravel Octane) تستطيع أن تعمل بـ<dfn>وضع العامل</dfn> (worker mode)، فتُبقي التطبيق في الذاكرة بين الطلبات طلباً للسرعة، مثل خادم Node. وحينها تبقى الخصائص الثابتة والكائنات الوحيدة (singletons) من طلب إلى الذي يليه، وقد يُسرّب كود كان آمناً في نموذج «لا شيء مشترك» بيانات مستخدم إلى طلب مستخدم آخر. وسنعود إلى هذا حين نقيس الأداء في الفصل {{n+13}}.</p>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>لا <code>strict_types</code></td><td>تُحوَّل الأنواع الخاطئة بصمت</td><td><code>declare(strict_types=1);</code> في كل ملف</td></tr>
+<tr><td><code>==</code> و<code>in_array</code> المرنة</td><td><code>"10" == "1e1"</code> و<code>null == false</code></td><td><code>===</code>، و<code>true</code> معاملاً أخيراً</td></tr>
+<tr><td><code>+</code> لوصل النصوص</td><td><code>TypeError</code>، أو عدد</td><td>عامل النقطة، أو وضع المتغير داخل النص</td></tr>
+<tr><td>توقع أن المصفوفات مشتركة</td><td>تضيع التغييرات على النسخة</td><td>أرجع المصفوفة الجديدة، والكائنات للحالة المشتركة</td></tr>
+<tr><td>توقع أن الدوال المغلقة تشارك المتغيرات</td><td>إجماليات تبقى صفراً</td><td>أرجع القيم، و<code>&amp;</code> عند الحاجة فقط</td></tr>
+<tr><td>نسيان أن <code>array_filter</code> تحتفظ بالمفاتيح</td><td>كائنات JSON حيث يُنتظر قوائم</td><td><code>array_values</code></td></tr>
+<tr><td>نصوص لمجموعات ثابتة من القيم</td><td>أخطاء إملائية تُحفظ في قاعدة البيانات</td><td>تعدادات مدعومة مع <code>from</code> و<code>tryFrom</code></td></tr>
+<tr><td>أعداد عشرية للمال</td><td>مبالغ ينقصها كسر</td><td>أعداد صحيحة بالوحدات الصغرى، في كائن قيمة</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>المتغيرات تبدأ بـ <code>$</code>، والنصوص توصل بـ <strong><code>.</code></strong>، والتنصيص المزدوج يضع قيم المتغيرات.</li>
+<li>تُفحص الأنواع وقت التشغيل، و<strong><code>declare(strict_types=1)</code></strong> توقف التحويلات الصامتة في الملف.</li>
+<li>قارن دائماً بـ <strong><code>===</code></strong>، فقواعد PHP المرنة تختلف عن قواعد JavaScript.</li>
+<li>نوع <strong>مصفوفة</strong> واحد للقوائم والخرائط. والمصفوفات <strong>تُنسخ</strong> عند الإسناد، و<code>array_filter</code> تحتفظ بالمفاتيح. وتضيف PHP 8.4 <code>array_find</code> و<code>array_any</code> و<code>array_all</code>، وتضيف PHP 8.5 عامل الأنبوب <strong><code>|&gt;</code></strong>.</li>
+<li><strong>الدوال المغلقة تلتقط بالقيمة</strong>: <code>fn</code> تلقائياً، و<code>function</code> مع <code>use</code>. والمعاملات المسماة تجعل الاستدعاءات الطويلة مقروءة.</li>
+<li><strong>فضاءات الأسماء</strong> ومحمّل <strong>Composer</strong> التلقائي بعرف PSR-4 تحل محل <code>require</code>.</li>
+<li><strong>الأصناف للقراءة فقط</strong>، و<strong>ترقية المُنشئ</strong>، و<strong>التعدادات المدعومة</strong> مع <code>match</code>، و<strong>الرؤية غير المتماثلة</strong>، و<strong>خطّافات الخصائص</strong>، و<strong><code>clone</code> بقيم جديدة</strong>، كلها تنمذج مجالاً لا يمكن أن يدخل حالاً معطوبة.</li>
+<li><strong>الاستثناءات</strong> للمشكلات المتوقعة، و<strong>الأخطاء</strong> للكود المعطوب.</li>
+<li><strong>PHPStan</strong> يفحص الأنواع دون تشغيل الكود، فشغّله في CI بأعلى مستوى.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. <code>+</code> للحساب وحده: مع نص ليس عدداً ترمي <code>TypeError</code>، بأنواع صارمة أو بدونها (أما نص مثل <code>"5"</code> فيُجمع كعدد). فاكتب <code>"Total: " . $total</code> أو <code>"Total: $total"</code>. 2. تحاول PHP أن تحوّل <code>"3 kits"</code> إلى int، ولأن النص ليس عدداً صحيحاً كاملاً ترمي <code>TypeError</code> على أي حال (أما نص مثل <code>"3"</code> فكان سيُحوَّل بصمت). 3. كلا النصين يبدو عدداً، فتقارنهما <code>==</code> كعددين، و<code>1e1</code> هي 10.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع مشروع Composer صغير بالتحميل التلقائي PSR-4، و<code>strict_types</code> في كل ملف، وPHPStan بالمستوى <code>max</code> بلا أخطاء. شغّل الكود بـ <code>php</code>، أما Laravel ففي الفصل التالي.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>قائمة أسعار بالأنواع</h3>
+<p class="project-goal">اقرأ المنتجات من ملف JSON، وحوّلها إلى كائنات <code>Product</code> بقيم مفحوصة، واطبع قائمة أسعار مرتبة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>json_decode</code>، والمصفوفات ودوالها، وكائنات القيمة، والاستثناءات، وعامل الأنبوب.</p>
+<ol class="steps">
+<li>اكتب <code>products.json</code> فيه ستة منتجات على الأقل، منها واحد بسعر سالب وواحد بعملة مجهولة.</li>
+<li>فكّ ترميزه بـ <code>json_decode($text, true, flags: JSON_THROW_ON_ERROR)</code>، وحوّل كل عنصر إلى <code>Product</code> مستخدماً <code>Currency::tryFrom</code>.</li>
+<li>اجمع العناصر غير الصالحة مع سبب رفض كل واحد، بدل أن تتوقف عند أولها.</li>
+<li>رتّب المنتجات الصالحة بالسعر بـ <code>usort</code> وعامل المركبة الفضائية <code>&lt;=&gt;</code>، واطبعها أعمدة مصطفة بـ <code>printf</code>.</li>
+<li>اكتب الخطوات الأخيرة أنبوباً: فكّ الترميز، ثم التحقق، ثم الترتيب، ثم التنسيق.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>usort</code> تغيّر المصفوفة التي تمررها، وتُرجع <code>true</code> لا المصفوفة المرتبة. ففي الأنبوب غلّفها بدالة سهمية ترتّب نسخة وتُرجعها.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>طلب يلتزم بالقواعد</h3>
+<p class="project-goal">نمذج طلباً لا تتحرك حالته إلا في المسارات المسموحة، مع سجل لكل تغيير.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التعدادات ذات الدوال، و<code>match</code>، والرؤية غير المتماثلة، والاستثناءات الخاصة، وPHPStan.</p>
+<ol class="steps">
+<li>أعطِ <code>OrderStatus</code> دالة <code>canMoveTo(OrderStatus $next): bool</code> مكتوبة بـ <code>match</code>: من الانتظار إلى المدفوع أو الملغى، ومن المدفوع إلى الشحن أو الإلغاء، ولا شيء بعد الشحن أو الإلغاء.</li>
+<li>اكتب صنف <code>Order</code> فيه <code>public private(set) OrderStatus $status</code> ومصفوفة سجل لتغييرات الحالة وأوقاتها (<code>new DateTimeImmutable()</code>).</li>
+<li>أضف <code>moveTo(OrderStatus $next)</code> التي ترمي استثناءك الخاص <code>InvalidTransition</code>، مسمّياً الحالتين، حين لا يُسمح بالانتقال.</li>
+<li>اكتب سكربتاً يمر بطلب في مسار صالح، ثم يحاول انتقالاً غير صالح ويلتقط الاستثناء.</li>
+<li>أضف خطّاف خاصية <code>$isFinished</code> يكون صحيحاً للطلبات المشحونة والملغاة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ضع القاعدة في التعداد لا في الطلب. فعندها تسأل صفحة الحالة والواجهة البرمجية والمهمة الخلفية الدالة نفسها، وتعيش القاعدة في مكان واحد.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>ابنِ حاوية خدمات صغيرة</h3>
+<p class="project-goal">اكتب نسخة صغيرة من الحاوية التي في قلب Laravel: تبني الكائنات واعتمادياتها تلقائياً من أنواع المُنشئ.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الانعكاس (reflection)، والدوال المغلقة، والواجهات، والاستدعاء الذاتي، والفكرة وراء حقن الاعتماديات.</p>
+<ol class="steps">
+<li>اكتب صنف <code>Container</code> فيه <code>bind(string $id, Closure $factory)</code> و<code>make(string $id): object</code>.</li>
+<li>حين تُطلب من <code>make</code> صنف بلا ربط، اقرأ مُنشئه بـ <code>new ReflectionClass($id)</code>، واصنع صنف كل معامل باستدعاء ذاتي، ثم أنشئ الكائن.</li>
+<li>أضف <code>singleton</code> التي تبني الكائن مرة واحدة وتُرجع الكائن نفسه في كل مرة بعدها.</li>
+<li>اربط واجهة (مثل <code>PaymentGateway</code>) بصنف، وتحقق أن الخدمة التي يطلب مُنشئها الواجهة تستلم ذلك الصنف.</li>
+<li>ارمِ استثناءً واضحاً لمعامل لا يمكن بناؤه (نوع بسيط بلا قيمة افتراضية)، واكتشف الحلقة التي يحتاج فيها A إلى B وB إلى A.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لتجد الحلقة احتفظ بقائمة الأصناف التي تُبنى الآن. فإن طُلب من <code>make</code> صنف موجود في القائمة، فقد عادت السلسلة إلى حيث بدأت.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> توقّع نتيجة كل مقارنة مرنة ثم تحقق منها: <code>'abc' == 0</code>، و<code>'1' == '1.0'</code>، و<code>null == 0</code>، و<code>'' == null</code>، و<code>'0' == false</code>، و<code>' 1' == 1</code>.</li>
+<li><span class="level">سهل</span> يُراد من هذا الكود أن يجمع الأسعار. ماذا يطبع، ولماذا، وكيف تصلحه بطريقتين مختلفتين؟<br><code>$total = 0; array_walk($prices, function (int $p) use ($total): void { $total += $p; }); echo $total;</code></li>
+<li><span class="level">متوسط</span> أضف الدينار الكويتي إلى <code>Currency</code>. فيه 1000 فلس لا 100، فيجب أن تُظهر <code>Money::format</code> ثلاث خانات عشرية له. غيّر الكود بحيث تقول كل عملة كم خانة عشرية لها.</li>
+<li><span class="level">متوسط</span> في <code>shop.sh</code> ثلاثة أسطر تبلغ عن أخطاء. سمِّ لكل منها ميزة PHP التي سببته، واشرح لماذا تعمل <code>$kit-&gt;onSale(10)</code> بينما لا تعمل <code>clone($kit, [...])</code> في السكربت.</li>
+<li><span class="level">تحدٍّ</span> أعطِ <code>Cart</code> خاصية <code>$discountPercent</code> من 0 إلى 100، يرمي خطّاف <code>set</code> فيها <code>ValueError</code> لأي قيمة أخرى، وخطّاف خاصية <code>$payable</code> يطبق الخصم على الإجمالي.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>بعد أن صارت PHP الحديثة بين يديك، ننشئ مشروع Laravel ونعيد بناء واجهة المتجر بالمسارات والمتحكمات والطلبات والتحقق، ونرى كم مما كتبناه بأيدينا في خادم الفصل {{n-1}} يفعله إطار العمل نيابة عنا.</p>
+</div>
+</section>

@@ -1,0 +1,46 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects grow the dashboard the way a real one grows: one feature at a time, each meeting the same quality goals. For every project, write the user story first, put the logic in <code>lib/</code> with a test, keep the screen thin, and run the three checks (unit tests, end-to-end tests, size) before you call it done.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A customers page</h3>
+<p class="project-goal">A page listing every customer with their number of orders, their total spent and their last order date, sorted by total, with a link to their orders.</p>
+<p class="project-skills"><strong>You will practise:</strong> deriving data with pure functions, a new route and a nav link, Intl formats, and URL state.</p>
+<ol class="steps">
+<li>Write <code>customers(orders)</code> in <code>lib/</code>: group by customer, ignore cancelled orders in the total, and sort. Test it with four orders from two customers.</li>
+<li>Add <code>/customers</code> to the routes and to the side navigation, with texts in both languages in <code>messages.ts</code>.</li>
+<li>Make each customer’s name a link to <code>/orders?q=&lt;name&gt;</code>, so the existing search does the rest.</li>
+<li>Add the page to the axe test in <code>e2e/admin.spec.ts</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> there is no new request here. The orders are already in the query cache, so <code>useOrders()</code> returns them at once, and the new page costs the server nothing.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Date ranges and a CSV export</h3>
+<p class="project-goal">Filter the orders by a date range kept in the address, and download exactly the filtered orders as a CSV file that opens correctly in Excel, in Arabic too.</p>
+<p class="project-skills"><strong>You will practise:</strong> extending <code>readFilters</code> safely, date inputs, building files in the browser, and testing pure output.</p>
+<ol class="steps">
+<li>Add <code>from</code> and <code>to</code> (as <code>YYYY-MM-DD</code>) to <code>Filters</code>. Ignore values that are not valid dates, and test that.</li>
+<li>Add two <code>&lt;input type="date"&gt;</code> fields with labels, updating the address with <code>replace</code>.</li>
+<li>Write <code>toCsv(orders)</code> in <code>lib/</code>: a header row, one row per order, values with commas or quotes wrapped in quotes and inner quotes doubled. Test it with a customer name that contains a comma.</li>
+<li>Download it with a <code>Blob</code> and a temporary link. Start the file with the byte order mark <code>"﻿"</code>, or Excel will show Arabic names as nonsense.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> export what the user is looking at, all pages of it, not only the current page. Users expect “export” to mean “these results”.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>From laptop to production</h3>
+<p class="project-goal">Turn the dashboard into a Vite project with a real CI pipeline, and serve it from a container, ready for a real <code>/api</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> Vite, GitHub Actions, required checks, Docker, Nginx, and single-page app routing on a server.</p>
+<ol class="steps">
+<li>Create a Vite React project (Chapter 3) and move <code>src/</code> into it. In development, run the pretend server only when <code>import.meta.env.DEV</code> is true.</li>
+<li>Write a workflow that, on every pull request, installs with <code>npm ci</code>, then runs the type checker, the unit tests, the end-to-end tests and the size script, and make all four required.</li>
+<li>Write a two-stage <code>Dockerfile</code>: the first stage builds with Node, the second copies <code>dist/</code> into an Nginx image.</li>
+<li>Configure Nginx to send every unknown path to <code>index.html</code>, so <code>/orders/1036</code> works after a reload, and to forward <code>/api/</code> to the real server.</li>
+<li>Add long cache headers for the hashed files in <code>assets/</code>, and none for <code>index.html</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the cache rule in the last step is what makes releases safe. Hashed files never change, so they can be cached for a year; <code>index.html</code> must always be fresh, because it is the file that points to the new hashes.</p>
+</div>

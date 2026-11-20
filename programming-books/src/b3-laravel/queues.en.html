@@ -1,0 +1,207 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/queues/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Queues and Jobs</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide which work belongs in a request and which belongs in a queued job</li>
+<li>write jobs, dispatch them to a Redis queue, and run them with <code>queue:work</code></li>
+<li>retry failed jobs with growing pauses, and stop retrying when it is pointless</li>
+<li>make jobs safe to run twice, and stop the same job from being queued twice</li>
+<li>dispatch only after the database commits, and schedule work for fixed times</li>
+<li>run and watch workers in production</li>
+</ul>
+</div>
+
+<p class="lead">When a customer places an order, the shop has more to do than save it: send a confirmation email, notify the warehouse, update a sales report, maybe resize the photos of a review. If the request does all of that, the customer waits for the slowest service in the chain, and when the mail provider has a bad minute, the order fails even though the order itself was fine. The answer is to do only the essential part in the request, write down the rest as <dfn>jobs</dfn>, and let separate processes do them a moment later. Laravel has queues built in; this chapter runs them on the Redis from Chapter {{n-3}}, for real.</p>
+
+<aside class="bit" data-mood="think"><p>Our first shop sent its emails inside the order request. One Friday evening the mail provider slowed to ten seconds per email, and our checkout took ten seconds too. Customers pressed “pay” again, and some were charged twice. Moving the emails into a queue took an afternoon; it would have saved us that whole weekend.</p></aside>
+
+<h2>{{n}}.1 What belongs in a job</h2>
+
+<p>A request should do what the response depends on, and nothing more. Everything else is a candidate for a job:</p>
+<ul>
+<li><strong>Slow work</strong>: sending email and notifications, generating PDFs and reports, resizing images, calling slow partner APIs.</li>
+<li><strong>Unreliable work</strong>: anything that talks to another service, which will sometimes be down and needs retries.</li>
+<li><strong>Work at a later time</strong>: “remind the customer in 24 hours if the basket is still full”, “the daily sales report at 6 in the morning”.</li>
+<li><strong>Heavy work</strong>: imports and exports of thousands of rows, which would block a PHP worker for minutes.</li>
+</ul>
+
+<p>A <dfn>queue</dfn> connects the two sides. The web request <dfn>dispatches</dfn> a job (a class and its data) onto the queue and answers at once. A <dfn>worker</dfn>, the long-running command <code>php artisan queue:work</code>, takes jobs from the queue and runs them. Redis keeps the queue, so jobs survive a restart of either side, and you can run as many workers as the work needs. Three settings in <code>.env</code> choose the backends: <code>QUEUE_CONNECTION=redis</code>, <code>CACHE_STORE=redis</code> and <code>REDIS_CLIENT=predis</code> (after <code>composer require predis/predis</code>, or install the faster <code>phpredis</code> extension instead).</p>
+
+<h2>{{n}}.2 A job and a worker</h2>
+
+<p>A job is a class with a <code>handle</code> method; <code>php artisan make:job SendOrderConfirmation</code> creates one. Implementing <code>ShouldQueue</code> is what sends it to the queue instead of running it at once:</p>
+
+<pre data-code="shop/app/Jobs/SendOrderConfirmation.php" data-from="class SendOrderConfirmation" data-title="app/Jobs/SendOrderConfirmation.php"></pre>
+
+<ul>
+<li>The constructor’s properties are the job’s data, serialised into the queue. The job carries only the order id, and <code>handle</code> reads the order when it runs, so it always sees the current data.</li>
+<li><code>handle</code> can ask for services, such as the <code>Mailer</code>, and the container passes them in, exactly as in a controller.</li>
+<li><code>$tries</code> and <code>$backoff</code> decide how failures are retried; <code>failed()</code> runs once, after the last attempt.</li>
+</ul>
+
+<p>The “mail service” is a stand-in with bad days built in: order 1003 fails twice before it works. It counts attempts in the cache, so that every worker process sees the same count. (Order 1004’s address in the database has no <code>@</code>, which the job itself detects.)</p>
+
+<pre data-code="shop/app/Support/Mailer.php" data-from="class Mailer" data-title="app/Support/Mailer.php"></pre>
+
+<p>An Artisan command plays the shop. It dispatches inside a transaction, as an order route would, and queues order 1001 twice:</p>
+
+<pre data-code="shop/routes/console.php" data-from="Artisan::command('shop:dispatch'" data-title="routes/console.php"></pre>
+
+<pre data-code="dispatch.sh" data-title="Terminal"></pre>
+
+<p>Dispatching took about a millisecond (the first paid for opening the connection), so the order request stays fast whatever the mail service is doing. Order 1001 was dispatched twice, but the queue holds four jobs: <code>ShouldBeUnique</code> takes a lock in the cache named by <code>uniqueId()</code>, and while a job with that id is waiting, the second dispatch is dropped. And no worker is running yet, so the jobs simply wait in Redis. Now a worker:</p>
+
+<pre data-code="worker.sh" data-title="Terminal"></pre>
+
+<p>Read the times. Orders 1001 and 1002 were sent in 0.3 seconds each. Order 1003 failed, came back a second later, failed again, came back two seconds after that, and was sent on its third attempt, without anyone doing anything. Order 1004 failed at once and was not retried. One worker runs one job at a time; run several <code>queue:work</code> processes for more at once.</p>
+
+<h2>{{n}}.3 Retries and failures</h2>
+
+<p>Retrying is what makes jobs reliable, and the job’s properties decide how:</p>
+<ul>
+<li><code>$tries = 3</code> allows three attempts in total (or <code>--tries</code> on the worker for every job).</li>
+<li><code>$backoff = [1, 2]</code> waits 1 second before the second attempt and 2 before the third. Growing pauses give a struggling service time to recover, instead of hitting it again at once with every queued job. In real systems the waits are longer, such as <code>[10, 60, 300]</code>.</li>
+<li>Some errors will never go away: an invalid address, an order that no longer exists. <code>$this-&gt;fail()</code> ends the job at once, skipping the remaining attempts, as order 1004 shows. For errors that can be retried, simply throw.</li>
+</ul>
+
+<p>A job that runs out of attempts is not lost. It is stored in the <code>failed_jobs</code> table with its exception, and its <code>failed()</code> method runs (here it writes to the log):</p>
+
+<pre data-code="failed.sh" data-title="Terminal"></pre>
+
+<p>In production, failed jobs are a signal: count them and alert when they grow (Chapter {{n+3}}). After the cause is fixed, <code>php artisan queue:retry</code> puts them back on the queue (exercise 4); <code>queue:forget</code> and <code>queue:flush</code> remove them.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: a job can run twice</p><p>Queues promise that a job runs <em>at least</em> once, not exactly once. A worker can be killed after sending the email but before telling Redis the job is done; after <code>retry_after</code> seconds (in <code>config/queue.php</code>) the job is given to a worker again. Every job must be <dfn>idempotent</dfn>: running it twice has the same effect as running it once. Check before acting (“is the confirmation for order 1001 already marked as sent?”), give the mail provider an idempotency key, and make database changes with conditions, as in Chapter {{n-4}}. <code>retry_after</code> must also be longer than your slowest job, or a job still running is started a second time.</p></aside>
+
+<h2>{{n}}.4 Jobs and the database</h2>
+
+<p>The order is saved in PostgreSQL and the job in Redis, and the two cannot share a transaction. Dispatching inside the transaction has two gaps: if it rolls back, the worker may send a confirmation for an order that does not exist; and the worker may run before the commit and not find the order. <code>-&gt;afterCommit()</code> on the dispatch, or <code>'after_commit' =&gt; true</code> for the whole connection in <code>config/queue.php</code>, holds the job back until the transaction commits, and drops it if the transaction rolls back.</p>
+
+<p>One gap remains: if the process dies between the commit and the dispatch, the order exists and its confirmation is never sent. For emails that is usually acceptable and easy to repair with a scheduled check (“orders older than ten minutes without a sent confirmation”). When it is not, use the <dfn>outbox</dfn> from Chapter {{n-4}}: insert the message into an <code>outbox</code> table in the same transaction as the order, and let a scheduled command move outbox rows into the queue. Two more habits keep jobs and data in step:</p>
+<ul>
+<li><strong>Put ids in jobs, not data.</strong> The job above carries <code>orderId</code> and reads the email when it runs. With Eloquent models in the constructor, the <code>SerializesModels</code> behaviour of <code>Queueable</code> does the same: it stores the model’s id and loads it fresh in the worker.</li>
+<li><strong>Keep job data small</strong> and free of secrets: it is stored in Redis and in <code>failed_jobs</code>. Implement <code>ShouldBeEncrypted</code> for jobs that must carry personal data.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did order 1001 end up as one job when it was dispatched twice?</li><li>What is the difference between throwing an exception in <code>handle</code> and calling <code>$this-&gt;fail()</code>?</li><li>What does <code>afterCommit()</code> change when the transaction around the dispatch rolls back?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Scheduled work</h2>
+
+<p>Some jobs are not caused by a request but by the clock. Laravel’s <dfn>scheduler</dfn> declares them in <code>routes/console.php</code>; here the sales report every morning at six, Cairo time:</p>
+
+<pre data-code="shop/routes/console.php" data-from="Schedule::job" data-to="Schedule::job" data-title="routes/console.php"></pre>
+
+<pre data-code="schedule.sh" data-title="Terminal"></pre>
+
+<p>The list shows the cron expression in the server’s time zone, UTC: <code>0 4 * * *</code> is four in the morning UTC, six in Cairo. Always give a time zone, or the report moves by an hour twice a year. On the server, one cron entry runs <code>php artisan schedule:run</code> every minute (or a process runs <code>php artisan schedule:work</code>), and Laravel decides what is due. With several servers, add <code>-&gt;onOneServer()</code>, which takes a lock in the shared cache so that the job is queued once, not once per server.</p>
+
+<h2>{{n}}.6 Running workers in production</h2>
+
+<p>Workers are long-running processes, and they need the same care as web servers:</p>
+<ul>
+<li><strong>A process manager.</strong> Supervisor or systemd (or the container platform of Chapter {{n+6}}) starts <code>queue:work</code>, restarts it if it crashes, and runs as many copies as you need.</li>
+<li><strong>Restart after every deploy.</strong> A worker loads the code once and keeps it in memory, so it keeps running the old code until restarted. <code>php artisan queue:restart</code> tells every worker to finish its current job and exit, and the process manager starts the new code. The same happens gracefully on <code>SIGTERM</code>.</li>
+<li><strong>Limits.</strong> <code>--max-jobs</code> and <code>--max-time</code> make a worker exit after a while, which keeps memory leaks from growing forever; <code>$timeout</code> on a job kills one that hangs.</li>
+<li><strong>Different queues for different work.</strong> <code>-&gt;onQueue('emails')</code> on the dispatch, and <code>queue:work --queue=emails,default</code>, keep password-reset emails from waiting behind slow exports.</li>
+<li><strong>Visibility.</strong> <code>php artisan queue:monitor redis:default --max=100</code> raises an event when a queue grows too long; <dfn>Horizon</dfn>, Laravel’s free dashboard for Redis queues, shows throughput, waiting times and failures, and manages the workers itself.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit: design every job to be retried</p><p>When you write a job, ask three questions before the code: What happens if it runs twice? What happens if it fails halfway? What happens if it runs an hour late? Write the answers as a comment above <code>handle</code>, and make the code match them. Jobs that survive these three questions survive production.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Slow or unreliable work inside the request</td><td>Slow checkouts, failures from other services</td><td>A queued job; answer at once</td></tr>
+<tr><td>Jobs that are not idempotent</td><td>Double emails, double charges after a retry</td><td>Check first, idempotency keys, conditional updates</td></tr>
+<tr><td>No <code>$tries</code> or <code>$backoff</code></td><td>One attempt only, or retries that hammer a service</td><td>Limited attempts with growing pauses</td></tr>
+<tr><td>Retrying errors that can never succeed</td><td>Wasted work, noisy failures</td><td><code>$this-&gt;fail()</code></td></tr>
+<tr><td>Dispatching inside a transaction that may roll back</td><td>Jobs for data that does not exist</td><td><code>afterCommit()</code>, or an outbox</td></tr>
+<tr><td>Not restarting workers after a deploy</td><td>Old code keeps running for days</td><td><code>queue:restart</code> in every deploy</td></tr>
+<tr><td><code>retry_after</code> shorter than the slowest job</td><td>Jobs start a second time while still running</td><td>Longer <code>retry_after</code>, and <code>$timeout</code></td></tr>
+<tr><td>Scheduled jobs on several servers</td><td>The report runs once per server</td><td><code>onOneServer()</code></td></tr>
+<tr><td>Nobody looks at <code>failed_jobs</code></td><td>Silent losses</td><td>Count them, alert, retry after fixing</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A request does what its response needs; slow, unreliable or later work becomes a <strong>job</strong> on a <strong>queue</strong>.</li>
+<li>A job implements <strong><code>ShouldQueue</code></strong>; dispatching takes a millisecond, and <strong><code>queue:work</code></strong> runs jobs in separate processes.</li>
+<li><strong><code>$tries</code></strong> and <strong><code>$backoff</code></strong> make jobs reliable; <code>$this-&gt;fail()</code> stops pointless retries; failed jobs wait in <code>failed_jobs</code> for <code>queue:retry</code>.</li>
+<li>Jobs run <strong>at least once</strong>: make them <strong>idempotent</strong>; <strong><code>ShouldBeUnique</code></strong> keeps one job per order.</li>
+<li>Dispatch <strong>after the commit</strong> or through an <strong>outbox</strong>; put ids in jobs, not copies of data.</li>
+<li>The <strong>scheduler</strong> runs timed jobs in a time zone; workers are supervised, <strong>restarted after deploys</strong>, and watched.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The job implements <code>ShouldBeUnique</code> with <code>uniqueId()</code> returning <code>order-1001</code>; the first dispatch took a lock with that name in the cache, so the second was dropped while the first was still waiting. 2. A thrown exception counts as a failed attempt, and the job is retried after the backoff until <code>$tries</code> is used up; <code>fail()</code> marks the job as failed for good at once, runs <code>failed()</code> and stores it in <code>failed_jobs</code>, without more attempts. 3. The job is held back until the transaction commits; if it rolls back, the job is never queued, so no confirmation goes out for an order that was never saved.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project moves real work of the shop into the background. For each, show what happens when the work fails.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Confirmations from the order controller</h3>
+<p class="project-goal">Dispatch a confirmation from the real order controller of Chapter {{n-7}}, and send it with a Mailable.</p>
+<p class="project-skills"><strong>You will practise:</strong> dispatching after commit, Mailables, the log mail driver, and idempotent jobs.</p>
+<ol class="steps">
+<li>Create a Mailable with <code>php artisan make:mail OrderConfirmed</code>, and set <code>MAIL_MAILER=log</code> so emails go to the log.</li>
+<li>Dispatch a job with the <code>Order</code> model after the order transaction commits.</li>
+<li>Add a <code>confirmation_sent_at</code> column; the job skips orders that already have one and sets it after sending.</li>
+<li>Run the job twice for the same order in a test, and assert that one email was sent (<code>Mail::fake()</code>).</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>Mail::to($order-&gt;customer)-&gt;queue(new OrderConfirmed($order))</code> queues a Mailable without writing a job class, but then the idempotency check has nowhere to live.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Abandoned basket reminders</h3>
+<p class="project-goal">Remind customers about a full basket 24 hours later, unless they have ordered in the meantime.</p>
+<p class="project-skills"><strong>You will practise:</strong> delayed jobs, unique jobs, and checking the current state when a job runs.</p>
+<ol class="steps">
+<li>When a basket changes, dispatch a job with <code>-&gt;delay(now()-&gt;addDay())</code>.</li>
+<li>Make it unique per customer with <code>ShouldBeUnique</code> and a <code>uniqueFor</code> of a day, so changes do not pile up reminders.</li>
+<li>In <code>handle</code>, check again that the basket is still full and no order was placed, before sending anything.</li>
+<li>Test it with <code>Queue::fake()</code> for the dispatch, and by running the job directly for the check.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the check in <code>handle</code> is what makes it correct; uniqueness only keeps the queue small.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>An outbox relay</h3>
+<p class="project-goal">Guarantee that every committed order gets its confirmation job, even if the process dies right after the commit.</p>
+<p class="project-skills"><strong>You will practise:</strong> the outbox pattern, <code>lockForUpdate()-&gt;skipLocked()</code>, the scheduler, and at-least-once delivery.</p>
+<ol class="steps">
+<li>In the order transaction, insert a row into <code>outbox</code> (type, payload, created) instead of dispatching.</li>
+<li>Write a command, scheduled every minute with <code>withoutOverlapping()</code>, that takes up to 100 unsent rows with <code>lockForUpdate()-&gt;skipLocked()</code>, dispatches each, and marks them sent.</li>
+<li>Make the job unique by outbox row id, so a row dispatched twice gives one job.</li>
+<li>Kill the command after dispatching but before marking rows sent, run it again, and show one email per order.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>skipLocked()</code> lets two relays share the outbox without waiting for each other; on PostgreSQL it becomes <code>FOR UPDATE SKIP LOCKED</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, say whether it belongs in the request or in a job, and why: checking stock before accepting an order; sending the order confirmation; charging the card; generating the monthly invoice PDF.</li>
+<li><span class="level">Easy</span> With <code>$tries = 5</code> and <code>$backoff = [10, 60, 300]</code>, how long after the first failure does each attempt start, at the earliest?</li>
+<li><span class="level">Medium</span> A worker sends the email and is killed before the job is marked done. What happens next, and what must the job do so that the customer gets one email?</li>
+<li><span class="level">Medium</span> The address of order 1004 has been corrected in the database. Retry the failed job, and run the worker again.</li>
+<li><span class="level">Challenge</span> The PDF export queue sometimes holds 5,000 jobs, and password-reset emails queued behind them wait for an hour. Propose two designs that keep the emails fast, and compare them.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Jobs run behind the scenes; some changes should appear in front of the user at once. Real-time features with Reverb: WebSockets, broadcasting events, and pushing an order’s status to the screen the moment it changes.</p>
+</div>
+</section>

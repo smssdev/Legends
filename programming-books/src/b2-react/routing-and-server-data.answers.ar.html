@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>أضف <code>{ path: "about", element: &lt;About /&gt; }</code> إلى أبناء مسار التخطيط، و<code>&lt;NavLink to="/about"&gt;من نحن&lt;/NavLink&gt;</code> إلى شريط التنقل. ويبرزه <code>NavLink</code> وحده.</li>
+<li><code>const client = useQueryClient(); const list = client.getQueryData&lt;Product[]&gt;(["products", null]);</code> ثم ابحث عن موضع المنتج بـ <code>findIndex</code>، وارسم «المنتج {index + 1} من {list.length}» فقط حين توجد <code>list</code> ولا يساوي الموضع −1. وقراءة الذاكرة المؤقتة لا ترسل أي طلب.</li>
+<li>اقرأ <code>q</code> بـ <code>params.get("q")</code>، وأضفه إلى المفتاح، وصفِّ بـ <code>p.name.toLowerCase().includes(q.toLowerCase())</code>. وحدّثه كما في المشروع {{n}}.2، بنسخ المعاملات أولاً لتبقى الفئة.</li>
+<li><code>const id = Number(params.id); if (!Number.isInteger(id)) return &lt;p&gt;لا يوجد منتج بهذا الرقم.&lt;/p&gt;;</code> قبل الاستعلام، أو مرّر <code>enabled: Number.isInteger(id)</code> إلى <code>useQuery</code> فلا يعمل أبداً.</li>
+<li><code>useEffect(() =&gt; { client.prefetchQuery({ queryKey: ["product", id + 1], queryFn: () =&gt; getProduct(id + 1) }); }, [id]);</code> و<code>&lt;Link to={`/products/${id + 1}`}&gt;</code>. وحين يضغط المستخدم يجد الاستعلام المنتج في الذاكرة المؤقتة فيعرضه دون هيكل تحميل.</li>
+</ol>

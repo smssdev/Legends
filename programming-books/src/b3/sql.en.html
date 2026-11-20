@@ -1,0 +1,268 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/sql/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>SQL and PostgreSQL</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>design tables with the right types, and let the database enforce your rules</li>
+<li>read data with <code>SELECT</code>, filters, sorting, and the strange logic of <code>NULL</code></li>
+<li>combine tables with joins, and summarise them with <code>GROUP BY</code></li>
+<li>write CTEs and window functions for questions that plain queries cannot answer</li>
+<li>change data with <code>RETURNING</code> and upserts</li>
+<li>read a query plan, and add the index that turns a scan into a lookup</li>
+<li>send values to SQL safely from your code, so that SQL injection cannot happen</li>
+</ul>
+</div>
+
+<p class="lead">Until now the shop kept its data in memory, in a file, or in a database we did not look inside. Part 2 opens the database. Almost every backend you will work on keeps its important data in a relational database, and almost every serious performance problem you will meet ends in a query. SQL is fifty years old and will outlive the frameworks in this book; learning it well is one of the best investments a backend developer can make. We use PostgreSQL, the most capable free database, and run every query for real on a shop with a hundred thousand orders.</p>
+
+<aside class="bit" data-mood="think"><p>For years I treated the database as a place to put things, and wrote everything else in code: loops over rows, checks before every insert, totals summed in JavaScript. Then a colleague replaced two hundred lines of my code with one query that ran fifty times faster. That was the day I started learning SQL properly.</p></aside>
+
+<h2>{{n}}.1 Tables, types and rules</h2>
+
+<p>A relational database stores data in <dfn>tables</dfn>. Each table has fixed <dfn>columns</dfn>, each with a type, and any number of <dfn>rows</dfn>. Tables refer to each other through ids. Here is the shop:</p>
+
+<pre data-code="schema.sql" data-title="schema.sql"></pre>
+
+<p>Read it slowly, because every word is a decision:</p>
+<ul>
+<li><strong>Types.</strong> <code>bigint</code> for ids, because <code>integer</code> stops at about two billion. <code>text</code> for strings, with no arbitrary length limit (PostgreSQL stores <code>text</code> and <code>varchar</code> the same way). <code>integer</code> for money in piastres. <code>timestamptz</code> for moments in time: it stores an exact instant, in UTC, and never confuses time zones. Never use <code>timestamp</code> without a time zone for events.</li>
+<li><strong><code>GENERATED ALWAYS AS IDENTITY</code></strong> numbers rows automatically. It is the standard way; the older <code>serial</code> works too.</li>
+<li><strong><code>PRIMARY KEY</code></strong> identifies each row: unique, never null, and indexed.</li>
+<li><strong><code>NOT NULL</code></strong>, <strong><code>UNIQUE</code></strong> and <strong><code>CHECK</code></strong> are rules the database enforces on every write.</li>
+<li><strong><code>REFERENCES</code></strong> is a <dfn>foreign key</dfn>: an order cannot point to a customer who does not exist. <code>ON DELETE CASCADE</code> deletes an order’s items with the order.</li>
+<li><strong><code>order_items</code></strong> has a <em>composite</em> primary key: one row per product per order. It also copies the price, because product prices change and an order must not.</li>
+</ul>
+
+<p>Start PostgreSQL (the book’s code repository has a one-line script for Docker, or install it from postgresql.org), create the tables, and fill them with seven named customers, two thousand generated ones, and a hundred thousand orders:</p>
+
+<pre data-code="load.sh" data-title="Terminal"></pre>
+
+<p><code>psql</code> is PostgreSQL’s command line. Typed alone, <code>psql shop</code> opens a session with the prompt <code>shop=#</code>, where you type SQL ending with a semicolon. Its backslash commands describe the database:</p>
+
+<pre data-code="describe.sh" data-title="psql"></pre>
+
+<h3>Let the database say no</h3>
+
+<p>Every rule in the schema is enforced, whichever program writes the data: your API, a script someone runs at midnight, or a colleague in <code>psql</code>:</p>
+
+<pre data-code="rules.sh" data-title="psql"></pre>
+
+<p>A price of zero, an order for a customer who does not exist, a second account with the same email, stock below zero: each is refused, with a message that names the rule. Validation in the application gives users friendly messages; constraints in the database guarantee the data stays correct when the application has a bug. You want both.</p>
+
+<h2>{{n}}.2 Reading: SELECT</h2>
+
+<p>A query names the columns it wants, the table, the rows (<code>WHERE</code>), the order, and how many:</p>
+
+<pre data-code="select.sh" data-title="psql"></pre>
+
+<p>Write SQL keywords in capitals and names in lower case, one clause per line. SQL does not care, but readers do. The second query uses <dfn>aggregate functions</dfn>, which turn many rows into one: <code>count</code>, <code>sum</code>, <code>min</code>, <code>max</code> and <code>avg</code>.</p>
+
+<h3>NULL: the missing value</h3>
+
+<p><code>NULL</code> means “unknown” or “missing”. Karim has no city. That sounds simple, until you compare:</p>
+
+<pre data-code="null.sh" data-title="psql"></pre>
+
+<p>Is an unknown city equal to an unknown city? SQL’s answer is “unknown”: <code>NULL = NULL</code> is <code>NULL</code>, not true. A <code>WHERE</code> keeps only rows where the condition is <em>true</em>, so <code>city = NULL</code> keeps nothing, ever. Use <code>IS NULL</code> and <code>IS NOT NULL</code>. Arithmetic with <code>NULL</code> gives <code>NULL</code> too, and aggregates such as <code>sum</code> skip <code>NULL</code> values. The best defence is <code>NOT NULL</code> on every column that has no good reason to be empty.</p>
+
+<h2>{{n}}.3 Joins: combining tables</h2>
+
+<p>A <dfn>join</dfn> puts together rows from several tables that belong together. To list each named customer’s orders with their totals, the query joins customers to their orders and orders to their items, then groups the items of each order:</p>
+
+<pre data-code="join.sh" data-title="psql"></pre>
+
+<p><code>JOIN … ON</code> (an <dfn>inner join</dfn>) keeps only the combinations that match. That is why Karim and Hana, who have no orders, are missing. To keep every customer, use a <dfn>left join</dfn>: every row of the left table, with <code>NULL</code> where the right table has nothing:</p>
+
+<pre data-code="left.sh" data-title="psql"></pre>
+
+<p>Notice <code>count(o.id)</code>, not <code>count(*)</code>. <code>count(*)</code> counts rows, and Karim’s row exists (with <code>NULL</code> for the order), so it would say 1. <code>count(o.id)</code> counts the values that are not <code>NULL</code>, so it says 0. This small difference hides in many reports.</p>
+
+<h2>{{n}}.4 Grouping and summarising</h2>
+
+<p><code>GROUP BY</code> makes one result row per group, and aggregates summarise each group. <code>HAVING</code> filters the groups, as <code>WHERE</code> filters rows:</p>
+
+<pre data-code="group.sh" data-title="psql"></pre>
+
+<p>Read the order in which the database works, which is not the order in which the query is written: <code>FROM</code> and the joins first, then <code>WHERE</code> (cancelled orders go), then <code>GROUP BY</code>, then <code>HAVING</code> (products that sold 26,600 units or fewer go), then <code>SELECT</code>, then <code>ORDER BY</code>. That is why <code>WHERE</code> cannot use <code>sum(...)</code>: when it runs, there are no groups yet.</p>
+
+<p>Money is still in piastres in the sums, and divided by 100 only at the end, for display. Integer division would be wrong for an amount like 12,550 piastres; here every revenue happens to be whole pounds. In an API, send piastres and let the client format them.</p>
+
+<h2>{{n}}.5 CTEs and window functions</h2>
+
+<p>Some questions need a result to build on. “Rank the named customers by what they spent, and show each one’s share” needs the totals first, then a ranking over them:</p>
+
+<pre data-code="window.sh" data-title="psql"></pre>
+
+<ul>
+<li><code>WITH spent AS (…)</code> is a <dfn>common table expression</dfn> (CTE): a named query used by the next one. It reads like a variable, and keeps long queries understandable.</li>
+<li><code>rank() OVER (ORDER BY …)</code> is a <dfn>window function</dfn>: it computes over a set of rows <em>without collapsing them</em>, unlike <code>GROUP BY</code>. Each customer keeps their row and gets a rank.</li>
+<li><code>sum(s.total) OVER ()</code> is an aggregate used as a window over all rows: the grand total, next to every row, so each row can compute its share.</li>
+</ul>
+
+<p>Window functions answer the questions reports always ask: rankings, running totals, the previous month for comparison (<code>lag</code>), the top three per category. Without them, you would write loops in code over thousands of rows.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does <code>WHERE city = NULL</code> return no rows, even for customers without a city?</li><li>A report counts each customer’s orders with a <code>LEFT JOIN</code> and <code>count(*)</code>. What is wrong with it?</li><li>Why can’t <code>WHERE sum(quantity) &gt; 100</code> work, and what do you write instead?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Writing: INSERT, UPDATE, DELETE</h2>
+
+<p>Writes can answer too. <code>RETURNING</code> gives back columns of the rows that were written, so the application gets the new id and the defaults without a second query. <code>ON CONFLICT</code> turns an insert that would break a unique rule into an update, an <dfn>upsert</dfn>:</p>
+
+<pre data-code="write.sh" data-title="psql"></pre>
+
+<p>The upsert is one statement, so two requests that register the same email at the same moment cannot both insert: the database decides. Doing the same in code (“check whether it exists, then insert”) leaves a gap between the check and the insert in which another request can slip through. Chapter {{n+2}} is about exactly these gaps.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: UPDATE and DELETE without WHERE</p><p><code>DELETE FROM orders;</code> deletes every order, instantly, without asking. Before running an <code>UPDATE</code> or a <code>DELETE</code> by hand, run the same <code>WHERE</code> as a <code>SELECT</code> and check the rows. Better still, start a transaction with <code>BEGIN;</code>, run the change, look at the result, and only then <code>COMMIT;</code> (or <code>ROLLBACK;</code>). Chapter {{n+2}} explains transactions.</p></aside>
+
+<h2>{{n}}.7 Indexes and query plans</h2>
+
+<p>The <code>orders</code> table has a hundred thousand rows. How does PostgreSQL find the orders of customer 1234? <code>EXPLAIN</code> shows the <dfn>plan</dfn> the database chose; with <code>ANALYZE</code>, it also runs the query and reports what really happened:</p>
+
+<pre data-code="slow.sh" data-title="psql"></pre>
+
+<p>A <dfn>sequential scan</dfn>: PostgreSQL read all 100,006 rows and threw away 99,962 to find 44. Five milliseconds sounds small, but it grows with the table, and the API does it on every request for every user. An <dfn>index</dfn> is a separate, sorted structure (a B-tree) that maps values to rows, like the index at the back of this book:</p>
+
+<pre data-code="index.sh" data-title="psql"></pre>
+
+<p>Now the database goes straight to the 44 rows through the index: several times faster here, and the gap widens as the table grows, because a B-tree lookup takes about the same time for a million rows as for a thousand. Three rules about indexes:</p>
+<ul>
+<li><strong>PostgreSQL does not index foreign keys for you.</strong> <code>orders.customer_id</code> had no index until we added one. Index the foreign keys you search or join by.</li>
+<li><strong>An index serves the queries that match it.</strong> A query that wraps the column in a function cannot use a plain index on the column. You can index the expression itself:</li>
+</ul>
+
+<pre data-code="expression.sh" data-title="psql"></pre>
+
+<ul>
+<li><strong>Indexes are not free.</strong> Each one takes space and slows every insert and update, which must update the index too. Add them for the queries you actually run, as shown by <code>EXPLAIN</code> and by the slow query log, not “just in case”.</li>
+</ul>
+
+<p>For a column pair such as <code>(price, id)</code>, the order matters: the index is sorted by price first, so it serves <code>WHERE price = …</code> and <code>ORDER BY price, id</code>, but not a search by <code>id</code> alone. Chapter {{n+10}} goes deeper into plans and tuning.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: EXPLAIN before you ship</p><p>For every new query that will run on a large or growing table, run <code>EXPLAIN ANALYZE</code> on realistic data before the code is merged, and paste the plan in the pull request. A <code>Seq Scan</code> on a big table in a request path is a bug waiting for traffic. Testing on a table with twelve rows proves nothing: generate data, as <code>seed.sql</code> does with <code>generate_series</code>.</p></aside>
+
+<h2>{{n}}.8 SQL from code, safely</h2>
+
+<p>Applications send SQL to the database through a driver. The single most important rule: <strong>never build SQL by joining strings with input</strong>. Here is why, with an input that a form could send as an email address:</p>
+
+<!-- node -->
+<pre data-code="node/query.ts" data-title="node/query.ts"></pre>
+
+<pre data-code="node.sh" data-title="Terminal"></pre>
+
+<p>Glued into the SQL, the input closed the quote and added <code>OR '1'='1'</code>, which is always true: the query returned every customer, 2008 rows, instead of none. This is <dfn>SQL injection</dfn>, still one of the most common and most damaging attacks on the web: with a slightly different input, an attacker can read any table, or delete them. With a <dfn>parameter</dfn>, <code>$1</code>, the SQL and the value are sent to the database separately; the value can never become SQL, whatever it contains, and the same query found no customer with that strange email.</p>
+
+<p>Notice the last line: <code>orders</code> arrived as the string <code>'2'</code>. <code>count(*)</code> returns a <code>bigint</code>, and a JavaScript number cannot hold every <code>bigint</code> exactly, so the <code>pg</code> driver plays safe and returns a string. Convert it when you know the value is small (<code>Number(row.orders)</code>), or cast in SQL (<code>count(*)::int</code>). Chapter {{n+1}} adds a typed layer that does this once.</p>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/query.php" data-title="php/query.php"></pre>
+
+<pre data-code="php.sh" data-title="Terminal"></pre>
+
+<p>Glued into the SQL, the input closed the quote and added <code>OR '1'='1'</code>, which is always true: the query returned every customer, 2008 rows, instead of none. This is <dfn>SQL injection</dfn>, still one of the most common and most damaging attacks on the web: with a slightly different input, an attacker can read any table, or delete them. With a <dfn>prepared statement</dfn> and a <code>?</code> placeholder, the SQL and the value are sent to the database separately; the value can never become SQL, whatever it contains, and the same query found no customer with that strange email.</p>
+
+<p>PDO is PHP’s database layer, and it is what Laravel uses underneath: <code>DB::select('… where email = ?', [$email])</code>, the query builder and Eloquent all send parameters this way. They are only unsafe when you put input into the SQL text yourself, for example in <code>DB::raw()</code> or <code>whereRaw()</code> with string concatenation. Notice also that <code>count</code> arrived as a PHP <code>int</code>: PDO for PostgreSQL converts integer columns to PHP integers. Chapter {{n+1}} puts Eloquent on top of this.</p>
+<!-- /laravel -->
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Strings concatenated into SQL</td><td>SQL injection</td><td>Parameters, always</td></tr>
+<tr><td>Rules only in application code</td><td>Bad data from bugs, scripts and other apps</td><td><code>NOT NULL</code>, <code>CHECK</code>, <code>UNIQUE</code>, foreign keys</td></tr>
+<tr><td><code>= NULL</code></td><td>Matches nothing, ever</td><td><code>IS NULL</code></td></tr>
+<tr><td><code>count(*)</code> with a left join</td><td>Zero counted as one</td><td>Count a column of the right table</td></tr>
+<tr><td>Floats or <code>numeric</code> for money without thought</td><td>Rounding errors, mixed units</td><td>Integers in minor units</td></tr>
+<tr><td><code>timestamp</code> without time zone</td><td>Times that shift with servers and seasons</td><td><code>timestamptz</code>, UTC</td></tr>
+<tr><td>Foreign keys without indexes</td><td>Full scans on every join and lookup</td><td>Index the keys you search by</td></tr>
+<tr><td>Check, then insert</td><td>Duplicates when two requests race</td><td>A unique rule and <code>ON CONFLICT</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Tables have typed columns: <code>bigint</code> ids, <code>text</code>, <code>integer</code> money, <code>timestamptz</code> times. <strong>Constraints</strong> (<code>PRIMARY KEY</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code>, <code>REFERENCES</code>) keep data correct whatever writes it.</li>
+<li><code>SELECT … FROM … WHERE … ORDER BY … LIMIT</code> reads rows; aggregates summarise them.</li>
+<li><strong><code>NULL</code></strong> is unknown: compare it with <code>IS NULL</code>; it spreads through arithmetic.</li>
+<li><strong>Inner joins</strong> keep matches; <strong>left joins</strong> keep every left row. Count a right-table column, not <code>*</code>.</li>
+<li><strong><code>GROUP BY</code></strong> makes groups, <strong><code>HAVING</code></strong> filters them; the database runs <code>FROM</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>SELECT</code>, <code>ORDER BY</code> in that order.</li>
+<li><strong>CTEs</strong> name intermediate results; <strong>window functions</strong> compute across rows without collapsing them.</li>
+<li><strong><code>RETURNING</code></strong> and <strong><code>ON CONFLICT</code></strong> make writes answer and upserts atomic.</li>
+<li><strong><code>EXPLAIN ANALYZE</code></strong> shows the plan; <strong>indexes</strong> turn scans into lookups. Index foreign keys and real query patterns, including expressions.</li>
+<li><strong>Parameters</strong>, never string concatenation, between code and SQL.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Comparing anything with <code>NULL</code> gives <code>NULL</code> (unknown), never true, and <code>WHERE</code> keeps only rows where the condition is true; use <code>IS NULL</code>. 2. <code>count(*)</code> counts rows, and a customer with no orders still has one row in a left join (with <code>NULL</code>s), so they get 1 instead of 0; count a column from the orders table, such as <code>count(o.id)</code>. 3. <code>WHERE</code> runs before the rows are grouped, so there is no sum yet; filter groups with <code>HAVING sum(quantity) &gt; 100</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Use the shop database from this chapter (or your own copy, loaded with <code>schema.sql</code> and <code>seed.sql</code>). Save each project’s SQL in a file, and run it with <code>psql shop -f</code>.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A sales report in SQL</h3>
+<p class="project-goal">Write the queries behind a monthly sales report, without a single loop in application code.</p>
+<p class="project-skills"><strong>You will practise:</strong> joins, grouping, date functions, <code>HAVING</code>, and formatting results.</p>
+<ol class="steps">
+<li>Revenue and number of orders per month for the last six months, cancelled orders excluded (use <code>date_trunc('month', created_at)</code>).</li>
+<li>The five best-selling products of the last 30 days by units, with their share of all units sold.</li>
+<li>Customers who ordered more than ten times but not in the last 60 days: people the shop might email.</li>
+<li>For each city, the number of customers and the average order total, cities with fewer than 100 customers left out.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> write each query in small steps with CTEs, checking each step’s result before adding the next. A long query written in one go is almost always wrong somewhere.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Reviews, with rules in the database</h3>
+<p class="project-goal">Add product reviews to the schema with every rule enforced by PostgreSQL, and prove each rule with a failing insert.</p>
+<p class="project-skills"><strong>You will practise:</strong> table design, constraints, composite keys, indexes, and testing rules.</p>
+<ol class="steps">
+<li>Create <code>reviews</code>: a product, a customer, a rating from 1 to 5, a text of 10 to 2000 characters, and a creation time.</li>
+<li>A customer may review a product only once: enforce it with a unique rule. Decide what happens to reviews when a product or a customer is deleted, and write it in the foreign keys.</li>
+<li>Write one insert per rule that must fail, and check each error message names the rule you expect.</li>
+<li>Add the index needed to list a product’s reviews newest first, and confirm it with <code>EXPLAIN</code> after generating 50,000 reviews.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> name your constraints (<code>CONSTRAINT reviews_rating_range CHECK (…)</code>). The name appears in error messages and logs, and a good name tells the next developer exactly which rule was broken.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Find and fix the slow queries</h3>
+<p class="project-goal">Make a set of realistic shop queries fast on a million orders, proving each improvement with <code>EXPLAIN ANALYZE</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading plans, composite and partial indexes, and judging when an index is worth it.</p>
+<ol class="steps">
+<li>Grow the data to a million orders by changing <code>generate_series</code> in <code>seed.sql</code>.</li>
+<li>Measure these queries before any new index: one customer’s last 10 orders; all pending orders older than a day; orders containing a given product in the last month; customers by email ignoring case.</li>
+<li>Add one index at a time, measure again, and record the time and the plan before and after in a table.</li>
+<li>Measure how much slower inserting 10,000 orders becomes with all your indexes, and decide which index is not worth keeping.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the order of columns in a composite index follows the query: columns compared with <code>=</code> first, then the column you sort or range over. For “one customer’s latest orders”, that is <code>(customer_id, created_at DESC)</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> List the named customers (ids 1 to 7) who live in Cairo, with their emails, sorted by name.</li>
+<li><span class="level">Easy</span> A colleague writes <code>WHERE city != 'Cairo'</code> to find customers outside Cairo, and Karim is missing from the result. Explain why, and fix the query.</li>
+<li><span class="level">Medium</span> Find the products that none of the named customers’ orders (ids above 100000) contain, with a <code>LEFT JOIN</code>.</li>
+<li><span class="level">Medium</span> The admin page lists pending orders from the last week, many times a minute. Design an index for <code>WHERE status = 'pending' AND created_at &gt; …</code> that stays small, and show that PostgreSQL uses it.</li>
+<li><span class="level">Challenge</span> Show the revenue of each month, a running total since the first month, and the change from the previous month, in one query, for the first four months of the data.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<!-- node -->
+<p>Writing SQL by hand for every table gets repetitive, and schemas change over time. Next we model data in TypeScript, change the schema safely with migrations, and choose between a query builder and an ORM.</p>
+<!-- /node -->
+<!-- laravel -->
+<p>Writing SQL by hand for every table gets repetitive. Next comes Eloquent, Laravel’s ORM, properly: models, relationships, migrations on PostgreSQL, and the N+1 problem that every ORM user must learn to see.</p>
+<!-- /laravel -->
+</div>
+</section>

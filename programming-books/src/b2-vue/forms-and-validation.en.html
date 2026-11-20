@@ -1,0 +1,198 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/vue/forms/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Forms and Validation</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>bind every kind of input with <code>v-model</code> and its modifiers</li>
+<li>describe a form’s rules once, in a zod schema that also gives you the TypeScript type</li>
+<li>build a small form composable: values, errors, touched fields and submitting</li>
+<li>show errors at the right moment, accessibly, and move the focus to them</li>
+<li>show errors that only the server can find, under the right field</li>
+<li>split long forms into steps that check only their own fields</li>
+</ul>
+</div>
+
+<p class="lead">Forms are where users give your app their data: a name, an address, a password, money. They are also where most frustration on the web happens: rules that are not explained, errors that appear too early or too late, typed text that vanishes after a failed submit. A good form is mostly a list of small decisions made well. This chapter makes them once, in a schema and a composable that every form can reuse.</p>
+
+<aside class="bit" data-mood="think"><p>The browser checks nothing that matters on its own, and the server must check everything again anyway. So why validate in the form at all? Because it is the only place where you can help the user fix the mistake while they are still typing.</p></aside>
+
+<h2>{{n}}.1 <code>v-model</code> on every kind of input</h2>
+
+<p>In Vue, the value of a field lives in your state, and <code>v-model</code> keeps the two in step. It adapts to the kind of input:</p>
+
+<ul>
+<li>A text input or <code>&lt;textarea&gt;</code> binds a string. <code>v-model.trim</code> removes spaces at the ends, <code>v-model.number</code> converts to a number, and <code>v-model.lazy</code> updates only when the field is left.</li>
+<li>A checkbox binds a boolean, or, with an array, the list of checked values.</li>
+<li>Radio buttons with the same <code>v-model</code> bind the <code>value</code> of the chosen one.</li>
+<li>A <code>&lt;select&gt;</code> binds the <code>value</code> of the chosen option.</li>
+</ul>
+
+<p>Because the values are in state, everything else is ordinary Vue: a <code>computed</code> can check them, a watcher can save a draft, and the template can show anything derived from them.</p>
+
+<h2>{{n}}.2 One schema for the rules</h2>
+
+<p>Every form has rules: required fields, formats, limits. Written by hand, they end up in three places: the form, the TypeScript type, and the server. zod, which you met in Chapter 2, describes them once:</p>
+
+<pre data-code="contact-schema.ts" data-title="contact-schema.ts"></pre>
+
+<ul>
+<li>Each field has its rules and its own message, written for the user: what is wrong and how to fix it.</li>
+<li><code>z.coerce.number()</code> turns the text of the age field into a number before checking it. Inputs always give text; the schema decides what it becomes.</li>
+<li><code>z.infer</code> gives the type of the <em>result</em>, with <code>age</code> as a number and the name trimmed, so the code after validation is fully typed.</li>
+</ul>
+
+<p>The same schema runs anywhere, including on the server, where it must run again, because anyone can send data without your form:</p>
+
+<pre data-code="validate.ts" data-title="validate.ts"></pre>
+<pre data-out="validate.mjs"></pre>
+
+<h2>{{n}}.3 A form composable</h2>
+
+<p>A real form needs more than a schema: it must know which fields the user has visited, whether a submit was tried, whether it is sending, and where to put errors that come back from the server. This is the same work for every form, so it belongs in a composable, as in Chapter {{n-2}}:</p>
+
+<pre data-code="useForm.ts" data-title="useForm.ts"></pre>
+
+<p>The composable keeps the values in a <code>reactive</code> object, checks them with the schema whenever they change, and exposes only the errors the user should see now. <code>handleSubmit</code> wraps the code that sends the data: it marks the form as submitted, stops and moves the focus if anything is wrong, and passes the <em>parsed</em> data, typed and converted, to your function.</p>
+
+<p>Each field also needs the same markup around it: a label, the input, and an error linked to the input. A component with a scoped slot writes it once:</p>
+
+<pre data-code="FormField.vue" data-title="FormField.vue"></pre>
+
+<p>The slot hands its attributes to the input, so the label’s <code>for</code>, the input’s <code>aria-invalid</code> and <code>aria-describedby</code>, and the error’s <code>id</code> always match. A screen reader reading the field also reads its error. And the form itself becomes a short list of fields:</p>
+
+<pre data-code="ContactForm.vue" data-title="ContactForm.vue"></pre>
+
+<figure data-render="contact.html" data-width="560" data-actions="fill:#name|S;fill:#email|sara@;click:button;wait:200"><figcaption><b>Figure {{n}}.1:</b> After pressing “Send” with a short name and a broken email: every error is shown under its field, and the focus has moved to the first one.</figcaption></figure>
+
+<h3>When to show errors</h3>
+
+<p>Errors shown while the user is still typing the first letters are noise: “invalid email” after one letter is not helpful, it is rude. Errors shown only after submit are too late. The composable follows the rule that most good forms use: a field’s error appears when the user <em>leaves</em> the field (<code>@blur</code>), or tries to submit. After that, it updates as the user types, so it disappears the moment the value is fixed.</p>
+
+<aside class="box tip"><p class="box-title">Tip: help the browser help the user</p><p>The right <code>type</code>, <code>inputmode</code> and <code>autocomplete</code> cost nothing and save users a lot of typing: <code>type="email"</code> shows the @ key on phones, <code>inputmode="numeric"</code> shows digits, and <code>autocomplete="email"</code> lets the browser fill in a saved address. Emails, phone numbers and passwords also get <code>dir="ltr"</code>, so they read correctly in Arabic pages.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why must the server validate the data again, even if the form already did?</li><li>What does <code>z.infer</code> give you?</li><li>Why does the composable wait until a field is left before showing its error?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Errors only the server knows</h2>
+
+<p>Some rules cannot be checked in the browser: is this email already registered? Is this coupon still valid? The server answers with errors per field, and they should appear exactly like the form’s own errors, under the field, with the focus moved there. In <code>useForm</code>, the function passed to <code>handleSubmit</code> can return such errors; Project {{n}}.2 uses it for an email that already has an account.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: never lose what the user typed</p><p>After a failed submit, keep every value in the form. The only exceptions are passwords and card numbers, which many sites clear on purpose. Nothing makes users leave faster than retyping a long form because one field was wrong.</p></aside>
+
+<h2>{{n}}.5 Forms in several steps</h2>
+
+<p>A long form, such as a checkout, is easier in steps. The data is still one object with one schema; each step lists the fields it is responsible for, and “Next” checks only those, with <code>checkFields</code>. The last step shows a summary and submits the whole form, checked against the whole schema. Project {{n}}.3 builds one.</p>
+
+<h2>{{n}}.6 Form libraries</h2>
+
+<p>The composable in this chapter is about seventy lines, and it is enough for many apps. Large apps with many complex forms often use a library, which adds features such as field arrays, async rules and fine-grained performance:</p>
+<ul>
+<li><strong>VeeValidate</strong> is the most used in Vue. At the time of writing, its stable version 4.15 accepts zod 3 schemas through <code>@vee-validate/zod</code>, and version 5, still in beta, adds support for zod 4 and other schema libraries directly.</li>
+<li><strong>TanStack Form</strong>, from the authors of TanStack Query, accepts zod 4 schemas directly.</li>
+</ul>
+<p>All of them do what you just built: values, errors, touched fields, submitting and server errors, around a schema. Knowing how it works inside lets you choose one with open eyes, or decide you do not need one.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: write the error messages with the design</p><p>Every rule needs a message that says what is wrong <em>and</em> how to fix it, in the user’s language: not “Invalid input” but “Please enter an 11-digit Egyptian mobile number.” Write the messages when the form is designed, review them like any other text, and keep them next to the rules, in the schema.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Rules only in the browser</td><td>Anyone can send bad data straight to the server</td><td>Check the same schema on the server</td></tr>
+<tr><td>Rules written in three places</td><td>The form, the type and the server disagree</td><td>One schema, with <code>z.infer</code> for the type</td></tr>
+<tr><td>Errors shown on the first keystroke</td><td>A form that scolds the user</td><td>Show them after the field is left, or after submit</td></tr>
+<tr><td>Errors not linked to their input</td><td>Screen readers never read them</td><td><code>aria-invalid</code> and <code>aria-describedby</code></td></tr>
+<tr><td>Placeholders instead of labels</td><td>The hint disappears when typing starts</td><td>A real <code>&lt;label&gt;</code> for every field</td></tr>
+<tr><td>Clearing the form after a server error</td><td>Users retype everything</td><td>Keep the values; show the error under the field</td></tr>
+<tr><td>Using the text of a number field as a number</td><td><code>"27" + 1</code> is <code>"271"</code></td><td>Let the schema convert, with <code>z.coerce</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><code>v-model</code> binds every kind of input to state; <code>.trim</code>, <code>.number</code> and <code>.lazy</code> adjust it.</li>
+<li>A <strong>zod schema</strong> holds the rules and the messages once, converts the values, and gives the type with <code>z.infer</code>. The server checks it again.</li>
+<li>A <strong>form composable</strong> keeps values, errors, touched fields and the submitting state, and passes parsed data to your submit function.</li>
+<li>Show errors <strong>after a field is left</strong> or a submit is tried, linked with <code>aria-describedby</code>, and move the focus to the first one.</li>
+<li><strong>Server errors</strong> go under the right field; never clear what the user typed.</li>
+<li><strong>Steps</strong> check only their own fields; the last step checks the whole schema.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because anyone can send data to the server without the form, for example with a script, so the form’s checks protect nothing. 2. The TypeScript type of the data <em>after</em> validation, with conversions applied, such as <code>age</code> as a number. 3. Because errors on the first letters only scold the user for an answer they have not finished writing.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">For each form, write the schema first, with every error message, and test it with <code>safeParse</code> in Node before you build any screen. When the rules are right, the form is mostly wiring.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>An accessible contact form</h3>
+<p class="project-goal">Finish the contact form from this chapter, and make sure every field is labelled, linked to its error, and receives the focus when it is wrong.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useForm</code>, a field component with a scoped slot, <code>@blur</code>, and accessibility attributes.</p>
+<ol class="steps">
+<li>Write the schema and infer the type. Give every rule a message that explains the fix.</li>
+<li>Write <code>FormField</code>: a label, a scoped slot for the input, and the error paragraph with an id. Pass <code>id</code>, <code>aria-invalid</code> and <code>aria-describedby</code> through the slot.</li>
+<li>Bind each input with <code>v-model</code> and <code>v-bind="attrs"</code>, and call <code>blur("name")</code> on <code>@blur</code>.</li>
+<li>Try every mistake: leave fields empty, type a short name, a broken email, an age of 9. Check that errors appear only after leaving a field, and disappear as soon as the value is fixed.</li>
+<li>Test with a screen reader (VoiceOver, NVDA or TalkBack): submit an empty form and listen. The focus should land on the first field, and its error should be read with its label.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the focus moves to the first <code>[aria-invalid='true']</code> element after <code>nextTick</code>, because the attribute only appears once Vue has updated the page. Without the <code>await nextTick()</code>, there would be nothing to focus yet.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Sign up, with an answer from the server</h3>
+<p class="project-goal">A sign-up form with a password, its confirmation and a terms box, which also shows the server’s “email already used” message on the email field.</p>
+<p class="project-skills"><strong>You will practise:</strong> rules that compare two fields with <code>refine</code>, <code>z.literal(true)</code> for a required checkbox, server errors returned from the submit function, and the submitting state.</p>
+<ol class="steps">
+<li>Write the schema: an email, a password of at least 8 characters with a digit, a confirmation, and <code>terms: z.literal(true, "…")</code>.</li>
+<li>Compare the passwords with <code>.refine(…, { path: ["confirm"] })</code>, so the error appears under the confirmation field.</li>
+<li>In the submit function, check the full schema, then call a pretend server that answers <code>{ email: "…" }</code> for one particular email. Return that object, and <code>useForm</code> shows it under the email field.</li>
+<li>Disable the button while <code>submitting</code> is true, so a double click cannot create two accounts.</li>
+<li>Give each password input <code>autocomplete="new-password"</code>, so password managers offer to create a strong one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> design your API so that its errors name the field they belong to, as the pretend server does here. Then the frontend can put every server error in the right place with one line of code.</p>
+<pre data-code="projects/signup-schema.ts" data-title="signup-schema.ts"></pre>
+<figure data-render="projects/signup.html" data-width="560" data-actions="fill:#email|sara@example.com;fill:#password|bit2026code;fill:#confirm|bit2026code;click:input[type=checkbox];click:button;wait:700"><figcaption><b>Project {{n}}.2:</b> every rule passed in the browser, but the server knows this email already, and the form shows it on the email field.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A checkout in three steps</h3>
+<p class="project-goal">Delivery, payment and review as three steps of one form, checked step by step, with a review screen before the order is placed.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>z.enum</code>, checking some fields only, <code>&lt;select&gt;</code> and radio buttons with <code>v-model</code>, <code>aria-current="step"</code>, and keyed buttons.</p>
+<ol class="steps">
+<li>Write one schema for the whole order, and a <code>STEPS</code> list with each step’s title and fields.</li>
+<li>Show only the current step’s inputs. “Next” calls <code>checkFields(STEPS[step].fields)</code> and moves on only if it returns <code>true</code>.</li>
+<li>On the last step, show a summary from <code>values</code> and a “Place order” submit button.</li>
+<li>Show the progress as a list, with <code>aria-current="step"</code> on the current one.</li>
+<li>Give “Next” and “Place order” different <code>key</code>s. Without them, Vue may reuse the same <code>&lt;button&gt;</code> and only change its <code>type</code>, and a click on “Next” could end as a submit of the new type, placing the order one step early.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because all steps are one form, “Back” is free: the values are still there. Never create a separate form per step unless the steps are saved separately on the server.</p>
+<pre data-code="projects/checkout-schema.ts" data-title="checkout-schema.ts"></pre>
+<figure data-render="projects/checkout.html" data-width="560" data-actions="click:.row button:nth-child(2);wait:200"><figcaption><b>Project {{n}}.3:</b> “Next” on an empty first step: only this step’s fields are checked.</figcaption></figure>
+<figure data-render="projects/checkout.html" data-width="560" data-actions="fill:#street|12 Corniche Street;fill:#phone|01012345678;press:#city|ArrowDown;click:.row button:nth-child(2);wait:200;click:input[value=card];click:.row button:nth-child(2);wait:200"><figcaption>The review step, after filling the delivery and choosing to pay by card.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an optional “Phone” field to the contact form, which is checked only when something is typed in it.</li>
+<li><span class="level">Easy</span> Show a counter under the message, “12 of at least 20 characters”, computed from <code>values.message</code>.</li>
+<li><span class="level">Medium</span> Add a <code>dirty</code> computed to <code>useForm</code> that is true when any value differs from the initial values, and ask for confirmation before leaving the page while it is true, with the <code>beforeunload</code> event.</li>
+<li><span class="level">Medium</span> Save a draft of the contact form in <code>localStorage</code> while the user types, and restore it when the form opens.</li>
+<li><span class="level">Challenge</span> Make the email field of the sign-up form check, after the user leaves it, whether the email is already taken, with a debounced request, and show the answer under the field before the user even submits.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Some data is needed by many distant parts of the app: who is signed in, the chosen language, the cart. The next chapter gives it a home with Pinia, Vue’s official store, and shows how to keep that home small.</p>
+</div>
+</section>

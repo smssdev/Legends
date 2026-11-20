@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>fr-FR</code> تجمع الأرقام بمسافة ضيقة وتستخدم الفاصلة للكسور، و<code>hi-IN</code> تجمع بالطريقة الهندية، باللاك والكرور (12,34,567.5)، و<code>fa-IR</code> تستخدم الأرقام الفارسية، وتختلف قليلاً عن الهندية العربية في الشكل.</li>
+<li><code>new Intl.DateTimeFormat("ar-SA-u-ca-gregory", { dateStyle: "full" })</code> و<code>new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura", { dateStyle: "full" })</code>، ثم الشيء نفسه مع <code>en-US</code>. فامتداد التقويم يغيّر التقويم، وجزء اللغة يغيّر الكلمات فقط.</li>
+<li>الإنجليزية: <code>{ one: "Arrives in {count} day", other: "Arrives in {count} days" }</code>. والعربية: <code>{ zero: "يصل اليوم", one: "يصل خلال يوم", two: "يصل خلال يومين", few: "يصل خلال {count} أيام", many: "يصل خلال {count} يوماً", other: "يصل خلال {count} يوم" }</code>. وقرّر مع فريقك ماذا تقول «صفر أيام»: فهذا قرار منتج لا قاعدة نحوية.</li>
+<li>من الاستبدالات المعتادة: <code>margin-left</code> ← <code>margin-inline-start</code>، و<code>padding-right</code> ← <code>padding-inline-end</code>، و<code>left: 0</code> ← <code>inset-inline-start: 0</code>، و<code>text-align: left</code> ← <code>text-align: start</code>، و<code>border-left</code> ← <code>border-inline-start</code>. واترك الأشياء المادية حقاً، كإزاحة الظل، كما هي.</li>
+<li>التعليق الإنجليزي من اليسار إلى اليمين، والعربي من اليمين إلى اليسار، والذي يبدأ برقم يأخذ اتجاه أول حرف <em>قوي</em> بعده، لأن الأرقام «ضعيفة» في خوارزمية الاتجاه الثنائي ولا تقرر الاتجاه.</li>
+</ol>

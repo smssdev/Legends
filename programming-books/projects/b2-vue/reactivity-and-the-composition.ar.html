@@ -1,0 +1,54 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع اكتب كل قطعة حالة تنوي حفظها، ثم اشطب كل واحدة يمكن حسابها من غيرها. فما يبقى يذهب إلى <code>ref</code>، والباقي يصير <code>computed</code>.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>عدّاد بخطوات وتراجع</h3>
+<p class="project-goal">عدّاد يضيف خطوة مختارة أو يطرحها، ويعرض سجله، ويستطيع التراجع عن أي عدد من التغييرات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الحالة في حدها الأدنى، و<code>computed</code>، وتغيير المصفوفات في مكانها، و<code>v-model.number</code>.</p>
+<ol class="steps">
+<li>احفظ مرجعين فقط: الخطوة، وسجل القيم مبتدئاً بـ <code>[0]</code>.</li>
+<li>اجعل القيمة الحالية <code>computed</code>: آخر عنصر في السجل.</li>
+<li>كل زر يدفع قيمة جديدة إلى السجل، و«تراجع» يحذف واحدة، ويُعطَّل حين لا يبقى إلا القيمة الأولى.</li>
+<li>اربط الخطوة بـ <code>v-model.number</code>، فتكون عدداً لا نصاً.</li>
+<li>أعطِ القيمة <code>aria-live="polite"</code>، ليعلن قارئ الشاشة العدد الجديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأن السجل هو الحالة، صار التراجع سطراً واحداً. ولو حفظت القيمة وغيرتها بـ <code>+=</code>، لاحتاج التراجع قائمة ثانية تُبقيها متوافقة مع الأولى باليد.</p>
+<pre data-code="projects/History.vue" data-title="History.vue"></pre>
+<figure data-render="projects/history.html" data-width="560" data-actions="click:.row button:nth-child(2);click:.row button:nth-child(2);fill:#step|5;click:.row button:nth-child(2);click:.row button:nth-child(3)"><figcaption><b>المشروع {{n}}.1:</b> بعد ‎+1 و‎+1، وتغيير الخطوة إلى 5، و‎+5، ثم «تراجع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>قائمة مهام تتذكر</h3>
+<p class="project-goal">قائمة مهام تحفظ نفسها في المتصفح، وتعود بعد إعادة التحميل بأمان.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>v-model</code> على النصوص ومربعات الاختيار، والمراقب العميق، و<code>localStorage</code>، والتحميل الحذر.</p>
+<ol class="steps">
+<li>حمّل المهام مرة واحدة حين يبدأ المكوّن، داخل <code>try</code>: فالبيانات المحفوظة قد تكون مفقودة أو تالفة أو من إصدار أقدم.</li>
+<li>اربط نص المهمة الجديدة بـ <code>v-model</code>، وأضفها عند <code>@submit.prevent</code>، فيعمل Enter ولا تُعاد الصفحة.</li>
+<li>اربط كل مربع اختيار مباشرة بـ <code>task.done</code> بـ <code>v-model</code>: يغيّر Vue الكائن في مكانه.</li>
+<li>احفظ بـ <code>watch(tasks, save, { deep: true })</code>. فبدون <code>deep</code> لن يُلاحَظ تعليم المربع، لأن المصفوفة نفسها لم تتغير.</li>
+<li>اعرض عدد المهام المتبقية بـ <code>computed</code>، وأضف زراً يحذف المنجزة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>deep: true</code> تمر على البنية كلها مع كل تغيير. وهذا مقبول لقائمة مهام، أما لآلاف العناصر فاحفظ أقل، أو راقب جزءاً أصغر.</p>
+<figure data-render="projects/tasks.html" data-width="560" data-actions="fill:#task|اكتب composable;press:#task|Enter"><figcaption><b>المشروع {{n}}.2:</b> مهمة جديدة أُضيفت بـ Enter، والأولى، المحمَّلة في البداية، منجزة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>البحث أثناء الكتابة دون سباقات</h3>
+<p class="project-goal">ابحث في المنتجات أثناء كتابة المستخدم، ولا تعرض أبداً نتائج بحث قديم، حتى حين يصل رد بطيء بعد رد سريع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المراقبين مع العمل غير المتزامن، و<code>onWatcherCleanup</code>، و<code>AbortController</code>، وحالات التحميل المعلنة لقارئ الشاشة.</p>
+<ol class="steps">
+<li>استخدم الواجهة الوهمية أدناه. فهي، كالبحث الحقيقي، تجيب عن الاستعلامات القصيرة أبطأ، فقد يصل «ب» بعد «بِت».</li>
+<li>راقب الاستعلام. وللاستعلام الفارغ امسح النتائج وتوقف.</li>
+<li>أنشئ لكل بحث <code>AbortController</code>، وسجّل <code>controller.abort()</code> بـ <code>onWatcherCleanup</code>، فتلغي الضغطة التالية الطلب السابق.</li>
+<li>انتظر النتائج داخل <code>try</code>، فالطلب الملغى يُرفض، و<code>catch</code> تتجاهله ببساطة.</li>
+<li>اعرض «جارٍ البحث عن…» وعدد النتائج بـ <code>role="status"</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اكتب «بِت» بسرعة مع سطر التنظيف ودونه. فبدونه سترى أحياناً نتائج «ب» تحل محل نتائج «بِت»: <dfn>حالة سباق</dfn> (race condition)، من أشهر الأخطاء في التطبيقات الحقيقية.</p>
+<pre data-code="fake-api.ts" data-title="fake-api.ts"></pre>
+<pre data-code="projects/Search.vue" data-title="Search.vue"></pre>
+<figure data-render="projects/search.html" data-width="560" data-actions="fill:#q|بِت;wait:1200"><figcaption><b>المشروع {{n}}.3:</b> نتائج «بِت».</figcaption></figure>
+</div>

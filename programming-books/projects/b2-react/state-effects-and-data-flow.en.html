@@ -1,0 +1,52 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Before each project, write down the state you will keep, in one line per variable. Then check every line against the three questions in section {{n}}.3. If the list gets shorter, you are doing it right.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A counter with steps and undo</h3>
+<p class="project-goal">A counter that moves by a chosen step and can undo any number of moves.</p>
+<p class="project-skills"><strong>You will practise:</strong> choosing the minimal state, updater functions, deriving the current value, and a controlled number input.</p>
+<ol class="steps">
+<li>Keep two pieces of state: the <code>step</code>, and the <code>history</code>, an array of every value so far, starting at <code>[0]</code>.</li>
+<li>The current value is not state: it is <code>history.at(-1)</code>.</li>
+<li>“+” and “−” append a new value with an updater: <code>setHistory((h) =&gt; [...h, last + by])</code>.</li>
+<li>“Undo” removes the last value, but never the first one. Disable the button when there is nothing to undo.</li>
+<li>Show the whole history under the counter.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> storing history instead of only the current value is how real editors implement undo. Because each entry is a new value and nothing is ever changed, going back is just removing the last entry.</p>
+<figure data-render="projects/history.html" data-width="560" data-actions="click:.row button:nth-child(2);click:.row button:nth-child(2);fill:#step|5;click:.row button:nth-child(2);click:.row button:nth-child(3)"><figcaption><b>Project {{n}}.1:</b> after +1, +1, changing the step to 5, +5, and Undo.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A task list that remembers</h3>
+<p class="project-goal">Rebuild the tasks app from Book 1 in React, with the reducer from this chapter, and keep the tasks after the page is closed.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useReducer</code> with a lazy initial state, an effect that saves to <code>localStorage</code>, a form, and a ref to keep the focus in the input.</p>
+<ol class="steps">
+<li>Import <code>tasksReducer</code>. Create the state with <code>useReducer(tasksReducer, [], load)</code>: the third argument runs <code>load</code> only once, on the first render.</li>
+<li>Write <code>load</code> with <code>try</code>/<code>catch</code>: saved data may be missing or broken.</li>
+<li>Save with an effect whose dependency is <code>[tasks]</code>, so it runs after every change.</li>
+<li>Keep the text of the new task in its own state, and dispatch <code>added</code> on submit. Then clear the text and move the focus back to the input with a ref.</li>
+<li>Derive the number of tasks left, and add a “Clear done” button.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> saving to <code>localStorage</code> is a perfect example of an effect: it keeps something outside React, the browser’s storage, in step with the state. Compare this component with the Book 1 version: the logic is the same, but the code that updates the page by hand has disappeared.</p>
+<figure data-render="projects/tasks.html" data-width="560" data-actions="fill:form input|Read chapter 5;press:form input|Enter;fill:form input|Write a reducer;press:form input|Enter;click:li input"><figcaption><b>Project {{n}}.2:</b> two tasks added, and the first one done.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Search as you type, without races</h3>
+<p class="project-goal">Search products while the user types, wait for a short pause before asking the server, and never show an old answer.</p>
+<p class="project-skills"><strong>You will practise:</strong> writing your own hook, effects with cleanup, <code>AbortController</code>, and a discriminated union for the result.</p>
+<ol class="steps">
+<li>Write a custom hook, <code>useDebounced(value, ms)</code>: it returns the value only after it has stopped changing for <code>ms</code> milliseconds. Inside, an effect starts a timer and its cleanup clears it.</li>
+<li>Model the result as <code>idle | loading | done | error</code>, with the query inside each state that needs it.</li>
+<li>In an effect that depends on the debounced query, create an <code>AbortController</code>, set <code>loading</code>, and call <code>searchProducts(query, controller.signal)</code>.</li>
+<li>Return <code>() =&gt; controller.abort()</code> as the cleanup. In the <code>catch</code>, ignore the error if the request was aborted.</li>
+<li>Render each state: a “Searching…” line, the results, “No products match”, or the error. Use the fake API, which answers short queries more slowly, and type quickly to watch old requests being cancelled.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a custom hook is just a function whose name starts with <code>use</code> and which calls other hooks. It is the React way to reuse stateful logic, as the next chapters will show again and again.</p>
+<pre data-code="fake-api.ts" data-title="fake-api.ts"></pre>
+<figure data-render="projects/search.html" data-width="560" data-actions="fill:#q|bit;wait:1200"><figcaption><b>Project {{n}}.3:</b> the results for “bit”, after the pause and the slow answer.</figcaption></figure>
+</div>

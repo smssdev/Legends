@@ -1,0 +1,50 @@
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res, err) => function __init() {
+  if (err) throw err[0];
+  try {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  } catch (e) {
+    throw err = [e], e;
+  }
+};
+var __commonJS = (cb, mod) => function __require() {
+  try {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  } catch (e) {
+    throw mod = 0, e;
+  }
+};
+
+// ar/contact-schema.ts
+import { z } from "zod";
+var contactSchema;
+var init_contact_schema = __esm({
+  "ar/contact-schema.ts"() {
+    contactSchema = z.object({
+      name: z.string().trim().min(3, "\u0627\u0643\u062A\u0628 \u0627\u0633\u0645\u0643 \u0627\u0644\u0643\u0627\u0645\u0644 (3 \u0623\u062D\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644)."),
+      email: z.email("\u0627\u0643\u062A\u0628 \u0628\u0631\u064A\u062F\u0627\u064B \u0645\u062B\u0644 name@example.com"),
+      age: z.coerce.number().int("\u064A\u062C\u0628 \u0623\u0646 \u064A\u0643\u0648\u0646 \u0627\u0644\u0639\u0645\u0631 \u0631\u0642\u0645\u0627\u064B \u0635\u062D\u064A\u062D\u0627\u064B.").min(13, "\u064A\u062C\u0628 \u0623\u0646 \u064A\u0643\u0648\u0646 \u0639\u0645\u0631\u0643 13 \u0633\u0646\u0629 \u0623\u0648 \u0623\u0643\u062B\u0631."),
+      message: z.string().trim().min(20, "\u0627\u0643\u062A\u0628 20 \u062D\u0631\u0641\u0627\u064B \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.")
+    });
+  }
+});
+
+// ar/validate.ts
+var require_validate = __commonJS({
+  "ar/validate.ts"() {
+    init_contact_schema();
+    var good = contactSchema.safeParse({
+      name: "  \u0633\u0627\u0631\u0629 \u062E\u0627\u0646 ",
+      email: "sara@example.com",
+      age: "27",
+      message: "\u0623\u0631\u064A\u062F \u0623\u0646 \u0623\u0637\u0644\u0628 \u0639\u0634\u0631\u064A\u0646 \u0646\u0633\u062E\u0629 \u0644\u0637\u0644\u0627\u0628 \u0641\u0635\u0644\u064A."
+    });
+    console.log("\u0633\u0644\u064A\u0645:", good.success, good.data);
+    var bad = contactSchema.safeParse({ name: "S", email: "sara@", age: "9", message: "Hi" });
+    console.log("\u063A\u064A\u0631 \u0633\u0644\u064A\u0645:", bad.success);
+    for (const issue of bad.error?.issues ?? []) {
+      console.log(`  ${issue.path.join(".")}: ${issue.message}`);
+    }
+  }
+});
+export default require_validate();

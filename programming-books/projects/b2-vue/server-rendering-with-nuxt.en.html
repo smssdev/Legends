@@ -1,0 +1,47 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Run <code>npm run build</code> at the end of every project and read the prerendering lines. Before you build, write down how you expect each address to be made; every surprise is something you can learn from.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A shop that fails gracefully</h3>
+<p class="project-goal">Give Bit’s shop friendly errors, a loading bar, and a slow part that does not hold the whole page back.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>error.vue</code>, <code>createError</code>, <code>clearError</code>, <code>&lt;NuxtLoadingIndicator&gt;</code>, and <code>useFetch</code> with <code>lazy</code>.</p>
+<ol class="steps">
+<li>Make <code>error.vue</code> show a different message for 404 and for everything else, and offer a way home with <code>clearError({ redirect: "/" })</code>.</li>
+<li>Make the product API throw a 500 for one id, and check what users see, and which status code <code>curl -I</code> reports.</li>
+<li>Add a slow “Reviews” API (1.5 s) and load it on the product page with <code>useFetch(…, { lazy: true })</code>, so the page does not wait for it. Show a small skeleton while <code>status</code> is <code>"pending"</code>.</li>
+<li>Check with a slow network in the DevTools that the loading bar of <code>&lt;NuxtLoadingIndicator&gt;</code> appears between pages.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a lazy fetch renders the page on the server without that data, and loads it in the browser. Use it for parts below the fold or that matter less; never for the main content, which search engines need in the HTML.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A static blog that search engines love</h3>
+<p class="project-goal">A blog whose articles are Markdown files in the project, prerendered at build time, with a title and description per article and a sitemap.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading files in server routes, dynamic pages, <code>useSeoMeta</code>, prerendering, and a server route that returns XML.</p>
+<ol class="steps">
+<li>Put three articles in <code>server/content/</code>, each starting with a title and a date. Write <code>server/utils/posts.ts</code> that reads them with <code>node:fs/promises</code>.</li>
+<li>Add <code>server/api/posts.get.ts</code> and <code>server/api/posts/[slug].get.ts</code>, turning Markdown into HTML on the server with a library such as <code>marked</code>.</li>
+<li>Write <code>pages/blog/index.vue</code> and <code>pages/blog/[slug].vue</code> with <code>useFetch</code>, <code>useSeoMeta</code>, and a 404 for unknown slugs.</li>
+<li>Add the rule <code>"/blog/**": { prerender: true }</code>. Nitro follows the links from the list and prerenders every article it finds.</li>
+<li>Add <code>server/routes/sitemap.xml.ts</code>, which returns the address of every article with the right <code>content-type</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the Markdown library runs only on the server, so it adds nothing to the browser’s JavaScript. Heavy work belongs in <code>server/</code>; the browser should receive results, not tools.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Prices an admin can change</h3>
+<p class="project-goal">A protected admin page where the shop owner changes a product’s price. The cached product pages show the new price soon after, and nobody else can change anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> cookies on the server, route middleware, server routes with permission checks, <code>runtimeConfig</code>, and route rules.</p>
+<ol class="steps">
+<li>Keep the prices in a server-side <code>Map</code> that a <code>updatePrice(id, price)</code> function can change.</li>
+<li>Write <code>server/api/admin/sign-in.post.ts</code>, which compares a password with <code>useRuntimeConfig().adminPassword</code> and, on success, sets an <code>httpOnly</code>, <code>secure</code>, <code>sameSite</code> cookie with <code>setCookie</code>.</li>
+<li>Protect the page with a route middleware in <code>app/middleware/admin.ts</code> that redirects to the sign-in page when the cookie is missing, and give the admin pages <code>ssr: false</code> in the route rules.</li>
+<li>Write <code>server/api/admin/price.post.ts</code>. It checks the cookie <em>again</em> (the page middleware does not protect the route), validates the price with zod as a positive whole number, and calls <code>updatePrice</code>.</li>
+<li>Change a price, then open the product page. Explain why the old price can appear for up to the <code>swr</code> time, and how a shorter time, or no cache for this page, changes that.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the permission check lives inside every server route, never only in the page that shows the form. A middleware decides what the <em>screen</em> shows; only the server decides what <em>happens</em>.</p>
+</div>

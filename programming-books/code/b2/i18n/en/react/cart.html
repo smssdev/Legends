@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Languages</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "/vendor/react.js",
+          "react-dom": "/vendor/react-dom.js",
+          "react-dom/client": "/vendor/react-dom-client.js",
+          "react/jsx-runtime": "/vendor/jsx-runtime.js",
+          "react-router": "/vendor/react-router.js",
+          "@tanstack/react-query": "/vendor/react-query.js",
+          "react-hook-form": "/vendor/react-hook-form.js",
+          "zod": "/vendor/zod.js",
+          "@hookform/resolvers/zod": "/vendor/hookform-zod.js",
+          "zustand": "/vendor/zustand.js",
+          "zustand/middleware": "/vendor/zustand-middleware.js"
+        }
+      }
+    </script>
+    <style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 20px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; color: #1e1b2e; background: #f5f5fb; line-height: 1.5; }
+h1, h2, h3 { color: #4338ca; margin: 0 0 8px; }
+button { font: inherit; cursor: pointer; border: 0; border-radius: 999px; padding: 6px 16px; background: #4338ca; color: white; }
+button.secondary { background: #e0e7ff; color: #312e81; }
+:focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+.cards { display: grid; gap: 12px; }
+.card { background: white; border-radius: 14px; padding: 12px 16px; box-shadow: 0 2px 10px rgb(67 56 202 / 0.1); }
+.card h2 { margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+.row { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid #eef2ff; }
+.badge { margin-inline-start: auto; background: #4338ca; color: white; border-radius: 999px; padding: 0 10px; font-size: 0.85rem; }
+.next::after { content: "→"; display: inline-block; margin-inline-start: 6px; }
+[dir="rtl"] .next::after { transform: scaleX(-1); }
+.muted { color: #5b5873; font-size: 0.9rem; }
+.bad { border-inline-start: 4px solid #b91c1c; }
+.good { border-inline-start: 4px solid #047857; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./cart.js"></script>
+  </body>
+</html>

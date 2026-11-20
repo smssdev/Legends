@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>const removeItem = (cart, id) =&gt; ({ ...cart, items: cart.items.filter((item) =&gt; item.id !== id) });</code> With two items, the original still has 2, the result has 1, and <code>cart === next</code> is <code>false</code>.</li>
+<li><code>Object.groupBy(words, (word) =&gt; word[0])</code> gives <code>{ a: ["apple", "avocado"], b: ["banana", "blueberry"], c: ["cherry"] }</code>. Node prints it as <code>[Object: null prototype]</code>: the result has no prototype, so a key such as <code>"constructor"</code> can never clash with a built-in.</li>
+<li>Define <code>class InsufficientFundsError extends Error</code> and set <code>this.name</code> in its constructor. In <code>withdraw</code>, throw it when <code>amount &gt; this.#balance</code>; otherwise subtract and return <code>this</code>. Test a withdrawal that works (100 − 30 leaves 70) and one that throws, checking <code>error instanceof InsufficientFundsError</code>.</li>
+<li><code>C</code>, <code>B</code>, <code>A</code>: synchronous code first, then the microtask from the promise, then the timer task.</li>
+<li><code>function* take(iterable, n) { if (n &lt;= 0) return; let count = 0; for (const value of iterable) { yield value; if (++count &gt;= n) return; } }</code>. With <code>function* evens() { for (let n = 0; ; n += 2) yield n; }</code>, <code>[...take(evens(), 5)]</code> is <code>[0, 2, 4, 6, 8]</code>. Returning from the generator stops the loop, so the endless generator is never asked for a sixth value.</li>
+</ol>

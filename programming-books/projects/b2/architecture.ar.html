@@ -1,0 +1,53 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع عن الكود <em>المحيط</em> بالميزات: شكل المجلدات، والباب إلى الخادم، والأدوات التي تُبقي الاثنين صادقين. فطبّقها على أكبر مشروع بنيته في هذا الكتاب.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>من مجلدات النوع إلى مجلدات الميزات</h3>
+<p class="project-goal">أعد تنظيم أحد مشاريعك في <code>shared</code> و<code>features</code> و<code>app</code>، مع <code>index.ts</code> عام لكل ميزة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تقرير ما المشترك وما يخص ميزة، والبراميل، ونقل الملفات دون كسر الاستيرادات.</p>
+<ol class="steps">
+<li>اسرد كل ملف واكتب بجانبه الميزة التي يخصها، أو «مشترك» إن كان لا يعرف شيئاً عن العمل.</li>
+<li>أنشئ المجلدات الجديدة وانقل الملفات بأمر إعادة التسمية في محررك، فيحدّث الاستيرادات نيابة عنك.</li>
+<li>أعطِ كل ميزة <code>index.ts</code> لا يصدّر إلا ما يحتاجه الكود الآخر.</li>
+<li>غيّر الاستيرادات من الميزات الأخرى لتشير إلى ملفات <code>index.ts</code> هذه.</li>
+<li>شغّل <code>npm run check</code> والاختبارات: فإعادة التنظيم يجب ألا تغيّر السلوك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حين لا تستطيع أن تقرر هل الشيء مشترك، أبقِه في الميزة. فنقل الكود إلى <code>shared</code> لاحقاً، حين تحتاجه ميزة ثانية، سهل، أما فك مجلد «مشترك» مليء بمنطق العمل فليس كذلك.</p>
+<pre data-out="tree.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>طبقة واجهة برمجية بالأنواع</h3>
+<p class="project-goal">اكتب الوحدة الواحدة التي تتحدث إلى الخادم: تتحقق من كل رد، وتحوّل كل فشل إلى خطأ ذي نوع تعالجه الشاشات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مخططات Zod، والاتحادات المميَّزة للأخطاء، و<code>AbortSignal.timeout</code>، وحقن <code>fetch</code>، وخادم اختبار محلي.</p>
+<ol class="steps">
+<li>صِف كل مورد بمخطط، واشتق نوعه بـ <code>z.infer</code>.</li>
+<li>عرّف <code>ApiError</code> اتحاداً من <code>network</code> و<code>not-found</code> و<code>invalid</code> و<code>server</code>، و<code>Result&lt;T&gt;</code> نجاحاً أو خطأً.</li>
+<li>اكتب دالة خاصة واحدة <code>get(path, schema)</code> تجلب بمهلة زمنية، وتفحص الحالة، وتحلل JSON بالمخطط، ولا ترمي خطأً أبداً.</li>
+<li>صدّر دالة صغيرة لكل مسار، مثل <code>products()</code> و<code>product(id)</code>.</li>
+<li>اقبل <code>fetch</code> معاملاً، لتمرر الاختبارات بديلاً، واختبر على خادم محلي يرد جيداً، وبـ 404، وببيانات خاطئة، وببطء شديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> انظر إلى الرد الثالث: أرسل الخادم السعر نصاً. فدون التحقق كان سيظهر «8EGP»، أو <code>NaN</code> في مجموع، بعيداً عن سببه. ومعه يسمّي الخطأ الحقل بالضبط.</p>
+<pre data-code="projects/api.ts" data-title="shared/api/api.ts"></pre>
+<pre data-out="projects/use-api.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>فاحص الحدود</h3>
+<p class="project-goal">اكتب سكربتاً يقرأ كل استيراد في قاعدة الكود، ويحدد الطبقة والميزة لكل ملف، ويبلّغ عن الاستيرادات التي تكسر قواعد الاعتماد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على المجلدات، والتعابير النمطية على كود المصدر، وحل المسارات النسبية، وتحويل القواعد إلى فحوص برموز خروج.</p>
+<ol class="steps">
+<li>مرّ على <code>src</code> واجمع كل ملف <code>.ts</code> و<code>.tsx</code>.</li>
+<li>اكتب <code>where(path)</code>، التي تقسم المسار إلى طبقته (<code>app</code> و<code>features</code> و<code>shared</code>)، وميزته، والباقي.</li>
+<li>لكل استيراد نسبي حلّ الهدف بـ <code>path.resolve</code> وقارن الموضعين بالقواعد الثلاث.</li>
+<li>اطبع كل مخالفة مع الملف والاستيراد والقاعدة التي يكسرها، واخرج بـ 1 إن وُجدت أي مخالفة.</li>
+<li>شغّله على النموذج: يجد الترويسة التي تمد يدها إلى مخزن السلة، وصفحة الحساب التي تتجاوز <code>index.ts</code> الخاص بالسلة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التعبير النمطي يكفي لفاحص كهذا، لكن الأدوات الحقيقية تستخدم مترجم TypeScript لقراءة الاستيرادات بدقة، بما فيها الأسماء المستعارة مثل <code>@/features/cart</code>. ابدأ بسيطاً، وانتقل حين يتوقف البسيط عن الصواب.</p>
+<pre data-code="boundaries.ts" data-title="boundaries.ts"></pre>
+<pre data-out="boundaries.mjs"></pre>
+</div>

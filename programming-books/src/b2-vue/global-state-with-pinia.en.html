@@ -1,0 +1,190 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/vue/global/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Global State with Pinia</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>sort every piece of state into the right home: component, address, server cache or global store</li>
+<li>share values with distant components through <code>provide</code> and <code>inject</code>, with typed keys</li>
+<li>build a global store with Pinia, and read it without losing reactivity</li>
+<li>save a store between visits</li>
+<li>use a store outside components, watch its actions, and test it without any screen</li>
+</ul>
+</div>
+
+<p class="lead">Some data is needed everywhere: who is signed in, the chosen language and theme, the number of items in the cart. Passing it as props from the top of the app through every component in between is called <dfn>prop drilling</dfn>, and it makes every component in the path depend on data it never uses. Vue offers two answers: <code>provide</code> and <code>inject</code>, built into Vue, and <strong>Pinia</strong>, Vue’s official store. But first, the most important skill of this chapter: knowing that most state is <em>not</em> global.</p>
+
+<aside class="bit" data-mood="think"><p>Many apps have a giant global store full of data that one screen uses, or that really belongs to the server. Every time I am tempted to make something global, I first ask: who actually reads this?</p></aside>
+
+<h2>{{n}}.1 Four homes for state</h2>
+
+<table>
+<thead><tr><th>Kind of state</th><th>Examples</th><th>Its home</th></tr></thead>
+<tbody>
+<tr><td>Belongs to one part of the screen</td><td>An open menu, a form’s values, the current tab</td><td>A <code>ref</code> in the lowest common component (Chapter {{n-4}})</td></tr>
+<tr><td>Should survive a reload or be shareable</td><td>Filters, search text, page number</td><td>The address (Chapter {{n-2}})</td></tr>
+<tr><td>A copy of server data</td><td>Products, orders, the user’s profile</td><td>The query cache (Chapter {{n-2}})</td></tr>
+<tr><td>Owned by the app, read in many places</td><td>Signed-in user, theme, language, cart, notifications</td><td><code>provide</code>/<code>inject</code> or a Pinia store (this chapter)</td></tr>
+</tbody>
+</table>
+
+<p>Go down the table in order and stop at the first home that fits. In a typical app, only a handful of values reach the last row.</p>
+
+<h2>{{n}}.2 <code>provide</code> and <code>inject</code></h2>
+
+<p>A component can <dfn>provide</dfn> a value to everything below it in the tree, at any depth, and any of those components can <dfn>inject</dfn> it, without props in between. Wrapped in two small functions, it looks like this:</p>
+
+<pre data-code="auth.ts" data-title="auth.ts"></pre>
+<pre data-code="AuthApp.vue" data-title="AuthApp.vue"></pre>
+<pre data-code="UserMenu.vue" data-title="UserMenu.vue"></pre>
+
+<figure data-render="context.html" data-width="560" data-actions="click:header button"><figcaption><b>Figure {{n}}.1:</b> After signing in: the menu and the profile both read the same user, though neither received it as a prop.</figcaption></figure>
+
+<p>Three habits make <code>provide</code> and <code>inject</code> pleasant to use:</p>
+<ul>
+<li><strong>Use a typed <code>InjectionKey</code></strong>, a <code>Symbol</code> that carries the type. <code>inject(AuthKey)</code> then knows exactly what it returns, and two libraries can never clash over a name.</li>
+<li><strong>Hide the key behind composables.</strong> Components call <code>provideAuth()</code> and <code>useAuth()</code>, never <code>inject</code> directly, and <code>useAuth</code> throws a clear error if someone forgets the provider, instead of a mysterious <code>undefined</code> later.</li>
+<li><strong>Provide data read-only, with the functions that change it.</strong> <code>readonly(user)</code> means components cannot assign to it; the only way to change the user is <code>signIn</code> and <code>signOut</code>, so it is always clear who changed what.</li>
+</ul>
+
+<p><code>provide</code> works best for values that belong to a part of the tree: a theme for one area, a form’s context for its fields, the settings of a library component. For state that the whole app shares, a store is clearer.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where should the text of a search box live if users want to share the results?</li><li>What happens when a component calls <code>useAuth()</code> without a provider above it?</li><li>Why is the user provided as <code>readonly</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 A store with Pinia</h2>
+
+<p>A <dfn>store</dfn> holds state that lives outside any one component, together with the values derived from it and the functions that change it. In Pinia, a store is defined with <code>defineStore</code> and, in the <dfn>setup store</dfn> style, written exactly like a composable: refs are the state, <code>computed</code> values are the <dfn>getters</dfn>, and functions are the <dfn>actions</dfn>:</p>
+
+<pre data-code="stores/cart.ts" data-title="stores/cart.ts"></pre>
+
+<p>The difference from a composable with module-level refs (Chapter {{n-3}}) is what Pinia adds around it: one instance per app, which matters for server rendering and tests; the Vue devtools, which show every store, its state and every change; and the hooks you will meet in section {{n}}.5. Install it once, in <code>main.ts</code>:</p>
+
+<pre data-code="main.ts" data-title="main.ts"></pre>
+
+<p>Then any component can use the store. Here three of them share one cart, with no props and no provider between them:</p>
+
+<pre data-code="CartBadge.vue" data-title="CartBadge.vue"></pre>
+<pre data-code="ProductList.vue" data-title="ProductList.vue"></pre>
+<pre data-code="CartSummary.vue" data-title="CartSummary.vue"></pre>
+
+<figure data-render="store.html" data-width="560" data-actions="click:.card .row:nth-child(1) button;click:.card .row:nth-child(2) button;click:.card .row:nth-child(2) button"><figcaption><b>Figure {{n}}.2:</b> Three components share one cart: the badge, the list and the summary update together.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title">Watch out: destructuring a store</p><p>A store is a reactive object, so <code>const { count } = useCart()</code> copies the current number and never updates, exactly the trap of Chapter {{n-4}}. Use <code>storeToRefs(store)</code> for state and getters, which gives refs linked to the store. Actions are plain functions and can be destructured directly, as <code>ProductList</code> does with <code>add</code>.</p></aside>
+
+<h2>{{n}}.4 Saving a store between visits</h2>
+
+<p>The cart above keeps its lines in <code>useLocalStorage</code> from VueUse (Chapter {{n-3}}), so they are saved in the browser on every change and loaded on the next visit, and even kept in step between open tabs. Because a setup store is just a function, any composable works inside it. Larger apps sometimes use a Pinia plugin, such as <code>pinia-plugin-persistedstate</code>, to save several stores the same way with one line each.</p>
+
+<aside class="box tip"><p class="box-title">Tip: save only what you must</p><p>Save the cart, the theme, a draft. Never save server data, which goes stale, nor anything secret: <code>localStorage</code> is readable by any script on the page (Chapter {{n+5}}). And if you change the shape of saved data later, old visitors still have the old shape, so read it carefully.</p></aside>
+
+<h2>{{n}}.5 Stores outside components</h2>
+
+<p>A store does not need a screen. With an active Pinia, it runs anywhere, which is how you test it, and how a router guard or a plain module reads it. Pinia also lets you watch a store from outside: <code>$onAction</code> sees every action call, and <code>$subscribe</code> sees every change of state:</p>
+
+<pre data-code="store-node.ts" data-title="store-node.ts"></pre>
+<pre data-out="store-node.mjs"></pre>
+
+<p>That is the same mechanism the devtools use to show a history of changes, and the one a logging or analytics plugin would use: one place that sees every change, without touching the components. After <code>$dispose()</code>, the hooks are gone: the last call changed the count but printed nothing.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: keep server data out of global stores</p><p>Copying products or orders into a store means writing your own cache, by hand, without refetching, deduplication or invalidation. Let TanStack Query own server data, and keep stores for what the app itself owns. Most “global state” problems disappear with this one rule.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Making everything global</td><td>Hard-to-follow changes from anywhere</td><td>Use the table in section {{n}}.1, top to bottom</td></tr>
+<tr><td><code>inject("auth")</code> with a string</td><td>No types, and names that can clash</td><td>A typed <code>InjectionKey</code>, behind a composable</td></tr>
+<tr><td>Providing a writable ref</td><td>Any component can change shared state</td><td>Provide <code>readonly</code> state and functions that change it</td></tr>
+<tr><td>Destructuring a store</td><td>Values that never update</td><td><code>storeToRefs</code> for state and getters</td></tr>
+<tr><td>Calling <code>useCart()</code> at the top of a module</td><td>An error: no active Pinia yet</td><td>Call it inside components, composables or functions</td></tr>
+<tr><td>Server data copied into a store</td><td>Stale data and hand-made caching bugs</td><td>TanStack Query</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>State has four homes: the <strong>component</strong>, the <strong>address</strong>, the <strong>query cache</strong> and, for the few values the app owns and many places read, <strong>provide/inject or a store</strong>.</li>
+<li><code>provide</code> and <code>inject</code> pass values down any depth. Use a typed <code>InjectionKey</code>, composables around it, and <code>readonly</code> state.</li>
+<li>A <strong>Pinia setup store</strong> is written like a composable: refs are state, computed are getters, functions are actions.</li>
+<li>Read stores with <code>storeToRefs</code>; destructure actions directly.</li>
+<li>Composables such as <code>useLocalStorage</code> work inside stores, for example to <strong>save</strong> them.</li>
+<li>Stores run without components; <code>$onAction</code> and <code>$subscribe</code> watch them from outside, and tests use them directly.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. In the address, as a query parameter. 2. It throws the error “useAuth() must be used inside a component that called provideAuth()”, which points straight at the problem. 3. So that no component can assign a new user by mistake; the only way to change it is through <code>signIn</code> and <code>signOut</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Before each project, fill in the table from section {{n}}.1 for the state you plan to keep. Everything that does not land in the last row stays out of the global code.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A theme that follows the user</h3>
+<p class="project-goal">A light and a dark theme, starting from the system setting, switchable from anywhere, and remembered on the next visit.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>provide</code> and <code>inject</code> with a typed key, VueUse’s <code>usePreferredDark</code> and <code>useLocalStorage</code>, a computed choice, and <code>watchEffect</code>.</p>
+<ol class="steps">
+<li>Write the colours as CSS custom properties on <code>:root</code>, and the dark ones on <code>html.dark</code>. Components never mention colours by name.</li>
+<li>In <code>provideTheme</code>, keep the user’s saved choice, or <code>null</code> if they never chose, and fall back to the system setting with <code>usePreferredDark()</code>.</li>
+<li>In a <code>watchEffect</code>, toggle the <code>dark</code> class on <code>&lt;html&gt;</code>.</li>
+<li>Provide <code>{ dark, toggle }</code> with a typed key, and read it with <code>useTheme()</code>, which throws a clear error outside the provider.</li>
+<li>Make the switch a button with <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> saving <code>null</code> until the user chooses means the app keeps following the system setting, and starts following the user only once they express a wish. That small detail is what users notice when they switch their phone to dark mode at night.</p>
+<pre data-code="projects/theme.ts" data-title="theme.ts"></pre>
+<figure data-render="projects/theme-page.html" data-width="560" data-actions="click:header button"><figcaption><b>Project {{n}}.1:</b> after switching to the dark theme.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A cart that survives a reload</h3>
+<p class="project-goal">Build the cart store of this chapter yourself, with add, decrease, remove and clear, a badge in the header, and saving between visits.</p>
+<p class="project-skills"><strong>You will practise:</strong> a setup store, getters, actions that change state in place, <code>storeToRefs</code>, and testing a store in Node.</p>
+<ol class="steps">
+<li>Write the store with the four actions. Keep lines in an object keyed by product id, so finding a line needs no search.</li>
+<li>Make <code>count</code> and <code>total</code> getters with <code>computed</code>.</li>
+<li>Build three components: <code>CartBadge</code> (count only), <code>ProductList</code> (<code>add</code> only) and <code>CartSummary</code> (lines, total and the other actions).</li>
+<li>Keep the lines in <code>useLocalStorage</code>, add a few products, reload the page and check that they are still there.</li>
+<li>Write a Node script that creates a Pinia, runs the four actions, and prints the count after each.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if you change the shape of saved data later, old visitors will load the old shape. Save a version number with the lines, and convert or discard old data when you load it.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Notifications with undo</h3>
+<p class="project-goal">A notification system that any component can use with one call, that shows at most three messages, disappears by itself, can offer an “Undo” button, and is announced by screen readers.</p>
+<p class="project-skills"><strong>You will practise:</strong> a store used from many components, <code>Teleport</code>, timers, and live regions.</p>
+<ol class="steps">
+<li>Write a <code>useToasts</code> store with the list of messages and two actions, <code>notify(text, action?)</code> and <code>dismiss(id)</code>.</li>
+<li>Add new messages with <code>[...toasts.slice(-2), next]</code>, so at most three stay on screen.</li>
+<li>Remove each message after five seconds with <code>setTimeout</code>, and also with a close button labelled for screen readers.</li>
+<li>Render the list with <code>&lt;Teleport to="body"&gt;</code>, so it is never hidden or clipped by the component that placed it.</li>
+<li>Give the list <code>role="status"</code> and <code>aria-live="polite"</code>, so screen readers announce new messages without interrupting the user.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> “Undo” is friendlier than “Are you sure?”. Do the action at once, and offer to reverse it for a few seconds. Users make fewer mistakes, and the rest of the time they are not slowed down.</p>
+<pre data-code="projects/toasts.ts" data-title="toasts.ts"></pre>
+<figure data-render="projects/toasts-page.html" data-width="560" data-actions="click:.card .row:nth-child(2) button;click:.card .row:nth-child(3) .secondary;wait:200"><figcaption><b>Project {{n}}.3:</b> two notifications; the second offers to undo the removal.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>remove(id)</code> action to the cart store and a “×” button next to each line in <code>CartSummary</code>.</li>
+<li><span class="level">Easy</span> Write a <code>useLanguage</code> store that holds <code>"en"</code> or <code>"ar"</code>, and sets <code>lang</code> and <code>dir</code> on <code>document.documentElement</code> in a <code>watchEffect</code>.</li>
+<li><span class="level">Medium</span> Write a Node script, like <code>store-node.ts</code>, that tests the cart’s <code>add</code> and <code>clear</code>, and prints <code>count</code> after each step. What does <code>useLocalStorage</code> do in Node, where there is no <code>localStorage</code>?</li>
+<li><span class="level">Medium</span> Use <code>$subscribe</code> to send every change of the cart to the console with the time, only in development (<code>import.meta.env.DEV</code>).</li>
+<li><span class="level">Challenge</span> Make the sign-in in <code>auth.ts</code> real: <code>signIn</code> calls a pretend API that takes 500 ms, the state becomes a discriminated union (<code>"signed-out" | "signing-in" | "signed-in"</code>), and the menu shows the right thing for each status. Then move it into a Pinia store and compare the two versions.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You can now build any screen. The next part of the book is about building them <em>well</em>, as a team. It starts with design systems: shared components, tokens and documentation that make a hundred screens look and behave like one product.</p>
+</div>
+</section>

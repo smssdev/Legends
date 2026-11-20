@@ -1,0 +1,56 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">في كل مشروع اكتب الاختبارات <em>قبل</em> أن تنظر إلى الكود الذي تختبره، من وصف ما يجب أن يفعله. شغّلها، وراقبها تفشل إن كان الكود ناقصاً، ثم اجعلها تنجح. وهذا الترتيب، المسمى <dfn>التطوير المقاد بالاختبارات</dfn> (TDD)، عادة مفيدة حتى إن لم تتبعها كل يوم.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>اختبارات جدول لفاحص كلمة المرور</h3>
+<p class="project-goal">خذ فاحص قوة كلمة المرور من الكتاب الأول، مكتوباً بـ TypeScript، وثبّت سلوكه بجدول أمثلة واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>it.each</code>، و<code>as const</code> لصفوف ذات أنواع، واختيار الحالات المثيرة.</p>
+<ol class="steps">
+<li>اكتب صفاً لكل حالة مثيرة: فارغة، وقصيرة جداً، وطويلة لكنها بسيطة، وفيها رقم، وفيها حرف كبير، وجملة طويلة بلا أرقام.</li>
+<li>استخدم <code>it.each([...] as const)</code>، فتعرف TypeScript أن كل صف كلمة مرور وواحدة من النتائج الثلاث.</li>
+<li>ضع القيم في اسم الاختبار بـ <code>%s</code>، فتُقرأ المخرجات قائمة قواعد.</li>
+<li>غيّر قاعدة في <code>strength</code> (مثلاً 10 أحرف بدل 8) وانظر أي الصفوف تفشل.</li>
+<li>قرّر هل الفشل أخطاء في الكود أم توقعات قديمة، وأصلح الصحيح منهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> انظر إلى الصف الأخير. فالجملة الطويلة سهلة التذكر كلمة مرور قوية في الحياة الحقيقية، لكن هذا الفاحص يسميها «مقبولة» فقط. فالاختبارات لا تلتقط الأخطاء فحسب، بل كتابتها تجعلك تسأل هل القواعد صحيحة أصلاً.</p>
+<pre data-code="projects/password.test.ts" data-title="password.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects/password.test.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>اختبارات مكوّن لقائمة مهام</h3>
+<p class="project-goal">اختبر قائمة مهام كما يستخدمها المستخدم: أضف مهمة من النموذج، وعلّمها منجزة، وتأكد أن المهام الفارغة تُرفض.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الرسم ببيانات أولية، والكتابة بـ <code>userEvent</code> مع مفاتيح خاصة، والاستعلام بالدور والاسم، والمناطق الحية في الاختبارات.</p>
+<ol class="steps">
+<li>اجعل المكوّن يقبل المهام الأولية <code>initial</code> خاصيةً، فيبدأ كل اختبار من الحالة التي يحتاجها.</li>
+<li>أضف مهمة بالكتابة في مربع النص المسمى «مهمة جديدة» وضغط Enter بـ <code>{Enter}</code> داخل <code>user.type</code>.</li>
+<li>جِد المهمة الجديدة مربع اختيار اسمه المتاح نص المهمة. وتحقق أنه غير محدد وأن الحقل فارغ من جديد.</li>
+<li>علّم مهمة منجزة، وافحص العدد في منطقة <code>role="status"</code>.</li>
+<li>اكتب مسافات فقط واضغط Enter: يجب أن تبقى <code>queryAllByRole("checkbox")</code> فارغة. (و<code>queryBy…</code> لا تُرجع شيئاً بدل أن تفشل.)</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأن التسمية تحيط بمربع الاختيار صار اسمه المتاح نص المهمة. فإن وجده الاختبار بهذا الاسم وجده قارئ الشاشة أيضاً. فالاختبارات وسهولة الوصول تشدّان في الاتجاه نفسه.</p>
+<!-- react -->
+<pre data-code="react/projects/Tasks.test.tsx" data-title="Tasks.test.tsx"></pre>
+<pre data-sh="npx vitest run --reporter=verbose react/projects/Tasks.test.tsx"></pre>
+<!-- /react -->
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>فحوص إتاحة في اختبارات الطرف إلى الطرف</h3>
+<p class="project-goal">أضف اختباري طرف إلى طرف يحميان سهولة الوصول: لا مخالفات axe في صفحة الدخول، وتسجيل دخول كامل بلوحة المفاتيح وحدها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حقن سكربت في صفحة، و<code>page.evaluate</code>، وواجهة لوحة المفاتيح، وقراءة فشل يشير إلى مشكلة حقيقية.</p>
+<ol class="steps">
+<li>في ملف اختبار جديد افتح صفحة الدخول، وأضف axe بـ <code>page.addScriptTag</code>، وشغّلها بـ <code>page.evaluate</code>، وتوقع أن تكون قائمة معرّفات المخالفات فارغة.</li>
+<li>اكتب اختباراً ثانياً يسجّل الدخول بـ <code>page.keyboard</code> وحدها: Tab، ثم كتابة، ثم Tab، ثم كتابة، ثم Enter.</li>
+<li>شغّل الاختبارات. فحين صُنع هذا الكتاب فشل الاختبار الأول على صفحة الكتاب نفسه بـ <code>landmark-one-main</code> و<code>page-has-heading-one</code> و<code>region</code>: لم يكن في النموذج <code>main</code> ولا <code>h1</code>.</li>
+<li>أصلح الصفحة لا الاختبار: غلّفها بـ <code>&lt;main&gt;</code> مع <code>&lt;h1&gt;</code>، واجعل رسالة الترحيب <code>&lt;h2&gt;</code>.</li>
+<li>شغّل الاختبارات كلها من جديد، الوحدات والمكونات والطرف إلى الطرف، وانظرها تنجح كلها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اختبار لوحة المفاتيح يثبت ما لا تستطيعه axe: أن ترتيب محطات Tab منطقي، وأن Enter ترسل النموذج. ومعاً يغطي الاختباران جزءاً كبيراً من مبدأ «قابل للتشغيل» في WCAG.</p>
+<pre data-code="e2e/a11y.spec.ts" data-title="e2e/a11y.spec.ts"></pre>
+<pre data-sh="npx playwright test"></pre>
+</div>

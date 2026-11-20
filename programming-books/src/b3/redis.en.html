@@ -1,0 +1,246 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/redis/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Redis: Caching, Rate Limits and Locks</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>use Redis from the command line: strings, counters, expiry, hashes and sorted sets</li>
+<li>put a cache in front of a slow query, and keep it correct when the data changes</li>
+<li>stop a stampede of requests from hitting the database at once, with a lock</li>
+<li>take and release a lock across processes and servers safely</li>
+<li>build a rate limit that several servers share</li>
+<li>decide what belongs in Redis and what must stay in the database</li>
+</ul>
+</div>
+
+<p class="lead">PostgreSQL is careful: it writes to disk, checks constraints and keeps every transaction safe. That care has a price, measured in milliseconds, and some questions are asked thousands of times a minute with the same answer. Redis is the opposite kind of tool: a server that keeps everything in memory and answers in well under a millisecond. Almost every production backend has one beside its database, for three jobs this chapter builds for real: a cache, a lock that many processes respect, and counters that several servers share.</p>
+
+<aside class="bit" data-mood="happy"><p>The first time I put a cache in front of our slowest page, its response time went from 900 milliseconds to 4. I felt like a magician for a week. Then a customer complained that a price they had changed an hour earlier still showed the old value, and I learned the other half of caching: knowing when the copy is wrong.</p></aside>
+
+<h2>{{n}}.1 Redis in five minutes</h2>
+
+<p><dfn>Redis</dfn> is a server that stores <dfn>keys</dfn> and their values in memory. Clients talk to it over the network, like a database, and <code>redis-cli</code> is its command-line client. The simplest values are strings, and a key can carry an expiry time:</p>
+
+<pre data-code="strings.sh" data-title="Terminal"></pre>
+
+<ul>
+<li><code>GET</code> of a key that does not exist answers <code>(nil)</code>.</li>
+<li><code>INCR</code> adds 1 and returns the new value, in one step: two clients incrementing at the same moment get 1 and 2, never 1 and 1. Redis runs one command at a time, so every single command is atomic.</li>
+<li><code>EX 1800</code> makes the key disappear after 1,800 seconds, and <code>TTL</code> says how long it has left. Sessions, caches and rate limits all depend on this.</li>
+<li><code>NX</code> sets the key only if it does not exist yet: the second <code>SET … NX</code> changed nothing. This one flag is the base of a lock (section {{n}}.3).</li>
+</ul>
+
+<p>Values can also be structures. A <dfn>hash</dfn> is a small table of fields under one key; a <dfn>sorted set</dfn> keeps members ordered by a score, which makes leaderboards and time windows easy:</p>
+
+<pre data-code="types.sh" data-title="Terminal"></pre>
+
+<p>Key names are free text; the convention is parts separated by colons, from general to specific: <code>product:2</code>, <code>session:7f3a</code>, <code>rate:203.0.113.7</code>. It keeps keys readable and lets you find them by prefix when debugging.</p>
+
+<h2>{{n}}.2 A cache in front of a slow query</h2>
+
+<p>The most common pattern is <dfn>cache-aside</dfn>: the application looks in Redis first; on a <dfn>cache miss</dfn> it asks the database and keeps a copy in Redis for next time; on a <dfn>cache hit</dfn> the database is not touched. Here a <code>pg_sleep(0.2)</code> makes the query take 200 milliseconds, like a heavy report:</p>
+
+<!-- node -->
+<pre data-code="node/cache.ts" data-from="^// " data-to="^}#3" data-title="node/cache.ts"></pre>
+
+<pre data-code="node-cache.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/cache.php" data-from="^// " data-to="^}#3" data-title="php/cache.php"></pre>
+
+<p>The PHP programs reach Redis with <dfn>Predis</dfn>, a client written in PHP and installed with Composer (<code>composer require predis/predis</code>), so no extension is needed.</p>
+
+<pre data-code="php-cache.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<p>The first request paid the full 200 milliseconds; the next two came from memory in about one. That is the reward. The cost is that there are now two copies of the data, and the copy can be wrong. Two rules keep it right:</p>
+<ul>
+<li><strong>Invalidate on change.</strong> Whatever changes the data deletes the cached copy, after the database write has succeeded. The next read misses and fetches the new value: the price 47000 appeared at once. Deleting is safer than writing the new value into the cache, because two concurrent writers could otherwise leave the older value there.</li>
+<li><strong>Always set an expiry.</strong> Some change will one day forget to invalidate: a direct SQL fix, a new code path, a bug. A TTL limits how long a wrong copy can live. Choose it from the question “how stale may this be?”: seconds for stock levels, minutes for a product page, hours for a list of countries.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: cache what is shared, not what is private</p><p>A cache key must contain everything the answer depends on. A product page in two languages needs <code>product:2:ar</code> and <code>product:2:en</code>, and anything that depends on the user (their basket, their prices, their permissions) needs the user in the key, or no cache at all. Serving one customer’s cached data to another is a security incident, not a performance bug.</p></aside>
+
+<h2>{{n}}.3 Stampedes and locks</h2>
+
+<p>A cache has a dangerous moment: when a popular key expires. Every request that arrives in the next 200 milliseconds misses, and every one of them asks the database the same heavy question. This is a <dfn>cache stampede</dfn>. The program sends twenty requests at once for a product that is not cached, first without protection, then with a lock that lets only one request rebuild the cache while the others wait and look again:</p>
+
+<!-- node -->
+<pre data-code="node/stampede.ts" data-from="^// " data-to="^}" data-title="node/stampede.ts"></pre>
+
+<pre data-code="node-stampede.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/stampede.php" data-from="^// " data-to="^}" data-title="php/stampede.php"></pre>
+
+<p>As in the previous chapter, the twenty requests are twenty processes made with <code>pcntl_fork</code>, each with its own connections.</p>
+
+<pre data-code="php-stampede.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<p>Without the lock, twenty requests made twenty identical queries; with it, one. With a real report that takes two seconds and a page that a thousand visitors open in that time, this is the difference between a slow page and a database that falls over. The lock is three ideas:</p>
+<ul>
+<li><strong>Take it with <code>SET key token NX PX 5000</code>.</strong> <code>NX</code> means only one client can create the key; the others get <code>null</code> and know someone else is working. <code>PX 5000</code> makes the lock expire after 5 seconds, so a process that crashes while holding it cannot block everyone forever.</li>
+<li><strong>A random token as the value.</strong> If the work took longer than 5 seconds, the lock expired and another process may hold it now. Deleting the key blindly would release <em>their</em> lock.</li>
+<li><strong>Release with a script.</strong> “Read the value, compare it, delete the key” must happen in one step, or the lock could change hands between the read and the delete. Redis runs a Lua script atomically, like a single command, so the release checks the token and deletes in one step.</li>
+</ul>
+
+<p>A Redis lock is good for efficiency: avoiding duplicate work, as here. It is not a guarantee of correctness, because a lock that expires while its owner is still working (a long pause, a slow network) lets two processes in. When two processes doing the work at once would corrupt data, the last line of defence stays in the database: a constraint, a conditional update or a row lock, from Chapter {{n-1}}.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does the cache-aside code delete the cached copy after an update instead of writing the new value into it?</li><li>What would go wrong if the lock had no expiry time?</li><li>Why does the lock need a random token instead of the value <code>1</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 A rate limit that servers share</h2>
+
+<!-- node -->
+<p>Chapter {{n-4}} limited requests with <code>@fastify/rate-limit</code>, which counts in the server’s own memory.</p>
+<!-- /node -->
+<!-- laravel -->
+<p>Chapter {{n-5}} limited requests with Laravel’s rate limiter, which counts in whatever cache store the application uses.</p>
+<!-- /laravel -->
+<p>With counters in each server’s memory, a client who spreads requests across two servers gets twice the limit, and a restart resets everyone. The counter belongs in Redis, where every server sees the same number:</p>
+
+<!-- node -->
+<pre data-code="node/ratelimit.ts" data-title="node/ratelimit.ts"></pre>
+
+<pre data-code="node-ratelimit.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/ratelimit.php" data-title="php/ratelimit.php"></pre>
+
+<pre data-code="php-ratelimit.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<p>The requests alternated between servers A and B, and the sixth was refused whichever server received it. Two details make it right:</p>
+<ul>
+<li><strong><code>EXPIRE … NX</code></strong> sets the expiry only if the key has none, so the first request starts the 10-second window and later requests do not extend it.</li>
+<li><strong><code>MULTI</code> and <code>EXEC</code></strong> send both commands as one transaction: Redis runs them together, with no other client’s command in between. With two separate commands, a process that crashed after <code>INCR</code> and before <code>EXPIRE</code> would leave a counter that never expires, and that client blocked forever.</li>
+</ul>
+
+<p>This is a <dfn>fixed window</dfn>: simple and cheap, but a client can send 5 requests at the end of one window and 5 more at the start of the next. A <dfn>sliding window</dfn> counts the requests of the last 10 seconds at every moment, with a sorted set of timestamps; it is exercise 5.</p>
+
+<h2>{{n}}.5 Redis in the framework</h2>
+
+<!-- node -->
+<p>In a Fastify application, create one Redis client when the server starts, share it with <code>app.decorate("redis", client)</code>, and close it in an <code>onClose</code> hook, exactly like the database pool. The ready-made pieces accept it:</p>
+<ul>
+<li><code>@fastify/rate-limit</code> takes a <code>redis</code> option, and then keeps its counters there instead of in memory, shared by every server.</li>
+<li>Caching stays a few lines of your own code, like <code>product()</code> above, often wrapped in a small helper <code>cached(key, ttl, load)</code>.</li>
+<li>For locks with automatic renewal and for queues, there are packages built on these same commands; Chapter {{n+3}} uses Redis for a job queue.</li>
+</ul>
+<!-- /node -->
+<!-- laravel -->
+<p>Laravel has Redis built in. Set <code>REDIS_CLIENT=predis</code> (or install the <code>phpredis</code> extension, which is faster), point <code>REDIS_HOST</code> at the server, and choose <code>CACHE_STORE=redis</code>. Then everything in this chapter is one line:</p>
+<ul>
+<li><code>Cache::remember("product:$id", 60, fn () =&gt; Product::findOrFail($id))</code> is cache-aside, and <code>Cache::forget("product:$id")</code> invalidates.</li>
+<li><code>Cache::lock("report", 5)-&gt;get(fn () =&gt; …)</code> takes a lock with a token and releases it safely, with the same <code>SET NX</code> and Lua script as above; <code>Cache::flexible()</code> serves the old value while one request rebuilds it, which also prevents stampedes.</li>
+<li>The rate limiter (<code>RateLimiter::for</code> and the <code>throttle</code> middleware) counts in the cache store, so with Redis it is shared by every server.</li>
+<li><code>Redis::incr()</code>, <code>Redis::zadd()</code> and the other commands are available directly for anything else; Chapter {{n+3}} runs the queue on Redis.</li>
+</ul>
+<!-- /laravel -->
+
+<h2>{{n}}.6 What belongs in Redis</h2>
+
+<p>Redis keeps everything in memory, and memory is small and expensive compared with disk. Three settings decide how it behaves when things go wrong:</p>
+<ul>
+<li><strong><code>maxmemory</code></strong> limits the memory Redis may use, and <strong><code>maxmemory-policy</code></strong> decides what happens at the limit. For a pure cache, <code>allkeys-lru</code> evicts the least recently used keys, which is exactly what a cache should forget. The default, <code>noeviction</code>, refuses new writes instead.</li>
+<li><strong>Persistence</strong> (RDB snapshots and the AOF log) can save the data to disk, so a restart does not empty it. A cache can do without; sessions and queues need it.</li>
+<li>One Redis for a cache that may forget, and another (or another configuration) for data that must not: a queue whose jobs vanish under memory pressure loses orders.</li>
+</ul>
+
+<p>The rule that follows: <strong>Redis holds copies and short-lived state; the database holds the truth.</strong> If Redis were emptied right now, the application should get slower, log users out at worst, but lose nothing that matters.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: measure before you cache</p><p>A cache adds a second copy of the data, invalidation code, and a new way to be wrong. Before adding one, measure: which query is slow, how often it runs, and whether an index (Chapter {{n-3}}) or a better query would fix it with no copy at all. Then cache the few hot, expensive, shared answers, and watch the hit rate: a cache that is hit 20% of the time is mostly overhead.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Caching without a TTL</td><td>A missed invalidation lasts forever</td><td>Every key gets an expiry</td></tr>
+<tr><td>Writing the new value into the cache on update</td><td>Concurrent writers leave the old value</td><td>Delete the key; the next read reloads</td></tr>
+<tr><td>A key missing part of what the answer depends on</td><td>One user sees another’s data</td><td>Language, user and filters in the key</td></tr>
+<tr><td>A lock without an expiry</td><td>A crash blocks everyone forever</td><td><code>SET … NX PX</code></td></tr>
+<tr><td>Releasing a lock with a plain <code>DEL</code></td><td>Releasing someone else’s lock</td><td>Token, and a Lua compare-and-delete</td></tr>
+<tr><td><code>INCR</code> then <code>EXPIRE</code> as two commands</td><td>Counters that never expire</td><td><code>MULTI</code>/<code>EXEC</code>, or <code>EXPIRE … NX</code> together</td></tr>
+<tr><td>Rate limits in each server’s memory</td><td>Limits multiplied by the number of servers</td><td>Counters in Redis</td></tr>
+<tr><td>Redis as the only copy of important data</td><td>Data lost on eviction or restart</td><td>The database holds the truth</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Redis</strong> keeps keys in memory and answers in under a millisecond; every single command is <strong>atomic</strong>.</li>
+<li><strong>Cache-aside:</strong> read Redis, on a miss read the database and keep a copy with a <strong>TTL</strong>; on change, <strong>delete</strong> the copy.</li>
+<li>A <strong>stampede</strong> sends every request to the database when a hot key expires; a <strong>lock</strong> lets one rebuild it.</li>
+<li>A safe lock: <code>SET key token NX PX</code>, and release with a <strong>Lua script</strong> that checks the token. Redis locks save work; correctness stays in the database.</li>
+<li><strong>Rate limits</strong> belong in Redis so that servers share them; <code>MULTI</code>/<code>EXEC</code> keeps counter and expiry together.</li>
+<li>Redis holds copies and short-lived state; the <strong>database holds the truth</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Two updates can happen at nearly the same time; if each writes its value into the cache, the slower one can overwrite the newer value with the older, and the cache stays wrong until the TTL. Deleting is the same whatever the order, and the next read loads the current value from the database. 2. If the process holding the lock crashed or hung, the key would never disappear, and every later request would wait forever for a cache that nobody rebuilds. 3. When the lock expires while its owner is still working, another process can take it; a fixed value would let the first process, when it finishes, delete the second one’s lock. The token lets each process delete only the lock it took.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project adds Redis to the shop from the earlier chapters. Measure before and after, and prove the correctness claims with concurrent requests.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A cached product list</h3>
+<p class="project-goal">Cache the paginated product list of the shop’s API, and keep it correct when any product changes.</p>
+<p class="project-skills"><strong>You will practise:</strong> cache-aside, cache keys that include every parameter, invalidation and TTLs.</p>
+<ol class="steps">
+<li>Cache the response of the product list for 60 seconds, with a key that includes the page cursor, the page size and the language.</li>
+<li>When any product is created, updated or deleted, the list must change at once. Deleting every list key is awkward, so keep a version number in <code>products:version</code>, put it in every list key, and <code>INCR</code> it on every change.</li>
+<li>Measure the response time of the list with and without the cache, and the hit rate after a hundred random requests.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> after the version changes, the old keys are never read again and simply expire with their TTL; nothing needs to find and delete them.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A live leaderboard</h3>
+<p class="project-goal">Build a “best sellers this week” board that updates on every order and answers instantly.</p>
+<p class="project-skills"><strong>You will practise:</strong> sorted sets, keys per time period, atomic increments, and rebuilding from the database.</p>
+<ol class="steps">
+<li>On every order, <code>ZINCRBY</code> the product’s score by the quantity in a key for the current week, such as <code>bestsellers:2026-W47</code>, with an expiry a few weeks away.</li>
+<li>Add <code>GET /products/bestsellers</code> that returns the top 10 with <code>ZREVRANGE … WITHSCORES</code>, joined to the names from the database in one query.</li>
+<li>Write a command that rebuilds the current week’s board from the orders table, for the day Redis is emptied, and check that its result equals the live board.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the rebuild is what makes this safe: the board in Redis is a copy computed from orders, so losing it costs a minute of work, not data.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A cache that never stampedes</h3>
+<p class="project-goal">Write a reusable <code>cached(key, ttl, load)</code> helper that is fast, correct under load and safe when Redis is down.</p>
+<p class="project-skills"><strong>You will practise:</strong> locks with tokens, stale-while-revalidate, graceful degradation and load testing.</p>
+<ol class="steps">
+<li>Store each value with its own “fresh until” time inside the JSON, and a Redis TTL much longer than that.</li>
+<li>When the value is stale but present, return it at once, and let one request (the one that gets the lock) reload it in the background.</li>
+<li>When Redis cannot be reached, log a warning and call <code>load()</code> directly, so the application is slower but still works.</li>
+<li>Load test it with 200 concurrent requests on an expired key, and show that the database receives one query and no request waits for it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the idea behind <!-- laravel --><code>Cache::flexible()</code> in Laravel and <!-- /laravel -->the <code>stale-while-revalidate</code> directive of HTTP caching.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Choose a TTL for each and say why: a product’s price on its page; the exchange rate shown next to prices; the list of countries in the address form; a user’s login session.</li>
+<li><span class="level">Easy</span> What is wrong with this rate limit: <code>count = INCR key</code>, then <code>if count == 1: EXPIRE key 60</code>, as two separate commands?</li>
+<li><span class="level">Medium</span> A product page is cached under <code>product:2</code>. The page also shows the product’s category name. What must happen when a category is renamed? Propose two solutions and compare them.</li>
+<li><span class="level">Medium</span> A lock taken with <code>PX 5000</code> protects a job that usually takes 1 second, but once took 7. Describe exactly what happened, and three ways to protect the data.</li>
+<li><span class="level">Challenge</span> Write a sliding-window rate limit with a sorted set: at most 3 requests in any 2 seconds. Show that the fourth request in a burst is refused and that a request 2 seconds later is allowed.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The shop is correct and fast; now it needs to know who is calling. Authentication: passwords stored properly, sessions and tokens, and the rules that decide what each user may do.</p>
+</div>
+</section>

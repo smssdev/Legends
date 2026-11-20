@@ -1,0 +1,30 @@
+{
+  "name": "from-zero-to-senior-book-3",
+  "private": true,
+  "description": "The code of Book 3. Run `npm ci` once; each chapter's make.py runs its examples.",
+  "type": "module",
+  "devDependencies": {
+    "@fastify/cors": "11.4.0",
+    "@fastify/helmet": "13.2.0",
+    "@fastify/rate-limit": "11.2.2",
+    "@fastify/swagger": "9.9.5",
+    "@fastify/websocket": "11.3.6",
+    "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
+    "@types/ws": "8.18.2",
+    "autocannon": "9.0.0",
+    "bullmq": "6.7.0",
+    "fastify": "5.12.8",
+    "fastify-type-provider-zod": "7.0.0",
+    "ioredis": "6.0.0",
+    "kysely": "0.29.9",
+    "kysely-codegen": "0.20.0",
+    "openapi-types": "12.1.3",
+    "pg": "8.23.1",
+    "prettier": "3.10.1",
+    "prom-client": "15.1.3",
+    "redis": "6.3.1",
+    "typescript": "7.0.2",
+    "zod": "4.6.7"
+  }
+}

@@ -30,8 +30,15 @@ function serve(dir) {
   const fonts = path.join(__dirname, 'fonts');
   const browser = await chromium.launch();
   const tab = await browser.newPage({ viewport: { width: Number(width), height: 200 }, deviceScaleFactor: 2 });
-  const server = await serve(path.dirname(path.resolve(page)));
-  await tab.goto(`http://localhost:${server.address().port}/${path.basename(page)}`);
+  // Pages in a folder with a package.json (Book 2 onwards) are served from that folder, so they can
+  // share files such as /vendor/react.js; other pages are served from their own folder.
+  let root = path.dirname(path.resolve(page));
+  for (let dir = root; dir !== path.dirname(dir); dir = path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) { root = dir; break; }
+  }
+  const server = await serve(root);
+  const url = path.relative(root, path.resolve(page)).split(path.sep).map(encodeURIComponent).join('/');
+  await tab.goto(`http://localhost:${server.address().port}/${url}`);
   await tab.waitForLoadState('networkidle');
   await tab.addStyleTag({
     content: `
@@ -52,6 +59,9 @@ function serve(dir) {
     if (kind === 'wait') await tab.waitForTimeout(Number(rest));
   }
   await tab.waitForTimeout(100);
+  // Grow the window to the page's height, so fixed things (dialogs, backdrops, toasts) cover the whole page
+  const height = await tab.evaluate(() => document.documentElement.scrollHeight);
+  if (height > 200) await tab.setViewportSize({ width: Number(width), height });
   await tab.screenshot({ path: out, fullPage: true });
   await browser.close();
   server.close();

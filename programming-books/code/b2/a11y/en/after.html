@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Bit's shop</title>
+    <style>
+      body { font-family: system-ui, "Segoe UI", Tahoma, sans-serif; margin: 0; padding: 16px; background: #f5f5fb; color: #1e1b2e; }
+      header { display: flex; gap: 8px; align-items: center; background: white; padding: 8px 12px; border-radius: 12px; }
+      header .brand { font-weight: 800; color: #4338ca; margin-inline-end: auto; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 6px 12px; background: #4338ca; color: white; cursor: pointer; }
+      input { font: inherit; padding: 6px 10px; border: 2px solid #c7d2fe; border-radius: 10px; }
+      .card { background: white; border-radius: 12px; padding: 12px 14px; margin-top: 10px; display: flex; gap: 12px; align-items: center; }
+      .faint { color: #5b5873; }
+      .icon { padding: 6px 8px; display: inline-flex; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="brand">Bit's shop</p>
+      <form role="search" style="display: flex; gap: 8px; align-items: center">
+        <label for="q" class="sr-only">Search</label>
+        <input id="q" type="search" placeholder="Search products…">
+        <button class="icon" aria-label="Search"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+      </form>
+    </header>
+    <main>
+      <h1 class="sr-only">Bit's shop</h1>
+      <section class="card">
+        <img src="mug.svg" width="120" height="80" alt="A white mug with the purple Bit robot on it">
+        <div>
+          <h2>New: the Bit mug</h2>
+          <p class="faint">Big enough for long coding nights. Only this week: 20% off.</p>
+          <a href="#mug">Read about the Bit mug</a>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Newsletter</h2>
+        <form style="display: flex; gap: 8px; align-items: center">
+          <label for="email">Email</label>
+          <input id="email" type="email" autocomplete="email" dir="ltr">
+          <button type="submit">Join</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

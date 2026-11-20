@@ -1,0 +1,40 @@
+<ol class="exercises">
+<li>لا يُحفظ شيء من التغييرات الثلاثة. ينقطع الاتصال، فيرى PostgreSQL أن الجلسة انتهت بلا <code>COMMIT</code>، فيتراجع عن المعاملة؛ وتُحرَّر أقفال صفوفها في اللحظة نفسها، فتكمل المعاملات المنتظرة لتلك الصفوف. وانهيار خادم قاعدة البيانات نفسه له النتيجة ذاتها: عند إعادة التشغيل، المعاملة غير المثبّتة كأنها لم تحدث.</li>
+<li>مشاهدات الصفحة: تحديث ذري، <code>UPDATE pages SET views = views + 1 WHERE id = $1</code>، بلا قراءة في الكود؛ لا شيء يُفحص، فلا شيء يتسابق. والمقعد المرقّم: تحديث شرطي ذري (<code>UPDATE seats SET booked_by = $1 WHERE id = $2 AND booked_by IS NULL</code>، وانظر إلى عدد الصفوف المتغيرة) أو قيد تفرد على المقعد في جدول الحجوزات. واسم المستخدم الفريد: قيد تفرد (أو فهرس فريد)، وحوّل خطأه إلى 409؛ والفحص أولاً في الكود لرسالة لطيفة فقط، لا للضمان أبداً.</li>
+<li>اجعل المعاملتين تأخذان الصفوف بالترتيب نفسه، الرقم الأصغر أولاً: تنفذ B <code>run("B", 1, 2)</code> مثل A. فتنتظر B عند المنتج 1 حتى تثبّت A، ثم تكمل؛ ولا دائرة ممكنة. والبرنامجان يأخذان الوسيط <code>ordered</code> لهذا، والتشغيل في مستودع الكود يطبع «A: انتهت» و«B: انتهت» في النسختين. ومع عدة منتجات، رتّبها بالرقم قبل القفل أو التحديث.</li>
+<li>القفل يبقى طوال مدة استدعاء الشبكة، الذي قد يستغرق ثواني أو تنتهي مهلته، وكل مشترٍ آخر لذلك المنتج ينتظر في الأثناء؛ فتصير خدمة الدفع البطيئة متجراً بطيئاً. والأسوأ: إن نجح الخصم ثم فشل التثبيت، أُخذ المال لطلب غير موجود. والترتيب الأفضل: (1) معاملة قصيرة تحجز المخزون بتحديث ذري وتنشئ الطلب «قيد الانتظار»؛ (2) الخصم، خارج أي معاملة، بمفتاح عدم تكرار من رقم الطلب؛ (3) معاملة قصيرة تعلّم الطلب «مدفوعاً»، أو تحرر المخزون إن فشل الخصم. وعامل يلغي الطلبات التي تبقى قيد الانتظار أطول من اللازم.</li>
+<li>
+<!-- node -->
+<pre dir="ltr"><code>async function retrying&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;, attempts = 5): Promise&lt;T&gt; {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await work();
+    } catch (error) {
+      const code = (error as { code?: string }).code;
+      if (attempt === attempts || (code !== "40001" &amp;&amp; code !== "40P01")) throw error;
+      const pause = Math.random() * 20 * 2 ** attempt; // تكبر مع كل محاولة
+      await new Promise((resolve) =&gt; setTimeout(resolve, pause));
+    }
+  }
+}
+// await retrying(() =&gt; db.transaction().setIsolationLevel("serializable").execute(work));</code></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre dir="ltr"><code>function retrying(Closure $work, int $attempts = 5): mixed
+{
+    for ($attempt = 1; ; $attempt++) {
+        try {
+            return DB::transaction($work);
+        } catch (QueryException $e) {
+            $code = $e-&gt;getCode();
+            if ($attempt === $attempts || ! in_array($code, ['40001', '40P01'], true)) {
+                throw $e;
+            }
+            usleep(random_int(0, 20_000 * 2 ** $attempt)); // تكبر مع كل محاولة
+        }
+    }
+}</code></pre>
+<p>وفي مشروع Laravel حقيقي، <code>DB::transaction($work, attempts: 5)</code> تعيد عند الاستعصاء وفشل التسلسل أصلاً؛ وهذه الدالة تضيف الوقفة العشوائية التي تكبر.</p>
+<!-- /laravel -->
+الوقفة عشوائية كي لا تعيد معاملتان تصادمتا في اللحظة نفسها فتتصادما مرة أخرى؛ وتكبر كي تأخذ لحظة الزحام وقتها لتمر. ولا يُعاد إلا المعاملة كلها، لا جملة واحدة منها أبداً، لأن كل ما قرأته ربما تغيّر.</li>
+</ol>

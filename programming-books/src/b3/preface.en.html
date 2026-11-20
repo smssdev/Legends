@@ -1,0 +1,78 @@
+<section class="chapter preface" data-chapter="0" data-code="b3/preface/en">
+<p class="chapter-kicker">Before you begin</p>
+<h1>How to Use This Book</h1>
+
+<p class="lead">This book is for developers who can already build a small API and want to build services the way senior backend engineers do: correct under concurrency, safe against attackers, observable in production, fast where it matters, and easy for a team to change. If you finished <em>Code from Zero</em>, the first book of this series, you are ready. If you learned elsewhere, you need to be comfortable with one programming language, the command line, JSON and Git; the book explains HTTP, SQL and everything after them from the beginning.</p>
+
+<h2>Two editions, one book</h2>
+<p>The book exists in two editions, one for <strong>Node.js with TypeScript</strong> and one for <strong>PHP with Laravel</strong>, two of the most widely used ways to build web backends. The chapters that do not depend on the language, such as HTTP, SQL, transactions, Redis, observability, performance and Docker, are the same in both, and their examples are shown in both languages side by side where code is needed. The other chapters build the same shop API in the language of your edition, with the same tables, the same endpoints and the same tests.
+<!-- node -->You are reading the <strong>Node.js edition</strong>.<!-- /node --><!-- laravel -->You are reading the <strong>Laravel edition</strong>.<!-- /laravel -->
+If your team uses the other one, the ideas still apply, word for word: only the syntax changes.</p>
+
+<h2>How the book is organised</h2>
+<!-- node --><p>The seventeen chapters are grouped in four parts:</p><!-- /node -->
+<!-- laravel --><p>The eighteen chapters are grouped in four parts:</p><!-- /laravel -->
+<ul>
+<!-- node --><li><strong>Foundations</strong> explains HTTP in depth, Node.js and TypeScript for servers, and how to design a REST API that clients can rely on.</li><!-- /node -->
+<!-- laravel --><li><strong>Foundations</strong> explains HTTP in depth, modern PHP, the parts of Laravel every project uses, and how to design a REST API that clients can rely on.</li><!-- /laravel -->
+<!-- node --><li><strong>Data</strong> covers SQL with PostgreSQL, modelling and migrations with Kysely, transactions and locks, and Redis for caching and counting.</li><!-- /node -->
+<!-- laravel --><li><strong>Data</strong> covers SQL with PostgreSQL, Eloquent and migrations, transactions and locks, and Redis for caching and counting.</li><!-- /laravel -->
+<li><strong>Production</strong> is what a service needs before real users arrive: authentication, security, background jobs, real-time messages, testing, and observability.</li>
+<li><strong>Senior Work</strong> measures and improves performance, keeps the code easy to change, ships it in containers, and ends with a complete production API built from an empty folder.</li>
+</ul>
+<p>Read the first two parts in order. After that, the chapters can be read in the order your work needs them, though each one assumes the parts before it, and the last chapter uses them all.</p>
+
+<h2>Every chapter</h2>
+<p>Each chapter follows the same pattern, so you always know where you are: what you will learn; explanations built on real, running examples; a quick check in the middle; boxes with professional habits and common traps; a table of common mistakes; a summary; <strong>three practice projects</strong> (easy, medium and challenge) with steps and hints; and exercises at three levels. Answers to the quick checks follow each summary, and answers to the exercises are at the end of the book.</p>
+<p>The projects matter more than anything else in the book. Reading about a skill is not having it. Do at least one project per chapter, preferably the medium one, before moving on.</p>
+
+<h2>Real code, real output</h2>
+<p>Every listing in this book is a real file, and every terminal output, test run and measurement was produced by running it, against a real PostgreSQL and a real Redis, while the book was being made. When the last chapter shows six wrong passwords answered <code>401 401 401 401 429 429</code>, or an order sent twice that makes one order, that is what the server printed. You will see the same results if you use the same versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<!-- node --><tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>TypeScript</td><td>7.0</td></tr>
+<tr><td>Fastify</td><td>5.12</td></tr>
+<tr><td>Kysely</td><td>0.29</td></tr>
+<tr><td>node-postgres (pg)</td><td>8.23</td></tr>
+<tr><td>zod</td><td>4.6</td></tr>
+<tr><td>BullMQ (with ioredis 6.0)</td><td>6.7</td></tr>
+<tr><td>node-redis</td><td>6.3</td></tr>
+<tr><td>prom-client</td><td>15.1</td></tr>
+<tr><td>autocannon</td><td>9.0</td></tr><!-- /node -->
+<!-- laravel --><tr><td>PHP</td><td>8.5</td></tr>
+<tr><td>Laravel</td><td>13.43</td></tr>
+<tr><td>Sanctum</td><td>4.5</td></tr>
+<tr><td>Reverb</td><td>1.14</td></tr>
+<tr><td>Pest</td><td>5.3</td></tr>
+<tr><td>Predis</td><td>3.7</td></tr>
+<tr><td>Monolog</td><td>3.13</td></tr><!-- /laravel -->
+<tr><td>PostgreSQL</td><td>18.7</td></tr>
+<tr><td>Redis</td><td>8.10</td></tr>
+<tr><td>Docker (with Compose 5.6)</td><td>29.9</td></tr>
+</tbody>
+</table>
+<p>Tools change quickly. If a newer version prints something slightly different, read the difference: it usually teaches you what changed and why.</p>
+<ul>
+<li>A dark tab above a listing gives the file’s name and path in the project.</li>
+<li>A box with three coloured dots shows what appeared in the <strong>terminal</strong>. A line starting with <code>$</code> is a command; the lines below it are the answer, and lines starting with <code>#</code> are comments that say what the next command is for.</li>
+<li>Where an output was long, the book shows the lines that matter. Times that change on every run are written as <code>…</code>.</li>
+</ul>
+
+<h2>What you need</h2>
+<ul>
+<li>A computer with Windows, macOS or Linux, with at least 8 GB of memory.</li>
+<!-- node --><li>Node.js 22 or later, Git, <code>curl</code>, <code>jq</code>, and an editor such as Visual Studio Code.</li><!-- /node -->
+<!-- laravel --><li>PHP 8.5 with Composer (or Laravel Herd, which installs both), Git, <code>curl</code>, <code>jq</code>, and an editor such as Visual Studio Code or PhpStorm.</li><!-- /laravel -->
+<li><strong>Docker</strong>, which runs PostgreSQL and Redis for every chapter without installing them, and the whole system in the last chapters.</li>
+<li>Every library and tool in the book is free and open source.</li>
+</ul>
+
+<h2>The code repository</h2>
+<p>Every example, every project and every exercise answer is in the book’s code repository, in a folder per chapter, together with the scripts that produced each output. Type the examples yourself first, then use the repository to compare, or to recover when you are stuck.</p>
+
+<h2>A word from the author</h2>
+<p>Most of what goes wrong in a backend goes wrong quietly: an order saved twice, a lock held too long, a token that never expires, an error that nobody logged. None of it shows in a demo, and all of it shows on a busy day. This book is about building services that keep their promises when the network fails, the traffic grows and the code changes, and about the habits that make that normal rather than heroic. Like every book of the series, it is written for each of its two languages rather than translated word for word. I hope it helps you become the engineer that others trust with the systems that matter.</p>
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>

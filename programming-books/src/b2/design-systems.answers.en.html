@@ -1,0 +1,12 @@
+<ol class="exercises">
+<li>Add <code>"8": "32px"</code> to <code>space</code> and <code>"lg": "16px"</code> to <code>radius</code>, run the script, and write <code>border-radius: var(--radius-lg)</code> in the card style. The script prints 6 spaces and 4 radii.</li>
+<li>For example <code>"focus": "pink-60"</code> in the dark theme. The script stops with <code>Unknown primitive token: pink-60</code>, naming the exact value to fix. Without the check, the dark theme would silently have no focus colour.</li>
+<li>Add a <code>"contrast"</code> object under <code>semantic</code> with every semantic name, and generate a third block for <code>[data-theme="contrast"]</code>. No component changes: they only use semantic tokens. If one did need a change, it was using a hard-coded value, and that is the real bug.</li>
+<!-- react -->
+<li>Add <code>iconStart?: ReactNode</code> to the props, and render <code>{iconStart &amp;&amp; &lt;span aria-hidden="true"&gt;{iconStart}&lt;/span&gt;}</code> before the children. The <code>gap</code> on <code>.btn</code> already spaces it correctly in both directions, because flexbox follows the text direction.</li>
+<!-- /react -->
+<!-- vue -->
+<li>Add a named slot, <code>&lt;slot name="iconStart" /&gt;</code>, wrapped in a span with <code>aria-hidden="true"</code> before the default slot. The <code>gap</code> on <code>.btn</code> already spaces it correctly in both directions, because flexbox follows the text direction.</li>
+<!-- /vue -->
+<li>Add <code>"duration": { "fast": "150ms", "normal": "250ms" }</code> to the tokens, generate <code>--duration-fast</code> and <code>--duration-normal</code>, and use <code>transition: inset-inline-start var(--duration-normal)</code> in the switch. Then have the script also write <code>@media (prefers-reduced-motion: reduce) { :root { --duration-fast: 0ms; --duration-normal: 0ms; } }</code>. Every component using the tokens stops moving, without a single change.</li>
+</ol>

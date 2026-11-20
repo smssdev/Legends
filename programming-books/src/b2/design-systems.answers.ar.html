@@ -1,0 +1,12 @@
+<ol class="exercises">
+<li>أضف <code>"8": "32px"</code> إلى <code>space</code> و<code>"lg": "16px"</code> إلى <code>radius</code>، وشغّل السكربت، واكتب <code>border-radius: var(--radius-lg)</code> في نمط البطاقة. ويطبع السكربت 6 مسافات و4 انحناءات.</li>
+<li>مثلاً <code>"focus": "pink-60"</code> في المظهر الداكن. فيتوقف السكربت بـ <code>Unknown primitive token: pink-60</code>، مسمّياً القيمة التي يجب إصلاحها بالضبط. ودون الفحص كان المظهر الداكن سيبقى بلا لون تركيز بصمت.</li>
+<li>أضف كائن <code>"contrast"</code> تحت <code>semantic</code> بكل الأسماء الدلالية، وولّد كتلة ثالثة لـ <code>[data-theme="contrast"]</code>. ولا يتغير أي مكوّن: فهي تستخدم الرموز الدلالية وحدها. وإن احتاج أحدها تغييراً فهو يستخدم قيمة مكتوبة مباشرة، وتلك العلّة الحقيقية.</li>
+<!-- react -->
+<li>أضف <code>iconStart?: ReactNode</code> إلى الخصائص، وارسم <code>{iconStart &amp;&amp; &lt;span aria-hidden="true"&gt;{iconStart}&lt;/span&gt;}</code> قبل الأبناء. والمسافة <code>gap</code> على <code>.btn</code> تضبط المسافة صحيحة في الاتجاهين أصلاً، لأن flexbox تتبع اتجاه النص.</li>
+<!-- /react -->
+<!-- vue -->
+<li>أضف فتحة مسماة، <code>&lt;slot name="iconStart" /&gt;</code>، داخل span بـ <code>aria-hidden="true"</code> قبل الفتحة الافتراضية. والمسافة <code>gap</code> على <code>.btn</code> تضبط المسافة صحيحة في الاتجاهين أصلاً، لأن flexbox تتبع اتجاه النص.</li>
+<!-- /vue -->
+<li>أضف <code>"duration": { "fast": "150ms", "normal": "250ms" }</code> إلى الرموز، وولّد <code>--duration-fast</code> و<code>--duration-normal</code>، واستخدم <code>transition: inset-inline-start var(--duration-normal)</code> في المفتاح. ثم اجعل السكربت يكتب أيضاً <code>@media (prefers-reduced-motion: reduce) { :root { --duration-fast: 0ms; --duration-normal: 0ms; } }</code>. فيتوقف كل مكوّن يستخدم الرموز عن الحركة، دون تغيير واحد.</li>
+</ol>

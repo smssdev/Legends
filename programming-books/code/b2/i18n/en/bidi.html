@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { font-family: system-ui, "Segoe UI", Tahoma, sans-serif; margin: 0; padding: 16px; background: #f5f5fb; color: #1e1b2e; }
+      .cards { display: grid; gap: 12px; }
+      .card { background: white; border-radius: 14px; padding: 12px 16px; box-shadow: 0 2px 10px rgb(67 56 202 / 0.1); }
+      .card h2 { margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+      .row { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid #eef2ff; }
+      .badge { margin-inline-start: auto; background: #4338ca; color: white; border-radius: 999px; padding: 0 10px; font-size: 0.85rem; }
+      .next::after { content: "→"; display: inline-block; margin-inline-start: 6px; }
+      [dir="rtl"] .next::after { transform: scaleX(-1); }
+      .muted { color: #5b5873; font-size: 0.9rem; }
+      .bad { border-inline-start: 4px solid #b91c1c; }
+      .good { border-inline-start: 4px solid #047857; }
+    </style>
+  </head>
+  <body>
+    <div class="cards">
+      <div class="card bad">
+        <p>طلب <span>#1042</span> من <span>Sara Khan</span> (3 items)</p>
+        <p>الهاتف: <span>+20 100 123 4567</span></p>
+        <p>البريد: <span>sara@example.com</span></p>
+      </div>
+      <div class="card good">
+        <p>طلب <bdi>#1042</bdi> من <bdi>Sara Khan</bdi> (<bdi>3 items</bdi>)</p>
+        <p>الهاتف: <span dir="ltr">+20 100 123 4567</span></p>
+        <p>البريد: <span dir="ltr">sara@example.com</span></p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "bit-shop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file=.env src/server.ts",
+    "worker": "node --env-file=.env src/worker.ts",
+    "test": "node --env-file=.env.test --test --test-reporter=spec",
+    "check": "tsc"
+  },
+  "dependencies": {
+    "@fastify/rate-limit": "11.2.2",
+    "fastify": "5.12.8",
+    "fastify-type-provider-zod": "7.0.0",
+    "ioredis": "6.0.0",
+    "kysely": "0.29.9",
+    "pg": "8.23.1",
+    "prom-client": "15.1.3",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
+    "typescript": "7.0.2"
+  }
+}

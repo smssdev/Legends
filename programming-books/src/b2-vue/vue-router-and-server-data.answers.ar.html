@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>أضف <code>{ path: "about", component: About }</code> إلى أبناء مسار الإطار، و<code>&lt;RouterLink to="/about"&gt;من نحن&lt;/RouterLink&gt;</code> إلى شريط التنقل. ويُضاف صنف الرابط الفعال وحده.</li>
+<li><code>const client = useQueryClient(); const position = computed(() =&gt; { const list = client.getQueryData&lt;Product[]&gt;(["products", null]); const i = list?.findIndex((p) =&gt; p.id === props.id) ?? -1; return list &amp;&amp; i &gt;= 0 ? `المنتج ${i + 1} من ${list.length}` : ""; });</code>. وقراءة الذاكرة لا ترسل أي طلب.</li>
+<li><code>const q = computed(() =&gt; (typeof route.query.q === "string" ? route.query.q : ""))</code>، وأضف <code>q</code> إلى المفتاح، ورشّح بـ <code>p.name.toLowerCase().includes(q.value.toLowerCase())</code>. وحدّثه كما في المشروع {{n}}.2، بـ <code>router.replace</code> مع نشر المعاملات الأخرى.</li>
+<li>أضف <code>meta: { title: "المنتجات" }</code> إلى كل مسار، و<code>router.afterEach((to) =&gt; { document.title = `${to.meta.title ?? "متجر بِت"} · متجر بِت`; })</code>. ولتكون <code>to.meta.title</code> بنوعها، وسّع الواجهة <code>RouteMeta</code> في ملف <code>.d.ts</code>.</li>
+<li><code>const client = useQueryClient(); watchEffect(() =&gt; client.prefetchQuery({ queryKey: ["product", props.id + 1], queryFn: () =&gt; getProduct(props.id + 1) }));</code> و<code>&lt;RouterLink :to="`/products/${id + 1}`"&gt;</code>. وحين يضغط المستخدم يجد الاستعلام المنتج في الذاكرة فيعرضه دون هيكل تحميل.</li>
+</ol>

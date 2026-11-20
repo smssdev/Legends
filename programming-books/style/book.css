@@ -105,7 +105,7 @@ h3 { font: 700 11.5pt/1.4 var(--head); color: var(--brand); margin: 1.1em 0 0.4e
 
 /* ---------- code and terminal ---------- */
 pre { font: 400 8.6pt/1.55 var(--mono); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0;
-  margin: 0; white-space: pre-wrap; text-align: left; }
+  margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; text-align: left; }
 .listing { margin: 0.9em 0 0.35em; break-inside: avoid; }
 .listing-title { font: 700 7.5pt var(--mono); background: var(--brand); color: #fff; display: inline-block; padding: 2.5pt 9pt; border-radius: 5pt 5pt 0 0; }
 pre.code { background: var(--code-bg); border: 1pt solid #d9dbea; border-left: 4pt solid var(--brand); border-radius: 0 6pt 6pt 6pt; padding: 8pt 10pt; }
@@ -190,3 +190,5 @@ figure.browser img { display: block; width: 100%; height: auto; max-height: 6.4i
 .hint { background: var(--tip-soft); border-radius: 8pt; padding: 5pt 10pt; font-size: 0.93em; }
 .solution { font-size: 0.88em; color: var(--muted); }
 pre.code.md { unicode-bidi: plaintext; }
+.code .line-bidi { unicode-bidi: plaintext; }
+.project p:has(+ .output), .project p:has(+ .listing), .project p:has(+ figure) { break-after: avoid; }

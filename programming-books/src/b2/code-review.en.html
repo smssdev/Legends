@@ -1,0 +1,297 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/review/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Code Review, Mentoring and Technical Decisions</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>open pull requests that are small, focused and easy to review</li>
+<li>let machines check everything a machine can, before a person looks</li>
+<li>review code in a useful order, and write comments that are clear and kind</li>
+<li>receive reviews without taking them personally</li>
+<li>help less experienced developers grow, through pairing, questions and feedback</li>
+<li>make technical decisions with a matrix, write them down as decision records, and manage technical debt</li>
+</ul>
+</div>
+
+<p class="lead">Up to now this book has been about the code you write. A senior developer spends a large part of the week on the code <em>other people</em> write: reading their pull requests, answering their questions, and helping the team choose between tools and designs. None of this is a soft extra. A team where reviews are slow and harsh, juniors are stuck and decisions are forgotten ships slowly, whatever the skill of each person. This chapter turns these human tasks into habits as concrete as the code ones.</p>
+
+<aside class="bit" data-mood="think"><p>The first time someone left forty comments on my pull request, I thought they disliked me. Later I understood that the comments were about the code, and that most of them a script could have written. This chapter is the one I wish I had read then.</p></aside>
+
+<h2>{{n}}.1 What review is for</h2>
+
+<p>A <dfn>code review</dfn> is another developer reading a change before it joins the main branch. It has four goals, in this order:</p>
+<ol>
+<li><strong>Catch problems early</strong>, when they are cheapest to fix: bugs, security holes, missing cases.</li>
+<li><strong>Share knowledge.</strong> After a review, two people know how the discount code works, not one. Juniors learn by being reviewed, and also by reviewing.</li>
+<li><strong>Keep the code consistent</strong>, so the codebase reads as if one careful person wrote it.</li>
+<li><strong>Keep the design healthy</strong>: a change can work today and still make the next ten changes harder.</li>
+</ol>
+
+<p>Notice what is not on the list: proving that the reviewer is clever, or making the code look exactly as the reviewer would have written it. A review that blocks a change for weeks over taste costs more than the problems it finds.</p>
+
+<h2>{{n}}.2 A pull request that is easy to review</h2>
+
+<p>The best review starts before anyone reviews: with a change that is easy to read. Here is Sara, adding discount codes to Bit’s shop. While she was there, her editor also reformatted a stylesheet. Git shows what the pull request contains:</p>
+
+<pre data-code="pr.sh" data-title="Terminal"></pre>
+
+<p>Eleven lines of new feature are hidden among three hundred lines of formatting. A reviewer will either read everything and get tired before reaching the part that matters, or skim and miss it. Both are bad. The fix takes a minute: move the formatting into a pull request of its own, which can be approved at a glance because it changes no behaviour:</p>
+
+<pre data-code="split.sh" data-title="Terminal"></pre>
+
+<p>Now the feature is eleven lines, and the reviewer’s full attention goes to them. Three habits keep pull requests like this:</p>
+<ul>
+<li><strong>One purpose per pull request.</strong> A feature, a fix, a refactoring and a formatting change are four pull requests. Mixed changes are hard to review and hard to undo.</li>
+<li><strong>Small.</strong> Under about 300 changed lines, a reviewer can still hold the whole change in their head. A big feature can be merged in small steps behind a <dfn>feature flag</dfn>, a setting that keeps the unfinished part hidden from users.</li>
+<li><strong>Described.</strong> Say what the change does, why, and how to test it. A template in the repository asks for this every time:</li>
+</ul>
+
+<pre data-code="pull_request_template.md" data-title=".github/pull_request_template.md"></pre>
+
+<p>GitHub and GitLab put the contents of this file into every new pull request automatically. The checklist is not bureaucracy: each line is a mistake the team has already made once.</p>
+
+<h2>{{n}}.3 Let the machines go first</h2>
+
+<p>A person’s attention is the most expensive thing in a review. It should not be spent on a missing semicolon. Everything a machine can check runs in CI on every pull request before a person is asked to look: the formatter, the linter, the type checker and the tests from Chapter {{n-6}}. A team can add its own rules too. Here is a small robot reviewer that reads a pull request’s diff:</p>
+
+<pre data-code="review-bot.ts" data-title="review-bot.ts"></pre>
+
+<p>A diff marks added lines with <code>+</code> and removed lines with <code>-</code>, and each part starts with a header like <code>@@ -0,0 +1,11 @@</code>, which says where the part begins in the new file. The robot follows the line numbers and applies its rules to the added lines only. On Sara’s first pull request:</p>
+
+<pre data-out="review-bot.mjs"></pre>
+
+<p>Seven comments that no person had to write, each pointing at an exact line. Real teams get the same effect with ESLint rules (<code>no-console</code>, <code>eqeqeq</code>, <code>@typescript-eslint/no-explicit-any</code>) and size checks in CI, and they make the checks <em>required</em>, so a pull request cannot be merged while one fails. The rule of thumb: <strong>if you write the same review comment three times, automate it.</strong></p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why should a formatting change never share a pull request with a feature?</li><li>What does <code>@@ -0,0 +1,11 @@</code> tell the robot?</li><li>What should you do with a review comment you have written three times?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Reviewing like a senior</h2>
+
+<p>Now a person reads what is left. Here is the feature part of Sara’s change:</p>
+
+<pre data-code="discount-pr.diff" data-title="src/cart/discount.ts"></pre>
+
+<p>The robot already flagged the small things. A useful review goes from the big questions to the small ones, and stops going deeper when a big question fails:</p>
+<ol>
+<li><strong>Purpose.</strong> Does the change do what the description says, and is it the right thing to build?</li>
+<li><strong>Design.</strong> Does it fit the code around it? Will the next change be easy?</li>
+<li><strong>Correctness.</strong> Edge cases, errors, security, money, time zones, languages.</li>
+<li><strong>Tests.</strong> Would the tests fail if the code were wrong?</li>
+<li><strong>Readability.</strong> Names, structure, comments where the <em>why</em> is not obvious.</li>
+</ol>
+
+<p>Reading this way, a reviewer finds problems no linter can: <code>total * 0.9</code> turns whole piastres into fractions; an unknown code silently gives the full price, so a customer who typed <code>bit10</code> pays more than they expected and nobody knows why; adding a code means editing an <code>if</code> chain; and the function changes the cart it was given, which surprises every caller.</p>
+
+<h3>Writing the comments</h3>
+
+<p>A comment must say three things: what the problem is, why it matters, and how important it is. Many teams start each comment with a label, in a style called <dfn>Conventional Comments</dfn>, so the author never has to guess what is required:</p>
+
+<table>
+<thead><tr><th>Label</th><th>Means</th><th>Example on Sara’s change</th></tr></thead>
+<tbody>
+<tr><td><strong>issue (blocking)</strong></td><td>Must change before merging</td><td>“<code>total * 0.9</code> turns 12997 piastres into 11697.3. We keep money in whole piastres; can we compute the discount and round it once?”</td></tr>
+<tr><td><strong>issue (blocking)</strong></td><td>Must change before merging</td><td>“An unknown code returns the full price with no message. Customers who mistype will think the discount did not work. Could the result say that the code is unknown?”</td></tr>
+<tr><td><strong>suggestion</strong></td><td>Better, but the author decides</td><td>“A table of codes instead of the <code>if</code> chain would let marketing add codes without touching the logic.”</td></tr>
+<tr><td><strong>question</strong></td><td>The reviewer wants to understand</td><td>“Should codes ignore case and spaces? People often paste them with a space at the end.”</td></tr>
+<tr><td><strong>nit</strong></td><td>Small, never blocking</td><td>“<code>applyDiscount</code> returns the price, so <code>price</code> might say it better.”</td></tr>
+<tr><td><strong>praise</strong></td><td>Something done well</td><td>“Reusing <code>subtotal</code> instead of a second loop: nice.”</td></tr>
+</tbody>
+</table>
+
+<p>Notice how the comments are written. They are about the code, never the person (“this returns”, not “you forgot”). They explain the consequence for users, which is what makes a reviewer convincing. They ask when the reviewer is not sure. And there is praise: reviews that only ever list problems teach people to dread them. Compare:</p>
+
+<table>
+<thead><tr><th>Instead of</th><th>Write</th></tr></thead>
+<tbody>
+<tr><td>“This is wrong.”</td><td>“This gives a fraction of a piastre for some carts. Could we round the discount once?”</td></tr>
+<tr><td>“Why didn’t you use a table?”</td><td>“suggestion: a table of codes would make adding one a one-line change.”</td></tr>
+<tr><td>“Use ===.”</td><td>(nothing: the linter says it)</td></tr>
+<tr><td>Thirty comments on one pull request</td><td>The three that matter, and a call to talk about the design</td></tr>
+</tbody>
+</table>
+
+<aside class="box tip"><p class="box-title">Tip: review fast</p><p>A pull request waiting two days blocks its author, who starts something else and has to switch back later. Many teams agree to give a first review within one working day. A quick review of the important points beats a perfect review next week.</p></aside>
+
+<h3>The change after the review</h3>
+
+<p>Sara answers every comment and pushes a new version:</p>
+
+<pre data-code="discount.ts" data-title="src/cart/discount.ts"></pre>
+
+<p>And a test that would have caught each of the problems, including the one about changing the cart:</p>
+
+<pre data-code="discount.test.ts" data-title="src/cart/discount.test.ts"></pre>
+<pre data-out="discount.test.mjs"></pre>
+
+<p>Every blocking comment is now a line in the code and a check in the test. That is the best ending a review can have: the problem cannot come back without a test failing.</p>
+
+<h2>{{n}}.5 Being reviewed</h2>
+
+<p>Half of review skill is on the other side. A few habits make it easier for everyone:</p>
+<ul>
+<li><strong>Review your own pull request first.</strong> Read the diff on GitHub before asking anyone. You will find the leftover <code>console.log</code> yourself.</li>
+<li><strong>Answer every comment</strong>, even with “Done in 3f2a91c” or “Good point, I opened #148 for it”. The reviewer should never have to check whether a comment was seen.</li>
+<li><strong>Disagree with reasons</strong>, politely, and in writing. If two rounds of comments do not settle it, talk for five minutes instead.</li>
+<li><strong>Separate yourself from your code.</strong> A comment on a line is not a comment on you. Every senior developer has received thousands.</li>
+</ul>
+
+<h2>{{n}}.6 Mentoring</h2>
+
+<p><dfn>Mentoring</dfn> is helping a less experienced developer grow faster than they would alone. It is part of every senior role, and it is learned like any other skill:</p>
+
+<ul>
+<li><strong>Ask before you tell.</strong> “What do you think happens when the code is unknown?” teaches more than the answer, because the junior finds it. Give the answer when they are stuck, not before.</li>
+<li><strong>Pair.</strong> In <dfn>pair programming</dfn> two people work on one task: the <em>driver</em> types, the <em>navigator</em> thinks ahead. Let the junior drive. Switch every half hour or so.</li>
+<li><strong>Give tasks slightly too big.</strong> A task they can do with some help, not one they can already do, nor one that will drown them. Agree in advance when they should ask for help: for example, after an hour stuck.</li>
+<li><strong>Give feedback on behaviour, soon and specifically.</strong> A simple shape is <dfn>situation, behaviour, impact</dfn>: “In yesterday’s pull request (situation), you added tests for the unknown code (behaviour); it stopped a bug that would have reached customers (impact).” It works for praise and for problems, and it never says “you always”.</li>
+<li><strong>Make it safe to not know.</strong> Say “I don’t know, let’s find out” yourself. Juniors who are afraid to ask lose days in silence.</li>
+</ul>
+
+<p>A first week plan for a new team member, built on these habits:</p>
+
+<table>
+<thead><tr><th>Day</th><th>Goal</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>The app runs on their computer; they know who to ask about what</td></tr>
+<tr><td>2</td><td>A tiny real change (a text, a colour) goes through the whole flow: branch, pull request, review, merge, release</td></tr>
+<tr><td>3–4</td><td>A small bug, paired with you for the first hour</td></tr>
+<tr><td>5</td><td>They review someone else’s pull request, and you review their review</td></tr>
+</tbody>
+</table>
+
+<h2>{{n}}.7 Technical decisions</h2>
+
+<p>Teams decide things all the time: which library, which structure, whether to rewrite. A senior’s job is not to decide alone, but to make sure decisions are made deliberately, by the right people, and remembered.</p>
+
+<h3>Two kinds of doors</h3>
+
+<p>First ask how hard the decision is to undo. A <em>two-way door</em>, such as a helper library used in one screen, can be reversed in an afternoon: decide quickly, and let the person doing the work choose. A <em>one-way door</em>, such as the main framework, the database, or the shape of a public API, is expensive to reverse: slow down, compare options, and write it down. Most decisions are two-way doors, and treating them like one-way doors is how teams get stuck in meetings.</p>
+
+<h3>A decision matrix</h3>
+
+<p>For a real choice, list the <strong>criteria</strong> first, give each a <strong>weight</strong> for how much it matters to <em>this</em> team, and only then score the options. Choosing the criteria before looking at the options keeps everyone honest. Here is the team choosing a tool for end-to-end tests:</p>
+
+<pre data-code="decide.ts" data-title="decide.ts"></pre>
+<pre data-out="decide.mjs"></pre>
+
+<p>Playwright wins, but only by two points, and the last lines show something more useful than the winner: if learning speed mattered twice as much, Cypress would win. So the real question for the team is “how much does a quick start matter to us?”. A matrix does not make the decision; it shows which disagreement is worth having.</p>
+
+<p>When the scores are guesses, buy information with a <dfn>spike</dfn>: a short, time-boxed experiment, such as a day to write the same three tests with each tool. The spike’s code is thrown away; its lessons go into the scores.</p>
+
+<h3>Decision records</h3>
+
+<p>Six months later, someone new will ask “why Playwright?”. If the answer lives only in a meeting, it is lost. An <dfn>architecture decision record</dfn> (ADR) is a short file, kept in the repository next to the code, that records one decision: its context, the options, the choice and its consequences:</p>
+
+<pre data-code="docs/0007-e2e-tests.md" data-title="docs/decisions/0007-e2e-tests.md"></pre>
+
+<p>Records are numbered and never edited after they are accepted. When a decision changes, a new record says so and marks the old one “Replaced by 12”. The folder becomes the history of why the code is the way it is, and it is reviewed in pull requests like any code.</p>
+
+<h2>{{n}}.8 Technical debt</h2>
+
+<p><dfn>Technical debt</dfn> is the extra work that every future change costs because of a shortcut taken earlier. Like money, debt is not always bad: shipping a feature by Friday with a known shortcut can be the right decision, <em>if it is a decision</em>. The trouble is debt nobody chose or recorded.</p>
+
+<ul>
+<li><strong>Make it visible.</strong> Every shortcut gets an issue, and the <code>TODO</code> in the code links to it, which is exactly what the robot checks.</li>
+<li><strong>Pay it continuously.</strong> Many teams reserve a fixed share of every sprint, often around a fifth, for debt. Waiting for a “cleanup month” means waiting forever.</li>
+<li><strong>Pay where you work.</strong> Improve the code you are already changing, a little, every time. Debt in code nobody touches costs nothing and can wait.</li>
+<li><strong>Explain it in the business’s words.</strong> Not “the cart code is ugly”, but “every change to prices takes three days instead of one, and broke checkout twice this year”.</li>
+</ul>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Huge pull requests</td><td>Tired reviewers approve without reading</td><td>One purpose, under about 300 lines; feature flags for big work</td></tr>
+<tr><td>People checking style by hand</td><td>Slow reviews full of small comments</td><td>Formatter, linter and robot rules in CI, required to pass</td></tr>
+<tr><td>Comments without a level</td><td>Authors treat every nit as an order</td><td>Labels: issue, suggestion, question, nit, praise</td></tr>
+<tr><td>Comments about the person</td><td>Defensive authors, worse code</td><td>Write about the code and its effect on users</td></tr>
+<tr><td>Reviews that wait for days</td><td>Blocked authors and costly context switches</td><td>A first review within a working day</td></tr>
+<tr><td>Giving juniors the answers</td><td>They stay dependent on you</td><td>Ask questions first; pair with them driving</td></tr>
+<tr><td>Decisions made in meetings and forgotten</td><td>The same debate every six months</td><td>A decision record in the repository</td></tr>
+<tr><td>Unrecorded shortcuts</td><td>Debt that grows unseen</td><td>An issue for every shortcut, a share of every sprint to pay it</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Review catches problems, shares knowledge, keeps code consistent and the design healthy. It is not about taste.</li>
+<li>Pull requests have <strong>one purpose</strong>, stay <strong>small</strong>, and are <strong>described</strong> with a template.</li>
+<li><strong>Machines go first</strong>: formatting, linting, types, tests and team rules run in CI. Automate any comment written three times.</li>
+<li>Review from <strong>purpose</strong> and <strong>design</strong> down to <strong>correctness</strong>, <strong>tests</strong> and <strong>readability</strong>. Label each comment, write about the code, explain the impact, and praise what is good.</li>
+<li>When reviewed: review yourself first, answer every comment, and disagree with reasons.</li>
+<li><strong>Mentor</strong> by asking before telling, pairing, stretching tasks and specific feedback.</li>
+<li>Decide fast on <strong>two-way doors</strong>; for one-way doors use a <strong>weighted matrix</strong>, spikes, and an <strong>ADR</strong>.</li>
+<li><strong>Technical debt</strong> is fine when chosen and recorded; pay it continuously where you work.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the formatting hides the feature: the reviewer either tires before reaching it or skims past it, and the two cannot be undone separately. 2. That the next lines are the start of the new file (line 1, eleven lines), so the robot can number each added line. 3. Automate it: a lint rule, a CI check, or a line in the robot.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects are about habits more than code. Do each one with another person if you can: a classmate, a colleague, or a friend from an online community. Review and mentoring are learned with someone on the other side.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Review your own old code</h3>
+<p class="project-goal">Take a project you wrote a few months ago, open a pull request that improves one thing, and review it as if a colleague had written it.</p>
+<p class="project-skills"><strong>You will practise:</strong> small focused pull requests, the review order, labelled comments, and answering every comment.</p>
+<ol class="steps">
+<li>Choose one improvement only: a function without tests, a confusing name, a missing error state. Make it on a branch, under 100 changed lines.</li>
+<li>Fill in the pull request template from this chapter, including how to test it.</li>
+<li>Wait a day. Then review the pull request on GitHub in the order purpose, design, correctness, tests, readability, and leave at least five labelled comments, including one <strong>praise</strong>.</li>
+<li>Answer every comment as the author: fix it, open an issue for it, or disagree with a reason.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> reviewing your own code after a day is surprisingly effective, because you have forgotten what you meant and can only read what you wrote. That is exactly the position of every reviewer.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A robot reviewer in CI</h3>
+<p class="project-goal">Run the chapter’s review robot on every pull request in GitHub Actions, and make it fail the check when it finds a problem.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading diffs, exit codes, GitHub Actions workflows, and required checks.</p>
+<ol class="steps">
+<li>Copy <code>review-bot.ts</code> into a repository of yours, and make it end with <code>process.exitCode = findings.length ? 1 : 0</code>.</li>
+<li>Write <code>.github/workflows/review.yml</code>: on <code>pull_request</code>, check out the code with <code>fetch-depth: 0</code>, run <code>git diff origin/${{ github.base_ref }}...HEAD &gt; pr.diff</code>, then run the robot.</li>
+<li>Open a pull request with a <code>console.log</code> in it and check that the robot fails. Remove it and check that it passes.</li>
+<li>In the repository settings, make the check required for merging into the main branch.</li>
+<li>Add one rule that your own team (or you) keeps forgetting.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the three dots in <code>main...HEAD</code> matter. They compare against the point where your branch started, so changes merged into <code>main</code> since then are not counted as yours.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A decision you can defend</h3>
+<p class="project-goal">Choose between two real libraries for your project with a time-boxed spike and a weighted matrix, write the decision record, and present it in ten minutes.</p>
+<p class="project-skills"><strong>You will practise:</strong> one-way doors, criteria and weights, spikes, sensitivity, and decision records.</p>
+<ol class="steps">
+<li>Pick a real choice, for example dates (<code>date-fns</code> or the built-in <code>Intl</code> and <code>Temporal</code>), or charts (two chart libraries). Decide whether it is a one-way or two-way door.</li>
+<li>Write the criteria and their weights <em>before</em> you try anything. Include bundle size, measured as in Chapter {{n-5}}.</li>
+<li>Spend at most half a day per option building the same small screen. Write down surprises as you go.</li>
+<li>Score the options in a copy of <code>decide.ts</code> and run the sensitivity check. Find the criterion that would change the winner.</li>
+<li>Write the decision record, including the bad consequences of your choice, and present it to someone in ten minutes. Note their questions: each one is something the record should have answered.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if no weight change can flip the winner, the decision was easy and the matrix was not needed. If many can, the scores are probably guesses: that is the moment for a spike, not a longer meeting.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Rewrite these comments using a label and the impact: “Bad name.”, “Why is this here??”, “You forgot the tests again.”</li>
+<li><span class="level">Easy</span> Add a rule to <code>review-bot.ts</code> that flags <code>debugger</code> statements, and run it on <code>pr.diff</code> after adding a <code>debugger</code> line to it.</li>
+<li><span class="level">Medium</span> The robot counts a file as a test only if it ends in <code>.test.ts</code>. Change it so that a pull request touching <code>src/cart/discount.ts</code> needs a change to <code>src/cart/discount.test.ts</code> in particular, not to any test file.</li>
+<li><span class="level">Medium</span> In <code>decide.ts</code>, add a criterion “Debugging tools” with weight 3 (Playwright 5, Cypress 5, manual 1). Does the winner change? Does the sensitivity check change?</li>
+<li><span class="level">Challenge</span> Write a decision record for a decision your own project made without one (a framework, a CSS approach, a hosting provider). Include at least two options you rejected and one bad consequence of the choice.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Everything in this book comes together in one last project: a production dashboard, built, tested, reviewed and shipped the way a professional team would do it.</p>
+</div>
+</section>

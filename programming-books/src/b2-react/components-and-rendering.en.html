@@ -1,0 +1,217 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/react/components/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Components and Rendering</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain the core idea of React: the screen is a function of the data</li>
+<li>write components with JSX, and know the rules that JSX adds to HTML</li>
+<li>pass data to components with typed props, and build bigger components from smaller ones</li>
+<li>render lists with keys, and choose what to show with conditions</li>
+<li>handle events and give a component its first piece of state</li>
+<li>keep components pure, so React can draw them safely as often as it needs</li>
+</ul>
+</div>
+
+<p class="lead">In Book 1 you built a tasks app with the DOM: find an element, listen for an event, change the element. It worked, but every new feature meant more code that changed the page by hand, and more chances to forget to update one part of it. <strong>React</strong> turns this around. You describe what the screen should look like <em>for the current data</em>, and React works out how to change the page to match. When the data changes, you describe the screen again, and React updates only what is different.</p>
+
+<aside class="bit" data-mood="wow"><p>Remember the tip at the end of the quiz project in Book 1? “The data is the truth, and <code>show()</code> draws it on the page.” That is exactly React. The difference is that React redraws for you, quickly and correctly, every time the data changes.</p></aside>
+
+<h2>{{n}}.1 A component is a function</h2>
+
+<p>A <dfn>component</dfn> is a function whose name starts with a capital letter and which returns a description of some user interface. The description is written in <dfn>JSX</dfn>, a syntax that looks like HTML inside JavaScript:</p>
+
+<pre data-code="first.tsx" data-title="first.tsx"></pre>
+<pre data-out="first.mjs"></pre>
+
+<p>This example asks React to turn the component into plain HTML and print it, so you can see exactly what JSX produces. In a browser, React builds the same elements in the page instead. The files end in <code>.tsx</code>: TypeScript with JSX. The build tool translates each JSX tag into a function call, and TypeScript checks it like any other code.</p>
+
+<h3>The rules of JSX</h3>
+
+<p>JSX looks like HTML, but it is JavaScript, so a few things are different:</p>
+
+<pre data-code="jsx.tsx" data-title="jsx.tsx"></pre>
+<pre data-out="jsx.mjs"></pre>
+
+<ul>
+<li><strong>Curly braces</strong> put any JavaScript expression into the markup: <code>{count}</code>, <code>{total.toFixed(2)}</code>. Statements such as <code>if</code> and <code>for</code> are not expressions, so they cannot go inside braces; you will see what to use instead in a moment.</li>
+<li><code>className</code> instead of <code>class</code>, and <code>htmlFor</code> instead of <code>for</code>, because those words are reserved in JavaScript. Other attributes are written in camelCase: <code>onClick</code>, <code>tabIndex</code>.</li>
+<li>A component returns <strong>one</strong> root. When you do not want an extra <code>&lt;div&gt;</code>, wrap the elements in a <dfn>fragment</dfn>, <code>&lt;&gt;…&lt;/&gt;</code>, which adds nothing to the page.</li>
+<li>Every tag must be closed: <code>&lt;img /&gt;</code>, <code>&lt;br /&gt;</code>.</li>
+<li><code>style</code> takes an object, hence the double braces: <code>style={{ fontWeight: 700 }}</code>. Prefer CSS classes; inline styles are for values computed in code.</li>
+<li><code>disabled={isEmpty}</code> passes a boolean. React wrote no <code>disabled</code> attribute here, because the value was <code>false</code>.</li>
+</ul>
+
+<p>Text in braces is always <strong>escaped</strong>: if a product name contains <code>&lt;script&gt;</code>, React shows it as text and never runs it. This protects you from the XSS attacks you met in Book 1, by default.</p>
+
+<h2>{{n}}.2 Props: passing data down</h2>
+
+<p>Components receive their inputs as <dfn>props</dfn> (properties): one object, written in JSX like HTML attributes. With TypeScript you describe the props as a type, and the editor then checks every place the component is used:</p>
+
+<pre data-code="products.ts" data-title="products.ts"></pre>
+<pre data-code="cards.tsx" data-title="cards.tsx"></pre>
+
+<figure data-render="cards.html" data-width="560"><figcaption><b>Figure {{n}}.1:</b> Four <code>ProductCard</code>s inside a <code>Section</code>. The sticker is out of stock, so its button is disabled and says so.</figcaption></figure>
+
+<ul>
+<li>The props are <dfn>destructured</dfn> in the parameter list: <code>({ product, onAdd })</code>.</li>
+<li><code>onAdd?</code> is optional, and <code>onAdd?.(product.id)</code> calls it only if it was given. Passing functions as props is how a child tells its parent that something happened.</li>
+<li><code>children</code> is a special prop: whatever you put <em>between</em> the opening and closing tags. <code>Section</code> does not know or care what is inside it. This is called <dfn>composition</dfn>, and it is the main way React components are combined. Its type is <code>ReactNode</code>: anything React can draw.</li>
+<li>Props are <strong>read-only</strong>. A component never changes its own props; it asks its parent to change the data, and gets new props.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">Tip: small components with good names</p><p>When a piece of JSX grows past what fits on one screen, or when you want to give a piece a name in your head (“the price”, “the badge”), make it a component. Components cost nothing, and a page made of <code>&lt;ProductCard&gt;</code>, <code>&lt;CartSummary&gt;</code> and <code>&lt;Checkout&gt;</code> reads like a description of the page.</p></aside>
+
+<h2>{{n}}.3 Lists and keys</h2>
+
+<p>To show a list, turn an array of data into an array of elements with <code>map</code>, as <code>App</code> does above. Each element in a list needs a <dfn>key</dfn>: a value that identifies that item among its brothers and sisters, such as <code>key={product.id}</code>.</p>
+
+<p>Keys tell React which item is which between two renders. If a product is removed from the middle of the list, the keys let React remove exactly that card, and keep the others with everything inside them: what the user typed, the scroll position, an animation. The rules are simple:</p>
+<ul>
+<li>Use a stable id from the data. Database ids are perfect.</li>
+<li>Do not use the array index if items can be added, removed or reordered: after a change, index 2 may be a different item, and React will reuse the wrong card.</li>
+<li>Keys only need to be unique within one list, and they are not passed to the component as a prop.</li>
+</ul>
+
+<h2>{{n}}.4 Choosing what to show</h2>
+
+<p>Because <code>if</code> cannot go inside braces, React code chooses with three tools: an <strong>early <code>return</code></strong> for whole different screens, the <strong>ternary</strong> <code>a ? b : c</code> for one of two things, and <code>&amp;&amp;</code> for “this or nothing”. You saw the last two in <code>ProductCard</code>. Here is the first, with the discriminated union from Chapter {{n-2}}:</p>
+
+<pre data-code="status.tsx" data-title="status.tsx"></pre>
+
+<figure data-render="status.html" data-width="560"><figcaption><b>Figure {{n}}.2:</b> The same component in all four states. Each state has its own message, and the error offers a way forward.</figcaption></figure>
+
+<p>Professional interfaces design every state, not just the happy one: loading, empty, error and success. Users meet the other three more often than designers expect.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: <code>0</code> is drawn</p><p><code>{count &amp;&amp; &lt;Badge /&gt;}</code> shows a <code>0</code> on the screen when <code>count</code> is zero, because <code>0 &amp;&amp; …</code> is <code>0</code>, and React draws numbers. Write a real boolean on the left: <code>{count &gt; 0 &amp;&amp; &lt;Badge /&gt;}</code>.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does JSX use <code>className</code> and not <code>class</code>?</li><li>What is wrong with <code>key={index}</code> in a list where the user can delete items?</li><li>How does a child component tell its parent that a button was pressed?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Events and a first piece of state</h2>
+
+<p>Events are props too: <code>onClick</code>, <code>onChange</code>, <code>onSubmit</code>, each taking a function. To make a component change over time, it needs <dfn>state</dfn>: data that belongs to the component and that React remembers between renders. The <code>useState</code> function, a <dfn>hook</dfn>, gives you the current value and a function to change it:</p>
+
+<pre data-code="like.tsx" data-title="like.tsx"></pre>
+
+<figure data-render="like.html" data-width="560" data-actions="click:button"><figcaption><b>Figure {{n}}.3:</b> Two independent like buttons after the first was pressed.</figcaption></figure>
+
+<p>Here is what happens when the button is pressed:</p>
+<ol>
+<li><code>toggle</code> calls <code>setLiked</code> and <code>setLikes</code>. These do not change the variables; they <em>ask</em> React for a new render with new values.</li>
+<li>React calls <code>LikeButton</code> again. This time <code>useState</code> returns the new values.</li>
+<li>The function returns new JSX, React compares it with the last one, and changes only the button’s text and class in the page.</li>
+</ol>
+
+<p>Each of the two buttons has its own state, because state belongs to a particular place in the screen, not to the function. The next chapter is all about state; for now, remember the cycle: <strong>event → set state → render → update the page</strong>.</p>
+
+<h2>{{n}}.6 Keep components pure</h2>
+
+<p>React may call your component many times: whenever its state or its parent changes, and in development, twice on purpose, to help you find mistakes. That is only safe if the component is <dfn>pure</dfn>: given the same props and state, it returns the same JSX, and it changes nothing outside itself while doing so. This one breaks the rule:</p>
+
+<pre data-code="impure.tsx" data-title="impure.tsx"></pre>
+<pre data-out="impure.mjs"></pre>
+
+<p>Nothing changed, yet the second render shows a different number. In a real app, this kind of bug makes numbers jump, lists double, and requests fire twice. Rendering must only <em>calculate</em>. Work that changes something, like saving data, starting a timer or sending a request, belongs in event handlers, or in effects, which the next chapter explains.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: develop in Strict Mode</p><p>Wrap the app in <code>&lt;StrictMode&gt;</code>, which Vite’s React template does for you. In development it renders every component twice and runs effects twice, so impure code shows its bugs on your screen instead of your users’. It does nothing in production.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A component name in lower case: <code>&lt;productCard /&gt;</code></td><td>React treats it as an unknown HTML tag</td><td>Capitalise: <code>ProductCard</code></td></tr>
+<tr><td><code>onClick={add()}</code></td><td><code>add</code> runs during render, not on click</td><td><code>onClick={add}</code> or <code>onClick={() =&gt; add(id)}</code></td></tr>
+<tr><td>A list without keys, or with index keys</td><td>A warning, and items mixed up after changes</td><td><code>key={item.id}</code></td></tr>
+<tr><td><code>{count &amp;&amp; …}</code> with a number</td><td>A stray <code>0</code> on the screen</td><td><code>{count &gt; 0 &amp;&amp; …}</code></td></tr>
+<tr><td>Changing props or outside variables while rendering</td><td>Values that jump between renders</td><td>Render only calculates; change things in event handlers</td></tr>
+<tr><td>Changing a state variable directly: <code>likes++</code></td><td>Nothing happens on screen</td><td>Call the setter: <code>setLikes(likes + 1)</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>In React, <strong>the screen is a function of the data</strong>. You describe it; React updates the page.</li>
+<li>A <strong>component</strong> is a capitalised function that returns <strong>JSX</strong>. Braces hold expressions; use <code>className</code>, close every tag, and wrap siblings in a fragment.</li>
+<li><strong>Props</strong> pass data down, typed with TypeScript and never changed by the child. <code>children</code> enables <strong>composition</strong>; function props pass events up.</li>
+<li>Lists are made with <code>map</code>, and every item needs a stable <strong>key</strong>.</li>
+<li>Choose what to show with early returns, ternaries and <code>&amp;&amp;</code>, and design all four states: loading, empty, error, success.</li>
+<li><strong>State</strong> from <code>useState</code> survives between renders; setting it causes a new render.</li>
+<li>Components must be <strong>pure</strong>. Strict Mode helps you find the ones that are not.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because JSX is JavaScript, where <code>class</code> is a reserved word. 2. After a deletion, the indexes of the following items change, so React matches the wrong items and may keep the wrong state on screen. 3. The parent passes a function as a prop, such as <code>onAdd</code>, and the child calls it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Build each project in a Vite project created with the <code>react-ts</code> template: <code>npm create vite@latest my-react -- --template react-ts</code>. Before writing code, draw the screen on paper and circle the components. Then build from the smallest component upwards.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A profile card</h3>
+<p class="project-goal">Build a profile card from four small components, with a follow button that changes the number of followers.</p>
+<p class="project-skills"><strong>You will practise:</strong> typed props, <code>children</code>, splitting a design into components, and one piece of state.</p>
+<ol class="steps">
+<li>Write a type <code>Person</code> with a name, role, city, number of projects and number of followers.</li>
+<li>Build the small parts first: <code>Avatar</code> (the first letter of the name in a circle) and <code>Stat</code> (a number with a label).</li>
+<li>Build <code>ProfileCard</code>, which takes a <code>person</code> and <code>children</code>, so each page can put its own text inside the card.</li>
+<li>Add <code>const [following, setFollowing] = useState(false)</code>. Show one more follower while following; do not change <code>person</code>.</li>
+<li>Give the button <code>aria-pressed={following}</code>, so screen readers announce whether it is on.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the number of followers shown is <em>calculated</em> from the props and the state on every render. You never store it separately, so it can never be wrong. The next chapter calls this “derived state”.</p>
+<figure data-render="projects/profile.html" data-width="560" data-actions="click:button"><figcaption><b>Project {{n}}.1:</b> the profile card after pressing “Follow”.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A catalogue with filters</h3>
+<p class="project-goal">Show a grid of products with filter buttons for each category and a line that says how many products are visible.</p>
+<p class="project-skills"><strong>You will practise:</strong> lists and keys, state typed with a union, deriving a filtered list, and buttons with <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>Reuse <code>products.ts</code>. Create the type <code>Filter = "all" | Product["category"]</code>: it updates itself if a category is added.</li>
+<li>Keep the filter buttons as data, an array of <code>{ value, label }</code>, and render them with <code>map</code>.</li>
+<li>Store only the chosen filter in state. Calculate <code>visible</code> from it on every render with <code>filter</code>.</li>
+<li>Show “Showing 3 of 4 products” using <code>visible.length</code> and <code>products.length</code>.</li>
+<li>Group the buttons with <code>role="group"</code> and a label, and mark the active one with <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a common mistake is to keep <code>visible</code> in state too, and then forget to update it when the products change. If a value can be calculated from other state, calculate it.</p>
+<figure data-render="projects/catalogue.html" data-width="560" data-actions="click:.filters button:nth-child(3)"><figcaption><b>Project {{n}}.2:</b> the catalogue filtered to gifts.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Accessible tabs</h3>
+<p class="project-goal">Build a reusable <code>Tabs</code> component that works with the mouse, the keyboard and screen readers, in both left-to-right and right-to-left pages.</p>
+<p class="project-skills"><strong>You will practise:</strong> passing content as data, ARIA roles, <code>useId</code> for unique ids, <code>useRef</code> to move the focus, and keyboard events.</p>
+<ol class="steps">
+<li>Make <code>Tabs</code> take <code>tabs: { label: string; content: ReactNode }[]</code> and a <code>label</code> for the group.</li>
+<li>Render a <code>role="tablist"</code> with one <code>role="tab"</code> button per tab, and one <code>role="tabpanel"</code> per tab, hidden unless active.</li>
+<li>Link each tab and panel with <code>aria-controls</code> and <code>aria-labelledby</code>. Make the ids with <code>useId()</code>, so two <code>Tabs</code> on one page never clash.</li>
+<li>Only the active tab is in the Tab order (<code>tabIndex={0}</code>); the others get <code>-1</code>. The arrow keys move between tabs, and Home and End jump to the ends.</li>
+<li>Keep the buttons in a <code>useRef</code> array, and call <code>focus()</code> on the new tab after the arrow keys. In a right-to-left page, the right arrow moves to the <em>previous</em> tab.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the keyboard pattern described in the WAI-ARIA Authoring Practices, the reference for accessible widgets. When you build any widget, look it up there first: the keyboard behaviour users expect is already decided.</p>
+<figure data-render="projects/tabs.html" data-width="560" data-actions="click:[role=tab]:nth-child(1);press:[role=tab]:nth-child(1)|ArrowRight"><figcaption><b>Project {{n}}.3:</b> after pressing the right arrow on the first tab: the next tab is selected and has the focus.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a <code>Price</code> component that takes <code>value</code> and <code>currency</code> and shows the value with two decimals, and use it in <code>ProductCard</code>.</li>
+<li><span class="level">Easy</span> Give <code>ProductCard</code> a <code>"-20%"</code> badge for products with a <code>discount</code> property, without showing anything for the others.</li>
+<li><span class="level">Medium</span> Pass an <code>onAdd</code> function from <code>App</code> that keeps a cart count in state, and show “3 items in your cart” above the grid.</li>
+<li><span class="level">Medium</span> Rewrite <code>OrderList</code> with a <code>switch</code> on <code>state.status</code> and an <code>assertNever</code> default, then add a fourth status, <code>"offline"</code>, and handle it.</li>
+<li><span class="level">Challenge</span> Make <code>impure.tsx</code> pure while still counting visitors: keep the count in the parent as state, increase it in an event handler, and pass it down as a prop.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You have used state for a like button. In the next chapter you will learn to design state for real screens: where it should live, how to update objects and lists in it, how to derive values instead of storing them, and how to talk to the world outside React with effects.</p>
+</div>
+</section>

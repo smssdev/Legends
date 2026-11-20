@@ -1,0 +1,53 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابدأ كل مشروع من المسارات مكتوبة بيانات، قبل أي مكوّن. فإن استطعت قراءة التطبيق كله من مصفوفة <code>routes</code> فالتصميم سليم.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>مدونة صغيرة بعناوين جميلة</h3>
+<p class="project-goal">قائمة تدوينات وصفحة لكل تدوينة، على عناوين مثل <code>/posts/rules-for-state</code>، مع رسالة لطيفة للتدوينات غير الموجودة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المسارات المتداخلة، ومسار الفهرس، ومعامل المسار، و<code>Link</code> و<code>NavLink</code>، ومعالجة غير الموجود.</p>
+<ol class="steps">
+<li>أعطِ كل تدوينة <dfn>معرّفاً نصياً</dfn> (slug): معرّفاً قصيراً مقروءاً مصنوعاً من العنوان، مثل <code>keys-explained</code>. والعناوين المقروءة أفضل للمستخدمين ولمحركات البحث.</li>
+<li>اكتب <code>Layout</code> فيه اسم المدونة، و<code>NavLink</code> إلى القائمة، و<code>Outlet</code>.</li>
+<li>مسار الفهرس يعرض القائمة، و<code>posts/:slug</code> يعرض تدوينة واحدة.</li>
+<li>في <code>PostPage</code> جِد التدوينة بـ <code>useParams().slug</code>. فإن لم توجد قل ذلك واربط إلى الرئيسية.</li>
+<li>جرّب عنواناً خاطئاً بيدك، مثل <code>/posts/nothing</code>، وتحقق من الرسالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البيانات هنا ثابتة، فلا حاجة إلى استعلام. فليست كل صفحة بحاجة إلى TanStack Query، واستخدمها حين تأتي البيانات من خادم.</p>
+<pre data-code="projects/blog-routes.tsx" data-title="blog-routes.tsx"></pre>
+<figure data-render="projects/blog-page.html" data-width="560" data-actions="click:ul.list li:nth-child(2) a"><figcaption><b>مشروع {{n}}.1:</b> صفحة تدوينة، بالوصول إليها من القائمة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>قائمة منتجات تُشارَك</h3>
+<p class="project-goal">وسّع متجر هذا الفصل لتعيش الفئة <em>ونص البحث</em> في العنوان، فيُشارك كل اختيار رابطاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useSearchParams</code> للقراءة والكتابة، ومفاتيح الاستعلام متعددة الأجزاء، وإبقاء العنوان متوافقاً مع حقل إدخال.</p>
+<ol class="steps">
+<li>اقرأ <code>category</code> و<code>q</code> من معاملات البحث، وكلاهما قد يغيب.</li>
+<li>ضع الاثنين في مفتاح الاستعلام: <code>["products", category, q]</code>، ومرّرهما إلى دالة الواجهة البرمجية.</li>
+<li>اجعل حقل البحث محكوماً بالعنوان: قيمته <code>q ?? ""</code>، و<code>onChange</code> تستدعي <code>setParams</code> بالنص الجديد مع إبقاء الفئة.</li>
+<li>مرّر <code>{ replace: true }</code> إلى <code>setParams</code> أثناء الكتابة، كي لا يصير كل حرف مدخلاً جديداً في تاريخ زر الرجوع.</li>
+<li>افتح العنوان نفسه في تبويب جديد، وتحقق أنك ترى القائمة نفسها بالضبط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لتغيّر معاملاً واحداً وتبقي الباقي انسخها أولاً: <code>const next = new URLSearchParams(params); next.set("q", text); setParams(next, { replace: true });</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>زر مفضلة متفائل</h3>
+<p class="project-goal">قلب يمتلئ لحظة الضغط، ويحفظ في الخلفية، ويعيد الأمور بهدوء إن رفض الخادم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useMutation</code>، وقراءة ذاكرة الاستعلامات والكتابة فيها، والتراجع بقيمة سياق، والإبطال.</p>
+<ol class="steps">
+<li>حمّل المنتج بـ <code>useQuery</code> بالمفتاح <code>["product", id]</code>.</li>
+<li>أنشئ تعديلاً (mutation) تستدعي <code>mutationFn</code> فيه <code>setFavourite(id, value)</code>.</li>
+<li>في <code>onMutate</code> ألغِ استعلامات المفتاح (كي لا يكتب رد قديم فوقك)، واحفظ القيمة الحالية بـ <code>getQueryData</code>، واكتب الجديدة بـ <code>setQueryData</code>، وأرجع <code>{ previous }</code>.</li>
+<li>في <code>onError</code> أعد كتابة <code>context.previous</code>. وفي <code>onSettled</code> أبطل المفتاح، لتنتهي الشاشة بحقيقة الخادم.</li>
+<li>اختبر الفشل: في الواجهة الوهمية مفتاح <code>server.failNextSave</code>. وراقب القلب يمتلئ ثم يفرغ، مع رسالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> استخدم التحديثات المتفائلة للأفعال الصغيرة المتكررة القابلة للتراجع، كالإعجاب وعلامات الصح وإعادة الترتيب. أما المدفوعات وكل ما يصعب التراجع عنه، فاعرض حالة «جارٍ الحفظ…» واضحة وانتظر الخادم.</p>
+<pre data-code="projects/favourite.tsx" data-title="favourite.tsx"></pre>
+<figure data-render="projects/fav-fail-page.html" data-width="560" data-actions="wait:500;click:button;wait:100"><figcaption><b>مشروع {{n}}.3:</b> بعد 100 ملي ثانية من الضغط: القلب ممتلئ، والحفظ في الطريق…</figcaption></figure>
+<figure data-render="projects/fav-fail-page.html" data-width="560" data-actions="wait:500;click:button;wait:900"><figcaption>…وبعد أن رفض الخادم: تراجع التغيير، وأُخبر المستخدم.</figcaption></figure>
+</div>

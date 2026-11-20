@@ -1,0 +1,51 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">In each project, write the attack first and watch it succeed, then add the defence and watch it fail. A defence you have never seen working is a defence you only hope works.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Comments with safe formatting</h3>
+<p class="project-goal">Let users format comments with bold, italics and links, without letting them run code.</p>
+<p class="project-skills"><strong>You will practise:</strong> sanitising with an allow-list, the difference between dangerous tags, attributes and URLs, and testing with attacks.</p>
+<ol class="steps">
+<li>Collect a list of inputs: harmless formatting, an image with <code>onerror</code>, a <code>javascript:</code> link, and a <code>&lt;script&gt;</code> tag followed by real text.</li>
+<li>Load DOMPurify into the page and sanitise each input with an <dfn>allow-list</dfn>: only <code>b</code>, <code>i</code>, <code>em</code>, <code>strong</code>, <code>a</code> and <code>p</code>, and only the <code>href</code> attribute.</li>
+<li>Print each input and its result side by side.</li>
+<li>Check the results: the formatting stays, the image disappears, the link loses its dangerous address but keeps its text, and the paragraph survives without the script.</li>
+<li>Only then put the sanitised HTML into the page.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> always list what is <em>allowed</em>, never what is forbidden. A deny-list must predict every trick attackers will ever invent; an allow-list only has to know what you need.</p>
+<pre data-out="projects/sanitize.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A strict policy for your own app</h3>
+<p class="project-goal">Add a strict Content Security Policy to one of your projects, prove that it blocks injected scripts, and keep every feature working.</p>
+<p class="project-skills"><strong>You will practise:</strong> CSP directives, report-only mode, finding what a policy breaks, and moving inline code into files.</p>
+<ol class="steps">
+<li>Start in report-only mode: send <code>Content-Security-Policy-Report-Only</code> with the policy from section {{n}}.2, open every page, and read the console.</li>
+<li>For each report, fix the cause: move inline scripts into files, replace <code>onclick</code> attributes with event listeners, and add the exact external hosts you really need, such as your API, to <code>connect-src</code>.</li>
+<li>When the console is clean, switch to the enforcing header.</li>
+<li>Prove it with the lab: inject an inline script and check that it does not run, while the app’s own scripts do.</li>
+<li>Add <code>frame-ancestors 'none'</code> unless another site must embed yours.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in production, the header is set by the server or the hosting platform, not by the app. In Vite’s development server, add it with a small plugin or in <code>server.headers</code> so that you meet problems early.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A security header checker</h3>
+<p class="project-goal">Write a tool that fetches a URL and reports which recommended security headers are present, which are missing, and why each one matters.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>fetch</code> in Node, reading response headers, and writing a small local server to test against.</p>
+<ol class="steps">
+<li>List the recommended headers with one sentence each on what they protect.</li>
+<li>Fetch the URL and check each header; header names are case-insensitive, and <code>headers.get</code> handles that.</li>
+<li>Print ✓ or ✗ for each, and a score at the end.</li>
+<li>Test it against a local server that sends only some of them, so you can see both results.</li>
+<li>Extend it: warn when the CSP contains <code>'unsafe-inline'</code>, or when <code>Strict-Transport-Security</code> has a <code>max-age</code> shorter than six months.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a header checker is only a start. Run it in CI against your staging site, so a configuration change that drops a header is noticed the day it happens.</p>
+<pre data-code="projects/headers.ts" data-title="headers.ts"></pre>
+<pre data-out="projects/headers.mjs"></pre>
+</div>

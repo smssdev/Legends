@@ -1,0 +1,13 @@
+import type { Line, Order } from "./order.ts";
+
+// ports: what the use case needs from the outside world, described by the use case
+export type OrderStore = {
+  /** Takes the stock and saves the order, all or nothing; prices come from the store. */
+  place(
+    email: string,
+    items: Omit<Line, "price">[],
+    placedAt: Date,
+  ): Promise<Order>;
+};
+export type Mailer = { send(to: string, subject: string): Promise<void> };
+export type Clock = { now(): Date };

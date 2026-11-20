@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>type Book = { readonly isbn: string; title: string; subtitle?: string; authors: string[] }</code>، و<code>label</code> تُرجع <code>book.subtitle ? `${book.title}: ${book.subtitle}` : book.title</code>. وتفرض TypeScript هذا الفحص، لأن <code>subtitle</code> قد تكون <code>undefined</code>.</li>
+<li><code>const SIZES = ["S", "M", "L"] as const; type Size = (typeof SIZES)[number];</code> و<code>SIZES.length</code> تساوي 3. وإضافة <code>"XL"</code> إلى المصفوفة تحدّث النوع وحدها.</li>
+<li>يقول الفحص إن <code>{ status: "empty" }</code> لا يمكن إسنادها إلى <code>never</code> في فرع <code>default</code>. أضف <code>case "empty": return "لا شيء هنا بعد";</code> (أو أي رسالة تريدها) فيختفي الخطأ.</li>
+<li><code>last</code> تستطيع ببساطة أن تكتب <code>return list.at(-1)</code>. ولـ <code>groupBy</code> ابدأ بـ <code>const groups = {} as Record&lt;K, T[]&gt;</code>، ثم لكل عنصر اكتب <code>(groups[key(item)] ??= []).push(item)</code>. وهذا من الاستخدامات القليلة الصادقة لـ <code>as</code>: فالكائن يبدأ فارغاً وتملؤه الحلقة.</li>
+<li>اكتب <code>isProduct(value: unknown): value is Product</code> تفحص الكائن وكل حقل بـ <code>typeof</code>، ثم <code>isProductList = (value: unknown): value is Product[] =&gt; Array.isArray(value) &amp;&amp; value.every(isProduct)</code>. فتمر البيانات السليمة، ويُرفض السعر المكتوب نصاً والكائن الذي ليس مصفوفة.</li>
+</ol>

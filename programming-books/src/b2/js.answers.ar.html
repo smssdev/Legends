@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>const removeItem = (cart, id) =&gt; ({ ...cart, items: cart.items.filter((item) =&gt; item.id !== id) });</code> ومع عنصرين يبقى في الأصل 2، وفي النتيجة 1، و<code>cart === next</code> تساوي <code>false</code>.</li>
+<li><code>Object.groupBy(words, (word) =&gt; word[0])</code> تعطي <code>{ a: ["apple", "avocado"], b: ["banana", "blueberry"], c: ["cherry"] }</code>. ويطبعها Node مع <code>[Object: null prototype]</code>: فالنتيجة بلا نموذج أولي (prototype)، فلا يتعارض مفتاح مثل <code>"constructor"</code> مع شيء مدمج أبداً.</li>
+<li>عرّف <code>class InsufficientFundsError extends Error</code> واضبط <code>this.name</code> في دالة البناء. وفي <code>withdraw</code> ارمِه حين <code>amount &gt; this.#balance</code>، وإلا فاطرح وأرجع <code>this</code>. واختبر سحباً ينجح (100 − 30 يبقي 70) وآخر يرمي الخطأ، مع فحص <code>error instanceof InsufficientFundsError</code>.</li>
+<li><code>C</code> ثم <code>B</code> ثم <code>A</code>: الكود المتزامن أولاً، ثم المهمة الدقيقة من الوعد، ثم مهمة المؤقت.</li>
+<li><code>function* take(iterable, n) { if (n &lt;= 0) return; let count = 0; for (const value of iterable) { yield value; if (++count &gt;= n) return; } }</code>. ومع <code>function* evens() { for (let n = 0; ; n += 2) yield n; }</code> تعطي <code>[...take(evens(), 5)]</code> القيمة <code>[0, 2, 4, 6, 8]</code>. والخروج من المولّد يوقف الحلقة، فلا يُطلب من المولّد اللانهائي قيمة سادسة أبداً.</li>
+</ol>

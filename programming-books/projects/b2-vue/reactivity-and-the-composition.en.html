@@ -1,0 +1,54 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Before each project, write down every piece of state you plan to keep, then cross out each one that can be calculated from the others. What remains goes in <code>ref</code>s; the rest becomes <code>computed</code>.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A counter with steps and undo</h3>
+<p class="project-goal">A counter that adds or subtracts a chosen step, shows its history, and can undo any number of changes.</p>
+<p class="project-skills"><strong>You will practise:</strong> minimal state, <code>computed</code>, changing arrays in place, and <code>v-model.number</code>.</p>
+<ol class="steps">
+<li>Keep only two refs: the step, and the history of values, starting with <code>[0]</code>.</li>
+<li>Make the current value a <code>computed</code>: the last item of the history.</li>
+<li>Each button pushes a new value onto the history; “Undo” pops one, and is disabled when only the first value is left.</li>
+<li>Bind the step with <code>v-model.number</code>, so it is a number, not text.</li>
+<li>Give the value <code>aria-live="polite"</code>, so screen readers announce the new number.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because the history is the state, undo is one line. Had you stored the value and changed it with <code>+=</code>, undo would need a second list, kept in step with the first by hand.</p>
+<pre data-code="projects/History.vue" data-title="History.vue"></pre>
+<figure data-render="projects/history.html" data-width="560" data-actions="click:.row button:nth-child(2);click:.row button:nth-child(2);fill:#step|5;click:.row button:nth-child(2);click:.row button:nth-child(3)"><figcaption><b>Project {{n}}.1:</b> after +1, +1, changing the step to 5, +5, and Undo.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A task list that remembers</h3>
+<p class="project-goal">A task list that saves itself in the browser, and comes back after a reload, safely.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>v-model</code> on text and checkboxes, a deep watcher, <code>localStorage</code>, and defensive loading.</p>
+<ol class="steps">
+<li>Load the tasks once, when the component starts, inside a <code>try</code>: saved data can be missing, broken or from an older version.</li>
+<li>Bind the new task’s text with <code>v-model</code>, and add it on <code>@submit.prevent</code>, so Enter works and the page does not reload.</li>
+<li>Bind each checkbox straight to <code>task.done</code> with <code>v-model</code>: Vue changes the object in place.</li>
+<li>Save with <code>watch(tasks, save, { deep: true })</code>. Without <code>deep</code>, ticking a box would not be noticed, because the array itself did not change.</li>
+<li>Show how many tasks are left with a <code>computed</code>, and add a button that removes the done ones.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>deep: true</code> walks the whole structure on every change. That is fine for a task list; for thousands of items, save less often, or watch a smaller part.</p>
+<figure data-render="projects/tasks.html" data-width="560" data-actions="fill:#task|Write a composable;press:#task|Enter"><figcaption><b>Project {{n}}.2:</b> a new task added with Enter; the first one, loaded at the start, is done.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Search as you type, without races</h3>
+<p class="project-goal">Search products while the user types, and never show the results of an old query, even when a slow answer arrives after a fast one.</p>
+<p class="project-skills"><strong>You will practise:</strong> watchers with async work, <code>onWatcherCleanup</code>, <code>AbortController</code>, and loading states announced to screen readers.</p>
+<ol class="steps">
+<li>Use the pretend API below. Like a real search, it answers short queries more slowly, so “b” can arrive after “bit”.</li>
+<li>Watch the query. For an empty query, clear the results and stop.</li>
+<li>For each search, create an <code>AbortController</code>, and register <code>controller.abort()</code> with <code>onWatcherCleanup</code>. The next keystroke cancels the previous request.</li>
+<li>Await the results inside <code>try</code>; an aborted request rejects, and the <code>catch</code> simply ignores it.</li>
+<li>Show “Searching for…” and the number of results with <code>role="status"</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> type “bit” quickly with and without the cleanup line. Without it, you will sometimes see the results for “b” replace the results for “bit”: a <dfn>race condition</dfn>, one of the most common bugs in real apps.</p>
+<pre data-code="fake-api.ts" data-title="fake-api.ts"></pre>
+<pre data-code="projects/Search.vue" data-title="Search.vue"></pre>
+<figure data-render="projects/search.html" data-width="560" data-actions="fill:#q|bit;wait:1200"><figcaption><b>Project {{n}}.3:</b> the results for “bit”.</figcaption></figure>
+</div>

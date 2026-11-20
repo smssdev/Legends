@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>Without <code>defer</code>, LCP grows by about the time the script takes to run on the slowed CPU, because nothing is drawn until it finishes. Without <code>width</code> and <code>height</code>, CLS can grow if the picture’s size becomes known only after the first paint; with this small, quick image it may stay near zero, which is exactly why dimensions are a rule, not a case-by-case decision.</li>
+<li>Typical suggestions: “Reduce unused JavaScript”, “Serve images in next-gen formats”, “Eliminate render-blocking resources”, “Avoid an excessive DOM size” and “Reduce the impact of third-party code”. Each one maps to a row of the table in section {{n}}.3.</li>
+<li><code>import { onCLS, onINP, onLCP } from "web-vitals"; onLCP(console.log); onINP(console.log); onCLS(console.log);</code>. In production, replace <code>console.log</code> with a function that sends the metric with <code>navigator.sendBeacon("/vitals", JSON.stringify(metric))</code>, which survives the page being closed.</li>
+<li>Collect three results in an array, sort them by LCP, and take the middle one: <code>const runs = []; for (let i = 0; i &lt; 3; i++) runs.push(await measure(page)); runs.sort((a, b) =&gt; a.lcp - b.lcp); const median = runs[1]!;</code>.</li>
+<li>After printing each page, <code>if (lcp &gt; 2500 || cls &gt; 0.1) failed = true;</code>, and at the end <code>process.exitCode = failed ? 1 : 0;</code>. With the pages of this chapter, <code>slow.html</code> fails on LCP and <code>fast.html</code> passes.</li>
+</ol>

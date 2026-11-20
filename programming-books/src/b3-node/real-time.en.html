@@ -1,0 +1,189 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/realtime/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Real-time Features</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>choose between polling, server-sent events and WebSockets</li>
+<li>push events to the browser with server-sent events, using nothing but HTTP</li>
+<li>open two-way connections with WebSockets, and treat every message as untrusted input</li>
+<li>make real-time work across several servers with Redis publish/subscribe</li>
+<li>handle the hard parts: reconnecting, missed events, authentication and load</li>
+</ul>
+</div>
+
+<p class="lead">HTTP is a conversation the client always starts: it asks, the server answers, and the server has no way to speak first. Yet many screens should change by themselves: an order moving from “paid” to “shipped”, a chat message arriving, the last kits in stock disappearing. This chapter pushes an order’s status to the screen the moment it changes, first with server-sent events, then with WebSockets, and finally across two running copies of the server, which is where most real-time features break in production.</p>
+
+<aside class="bit" data-mood="happy"><p>The first live feature I built was a counter of people viewing a product. It worked beautifully on my laptop. In production we ran three servers, and each one counted only its own visitors, so the number jumped between three different values every time the page reconnected. That week I learned what publish/subscribe is for.</p></aside>
+
+<h2>{{n}}.1 Three ways to be up to date</h2>
+
+<ul>
+<li><dfn>Polling</dfn>: the client asks every few seconds, “anything new?”. Simple, works everywhere, and often good enough; but most answers are “no”, each one costs a request, and news arrives up to one interval late.</li>
+<li><dfn>Server-sent events</dfn> (SSE): the client makes one ordinary HTTP request, and the server keeps the response open, writing an event whenever something happens. One direction only, server to client, but plain HTTP: it passes through proxies, works with cookies, and browsers reconnect automatically.</li>
+<li><dfn>WebSockets</dfn>: an HTTP request that is <em>upgraded</em> into a two-way connection, where either side can send a message at any time. The right tool when the client talks a lot too: chat, collaborative editing, games.</li>
+</ul>
+
+<p>For updates that flow from the server to a screen, such as order statuses, notifications and live prices, SSE is usually the simplest choice. This chapter builds both, on one server.</p>
+
+<h2>{{n}}.2 Server-sent events</h2>
+
+<p>An SSE response has the type <code>text/event-stream</code> and is never finished. Each event is a few lines of text followed by an empty line: <code>id:</code> numbers it, <code>event:</code> names it, <code>data:</code> carries it, and a line starting with a colon is a comment, ignored by the browser:</p>
+
+<pre data-code="src/app.ts" data-from="^  app.get&lt;" data-to="^  );" data-title="src/app.ts"></pre>
+
+<p>To watch it, <code>curl -N</code> (no buffering) plays the browser in one terminal, while a second terminal changes the order’s status twice:</p>
+
+<pre data-code="sse.sh" data-title="Terminal 1"></pre>
+
+<pre data-code="sse-2.sh" data-title="Terminal 2"></pre>
+
+<p>The two status changes appeared in the first terminal the moment they were made. In a browser, the receiving side is a few lines, with no library:</p>
+
+<pre><code>const events = new EventSource("/orders/1001/events");
+events.addEventListener("status", (e) =&gt; show(JSON.parse(e.data)));</code></pre>
+
+<p>If the connection drops, <code>EventSource</code> reconnects by itself after a few seconds and sends the last <code>id</code> it saw in a <code>Last-Event-ID</code> header, so a server that keeps recent events can send what was missed (exercise 3).</p>
+
+<h2>{{n}}.3 WebSockets</h2>
+
+<p>A WebSocket starts as an HTTP request with <code>Upgrade: websocket</code>; after the server agrees, the same TCP connection carries messages both ways. With <code>@fastify/websocket</code>, a route marked <code>websocket: true</code> receives the socket. Here the client says which order it wants to watch:</p>
+
+<pre data-code="src/app.ts" data-from="&quot;/live&quot;" data-to="^  });" data-title="src/app.ts"></pre>
+
+<p>The client side uses the <code>WebSocket</code> class, built into browsers and, since version 22, into Node:</p>
+
+<pre data-code="demos/watch.ts" data-title="demos/watch.ts"></pre>
+
+<p>Messages from clients are input like any other, so everything from Chapter {{n-2}} applies: the message is parsed safely (invalid JSON must not crash the server), checked against a strict schema, and anything else closes the connection with code 1008, “policy violation”. Size limits matter too: <code>@fastify/websocket</code> takes a <code>maxPayload</code> option, and the plugin’s default is generous.</p>
+
+<h2>{{n}}.4 Many servers: publish and subscribe</h2>
+
+<p>Real-time connections are long-lived and belong to one server process. With two or more servers behind a load balancer, the change may happen on server A while the customer’s screen is connected to server B. Keeping a list of connections in memory, as the first version of any live feature does, then silently fails for some users.</p>
+
+<p>The fix is a message bus that every server listens to. Redis has one built in, <dfn>publish/subscribe</dfn>: <code>PUBLISH order:1001 …</code> delivers a message to every connection that ran <code>SUBSCRIBE order:1001</code>, on any server. The route that changes a status does not look for connections at all; it publishes, and whichever servers hold interested screens forward the message:</p>
+
+<pre data-code="src/app.ts" data-from="export async function buildApp" data-to="^  );" data-title="src/app.ts"></pre>
+
+<p>Two copies of the server run here, on ports 3000 and 3001. The client connects to 3001, and the changes are made on 3000:</p>
+
+<pre data-code="ws.sh" data-title="Terminal 1"></pre>
+
+<pre data-code="ws-2.sh" data-title="Terminal 2"></pre>
+
+<p>Redis reported one subscriber to <code>order:1001</code> (the connection held by server 3001), and both changes, made on server 3000, reached the client on 3001. The same happens with any number of servers. Two properties of pub/sub must be understood before relying on it:</p>
+<ul>
+<li><strong>Fire and forget.</strong> A message reaches only the subscribers connected at that moment; nothing is stored. A screen that connects a second later, or reconnects after a network blip, never sees it (exercise 4). Real-time messages are therefore <em>hints</em> that something changed; the truth stays in the database, and a client that reconnects loads the current state first.</li>
+<li><strong>A subscribed connection is busy.</strong> Once a Redis connection subscribes, it can only receive; publishing and other commands need another connection. Hence <code>redis.duplicate()</code> for each subscriber. With thousands of clients, share one subscriber connection per server and dispatch messages to sockets in memory.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: real-time does not replace the database</p><p>Never make a real-time message the only record of a change. Save the change, then publish; when a client connects or reconnects, send it the current state from the database, then the live updates. If the stream breaks for a minute, the user loses nothing but a little freshness. Redis Streams and dedicated brokers can store messages for replay, but the database remains the source of truth.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>When is SSE a better choice than WebSockets, and when is it not?</li><li>Why did the change made on server 3000 reach a client connected to server 3001?</li><li>A client reconnects after being offline for 30 seconds. What did it miss, and how should it catch up?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 The hard parts</h2>
+
+<ul>
+<li><strong>Authentication.</strong> SSE is an ordinary request, so cookies and headers work as in Chapter {{n-3}}, with one catch: the browser’s <code>EventSource</code> cannot add an <code>Authorization</code> header, so web clients use the session cookie. The browser’s <code>WebSocket</code> cannot set headers either: authenticate during the upgrade with the cookie, or have the client send a short-lived token as its first message, and close the socket if it does not arrive. And authorize every subscription: a customer may watch their own orders only, the same ownership rule as every other route.</li>
+<li><strong>Keeping connections alive.</strong> Proxies and load balancers close connections that stay quiet, often after 60 seconds. The SSE route sends a comment every 15 seconds; WebSockets have ping and pong frames for the same purpose, which also detect clients that vanished without saying goodbye.</li>
+<li><strong>Reconnecting.</strong> Networks drop, phones sleep, servers restart at every deploy. Clients must reconnect with a growing, random delay, so that ten thousand of them do not all reconnect in the same second after a deploy, and then reload the current state.</li>
+<li><strong>Capacity.</strong> Each open connection holds memory and a file descriptor for as long as the page is open. Node handles tens of thousands of idle connections per process, but limits (<code>ulimit</code>, proxy timeouts, load balancer settings) must be configured for long-lived connections. Graceful shutdown must close them, and clients must expect it.</li>
+<li><strong>Do you need it?</strong> A status that changes twice a day does not need a socket; polling every 30 seconds, or refreshing when the user returns to the tab, may be the better engineering.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit: test real-time with two servers from day one</p><p>Run two copies of the server locally, on two ports, from the first day you build a live feature, and connect the client to one while making changes on the other, exactly as this chapter did. Bugs that appear only with more than one server are the most common real-time bug in production, and they are invisible with one.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Keeping connections in memory with several servers</td><td>Some users never get updates</td><td>Publish/subscribe through Redis</td></tr>
+<tr><td>Treating pub/sub as storage</td><td>Messages lost during reconnects</td><td>The database holds the state; reload on connect</td></tr>
+<tr><td>Trusting client messages</td><td>Crashes on bad JSON, unwanted subscriptions</td><td>Safe parsing, strict schemas, closing on violations</td></tr>
+<tr><td>No authorization on subscriptions</td><td>Users watch other people’s orders</td><td>The same ownership checks as other routes</td></tr>
+<tr><td>Quiet connections</td><td>Proxies cut them after a minute</td><td>Comments or pings every 15–30 seconds</td></tr>
+<tr><td>Reconnecting at once, all together</td><td>A storm of connections after every deploy</td><td>Growing, random delays</td></tr>
+<tr><td>WebSockets for one-way updates</td><td>More code and infrastructure than needed</td><td>Server-sent events, or polling</td></tr>
+<tr><td>Testing with a single server</td><td>Bugs that appear only in production</td><td>Two local servers from the start</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Polling</strong> asks repeatedly; <strong>server-sent events</strong> keep one HTTP response open for server-to-client events; <strong>WebSockets</strong> carry messages both ways.</li>
+<li>SSE is plain text over HTTP: <code>id</code>, <code>event</code>, <code>data</code>; browsers reconnect by themselves and send <code>Last-Event-ID</code>.</li>
+<li>WebSocket messages are <strong>untrusted input</strong>: parse safely, validate, limit size, authorize every subscription.</li>
+<li>With several servers, changes go through <strong>Redis publish/subscribe</strong>, which delivers to every subscriber on every server.</li>
+<li>Pub/sub is <strong>fire and forget</strong>: messages are hints; the database holds the truth, and reconnecting clients reload it.</li>
+<li>Keep connections alive, reconnect with random delays, and test with <strong>two servers</strong> from the start.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. SSE fits when updates flow only from the server to the client (statuses, notifications, live prices): it is plain HTTP, works with cookies and proxies, and reconnects by itself. When the client also sends frequent messages (chat, games, collaborative editing), a WebSocket avoids a new HTTP request per message. 2. Server 3000 published the change to the Redis channel <code>order:1001</code>; server 3001 had subscribed to that channel for its client, so Redis delivered the message to it, and it forwarded the message over the WebSocket. 3. Every message published during those 30 seconds: pub/sub does not store them. On reconnecting, it should load the order’s current state from the API (or receive it as the first message), and then follow the live updates.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project adds a live feature to the shop. Test each one with two servers running.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A live order page</h3>
+<p class="project-goal">Show an order’s status on a web page that updates by itself.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>EventSource</code>, sending the current state first, and reconnecting.</p>
+<ol class="steps">
+<li>Serve a small HTML page that opens <code>/orders/1001/events</code> with <code>EventSource</code> and shows each status.</li>
+<li>Change the SSE route to send the order’s current status as the first event, before any live update.</li>
+<li>Stop and restart the server while the page is open, and watch it reconnect and show the current state.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> sending the current state first is what makes reconnecting correct: whatever was missed is replaced by the present.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Only your own orders</h3>
+<p class="project-goal">Secure the live routes with the authentication of Chapter {{n-3}}.</p>
+<p class="project-skills"><strong>You will practise:</strong> authenticating long-lived connections, ownership checks, and closing on violations.</p>
+<ol class="steps">
+<li>Require the session token for the SSE route, and refuse with 404 an order that is not the user’s.</li>
+<li>For the WebSocket, require an <code>{"auth": token}</code> message within 5 seconds of connecting, then accept watch requests for the user’s own orders only.</li>
+<li>Close the socket with code 1008 for a wrong token, a missing one, or someone else’s order.</li>
+<li>Test each case with a script.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> check again when a session ends: a user who signs out should not keep receiving events on a connection opened earlier.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A live stock counter</h3>
+<p class="project-goal">Show how many units of each product are left, updated for everyone the moment anyone buys.</p>
+<p class="project-skills"><strong>You will practise:</strong> one subscriber connection per server, fan-out in memory, and load testing.</p>
+<ol class="steps">
+<li>After each successful order (the atomic update of Chapter {{n-5}}), publish the new stock to <code>stock:{productId}</code>.</li>
+<li>Use a single Redis subscriber per server, and a <code>Map</code> from product id to the set of sockets watching it.</li>
+<li>Open 2,000 WebSocket clients across two servers with a script, buy products, and measure how long updates take to arrive.</li>
+<li>Kill one server during the test, and show that its clients reconnect to the other and catch up.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> subscribe to a channel when the first socket asks for it and unsubscribe when the last one leaves, so Redis only sends what this server needs.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Choose polling, SSE or WebSockets for each, and say why: a delivery tracking page; a support chat; a dashboard of today’s sales refreshed every minute; a multiplayer quiz.</li>
+<li><span class="level">Easy</span> What would happen in the two-server example if the route published nothing and instead looped over the sockets it holds in memory?</li>
+<li><span class="level">Medium</span> Describe how the SSE route could use <code>Last-Event-ID</code> to send the events a reconnecting client missed. Where would the events be kept, and for how long?</li>
+<li><span class="level">Medium</span> Change an order’s status while no client is listening, then connect a client. What does it receive, and what does that show about pub/sub?</li>
+<li><span class="level">Challenge</span> After a deploy, 20,000 browsers reconnect at the same moment and the servers fall over. Propose changes on the client and on the server that prevent it.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The shop now has many moving parts. Testing: unit, integration and end-to-end tests, a real database in tests, and a suite fast enough to run on every change.</p>
+</div>
+</section>

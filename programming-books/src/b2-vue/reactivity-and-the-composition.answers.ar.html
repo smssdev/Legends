@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>&lt;button type="button" @click="lines = []"&gt;أفرغ&lt;/button&gt;</code>. ولا تتغير أي قيمة محسوبة: فالعدد والمجموع والمبلغ الناقص كلها محسوبة من <code>lines</code>، فتتبعها وحدها. وهذه مكافأة الحالة في حدها الأدنى.</li>
+<li>سطر إضافي واحد: <code>المجموع: 24</code>، فحذف الكتاب يترك ثلاثة أكواب بـ 8. و<code>pop()</code> تغيّر المصفوفة التي قرأها <code>total</code>، فيعمل الأثر من جديد.</li>
+<li>التصفير: <code>@click="seconds = 0"</code>. والعنوان: <code>watchEffect(() =&gt; { document.title = running.value ? `${seconds.value} ث` : "المؤقت"; })</code>. وحين يتوقف يجب أن يعود عنوان الصفحة العادي، فلا يظل اللسان يعرض عدداً قديماً.</li>
+<li>في <code>QuantityInput.vue</code>: ‏<code>const note = defineModel&lt;string&gt;("note", { default: "" })</code> وحقل بـ <code>v-model="note"</code>. وفي الأب: ‏<code>&lt;QuantityInput v-model="mugs" v-model:note="giftNote" … /&gt;</code>.</li>
+<li><code>watch(lines, (now) =&gt; localStorage.setItem("cart", JSON.stringify(now)), { deep: true })</code>، وابدأ بـ <code>ref&lt;Line[]&gt;(load())</code>. والبيانات القديمة أو التالفة تُسقط الشاشة، فتحلل <code>load</code> داخل <code>try</code>، وتتحقق من الشكل (بمخطط zod مثلاً، الفصل 2)، وتعود إلى <code>[]</code>. وحفظ رقم إصدار مع البيانات يسمح لإصدار لاحق أن يحوّل السلال القديمة بدل رميها.</li>
+</ol>

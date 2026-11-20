@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bit's shop</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "/vendor-vue/vue.js",
+          "vue-router": "/vendor-vue/vue-router.js",
+          "pinia": "/vendor-vue/pinia.js",
+          "@tanstack/vue-query": "/vendor-vue/vue-query.js",
+          "@vueuse/core": "/vendor-vue/vueuse.js",
+          "zod": "/vendor-vue/zod.js"
+        }
+      }
+    </script>
+    <style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 20px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; color: #1e1b2e; background: #f5f5fb; line-height: 1.5; }
+h1, h2, h3 { color: #4338ca; margin: 0 0 8px; }
+button { font: inherit; cursor: pointer; border: 0; border-radius: 999px; padding: 6px 16px; background: #4338ca; color: white; }
+button.secondary { background: #e0e7ff; color: #312e81; }
+:focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+.layout { max-width: 560px; }
+nav { display: flex; gap: 4px; align-items: center; background: white; padding: 8px 10px; border-radius: 14px; margin-bottom: 14px; box-shadow: 0 2px 10px rgb(67 56 202 / 0.1); }
+nav .brand { font-weight: 800; color: #4338ca; margin-inline-end: auto; }
+nav a { color: #312e81; text-decoration: none; padding: 4px 10px; border-radius: 999px; }
+nav a.router-link-active { background: #4338ca; color: white; }
+.card { background: white; border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 10px rgb(67 56 202 / 0.1); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.filters a { padding: 4px 12px; border-radius: 999px; background: #e0e7ff; color: #312e81; text-decoration: none; }
+.filters a.on { background: #4338ca; color: white; }
+ul.list { list-style: none; padding: 0; margin: 0; }
+ul.list li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid #eef2ff; }
+ul.list a { color: #4338ca; font-weight: 600; }
+.muted { color: #5b5873; }
+.price { font-weight: 700; color: #4338ca; }
+.error { color: #b91c1c; }
+.skeleton { height: 18px; border-radius: 6px; background: linear-gradient(90deg, #eef2ff, #e0e7ff, #eef2ff); margin: 10px 0; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./fav-fail-page.js"></script>
+  </body>
+</html>

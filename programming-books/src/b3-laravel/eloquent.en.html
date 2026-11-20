@@ -1,0 +1,206 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/eloquent/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Eloquent, Relationships and Migrations</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>connect Laravel to PostgreSQL and change the schema with migrations you can undo</li>
+<li>change a live schema without downtime, with expand and contract</li>
+<li>model a domain with Eloquent: relationships, pivot data, enum casts, scopes and computed attributes</li>
+<li>see the SQL Eloquent sends, and count it</li>
+<li>find the N+1 problem, fix it with eager loading, and make Laravel refuse it in development</li>
+<li>protect models from mass assignment</li>
+</ul>
+</div>
+
+<p class="lead">Chapter {{n-2}} used Eloquent for a few minutes, and Chapter {{n-1}} showed the SQL underneath. Eloquent is Laravel’s <dfn>ORM</dfn> (object-relational mapper): every table is a class, every row an object, and relationships are methods. It is pleasant to use and easy to misuse, because a single innocent line can send hundreds of queries. This chapter uses it properly, on PostgreSQL, and keeps an eye on the SQL the whole time.</p>
+
+<aside class="bit" data-mood="think"><p>The slowest page I ever shipped had twelve lines of Blade and sent 1,400 queries. Every line looked harmless: <code>$order-&gt;customer-&gt;name</code>, <code>$item-&gt;product-&gt;price</code>. Nothing was wrong with Eloquent; I simply never looked at what it sent. Now I count queries before I trust a page.</p></aside>
+
+<h2>{{n}}.1 PostgreSQL and migrations</h2>
+
+<p>A new Laravel project uses SQLite. Pointing it at PostgreSQL is a matter of settings in <code>.env</code>:</p>
+
+<pre data-code="env.sh" data-title="Terminal"></pre>
+
+<p>A <dfn>migration</dfn> is one change to the schema, written as code, with an <code>up</code> that makes it and a <code>down</code> that undoes it. Every machine runs the migrations it has not run yet, in order, and Laravel records which ran in a <code>migrations</code> table. Here is the shop:</p>
+
+<pre data-code="shop/database/migrations/2026_11_01_000001_create_shop_tables.php" data-from="    public function up" data-to="^    }" data-title="database/migrations/…_create_shop_tables.php"></pre>
+
+<p>Laravel’s schema builder hides SQL details. <code>id()</code> is a <code>bigint</code> primary key, and <code>foreignId('customer_id')-&gt;constrained()</code> adds the foreign key. On PostgreSQL a foreign key gets no index by itself (MySQL adds one), so <code>-&gt;index()</code> adds it: every “orders of this customer” query needs it. One default needs correcting: <code>timestamps()</code> creates columns <em>without</em> a time zone, the type Chapter {{n-1}} warned against. <code>timestampsTz()</code> creates <code>timestamptz</code>.</p>
+
+<pre data-code="migrate.sh" data-title="Terminal"></pre>
+
+<pre data-code="table.sh" data-title="Terminal"></pre>
+
+<p>Every migration can be undone, and you should try it once for every new migration on your machine, because a <code>down</code> that has never run is a <code>down</code> that does not work:</p>
+
+<pre data-code="rollback.sh" data-title="Terminal"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit: never edit a migration that has run elsewhere</p><p>Once a migration is merged, other machines have run it, and changing its file changes nothing there: their database and yours now differ, silently. Fix mistakes with a new migration. In CI, run <code>php artisan migrate</code>, <code>migrate:rollback</code> to the start, and <code>migrate</code> again on an empty database; it takes seconds and catches broken <code>down</code> methods.</p></aside>
+
+<h2>{{n}}.2 Changing a live schema: expand and contract</h2>
+
+<p>Every product needs a SKU, a stock code, required and unique. Adding a required column in one step fails on a live system: existing rows have no value, and the code still running in production does not send one. The safe pattern is <dfn>expand and contract</dfn>:</p>
+<ol>
+<li><strong>Expand:</strong> add the column as nullable. The running code ignores it.</li>
+<li><strong>Deploy code that writes it</strong>, and fill it for the existing rows.</li>
+<li><strong>Contract:</strong> make it required and unique.</li>
+</ol>
+
+<pre data-code="shop/database/migrations/2026_11_02_000001_add_sku_to_products.php" data-from="return new class" data-title="database/migrations/…_add_sku_to_products.php"></pre>
+
+<pre data-code="shop/database/migrations/2026_11_03_000001_require_product_sku.php" data-from="    public function up" data-to="^    }" data-title="database/migrations/…_require_product_sku.php"></pre>
+
+<p><code>chunkById</code> fills the rows 500 at a time, so a large table is never loaded into memory at once. On a table of millions of rows, run the backfill as a separate command or job rather than inside a migration. The same pattern renames a column (add the new one, write both, backfill, read the new one, drop the old one) without the shop ever stopping.</p>
+
+<h2>{{n}}.3 Models and relationships</h2>
+
+<p>Each table gets a model. Relationships are methods that return relationship objects:</p>
+
+<pre data-code="shop/app/Models/Order.php" data-from="class Order" data-title="app/Models/Order.php"></pre>
+
+<ul>
+<li><strong><code>belongsTo</code></strong> on the side with the foreign key (an order belongs to a customer), and <strong><code>hasMany</code></strong> on the other (a customer has many orders).</li>
+<li><strong><code>belongsToMany</code></strong> for many-to-many, through <code>order_items</code>. <code>withPivot</code> brings the joining table’s own facts, the quantity and the price at the time, onto each product as <code>$product-&gt;pivot</code>.</li>
+<li>A <strong>cast</strong> converts a column when it is read and written. The status column holds text; the model gives you the <code>OrderStatus</code> enum from Chapter 2, with its labels.</li>
+<li>A <strong>scope</strong> is a named, reusable condition, marked with <code>#[Scope]</code>: <code>Order::shipped()</code>.</li>
+<li>An <strong>attribute</strong> such as <code>total</code> is computed from the items when read: <code>$order-&gt;total</code>. It is not stored, so it cannot disagree with them.</li>
+</ul>
+
+<h2>{{n}}.4 Seeing the SQL</h2>
+
+<p>Every query Laravel sends passes through the database layer, and <code>DB::listen</code> can watch them. The book’s Artisan commands collect the SQL of each piece of work:</p>
+
+<pre data-code="shop/routes/console.php" data-from="function countQueries" data-to="^}" data-title="routes/console.php"></pre>
+
+<pre data-code="order.sh" data-title="Terminal"></pre>
+
+<p><code>Order::with(['customer', 'products'])</code> asks for the relationships up front: one query for the order, one for its customer, one for its products with the pivot columns. Three queries, whatever the number of products. Read the SQL Eloquent writes now and then: it is the best way to understand what your code costs.</p>
+
+<h2>{{n}}.5 The N+1 problem</h2>
+
+<p>A report lists every shipped order with its products. Written the natural way, it loads the orders, then touches <code>$order-&gt;products</code> for each one, and Eloquent loads them <em>lazily</em>, one order at a time:</p>
+
+<pre data-code="shop/routes/console.php" data-from="Artisan::command('shop:report" data-to="^});" data-title="routes/console.php"></pre>
+
+<pre data-code="n-plus-one.sh" data-title="Terminal"></pre>
+
+<p>Lazy: one query for the orders and one more for each of the 200 orders, 201 queries. Eager, with <code>with('products')</code>: two queries, the orders and then all their products with <code>WHERE order_id IN (…)</code>. Several times faster on a database on the same machine; across a network, the difference grows to seconds. This is the <dfn>N+1 problem</dfn>, the most common performance bug in Laravel applications, because every line looks innocent.</p>
+
+<p>Laravel can turn it into an error. In the service provider:</p>
+
+<pre data-code="shop/app/Providers/AppServiceProvider.php" data-from="    public function boot" data-to="^    }" data-title="app/Providers/AppServiceProvider.php"></pre>
+
+<pre data-code="strict.sh" data-title="Terminal"></pre>
+
+<p>In development and tests, the lazy version now fails at once, naming the relationship and the model, so the N+1 is fixed before it ships. In production the setting is off, so a missed case slows a page down instead of breaking it.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What is the difference between <code>$order-&gt;products</code> and <code>$order-&gt;products()</code>?</li><li>A page shows 50 orders with their customers’ names. How many queries does it send without eager loading, and with it?</li><li>Why does the migration use <code>timestampsTz()</code> instead of <code>timestamps()</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Mass assignment</h2>
+
+<p><code>Product::create($request-&gt;all())</code> would let a client set any column it names, including ones it must never touch. <code>$fillable</code> lists the attributes that may be set from an array; everything else is ignored, or, with <code>preventSilentlyDiscardingAttributes</code>, refused loudly:</p>
+
+<pre data-code="mass.sh" data-title="Terminal"></pre>
+
+<p>The first line shows the fillable attributes being set. The second call tried to set <code>id</code>, and in development Laravel refused instead of silently dropping it, so a typo or a forgotten field in <code>$fillable</code> is noticed at once. Combine it with Chapter {{n-3}}’s rule: pass <code>$request-&gt;validated()</code>, never <code>$request-&gt;all()</code>.</p>
+
+<aside class="box tip"><p class="box-title">Tip: Model::shouldBeStrict()</p><p>One call, <code>Model::shouldBeStrict(! app()-&gt;isProduction())</code>, turns on three protections together: no lazy loading, no silently discarded attributes, and an error when you read an attribute that was not selected. Put it in a service provider of every new project.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Relationships used in loops without <code>with</code></td><td>1 + N queries</td><td>Eager loading; <code>preventLazyLoading</code> in development</td></tr>
+<tr><td><code>timestamps()</code> on PostgreSQL</td><td>Times without a time zone</td><td><code>timestampsTz()</code></td></tr>
+<tr><td>Editing a migration that ran</td><td>Databases silently diverge</td><td>A new migration</td></tr>
+<tr><td>A required column added in one step</td><td>Failures while old code runs</td><td>Expand, backfill, contract</td></tr>
+<tr><td><code>$guarded = []</code> or <code>$request-&gt;all()</code></td><td>Clients set any column</td><td><code>$fillable</code> and <code>validated()</code></td></tr>
+<tr><td>Strings for statuses in code</td><td>Typos stored as statuses</td><td>Enum casts</td></tr>
+<tr><td>Totals stored beside their items</td><td>Two truths that disagree</td><td>Computed attributes, or a deliberate cache</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Laravel talks to PostgreSQL through <code>.env</code> settings; <strong>migrations</strong> are ordered, recorded, reversible schema changes. Never edit one that ran.</li>
+<li><strong>Expand and contract</strong> changes a live schema in compatible steps; <code>chunkById</code> backfills safely.</li>
+<li>Models declare <strong>relationships</strong>: <code>belongsTo</code>, <code>hasMany</code>, <code>belongsToMany</code> with <code>withPivot</code>.</li>
+<li><strong>Casts</strong>, <strong>scopes</strong> and computed <strong>attributes</strong> keep domain rules on the model.</li>
+<li><strong><code>DB::listen</code></strong> shows the SQL; count queries before you trust a page.</li>
+<li><strong>N+1</strong>: one query per row. <strong><code>with()</code></strong> loads relationships together; <strong><code>preventLazyLoading</code></strong> makes the mistake an error in development.</li>
+<li><strong><code>$fillable</code></strong> and <code>preventSilentlyDiscardingAttributes</code> stop mass assignment.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>$order-&gt;products</code> is the loaded collection of products (loaded now, lazily, if it was not eager loaded); <code>$order-&gt;products()</code> is the relationship object, a query builder you can add conditions to, such as <code>$order-&gt;products()-&gt;where('price', '&gt;', 10000)-&gt;get()</code>. 2. Without eager loading, 1 + 50 = 51; with <code>with('customer')</code>, 2. 3. <code>timestamps()</code> creates <code>timestamp</code> columns without a time zone, which store a clock reading without saying where; <code>timestampsTz()</code> creates <code>timestamptz</code>, an exact instant.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project continues this chapter’s project on PostgreSQL. Every schema change is a migration with a working <code>down</code>, and every page or command is checked for its query count.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Reviews</h3>
+<p class="project-goal">Add product reviews with relationships, counts and averages, in a fixed number of queries.</p>
+<p class="project-skills"><strong>You will practise:</strong> migrations, <code>hasMany</code> and <code>belongsTo</code>, <code>withCount</code> and <code>withAvg</code>, and unique rules.</p>
+<ol class="steps">
+<li>Create a <code>Review</code> model with a migration: a product, a customer, a rating from 1 to 5, a text, and <code>timestampsTz</code>. A customer may review a product once: add a unique index on the pair.</li>
+<li>Add the relationships on <code>Product</code>, <code>Customer</code> and <code>Review</code>.</li>
+<li>Write a command that lists every product with its number of reviews and average rating, using <code>withCount</code> and <code>withAvg</code>, and check it sends one query.</li>
+<li>Add a <code>Review</code> factory and seed 5,000 reviews to check the command stays at one query.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>withCount</code> and <code>withAvg</code> add subqueries to the main query, so the numbers arrive with the products, without loading a single review.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A query budget in tests</h3>
+<p class="project-goal">Make the test suite fail when a page or an API endpoint sends more queries than its budget.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>DB::listen</code> in tests, custom assertions, and keeping performance from regressing.</p>
+<ol class="steps">
+<li>Write a helper <code>assertQueryCount(int $max, callable $work)</code> in your base test case, using <code>DB::enableQueryLog()</code> and <code>DB::getQueryLog()</code>.</li>
+<li>Add the Chapter {{n-2}} API to this project, and test that listing orders sends at most 3 queries with 10 orders and with 100.</li>
+<li>Remove a <code>with()</code> on purpose and check the test fails and names the queries.</li>
+<li>Turn on <code>Model::shouldBeStrict()</code> in tests, and explain what it catches that the budget does not.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> testing with both 10 and 100 rows is what reveals N+1: a correct page sends the same number of queries for both.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A rename without downtime</h3>
+<p class="project-goal">Rename <code>customers.name</code> to <code>full_name</code> while a script reads and writes customers in a loop, without a single error.</p>
+<p class="project-skills"><strong>You will practise:</strong> expand and contract, accessors for dual reading, backfilling in chunks, and verifying compatibility.</p>
+<ol class="steps">
+<li>Write a command that creates and reads customers in an endless loop and reports any exception.</li>
+<li>Expand: add <code>full_name</code>. Change the model so it writes both columns (a model event in <code>booted()</code>) and still reads <code>name</code>.</li>
+<li>Backfill <code>full_name</code> with <code>chunkById</code> in a separate command.</li>
+<li>Switch reading to <code>full_name</code>; then contract: make it required and drop <code>name</code>.</li>
+<li>Keep the loop running through every step, and check it never reported an error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> at each step, ask: “if the previous version of the code were still running, would it work?” A step that fails that question needs to be split.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a migration that adds an optional <code>city</code> column to <code>customers</code>, with its <code>down</code>. Run it, roll it back, and run it again.</li>
+<li><span class="level">Easy</span> Count the shipped orders with the <code>shipped</code> scope, and explain what SQL it sends.</li>
+<li><span class="level">Medium</span> Plan the steps to rename <code>products.name</code> to <code>title</code> without downtime, and say which code versions can run during each step.</li>
+<li><span class="level">Medium</span> List every product with the total quantity sold, in one query, including products never sold (with 0).</li>
+<li><span class="level">Challenge</span> Write a CI step that proves all migrations work in both directions on an empty database.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Two customers order the last robot kit at the same moment. Next we see what really happens inside the database when requests run at the same time, and use transactions, isolation levels and locks to keep the data correct.</p>
+</div>
+</section>

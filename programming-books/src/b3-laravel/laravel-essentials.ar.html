@@ -1,0 +1,278 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/essentials/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>أساسيات Laravel: المسارات والمتحكمات والطلبات</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تُنشئ مشروع Laravel وتعرف طريقك بين مجلداته</li>
+<li>تتبع الطلب داخل Laravel، من الباب الأمامي إلى متحكمك والعودة</li>
+<li>تكتب المسارات ومتحكمات الموارد، وتراها بـ Artisan</li>
+<li>تتحقق من المدخلات بطلبات النماذج، برسائل مكتوبة لمستخدميك</li>
+<li>تستخدم حاوية الخدمات لتعطي الأصناف ما تحتاجه، وتبدّله في الاختبارات</li>
+<li>تكتب الوسطاء، وتحدّ معدل الطلبات، وتُبقي الإعدادات في مكان واحد، وتختبر الواجهة</li>
+</ul>
+</div>
+
+<p class="lead">بنينا في الفصل {{n-2}} واجهة المتجر في ملف PHP واحد، وكل سطر فيه كان لنا: قراءة الطريقة والمسار، وفحص المحتوى، وإرسال الحالة والترويسات، والتقاط الأخطاء. وLaravel يفعل ذلك كله، ويفعله بالطريقة نفسها لكل مسار ستضيفه. وهذا الفصل يعيد بناء الواجهة نفسها في Laravel، فترى بالضبط أي جزء مما كتبناه بأيدينا تحل محله كل ميزة في Laravel، وأين صار كودك يعيش.</p>
+
+<aside class="bit" data-mood="think"><p>بدا لي أول مشروع Laravel سحراً: دالة في متحكم تُرجع مصفوفة، فيخرج JSON. والسحر لطيف حتى ينكسر. ويوم تتبعت طلباً واحداً داخل الإطار، من <code>public/index.php</code> إلى متحكمي، توقف Laravel عن أن يكون سحراً وصار أداة أفهمها.</p></aside>
+
+<h2>{{n}}.1 مشروع جديد</h2>
+
+<p>يُنشئ Composer مشروع Laravel من القالب الرسمي، وينزّل الإطار وحزمه إلى <code>vendor/</code>، ويكتب ملف <code>.env</code> بمفتاح سري جديد، ويجهّز قاعدة بيانات SQLite صغيرة:</p>
+
+<pre data-code="create.sh" data-title="الطرفية"></pre>
+
+<p>والمجلدات التي ستعمل فيها:</p>
+<ul>
+<li><code>app/</code>: كودك أنت. المتحكمات والنماذج والوسطاء وأصنافك الخاصة، تحت الفضاء <code>App\</code>.</li>
+<li><code>routes/</code>: أي عنوان يذهب إلى أي كود. <code>web.php</code> للصفحات، و<code>api.php</code> للواجهة البرمجية.</li>
+<li><code>config/</code>: ملف PHP لكل موضوع (قاعدة البيانات، والذاكرة المؤقتة، والبريد…)، يُرجع كل منها مصفوفة إعدادات.</li>
+<li><code>bootstrap/app.php</code>: كيف يُركَّب التطبيق: المسارات والوسطاء ومعالجة الأخطاء.</li>
+<li><code>public/</code>: المجلد الوحيد الذي يعرضه خادم الويب، وملفه <code>index.php</code> هو الباب الأمامي لكل طلب.</li>
+<li><code>database/</code> و<code>resources/</code> و<code>storage/</code> و<code>tests/</code>: الترحيلات، والقوالب والترجمات، والملفات التي يكتبها التطبيق، والاختبارات.</li>
+</ul>
+
+<p>المشروع الجديد ليس فيه مسارات واجهة بعد. وأمر Artisan واحد يضيف <code>routes/api.php</code>، ويثبّت أيضاً Sanctum، التحقق بالرموز الذي نستخدمه في الفصل {{n+6}}:</p>
+
+<pre data-code="install-api.sh" data-title="الطرفية"></pre>
+
+<p><dfn>Artisan</dfn> هو سطر أوامر Laravel، أي <code>php artisan</code> التي ستكتبها طوال اليوم: يُنشئ الملفات، ويشغّل الترحيلات والاختبارات، ويُظهر ما يعرفه التطبيق عن نفسه.</p>
+
+<h2>{{n}}.2 حياة الطلب</h2>
+
+<p>يدخل كل طلب من <code>public/index.php</code>، الذي يحمّل محمّل Composer التلقائي والتطبيق المعرَّف في <code>bootstrap/app.php</code>:</p>
+
+<pre data-code="shop/bootstrap/app.php" data-title="bootstrap/app.php"></pre>
+
+<p>اقرأه وصفاً، لا كوداً يؤدي عملاً: للتطبيق مسارات ويب ومسارات واجهة، وفحص صحة على <code>/up</code>، ووسيطان أضفناهما للواجهة، وقاعدة تقول إن أخطاء الواجهة تُرد JSON. ومن هناك يمر الطلب عبر <dfn>خط</dfn> (pipeline) من الوسطاء، ثم يجد الموجّه المسار، ثم يعمل المتحكم، ويعود الجواب خارجاً عبر الوسطاء أنفسهم.</p>
+
+<p>وتستطيع أن ترى هذا الخط فعلاً. فحين يكون التصحيح مفعّلاً، تحمل أجوبة الخطأ في Laravel تتبعاً للمكدس (stack trace)، أي قائمة الدوال التي كانت تعمل. ومقروءاً من الأسفل، هو مسار الطلب. وهذا المرشّح الصغير بـ <code>jq</code> يُبقي الوسطاء والمتحكمات وحدها:</p>
+
+<pre data-code="pipeline.sh" data-title="الطرفية"></pre>
+
+<p>كل صنف في هذه القائمة شيء فعله خادم الفصل {{n-2}} بيده، أو لم يفعله أصلاً: الوكلاء وCORS، ووضع الصيانة، وحد حجم المحتوى، وقص المسافات من المدخلات وتحويل النصوص الفارغة إلى <code>null</code>، وحد المعدل، ومعاملات المسار، ووسيط التوقيت الخاص بنا، ثم متحكمنا أخيراً. وكل واحد صنف صغير بعمل واحد، تستطيع أن تضيفه أو تحذفه أو تغيّر ترتيبه في <code>bootstrap/app.php</code>.</p>
+
+<h2>{{n}}.3 المسارات والمتحكمات</h2>
+
+<p>يقول ملف المسارات أي كود يجيب أي طريقة ومسار:</p>
+
+<pre data-code="shop/routes/api.php" data-title="routes/api.php"></pre>
+
+<p>كل ما في <code>api.php</code> يأخذ البادئة <code>/api</code> ومجموعة وسطاء الواجهة. و<code>Route::apiResource</code> يسجّل المسارات الخمسة القياسية للمورد دفعة واحدة، على أعراف الفصل {{n-2}}، و<code>where</code> تقصر <code>{product}</code> على الأرقام. ويُظهر Artisan ما صنعه Laravel من ذلك:</p>
+
+<pre data-code="routes.sh" data-title="الطرفية"></pre>
+
+<p>ويكتب Artisan أيضاً الأصناف الفارغة، في مجلداتها وفضاءاتها الصحيحة:</p>
+
+<pre data-code="make.sh" data-title="الطرفية"></pre>
+
+<p>يحمل المتحكم دالة لكل مسار. ويبقى نحيفاً: يقرأ الطلب، ويطلب من غيره أن يؤدي العمل، ويبني الجواب.</p>
+
+<pre data-code="shop/app/Http/Controllers/ProductController.php" data-title="app/Http/Controllers/ProductController.php"></pre>
+
+<ul>
+<li>معامل المسار <code>{product}</code> يصل معاملاً اسمه <code>$product</code>، بالاسم.</li>
+<li><code>$request-&gt;integer('max_price', PHP_INT_MAX)</code> تقرأ قيمة من الاستعلام عدداً صحيحاً مع قيمة افتراضية: لا <code>$_GET</code>، ولا تحويل باليد.</li>
+<li><code>abort(404, …)</code> توقف الطلب بتلك الحالة من أي مكان، ويحوّلها معالج الاستثناءات إلى جواب JSON.</li>
+<li><code>route('products.show', 4)</code> تبني العنوان من اسم المسار، فلا تُكتب العناوين مرتين أبداً.</li>
+<li><code>$this-&gt;json</code> دالة مساعدة صغيرة لنا. فـLaravel يكتب JSON افتراضياً وكل حرف غير إنجليزي مهرَّب بالشكل <code>ك</code>: صالح، لكنه غير مقروء للناس. والخيار <code>JSON_UNESCAPED_UNICODE</code> يُبقي العربية عربية، كما في الفصل {{n-2}}. وجرّب حذفه لترى أسماء المنتجات العربية تتحول إلى رموز.</li>
+</ul>
+
+<h2>{{n}}.4 حاوية الخدمات</h2>
+
+<p>يطلب مُنشئ المتحكم <code>ProductCatalog</code>، ولا أحد يستدعي <code>new ProductController</code>. فـ<dfn>حاوية الخدمات</dfn> (service container) في Laravel تبني المتحكم: تقرأ أنواع المُنشئ، وتبني ما يحتاجه كل معامل (وما تحتاجه هذه بدورها حتى النهاية)، ثم تمررها إليه. وهذا هو <dfn>حقن الاعتماديات</dfn> (dependency injection): الصنف يقول ما يحتاجه، ولا يذهب يبحث عنه.</p>
+
+<p>و<code>ProductCatalog</code> واجهة (interface)، عقد يقول ماذا يستطيع الكتالوج أن يفعل، لا كيف:</p>
+
+<pre data-code="shop/app/Catalog/ProductCatalog.php" data-title="app/Catalog/ProductCatalog.php"></pre>
+
+<p>لا تستطيع الحاوية أن تبني واجهة، فنخبرها أي صنف تستخدم، في <dfn>مزوّد خدمات</dfn> (service provider)، وهو صنف يشغّله Laravel عند البدء ليسجّل الأشياء:</p>
+
+<pre data-code="shop/app/Providers/AppServiceProvider.php" data-title="app/Providers/AppServiceProvider.php"></pre>
+
+<p>والكتالوج الحقيقي يحفظ المنتجات في ملف JSON تحت قفل، تماماً كخادم الفصل {{n-2}}. فلأن PHP تنسى كل شيء بين الطلبات، يجب أن يعيش التخزين خارج العملية:</p>
+
+<pre data-code="shop/app/Catalog/JsonProductCatalog.php" data-from="    private function change" data-to="^    }" data-title="app/Catalog/JsonProductCatalog.php"></pre>
+
+<p>كل تغيير يمر من هذه الدالة الواحدة: تفتح الملف، وتنتظر القفل، وتدع المستدعي يعدّل البيانات، ثم تكتبها. أما <code>create</code> و<code>update</code> و<code>delete</code> فتصف التعديل فقط.</p>
+
+<p>لماذا الواجهة؟ لأن المتحكم لا يهمه أين تُحفظ المنتجات. ففي الفصل {{n+3}} نكتب كتالوجاً على قاعدة البيانات ونغيّر سطراً واحداً في المزوّد، ولا يتغير أي متحكم. وفي الاختبارات نستطيع أن نعطي المتحكم كتالوجاً آخر، كما سترى في القسم {{n}}.8.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر فهمك</p><ol><li>في الخط، أي الوسطاء يستطيع أن يجيب الطلب قبل أن يعمل المتحكم أصلاً؟ سمِّ اثنين.</li><li>لماذا لا يمكن أن يصل <code>/api/products/abc</code> إلى <code>show(int $product)</code> أبداً؟</li><li>ماذا تغيّر لتحفظ المنتجات في قاعدة بيانات بدل ملف JSON، وماذا يبقى كما هو؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.5 الطلبات والتحقق</h2>
+
+<p>شغّل الخادم في نافذته الخاصة. <code>php artisan serve</code> يشغّل خادم تطوير PHP من الفصل {{n-2}}، موجّهاً إلى <code>public/index.php</code>:</p>
+
+<pre data-code="serve.sh" data-title="النافذة 1"></pre>
+
+<p>والقراءة تعمل كما كانت:</p>
+
+<pre data-code="read.sh" data-title="النافذة 2"></pre>
+
+<p>ويفحص المدخلات <dfn>طلب نموذج</dfn> (form request)، وهو صنف يحمل قواعد نوع واحد من الطلبات. فحين تطلبه دالة في متحكم، يتحقق Laravel من الطلب <em>قبل</em> أن تعمل الدالة، فإن كان فيه خطأ لا تعمل الدالة أبداً، ويأخذ العميل <code>422</code> مع كل الأخطاء:</p>
+
+<pre data-code="shop/app/Http/Requests/StoreProductRequest.php" data-title="app/Http/Requests/StoreProductRequest.php"></pre>
+
+<p>القواعد تُقرأ كالإنجليزية تقريباً: مطلوب، ونص، و80 حرفاً على الأكثر، وعدد صحيح لا يقل عن 1. و<code>sometimes</code> تعني «افحصه إن أُرسل فقط». و<code>authorize</code> تجيب هل يجوز لهذا المستخدم هذا الطلب، ويملؤها الفصل {{n+6}}. أما <code>messages</code> فتستبدل نصوص Laravel العامة بنصوص مكتوبة لمستخدميك:</p>
+
+<pre data-code="store.sh" data-title="النافذة 2"></pre>
+
+<p>لاحظ آخر الرسالة الأولى: «(and 2 more errors)». هذه الجملة من ملفات ترجمة Laravel الإنجليزية، لأن لغة التطبيق ما زالت الإنجليزية. وتنشر <code>php artisan lang:publish</code> ملفات اللغة إلى المجلد <code>lang/</code>، فتترجمها مع <code>APP_LOCALE=ar</code>، أو تعرض حقل <code>errors</code> وحده في واجهتك، كما تفعل معظم التطبيقات.</p>
+
+<p>وفي المتحكم تُرجع <code>$request-&gt;validated()</code> الحقول التي لها قواعد وحدها. فإن أرسل العميل <code>"id": 1</code> أو <code>"is_admin": true</code> معها، فهي ببساطة ليست هناك. ولا تمرر <code>$request-&gt;all()</code> إلى التخزين أبداً: فهكذا يضبط المهاجمون حقولاً لم تقصد قبولها.</p>
+
+<p>ويسمح طلب التحديث بأن يغيب أي حقل، لكن لا تغيب كلها معاً. وخطّاف <code>after</code> يعمل بعد نجاح القواعد، للفحوص التي تشمل الطلب كله:</p>
+
+<pre data-code="shop/app/Http/Requests/UpdateProductRequest.php" data-from="    public function rules" data-to="^    }#2" data-title="app/Http/Requests/UpdateProductRequest.php"></pre>
+
+<pre data-code="change.sh" data-title="النافذة 2"></pre>
+
+<p>وبسبب <code>where</code> على المسار، لا يطابق رقم المنتج الذي ليس عدداً المسارَ أصلاً، فيبقى معامل المتحكم <code>int</code> آمناً دائماً:</p>
+
+<pre data-code="bad-id.sh" data-title="النافذة 2"></pre>
+
+<h2>{{n}}.6 الوسطاء وحدود المعدل</h2>
+
+<p><dfn>الوسيط</dfn> (middleware) يلف كل طلب في مجموعة. فيستطيع أن ينظر في الطلب، ويرفضه، ويغيّره، وينظر في الجواب وهو عائد. ووسيطنا يقيس كم استغرق التطبيق، ويخبر به في الترويسة <code>Server-Timing</code> التي تعرضها أدوات المطور في المتصفحات:</p>
+
+<pre data-code="shop/app/Http/Middleware/AddServerTiming.php" data-title="app/Http/Middleware/AddServerTiming.php"></pre>
+
+<p>كل ما قبل <code>$next($request)</code> يعمل والطلب داخل، وكل ما بعده يعمل والجواب خارج. ويضيفه <code>bootstrap/app.php</code> إلى مجموعة الواجهة، ويضيف <code>throttleApi()</code> محدِّد المعدل في Laravel، مستخدماً المحدِّد <code>api</code> المعرَّف في مزوّد الخدمات:</p>
+
+<pre data-code="timing.sh" data-title="النافذة 2"></pre>
+
+<p>وحين يبدأ الخادم بحد ثلاثة طلبات في الدقيقة يُرفض الرابع، بالترويسات نفسها التي في الفصل {{n-2}}:</p>
+
+<pre data-code="rate-limit.sh" data-title="النافذة 2"></pre>
+
+<h2>{{n}}.7 الإعدادات والبيئة</h2>
+
+<p>الإعدادات التي تختلف بين الأجهزة تعيش في <code>.env</code>. لكن كود التطبيق لا يقرأ <code>.env</code> مباشرة أبداً: إنه يقرأ ملفات <code>config/</code>، وهذه وحدها تقرأ البيئة، مرة واحدة:</p>
+
+<pre data-code="shop/config/shop.php" data-title="config/shop.php"></pre>
+
+<pre data-code="config.sh" data-title="الطرفية"></pre>
+
+<p>والسبب السرعة. ففي الإنتاج يجمع <code>php artisan config:cache</code> كل ملفات الإعداد في مصفوفة واحدة محفوظة، ومن بعدها لا يُحمَّل <code>.env</code> أصلاً: فاستدعاء <code>env()</code> في متحكم سيُرجع <code>null</code> بصمت. أما الكود الذي يقرأ <code>config('shop.requests_per_minute')</code> فيعمل بالطريقة نفسها مع الحفظ وبدونه.</p>
+
+<p>وإعداد واحد يستحق عناية خاصة. فمع <code>APP_DEBUG=true</code>، كما على جهازك، يحمل كل جواب خطأ صنف الاستثناء والملف والسطر وتتبع المكدس كله:</p>
+
+<pre data-code="debug.sh" data-title="النافذة 2"></pre>
+
+<p>وهذه هدية للمهاجم: مسارات الملفات والإصدارات والبنية الداخلية لكودك. ومع <code>APP_DEBUG=false</code>، كما يجب أن يكون في الإنتاج، لا يرد الطلب نفسه إلا بهذا:</p>
+
+<pre data-code="nodebug.sh" data-title="النافذة 2"></pre>
+
+<aside class="box warn"><p class="box-title">انتبه: APP_DEBUG في الإنتاج</p><p>خادم الإنتاج الذي فيه <code>APP_DEBUG=true</code> يعرض تتبع المكدس للجميع، وقد يعرض في صفحات الخطأ قيماً من البيئة مثل كلمات مرور قاعدة البيانات. فاجعله بنداً في قائمة النشر، وتحقق منه من الخارج بعد كل نشر: اطلب عنواناً غير موجود واقرأ الجواب.</p></aside>
+
+<h2>{{n}}.8 اختبار الواجهة</h2>
+
+<p>ترسل اختبارات الميزات في Laravel الطلبات عبر التطبيق كله، بوسطائه، دون أن تشغّل خادماً. ولكل اختبار تطبيق جديد، ودالة <code>setUp</code> عندنا تستخدم الحاوية لتعطي كل اختبار ملف كتالوج فارغاً خاصاً به، فلا تتشارك الاختبارات البيانات أبداً:</p>
+
+<pre data-code="shop/tests/Feature/ProductApiTest.php" data-title="tests/Feature/ProductApiTest.php"></pre>
+
+<pre data-code="test.sh" data-title="الطرفية"></pre>
+
+<p><code>$this-&gt;app-&gt;instance(...)</code> تستبدل ما تعطيه الحاوية لـ <code>ProductCatalog</code>، لهذا الاختبار وحده. وهذا هو السبب الثاني للواجهة: المتحكم المختبَر لا يعرف ولا يهمه أي كتالوج أخذ. ويتناول الفصل {{n+10}} الاختبار بعمق، بـ Pest.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: متحكمات نحيفة</p><p>يجب أن تتسع دالة المتحكم لشاشة واحدة: تقرأ المدخلات المفحوصة، وتستدعي خدمة واحدة، وتُرجع جواباً. أما قواعد المنتجات (المخزون، والأسعار، ومن يجوز له ماذا) فمكانها أصناف يستدعيها المتحكم، حيث يستطيع كل مسار ومهمة وأمر أن يستخدمها، وتصل إليها الاختبارات مباشرة. وحين تكبر دالة متحكم فوق عشرين سطراً، تكون الأسطر الزائدة غالباً خدمة تنتظر أن تُستخرج. ويحوّل الفصل {{n+12}} هذه العادة إلى معمارية.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>تمرير <code>$request-&gt;all()</code> إلى التخزين</td><td>يضبط العملاء حقولاً لم تقصد قبولها</td><td><code>$request-&gt;validated()</code></td></tr>
+<tr><td>التحقق داخل دالة المتحكم</td><td>دوال طويلة، وقواعد مكررة بين الإنشاء والتحديث</td><td>طلبات النماذج</td></tr>
+<tr><td><code>env()</code> خارج <code>config/</code></td><td>تُرجع <code>null</code> بعد حفظ الإعدادات</td><td><code>config('…')</code></td></tr>
+<tr><td><code>APP_DEBUG=true</code> في الإنتاج</td><td>تتبع المكدس والأسرار معروضة للغرباء</td><td><code>false</code>، مع فحص بعد كل نشر</td></tr>
+<tr><td><code>new</code> للخدمات داخل المتحكمات</td><td>كود لا يمكن تبديله ولا اختباره</td><td>اطلبها في المُنشئ</td></tr>
+<tr><td>معاملات مسار بلا قيود</td><td>أخطاء أنواع (500) مع <code>/products/abc</code></td><td><code>where</code> أو <code>whereNumber</code></td></tr>
+<tr><td>تهريب JSON الافتراضي للعربية</td><td><code>ك</code> بدل الحروف</td><td><code>JSON_UNESCAPED_UNICODE</code></td></tr>
+<tr><td>قواعد العمل في المتحكمات</td><td>قواعد منسوخة بين المسارات والمهام والأوامر</td><td>خدمات تستدعيها المتحكمات</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><code>composer create-project laravel/laravel</code> يصنع المشروع، و<strong>Artisan</strong> يُنشئ الملفات ويُظهر المسارات والإعدادات وغيرها.</li>
+<li>يدخل الطلب من <code>public/index.php</code>، ويمر بـ<strong>خط من الوسطاء</strong>، ويصل إلى <strong>الموجّه</strong> ثم <strong>المتحكم</strong>، ويعود بالطريق نفسه. و<code>bootstrap/app.php</code> يصف ذلك كله.</li>
+<li><strong>المسارات</strong> تربط الطريقة والمسار بالكود، و<code>apiResource</code> تسجّل مسارات المورد الخمسة، و<code>where</code> تقيّد المعاملات.</li>
+<li><strong>المتحكمات</strong> نحيفة. و<strong>طلبات النماذج</strong> تتحقق قبل أن يعمل المتحكم، برسائلك أنت، و<code>validated()</code> تُرجع الحقول المفحوصة وحدها.</li>
+<li><strong>حاوية الخدمات</strong> تبني الأصناف من مُنشئاتها، و<strong>المزوّدات</strong> تربط الواجهات بالأصناف، والاختبارات تبدّلها بـ <code>instance</code>.</li>
+<li><strong>الوسطاء</strong> تلف الطلبات، و<code>throttleApi</code> تحدّ المعدل بمحدِّد معرَّف في مزوّد.</li>
+<li>الكود يقرأ <strong>الإعدادات</strong>، والإعدادات تقرأ <strong>‎.env</strong>. و<code>APP_DEBUG</code> قيمته false في الإنتاج.</li>
+<li><strong>اختبارات الميزات</strong> ترسل الطلبات عبر التطبيق كله بلا خادم.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. أي منها يستطيع: <code>ThrottleRequests</code> يرد بـ <code>429</code>، و<code>ValidatePostSize</code> يرد بـ <code>413</code> للمحتوى الأكبر من حد PHP، و<code>PreventRequestsDuringMaintenance</code> يرد بـ <code>503</code> أثناء الصيانة، و<code>HandleCors</code> يجيب الطلبات التمهيدية للمتصفحات بنفسه. 2. لأن المسار لا يطابق إلا حين يكون <code>{product}</code> أرقاماً، بسبب <code>where(['product' =&gt; '[0-9]+'])</code>، فأي قيمة أخرى لا تجد مساراً وتأخذ <code>404</code> قبل أن يُختار أي متحكم. 3. اكتب صنفاً ثانياً يحقق <code>ProductCatalog</code> بقاعدة البيانات، واربطه في <code>AppServiceProvider</code> بدل <code>JsonProductCatalog</code>. وتبقى المسارات والمتحكم وطلبات النماذج والوسطاء والاختبارات كما هي.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يُنمّي تطبيق Laravel في هذا الفصل. أنشئ الملفات بـ Artisan، وأبقِ المتحكمات نحيفة، وأضف اختبار ميزة لكل قاعدة.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>التصنيفات</h3>
+<p class="project-goal">أضف تصنيفات المنتجات مورداً ثانياً، بمتحكمه وطلبات نماذجه وكتالوجه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مولّدات Artisan، ومسارات الموارد، وطلبات النماذج برسائل خاصة، وروابط الحاوية.</p>
+<ol class="steps">
+<li>أنشئ <code>CategoryController</code> بـ <code>--api</code>، وسجّل <code>Route::apiResource('categories', …)</code>.</li>
+<li>للتصنيف اسم (من 2 إلى 40 حرفاً، لا يتكرر بين التصنيفات) واسم مختصر (slug) من حروف صغيرة وأرقام وشرطات. اكتب القواعد، برسائل لمستخدميك.</li>
+<li>اكتب واجهة <code>CategoryCatalog</code> وتطبيقاً لها على JSON، واربطها في المزوّد.</li>
+<li>أضف <code>category_id</code> اختيارياً إلى المنتجات، يُفحص على التصنيفات الموجودة بقاعدة دالة مغلقة أو بصنف قاعدة خاص.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> فحص عدم التكرار يعمل في طلب النموذج، لكن طلبين قد يجتازانه في اللحظة نفسها. ولا يستطيع أن يضمنه حقاً إلا التخزين تحت قفله (أو قاعدة البيانات بفهرس فريد في الفصل {{n+3}}).</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>رقم طلب على كل سطر في السجل</h3>
+<p class="project-goal">أعطِ كل طلب رقماً، وأرجعه إلى العميل، وأرفقه بكل ما يسجله التطبيق أثناء معالجة ذلك الطلب.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الوسطاء، وترويسات الطلب والجواب، و<code>Context</code> في Laravel، والسجلات.</p>
+<ol class="steps">
+<li>اكتب وسيطاً يأخذ <code>X-Request-Id</code> من الطلب إن أرسله وكيل، أو يصنع UUID جديداً بـ <code>Str::uuid()</code>، ويضيفه إلى الجواب.</li>
+<li>احفظه بـ <code>Context::add('request_id', $id)</code>، فيضيفه Laravel إلى كل مدخل في السجل يُكتب أثناء الطلب.</li>
+<li>سجّل سطراً لكل طلب، فيه الطريقة والمسار والحالة والمدة، بعد أن تعود <code>$next</code>.</li>
+<li>أضف الرقم إلى JSON أجوبة الخطأ في <code>bootstrap/app.php</code>، ليذكره المستخدم للدعم، وتحقق منه في <code>storage/logs/laravel.log</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مع الرقم في رسالة الخطأ عند المستخدم وفي السجل، ينتقل الدعم من «لم يعمل» إلى أسطر السجل بالضبط في ثوانٍ. ويبني الفصل {{n+11}} على هذا.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>أعد بناء شريحة من Laravel</h3>
+<p class="project-goal">اكتب إطار عمل صغيراً بـ PHP وحدها فيه موجّه وخط وسطاء وحاوية، وشغّل عليه واجهة الفصل {{n-2}}.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> كيف تطابق الموجّهات، وكيف تلف الخطوط الدوال المغلقة، وكيف تبني الحاويات الكائنات.</p>
+<ol class="steps">
+<li>صنف <code>Router</code> فيه <code>get</code> و<code>post</code> وأخواتها، يحفظ أنماطاً مثل <code>/products/{id}</code>، ويحوّلها إلى تعابير نمطية، ويمرر القيم المطابقة إلى المعالج.</li>
+<li>صنف <code>Pipeline</code> يلف معالجاً نهائياً بقائمة وسطاء، كل منها مكتوب بالشكل <code>fn (Request $request, Closure $next)</code>، باستخدام <code>array_reduce</code> على القائمة معكوسة.</li>
+<li>الحاوية من تحدي الفصل {{n-1}}، لتبني المتحكمات من مُنشئاتها.</li>
+<li>شغّل مسارات منتجات المتجر عليه بـ <code>php -S</code>، وقارن الحجم والسلوك بنسخة Laravel.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الصنف <code>Illuminate\Pipeline\Pipeline</code> في Laravel نفسه نحو مئتي سطر، ورأيت اسمه في التتبع. وقراءته بعد أن تكتب نسختك أفضل طريقة لفهمه.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> مستخدماً الخط في القسم {{n}}.2، سمِّ الوسيط الذي يجيب كلاً من هذه الطلبات دون أن يصل إلى المتحكم، والحالة التي يردها: الطلب الخامس في دقيقة بحد أربعة، ومحتوى حجمه 50 MB، وأي طلب ما دام <code>php artisan down</code> مفعّلاً.</li>
+<li><span class="level">سهل</span> أضف <code>GET /api/products/{product}/stock</code> تجيبه دالة جديدة في المتحكم اسمها <code>stock</code>، تُرجع الرقم والمخزون و<code>in_stock</code> (صح أو خطأ). وسمِّ المسار <code>products.stock</code>.</li>
+<li><span class="level">متوسط</span> اجعل القائمة تقبل <code>min_price</code> مع <code>max_price</code>. وتحقق من الاثنين (عددان صحيحان غير سالبين، والحد الأعلى لا يقل عن الأدنى حين يُرسلان معاً)، ورد بـ <code>422</code> في غير ذلك.</li>
+<li><span class="level">متوسط</span> ما زالت اختبارات هذا الفصل تكتب ملفاً. اكتب <code>ArrayProductCatalog</code> يحفظ المنتجات في الذاكرة، واستخدمه في اختبار، واشرح لماذا لم يحتج المتحكم أي تغيير.</li>
+<li><span class="level">تحدٍّ</span> اكتب وسيطاً <code>RequireJson</code> لمجموعة الواجهة: يرد بـ <code>415</code> على طلبات <code>POST</code> و<code>PUT</code> و<code>PATCH</code> التي ليس محتواها JSON، ويجعل كل أجوبة الواجهة JSON حتى حين ينسى العميل <code>Accept: application/json</code>.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>ما زالت واجهتنا تُرجع المصفوفات كما خرجت من التخزين، وأخطاؤها بشكل Laravel الافتراضي. ونصممها تالياً كما ينبغي: API Resources للتمثيل، والصفحات بالمؤشر، وProblem Details، ومفاتيح عدم التكرار، والتزامن المتفائل، والتوثيق المولَّد من الكود.</p>
+</div>
+</section>

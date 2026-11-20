@@ -1,0 +1,52 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Before each project, fill in the table from section {{n}}.1 for the state you plan to keep. Everything that does not land in the last row stays out of the global code.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A theme that follows the user</h3>
+<p class="project-goal">A light and a dark theme, starting from the system setting, switchable from anywhere, and remembered on the next visit.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>provide</code> and <code>inject</code> with a typed key, VueUse’s <code>usePreferredDark</code> and <code>useLocalStorage</code>, a computed choice, and <code>watchEffect</code>.</p>
+<ol class="steps">
+<li>Write the colours as CSS custom properties on <code>:root</code>, and the dark ones on <code>html.dark</code>. Components never mention colours by name.</li>
+<li>In <code>provideTheme</code>, keep the user’s saved choice, or <code>null</code> if they never chose, and fall back to the system setting with <code>usePreferredDark()</code>.</li>
+<li>In a <code>watchEffect</code>, toggle the <code>dark</code> class on <code>&lt;html&gt;</code>.</li>
+<li>Provide <code>{ dark, toggle }</code> with a typed key, and read it with <code>useTheme()</code>, which throws a clear error outside the provider.</li>
+<li>Make the switch a button with <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> saving <code>null</code> until the user chooses means the app keeps following the system setting, and starts following the user only once they express a wish. That small detail is what users notice when they switch their phone to dark mode at night.</p>
+<pre data-code="projects/theme.ts" data-title="theme.ts"></pre>
+<figure data-render="projects/theme-page.html" data-width="560" data-actions="click:header button"><figcaption><b>Project {{n}}.1:</b> after switching to the dark theme.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A cart that survives a reload</h3>
+<p class="project-goal">Build the cart store of this chapter yourself, with add, decrease, remove and clear, a badge in the header, and saving between visits.</p>
+<p class="project-skills"><strong>You will practise:</strong> a setup store, getters, actions that change state in place, <code>storeToRefs</code>, and testing a store in Node.</p>
+<ol class="steps">
+<li>Write the store with the four actions. Keep lines in an object keyed by product id, so finding a line needs no search.</li>
+<li>Make <code>count</code> and <code>total</code> getters with <code>computed</code>.</li>
+<li>Build three components: <code>CartBadge</code> (count only), <code>ProductList</code> (<code>add</code> only) and <code>CartSummary</code> (lines, total and the other actions).</li>
+<li>Keep the lines in <code>useLocalStorage</code>, add a few products, reload the page and check that they are still there.</li>
+<li>Write a Node script that creates a Pinia, runs the four actions, and prints the count after each.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if you change the shape of saved data later, old visitors will load the old shape. Save a version number with the lines, and convert or discard old data when you load it.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Notifications with undo</h3>
+<p class="project-goal">A notification system that any component can use with one call, that shows at most three messages, disappears by itself, can offer an “Undo” button, and is announced by screen readers.</p>
+<p class="project-skills"><strong>You will practise:</strong> a store used from many components, <code>Teleport</code>, timers, and live regions.</p>
+<ol class="steps">
+<li>Write a <code>useToasts</code> store with the list of messages and two actions, <code>notify(text, action?)</code> and <code>dismiss(id)</code>.</li>
+<li>Add new messages with <code>[...toasts.slice(-2), next]</code>, so at most three stay on screen.</li>
+<li>Remove each message after five seconds with <code>setTimeout</code>, and also with a close button labelled for screen readers.</li>
+<li>Render the list with <code>&lt;Teleport to="body"&gt;</code>, so it is never hidden or clipped by the component that placed it.</li>
+<li>Give the list <code>role="status"</code> and <code>aria-live="polite"</code>, so screen readers announce new messages without interrupting the user.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> “Undo” is friendlier than “Are you sure?”. Do the action at once, and offer to reverse it for a few seconds. Users make fewer mistakes, and the rest of the time they are not slowed down.</p>
+<pre data-code="projects/toasts.ts" data-title="toasts.ts"></pre>
+<figure data-render="projects/toasts-page.html" data-width="560" data-actions="click:.card .row:nth-child(2) button;click:.card .row:nth-child(3) .secondary;wait:200"><figcaption><b>Project {{n}}.3:</b> two notifications; the second offers to undo the removal.</figcaption></figure>
+</div>

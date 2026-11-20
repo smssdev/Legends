@@ -1,0 +1,47 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">شغّل <code>npm run build</code> في نهاية كل مشروع واقرأ جدول المسارات. وقبل البناء اكتب الرمز الذي تتوقعه لكل عنوان، فكل مفاجأة في الجدول شيء تتعلم منه.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>متجر يتعثر بلطف</h3>
+<p class="project-goal">أعطِ متجر بِت صفحة للأخطاء، وصفحة 404 أفضل للمنتجات المفقودة، وحالة تحميل لكل جزء بطيء، حتى لا يرى المستخدم أبداً شاشة بيضاء أو تفاصيل خطأ تقنية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>error.tsx</code>، و<code>not-found.tsx</code> في مستويات مختلفة، و<code>loading.tsx</code>، و<code>&lt;Suspense&gt;</code> حول جزء بطيء واحد.</p>
+<ol class="steps">
+<li>اكتب <code>app/error.tsx</code> مكوّنَ عميل يستلم <code>{ error, reset }</code>، ويعرض رسالة ودودة، ويقدم زر «حاول مجدداً» يستدعي <code>reset()</code>.</li>
+<li>اجعل <code>getProduct</code> ترمي خطأ لمعرّف واحد، وتأكد أن منطقة المحتوى وحدها تُستبدل بينما يبقى شريط التنقل.</li>
+<li>أضف <code>app/products/[id]/not-found.tsx</code> يقول إن <em>المنتج</em> غير موجود ويعيد رابطاً إلى القائمة. وتظل العناوين المجهولة في غير ذلك تستخدم صفحة 404 العامة.</li>
+<li>أضف إلى صفحة المنتج جزء «المراجعات» البطيء (انتظر تأخيراً مدته 1.5 ثانية)، وغلّفه وحده بـ <code>&lt;Suspense&gt;</code> مع هيكل تحميل صغير، فيظهر باقي الصفحة فوراً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يلتقط <code>error.tsx</code> أخطاء الصفحات <em>تحته</em>، لا أخطاء الإطار في المجلد نفسه. ولالتقاط أخطاء الإطار الجذري أيضاً، في Next.js ملف خاص اسمه <code>global-error.tsx</code>، ويجب أن يكتب <code>&lt;html&gt;</code> و<code>&lt;body&gt;</code> بنفسه.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>مدونة ثابتة تحبها محركات البحث</h3>
+<p class="project-goal">مدونة مقالاتها ملفات Markdown داخل المشروع، تُبنى كلها وقت البناء، ولكل مقال عنوانه ووصفه، ومعها خريطة للموقع وملف robots.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الملفات في مكوّن خادم، و<code>generateStaticParams</code>، و<code>generateMetadata</code>، و<code>sitemap.ts</code>، و<code>robots.ts</code>.</p>
+<ol class="steps">
+<li>ضع ثلاث مقالات في <code>content/</code>، يبدأ كل منها بعنوان وتاريخ في أسطره الأولى. واكتب <code>lib/posts.ts</code> فيه <code>getPosts()</code> و<code>getPost(slug)</code> باستخدام <code>node:fs/promises</code>.</li>
+<li>اجعل <code>app/blog/page.tsx</code> تسرد المقالات من الأحدث، و<code>app/blog/[slug]/page.tsx</code> تعرض مقالاً واحداً. وحوّل Markdown إلى HTML بمكتبة مثل <code>marked</code>، على الخادم.</li>
+<li>أضف <code>generateStaticParams</code> و<code>generateMetadata</code>، واستدعِ <code>notFound()</code> للمعرّفات المجهولة.</li>
+<li>أضف <code>app/sitemap.ts</code> الذي يُرجع عنوان كل مقال، و<code>app/robots.ts</code> الذي يشير إلى خريطة الموقع. وافتح <code>/sitemap.xml</code> لتتأكد.</li>
+<li>ابنِ، وتأكد أن كل مقال ○ أو ◐ في جدول المسارات، ثم تأكد بـ <code>curl</code> أن عنوان المقال داخل HTML.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مكتبة Markdown تعمل على الخادم فقط، فلا تضيف شيئاً إلى JavaScript المتصفح. وهذه ميزة هادئة لمكونات الخادم: المكتبات الثقيلة للتنسيق أو التواريخ أو تلوين الكود مجانية لمستخدميك.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>أسعار يغيّرها المدير</h3>
+<p class="project-goal">صفحة إدارة محمية يغيّر فيها صاحب المتجر سعر منتج، فتعرض صفحات المنتجات المخزنة السعر الجديد فوراً، ولا يستطيع أحد غيره تغيير شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات تعريف الارتباط، و<code>redirect</code>، وإجراءات الخادم مع فحص الصلاحيات، و<code>cacheTag</code> و<code>updateTag</code>.</p>
+<ol class="steps">
+<li>علّم <code>getProducts</code> و<code>getProduct</code> بـ <code>"use cache"</code> و<code>cacheTag("products")</code>، واحفظ الأسعار في <code>Map</code> على مستوى الوحدة تستطيع دالة <code>updatePrice(id, price)</code> تغييرها.</li>
+<li>اكتب إجراء خادم لتسجيل الدخول يقارن كلمة مرور بـ <code>process.env.ADMIN_PASSWORD</code>، وعند النجاح يضع ملف تعريف ارتباط <code>httpOnly</code> و<code>secure</code> و<code>sameSite</code> بـ <code>cookies()</code> من <code>next/headers</code>.</li>
+<li>اجعل <code>app/admin/page.tsx</code> تقرأ ملف تعريف الارتباط وتستدعي <code>redirect("/admin/sign-in")</code> إن لم يوجد.</li>
+<li>اكتب الإجراء <code>changePrice</code>. يفحص ملف تعريف الارتباط <em>مرة أخرى</em> (ففحص الصفحة لا يحمي الإجراء)، ويتحقق بـ zod أن السعر عدد صحيح موجب، ويستدعي <code>updatePrice</code> ثم <code>updateTag("products")</code>.</li>
+<li>غيّر سعراً، وافتح صفحة المنتج، وتأكد أن السعر الجديد ظاهر دون بناء جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التطبيق الحقيقي يحفظ الأسعار في قاعدة بيانات والجلسات الموقّعة في مكتبة، لكن الشكل واحد: فحص الصلاحية يعيش داخل كل إجراء، لا في الصفحة التي تعرض النموذج وحدها.</p>
+</div>

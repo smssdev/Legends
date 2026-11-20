@@ -1,0 +1,221 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/perf/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Performance and Core Web Vitals</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe speed the way users feel it, with the three Core Web Vitals</li>
+<li>measure a page in a lab, with a slowed network and CPU, and know why field data matters more</li>
+<li>make the main content appear sooner: images, fonts, scripts and code splitting</li>
+<li>stop the layout from jumping</li>
+<li>keep the page responsive while it does heavy work</li>
+<li>protect performance with budgets that fail the build</li>
+</ul>
+</div>
+
+<p class="lead">Your computer is fast and your network is good, so your site feels fast to you. Most of your users have a mid-range phone, a crowded mobile network, and twenty other tabs open. Every extra second of loading loses visitors, and search engines rank slow pages lower. Performance is not something to fix at the end; it is a feature that is designed, measured and protected, like accessibility. This chapter shows how to measure it honestly and how to fix the causes that matter most.</p>
+
+<aside class="bit" data-mood="think"><p>The most common performance mistake is guessing. Developers optimise the code they find interesting, not the code that is slow. Measure first, fix the biggest problem, and measure again.</p></aside>
+
+<h2>{{n}}.1 Core Web Vitals</h2>
+
+<p>“Fast” means different things at different moments, so Google defined three numbers, the <dfn>Core Web Vitals</dfn>, that describe what users actually experience:</p>
+
+<table>
+<thead><tr><th>Metric</th><th>Question it answers</th><th>Good</th><th>Poor</th></tr></thead>
+<tbody>
+<tr><td><dfn>LCP</dfn>, Largest Contentful Paint</td><td>When does the main content appear?</td><td>≤ 2.5 s</td><td>&gt; 4 s</td></tr>
+<tr><td><dfn>INP</dfn>, Interaction to Next Paint</td><td>How quickly does the page react to taps and keys?</td><td>≤ 200 ms</td><td>&gt; 500 ms</td></tr>
+<tr><td><dfn>CLS</dfn>, Cumulative Layout Shift</td><td>Does the layout jump while I read?</td><td>≤ 0.1</td><td>&gt; 0.25</td></tr>
+</tbody>
+</table>
+
+<p>A page passes when 75% of real visits are “good” on all three. The thresholds are about people: under about a tenth of a second a reaction feels instant, and after a few seconds of a blank screen people start to leave.</p>
+
+<h2>{{n}}.2 Measuring like a professional</h2>
+
+<p>There are two kinds of measurement. <dfn>Lab data</dfn> comes from a test you run yourself, under fixed conditions: perfect for finding and fixing problems. <dfn>Field data</dfn>, or real user monitoring, comes from real visitors on their real devices, collected in the page with the small <code>web-vitals</code> library or seen in Google’s Chrome UX Report. Field data is the truth; lab data explains it.</p>
+
+<p>The browser itself reports the vitals through <code>PerformanceObserver</code>. This script opens a page in Chromium, slows the network and the processor to imitate an average phone, and reads LCP and CLS:</p>
+
+<pre data-code="measure-lib.ts" data-title="measure-lib.ts"></pre>
+
+<p>Here are two versions of the same page. The first has four common problems; the second fixes them:</p>
+
+<pre data-code="slow.html" data-title="slow.html"></pre>
+<pre data-code="fast.html" data-title="fast.html"></pre>
+<pre data-code="measure.ts" data-title="measure.ts"></pre>
+<pre data-out="measure.mjs"></pre>
+
+<p>The same content appears four seconds earlier. Here is what changed, in order of impact:</p>
+<ol>
+<li><strong>The picture is far smaller</strong> (here 3 KB instead of 900 KB): the right size for its slot, and a format and content that compress well. The hero image is usually the LCP element, and on a slow network its size decides everything.</li>
+<li><strong>The browser hears about the picture early</strong>: <code>&lt;link rel="preload"&gt;</code> and <code>fetchpriority="high"</code> start the download before the browser even reaches the <code>&lt;img&gt;</code> tag.</li>
+<li><strong>The script no longer blocks the page</strong>: a plain <code>&lt;script&gt;</code> in the head stops all drawing until it has downloaded and run. <code>defer</code> lets the page appear first and runs the script afterwards.</li>
+<li><strong>Space is reserved</strong>: the banner is part of the page from the start, and the image has <code>width</code> and <code>height</code>, so the browser knows how much room to leave before the picture arrives.</li>
+</ol>
+
+<p>Look at CLS too. The slow page scores 0.08, still “good”, yet that is one late banner using up most of the 0.1 budget. Add an advertisement that loads late, or a picture without dimensions, and the page fails. Layout shifts add up.</p>
+
+<aside class="box tip"><p class="box-title">Tip: the browser’s own tools</p><p>Chrome’s DevTools have a <strong>Performance</strong> panel that records exactly what the page did, frame by frame, and a <strong>Lighthouse</strong> panel that runs a full lab audit with advice. Both can throttle the network and CPU, just like the script above.</p></aside>
+
+<h2>{{n}}.3 Loading less, and sooner</h2>
+
+<p>Most slow pages are slow because they send too much, in the wrong order. The fixes are well known:</p>
+
+<table>
+<thead><tr><th>Resource</th><th>Problem</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Images</td><td>Huge files, one size for all screens</td><td>Modern formats (WebP, AVIF), <code>srcset</code> and <code>sizes</code>, <code>loading="lazy"</code> below the fold, always <code>width</code> and <code>height</code></td></tr>
+<tr><td>JavaScript</td><td>One huge bundle; blocking scripts</td><td>Code splitting by route (Chapter 3), <code>defer</code>, remove unused libraries, load third-party widgets late</td></tr>
+<tr><td>Fonts</td><td>Invisible text while the font loads</td><td>Few weights, <code>font-display: swap</code>, self-hosted files, preload the main one</td></tr>
+<tr><td>Everything</td><td>Downloaded again on every visit</td><td>Hashed file names with long cache times (Chapter 3), a CDN close to users</td></tr>
+</tbody>
+</table>
+
+<p>Project {{n}}.1 shows <code>srcset</code> in action: the browser picks the smallest image that is sharp enough for each screen, and does not download a lazy image at all until the user scrolls near it.</p>
+
+<h2>{{n}}.4 Staying responsive</h2>
+
+<p>INP measures the time from a tap or key press until the screen shows the result. The enemy is the <dfn>long task</dfn>: any piece of JavaScript that keeps the main thread busy for more than 50 ms. While it runs, the browser cannot react to anything (Chapter 1’s event loop). The usual causes are rendering huge lists, heavy calculations in event handlers, and third-party scripts.</p>
+
+<!-- react -->
+<p>React offers tools to keep typing urgent while big updates wait. <code>useDeferredValue</code> gives you a copy of a value that “lags behind” during busy moments: the input updates at once, and the expensive list re-renders with the deferred value when the browser has time. <code>memo</code> skips re-rendering a component whose props did not change:</p>
+
+<pre data-code="react/SlowList.tsx" data-title="SlowList.tsx"></pre>
+<pre data-code="react/transition.tsx" data-title="transition.tsx"></pre>
+
+<figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Figure {{n}}.1:</b> Filtering 5,000 slow rows. The text field never freezes; while the list catches up it fades and says “Updating…”.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<p>Vue does part of this work for you. A child component re-renders only when its props change, so a list never re-renders because the page around it did, and <code>computed</code> values cache their result. To keep typing urgent, give the expensive list a <em>delayed copy</em> of the text, with <code>refDebounced</code> from VueUse: the input updates at once, and the list only when the typing pauses. For big data that never changes inside, <code>shallowRef</code> stops Vue from watching every item:</p>
+
+<pre data-code="vue/SlowList.vue" data-title="SlowList.vue"></pre>
+<pre data-code="vue/Filter.vue" data-title="Filter.vue"></pre>
+
+<figure data-render="vue/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Figure {{n}}.1:</b> Filtering 5,000 slow rows. The text field never freezes; while the list catches up it fades and says “Updating…”.</figcaption></figure>
+<!-- /vue -->
+
+<p>Two more techniques solve most remaining problems. <dfn>Virtualisation</dfn> renders only the rows that are visible, so a list of 10,000 items costs the same as a list of 20. And heavy work that does not touch the page, such as parsing a big file, can move to a <dfn>Web Worker</dfn>, a second thread with no access to the DOM.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which metric gets worse when a cookie banner pushes the page down after it has appeared?</li><li>Why does <code>&lt;script src="widget.js"&gt;</code> in the head make LCP worse?</li><li>Which matters more when lab and field data disagree?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Budgets: keep it fast</h2>
+
+<p>Pages rarely become slow in one big step. They become slow one small library, one big image, one extra font at a time, each change too small for anyone to notice. A <dfn>performance budget</dfn> is a limit, such as “60 KB of compressed JavaScript” or “LCP under 2.5 s in the lab”, that the build checks automatically, exactly like a failing test. Project {{n}}.3 builds one.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: test on a real, cheap phone</p><p>Keep a three-year-old, mid-range Android phone on your desk, and use it on mobile data. Throttling in DevTools helps, but nothing shows the truth like using your app on the device most of your users actually have.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Testing only on a fast computer and network</td><td>Slow pages go unnoticed</td><td>Throttle, and test on a real mid-range phone</td></tr>
+<tr><td>Images without <code>width</code> and <code>height</code></td><td>The layout jumps when they load (CLS)</td><td>Always set both, and use CSS <code>height: auto</code></td></tr>
+<tr><td>Lazy-loading the hero image</td><td>The main content appears later (LCP)</td><td><code>fetchpriority="high"</code> for the hero; lazy only below the fold</td></tr>
+<tr><td>Blocking scripts in the head</td><td>Nothing is drawn until they finish</td><td><code>defer</code>, or load them later</td></tr>
+<tr><td>Inserting banners above existing content</td><td>Everything shifts</td><td>Reserve the space from the start</td></tr>
+<tr><td>Rendering thousands of rows</td><td>Slow typing and scrolling (INP)</td><td>Virtualise, defer, memoise</td></tr>
+<tr><td>Optimising without measuring</td><td>Effort spent on the wrong thing</td><td>Measure, fix the biggest cause, measure again</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>The <strong>Core Web Vitals</strong> describe experience: <strong>LCP</strong> (main content, ≤ 2.5 s), <strong>INP</strong> (reaction, ≤ 200 ms) and <strong>CLS</strong> (stability, ≤ 0.1).</li>
+<li><strong>Lab data</strong> finds and explains problems; <strong>field data</strong> from real users is the truth.</li>
+<li>Load less and sooner: right-sized, modern images with <code>srcset</code>; <code>preload</code> and <code>fetchpriority</code> for the hero; <code>defer</code> for scripts; code splitting; long caching.</li>
+<li>Prevent layout shifts by reserving space for images, banners and ads.</li>
+<li>Avoid long tasks: defer expensive updates, memoise, virtualise long lists, and move heavy work to workers.</li>
+<li>Protect speed with <strong>performance budgets</strong> checked by the build.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. CLS, Cumulative Layout Shift. 2. A plain script in the head blocks drawing: the browser waits to download and run it before it shows anything. 3. Field data, because it measures real users on real devices; lab data is a tool to understand and fix what the field shows.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Measure before and after every change in these projects, and write the numbers down. A performance change that you cannot measure is a guess.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Images that fit every screen</h3>
+<p class="project-goal">Give the hero image two sizes and let the browser choose, and stop the browser from downloading a picture nobody has scrolled to yet. Then prove both with a script.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>srcset</code> with width descriptors, <code>sizes</code>, <code>loading="lazy"</code>, and checking downloads with the Resource Timing API.</p>
+<ol class="steps">
+<li>List both files in <code>srcset</code> with their real widths: <code>hero-small.png 640w, hero-big.png 1000w</code>.</li>
+<li>Tell the browser how wide the image will be shown with <code>sizes</code>: the full screen on phones, 640 px on wider screens.</li>
+<li>Keep <code>width</code>, <code>height</code> and <code>alt</code> on the image, as always.</li>
+<li>Add a second picture far down the page with <code>loading="lazy"</code>.</li>
+<li>Write a Playwright script that opens the page as a phone, as a high-density phone and as a desktop, and prints which hero file was used and whether the lower picture was downloaded.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the second line of the result. A phone with a high-density screen needs twice the pixels to look sharp, so the browser correctly picks the bigger file. You describe the facts; the browser makes the choice.</p>
+<pre data-code="projects/images.html" data-title="images.html" data-show="body"></pre>
+<pre data-out="projects/which-image.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A filter that never freezes</h3>
+<p class="project-goal">Filter thousands of slow rows while the text field stays perfectly responsive, and show that the list is catching up.</p>
+<p class="project-skills"><strong>You will practise:</strong> finding a long task in the Performance panel, deferring an update, memoising a component, and showing a pending state.</p>
+<ol class="steps">
+<li>Build the slow version first: filter and render directly from the input’s value. Type quickly and feel the input lag.</li>
+<li>Record it in the Performance panel of DevTools with the CPU slowed 4×. Find the long tasks after each key press.</li>
+<!-- react -->
+<li>Use <code>useDeferredValue(text)</code> for the list, and wrap the list in <code>memo</code> so it only re-renders when its items change.</li>
+<!-- /react -->
+<!-- vue -->
+<li>Keep a second, delayed copy of the text for the list with <code>refDebounced</code>, and compute the filtered items from it. Mark the big, unchanging list with <code>shallowRef</code>.</li>
+<!-- /vue -->
+<li>While the list is behind the input, fade it and say “Updating…” in a polite live region.</li>
+<li>Record again and compare: typing should no longer wait for the list.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> deferring does not make the work smaller; it changes its priority. If the list is still too slow when it finally renders, the next step is virtualisation: render only the 20 rows that fit on the screen.</p>
+<!-- react --><figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Project {{n}}.2:</b> the filtered list, once it has caught up.</figcaption></figure><!-- /react --><!-- vue --><figure data-render="vue/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Project {{n}}.2:</b> the filtered list, once it has caught up.</figcaption></figure><!-- /vue -->
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A bundle budget that fails the build</h3>
+<p class="project-goal">Measure how much compressed JavaScript and CSS the app sends to users, compare it with a budget, and stop the build when it is over.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking a folder recursively, compressing with <code>node:zlib</code>, and exit codes.</p>
+<ol class="steps">
+<li>Collect every file under the built folder (<code>dist</code> in a real project; here, the book’s shared <code>vendor</code> folder), recursively.</li>
+<li>For each <code>.js</code> and <code>.css</code> file, add its <em>gzip</em> size: that is what travels over the network.</li>
+<li>Compare the totals with a budget, and print each line with ✓ or ✗.</li>
+<li>Set the exit code to 1 when any budget is exceeded, and add the script after <code>vite build</code> in <code>npm run check</code>.</li>
+<li>Read the result honestly: the shared <!-- react -->React<!-- /react --><!-- vue -->Vue<!-- /vue --> bundle alone is far over a 60 KB budget. Decide whether to raise the budget on purpose, or to load less.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a budget that fails is a conversation, not a disaster. The point is that growth becomes a decision someone makes knowingly, instead of something that happens by accident.</p>
+<!-- react -->
+<pre data-code="projects/budget.ts" data-title="budget.ts"></pre>
+<pre data-out="projects/budget.mjs"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/budget.ts" data-title="budget.ts"></pre>
+<pre data-out="vue/projects/budget.mjs"></pre>
+<!-- /vue -->
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Remove <code>defer</code> from <code>fast.html</code> and measure again. Then remove the image’s <code>width</code> and <code>height</code>. Which number changed each time?</li>
+<li><span class="level">Easy</span> Open a big news site with DevTools, run Lighthouse in mobile mode, and write down its three biggest suggestions.</li>
+<li><span class="level">Medium</span> Add the <code>web-vitals</code> library to a project and log LCP, INP and CLS to the console. In a real app, you would send these numbers to your server.</li>
+<li><span class="level">Medium</span> Change <code>measure.ts</code> to measure each page three times and print the median, which is more reliable than one run.</li>
+<li><span class="level">Challenge</span> Add a check to <code>measure.ts</code> that sets a failing exit code when a page’s LCP is over 2.5 s or its CLS is over 0.1, and add it to the <code>check</code> script after the build.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>A fast, accessible, tested app must also be safe. In the next chapter you will meet the attacks that target frontends, such as XSS, CSRF and clickjacking, and the defences that stop them, from escaping and Content Security Policy to safe authentication.</p>
+</div>
+</section>

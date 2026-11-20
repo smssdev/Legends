@@ -1,0 +1,55 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects set up habits rather than features. You will use all three in every project for the rest of this book, so take the time to do them properly in your own Vite project.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A small utility library with a public face</h3>
+<p class="project-goal">Organise helper functions into modules, and decide which of them the rest of the app may use.</p>
+<p class="project-skills"><strong>You will practise:</strong> named exports, re-exports, a barrel file, and keeping some code internal.</p>
+<ol class="steps">
+<li>Create a folder <code>modules</code> with <code>text.mjs</code> (<code>slugify</code> and <code>truncate</code>) and <code>numbers.mjs</code> (<code>clamp</code> and <code>percent</code>).</li>
+<li><code>slugify</code> turns a title into a web address: lower case, no spaces at the ends, and every run of other characters becomes one <code>-</code>. The pattern <code>\p{L}</code> means “any letter in any language”, so it works for Arabic too.</li>
+<li>Add <code>internal.mjs</code> with a helper used only inside the folder.</li>
+<li>Write <code>index.mjs</code> that re-exports the four public functions, and <em>not</em> the internal one.</li>
+<li>In <code>app.mjs</code>, import only from <code>./index.mjs</code> and try each function.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the barrel is a promise to the rest of the team: “these functions are stable; everything else may change”. Keep it small.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/modules/app.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>One command to check everything</h3>
+<p class="project-goal">Give your project a <code>check</code> script that runs the type checker, the linter and the formatter in order, and stops at the first problem.</p>
+<p class="project-skills"><strong>You will practise:</strong> npm scripts, <code>&amp;&amp;</code> to chain commands, ESLint rules, and reading which tool failed.</p>
+<ol class="steps">
+<li>Install ESLint, typescript-eslint and Prettier as in section {{n}}.4, resolving the TypeScript version if needed.</li>
+<li>Add the scripts with <code>npm pkg set</code>: <code>lint</code>, <code>format</code> and <code>check</code>, where <code>check</code> is <code>tsc &amp;&amp; eslint src &amp;&amp; prettier --check src</code>.</li>
+<li>Add a file that uses <code>var</code>, and run <code>npm run check</code>. Notice that <code>tsc</code> passed silently and ESLint stopped the chain.</li>
+<li>Fix the problem and run the check again until it passes.</li>
+<li>Make it a habit: run <code>npm run check</code> before every <code>git commit</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>&amp;&amp;</code> runs the next command only if the previous one succeeded. Put the fastest checks first, so you hear about problems sooner. Many teams also run this script automatically with a Git hook.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-code="projects/check.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Settings for every environment</h3>
+<p class="project-goal">Use one API address while you develop and another in production, read them in one typed module, and prove which one the build used.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>.env</code> files, <code>import.meta.env</code>, failing early on missing settings, and inspecting build output.</p>
+<ol class="steps">
+<li>Create <code>.env.development</code> and <code>.env.production</code>, each with a different <code>VITE_API_URL</code>.</li>
+<li>Write <code>src/config.ts</code>, the only file that reads <code>import.meta.env</code>. If the address is missing, throw an error with a helpful message straight away.</li>
+<li>Export one read-only <code>config</code> object, and import it wherever the address is needed.</li>
+<li>Run <code>npm run dev</code> and check the development address in the console. Then build.</li>
+<li>Search the built JavaScript with <code>grep</code> to confirm that the production address, and only that one, went in.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> step 5 is how you prove what is really inside your build. Use the same trick to check that no secret slipped in: if you can find it with <code>grep</code>, so can anyone.</p>
+<pre data-code="projects/config.ts" data-title="src/config.ts"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-code="projects/env.sh" data-title="terminal"></pre>
+</div>

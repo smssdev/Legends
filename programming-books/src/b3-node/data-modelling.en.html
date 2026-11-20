@@ -1,0 +1,220 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/modelling/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Data Modelling and Migrations</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>turn a domain into tables: entities, relationships, and what to store or compute</li>
+<li>change a schema with migrations that every machine runs the same way, and undo them</li>
+<li>change a live schema without downtime, with expand and contract</li>
+<li>generate TypeScript types from the real database, so <code>tsc</code> checks your queries</li>
+<li>write typed queries with Kysely, a query builder close to SQL</li>
+<li>see the N+1 problem in numbers, and fix it with one query</li>
+</ul>
+</div>
+
+<p class="lead">In Chapter {{n-1}} we created the shop’s tables by running a SQL file once. Real schemas are never written once: every month brings a new column, a new table, a rule that changes. The database in production is full of data that must survive every change, and the code that reads it must agree with it at every moment. This chapter is about keeping the schema, the data and the code in step, safely, and about writing queries that the compiler checks.</p>
+
+<aside class="bit" data-mood="think"><p>Early in my career I changed a column name directly on the production database on a Friday afternoon. The new code was not deployed yet; the old code kept asking for the old name. For twenty minutes every order failed. Since then, schema changes go through migrations, in small steps, and never on Fridays.</p></aside>
+
+<h2>{{n}}.1 Modelling the shop</h2>
+
+<p>A data model starts from the <dfn>entities</dfn> of the domain (customers, products, orders) and the <dfn>relationships</dfn> between them:</p>
+<ul>
+<li><strong>One to many:</strong> a customer has many orders, an order has one customer. The “many” side holds a foreign key: <code>orders.customer_id</code>.</li>
+<li><strong>Many to many:</strong> an order has many products, a product is in many orders. A third table joins them, <code>order_items</code>, and it often carries its own data: the quantity and the price at the time.</li>
+<li><strong>One to one</strong> is rare: usually it means the two tables are one entity, or that some optional data is split off (a customer’s billing details).</li>
+</ul>
+
+<p>Three questions decide most designs:</p>
+<ul>
+<li><strong>Store or compute?</strong> An order’s total can be computed from its items, so storing it as well creates two truths that can disagree. Store facts; compute what derives from them, until measurements say a stored copy is needed for speed. The price on <code>order_items</code> is not a copy: it is a different fact, the price <em>then</em>.</li>
+<li><strong>Which rules belong in the database?</strong> Every rule that must never be broken, whatever code writes the data: types, <code>NOT NULL</code>, uniqueness, foreign keys, ranges.</li>
+<li><strong>What happens on delete?</strong> Deleting a customer with orders must either be refused (the default), cascade, or be replaced by marking the row inactive. Decide per relationship, and write it in the foreign key.</li>
+</ul>
+
+<h2>{{n}}.2 Migrations</h2>
+
+<p>A <dfn>migration</dfn> is one change to the schema, written as code and kept in the repository: a function <code>up</code> that makes the change and a function <code>down</code> that undoes it. Each machine (your laptop, a colleague’s, CI, production) runs the migrations it has not run yet, in order, and records which ones ran. Nobody changes a shared database by hand.</p>
+
+<p>We use <dfn>Kysely</dfn>, a type-safe SQL query builder for TypeScript that includes a migration runner. The first migration creates the tables of Chapter {{n-1}}:</p>
+
+<pre data-code="migrations/2026_11_01_001_initial.ts" data-title="migrations/2026_11_01_001_initial.ts"></pre>
+
+<p>The schema builder reads like the SQL it writes, and <code>sql`…`</code> is there for anything it does not cover, such as the checks. The file name starts with the date, because migrations run in name order. Note the index on <code>orders.customer_id</code>: Chapter {{n-1}} showed that PostgreSQL does not index foreign keys by itself. A small script runs the migrator:</p>
+
+<pre data-code="src/migrate.ts" data-title="src/migrate.ts"></pre>
+
+<pre data-code="migrate.sh" data-title="Terminal"></pre>
+
+<pre data-code="table.sh" data-title="Terminal"></pre>
+
+<p>Kysely keeps the list of migrations that ran in its own table, <code>kysely_migration</code>; the next run starts after the last one. And every migration can be undone, which you should try once on your machine for each new migration, because a <code>down</code> that has never run is a <code>down</code> that does not work:</p>
+
+<pre data-code="down.sh" data-title="Terminal"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit: never edit a migration that has run elsewhere</p><p>Once a migration is merged, other machines have run it, and changing its file changes nothing there: their database and yours now differ, silently. To fix a mistake, write a new migration. Before merging, run all migrations up, all down, and all up again on an empty database, in CI. It takes seconds and catches broken <code>down</code> functions and missing steps.</p></aside>
+
+<h2>{{n}}.3 Changing a live schema: expand and contract</h2>
+
+<p>The shop needs a SKU, a stock code, for every product, required and unique. The obvious migration adds a <code>NOT NULL UNIQUE</code> column in one step. On a live system, that step fails or breaks things: the existing rows have no SKU, and the code running in production does not send one when it creates a product. While the new code is being deployed, old and new versions run side by side.</p>
+
+<p>The safe pattern is <dfn>expand and contract</dfn>: change the schema in steps, each compatible with the code running at that moment.</p>
+<ol>
+<li><strong>Expand:</strong> add the column as optional. Old code ignores it; nothing breaks.</li>
+<li><strong>Deploy code that writes it</strong> for every new product, and backfill the existing rows.</li>
+<li><strong>Contract:</strong> once every row has a value, make it required and unique.</li>
+</ol>
+
+<pre data-code="migrations/2026_11_02_001_product_sku_expand.ts" data-title="migrations/2026_11_02_001_product_sku_expand.ts"></pre>
+
+<pre data-code="migrations/2026_11_03_001_product_sku_contract.ts" data-title="migrations/2026_11_03_001_product_sku_contract.ts"></pre>
+
+<p>The same pattern renames a column (add the new one, write both, backfill, read the new one, drop the old one) or splits a table. It takes more migrations and more deployments, and it never takes the shop down. Two warnings for large tables: a backfill of millions of rows should run in batches outside the migration, and some changes lock a table while they run; Chapter {{n+9}} shows how to see those locks.</p>
+
+<h2>{{n}}.4 Types from the database</h2>
+
+<p>Queries written as strings are invisible to <code>tsc</code>: a misspelled column fails at run time, maybe in production. Kysely needs a TypeScript description of the database, and <code>kysely-codegen</code> writes it by reading the real schema:</p>
+
+<pre data-code="codegen.sh" data-title="Terminal"></pre>
+
+<pre data-code="src/db-types.ts" data-from="export interface Customers" data-title="src/db-types.ts"></pre>
+
+<p>Every table is an interface, and <code>Generated&lt;…&gt;</code> marks columns the database fills in, so an insert may leave them out. One mapping deserves a word: PostgreSQL’s <code>bigint</code> can hold numbers that a JavaScript number cannot, so the <code>pg</code> driver returns it as a string by default, as you saw in Chapter {{n-1}}. Our ids will never come near 2<sup>53</sup>, so the project maps <code>int8</code> to <code>number</code> in the generator, and tells the driver to parse it the same way:</p>
+
+<pre data-code="src/db.ts" data-title="src/db.ts"></pre>
+
+<p>Now the compiler knows every table and column. A misspelling is caught before the code runs:</p>
+
+<pre data-code="demos/typo.ts" data-title="demos/typo.ts"></pre>
+
+<pre data-code="typo.sh" data-title="Terminal"></pre>
+
+<p>Run the generator after every migration (in the same pull request), so the types and the schema can never disagree.</p>
+
+<h2>{{n}}.5 Typed queries</h2>
+
+<p>Kysely’s queries read like SQL, and their result types are built from what you select:</p>
+
+<pre data-code="src/orders.ts" data-from="export async function findOrder" data-to="^}" data-title="src/orders.ts"></pre>
+
+<pre data-code="order.sh" data-title="Terminal"></pre>
+
+<p>The type of <code>order</code> is exactly <code>{ id, status, customer, items: { name, quantity, price }[] }</code>, with each field’s type from the schema; select another column and the type changes with it. <code>jsonArrayFrom</code> asks PostgreSQL to build the items as a JSON array inside the same query, so the order arrives in one round trip, already shaped.</p>
+
+<aside class="box tip"><p class="box-title">Tip: query builder or ORM?</p><p>An <dfn>ORM</dfn> (Prisma, Drizzle, TypeORM) maps tables to objects and writes most SQL for you; a <dfn>query builder</dfn> such as Kysely keeps you close to SQL and only adds types and composition. ORMs are quicker for simple create-read-update-delete work. Query builders make the SQL you run obvious, which matters as soon as performance does. Both are good choices; what matters is that the team knows the SQL being sent. Turn on query logging in development whichever you choose.</p></aside>
+
+<h2>{{n}}.6 The N+1 problem</h2>
+
+<p>A page lists a customer’s orders with their items. The natural first version loads the orders, then loops over them and loads each order’s items:</p>
+
+<pre data-code="src/orders.ts" data-from="export async function customerOrdersOneByOne" data-to="^}" data-title="src/orders.ts"></pre>
+
+<p>That is one query for the orders and one more for <em>each</em> order: 1 + N queries. The second version asks for everything at once:</p>
+
+<pre data-code="src/orders.ts" data-from="export async function customerOrdersAtOnce" data-to="^}" data-title="src/orders.ts"></pre>
+
+<p>The database module counts every query Kysely sends, so we can measure both on a customer with 200 orders:</p>
+
+<pre data-code="n-plus-one.sh" data-title="Terminal"></pre>
+
+<p>201 queries against one, and many times slower, on a database on the same machine. Across a network, where each round trip costs a millisecond or more, the gap becomes seconds. N+1 is the most common performance bug in data-heavy code, because each query looks innocent and the loop hides the count. Watch the number of queries per request; Chapter {{n+9}} turns this into a habit.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why must a migration that has been merged never be edited?</li><li>Why can’t you add a <code>NOT NULL</code> column without a default to a live table in one step?</li><li>A page shows 50 products and, for each one, its number of reviews, loaded in a loop. How many queries is that, and what is the fix?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Changing the schema by hand</td><td>Machines differ; nobody knows the real schema</td><td>Migrations, in the repository</td></tr>
+<tr><td>Editing a migration that ran</td><td>Databases silently diverge</td><td>A new migration</td></tr>
+<tr><td>A <code>down</code> that never ran</td><td>No way back when you need it</td><td>Up, down, up in CI</td></tr>
+<tr><td>Breaking changes in one step</td><td>Errors while old and new code run together</td><td>Expand, migrate data, contract</td></tr>
+<tr><td>Storing what can be computed</td><td>Two truths that disagree</td><td>Store facts; cache later, on purpose</td></tr>
+<tr><td>Types written by hand</td><td>Types that lie about the schema</td><td>Generate them after every migration</td></tr>
+<tr><td>Queries in loops</td><td>1 + N round trips</td><td>Joins, <code>IN</code>, or JSON aggregation</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Model <strong>entities</strong> and <strong>relationships</strong>; the many side holds the foreign key; many-to-many uses a joining table with its own facts.</li>
+<li><strong>Store facts, compute the rest</strong>; put every unbreakable rule in the schema; decide what deleting does.</li>
+<li><strong>Migrations</strong> are ordered, recorded, reversible changes in code. Never edit one that ran; test up, down, up.</li>
+<li><strong>Expand and contract</strong> changes a live schema in compatible steps.</li>
+<li><strong>kysely-codegen</strong> generates types from the real database; map <code>bigint</code> deliberately.</li>
+<li><strong>Kysely</strong> writes typed SQL; result types follow the selection; JSON aggregation shapes nested data in one query.</li>
+<li><strong>N+1</strong>: one query per row of a list. Count queries, and load related data together.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Other databases have already run it and will never run it again, so the change would exist only on some machines; fix mistakes with a new migration. 2. The existing rows have no value, so the database refuses the constraint (or, with a default, every row gets a meaningless value), and the old code still running does not send the column; add it as optional, fill it, then require it. 3. 1 + 50 = 51 queries; load the counts in the same query with a join and <code>GROUP BY</code> or a subquery, or in one second query with <code>WHERE product_id IN (…)</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project continues this chapter’s Kysely project. Every schema change is a migration with a working <code>down</code>, followed by regenerated types.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Addresses</h3>
+<p class="project-goal">Give customers several delivery addresses, one of them the default, and attach an address to each order.</p>
+<p class="project-skills"><strong>You will practise:</strong> one-to-many design, migrations with foreign keys, partial unique indexes, and typed queries.</p>
+<ol class="steps">
+<li>Write a migration for <code>addresses</code> (customer, label, street, city, <code>is_default</code>) and its <code>down</code>.</li>
+<li>Allow at most one default address per customer with a <em>partial</em> unique index on <code>customer_id</code> where <code>is_default</code> is true.</li>
+<li>Add <code>orders.address_id</code> with expand and contract: optional first, then required once old orders are backfilled.</li>
+<li>Write a typed query that returns a customer with all their addresses, default first, in one query.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> should an order point to the address, or copy it? If a customer later edits the address, an old order’s delivery address must not change. That is the same reasoning as the price in <code>order_items</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Migrations in CI</h3>
+<p class="project-goal">Make CI prove on every pull request that migrations run up and down on an empty database, and that the generated types are up to date.</p>
+<p class="project-skills"><strong>You will practise:</strong> GitHub Actions service containers, scripted migrations, and detecting drift.</p>
+<ol class="steps">
+<li>In a workflow, start PostgreSQL as a service container, and run <code>npm run migrate</code>.</li>
+<li>Add a <code>migrate:reset</code> script that migrates down until nothing is left, then run it, then migrate up again.</li>
+<li>Regenerate the types, and fail the job if <code>git diff --exit-code src/db-types.ts</code> finds a difference.</li>
+<li>Open a pull request that changes a migration without regenerating the types, and check that CI stops it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> Kysely’s <code>migrateDown()</code> undoes one migration at a time; loop until <code>results</code> is empty.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A rename without downtime</h3>
+<p class="project-goal">Rename <code>customers.name</code> to <code>full_name</code> on a running API, step by step, with traffic flowing the whole time.</p>
+<p class="project-skills"><strong>You will practise:</strong> expand and contract, dual writes, backfilling in batches, and proving compatibility.</p>
+<ol class="steps">
+<li>Start the API from Chapter {{n-2}} reading customers from this database, and a script that creates and reads customers in a loop, reporting any error.</li>
+<li>Expand: add <code>full_name</code>. Deploy code that writes both columns and still reads <code>name</code>.</li>
+<li>Backfill <code>full_name</code> in batches of 1,000 rows, outside the migration.</li>
+<li>Deploy code that reads <code>full_name</code>; then contract: make it <code>NOT NULL</code> and drop <code>name</code>.</li>
+<li>Keep the loop running through every step, and check it never reported an error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a database trigger can keep the two columns in step instead of the application, which helps when several applications write the table. Either way, write down which step you are at: a rename in progress is a state the team must know about.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a migration that adds an optional <code>city</code> column to <code>customers</code>, with its <code>down</code>. Run it, undo it, and run it again.</li>
+<li><span class="level">Easy</span> The generated type of <code>orders.status</code> is <code>string</code>, although the database allows only four values. Why, and how can the generator produce the union type instead?</li>
+<li><span class="level">Medium</span> Plan the steps to rename <code>products.name</code> to <code>title</code> without downtime. For each step, say which code versions can run safely.</li>
+<li><span class="level">Medium</span> A report shows every product with the total quantity sold, written as one query for the products and one per product for the sum. Rewrite it as one Kysely query.</li>
+<li><span class="level">Challenge</span> Write a script that checks that all migrations work in both directions: on an empty database, run them all up, then all down, then all up again, and fail on any error.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Two customers order the last robot kit at the same moment. Next we see what really happens inside the database when requests run at the same time, and use transactions, isolation levels and locks to keep the data correct.</p>
+</div>
+</section>

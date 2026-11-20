@@ -1,0 +1,282 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/react/next/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>الرسم على الخادم بـ Next.js</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تميّز الطرق التي تُصنع بها الصفحة: في المتصفح، أو على الخادم مع كل طلب، أو مسبقاً وقت البناء</li>
+<li>تنشئ تطبيق Next.js وتبني مساراته من المجلدات والملفات</li>
+<li>تكتب مكونات خادم تقرأ البيانات مباشرة، ومكونات عميل تتفاعل مع المستخدم</li>
+<li>تخزّن الصفحات مؤقتاً، وترسمها مسبقاً وقت البناء، وتبث أجزاءها البطيئة</li>
+<li>تعالج النماذج بإجراءات الخادم، وتجيب طلبات الواجهة البرمجية بمعالجات المسارات</li>
+<li>تقرأ جدول المسارات في مخرجات البناء، وتشغّل التطبيق في الإنتاج</li>
+</ul>
+</div>
+
+<p class="lead">كل تطبيق React في هذا الكتاب حتى الآن بدأ صفحةَ HTML شبه فارغة: ينزّل المتصفح JavaScript، ويشغّلها، ويجلب البيانات، وعندها فقط يرسم شيئاً. هذا يناسب التطبيقات التي خلف تسجيل الدخول، لكن المستخدم ينتظر أمام صفحة بيضاء، والجوالات البطيئة تنتظر أطول، وقد لا يرى محرك البحث أو معاينة الرابط شيئاً على الإطلاق. و<strong>Next.js</strong> إطار عمل حول React يستطيع أن يصنع HTML على الخادم، فيرسل صفحة كاملة قبل أن تعمل أي JavaScript. وهو أكثر الطرق استخداماً لبناء مواقع React يجب أن تكون سريعة وأن تظهر في البحث.</p>
+
+<aside class="bit" data-mood="think"><p>Next.js لا يلغي شيئاً مما تعلمته: المكونات والخصائص والحالة والخطافات والنماذج كلها كما هي. الذي يتغير هو <em>أين</em> يعمل كل مكوّن، وهذا السؤال وحده هو الفصل كله.</p></aside>
+
+<h2>{{n}}.1 أربع طرق لصنع الصفحة</h2>
+
+<table>
+<thead><tr><th>الطريقة</th><th>متى يُصنع HTML</th><th>تناسب</th><th>ثمنها</th></tr></thead>
+<tbody>
+<tr><td><dfn>الرسم في المتصفح</dfn> (CSR)</td><td>في المتصفح، بعد أن تعمل JavaScript</td><td>لوحات التحكم والتطبيقات خلف تسجيل الدخول</td><td>صفحة بيضاء أولاً، وضعف أمام محركات البحث</td></tr>
+<tr><td><dfn>الرسم على الخادم</dfn> (SSR)</td><td>على الخادم، مع كل طلب</td><td>صفحات تختلف لكل مستخدم أو كل دقيقة</td><td>عمل على الخادم في كل زيارة</td></tr>
+<tr><td><dfn>التوليد الثابت</dfn> (SSG)</td><td>مرة واحدة، عند بناء التطبيق</td><td>صفحات واحدة للجميع: مقالات، وتوثيق، وصفحات منتجات</td><td>تبقى قديمة حتى البناء التالي</td></tr>
+<tr><td><dfn>إعادة التحقق التدريجية</dfn> (ISR)</td><td>عند البناء، ثم من جديد في الخلفية بعد مدة محددة</td><td>صفحات ثابتة غالباً تتغير بياناتها أحياناً</td><td>قد يرى الزائر بيانات قديمة قليلاً</td></tr>
+</tbody>
+</table>
+
+<p>وفي طرق الخادم الثلاث يظل المتصفح ينزّل كود React بعدها، فيربط React معالجات الأحداث بـ HTML الموجود أصلاً. تسمى هذه الخطوة <dfn>الإحياء</dfn> (hydration): تظهر الصفحة أولاً، وتصير تفاعلية بعد لحظة. ويتيح لك Next.js أن تختار الطريقة <em>لكل صفحة</em>، بل لكل جزء من الصفحة، ولذلك يناسب المواقع الحقيقية التي تحتاج فيها الصفحة الرئيسية وصفحات المنتجات وصفحة الحساب أشياء مختلفة.</p>
+
+<h2>{{n}}.2 إنشاء التطبيق</h2>
+
+<p>سنبني متجراً صغيراً لبِت: صفحة رئيسية، وقائمة منتجات، وصفحة لكل منتج، ونموذج تواصل، وواجهة برمجية صغيرة. يكتب <code>create-next-app</code> المشروع، ومعه TypeScript وESLint جاهزين:</p>
+
+<pre data-code="build.sh" data-title="الطرفية"></pre>
+
+<p>سُجّلت هذه الجلسة أثناء بناء مثال هذا الفصل. تجاهل الجدول في آخرها الآن: ستقرأ كل سطر فيه حين تصل إلى القسم {{n}}.6. وأثناء التطوير تشغّل <code>npm run dev</code> وتفتح <code>http://localhost:3000</code>، وكل حفظ يعيد تحميل الصفحة.</p>
+
+<h3>المجلدات هي المسارات</h3>
+
+<p>لا قائمة مسارات في Next.js مثل التي كتبتها بـ React Router في الفصل {{n-10}}. بل المجلدات داخل <code>app/</code> <em>هي</em> العناوين، وبضعة أسماء ملفات خاصة تقول ما عمل كل ملف:</p>
+
+<table>
+<thead><tr><th>الملف</th><th>عمله</th><th>في متجرنا</th></tr></thead>
+<tbody>
+<tr><td><code>page.tsx</code></td><td>الصفحة المعروضة على عنوان هذا المجلد</td><td><code>app/products/page.tsx</code> ← <code>/products</code></td></tr>
+<tr><td><code>layout.tsx</code></td><td>إطار حول هذه الصفحة وكل صفحة تحتها</td><td><code>app/layout.tsx</code>: شريط التنقل في كل صفحة</td></tr>
+<tr><td><code>loading.tsx</code></td><td>يظهر فوراً أثناء تحميل بيانات الصفحة</td><td>أشرطة رمادية لصفحات المنتجات</td></tr>
+<tr><td><code>error.tsx</code></td><td>يظهر حين يرمي شيء تحته خطأ</td><td>(المشروع {{n}}.1)</td></tr>
+<tr><td><code>not-found.tsx</code></td><td>يظهر للعناوين المجهولة ومع <code>notFound()</code></td><td>صفحة 404 الخاصة بنا</td></tr>
+<tr><td><code>route.ts</code></td><td>نقطة واجهة برمجية بدل صفحة</td><td><code>app/api/products/route.ts</code></td></tr>
+<tr><td><code>[id]</code> (مجلد)</td><td>جزء متغير من العنوان</td><td><code>app/products/[id]/page.tsx</code> ← <code>/products/2</code></td></tr>
+</tbody>
+</table>
+
+<p>والملفات الأخرى في هذه المجلدات، كمكونات تستخدمها صفحة واحدة، مسموحة وليست مسارات. أما الكود المشترك فيعيش خارج <code>app/</code>، في مجلدات مثل <code>lib/</code>، ويُستورد بالاختصار <code>@/</code> الذي ضبطه <code>create-next-app</code>.</p>
+
+<h3>الإطار الجذري</h3>
+
+<pre data-code="app/layout.tsx" data-title="app/layout.tsx"></pre>
+
+<p>الإطار الجذري هو المكان الوحيد الذي يكتب <code>&lt;html&gt;</code> و<code>&lt;body&gt;</code>، فهو مكان <code>lang</code> و<code>dir</code> (الفصل {{n-2}}). و<code>Link</code> هو رابط Next.js: يغيّر الصفحة دون إعادة تحميل كاملة، وينزّل الصفحة الهدف في الخلفية بمجرد ظهور الرابط على الشاشة، فتبدو النقرات فورية. وتصير <code>metadata</code> المصدَّرة وسوم <code>&lt;title&gt;</code> و<code>&lt;meta&gt;</code>، ويتيح <code>template</code> لكل صفحة أن تكتب جزءها من العنوان فقط.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة: الخطوط</p><p>يحمّل <code>create-next-app</code> خطاً من Google بـ <code>next/font/google</code>. حذفناه واستخدمنا خطوط النظام، فهي لا تحتاج تنزيلاً وتقرأ العربية جيداً أصلاً. وإن احتجت خط العلامة التجارية فـ <code>next/font/local</code> يقدّم ملفات خطوطك من خادمك أنت.</p></aside>
+
+<h2>{{n}}.3 مكونات الخادم</h2>
+
+<p>هذا قلب الفصل. في مجلد <code>app/</code> <strong>كل مكوّن مكوّنُ خادم ما لم تقل غير ذلك</strong>. و<dfn>مكوّن الخادم</dfn> (Server Component) يعمل على الخادم فقط: يمكن أن يكون <code>async</code>، وأن ينتظر البيانات بـ <code>await</code> مباشرة، ولا يُرسل كوده إلى المتصفح أبداً. أولاً قاعدة بيانات وهمية:</p>
+
+<pre data-code="lib/products.ts" data-title="lib/products.ts"></pre>
+
+<p>ثم قائمة المنتجات، التي تنتظرها ببساطة:</p>
+
+<pre data-code="app/products/page.tsx" data-title="app/products/page.tsx"></pre>
+
+<p>قارنها بالفصل {{n-10}}: لا <code>useQuery</code>، ولا حالة تحميل، ولا حالة خطأ، ولا واجهة تستدعيها. يطلب المكوّن البيانات ويُرجع JSX يستخدمها. ودع السطرين اللذين فيهما <code>"use cache"</code> إلى القسم {{n}}.6. فماذا يستلم المتصفح؟ لنسأل الخادم وهو يعمل بـ <code>curl</code>، الذي ينزّل الصفحة دون أن يشغّل أي JavaScript:</p>
+
+<pre data-code="curl.sh" data-title="الطرفية"></pre>
+
+<p>أسماء المنتجات داخل HTML أصلاً. فمحرك البحث، ومعاينة الرابط في الجوال، والمستخدم على شبكة بطيئة، كلهم يحصلون على المحتوى فوراً. ولأن المكوّن لا يصل إلى المتصفح أبداً، فلا يصله كود قراءة قاعدة البيانات، ولا المكتبات التي يستخدمها، ولا أي سر يحتاجه: كلفتها على المستخدم صفر كيلوبايت.</p>
+
+<figure data-img="shots/products.png" data-url="localhost:3000/products"><figcaption><b>الشكل {{n}}.1:</b> قائمة المنتجات، مصنوعة كلها على الخادم. والوقت في الأسفل يقول متى صنعها الخادم.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>أين يعمل مكوّن في مجلد <code>app/</code> إن لم يكن في ملفه أي توجيه؟</li><li>لماذا يرى <code>curl</code> أسماء المنتجات مع أنه لا يشغّل JavaScript أبداً؟</li><li>ماذا يفعل الإحياء؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.4 مكونات العميل</h2>
+
+<p>لا تستطيع مكونات الخادم أن تفعل ما يحدث <em>بعد</em> وصول الصفحة: لا حالة لها، ولا تأثيرات، ولا معالجات أحداث، لأنها ليست في المتصفح. والمكوّن الذي يحتاج شيئاً من هذا يبدأ ملفه بالتوجيه <code>"use client"</code>:</p>
+
+<pre data-code="app/products/[id]/AddToCart.tsx" data-title="app/products/[id]/AddToCart.tsx"></pre>
+
+<p><dfn>مكوّن العميل</dfn> (Client Component) هو نوع المكونات الذي كتبته طوال الكتاب. وهو يُرسم أيضاً إلى HTML على الخادم في الزيارة الأولى، فيظهر الزر فوراً، ثم يُحيا في المتصفح فيتفاعل مع النقرات. و<code>"use client"</code> يرسم <em>حداً</em>: هذا الملف وكل ما يستورده يذهب إلى المتصفح.</p>
+
+<figure data-img="shots/product.png" data-url="localhost:3000/products/2"><figcaption><b>الشكل {{n}}.2:</b> صفحة المنتج بعد الضغط على الزر. الصفحة مصنوعة على الخادم، والزر وحده مكوّن عميل.</figcaption></figure>
+
+<p>وأربع قواعد تُبقي النوعين يعملان معاً:</p>
+<ul>
+<li><strong>مكونات الخادم ترسم مكونات العميل</strong> وتمرر لها خصائص. والخصائص تعبر من الخادم إلى المتصفح، فيجب أن تكون بيانات يمكن تحويلها إلى نص: نصوصاً وأرقاماً وكائنات بسيطة ومصفوفات، لا دوال ولا كائنات أصناف.</li>
+<li><strong>مكونات العميل لا تستورد مكونات الخادم.</strong> لكنها تستطيع أن تعرض واحداً إن مُرّر إليها في <code>children</code>.</li>
+<li><strong>ادفع <code>"use client"</code> إلى الأوراق.</strong> اجعل الزر مكوّن عميل، لا الصفحة كلها. فكل ما فوق الحد يبقى على الخادم ولا يكلف المتصفح شيئاً.</li>
+<li><strong>أبعد كود الخادم عن ملفات العميل.</strong> الحزمة <code>server-only</code>، إذا استُوردت في أول ملف، تُفشل البناء إن استُورد ذلك الملف إلى المتصفح خطأً.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">انتبه: عدم تطابق الإحياء</p><p>يتوقع React أثناء الإحياء أن يصنع الرسم الأول في المتصفح HTML نفسه الذي أرسله الخادم بالضبط. فمكوّن العميل الذي يرسم <code>new Date()</code> أو <code>Math.random()</code> أو <code>window.innerWidth</code> مباشرة يعطي نتيجتين مختلفتين في المكانين، فيحذّر React من <em>عدم تطابق الإحياء</em>. اقرأ هذه القيم في تأثير بعد الإحياء، أو احسبها على الخادم ومرّرها خصائص.</p></aside>
+
+<h2>{{n}}.5 المسارات المتغيرة</h2>
+
+<p>المجلد <code>[id]</code> يطابق أي قيمة في ذلك الجزء من العنوان، وتستلمها الصفحة في <code>params</code>:</p>
+
+<pre data-code="app/products/[id]/page.tsx" data-title="app/products/[id]/page.tsx"></pre>
+
+<p>ثلاث دوال تقوم هنا بعمل كبير:</p>
+<ul>
+<li><code>generateStaticParams</code> تسرد المعرّفات المعروفة وقت البناء، فيبني Next.js صفحة لكل منها مسبقاً كما في التوليد الثابت، ويظل يعالج المعرّفات الأخرى حين تُطلب.</li>
+<li><code>generateMetadata</code> تعطي كل منتج عنوانه ووصفه، وهما ما يظهر في نتائج البحث ومعاينات الروابط.</li>
+<li><code>notFound()</code> توقف الرسم وتعرض أقرب <code>not-found.tsx</code>، مع رمز الحالة الصحيح 404. وهي ترمي، فيعرف TypeScript أن <code>product</code> معرّف في الأسطر التي بعدها.</li>
+</ul>
+
+<p>و<code>params</code> وعد: يبدأ Next.js الرسم قبل أن يحسم كل شيء عن الطلب، ولا ينتظر المكوّن إلا حين يحتاج القيمة فعلاً.</p>
+
+<figure data-img="shots/missing.png" data-url="localhost:3000/products/99"><figcaption><b>الشكل {{n}}.3:</b> منتج غير موجود: <code>notFound()</code> تعرض صفحة 404 الخاصة بنا.</figcaption></figure>
+
+<h2>{{n}}.6 التخزين المؤقت والرسم المسبق والبث</h2>
+
+<p>نستطيع الآن أن نقرأ جدول المسارات من البناء في القسم {{n}}.2. كل رمز يقول كيف سيُقدَّم ذلك العنوان:</p>
+
+<ul>
+<li><strong>○ ثابت.</strong> لا يعتمد <code>/</code> ولا <code>/contact</code> على شيء يتغير، فصُنعا مرة واحدة وقت البناء ويُقدَّمان ملفين جاهزين. وهذا أسرع ما يمكن أن تكون عليه صفحة.</li>
+<li><strong>◐ رسم مسبق جزئي.</strong> رُسمت صفحات المنتجات مسبقاً وقت البناء للمعرّفات 1 و2 و3، وللمسار أيضاً جزء يُصنع مع كل طلب (<code>params</code> لمعرّف لم يسرده أحد). فيُرسل الهيكل الثابت فوراً ويُبث الباقي داخله.</li>
+<li><strong>ƒ متغير.</strong> <code>/api/products</code> يعمل مع كل طلب.</li>
+<li>و<code>/products</code> ثابت ومعه <strong>Revalidate 1m</strong> و<strong>Expire 1h</strong>. هذا عمل <code>"use cache"</code>.</li>
+</ul>
+
+<p>لا يخزّن Next.js البيانات افتراضياً: كل ما يقرأ بيانات يعمل من جديد مع كل طلب، فلا تصير صفحة قديمة دون قصد. وتطلب التخزين بنفسك بالتوجيه <code>"use cache"</code> في أول مكوّن أو دالة غير متزامنة، فتُحفظ نتيجته ويعاد استخدامها، وتقول <code>cacheLife</code> لكم من الوقت. مع <code>"minutes"</code> تُعد الصفحة المخزنة حديثة نحو دقيقة، وبعدها يحصل الزائر التالي على الصفحة المخزنة فوراً بينما تُصنع صفحة جديدة في الخلفية. هذه إعادة التحقق التدريجية مكتوبة في سطر واحد. ومن الملفات الأخرى <code>"seconds"</code> و<code>"hours"</code> و<code>"days"</code> و<code>"max"</code>.</p>
+
+<p>وحين تتغير البيانات بسبب شيء فعله تطبيقك نفسه، كمدير يعدّل سعراً، فلا داعي للانتظار: أعطِ الدالة المخزنة اسماً بـ <code>cacheTag("products")</code>، ثم استدعِ <code>updateTag("products")</code> في إجراء الخادم الذي أجرى التغيير، فتُرمى النتيجة المحفوظة ويصنع الطلب التالي الصفحة من جديد، ومنه طلب المدير نفسه. (و<code>revalidateTag("products", "max")</code> هي النسخة الألطف للأماكن الأخرى: يظل الزوار يحصلون على الصفحة القديمة بينما تُصنع الجديدة.)</p>
+
+<h3>بث الأجزاء البطيئة</h3>
+
+<p>قاعدة بياناتنا الوهمية تأخذ 300 ملي ثانية. وحين تنتظر صفحة البيانات، يظهر الملف <code>loading.tsx</code> المجاور لها مكانها فوراً:</p>
+
+<pre data-code="app/products/loading.tsx" data-title="app/products/loading.tsx"></pre>
+
+<p>وفي الخلفية يغلّف Next.js الصفحة بمكوّن React المسمى <code>&lt;Suspense&gt;</code>، و<code>loading.tsx</code> هو <code>fallback</code> الخاص به: ما دام شيء بداخله ينتظر، يُعرض البديل مكانه. فيرسل الخادم الإطار والأشرطة الرمادية أولاً، ويُبقي الاتصال مفتوحاً، ويرسل المحتوى الحقيقي حين يجهز، في الرد نفسه. وتستطيع أيضاً أن تضع <code>&lt;Suspense&gt;</code> بنفسك حول جزء بطيء واحد من الصفحة، فيظهر كل ما عداه دون انتظاره.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: اقرأ جدول المسارات بعد كل بناء</p><p>الجدول خلاصة كل قرار تخزين في التطبيق. والصفحة التي توقعتها ○ فظهرت ƒ يعني أن شيئاً فيها يقرأ بيانات مع كل طلب، وأن كل زائر صار يدفع ثمن عمل على الخادم. اكتشاف ذلك في مخرجات البناء يأخذ ثانية، واكتشافه لاحقاً في موقع بطيء في الإنتاج يأخذ أكثر بكثير.</p></aside>
+
+<h2>{{n}}.7 معالجات المسارات</h2>
+
+<p>ملف <code>route.ts</code> يجيب طلبات HTTP بأي رد تريده، وعادة JSON. صدّر دالة باسم طريقة HTTP:</p>
+
+<pre data-code="app/api/products/route.ts" data-title="app/api/products/route.ts"></pre>
+
+<p>والأمر الثاني في جلسة <code>curl</code> أعلاه استدعاه. ومعالجات المسارات للعملاء الذين ليسوا صفحاتك: تطبيق جوال، أو إشعار من خدمة دفع، أو نظام شركة أخرى. أما صفحاتك فنادراً ما تحتاجها، فمكونات الخادم تقرأ البيانات مباشرة، وإجراءات الخادم تغيّرها.</p>
+
+<h2>{{n}}.8 النماذج بإجراءات الخادم</h2>
+
+<p><dfn>إجراء الخادم</dfn> (Server Action) دالة غير متزامنة تعمل على الخادم ويمكن استدعاؤها من المتصفح، وعادة من نموذج. والملف الذي يبدأ بـ <code>"use server"</code> يجعل كل دالة يصدّرها إجراء خادم:</p>
+
+<pre data-code="app/contact/actions.ts" data-title="app/contact/actions.ts"></pre>
+
+<p>ويستخدم النموذج <code>useActionState</code> من React، الذي يحفظ آخر قيمة أرجعها الإجراء، ويخبرك متى يكون قيد التشغيل:</p>
+
+<pre data-code="app/contact/ContactForm.tsx" data-title="app/contact/ContactForm.tsx"></pre>
+<pre data-code="app/contact/page.tsx" data-title="app/contact/page.tsx"></pre>
+
+<p>عند إرسال النموذج يرسل React حقوله إلى الخادم، ويشغّل <code>sendMessage</code> هناك بالحالة السابقة و<code>FormData</code>، ويضع القيمة المُرجعة في <code>state</code>. والتحقق هو مخطط zod من الفصل {{n-9}}، يعمل على الخادم حيث لا يستطيع أي مستخدم إيقافه. ولأن النموذج يستخدم <code>action</code> عادياً، فهو يعمل حتى قبل تحميل JavaScript: يرسله المتصفح كنموذج HTML تقليدي.</p>
+
+<figure data-img="shots/contact.png" data-url="localhost:3000/contact"><figcaption><b>الشكل {{n}}.4:</b> أُرسل برسالة أقصر من اللازم: تحقق الخادم من الحقول وأرجع الأخطاء، فعرضها النموذج تحت كل حقل.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title">انتبه: كل إجراء خادم نقطة عامة</p><p>يبدو الإجراء كاستدعاء دالة، لكن أي أحد يستطيع استدعاءه بأي بيانات، تماماً كواجهة برمجية. تحقق من كل حقل على الخادم، وتأكد أن المستخدم مسجّل الدخول ومسموح له بهذا، ولا تثق أبداً بحقل مخفي لمعرّف المستخدم أو لسعر. وكل ما في الفصل {{n-3}} ينطبق هنا.</p></aside>
+
+<h2>{{n}}.9 التشغيل في الإنتاج</h2>
+
+<p>يصنع <code>npm run build</code> التطبيق المحسَّن، ويشغّله <code>npm start</code> خادمَ Node.js على المنفذ 3000. وهذا كل ما يحتاجه الخادم: Node.js، ومجلد <code>.next</code> المبني، و<code>node_modules</code>. وتكمل الصورة حقيقتان:</p>
+<ul>
+<li><strong>متغيرات البيئة تبقى على الخادم</strong>، إلا ما بدأ اسمه بـ <code>NEXT_PUBLIC_</code>. فهذه تُكتب في JavaScript المتصفح وقت البناء، حيث يقرؤها أي أحد. وكلمات مرور قاعدة البيانات ومفاتيح الواجهات يجب ألا تحمل هذه البادئة أبداً.</li>
+<li><strong>وللحاويات</strong> اضبط <code>output: "standalone"</code> في <code>next.config.ts</code>، فينسخ البناء الملفات التي يحتاجها الخادم فعلاً فقط إلى <code>.next/standalone</code>، فتصغر الصورة كثيراً.</li>
+</ul>
+
+<p>ضع أمامه وكيلاً عكسياً مثل Nginx من أجل HTTPS والضغط، فيصير المتجر جاهزاً للزوار. والمنصات المتخصصة في استضافة Next.js تفعل كل هذا عنك، لكن لا شيء في هذا الفصل يحتاج إليها.</p>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td><code>"use client"</code> في أول كل صفحة</td><td>يذهب التطبيق كله إلى المتصفح من جديد، ويعود جلب البيانات إلى التأثيرات</td><td>أبقِ الصفحات على الخادم، واجعل الأوراق التفاعلية وحدها مكونات عميل</td></tr>
+<tr><td><code>useState</code> أو <code>onClick</code> في مكوّن خادم</td><td>خطأ في البناء</td><td>انقل ذلك الجزء إلى مكوّن عميل</td></tr>
+<tr><td>تمرير دالة خاصيةً من الخادم إلى العميل</td><td>خطأ: الدوال لا تتحول إلى نص</td><td>مرّر بيانات، أو إجراء خادم</td></tr>
+<tr><td>سر في متغير <code>NEXT_PUBLIC_</code></td><td>يقرؤه أي أحد في JavaScript الصفحة</td><td>أبقِ الأسرار في متغيرات عادية تُقرأ على الخادم فقط</td></tr>
+<tr><td>الثقة بمدخلات إجراء الخادم</td><td>يستطيع أي أحد استدعاءه ببيانات مزوّرة</td><td>تحقق من المدخلات والصلاحيات داخل الإجراء</td></tr>
+<tr><td>رسم <code>Date.now()</code> أو <code>window</code> في مكوّن عميل</td><td>تحذيرات عدم تطابق الإحياء</td><td>اقرأها في تأثير، أو مرّرها من الخادم</td></tr>
+<tr><td>جلب معالج مسارك أنت من مكوّن خادم</td><td>رحلة HTTP زائدة إلى نفسك</td><td>استدعِ دالة البيانات مباشرة</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>تُصنع الصفحة في <strong>المتصفح</strong>، أو على <strong>الخادم مع كل طلب</strong>، أو <strong>وقت البناء</strong>، أو وقت البناء ثم <strong>يعاد التحقق</strong> منها لاحقاً. ويتيح Next.js الاختيار لكل صفحة. و<strong>الإحياء</strong> يجعل HTML الخادم تفاعلياً.</li>
+<li>المجلدات في <code>app/</code> عناوين، وملفات <code>page</code> و<code>layout</code> و<code>loading</code> و<code>error</code> و<code>not-found</code> و<code>route</code> تعطي كل عنوان أجزاءه.</li>
+<li>المكونات <strong>مكونات خادم</strong> افتراضياً: غير متزامنة، وتقرأ البيانات مباشرة، ولا تُرسل إلى المتصفح أبداً. و<code>"use client"</code> يحدد <strong>مكونات العميل</strong> التي لها حالة وأحداث. أبقِ الحد عند الأوراق.</li>
+<li><code>generateStaticParams</code> و<code>generateMetadata</code> و<code>notFound()</code> تجعل المسارات المتغيرة سريعة وظاهرة في البحث وصحيحة.</li>
+<li>البيانات لا تُخزّن ما لم تطلب: <code>"use cache"</code> مع <code>cacheLife</code>، و<code>updateTag</code> بعد التغييرات. و<code>loading.tsx</code> و<code>&lt;Suspense&gt;</code> يبثان الأجزاء البطيئة.</li>
+<li><strong>إجراءات الخادم</strong> تعالج النماذج على الخادم، وهي نقاط عامة يجب التحقق منها وحمايتها. و<strong>معالجات المسارات</strong> تخدم العملاء الآخرين.</li>
+<li>الإنتاج هو <code>npm run build</code> ثم <code>npm start</code>. ومتغيرات <code>NEXT_PUBLIC_</code> وحدها تصل إلى المتصفح.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. على الخادم فقط: إنه مكوّن خادم. 2. لأن الخادم رسم المكونات إلى HTML والبيانات بداخله قبل إرسال الصفحة. 3. يعمل React في المتصفح، ويطابق HTML الموجود على الصفحة، ويربط معالجات الأحداث، فتصير الصفحة تفاعلية.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">شغّل <code>npm run build</code> في نهاية كل مشروع واقرأ جدول المسارات. وقبل البناء اكتب الرمز الذي تتوقعه لكل عنوان، فكل مفاجأة في الجدول شيء تتعلم منه.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>متجر يتعثر بلطف</h3>
+<p class="project-goal">أعطِ متجر بِت صفحة للأخطاء، وصفحة 404 أفضل للمنتجات المفقودة، وحالة تحميل لكل جزء بطيء، حتى لا يرى المستخدم أبداً شاشة بيضاء أو تفاصيل خطأ تقنية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>error.tsx</code>، و<code>not-found.tsx</code> في مستويات مختلفة، و<code>loading.tsx</code>، و<code>&lt;Suspense&gt;</code> حول جزء بطيء واحد.</p>
+<ol class="steps">
+<li>اكتب <code>app/error.tsx</code> مكوّنَ عميل يستلم <code>{ error, reset }</code>، ويعرض رسالة ودودة، ويقدم زر «حاول مجدداً» يستدعي <code>reset()</code>.</li>
+<li>اجعل <code>getProduct</code> ترمي خطأ لمعرّف واحد، وتأكد أن منطقة المحتوى وحدها تُستبدل بينما يبقى شريط التنقل.</li>
+<li>أضف <code>app/products/[id]/not-found.tsx</code> يقول إن <em>المنتج</em> غير موجود ويعيد رابطاً إلى القائمة. وتظل العناوين المجهولة في غير ذلك تستخدم صفحة 404 العامة.</li>
+<li>أضف إلى صفحة المنتج جزء «المراجعات» البطيء (انتظر تأخيراً مدته 1.5 ثانية)، وغلّفه وحده بـ <code>&lt;Suspense&gt;</code> مع هيكل تحميل صغير، فيظهر باقي الصفحة فوراً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يلتقط <code>error.tsx</code> أخطاء الصفحات <em>تحته</em>، لا أخطاء الإطار في المجلد نفسه. ولالتقاط أخطاء الإطار الجذري أيضاً، في Next.js ملف خاص اسمه <code>global-error.tsx</code>، ويجب أن يكتب <code>&lt;html&gt;</code> و<code>&lt;body&gt;</code> بنفسه.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>مدونة ثابتة تحبها محركات البحث</h3>
+<p class="project-goal">مدونة مقالاتها ملفات Markdown داخل المشروع، تُبنى كلها وقت البناء، ولكل مقال عنوانه ووصفه، ومعها خريطة للموقع وملف robots.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الملفات في مكوّن خادم، و<code>generateStaticParams</code>، و<code>generateMetadata</code>، و<code>sitemap.ts</code>، و<code>robots.ts</code>.</p>
+<ol class="steps">
+<li>ضع ثلاث مقالات في <code>content/</code>، يبدأ كل منها بعنوان وتاريخ في أسطره الأولى. واكتب <code>lib/posts.ts</code> فيه <code>getPosts()</code> و<code>getPost(slug)</code> باستخدام <code>node:fs/promises</code>.</li>
+<li>اجعل <code>app/blog/page.tsx</code> تسرد المقالات من الأحدث، و<code>app/blog/[slug]/page.tsx</code> تعرض مقالاً واحداً. وحوّل Markdown إلى HTML بمكتبة مثل <code>marked</code>، على الخادم.</li>
+<li>أضف <code>generateStaticParams</code> و<code>generateMetadata</code>، واستدعِ <code>notFound()</code> للمعرّفات المجهولة.</li>
+<li>أضف <code>app/sitemap.ts</code> الذي يُرجع عنوان كل مقال، و<code>app/robots.ts</code> الذي يشير إلى خريطة الموقع. وافتح <code>/sitemap.xml</code> لتتأكد.</li>
+<li>ابنِ، وتأكد أن كل مقال ○ أو ◐ في جدول المسارات، ثم تأكد بـ <code>curl</code> أن عنوان المقال داخل HTML.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مكتبة Markdown تعمل على الخادم فقط، فلا تضيف شيئاً إلى JavaScript المتصفح. وهذه ميزة هادئة لمكونات الخادم: المكتبات الثقيلة للتنسيق أو التواريخ أو تلوين الكود مجانية لمستخدميك.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>أسعار يغيّرها المدير</h3>
+<p class="project-goal">صفحة إدارة محمية يغيّر فيها صاحب المتجر سعر منتج، فتعرض صفحات المنتجات المخزنة السعر الجديد فوراً، ولا يستطيع أحد غيره تغيير شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات تعريف الارتباط، و<code>redirect</code>، وإجراءات الخادم مع فحص الصلاحيات، و<code>cacheTag</code> و<code>updateTag</code>.</p>
+<ol class="steps">
+<li>علّم <code>getProducts</code> و<code>getProduct</code> بـ <code>"use cache"</code> و<code>cacheTag("products")</code>، واحفظ الأسعار في <code>Map</code> على مستوى الوحدة تستطيع دالة <code>updatePrice(id, price)</code> تغييرها.</li>
+<li>اكتب إجراء خادم لتسجيل الدخول يقارن كلمة مرور بـ <code>process.env.ADMIN_PASSWORD</code>، وعند النجاح يضع ملف تعريف ارتباط <code>httpOnly</code> و<code>secure</code> و<code>sameSite</code> بـ <code>cookies()</code> من <code>next/headers</code>.</li>
+<li>اجعل <code>app/admin/page.tsx</code> تقرأ ملف تعريف الارتباط وتستدعي <code>redirect("/admin/sign-in")</code> إن لم يوجد.</li>
+<li>اكتب الإجراء <code>changePrice</code>. يفحص ملف تعريف الارتباط <em>مرة أخرى</em> (ففحص الصفحة لا يحمي الإجراء)، ويتحقق بـ zod أن السعر عدد صحيح موجب، ويستدعي <code>updatePrice</code> ثم <code>updateTag("products")</code>.</li>
+<li>غيّر سعراً، وافتح صفحة المنتج، وتأكد أن السعر الجديد ظاهر دون بناء جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التطبيق الحقيقي يحفظ الأسعار في قاعدة بيانات والجلسات الموقّعة في مكتبة، لكن الشكل واحد: فحص الصلاحية يعيش داخل كل إجراء، لا في الصفحة التي تعرض النموذج وحدها.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف صفحة <code>/about</code> بعنوانها في <code>metadata</code>، ورابطاً إليها في شريط تنقل الإطار. أي رمز ستأخذه في جدول المسارات، ولماذا؟</li>
+<li><span class="level">سهل</span> أضف <code>import "server-only";</code> في أول <code>lib/products.ts</code>، ثم استورد <code>getProducts</code> في <code>AddToCart.tsx</code> وابنِ. ماذا يحدث، ولماذا هذا جيد؟</li>
+<li><span class="level">متوسط</span> أضف خيار <code>?sort=price</code> إلى <code>/products</code>. تستلم الصفحة <code>searchParams</code> وعداً مثل <code>params</code>. رتّب على الخادم، واصنع رابطين يبدّلان الترتيب.</li>
+<li><span class="level">متوسط</span> اكتب <code>app/products/error.tsx</code>. يجب أن يكون مكوّن عميل يستلم <code>{ error, reset }</code>. اجعل <code>getProduct</code> ترمي خطأ للمعرّف 3 لتختبره، وأعطِ الصفحة زر «حاول مجدداً» يستدعي <code>reset</code>.</li>
+<li><span class="level">تحدٍّ</span> أعطِ نموذج التواصل زر إرسال في مكوّن مستقل يعتمد على <code>useFormStatus</code>، واجعل <code>sendMessage</code> ترفض أكثر من ثلاث رسائل في الدقيقة من العنوان نفسه، مستخدماً <code>headers()</code> من <code>next/headers</code> لقراءة <code>x-forwarded-for</code>.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>تستطيع الآن أن تبني تطبيق React كاملاً وتختبره وتؤمّنه وتطلقه. والفصل التالي عن العمل حول الكود الذي يجعل المرء خبيراً: مراجعة تغييرات الآخرين، ومساعدة المبتدئين على النمو، واتخاذ قرارات تقنية يستطيع الفريق أن يعيش معها.</p>
+</div>
+</section>

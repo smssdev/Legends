@@ -1,0 +1,53 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Build each project in a Vite project created with the <code>vue-ts</code> template: <code>npm create vite@latest my-vue -- --template vue-ts</code>. Before writing code, draw the screen on paper and circle the components. Then build from the smallest component upwards.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A profile card</h3>
+<p class="project-goal">Build a profile card with a slot for the biography, and a follow button that changes the number of followers.</p>
+<p class="project-skills"><strong>You will practise:</strong> typed props, a default slot, exporting a type from a component, <code>ref</code> and <code>computed</code>.</p>
+<ol class="steps">
+<li>Write a type <code>Person</code> with a name, role, city, number of projects and number of followers. Export it from <code>ProfileCard.vue</code>, so pages can import it with the component.</li>
+<li>Show the first letter of the name in a circle, marked <code>aria-hidden="true"</code>: the name is already written next to it.</li>
+<li>Put a <code>&lt;slot /&gt;</code> under the role and city, so each page can put its own text inside the card.</li>
+<li>Add <code>const following = ref(false)</code>, and a <code>computed</code> number of followers that adds one while following. Do not change the prop.</li>
+<li>Give the button <code>:aria-pressed="following"</code>, so screen readers announce whether it is on.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in the template, <code>@click="following = !following"</code> is enough: Vue unwraps the ref when you assign to it there too. In the script you would write <code>following.value = !following.value</code>.</p>
+<pre data-code="projects/ProfileCard.vue" data-title="ProfileCard.vue"></pre>
+<figure data-render="projects/profile.html" data-width="560" data-actions="click:button"><figcaption><b>Project {{n}}.1:</b> the profile card after pressing “Follow”.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A catalogue with filters</h3>
+<p class="project-goal">Show a grid of products with filter buttons for each category and a line that says how many products are visible.</p>
+<p class="project-skills"><strong>You will practise:</strong> lists and keys, a ref typed with a union, a computed filtered list, and buttons with <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>Reuse <code>products.ts</code>. Create the type <code>Filter = "all" | Product["category"]</code>: it updates itself if a category is added.</li>
+<li>Keep the filter buttons as data, an array of <code>{ value, label }</code>, and render them with <code>v-for</code>.</li>
+<li>Store only the chosen filter in a <code>ref</code>. Make <code>visible</code> a <code>computed</code>.</li>
+<li>Show “Showing 3 of 4 products” using <code>visible.length</code> and <code>products.length</code>.</li>
+<li>Group the buttons with <code>role="group"</code> and a label, and mark the active one with <code>:aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a common mistake is to keep <code>visible</code> in a ref too, and then forget to update it when the products change. If a value can be calculated from other state, compute it.</p>
+<figure data-render="projects/catalogue.html" data-width="560" data-actions="click:.filters button:nth-child(3)"><figcaption><b>Project {{n}}.2:</b> the catalogue filtered to gifts.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Accessible tabs</h3>
+<p class="project-goal">Build a reusable tabs component that works with the mouse, the keyboard and screen readers, in both left-to-right and right-to-left pages.</p>
+<p class="project-skills"><strong>You will practise:</strong> named and dynamic slots, ARIA roles, <code>useId</code> for unique ids, template refs to move the focus, and keyboard events.</p>
+<ol class="steps">
+<li>Make <code>TabList</code> take <code>labels: string[]</code> and a <code>label</code> for the group. The content of each tab comes from a named slot: <code>#tab-0</code>, <code>#tab-1</code>…</li>
+<li>Render a <code>role="tablist"</code> with one <code>role="tab"</code> button per tab, and one <code>role="tabpanel"</code> per tab, hidden unless active.</li>
+<li>Link each tab and panel with <code>aria-controls</code> and <code>aria-labelledby</code>. Make the ids with <code>useId()</code>, so two tab lists on one page never clash.</li>
+<li>Only the active tab is in the Tab order (<code>:tabindex="0"</code>); the others get <code>-1</code>. The arrow keys move between tabs, and Home and End jump to the ends.</li>
+<li>Collect the buttons with <code>ref="tab"</code> inside the <code>v-for</code> and <code>useTemplateRef("tab")</code>, which gives an array, and call <code>focus()</code> on the new tab. In a right-to-left page, the right arrow moves to the <em>previous</em> tab.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the keyboard pattern described in the WAI-ARIA Authoring Practices, the reference for accessible widgets. When you build any widget, look it up there first: the keyboard behaviour users expect is already decided.</p>
+<pre data-code="projects/TabList.vue" data-title="TabList.vue"></pre>
+<figure data-render="projects/tabs.html" data-width="560" data-actions="click:[role=tab]:nth-child(1);press:[role=tab]:nth-child(1)|ArrowRight"><figcaption><b>Project {{n}}.3:</b> after pressing the right arrow on the first tab: the next tab is selected and has the focus.</figcaption></figure>
+</div>

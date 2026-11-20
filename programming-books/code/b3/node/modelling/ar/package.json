@@ -1,0 +1,21 @@
+{
+  "name": "bit-shop-data",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate": "node --env-file=.env src/migrate.ts",
+    "db:types": "kysely-codegen --env-file=.env --type-mapping '{\"int8\":\"number\"}' --out-file src/db-types.ts",
+    "check": "tsc"
+  },
+  "dependencies": {
+    "kysely": "^0.29.9",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "kysely-codegen": "^0.20.0",
+    "typescript": "^7.0.2"
+  }
+}

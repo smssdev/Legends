@@ -1,0 +1,40 @@
+<ol class="exercises">
+<li>Nothing of the three changes is kept. The connection drops, PostgreSQL sees the session end without a <code>COMMIT</code>, and rolls the transaction back; its row locks are released at the same moment, so the transactions waiting for those rows continue. A crash of the database server itself has the same result: on restart, an uncommitted transaction never happened.</li>
+<li>Page views: an atomic update, <code>UPDATE pages SET views = views + 1 WHERE id = $1</code>, with no read in code; nothing to check, so nothing can race. A numbered seat: an atomic conditional update (<code>UPDATE seats SET booked_by = $1 WHERE id = $2 AND booked_by IS NULL</code>, and look at the number of changed rows) or a unique constraint on the seat in a bookings table. A unique username: a unique constraint (or unique index), and turn its error into a 409; checking first in code is only for a friendly message, never the guarantee.</li>
+<li>Make both transactions take the rows in the same order, lowest id first: B runs <code>run("B", 1, 2)</code> like A. Then B waits at product 1 until A commits, and continues; no cycle is possible. The programs take an <code>ordered</code> argument for this, and the run in the code repository prints “A: done” and “B: done” in both editions. With several products, sort them by id before locking or updating.</li>
+<li>The lock is held for the whole duration of the network call, which can take seconds or time out, and every other buyer of that product waits in the meantime; a slow payment service becomes a slow shop. Worse, if the charge succeeds and the commit then fails, money is taken for an order that does not exist. A better order: (1) a short transaction that reserves the stock with an atomic update and creates the order as “pending”; (2) the charge, outside any transaction, with an idempotency key made from the order id; (3) a short transaction that marks the order “paid”, or releases the stock if the charge failed. A worker cancels pending orders that stay pending too long.</li>
+<li>
+<!-- node -->
+<pre><code>async function retrying&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;, attempts = 5): Promise&lt;T&gt; {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await work();
+    } catch (error) {
+      const code = (error as { code?: string }).code;
+      if (attempt === attempts || (code !== "40001" &amp;&amp; code !== "40P01")) throw error;
+      const pause = Math.random() * 20 * 2 ** attempt; // grows with each attempt
+      await new Promise((resolve) =&gt; setTimeout(resolve, pause));
+    }
+  }
+}
+// await retrying(() =&gt; db.transaction().setIsolationLevel("serializable").execute(work));</code></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre><code>function retrying(Closure $work, int $attempts = 5): mixed
+{
+    for ($attempt = 1; ; $attempt++) {
+        try {
+            return DB::transaction($work);
+        } catch (QueryException $e) {
+            $code = $e-&gt;getCode();
+            if ($attempt === $attempts || ! in_array($code, ['40001', '40P01'], true)) {
+                throw $e;
+            }
+            usleep(random_int(0, 20_000 * 2 ** $attempt)); // grows with each attempt
+        }
+    }
+}</code></pre>
+<p>In a real Laravel project <code>DB::transaction($work, attempts: 5)</code> already retries deadlocks and serialization failures; this helper adds the growing random pause.</p>
+<!-- /laravel -->
+The pause is random so that two transactions that collided do not retry at the same instant and collide again; it grows so that a busy moment gets time to pass. Only the whole transaction is retried, never a single statement, because everything it read may have changed.</li>
+</ol>

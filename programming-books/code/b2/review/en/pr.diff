@@ -1,0 +1,322 @@
+diff --git a/src/cart/discount.ts b/src/cart/discount.ts
+new file mode 100644
+index 0000000..36b91e1
+--- /dev/null
++++ b/src/cart/discount.ts
+@@ -0,0 +1,11 @@
++import { subtotal } from "./cart";
++
++export function applyDiscount(cart: any, code: string) {
++  console.log("applying", code);
++  let total = subtotal(cart.lines);
++  if (code == "BIT10") total = total * 0.9;
++  if (code == "HALF") total = total / 2;
++  // TODO make the codes configurable
++  cart.total = total;
++  return cart;
++}
+diff --git a/src/ui/styles.css b/src/ui/styles.css
+index 1e91b6d..9cd3f60 100644
+--- a/src/ui/styles.css
++++ b/src/ui/styles.css
+@@ -1,60 +1,240 @@
+-.c1 { margin: 1px; padding: 1px; }
+-.c2 { margin: 2px; padding: 2px; }
+-.c3 { margin: 3px; padding: 3px; }
+-.c4 { margin: 4px; padding: 4px; }
+-.c5 { margin: 5px; padding: 0px; }
+-.c6 { margin: 6px; padding: 1px; }
+-.c7 { margin: 7px; padding: 2px; }
+-.c8 { margin: 0px; padding: 3px; }
+-.c9 { margin: 1px; padding: 4px; }
+-.c10 { margin: 2px; padding: 0px; }
+-.c11 { margin: 3px; padding: 1px; }
+-.c12 { margin: 4px; padding: 2px; }
+-.c13 { margin: 5px; padding: 3px; }
+-.c14 { margin: 6px; padding: 4px; }
+-.c15 { margin: 7px; padding: 0px; }
+-.c16 { margin: 0px; padding: 1px; }
+-.c17 { margin: 1px; padding: 2px; }
+-.c18 { margin: 2px; padding: 3px; }
+-.c19 { margin: 3px; padding: 4px; }
+-.c20 { margin: 4px; padding: 0px; }
+-.c21 { margin: 5px; padding: 1px; }
+-.c22 { margin: 6px; padding: 2px; }
+-.c23 { margin: 7px; padding: 3px; }
+-.c24 { margin: 0px; padding: 4px; }
+-.c25 { margin: 1px; padding: 0px; }
+-.c26 { margin: 2px; padding: 1px; }
+-.c27 { margin: 3px; padding: 2px; }
+-.c28 { margin: 4px; padding: 3px; }
+-.c29 { margin: 5px; padding: 4px; }
+-.c30 { margin: 6px; padding: 0px; }
+-.c31 { margin: 7px; padding: 1px; }
+-.c32 { margin: 0px; padding: 2px; }
+-.c33 { margin: 1px; padding: 3px; }
+-.c34 { margin: 2px; padding: 4px; }
+-.c35 { margin: 3px; padding: 0px; }
+-.c36 { margin: 4px; padding: 1px; }
+-.c37 { margin: 5px; padding: 2px; }
+-.c38 { margin: 6px; padding: 3px; }
+-.c39 { margin: 7px; padding: 4px; }
+-.c40 { margin: 0px; padding: 0px; }
+-.c41 { margin: 1px; padding: 1px; }
+-.c42 { margin: 2px; padding: 2px; }
+-.c43 { margin: 3px; padding: 3px; }
+-.c44 { margin: 4px; padding: 4px; }
+-.c45 { margin: 5px; padding: 0px; }
+-.c46 { margin: 6px; padding: 1px; }
+-.c47 { margin: 7px; padding: 2px; }
+-.c48 { margin: 0px; padding: 3px; }
+-.c49 { margin: 1px; padding: 4px; }
+-.c50 { margin: 2px; padding: 0px; }
+-.c51 { margin: 3px; padding: 1px; }
+-.c52 { margin: 4px; padding: 2px; }
+-.c53 { margin: 5px; padding: 3px; }
+-.c54 { margin: 6px; padding: 4px; }
+-.c55 { margin: 7px; padding: 0px; }
+-.c56 { margin: 0px; padding: 1px; }
+-.c57 { margin: 1px; padding: 2px; }
+-.c58 { margin: 2px; padding: 3px; }
+-.c59 { margin: 3px; padding: 4px; }
+-.c60 { margin: 4px; padding: 0px; }
++.c1 {
++  margin: 1px;
++  padding: 1px;
++}
++.c2 {
++  margin: 2px;
++  padding: 2px;
++}
++.c3 {
++  margin: 3px;
++  padding: 3px;
++}
++.c4 {
++  margin: 4px;
++  padding: 4px;
++}
++.c5 {
++  margin: 5px;
++  padding: 0px;
++}
++.c6 {
++  margin: 6px;
++  padding: 1px;
++}
++.c7 {
++  margin: 7px;
++  padding: 2px;
++}
++.c8 {
++  margin: 0px;
++  padding: 3px;
++}
++.c9 {
++  margin: 1px;
++  padding: 4px;
++}
++.c10 {
++  margin: 2px;
++  padding: 0px;
++}
++.c11 {
++  margin: 3px;
++  padding: 1px;
++}
++.c12 {
++  margin: 4px;
++  padding: 2px;
++}
++.c13 {
++  margin: 5px;
++  padding: 3px;
++}
++.c14 {
++  margin: 6px;
++  padding: 4px;
++}
++.c15 {
++  margin: 7px;
++  padding: 0px;
++}
++.c16 {
++  margin: 0px;
++  padding: 1px;
++}
++.c17 {
++  margin: 1px;
++  padding: 2px;
++}
++.c18 {
++  margin: 2px;
++  padding: 3px;
++}
++.c19 {
++  margin: 3px;
++  padding: 4px;
++}
++.c20 {
++  margin: 4px;
++  padding: 0px;
++}
++.c21 {
++  margin: 5px;
++  padding: 1px;
++}
++.c22 {
++  margin: 6px;
++  padding: 2px;
++}
++.c23 {
++  margin: 7px;
++  padding: 3px;
++}
++.c24 {
++  margin: 0px;
++  padding: 4px;
++}
++.c25 {
++  margin: 1px;
++  padding: 0px;
++}
++.c26 {
++  margin: 2px;
++  padding: 1px;
++}
++.c27 {
++  margin: 3px;
++  padding: 2px;
++}
++.c28 {
++  margin: 4px;
++  padding: 3px;
++}
++.c29 {
++  margin: 5px;
++  padding: 4px;
++}
++.c30 {
++  margin: 6px;
++  padding: 0px;
++}
++.c31 {
++  margin: 7px;
++  padding: 1px;
++}
++.c32 {
++  margin: 0px;
++  padding: 2px;
++}
++.c33 {
++  margin: 1px;
++  padding: 3px;
++}
++.c34 {
++  margin: 2px;
++  padding: 4px;
++}
++.c35 {
++  margin: 3px;
++  padding: 0px;
++}
++.c36 {
++  margin: 4px;
++  padding: 1px;
++}
++.c37 {
++  margin: 5px;
++  padding: 2px;
++}
++.c38 {
++  margin: 6px;
++  padding: 3px;
++}
++.c39 {
++  margin: 7px;
++  padding: 4px;
++}
++.c40 {
++  margin: 0px;
++  padding: 0px;
++}
++.c41 {
++  margin: 1px;
++  padding: 1px;
++}
++.c42 {
++  margin: 2px;
++  padding: 2px;
++}
++.c43 {
++  margin: 3px;
++  padding: 3px;
++}
++.c44 {
++  margin: 4px;
++  padding: 4px;
++}
++.c45 {
++  margin: 5px;
++  padding: 0px;
++}
++.c46 {
++  margin: 6px;
++  padding: 1px;
++}
++.c47 {
++  margin: 7px;
++  padding: 2px;
++}
++.c48 {
++  margin: 0px;
++  padding: 3px;
++}
++.c49 {
++  margin: 1px;
++  padding: 4px;
++}
++.c50 {
++  margin: 2px;
++  padding: 0px;
++}
++.c51 {
++  margin: 3px;
++  padding: 1px;
++}
++.c52 {
++  margin: 4px;
++  padding: 2px;
++}
++.c53 {
++  margin: 5px;
++  padding: 3px;
++}
++.c54 {
++  margin: 6px;
++  padding: 4px;
++}
++.c55 {
++  margin: 7px;
++  padding: 0px;
++}
++.c56 {
++  margin: 0px;
++  padding: 1px;
++}
++.c57 {
++  margin: 1px;
++  padding: 2px;
++}
++.c58 {
++  margin: 2px;
++  padding: 3px;
++}
++.c59 {
++  margin: 3px;
++  padding: 4px;
++}
++.c60 {
++  margin: 4px;
++  padding: 0px;
++}

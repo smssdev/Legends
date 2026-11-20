@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>Add <code>{ path: "about", element: &lt;About /&gt; }</code> to the children of the layout route, and <code>&lt;NavLink to="/about"&gt;About&lt;/NavLink&gt;</code> to the navigation bar. <code>NavLink</code> highlights it by itself.</li>
+<li><code>const client = useQueryClient(); const list = client.getQueryData&lt;Product[]&gt;(["products", null]); const index = list?.findIndex((p) =&gt; p.id === id);</code>, then render <code>Product {index + 1} of {list.length}</code> only when <code>list</code> exists and the index is not −1. Reading the cache makes no request.</li>
+<li>Read <code>q</code> with <code>params.get("q")</code>, add it to the key, and filter with <code>p.name.toLowerCase().includes(q.toLowerCase())</code>. Update it as in Project {{n}}.2, copying the parameters first so the category is kept.</li>
+<li><code>const id = Number(params.id); if (!Number.isInteger(id)) return &lt;p&gt;There is no product with this number.&lt;/p&gt;;</code> before the query, or pass <code>enabled: Number.isInteger(id)</code> to <code>useQuery</code> so it never runs.</li>
+<li><code>useEffect(() =&gt; { client.prefetchQuery({ queryKey: ["product", id + 1], queryFn: () =&gt; getProduct(id + 1) }); }, [id]);</code> and <code>&lt;Link to={`/products/${id + 1}`}&gt;</code>. When the user clicks, the query finds the product in the cache and shows it without a skeleton.</li>
+</ol>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>نظام التصميم</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "/vendor-vue/vue.js",
+          "vue-router": "/vendor-vue/vue-router.js",
+          "pinia": "/vendor-vue/pinia.js",
+          "@tanstack/vue-query": "/vendor-vue/vue-query.js",
+          "@vueuse/core": "/vendor-vue/vueuse.js",
+          "zod": "/vendor-vue/zod.js"
+        }
+      }
+    </script>
+    <style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 20px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; color: #1e1b2e; background: #f5f5fb; line-height: 1.5; }
+h1, h2, h3 { color: #4338ca; margin: 0 0 8px; }
+button { font: inherit; cursor: pointer; border: 0; border-radius: 999px; padding: 6px 16px; background: #4338ca; color: white; }
+button.secondary { background: #e0e7ff; color: #312e81; }
+:focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+:root {
+  --color-surface: #ffffff; --color-surface-muted: #f5f5fb; --color-text: #1e1b2e; --color-text-muted: #5b5873;
+  --color-action: #4338ca; --color-action-text: #ffffff; --color-action-soft: #eef2ff; --color-action-soft-text: #312e81;
+  --color-danger: #b91c1c; --color-danger-soft: #fef2f2; --color-success: #047857; --color-success-soft: #ecfdf5;
+  --color-warning: #92400e; --color-warning-soft: #fffbeb; --color-focus: #db2777;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-full: 999px;
+}
+[data-theme="dark"] {
+  --color-surface: #16142a; --color-surface-muted: #1e1b2e; --color-text: #f5f5fb; --color-text-muted: #a5a3bd;
+  --color-action: #a5b4fc; --color-action-text: #312e81; --color-action-soft: #312e81; --color-action-soft-text: #eef2ff;
+  --color-danger: #fef2f2; --color-danger-soft: #b91c1c; --color-success: #ecfdf5; --color-success-soft: #047857;
+  --color-warning: #fffbeb; --color-warning-soft: #92400e;
+}
+body { background: var(--color-surface-muted); color: var(--color-text); }
+.btn { display: inline-flex; align-items: center; gap: var(--space-2); border: 2px solid transparent;
+  border-radius: var(--radius-full); font: inherit; font-weight: 600; cursor: pointer; }
+.btn:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-sm { padding: 2px var(--space-3); font-size: 0.875rem; }
+.btn-md { padding: var(--space-1) var(--space-4); }
+.btn-lg { padding: var(--space-2) var(--space-6); font-size: 1.125rem; }
+.btn-primary { background: var(--color-action); color: var(--color-action-text); }
+.btn-secondary { background: var(--color-action-soft); color: var(--color-action-soft-text); }
+.btn-danger { background: var(--color-danger); color: var(--color-surface); }
+.btn-ghost { background: transparent; color: var(--color-action); border-color: var(--color-action-soft); }
+.spinner { width: 1em; height: 1em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }
+.badge { display: inline-block; padding: 0 var(--space-2); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700; }
+.badge-neutral { background: var(--color-action-soft); color: var(--color-action-soft-text); }
+.badge-success { background: var(--color-success-soft); color: var(--color-success); }
+.badge-warning { background: var(--color-warning-soft); color: var(--color-warning); }
+.badge-danger { background: var(--color-danger-soft); color: var(--color-danger); }
+.alert { display: flex; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border-inline-start: 4px solid; margin-bottom: var(--space-2); }
+.alert-info { background: var(--color-action-soft); color: var(--color-action-soft-text); }
+.alert-success { background: var(--color-success-soft); color: var(--color-success); }
+.alert-warning { background: var(--color-warning-soft); color: var(--color-warning); }
+.alert-danger { background: var(--color-danger-soft); color: var(--color-danger); }
+.switch { display: inline-flex; align-items: center; gap: var(--space-3); background: none; border: 0; padding: var(--space-1) 0; font: inherit; color: inherit; cursor: pointer; }
+.switch .track { width: 44px; height: 24px; border-radius: var(--radius-full); background: var(--color-surface); border: 2px solid var(--color-text-muted); position: relative; transition: background 0.2s; }
+.switch .thumb { position: absolute; top: 2px; inset-inline-start: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--color-text-muted); transition: inset-inline-start 0.2s; }
+.switch[aria-checked="true"] .track { background: var(--color-action); border-color: var(--color-action); }
+.switch[aria-checked="true"] .thumb { inset-inline-start: 22px; background: var(--color-action-text); }
+.switch:focus-visible .track { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.gallery { display: flex; flex-direction: column; gap: var(--space-3); background: var(--color-surface); color: var(--color-text); padding: var(--space-4); border-radius: var(--radius-md); }
+.row { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./buttons.js"></script>
+  </body>
+</html>

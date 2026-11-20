@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>في المخطط: <code>phone: z.union([z.literal(""), z.string().regex(/^\d{11}$/, "اكتب 11 رقماً.")])</code>، مع <code>phone: ""</code> في القيم الأولى، و<code>FormField</code> كالباقية. فالنص الفارغ مسموح صراحة، وما عداه يجب أن يكون 11 رقماً.</li>
+<li><code>&lt;p class="muted"&gt;{{ values.message.trim().length }} من 20 حرفاً على الأقل&lt;/p&gt;</code>. ولأن <code>values</code> تفاعلية، يتبع العدّاد كل ضغطة دون أي كود إضافي.</li>
+<li>احفظ نسخة من <code>initial</code>، و<code>const dirty = computed(() =&gt; JSON.stringify(values) !== JSON.stringify(initial))</code>. وفي المكوّن: <code>useEventListener(window, "beforeunload", (e) =&gt; { if (dirty.value) e.preventDefault(); })</code>، فيسأل المتصفح المستخدم قبل المغادرة.</li>
+<li>ابدأ بـ <code>useForm(contactSchema, loadDraft() ?? empty)</code>، حيث تحلل <code>loadDraft</code> ما في <code>localStorage</code> داخل <code>try</code>، واحفظ بـ <code>watch(values, (v) =&gt; localStorage.setItem("contact-draft", JSON.stringify(v)), { deep: true })</code>. واحذف المسودة بعد الإرسال الناجح.</li>
+<li>راقب البريد مع علامة «ملموس»: حين يُغادر الحقل ويكون البريد صالحاً، أجّله (الفصل {{n-2}})، واستدعِ <code>isTaken(email, signal)</code> وهمية، وألغِ الاستدعاءات القديمة في التنظيف، وضع الجواب في مرجع مستقل <code>emailTaken</code> يُعرض تحت الحقل. وما زالت دالة الإرسال تسأل الخادم من جديد، لأن الجواب قد يتغير.</li>
+</ol>

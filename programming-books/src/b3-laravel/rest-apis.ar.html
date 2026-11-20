@@ -1,0 +1,271 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/rest/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>تصميم واجهات REST بـ API Resources</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تسمّي الموارد والعناوين بحيث تُخمَّن الواجهة بدل أن تُحفظ</li>
+<li>تتحكم في JSON الذي ترسله واجهتك بـ API Resources، منفصلاً عن طريقة تخزين البيانات</li>
+<li>تتنقل في القوائم بمؤشرات لا تكرر صفاً ولا تقفز عنه أبداً</li>
+<li>ترد كل خطأ بصيغة قياسية واحدة، هي Problem Details</li>
+<li>تجعل إعادة المحاولة آمنة بمفاتيح عدم التكرار، وتمنع ضياع التحديثات بـ <code>If-Match</code></li>
+<li>تولّد توثيق الواجهة من كودها، وتختبر ذلك كله</li>
+</ul>
+</div>
+
+<p class="lead">الواجهة البرمجية منتج، ومستخدموها مطورون. وهم يحكمون عليها كما تحكم أنت على مكتبة: هل أستطيع أن أخمّن كيف تعمل، وهل تخبرني بوضوح بما أخطأت فيه، وهل ستكسر تطبيقي في الشهر القادم؟ علّمك الفصل {{n-3}} البروتوكول، والفصل {{n-1}} إطار العمل. أما هذا الفصل فعن القرارات التي فوقهما، تلك التي يرخص ضبطها في البداية ويغلو تغييرها جداً حين تعتمد عليها فرق أخرى. ونبني الإصدار الأول من واجهة متجر Bit كما ينبغي، والمنتجات والطلبات في قاعدة بيانات حقيقية.</p>
+
+<aside class="bit" data-mood="think"><p>أول واجهة عامة صممتها كان فيها <code>/getProducts</code> و<code>/product_list</code> و<code>/Products/All</code>، كتبها ثلاثة أشخاص في ثلاثة أسابيع. واحتاج كل عميل مساعدتنا ليستخدمها، ولم نستطع أن نحذف منها شيئاً أبداً. فالاتساق ليس ذوقاً: إنه ما يجعل الغرباء يستخدمون عملك دون أن يسألوك.</p></aside>
+
+<h2>{{n}}.1 الموارد والعناوين</h2>
+
+<p>تنظّم REST الواجهة حول <dfn>الموارد</dfn>: أسماء مجال عملك، مثل المنتجات والطلبات. والعناوين تسمّي الموارد، والطرق تقول ماذا تفعل بها. وقواعد الواجهة التي تُخمَّن قليلة:</p>
+<ul>
+<li><strong>أسماء، بالجمع، بحروف صغيرة:</strong> <code>/products</code> و<code>/orders</code>. والطريقة هي الفعل: <code>GET /products</code> لا <code>/getProducts</code>.</li>
+<li><strong>المورد الواحد:</strong> المجموعة ومعها الرقم، <code>/products/2</code>.</li>
+<li><strong>التداخل للملكية، بمستوى واحد:</strong> <code>/orders/7/items</code> مقبول، و<code>/customers/3/orders/7/items/2</code> ليس كذلك.</li>
+<li><strong>الأفعال التي ليست إنشاءً ولا قراءة ولا تحديثاً ولا حذفاً</strong> تصير مورداً فرعياً بـ <code>POST</code>: <code>POST /orders/7/cancel</code>. ولا تخفها في <code>PATCH</code> يضبط <code>status</code>: فللإلغاء قواعد (إرجاع المخزون، وردّ المبلغ) سيتخطاها التحديث العام.</li>
+<li><strong>الإصدار في المسار:</strong> <code>/api/v1/...</code>. واجعل كل تغيير إضافياً إن استطعت، وحين لا مفر من تغيير كاسر انشر <code>/v2</code> بجوار <code>/v1</code>، وأعلن نهاية <code>/v1</code> بترويستي <code>Deprecation</code> و<code>Sunset</code>.</li>
+</ul>
+
+<pre data-code="shop/routes/api.php" data-title="routes/api.php"></pre>
+
+<p>تُقرأ المنتجات وتُحدَّث عبر متحكم موارد. وللطلبات متحكمها الخاص، و<code>Route::controller</code> تجمع مساراته، وفعل الإلغاء مورد فرعي. ويمر إنشاء الطلب بوسيط إضافي، <code>Idempotent</code>، نكتبه في القسم {{n}}.6.</p>
+
+<h2>{{n}}.2 البيانات في قاعدة بيانات</h2>
+
+<p>حفظ الفصل {{n-1}} المنتجات في ملف JSON. أما الواجهة الحقيقية فتحفظها في قاعدة بيانات، وقاعدة Laravel الافتراضية SQLite لا تحتاج خادماً: إنها ملف واحد. ويعلّم الفصلان {{n+1}} و{{n+2}} لغة SQL وEloquent كما ينبغي على PostgreSQL، أما هنا فنحتاج ما يكفي لأن تكون لنا جداول نقرؤها فقط. ويكتب Artisan الأصناف:</p>
+
+<pre data-code="make.sh" data-title="الطرفية"></pre>
+
+<p><dfn>الترحيل</dfn> (migration) يصف الجدول بـ PHP، فيكون لكل نسخة من التطبيق على كل جهاز الجداول نفسها:</p>
+
+<pre data-code="shop/database/migrations/2026_11_01_000001_create_products_table.php" data-from="        Schema::create" data-to="^        });" data-title="database/migrations/…_create_products_table.php"></pre>
+
+<p>الأسعار قروش صحيحة، لا كسور عشرية أبداً. و<code>version</code> يعدّ تغييرات المنتج، للقسم {{n}}.7. والفهرس على <code>price</code> و<code>id</code> يخدم القائمة المرتبة المقسّمة إلى صفحات في القسم {{n}}.4. و<dfn>النموذج</dfn> (model) هو الصنف الذي يقرأ الجدول ويكتبه، و<dfn>البذرة</dfn> (seeder) تملؤه بمنتجات المتجر الاثني عشر:</p>
+
+<pre data-code="shop/app/Models/Product.php" data-title="app/Models/Product.php"></pre>
+
+<pre data-code="migrate.sh" data-title="الطرفية"></pre>
+
+<p><code>$fillable</code> تذكر الأعمدة التي يجوز ضبطها من مصفوفة. أما غيرها، مثل <code>version</code>، فلا يُضبط إلا عن قصد، واحداً واحداً، وهذا يحميها من طلب يرسل حقولاً أكثر مما ينبغي.</p>
+
+<h2>{{n}}.3 API Resources: التمثيل</h2>
+
+<p>صف قاعدة البيانات وJSON الذي يستلمه العميل شيئان مختلفان، ويجب أن يتغيرا لأسباب مختلفة. فقد يكسب الجدول أعمدة داخلية، أما JSON فوعد لمطورين آخرين. و<dfn>API Resource</dfn> هو الصنف الذي يحوّل الأول إلى الثاني:</p>
+
+<pre data-code="shop/app/Http/Resources/ProductResource.php" data-title="app/Http/Resources/ProductResource.php"></pre>
+
+<p>ثبّت أعراف التمثيل مرة واحدة، والتزم بها في كل مكان:</p>
+<ul>
+<li><strong>أسلوب تسمية واحد.</strong> نستخدم <code>snake_case</code>، كما يفعل Laravel.</li>
+<li><strong>الأوقات بصيغة ISO 8601 وبتوقيت UTC:</strong> <code>2026-11-01T09:00:00Z</code>. والعملاء يحوّلونها إلى منطقة المستخدم الزمنية.</li>
+<li><strong>المال كائناً</strong>، والمبلغ بالوحدات الصغرى مع عملته. ودالة مساعدة واحدة تجعله متماثلاً في كل مورد:</li>
+</ul>
+
+<pre data-code="shop/app/Http/Resources/Money.php" data-title="app/Http/Resources/Money.php"></pre>
+
+<ul>
+<li><strong>الأعمدة الداخلية تبقى في الداخل.</strong> <code>version</code> و<code>updated_at</code> ليسا في المورد، فإضافة عمود إلى الجدول لا تغيّر شيئاً للعملاء.</li>
+<li><strong>القوائم داخل كائن</strong>، لا مصفوفة مجردة أبداً، كي يكون لمعلومات الصفحات مكان: ويضيف Laravel <code>data</code> و<code>links</code> و<code>meta</code> نيابة عنك.</li>
+</ul>
+
+<p>وعُرف آخر يحتاج سطراً من الكود: فـLaravel يكتب افتراضياً كل حرف غير إنجليزي بالشكل <code>ك</code>. ووسيط صغير يضيف <code>JSON_UNESCAPED_UNICODE</code> إلى كل جواب JSON في الواجهة، مرة واحدة، بدل أن يُضاف في كل متحكم:</p>
+
+<pre data-code="shop/app/Http/Middleware/UnescapedJson.php" data-from="final class" data-title="app/Http/Middleware/UnescapedJson.php"></pre>
+
+<h2>{{n}}.4 القوائم: التصفية والترتيب وصفحات المؤشر</h2>
+
+<p>كل ما يجوز للعميل أن يرسله إلى القائمة في طلب نموذج، ولكل قيمة حدود:</p>
+
+<pre data-code="shop/app/Http/Requests/ListProductsRequest.php" data-from="    public function rules" data-to="^    }" data-title="app/Http/Requests/ListProductsRequest.php"></pre>
+
+<p>لا يوجد إلا أربعة أنواع ترتيب. فالواجهة التي ترتّب بأي حقل يسمّيه العميل يمكن أن يُطلب منها الترتيب بعمود بلا فهرس، فتصنع استعلاماً بطيئاً يستطيع مهاجم واحد أن يكرره ألف مرة في الدقيقة.</p>
+
+<p>الطريقة البديهية للصفحات هي <dfn>الإزاحة</dfn> (offset)، <code>?page=2</code>، أي «تخطَّ أول 20». ولها مشكلتان: قاعدة البيانات ما زالت تمر على كل صف متخطى، فتكون الصفحات العميقة بطيئة، والصفحات تنزلق حين تُضاف صفوف أو تُحذف بين طلبين، فيرى المستخدم منتجاً مرتين، أو لا يراه أبداً. أما <dfn>المؤشر</dfn> (cursor) فيقول «تابع بعد <em>هذا</em> الصف»، فالصفوف الجديدة قبله لا تغيّر شيئاً. ويبني Laravel المؤشرات بـ <code>cursorPaginate</code>:</p>
+
+<pre data-code="shop/app/Http/Controllers/ProductController.php" data-from="    public function index" data-to="^    }" data-title="app/Http/Controllers/ProductController.php"></pre>
+
+<p>الاستدعاء الثاني لـ <code>orderBy</code> مهم. فالمؤشر يحتاج ترتيباً <em>كاملاً</em>: يجب أن يكون لمنتجين بالسعر نفسه مكان ثابت، وإلا انتقل صف من صفحة إلى التالية بين الطلبات. والترتيب بالسعر ثم بالرقم يجعل كل موضع فريداً، وفهرس الترحيل على <code>(price, id)</code> يسمح لقاعدة البيانات أن تجده مباشرة. وهذا جانب العميل:</p>
+
+<pre data-code="pages.sh" data-title="الطرفية"></pre>
+
+<p>تحمل الصفحة الأولى رابط التالية، فلا يبني العملاء العناوين بأنفسهم أبداً، بل يتبعون <code>links.next</code> حتى يصير <code>null</code>. ومع التصفية والترتيب يحمل المؤشر السعر مع الرقم، وتُبقي <code>withQueryString</code> التصفية في الرابط. والمؤشر JSON مرمّز بـ base64: يستطيع أي أحد أن يفكّه، فليس سراً. فوثّقه رمزاً غامضاً يجب على العملاء أن يعيدوه كما هو، كي يبقى الخادم حراً في تغيير ما بداخله.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر فهمك</p><ol><li>أي عنوان أفضل لإلغاء الطلب 7: <code>PATCH /orders/7</code> مع <code>{"status": "cancelled"}</code>، أم <code>POST /orders/7/cancel</code>؟ ولماذا؟</li><li>لماذا ترتّب القائمة بالسعر <em>والرقم</em>، لا بالسعر وحده؟</li><li>لماذا <code>version</code> عمود في الجدول لكنه ليس حقلاً في المورد؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.5 الأخطاء: Problem Details</h2>
+
+<p>لأجوبة الخطأ الافتراضية في Laravel، التي رأيتها في الفصل {{n-1}}، شكل خاص بها. وكل واجهة بشكل خاص تُجبر كل عميل على تعلّمه. أما <dfn>Problem Details</dfn> (RFC 9457) فهو الشكل القياسي لأخطاء واجهات HTTP، ويُرسل بنوع المحتوى <code>application/problem+json</code>: عنوان <code>type</code> يحدد نوع المشكلة ويقود إلى توثيقها، و<code>title</code> قصير، و<code>status</code>، و<code>detail</code> لهذه الحالة، و<code>instance</code> أي الطلب الذي فشل. ويُسمح بأعضاء إضافيين، مثل قائمة <code>errors</code>.</p>
+
+<p>المشكلة استثناء يعرف كيف يرسم نفسه:</p>
+
+<pre data-code="shop/app/Http/Problem.php" data-from="final class" data-title="app/Http/Problem.php"></pre>
+
+<p>وصنف واحد يقرر كيف يصير كل استثناء آخر مشكلة: أخطاء التحقق، والنماذج غير الموجودة، وحدود المعدل، وأخطاء HTTP الأخرى، وكل ما هو غير متوقع 500 بسيطة. وهو أيضاً يصنع المشكلات التي ترميها الواجهة عن قصد، فلا يخترع متحكم رمز حالة جديداً أو شكلاً جديداً:</p>
+
+<pre data-code="shop/app/Http/Problems.php" data-from="    public static function from" data-to="^    }" data-title="app/Http/Problems.php"></pre>
+
+<p><code>match (true)</code> تأخذ أول ذراع يصدق شرطه، وهي طريقة شائعة في PHP لقائمة من فحوص الأنواع. والنصوص تأتي من ملف لغة، <code>lang/ar/problems.php</code>، تقرؤه <code>__('problems.stale')</code> بلغة التطبيق، وقد ضبطنا <code>APP_LOCALE=ar</code> في <code>.env</code>. وسطر واحد في <code>bootstrap/app.php</code> يمرر كل استثناء في الواجهة عبره:</p>
+
+<pre data-code="shop/bootstrap/app.php" data-from="    -&gt;withExceptions" data-title="bootstrap/app.php"></pre>
+
+<pre data-code="problems.sh" data-title="الطرفية"></pre>
+
+<p>صار لكل خطأ، من التحقق إلى النموذج المفقود، الشكل نفسه. ويرد Laravel بـ <code>422</code> لكل فشل في التحقق، للاستعلام أو للمحتوى، وبعض الواجهات تفضّل <code>400</code> للاستعلام المشوّه، لكن الأهم أن تفعل واجهتك الشيء نفسه دائماً.</p>
+
+<h2>{{n}}.6 إعادة محاولة آمنة: مفاتيح عدم التكرار</h2>
+
+<p>حذّر الفصل {{n-3}} من أن إعادة <code>POST</code> قد تُنشئ الطلب مرتين. والجواب القياسي، الذي تستخدمه مزودات الدفع مثل Stripe، هو <dfn>مفتاح عدم التكرار</dfn>: يصنع العميل قيمة فريدة (UUID) لكل عملية <em>مقصودة</em> ويرسلها في الترويسة <code>Idempotency-Key</code>. فإن وصل المفتاح نفسه مرة أخرى لا يعيد الخادم العمل، بل يعيد الجواب الذي أعطاه في المرة الأولى. وهذا عمل للوسيط، لأنه يلف المتحكم دون أن يعرف المتحكم:</p>
+
+<pre data-code="shop/app/Http/Middleware/Idempotent.php" data-from="final class" data-title="app/Http/Middleware/Idempotent.php"></pre>
+
+<ul>
+<li><strong>قفل</strong> على المفتاح يجعل الطلب الثاني الذي يصل والأول ما زال يعمل يأخذ <code>409</code>، بدل أن يؤدي العمل مرتين. و<code>Cache::lock</code> يعمل عبر كل عمليات PHP على الخادم، لأن القفل يعيش في مخزن الذاكرة المؤقتة (هنا قاعدة البيانات، وRedis في الفصل {{n+4}}).</li>
+<li><strong>بصمة</strong> المحتوى تُحفظ مع الجواب. فالمفتاح نفسه مع محتوى مختلف خطأ في العميل، ويأخذ <code>422</code>، لا إعادة صامتة لطلب مختلف أبداً.</li>
+<li>لا تُحفظ إلا الأجوبة <strong>الناجحة</strong>، ليوم واحد. فالطلب الذي فشل يجوز تكراره بالمفتاح نفسه.</li>
+</ul>
+
+<p>ويُنشئ المتحكم الطلب داخل <dfn>معاملة</dfn> (transaction) في قاعدة البيانات: إما أن تحدث كل التغييرات، وإما ألا يحدث شيء منها:</p>
+
+<pre data-code="shop/app/Http/Controllers/OrderController.php" data-from="    public function store" data-to="^    }" data-title="app/Http/Controllers/OrderController.php"></pre>
+
+<p>يُؤخذ المخزون بجملة شرطية واحدة، «أنقص المخزون 2 <em>حيث</em> المخزون 2 على الأقل»، وعدد الصفوف المتغيرة يقول هل نجحت. أما قراءة المخزون أولاً ثم كتابته فتسمح لطلبين أن يريا آخر عدّة وأن يأخذاها معاً، ويشرح الفصل {{n+3}} لماذا، والأدوات الأخرى لذلك. فإن رُمي أي شيء تراجعت المعاملة، فالطلب الذي يفشل في عنصره الثالث يعيد مخزون الأولين. والأسعار تأتي من قاعدة البيانات: فالعميل لا يخبر الخادم بثمن شيء أبداً.</p>
+
+<pre data-code="idempotency.sh" data-title="الطرفية"></pre>
+
+<p>أخذ الطلب الثاني الطلب نفسه، بالرقم والوقت نفسيهما، ومعه ترويسة تقول إنه أُعيد. ونقص المخزون 2 لا 4. وقواعد العمل الأخرى ترد مشكلات أيضاً:</p>
+
+<pre data-code="orders.sh" data-title="الطرفية"></pre>
+
+<h2>{{n}}.7 التحديثات الضائعة: ETag وIf-Match</h2>
+
+<p>مديران يفتحان المنتج 2 في الوقت نفسه. تغيّر سارة السعر إلى 65.00 وتحفظ، وبعد دقيقة يغيّره عمر، الذي ما زالت شاشته تعرض المنتج القديم، إلى 70.00 ويحفظ. فيضيع تغيير سارة ولا يُخبَر أحد. هذه مشكلة <dfn>التحديث الضائع</dfn>. ويحلها HTTP بوسم ETag من الفصل {{n-3}}: إصدار المنتج هو وسمه، والتغيير يجب أن يعيد في <code>If-Match</code> الإصدار الذي بُني عليه:</p>
+
+<pre data-code="shop/app/Http/Controllers/ProductController.php" data-from="    public function show" data-to="^    }#2" data-title="app/Http/Controllers/ProductController.php"></pre>
+
+<p>تضبط <code>show</code> الوسم، وتحوّل <code>isNotModified</code> من Symfony الجواب إلى <code>304</code> فارغة حين يملك العميل هذا الإصدار من قبل. وترفض <code>update</code> الطلب الذي بلا <code>If-Match</code>، ثم تغيّر الصف <em>فقط إن</em> كان إصداره ما زال الذي قرأه العميل، وترفعه واحداً في الجملة نفسها. فإن لم يتغير أي صف فقد سبقه غيره:</p>
+
+<pre data-code="if-match.sh" data-title="الطرفية"></pre>
+
+<p>هذا هو <dfn>التزامن المتفائل</dfn>: لا شيء يُقفل بينما ينظر الناس إلى شاشة، والتعارضات النادرة تُكتشف حين تحدث. والعميل الذي يأخذ <code>412</code> يعيد تحميل المنتج ويُري المستخدم ما تغيّر.</p>
+
+<h2>{{n}}.8 التوثيق من الكود</h2>
+
+<p>التوثيق المكتوب باليد يبتعد عن الكود في أسابيع. أما <dfn>Scramble</dfn> فيقرأ المسارات وطلبات النماذج والموارد، ويكتب منها وثيقة <dfn>OpenAPI</dfn>، أي وصفاً قياسياً للواجهة تقرؤه الآلات:</p>
+
+<pre data-code="scramble.sh" data-title="الطرفية"></pre>
+
+<pre data-code="routes.sh" data-title="الطرفية"></pre>
+
+<p>وعلى جهاز المطور يقدّم Scramble أيضاً صفحة توثيق على <code>/docs/api</code>. ومن الوثيقة نفسها تستطيع الأدوات أن تولّد عملاء بأنواعهم بلغات كثيرة، ويستطيع فحص في CI أن يرفض طلب دمج يحذف شيئاً يعتمد عليه العملاء. (يذكر Scramble مسار التحديث بـ <code>PUT</code>، ويقبل Laravel <code>PATCH</code> على المسار نفسه.)</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: صمّم الواجهة قبل أن تبنيها</p><p>اكتب أمثلة الطلب والجواب للمسار الجديد أولاً، في طلب الدمج، واطلب مراجعة من شخص <em>سيستخدم</em> المسار، مثل مطور واجهة أمامية أو تطبيق جوال. فتغيير المثال يستغرق دقائق، وتغيير واجهة منشورة يستغرق شهوراً من الإصدارات ورسائل الإيقاف.</p></aside>
+
+<h2>{{n}}.9 اختبار الواجهة</h2>
+
+<p>مع <code>RefreshDatabase</code> يبدأ كل اختبار بجداول جديدة، تملؤها البذرة المذكورة في <code>$seeder</code>. وأثمن اختبار يمر على كل الصفحات ويتحقق أن كل منتج يظهر مرة واحدة بالضبط:</p>
+
+<pre data-code="shop/tests/Feature/ShopApiTest.php" data-from="    public function test_it_walks" data-to="^    }" data-title="tests/Feature/ShopApiTest.php"></pre>
+
+<pre data-code="test.sh" data-title="الطرفية"></pre>
+
+<p>والاختبارات الأخرى تثبّت ما يعتمد عليه العملاء: الترتيب، والإعادة، والتحديث القديم، وشكل الخطأ. ويذهب الفصل {{n+9}} أبعد بكثير.</p>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>إرجاع النماذج JSON مباشرة</td><td>يُنشر كل عمود جديد، وإعادة تسمية عمود تكسر العملاء</td><td>API Resources</td></tr>
+<tr><td>أفعال في العناوين، وتسمية مختلطة</td><td>يجب البحث عن كل مسار</td><td>أسماء بالجمع، وأسلوب تسمية واحد، والطرق أفعال</td></tr>
+<tr><td>صفحات بالإزاحة على بيانات متغيرة</td><td>صفوف مكررة وناقصة، وصفحات عميقة بطيئة</td><td><code>cursorPaginate</code> على ترتيب كامل مفهرس</td></tr>
+<tr><td>الترتيب بأي حقل يسمّيه العميل</td><td>استعلامات بطيئة عند الطلب</td><td>قائمة بأنواع الترتيب المسموحة</td></tr>
+<tr><td>شكل خطأ مختلف لكل مسار</td><td>لا يعالج العملاء الأخطاء بطريقة عامة</td><td>Problem Details لكل استثناء</td></tr>
+<tr><td>إعادة POST بلا مفاتيح</td><td>طلبات ومدفوعات مكررة</td><td>وسيط عدم تكرار مع البصمات</td></tr>
+<tr><td>قراءة المخزون ثم كتابته</td><td>يأخذ طلبان آخر قطعة</td><td>جملة شرطية واحدة داخل معاملة</td></tr>
+<tr><td>تحديثات بلا فحص للإصدار</td><td>تحديثات تضيع بصمت</td><td>ETag و<code>If-Match</code> إلزامية</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الموارد</strong> أسماء بالجمع، و<strong>الطرق</strong> هي الأفعال، والأفعال الخاصة موارد فرعية بـ <code>POST</code>. والإصدار في المسار، وفضّل التغييرات الإضافية.</li>
+<li><strong>الترحيلات</strong> تصف الجداول، و<strong>النماذج</strong> تقرؤها وتكتبها، و<strong>البذور</strong> تملؤها.</li>
+<li><strong>API Resources</strong> تفصل التمثيل عن التخزين: أوقات UTC، والمال مبلغاً وعملة، والأعمدة الداخلية مخفية.</li>
+<li><strong>المؤشرات</strong> تتنقل بلا انزلاق على ترتيب كامل (حقل الترتيب والرقم)، مع روابط يتبعها العملاء.</li>
+<li>كل خطأ <strong>Problem Details</strong>، من راسم واحد ومجموعة واحدة من دوال الصنع.</li>
+<li><strong>وسيط عدم التكرار</strong> بقفل وبصمة يجعل الإعادة آمنة، و<strong>المعاملات</strong> والتحديثات الشرطية تُبقي المخزون صحيحاً.</li>
+<li><strong>ETag مع <code>If-Match</code></strong> وفحص ذري للإصدار يمنعان التحديثات الضائعة.</li>
+<li><strong>Scramble</strong> يولّد OpenAPI من الكود، و<strong>اختبارات الميزات</strong> مع <code>RefreshDatabase</code> تثبّت السلوك.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. <code>POST /orders/7/cancel</code>: فالإلغاء فعل له قواعده (إرجاع المخزون، والرد، والتحقق أن الطلب ما زال قابلاً للإلغاء)، والمسار المخصص يستطيع أن يفرضها، وأن يوثَّق وتُمنح صلاحيته وحده، أما <code>PATCH</code> العام فيسمح للعميل أن يضع أي حالة. 2. لأن المنتجات بالسعر نفسه لن يكون لها بغير ذلك ترتيب ثابت، فقد ينتقل صف بين الصفحات ولا يستطيع المؤشر أن يقول بالضبط أين يتابع. 3. الإصدار تفصيل داخلي لطريقة الخادم في اكتشاف التعارضات، ولا يراه العملاء إلا وسماً ETag، فيستطيع الخادم أن يغيّر طريقة عمل الإصدارات دون أن يتغير JSON.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يوسّع واجهة هذا الفصل. فالتزم بالأعراف: طلب نموذج لكل مدخل، ومورد لكل مخرج، وProblem Details لكل خطأ، واختبار ميزة لكل قاعدة.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>مراجعات المنتجات</h3>
+<p class="project-goal">أضف المراجعات إلى المنتجات: اعرضها بصفحات المؤشر، وأنشئها مع التحقق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الترحيلات والنماذج، والموارد المتداخلة، وصفحات المؤشر، والموارد، و<code>201</code> مع <code>Location</code>.</p>
+<ol class="steps">
+<li>صمّم المسارات أولاً: <code>GET /api/v1/products/{product}/reviews</code> و<code>POST</code> على المسار نفسه، واكتب مثال طلب وجواب لكل منهما.</li>
+<li>أنشئ نموذج <code>Review</code> بترحيله: منتج، وتقييم من 1 إلى 5، ونص من 10 إلى 1000 حرف، وطوابع زمنية.</li>
+<li>اعرض المراجعات الأحدث أولاً، مرتبة بـ <code>created_at</code> ثم <code>id</code>، بـ <code>cursorPaginate</code>، عبر <code>ReviewResource</code>.</li>
+<li>أضف <code>average_rating</code> و<code>review_count</code> إلى <code>ProductResource</code> باستخدام <code>withAvg</code> و<code>withCount</code> في الاستعلام. هل هذا تغيير إضافي؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قد تُنشأ مراجعتان في الثانية نفسها، ودقة <code>created_at</code> ثانية واحدة. ولهذا بالضبط يحتاج الترتيب الرقم أيضاً.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>عميل يعيد المحاولة كما ينبغي</h3>
+<p class="project-goal">اكتب عميلاً صغيراً بـ PHP لمسار الطلبات بعميل HTTP في Laravel، يعيد المحاولة بأمان، واختبره على خادم يفشل عمداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مفاتيح عدم التكرار من جهة العميل، و<code>Http::retry</code>، والتراجع، و<code>Http::fake</code> في الاختبارات.</p>
+<ol class="steps">
+<li>اكتب <code>OrdersClient::create(array $items)</code>: تصنع مفتاحاً واحداً بـ <code>Str::uuid()</code> وترسل المفتاح <em>نفسه</em> في كل محاولة.</li>
+<li>استخدم <code>Http::retry([200, 400, 800], when: ...)</code> لتعيد المحاولة مع أخطاء الاتصال و<code>409</code> و<code>429</code> و<code>5xx</code>، ولا تعيدها مع باقي <code>4xx</code> أبداً، مع مهلة لكل محاولة (<code>timeout(5)</code>).</li>
+<li>احترم <code>Retry-After</code> حين يرسلها الخادم.</li>
+<li>في اختبار استخدم <code>Http::fake</code> مع سلسلة: خطأ اتصال، ثم <code>503</code>، ثم <code>201</code>. وتحقق بـ <code>Http::assertSent</code> أن الطلبات الثلاثة حملت المفتاح نفسه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أضف جزءاً عشوائياً إلى الانتظار (jitter). فبدونه يعيد ألف عميل فشلوا في اللحظة نفسها المحاولة في اللحظة نفسها أيضاً، فيُسقطون الخادم مرة أخرى.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>الإصدار 2 بجوار الأول</h3>
+<p class="project-goal">أدخل تغييراً كاسراً بالإصدار <code>/api/v2</code>، وأبقِ <code>/api/v1</code> يعمل من النماذج نفسها، وأعلن نهايته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الإصدارات بالموارد، ومجموعات المسارات، وترويسات الإيقاف، واختبارات العقد.</p>
+<ol class="steps">
+<li>في الإصدار 2 تصير الأسعار <code>{"amount": "450.00", "currency": "EGP"}</code> بنص عشري، ويُسمى <code>created_at</code> باسم <code>created</code>. واشرح لماذا يكسر كل تغيير منهما العملاء.</li>
+<li>ضع موارد الإصدار 2 في <code>App\Http\Resources\V2</code> ومساراته في مجموعة <code>prefix('v2')</code> ثانية. وتبقى النماذج وقواعد العمل مشتركة.</li>
+<li>اكتب وسيطاً لمجموعة الإصدار 1 يضيف <code>Deprecation</code> و<code>Sunset</code> (بعد ستة أشهر) و<code>Link</code> إلى دليل الانتقال، إلى كل جواب.</li>
+<li>احفظ أجوبة الإصدار 1 اليوم نماذج JSON ثابتة، واكتب اختبارات تفشل إن تغيّر الإصدار 1 أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يجب أن تكون الإصدارات طبقات رقيقة على حافة الواجهة. فإن احتاج الإصدار 2 جداول خاصة أو قواعد عمل خاصة، فالإصدار في المكان الخطأ.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> صمّم الطريقة والعنوان لكل من: عرض طلبات عميل واحد، وإضافة عنصر إلى سلة، ومزوّد دفع يخبرك أن دفعة نجحت، والبحث عن المنتجات بالاسم، وردّ مبلغ طلب.</li>
+<li><span class="level">سهل</span> اختر رمز حالة لكل مما يلي، وقل لماذا: بريد مسجل من قبل، وتحديث بلا <code>If-Match</code>، وتحديث بوسم ETag قديم، وJSON تنقصه علامة تنصيص، وكمية 0.</li>
+<li><span class="level">متوسط</span> أضف معاملاً <code>q</code> إلى قائمة المنتجات يجد المنتجات التي يحوي اسمها النص، بحرفين على الأقل. هل يبقى المؤشر يعمل معه؟</li>
+<li><span class="level">متوسط</span> إلغاء الطلب مرتين يرد بـ <code>409</code>. وتطبيق جوال يعيد طلب الإلغاء بعد انتهاء المهلة، فيُري خطأً لمستخدم أُلغي طلبه فعلاً. اقترح طريقتين لإصلاح ذلك، واختر إحداهما.</li>
+<li><span class="level">تحدٍّ</span> عميلان مختلفان يرسلان مفتاح عدم التكرار نفسه مصادفةً سيتشاركان جواباً واحداً. اجعل المفاتيح خاصة بكل عميل (وحتى يعطينا الفصل {{n+5}} مستخدمين حقيقيين، تسمّي الترويسة <code>X-Client-Id</code> العميل)، واختبر أن المفاتيح منفصلة لكل عميل، وأنها تنتهي بعد يوم.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>يبدأ الجزء الثاني. استخدمنا قاعدة بيانات في هذا الفصل دون أن ننظر داخلها. ونتعلم تالياً SQL كما ينبغي على PostgreSQL: الجداول، والربط، والتجميع، والفهارس، وكيف نقرأ خطة الاستعلام.</p>
+</div>
+</section>

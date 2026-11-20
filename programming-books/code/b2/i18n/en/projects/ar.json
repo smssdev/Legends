@@ -1,0 +1,7 @@
+{
+  "nav.home": "الرئيسية",
+  "cart.total": "المجموع: {sum}",
+  "order.placed": "تم الطلب #{id} في {date}",
+  "profile.greeting": "أهلاً يا {name}!",
+  "profile.old": "إعداد قديم"
+}

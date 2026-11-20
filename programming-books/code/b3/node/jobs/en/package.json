@@ -1,0 +1,18 @@
+{
+  "name": "bit-shop-jobs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "worker": "node src/worker.ts",
+    "check": "tsc"
+  },
+  "dependencies": {
+    "bullmq": "^6.7.0",
+    "ioredis": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2"
+  }
+}

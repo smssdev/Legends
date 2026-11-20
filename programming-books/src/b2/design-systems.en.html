@@ -1,0 +1,220 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/design/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Design Systems and Component Libraries</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what a design system is, and why teams build one</li>
+<li>keep every visual decision in design tokens, and generate CSS from them</li>
+<li>separate primitive tokens from semantic tokens, so themes are easy</li>
+<li>design component APIs that are small, predictable and hard to misuse</li>
+<li>support both controlled and uncontrolled use of a component</li>
+<li>document, test and version a component library</li>
+</ul>
+</div>
+
+<p class="lead">Open any big app made without a design system and count the shades of blue, the sizes of buttons, and the ways an error is shown. There will be dozens, because every screen was built by a different person on a different day. A <dfn>design system</dfn> is the shared set of decisions, <strong>tokens</strong>, <strong>components</strong>, <strong>patterns</strong> and their <strong>documentation</strong>, that makes a hundred screens look and behave like one product. For the team it means less code, fewer arguments and fewer accessibility bugs, because each decision is made, and tested, once.</p>
+
+<aside class="bit" data-mood="happy"><p>Designers and developers often build two systems: one in the design tool and one in the code, slowly drifting apart. The best teams share one source of truth: the tokens. Book 9 shows the designer’s side in Figma; this chapter shows the developer’s.</p></aside>
+
+<h2>{{n}}.1 Design tokens</h2>
+
+<p>A <dfn>design token</dfn> is a named design decision: a colour, a spacing step, a radius, a font size. Instead of writing <code>#4338ca</code> in fifty places, everyone writes <code>var(--color-action)</code>. Tokens are kept in a neutral format, usually JSON, so that the same values can be turned into CSS for the web, into Swift and Kotlin for mobile apps, and into variables in the design tool.</p>
+
+<pre data-code="tokens.json" data-title="tokens.json"></pre>
+
+<p>Notice the two levels:</p>
+<ul>
+<li><dfn>Primitive tokens</dfn> are the raw palette: <code>indigo-600</code>, <code>red-700</code>. They describe what a value <em>is</em>.</li>
+<li><dfn>Semantic tokens</dfn> describe what a value is <em>for</em>: <code>action</code>, <code>danger</code>, <code>text-muted</code>. Components only ever use semantic tokens.</li>
+</ul>
+
+<p>That separation is what makes themes cheap. The dark theme does not touch a single component; it simply points <code>action</code> and <code>surface</code> at different primitives. The same idea gives you a high-contrast theme, or a second brand, for free.</p>
+
+<p>A small script turns the JSON into CSS custom properties. In a real project it runs before every build, so the CSS can never disagree with the tokens:</p>
+
+<pre data-code="build-tokens.ts" data-title="build-tokens.ts"></pre>
+<pre data-out="build-tokens.mjs"></pre>
+
+<p>The script throws an error if a semantic token points at a primitive that does not exist. That one check catches typos that would otherwise show up as a missing colour on one screen, weeks later.</p>
+
+<h2>{{n}}.2 Designing a component’s API</h2>
+
+<p>The <dfn>API</dfn> of a component is its props, events and slots: everything other developers see. A good API is small, says what it means, and makes wrong use difficult. Here is a button built from the tokens:</p>
+
+<pre data-code="components.css" data-title="components.css (part)"></pre>
+
+<!-- react -->
+<pre data-code="react/Button.tsx" data-title="Button.tsx"></pre>
+
+<figure data-render="react/buttons.html" data-width="560"><figcaption><b>Figure {{n}}.1:</b> One <code>Button</code>, four variants and three sizes, with the loading and disabled states, in the light and dark themes. Not one line of the component changed between the themes.</figcaption></figure>
+
+<ul>
+<li><strong>Variants as one prop with a union type</strong>, <code>variant="danger"</code>, not separate booleans like <code>primary</code>, <code>danger</code>, <code>ghost</code>. With booleans, nothing stops someone from writing <code>&lt;Button primary danger&gt;</code>, and nobody knows what that means.</li>
+<li><strong>Build on the platform.</strong> <code>ComponentProps&lt;"button"&gt;</code> adds every prop a real button accepts, and <code>...rest</code> passes them on. <code>onClick</code>, <code>aria-label</code>, <code>form</code> and <code>type="submit"</code> all work, without the design system listing them one by one.</li>
+<li><strong>Safe defaults.</strong> <code>type="button"</code> by default, because a plain <code>&lt;button&gt;</code> inside a form submits it, a classic surprise. A loading button is also disabled, and tells assistive technology with <code>aria-busy</code>.</li>
+<li><strong>An escape hatch.</strong> <code>className</code> is merged, not replaced, for the rare screen that needs a margin.</li>
+</ul>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/Button.vue" data-title="Button.vue"></pre>
+
+<figure data-render="vue/buttons.html" data-width="560"><figcaption><b>Figure {{n}}.1:</b> One <code>Button</code>, four variants and three sizes, with the loading and disabled states, in the light and dark themes. Not one line of the component changed between the themes.</figcaption></figure>
+
+<ul>
+<li><strong>Variants as one prop with a union type</strong>, <code>variant="danger"</code>, not separate booleans like <code>primary</code>, <code>danger</code>, <code>ghost</code>. With booleans, nothing stops someone from writing <code>&lt;Button primary danger&gt;</code>, and nobody knows what that means.</li>
+<li><strong>Build on the platform.</strong> Vue passes every attribute the component does not declare as a prop, such as <code>aria-label</code>, <code>form</code> or a <code>@click</code> listener, straight to the root <code>&lt;button&gt;</code>. This <dfn>attribute fallthrough</dfn> means the design system does not have to list them one by one.</li>
+<li><strong>Safe defaults.</strong> <code>type="button"</code> by default, because a plain <code>&lt;button&gt;</code> inside a form submits it, a classic surprise. A loading button is also disabled, and tells assistive technology with <code>aria-busy</code>.</li>
+<li><strong>An escape hatch.</strong> A <code>class</code> passed by the parent is merged with the component’s own classes, not replaced, for the rare screen that needs a margin.</li>
+</ul>
+<!-- /vue -->
+
+<aside class="box tip"><p class="box-title">Tip: name things by purpose, never by appearance</p><p>A variant called <code>blue</code> becomes a lie the day the brand turns green. <code>primary</code>, <code>danger</code> and <code>subtle</code> stay true. The same rule applies to tokens: <code>color-action</code>, not <code>color-indigo</code>.</p></aside>
+
+<h2>{{n}}.3 Composition over configuration</h2>
+
+<p>Components in a design system tend to grow props until nobody can use them: <code>showIcon</code>, <code>iconPosition</code>, <code>titleSize</code>, <code>footerAlign</code>… Each prop answers one screen’s wish, and together they form a maze. The cure is <dfn>composition</dfn>: instead of describing the content with props, let the user pass the content in. A card that accepts children can hold any header, picture or footer, today and next year, without a single new prop.</p>
+
+<p>A good rule: props for <em>how</em> it behaves and looks (<code>variant</code>, <code>size</code>, <code>disabled</code>), children or slots for <em>what</em> it contains.</p>
+
+<h3>Controlled and uncontrolled</h3>
+
+<p>Inputs in a design system should work the way native inputs do: <dfn>uncontrolled</dfn> when the user just wants a default and does not care about every change, and <dfn>controlled</dfn> when the page owns the value. <!-- react -->By convention, <code>defaultChecked</code> or <code>defaultValue</code> means uncontrolled, and <code>checked</code> or <code>value</code> with a change handler means controlled. Project {{n}}.2 builds a switch that supports both.<!-- /react --><!-- vue -->In Vue, both cases are covered by one line, <code>defineModel</code>: when the parent binds <code>v-model</code> the parent owns the value, and when it does not, the component keeps its own. Project {{n}}.2 builds a switch that works both ways.<!-- /vue --></p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Should a button component use the token <code>indigo-600</code> or <code>color-action</code>?</li><li>What is wrong with props like <code>primary</code>, <code>secondary</code> and <code>danger</code> as three booleans?</li><li>Why should a button component default to <code>type="button"</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Accessibility, built in once</h2>
+
+<p>The greatest gift of a design system is that accessibility is solved once, by people who took the time, instead of fifty times by people in a hurry. Every component in the system should come with: the right element or ARIA role, a visible focus style from the <code>focus</code> token, full keyboard support, colours that pass contrast in every theme, and a reduced-motion version of any animation.</p>
+
+<p>Complex widgets, such as menus, dialogs, comboboxes and date pickers, are hard to get right. Many teams build them on <dfn>headless</dfn> libraries, which provide the behaviour and accessibility but no styles, and add their own tokens on top.
+<!-- react -->For React, popular choices are Radix UI and React Aria.<!-- /react --><!-- vue -->For Vue, popular choices are Reka UI and Headless UI.<!-- /vue --></p>
+
+<h2>{{n}}.5 Documenting, testing and releasing</h2>
+
+<p>A component nobody can find is a component somebody will write again. Design systems are documented in a living catalogue, usually built with <strong>Storybook</strong>, where each component appears in all its variants and states, with its props, its do’s and don’ts, and the code to copy. Each of those examples, called a <dfn>story</dfn>, doubles as a test case:</p>
+<ul>
+<li><strong>Unit and interaction tests</strong> check behaviour: does the switch toggle with Space, does the loading button refuse clicks? (Chapter {{n+2}}.)</li>
+<li><strong>Accessibility checks</strong> such as axe run on every story automatically. (Chapter {{n+1}}.)</li>
+<li><strong>Visual regression tests</strong> take a screenshot of every story and compare it with the approved one, so a change to a shared token cannot silently break a screen.</li>
+</ul>
+
+<p>A design system used by several apps is published as a package, with <strong>semantic versions</strong> and a changelog (Chapter 3): renaming a prop is a breaking change and needs a major version, so app teams can upgrade when they are ready.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: start small, extract from real screens</p><p>Do not design forty components before the first screen exists. Build the product, notice what repeats, and promote it into the system when it has been used three times. A small system that everyone uses beats a large one that nobody trusts.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Hard-coded colours and sizes in components</td><td>Themes and rebrands mean editing every file</td><td>Semantic tokens only</td></tr>
+<tr><td>Tokens named after their look (<code>blue</code>)</td><td>The names lie after a redesign</td><td>Name by purpose (<code>action</code>)</td></tr>
+<tr><td>A boolean prop per variant</td><td>Impossible combinations</td><td>One <code>variant</code> prop with a union type</td></tr>
+<tr><td>Copying native props one by one</td><td>Missing props such as <code>form</code> or <code>aria-*</code></td><td>Extend the native element’s props and pass the rest on</td></tr>
+<tr><td>A prop for every layout wish</td><td>A component nobody understands</td><td>Composition with children or slots</td></tr>
+<tr><td>Checking a theme only in light mode</td><td>States that look the same, or text that vanishes, in dark mode</td><td>Show every story in every theme</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A <strong>design system</strong> is shared tokens, components, patterns and documentation that make a product consistent and accessible.</li>
+<li><strong>Design tokens</strong> are named decisions kept in a neutral format and generated into CSS and other platforms.</li>
+<li><strong>Primitive</strong> tokens are the palette; <strong>semantic</strong> tokens say what a value is for. Components use semantic tokens, and themes remap them.</li>
+<li>Good component APIs use <strong>one variant prop</strong>, <strong>extend native props</strong>, have <strong>safe defaults</strong>, and prefer <strong>composition</strong> to configuration.</li>
+<li>Inputs support <strong>controlled</strong> and <strong>uncontrolled</strong> use, like native inputs.</li>
+<li>Accessibility is built into each component once. Stories document the system and drive unit, accessibility and visual tests; releases follow semantic versioning.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>color-action</code>: a semantic token, so themes and rebrands work without touching the component. 2. Nothing stops two of them being true together, and nobody knows what that should look like; one <code>variant</code> prop with a union type allows exactly one. 3. Because a plain <code>&lt;button&gt;</code> inside a form is a submit button, and would submit the form by accident.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Build these as the first pieces of your own small design system: one folder of tokens, one stylesheet generated from them, and a few components that use nothing else.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Badges and alerts from tokens</h3>
+<p class="project-goal">Two small components that show status: a badge for short labels and an alert for messages, each with four tones and no colour of its own.</p>
+<p class="project-skills"><strong>You will practise:</strong> tone props with union types, semantic tokens, and choosing the right live-region role.</p>
+<ol class="steps">
+<li>Add soft background tokens for each tone (<code>success-soft</code>, <code>warning-soft</code>, <code>danger-soft</code>) and the matching text tokens, in both themes.</li>
+<li>Write the CSS classes <code>.badge-…</code> and <code>.alert-…</code> using only those tokens.</li>
+<li>Write <code>Badge</code> with a <code>tone</code> prop and children.</li>
+<li>Write <code>Alert</code>: an icon hidden from screen readers, the message, and a role: <code>alert</code> for errors, which interrupts, and <code>status</code> for the others, which waits for a pause.</li>
+<li>Never let colour carry the meaning alone: the words “Paid” and “Pending”, and the icons, say it too.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> using <code>role="alert"</code> for everything sounds safe, but it interrupts the user for every small notice. Keep interruptions for things that really need attention now.</p>
+<!-- react -->
+<pre data-code="react/projects/Alert.tsx" data-title="Alert.tsx"></pre>
+<figure data-render="react/projects/feedback.html" data-width="560"><figcaption><b>Project {{n}}.1:</b> badges and alerts in their four tones.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Alert.vue" data-title="Alert.vue"></pre>
+<figure data-render="vue/projects/feedback.html" data-width="560"><figcaption><b>Project {{n}}.1:</b> badges and alerts in their four tones.</figcaption></figure>
+<!-- /vue -->
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A switch that works both ways</h3>
+<p class="project-goal">An on/off switch that can be used controlled or uncontrolled, works with the keyboard and screen readers, and is clear in every theme.</p>
+<p class="project-skills"><strong>You will practise:</strong> the controlled/uncontrolled pattern, <code>role="switch"</code> with <code>aria-checked</code>, logical CSS properties, and checking states in every theme.</p>
+<ol class="steps">
+<!-- react --><li>Accept <code>checked</code>, <code>defaultChecked</code> and <code>onChange</code>. If <code>checked</code> is given, the parent owns the value; otherwise the component keeps its own.</li><!-- /react --><!-- vue --><li>Make the value a model with <code>defineModel&lt;boolean&gt;({ default: false })</code>. When the parent binds <code>v-model</code>, the parent owns the value; when it does not, the ref is local and the switch keeps its own.</li><!-- /vue -->
+<li>Render a real <code>&lt;button type="button"&gt;</code> with <code>role="switch"</code> and <code>aria-checked</code>. Enter and Space work for free.</li>
+<li>Draw the track and thumb with tokens, and move the thumb with <code>inset-inline-start</code>, so it slides the right way in Arabic too.</li>
+<li>Give the off state an outline and the on state a fill. Check both in the dark theme: when this book was written, the first version looked the same on and off in dark mode, until the screenshot showed it.</li>
+<!-- react --><li>Use it three ways: uncontrolled with <code>defaultChecked</code>, uncontrolled off, and controlled, where it switches the theme of its own panel.</li><!-- /react --><!-- vue --><li>Use it both ways: two switches without <code>v-model</code>, which remember their own state, and one with <code>v-model</code>, where it switches the theme of its own panel.</li><!-- /vue -->
+</ol>
+<!-- react --><p class="hint"><strong>Hint:</strong> never change from uncontrolled to controlled during a component’s life (from <code>checked={undefined}</code> to <code>checked={true}</code>). React warns about it, because it is almost always a bug: decide once, in the parent.</p><!-- /react --><!-- vue --><p class="hint"><strong>Hint:</strong> decide once, in the parent, whether it owns the value. Adding or removing <code>v-model</code> on the same switch while it is on screen makes it jump between two values: its own, and the parent’s.</p><!-- /vue -->
+<!-- react -->
+<pre data-code="react/projects/Switch.tsx" data-title="Switch.tsx"></pre>
+<figure data-render="react/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>Project {{n}}.2:</b> after turning on the dark theme with the controlled switch.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Switch.vue" data-title="Switch.vue"></pre>
+<figure data-render="vue/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>Project {{n}}.2:</b> after turning on the dark theme with the switch bound by <code>v-model</code>.</figcaption></figure>
+<!-- /vue -->
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A contrast guard for the tokens</h3>
+<p class="project-goal">A script that checks every important text-and-background pair in every theme against WCAG, and fails the build when one is too weak.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading JSON in Node, the contrast formula, typed tuples, and using the exit code to stop a pipeline.</p>
+<ol class="steps">
+<li>Read <code>tokens.json</code>, and write <code>luminance</code> and <code>contrast</code> from the formula in Book 1.</li>
+<li>List the pairs that are really used together, as <code>[foreground, background]</code> tuples of semantic names.</li>
+<li>For each theme and each pair, resolve both names to colours, compute the ratio, and print it with ✓ or ✗.</li>
+<li>Set <code>process.exitCode = 1</code> if any pair is below 4.5, so that <code>npm run check</code> and CI stop.</li>
+<li>Add it to your <code>check</code> script, then try to break it: make <code>text-muted</code> lighter in the light theme and watch it fail.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is how a design system stays accessible as it grows: not by people remembering the rules, but by a check that runs every time anything changes.</p>
+<pre data-code="projects/check-contrast.ts" data-title="check-contrast.ts"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/check-contrast.mjs"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>space-8: 32px</code> token and a <code>radius-lg: 16px</code> token, run the script, and use the new radius for cards.</li>
+<li><span class="level">Easy</span> Add a primitive token whose semantic name is misspelled in the dark theme, run the script, and read the error. Then fix it.</li>
+<li><span class="level">Medium</span> Add a third theme, <code>[data-theme="contrast"]</code>, with black text on white, a dark blue action colour and a thick yellow focus colour. Which components needed changes? (The right answer is “none”.)</li>
+<li><span class="level">Medium</span> Add an <code>iconStart</code> slot to the button: a prop that accepts any icon element and places it before the text, with the correct gap in both directions.</li>
+<li><span class="level">Challenge</span> Add motion tokens, <code>duration-fast: 150ms</code> and <code>duration-normal: 250ms</code>, generate them with the script, and use them for the switch’s movement. Then make every duration <code>0ms</code> inside <code>@media (prefers-reduced-motion: reduce)</code>, by changing only the generated CSS, not the components.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Book 1 introduced accessibility. In the next chapter you will learn the standard that professionals work to, WCAG, and how to meet it in real component code: focus management in dialogs, live announcements, accessible names, and automatic checks in your tests.</p>
+</div>
+</section>

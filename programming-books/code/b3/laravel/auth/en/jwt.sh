@@ -1,0 +1,6 @@
+# Inside a JWT
+$ php artisan shop:jwt
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInJvbGUiOiJjdXN0b21lciIsImV4cCI6MTc5NTAwMDAwMH0.FIARINURub56u1m-5b1qFNKR31jo58HiVsulPiTmtkU
+payload, read without the key: {"sub":2,"role":"customer","exp":1795000000}
+signature valid: true
+tampered token valid: false

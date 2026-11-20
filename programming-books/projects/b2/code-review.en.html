@@ -1,0 +1,47 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects are about habits more than code. Do each one with another person if you can: a classmate, a colleague, or a friend from an online community. Review and mentoring are learned with someone on the other side.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Review your own old code</h3>
+<p class="project-goal">Take a project you wrote a few months ago, open a pull request that improves one thing, and review it as if a colleague had written it.</p>
+<p class="project-skills"><strong>You will practise:</strong> small focused pull requests, the review order, labelled comments, and answering every comment.</p>
+<ol class="steps">
+<li>Choose one improvement only: a function without tests, a confusing name, a missing error state. Make it on a branch, under 100 changed lines.</li>
+<li>Fill in the pull request template from this chapter, including how to test it.</li>
+<li>Wait a day. Then review the pull request on GitHub in the order purpose, design, correctness, tests, readability, and leave at least five labelled comments, including one <strong>praise</strong>.</li>
+<li>Answer every comment as the author: fix it, open an issue for it, or disagree with a reason.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> reviewing your own code after a day is surprisingly effective, because you have forgotten what you meant and can only read what you wrote. That is exactly the position of every reviewer.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A robot reviewer in CI</h3>
+<p class="project-goal">Run the chapter’s review robot on every pull request in GitHub Actions, and make it fail the check when it finds a problem.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading diffs, exit codes, GitHub Actions workflows, and required checks.</p>
+<ol class="steps">
+<li>Copy <code>review-bot.ts</code> into a repository of yours, and make it end with <code>process.exitCode = findings.length ? 1 : 0</code>.</li>
+<li>Write <code>.github/workflows/review.yml</code>: on <code>pull_request</code>, check out the code with <code>fetch-depth: 0</code>, run <code>git diff origin/${{ github.base_ref }}...HEAD &gt; pr.diff</code>, then run the robot.</li>
+<li>Open a pull request with a <code>console.log</code> in it and check that the robot fails. Remove it and check that it passes.</li>
+<li>In the repository settings, make the check required for merging into the main branch.</li>
+<li>Add one rule that your own team (or you) keeps forgetting.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the three dots in <code>main...HEAD</code> matter. They compare against the point where your branch started, so changes merged into <code>main</code> since then are not counted as yours.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A decision you can defend</h3>
+<p class="project-goal">Choose between two real libraries for your project with a time-boxed spike and a weighted matrix, write the decision record, and present it in ten minutes.</p>
+<p class="project-skills"><strong>You will practise:</strong> one-way doors, criteria and weights, spikes, sensitivity, and decision records.</p>
+<ol class="steps">
+<li>Pick a real choice, for example dates (<code>date-fns</code> or the built-in <code>Intl</code> and <code>Temporal</code>), or charts (two chart libraries). Decide whether it is a one-way or two-way door.</li>
+<li>Write the criteria and their weights <em>before</em> you try anything. Include bundle size, measured as in Chapter {{n-5}}.</li>
+<li>Spend at most half a day per option building the same small screen. Write down surprises as you go.</li>
+<li>Score the options in a copy of <code>decide.ts</code> and run the sensitivity check. Find the criterion that would change the winner.</li>
+<li>Write the decision record, including the bad consequences of your choice, and present it to someone in ten minutes. Note their questions: each one is something the record should have answered.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if no weight change can flip the winner, the decision was easy and the matrix was not needed. If many can, the scores are probably guesses: that is the moment for a spike, not a longer meeting.</p>
+</div>

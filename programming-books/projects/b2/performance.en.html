@@ -1,0 +1,58 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Measure before and after every change in these projects, and write the numbers down. A performance change that you cannot measure is a guess.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Images that fit every screen</h3>
+<p class="project-goal">Give the hero image two sizes and let the browser choose, and stop the browser from downloading a picture nobody has scrolled to yet. Then prove both with a script.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>srcset</code> with width descriptors, <code>sizes</code>, <code>loading="lazy"</code>, and checking downloads with the Resource Timing API.</p>
+<ol class="steps">
+<li>List both files in <code>srcset</code> with their real widths: <code>hero-small.png 640w, hero-big.png 1000w</code>.</li>
+<li>Tell the browser how wide the image will be shown with <code>sizes</code>: the full screen on phones, 640 px on wider screens.</li>
+<li>Keep <code>width</code>, <code>height</code> and <code>alt</code> on the image, as always.</li>
+<li>Add a second picture far down the page with <code>loading="lazy"</code>.</li>
+<li>Write a Playwright script that opens the page as a phone, as a high-density phone and as a desktop, and prints which hero file was used and whether the lower picture was downloaded.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the second line of the result. A phone with a high-density screen needs twice the pixels to look sharp, so the browser correctly picks the bigger file. You describe the facts; the browser makes the choice.</p>
+<pre data-code="projects/images.html" data-title="images.html" data-show="body"></pre>
+<pre data-out="projects/which-image.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A filter that never freezes</h3>
+<p class="project-goal">Filter thousands of slow rows while the text field stays perfectly responsive, and show that the list is catching up.</p>
+<p class="project-skills"><strong>You will practise:</strong> finding a long task in the Performance panel, deferring an update, memoising a component, and showing a pending state.</p>
+<ol class="steps">
+<li>Build the slow version first: filter and render directly from the input’s value. Type quickly and feel the input lag.</li>
+<li>Record it in the Performance panel of DevTools with the CPU slowed 4×. Find the long tasks after each key press.</li>
+<!-- react -->
+<li>Use <code>useDeferredValue(text)</code> for the list, and wrap the list in <code>memo</code> so it only re-renders when its items change.</li>
+<!-- /react -->
+<!-- vue -->
+<li>Keep a second, delayed copy of the text for the list (debounced, as in the state chapter), and compute the filtered items from it.</li>
+<!-- /vue -->
+<li>While the list is behind the input, fade it and say “Updating…” in a polite live region.</li>
+<li>Record again and compare: typing should no longer wait for the list.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> deferring does not make the work smaller; it changes its priority. If the list is still too slow when it finally renders, the next step is virtualisation: render only the 20 rows that fit on the screen.</p>
+<figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Project {{n}}.2:</b> the filtered list, once it has caught up.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A bundle budget that fails the build</h3>
+<p class="project-goal">Measure how much compressed JavaScript and CSS the app sends to users, compare it with a budget, and stop the build when it is over.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking a folder recursively, compressing with <code>node:zlib</code>, and exit codes.</p>
+<ol class="steps">
+<li>Collect every file under the built folder (<code>dist</code> in a real project; here, the book’s shared <code>vendor</code> folder), recursively.</li>
+<li>For each <code>.js</code> and <code>.css</code> file, add its <em>gzip</em> size: that is what travels over the network.</li>
+<li>Compare the totals with a budget, and print each line with ✓ or ✗.</li>
+<li>Set the exit code to 1 when any budget is exceeded, and add the script after <code>vite build</code> in <code>npm run check</code>.</li>
+<li>Read the result honestly: the shared React bundle alone is far over a 60 KB budget. Decide whether to raise the budget on purpose, or to load less.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a budget that fails is a conversation, not a disaster. The point is that growth becomes a decision someone makes knowingly, instead of something that happens by accident.</p>
+<pre data-code="projects/budget.ts" data-title="budget.ts"></pre>
+<pre data-out="projects/budget.mjs"></pre>
+</div>

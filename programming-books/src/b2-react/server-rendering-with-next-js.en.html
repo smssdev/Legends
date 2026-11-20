@@ -1,0 +1,282 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/react/next/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Server Rendering with Next.js</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell apart the ways a page can be made: in the browser, on the server per request, or ahead of time at build</li>
+<li>create a Next.js app and build its routes from folders and files</li>
+<li>write Server Components that read data directly, and Client Components that react to the user</li>
+<li>cache pages, prerender them at build time, and stream the slow parts</li>
+<li>handle forms with Server Actions, and answer API requests with route handlers</li>
+<li>read the build’s route table and run the app in production</li>
+</ul>
+</div>
+
+<p class="lead">Every React app in this book so far started as an almost empty HTML page. The browser downloaded JavaScript, ran it, fetched the data, and only then drew something. That works well for apps behind a login, but the user waits for a blank page, slow phones wait longest, and a search engine or a link preview may see nothing at all. <strong>Next.js</strong> is a framework around React that can make the HTML on the server instead, and send a page that is complete before any JavaScript runs. It is the most widely used way to build React sites that must be fast and found.</p>
+
+<aside class="bit" data-mood="think"><p>Next.js does not replace what you learned. Components, props, state, hooks and forms all work the same. What changes is <em>where</em> each component runs, and that one question is the whole chapter.</p></aside>
+
+<h2>{{n}}.1 Four ways to make a page</h2>
+
+<table>
+<thead><tr><th>Way</th><th>When the HTML is made</th><th>Good for</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td><dfn>Client-side rendering</dfn> (CSR)</td><td>In the browser, after the JavaScript runs</td><td>Dashboards and apps behind a login</td><td>A blank page at first, weak for search engines</td></tr>
+<tr><td><dfn>Server-side rendering</dfn> (SSR)</td><td>On the server, for every request</td><td>Pages that differ per user or per minute</td><td>Server work on every visit</td></tr>
+<tr><td><dfn>Static generation</dfn> (SSG)</td><td>Once, when the app is built</td><td>Pages that are the same for everyone: articles, docs, product pages</td><td>Stale until the next build</td></tr>
+<tr><td><dfn>Incremental revalidation</dfn> (ISR)</td><td>At build, then again in the background after a set time</td><td>Mostly-static pages whose data changes sometimes</td><td>Visitors may see data a little old</td></tr>
+</tbody>
+</table>
+
+<p>In all three server ways, the browser still downloads the React code afterwards, and React attaches event handlers to the HTML that is already there. This step is called <dfn>hydration</dfn>: the page appears first and becomes interactive a moment later. Next.js lets you choose the way <em>per page</em>, and even per part of a page, which is why it suits real sites where the home page, the product pages and the account page need different things.</p>
+
+<h2>{{n}}.2 Creating the app</h2>
+
+<p>We will build a small shop for Bit: a home page, a product list, a page per product, a contact form and a tiny API. <code>create-next-app</code> writes the project, with TypeScript and ESLint already set up:</p>
+
+<pre data-code="build.sh" data-title="Terminal"></pre>
+
+<p>That transcript was recorded while this chapter’s example was built. Ignore the table at the end for now: by section {{n}}.6 you will be able to read every line of it. During development you run <code>npm run dev</code> and open <code>http://localhost:3000</code>; every save reloads the page.</p>
+
+<h3>Folders are routes</h3>
+
+<p>Next.js has no route list like the one you wrote with React Router in Chapter {{n-10}}. Instead, the folders inside <code>app/</code> <em>are</em> the addresses, and a few special file names say what each file does:</p>
+
+<table>
+<thead><tr><th>File</th><th>Its job</th><th>In our shop</th></tr></thead>
+<tbody>
+<tr><td><code>page.tsx</code></td><td>The page shown at this folder’s address</td><td><code>app/products/page.tsx</code> → <code>/products</code></td></tr>
+<tr><td><code>layout.tsx</code></td><td>A frame around this page and every page below it</td><td><code>app/layout.tsx</code>: the nav on every page</td></tr>
+<tr><td><code>loading.tsx</code></td><td>Shown at once while the page’s data loads</td><td>Grey bars for the product pages</td></tr>
+<tr><td><code>error.tsx</code></td><td>Shown when something below it throws</td><td>(project {{n}}.1)</td></tr>
+<tr><td><code>not-found.tsx</code></td><td>Shown for unknown addresses and <code>notFound()</code></td><td>Our 404 page</td></tr>
+<tr><td><code>route.ts</code></td><td>An API endpoint instead of a page</td><td><code>app/api/products/route.ts</code></td></tr>
+<tr><td><code>[id]</code> (a folder)</td><td>A part of the address that varies</td><td><code>app/products/[id]/page.tsx</code> → <code>/products/2</code></td></tr>
+</tbody>
+</table>
+
+<p>Other files in these folders, such as components used by only one page, are allowed and are not routes. Shared code lives outside <code>app/</code>, in folders like <code>lib/</code>, imported with the <code>@/</code> alias that <code>create-next-app</code> set up.</p>
+
+<h3>The root layout</h3>
+
+<pre data-code="app/layout.tsx" data-title="app/layout.tsx"></pre>
+
+<p>The root layout is the only place that writes <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code>, so it is where <code>lang</code> and <code>dir</code> belong (Chapter {{n-2}}). <code>Link</code> is Next.js’s link: it changes the page without a full reload, and it fetches the target page in the background as soon as the link appears on screen, so clicks feel instant. The exported <code>metadata</code> becomes the <code>&lt;title&gt;</code> and <code>&lt;meta&gt;</code> tags; the <code>template</code> lets every page set only its own part of the title.</p>
+
+<aside class="box tip"><p class="box-title">Tip: fonts</p><p><code>create-next-app</code> loads a font from Google with <code>next/font/google</code>. We removed it and used the system fonts, which need no download and already read Arabic well. If you need a brand font, <code>next/font/local</code> serves your own font files from your own server.</p></aside>
+
+<h2>{{n}}.3 Server Components</h2>
+
+<p>Here is the heart of the chapter. In the <code>app/</code> folder, <strong>every component is a Server Component unless you say otherwise</strong>. A <dfn>Server Component</dfn> runs only on the server. It can be <code>async</code>, it can <code>await</code> data directly, and its code is never sent to the browser. First, a pretend database:</p>
+
+<pre data-code="lib/products.ts" data-title="lib/products.ts"></pre>
+
+<p>And the product list, which simply awaits it:</p>
+
+<pre data-code="app/products/page.tsx" data-title="app/products/page.tsx"></pre>
+
+<p>Compare it with Chapter {{n-10}}: no <code>useQuery</code>, no loading state, no error state, no API to call. The component asks for the data and returns JSX that uses it. Leave aside the two lines with <code>"use cache"</code> until section {{n}}.6. What does the browser receive? Let us ask the running server with <code>curl</code>, which downloads a page without running any JavaScript:</p>
+
+<pre data-code="curl.sh" data-title="Terminal"></pre>
+
+<p>The product names are already inside the HTML. A search engine, a link preview on a phone, or a user on a slow network gets the content immediately. And because the component never reaches the browser, neither does the code that reads the database, nor the libraries it uses, nor any secret it needs: they cost the user zero kilobytes.</p>
+
+<figure data-img="shots/products.png" data-url="localhost:3000/products"><figcaption><b>Figure {{n}}.1:</b> The product list, made entirely on the server. The time at the bottom shows when the server made it.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where does a component in the <code>app/</code> folder run if its file has no directive?</li><li>Why does <code>curl</code> see the product names, although it never runs JavaScript?</li><li>What does hydration do?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Client Components</h2>
+
+<p>Server Components cannot do what happens <em>after</em> the page arrives: they have no state, no effects and no event handlers, because they are not in the browser. A component that needs any of these starts its file with the directive <code>"use client"</code>:</p>
+
+<pre data-code="app/products/[id]/AddToCart.tsx" data-title="app/products/[id]/AddToCart.tsx"></pre>
+
+<p>A <dfn>Client Component</dfn> is the kind of component you have written all book long. It is still rendered to HTML on the server for the first visit, so the button appears at once, and then it is hydrated in the browser, where it reacts to clicks. <code>"use client"</code> marks a <em>boundary</em>: this file and everything it imports goes to the browser.</p>
+
+<figure data-img="shots/product.png" data-url="localhost:3000/products/2"><figcaption><b>Figure {{n}}.2:</b> The product page after clicking the button. The page is server-made; only the button is a Client Component.</figcaption></figure>
+
+<p>Four rules keep the two kinds working together:</p>
+<ul>
+<li><strong>Server Components can render Client Components</strong>, and pass them props. The props cross from the server to the browser, so they must be data that can be serialised: strings, numbers, plain objects and arrays, not functions or class instances.</li>
+<li><strong>Client Components cannot import Server Components.</strong> They can still show one if it is passed to them as <code>children</code>.</li>
+<li><strong>Push <code>"use client"</code> down to the leaves.</strong> Make the button a Client Component, not the whole page. Everything above the boundary stays on the server and costs the browser nothing.</li>
+<li><strong>Keep server-only code out of client files.</strong> The package <code>server-only</code>, imported at the top of a file, makes the build fail if that file is ever imported into the browser by mistake.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: hydration mismatches</p><p>During hydration, React expects the browser’s first render to produce exactly the HTML that the server sent. A Client Component that renders <code>new Date()</code>, <code>Math.random()</code> or <code>window.innerWidth</code> directly gives different results in the two places, and React warns about a <em>hydration mismatch</em>. Read such values in an effect, after hydration, or compute them on the server and pass them as props.</p></aside>
+
+<h2>{{n}}.5 Dynamic routes</h2>
+
+<p>The folder <code>[id]</code> matches any value in that part of the address, and the page receives it in <code>params</code>:</p>
+
+<pre data-code="app/products/[id]/page.tsx" data-title="app/products/[id]/page.tsx"></pre>
+
+<p>Three functions do a lot of work here:</p>
+<ul>
+<li><code>generateStaticParams</code> lists the ids known at build time. Next.js builds a page for each of them ahead of time, the way static generation works, and still handles other ids when they are requested.</li>
+<li><code>generateMetadata</code> gives each product its own title and description, which is what appears in search results and link previews.</li>
+<li><code>notFound()</code> stops rendering and shows the nearest <code>not-found.tsx</code>, with the correct status code 404. It throws, so TypeScript knows that <code>product</code> is defined in the lines after it.</li>
+</ul>
+
+<p><code>params</code> is a promise: Next.js starts rendering before it has decided everything about the request, and the component waits only when it really needs the value.</p>
+
+<figure data-img="shots/missing.png" data-url="localhost:3000/products/99"><figcaption><b>Figure {{n}}.3:</b> A product that does not exist: <code>notFound()</code> shows our 404 page.</figcaption></figure>
+
+<h2>{{n}}.6 Caching, prerendering and streaming</h2>
+
+<p>Now we can read the route table from the build in section {{n}}.2. Each symbol tells you how that address will be served:</p>
+
+<ul>
+<li><strong>○ Static.</strong> <code>/</code> and <code>/contact</code> depend on nothing that changes, so they were made once, at build time, and are served as ready files. This is the fastest a page can be.</li>
+<li><strong>◐ Partial prerender.</strong> The product pages were prerendered at build time for ids 1, 2 and 3, and the route also has a part that is made per request (the <code>params</code> of an id nobody listed). The static shell is sent at once and the rest is streamed into it.</li>
+<li><strong>ƒ Dynamic.</strong> <code>/api/products</code> runs on every request.</li>
+<li><code>/products</code> is static with <strong>Revalidate 1m</strong> and <strong>Expire 1h</strong>. That is our <code>"use cache"</code> at work.</li>
+</ul>
+
+<p>By default, Next.js does not cache data: anything that reads data runs again for each request, so pages are never stale by accident. You opt in with the directive <code>"use cache"</code> at the top of a component or an async function. Its result is stored and reused, and <code>cacheLife</code> says for how long. With <code>"minutes"</code>, the cached page is considered fresh for about a minute; after that, the next visitor still gets the stored page at once, while a fresh one is made in the background. That is incremental revalidation, written in one line. Other profiles include <code>"seconds"</code>, <code>"hours"</code>, <code>"days"</code> and <code>"max"</code>.</p>
+
+<p>When data changes because of something your own app did, such as an admin editing a price, you do not need to wait. Give the cached function a name with <code>cacheTag("products")</code>. Then, in the Server Action that made the change, call <code>updateTag("products")</code>: the stored result is thrown away, and the next request, including the admin’s own, makes the page again. (<code>revalidateTag("products", "max")</code> is the gentler version for other places: visitors keep getting the old page while a new one is made.)</p>
+
+<h3>Streaming the slow parts</h3>
+
+<p>Our pretend database takes 300 ms. When a page has to wait for data, the file <code>loading.tsx</code> next to it is shown immediately in its place:</p>
+
+<pre data-code="app/products/loading.tsx" data-title="app/products/loading.tsx"></pre>
+
+<p>Behind the scenes, Next.js wraps the page in React’s <code>&lt;Suspense&gt;</code> component, with <code>loading.tsx</code> as its <code>fallback</code>: while anything inside is still waiting, the fallback is shown instead. The server sends the layout and the grey bars first, keeps the connection open, and sends the real content when it is ready, in the same response. You can also place your own <code>&lt;Suspense&gt;</code> around a single slow part of a page, so that everything else appears without waiting for it.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: read the route table after every build</p><p>The table is a summary of every caching decision in the app. A page you expected to be ○ that shows as ƒ means something in it reads data per request, and every visitor now pays for server work. Catching that in the build output takes a second; finding it later in a slow production site takes much longer.</p></aside>
+
+<h2>{{n}}.7 Route handlers</h2>
+
+<p>A <code>route.ts</code> file answers HTTP requests with any response you like, usually JSON. Export a function named after the HTTP method:</p>
+
+<pre data-code="app/api/products/route.ts" data-title="app/api/products/route.ts"></pre>
+
+<p>The second command in the <code>curl</code> transcript above called it. Route handlers are for clients that are not your pages: a mobile app, a webhook from a payment service, another company’s system. Your own pages rarely need them, since Server Components can read the data directly and Server Actions can change it.</p>
+
+<h2>{{n}}.8 Forms with Server Actions</h2>
+
+<p>A <dfn>Server Action</dfn> is an async function that runs on the server and can be called from the browser, usually by a form. A file that starts with <code>"use server"</code> makes every function it exports a Server Action:</p>
+
+<pre data-code="app/contact/actions.ts" data-title="app/contact/actions.ts"></pre>
+
+<p>The form uses React’s <code>useActionState</code>, which keeps the last value the action returned, and tells you when it is running:</p>
+
+<pre data-code="app/contact/ContactForm.tsx" data-title="app/contact/ContactForm.tsx"></pre>
+<pre data-code="app/contact/page.tsx" data-title="app/contact/page.tsx"></pre>
+
+<p>When the form is submitted, React sends its fields to the server, runs <code>sendMessage</code> there with the previous state and a <code>FormData</code>, and puts the returned value in <code>state</code>. The validation is the zod schema from Chapter {{n-9}}, running on the server, where no user can switch it off. Because the form uses a plain <code>action</code>, it even works before the JavaScript has loaded: the browser posts it like a classic HTML form.</p>
+
+<figure data-img="shots/contact.png" data-url="localhost:3000/contact"><figcaption><b>Figure {{n}}.4:</b> Sent with a message that is too short: the server checked the fields and returned the errors, which the form shows under each field.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title">Watch out: every Server Action is a public endpoint</p><p>An action feels like a function call, but anyone can call it with any data, just like an API. Validate every field on the server, check that the user is signed in and allowed to do this, and never trust a hidden field for the user’s id or a price. Everything from Chapter {{n-3}} applies here.</p></aside>
+
+<h2>{{n}}.9 Running in production</h2>
+
+<p><code>npm run build</code> makes the optimised app, and <code>npm start</code> runs it as a Node.js server on port 3000. That is all a server needs: Node.js, the built <code>.next</code> folder, and <code>node_modules</code>. Two more facts complete the picture:</p>
+<ul>
+<li><strong>Environment variables stay on the server</strong>, unless their name starts with <code>NEXT_PUBLIC_</code>. Those are written into the browser’s JavaScript at build time, where anyone can read them. Database passwords and API keys must never have that prefix.</li>
+<li><strong>For containers</strong>, set <code>output: "standalone"</code> in <code>next.config.ts</code>. The build then copies only the files the server really needs into <code>.next/standalone</code>, which makes a much smaller image.</li>
+</ul>
+
+<p>Put a reverse proxy such as Nginx in front of it for HTTPS and compression, and the shop is ready for visitors. Hosting platforms that specialise in Next.js do all of this for you, but nothing in this chapter needs one.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>"use client"</code> at the top of every page</td><td>The whole app goes to the browser again; data fetching moves back into effects</td><td>Keep pages on the server; make only the interactive leaves Client Components</td></tr>
+<tr><td><code>useState</code> or <code>onClick</code> in a Server Component</td><td>A build error</td><td>Move that part into a Client Component</td></tr>
+<tr><td>Passing a function as a prop from server to client</td><td>An error: functions cannot be serialised</td><td>Pass data, or a Server Action</td></tr>
+<tr><td>A secret in a <code>NEXT_PUBLIC_</code> variable</td><td>Anyone can read it in the page’s JavaScript</td><td>Keep secrets in plain variables, read only on the server</td></tr>
+<tr><td>Trusting a Server Action’s input</td><td>Anyone can call it with forged data</td><td>Validate and check permissions inside the action</td></tr>
+<tr><td>Rendering <code>Date.now()</code> or <code>window</code> in a Client Component</td><td>Hydration mismatch warnings</td><td>Read them in an effect, or pass them from the server</td></tr>
+<tr><td>Fetching your own route handler from a Server Component</td><td>An extra HTTP round trip to yourself</td><td>Call the data function directly</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A page can be made in the <strong>browser</strong>, on the <strong>server per request</strong>, <strong>at build time</strong>, or at build time and <strong>revalidated</strong> later. Next.js lets you choose per page. <strong>Hydration</strong> makes server HTML interactive.</li>
+<li>Folders in <code>app/</code> are addresses; <code>page</code>, <code>layout</code>, <code>loading</code>, <code>error</code>, <code>not-found</code> and <code>route</code> files give each one its parts.</li>
+<li>Components are <strong>Server Components</strong> by default: async, reading data directly, never sent to the browser. <code>"use client"</code> marks <strong>Client Components</strong>, which have state and events. Keep the boundary at the leaves.</li>
+<li><code>generateStaticParams</code>, <code>generateMetadata</code> and <code>notFound()</code> make dynamic routes fast, findable and correct.</li>
+<li>Data is not cached unless you ask: <code>"use cache"</code> with <code>cacheLife</code>, and <code>updateTag</code> after changes. <code>loading.tsx</code> and <code>&lt;Suspense&gt;</code> stream slow parts.</li>
+<li><strong>Server Actions</strong> handle forms on the server, and are public endpoints to validate and protect. <strong>Route handlers</strong> serve other clients.</li>
+<li>Production is <code>npm run build</code> and <code>npm start</code>. Only <code>NEXT_PUBLIC_</code> variables reach the browser.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Only on the server: it is a Server Component. 2. Because the server already rendered the components into HTML, with the data inside, before sending the page. 3. React runs in the browser, matches the HTML that is already on the page, and attaches the event handlers, so the page becomes interactive.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Run <code>npm run build</code> at the end of every project and read the route table. Before you build, write down the symbol you expect for each address; every surprise in the table is something you can learn from.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A shop that fails gracefully</h3>
+<p class="project-goal">Give Bit’s shop a page for errors, a better 404 for missing products, and a loading state for each slow part, so that nothing ever shows the user a blank screen or a stack trace.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>error.tsx</code>, <code>not-found.tsx</code> at different levels, <code>loading.tsx</code>, and <code>&lt;Suspense&gt;</code> around one slow part.</p>
+<ol class="steps">
+<li>Write <code>app/error.tsx</code> as a Client Component that receives <code>{ error, reset }</code>, shows a friendly message, and offers a “Try again” button that calls <code>reset()</code>.</li>
+<li>Make <code>getProduct</code> throw for one id, and check that only the content area is replaced, while the nav stays.</li>
+<li>Add <code>app/products/[id]/not-found.tsx</code>, which says that the <em>product</em> was not found and links back to the list. Unknown addresses elsewhere still use the general 404.</li>
+<li>Add a slow “Reviews” part to the product page (await a 1.5 s delay), and wrap it alone in <code>&lt;Suspense&gt;</code> with a small skeleton, so the rest of the page appears at once.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>error.tsx</code> catches errors from the pages <em>below</em> it, not from the layout in the same folder. To catch errors in the root layout too, Next.js has a special <code>global-error.tsx</code>, which must write its own <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A static blog that search engines love</h3>
+<p class="project-goal">A blog whose articles are Markdown files in the project, built entirely at build time, with a title and description per article, a sitemap and a robots file.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading files in a Server Component, <code>generateStaticParams</code>, <code>generateMetadata</code>, <code>sitemap.ts</code> and <code>robots.ts</code>.</p>
+<ol class="steps">
+<li>Put three articles in <code>content/</code>, each starting with a title and a date on its first lines. Write <code>lib/posts.ts</code> with <code>getPosts()</code> and <code>getPost(slug)</code>, using <code>node:fs/promises</code>.</li>
+<li>Make <code>app/blog/page.tsx</code> list the articles, newest first, and <code>app/blog/[slug]/page.tsx</code> show one. Turn Markdown into HTML with a library such as <code>marked</code>, on the server.</li>
+<li>Add <code>generateStaticParams</code> and <code>generateMetadata</code>, and call <code>notFound()</code> for unknown slugs.</li>
+<li>Add <code>app/sitemap.ts</code>, which returns the address of every article, and <code>app/robots.ts</code>, which points to the sitemap. Open <code>/sitemap.xml</code> to check.</li>
+<li>Build, and check that every article is ○ or ◐ in the route table. Then use <code>curl</code> to check that an article’s title is in the HTML.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the Markdown library runs only on the server, so it adds nothing to the browser’s JavaScript. That is a quiet advantage of Server Components: heavy libraries for formatting, dates or syntax highlighting are free for your users.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Prices an admin can change</h3>
+<p class="project-goal">A protected admin page where the shop owner changes a product’s price. The cached product pages show the new price at once, and nobody else can change anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> cookies, <code>redirect</code>, Server Actions with permission checks, <code>cacheTag</code> and <code>updateTag</code>.</p>
+<ol class="steps">
+<li>Mark <code>getProducts</code> and <code>getProduct</code> with <code>"use cache"</code> and <code>cacheTag("products")</code>, and keep the prices in a module-level <code>Map</code> that an <code>updatePrice(id, price)</code> function can change.</li>
+<li>Write a sign-in Server Action that compares a password with <code>process.env.ADMIN_PASSWORD</code>, and on success sets an <code>httpOnly</code>, <code>secure</code>, <code>sameSite</code> cookie with <code>cookies()</code> from <code>next/headers</code>.</li>
+<li>Make <code>app/admin/page.tsx</code> read the cookie and call <code>redirect("/admin/sign-in")</code> if it is missing.</li>
+<li>Write the <code>changePrice</code> action. It checks the cookie <em>again</em> (the page check does not protect the action), validates the price with zod as a positive whole number, calls <code>updatePrice</code>, then <code>updateTag("products")</code>.</li>
+<li>Change a price, open the product page, and check that the new price is there without a new build.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a real app would keep prices in a database and signed sessions in a library, but the shape is the same: the permission check lives inside every action, never only in the page that shows the form.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an <code>/about</code> page with its own title in <code>metadata</code>, and a link to it in the layout’s nav. What symbol will it get in the route table, and why?</li>
+<li><span class="level">Easy</span> Add <code>import "server-only";</code> at the top of <code>lib/products.ts</code>. Then import <code>getProducts</code> into <code>AddToCart.tsx</code> and build. What happens, and why is that good?</li>
+<li><span class="level">Medium</span> Add a <code>?sort=price</code> option to <code>/products</code>. The page receives <code>searchParams</code> as a promise, like <code>params</code>. Sort on the server, and make two links that switch the order.</li>
+<li><span class="level">Medium</span> Write <code>app/products/error.tsx</code>. It must be a Client Component that receives <code>{ error, reset }</code>. Make <code>getProduct</code> throw for id 3 to test it, and give the page a “Try again” button that calls <code>reset</code>.</li>
+<li><span class="level">Challenge</span> Give the contact form a <code>useFormStatus</code>-based submit button in its own component, and make <code>sendMessage</code> refuse more than three messages per minute from the same address, using <code>headers()</code> from <code>next/headers</code> to read <code>x-forwarded-for</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You can now build, test, secure and ship a complete React application. The next chapter is about the work around the code that makes someone senior: reviewing other people’s changes, helping juniors grow, and making technical decisions that a team can live with.</p>
+</div>
+</section>

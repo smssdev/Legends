@@ -1,0 +1,231 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/transactions/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Transactions, Locks and Consistency</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>group changes into transactions that happen completely or not at all</li>
+<li>see a race condition sell one item ten times, and fix it three different ways</li>
+<li>choose an isolation level, knowing what each lets a transaction see</li>
+<li>recognise deadlocks, and prevent them with a consistent lock order</li>
+<li>retry the transactions the database refuses, safely</li>
+<li>keep side effects such as emails and messages out of transactions that might roll back</li>
+</ul>
+</div>
+
+<p class="lead">Everything in Part 1 quietly assumed one request at a time. A real shop serves many customers at once, and the database runs their requests side by side. Most of the time they touch different rows and nothing interesting happens. Then two customers buy the last robot kit at the same moment, and the shop sells it twice. These bugs never show in development, where you are the only user; they appear under load, rarely, and they cost money. This chapter makes them happen on purpose, so you can see them, and then makes them impossible.</p>
+
+<aside class="bit" data-mood="think"><p>A bug report said: “we sold 103 tickets for a room of 100”. I could not reproduce it. Every test passed, every read of the code looked right. It only happened when three people pressed “buy” in the same tenth of a second. It took me a week to understand that my code was correct for one user and wrong for two.</p></aside>
+
+<h2>{{n}}.1 Transactions: all or nothing</h2>
+
+<p>A <dfn>transaction</dfn> groups statements so that they act as one. It has four guarantees, known as <dfn>ACID</dfn>:</p>
+<ul>
+<li><strong>Atomicity:</strong> either every change is kept, or none is.</li>
+<li><strong>Consistency:</strong> every rule of the schema holds at the end.</li>
+<li><strong>Isolation:</strong> transactions running at the same time do not see each other’s unfinished work (exactly how much they see is the isolation level, {{n}}.3).</li>
+<li><strong>Durability:</strong> once committed, a change survives a crash.</li>
+</ul>
+
+<p>This chapter uses two small tables:</p>
+
+<pre data-code="schema.sql" data-title="schema.sql"></pre>
+
+<p><code>BEGIN</code> starts a transaction, <code>COMMIT</code> keeps its changes, <code>ROLLBACK</code> throws them away. Inside the transaction, the change is visible; after the rollback, it never happened:</p>
+
+<pre data-code="basics.sh" data-title="Terminal"></pre>
+
+<p>When one step fails, the transaction is <em>aborted</em>: PostgreSQL ignores every later statement, and even <code>COMMIT</code> turns into a <code>ROLLBACK</code>. The first update, which succeeded, is undone with the rest:</p>
+
+<pre data-code="atomic.sh" data-title="Terminal"></pre>
+
+<p>That is exactly what an order with several items needs: if the third item is out of stock, the stock of the first two must not be taken. Every statement you run outside <code>BEGIN</code> is a transaction of its own, committed at once.</p>
+
+<h2>{{n}}.2 A race: one kit, ten buyers</h2>
+
+<p>Here is the obvious way to sell a product: read the stock, check it in code, write the new stock, record the order. To see what happens under load, the program starts ten buyers at the same moment, each with its own database connection, for a product with one unit left. A short pause between reading and writing stands for what a real application does there, such as calling a payment service:</p>
+
+<!-- node -->
+<pre data-code="node/race.ts" data-from="async function buy" data-to="^}" data-title="node/race.ts"></pre>
+
+<pre data-code="node-race.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/race.php" data-from="function buy" data-to="^}" data-title="php/race.php"></pre>
+
+<p>The ten buyers are ten processes made with <code>pcntl_fork</code>, each with its own connection, like ten PHP workers serving ten requests:</p>
+
+<pre data-code="php/race.php" data-from="$setup = $connect" data-to="^}#2" data-title="php/race.php"></pre>
+
+<pre data-code="php-race.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<p>The naive version sold one kit <strong>ten times</strong>. Every buyer read “1 in stock” before anyone had written, every buyer decided to sell, and every buyer wrote “0”. The transaction did not help: it makes changes all-or-nothing, but it does not stop two transactions from reading the same value. This is a <dfn>race condition</dfn>, a <dfn>check-then-act</dfn> bug: the check was true when it ran and false by the time the action happened.</p>
+
+<p>The other three versions each sold it once. They are the three standard fixes:</p>
+<ul>
+<li><strong>An atomic update.</strong> <code>UPDATE products SET stock = stock - 1 WHERE id = 1 AND stock &gt; 0</code> checks and changes in one statement. PostgreSQL locks the row while it updates, so the second buyer’s update waits, then re-checks <code>stock &gt; 0</code> against the new value and changes nothing. The number of changed rows tells the code whether it sold. When the rule fits in a <code>WHERE</code>, this is the simplest and fastest fix.</li>
+<li><strong>A row lock.</strong> <code>SELECT … FOR UPDATE</code> reads the row and locks it until the transaction ends. Every other buyer waits at that line, then reads the stock after the first one committed. Use it when the decision needs code between the read and the write (a price calculation, a call to another service), and keep such transactions short, because everyone waits.</li>
+<li><strong>Serializable isolation.</strong> The code stays naive, and the database guarantees that the result equals running the transactions one after another. When it detects that this is impossible, it refuses a transaction with error <code>40001</code>, and the code runs it again from the start: here, nine of the ten buyers were refused once and found the stock empty on their retry.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: the check in code is never enough</p><p>Any rule of the form “only if …” (enough stock, a seat still free, a balance high enough, a username not taken) is a race when it is checked in code and then written. Put the rule where the database can enforce it at the moment of the write: in a conditional update, a unique constraint, a <code>CHECK</code>, or a lock. Chapter {{n-2}}’s <code>CHECK (stock &gt;= 0)</code> would also have stopped the oversale, with an error instead of a quiet second order.</p></aside>
+
+<h2>{{n}}.3 Isolation levels</h2>
+
+<p>The <dfn>isolation level</dfn> decides what a transaction sees of other transactions that commit while it is running. Two connections show the difference: A reads a price, B changes it and commits, A reads again and then tries to change it:</p>
+
+<!-- node -->
+<pre data-code="node/isolation.ts" data-from="// " data-to="^}" data-title="node/isolation.ts"></pre>
+
+<pre data-code="node-isolation.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/isolation.php" data-from="// " data-to="^}" data-title="php/isolation.php"></pre>
+
+<pre data-code="php-isolation.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<ul>
+<li><strong><code>READ COMMITTED</code></strong>, PostgreSQL’s default: every statement sees everything committed before it started. A’s second read saw B’s new price, so two reads in one transaction disagreed, and A’s update built on B’s value.</li>
+<li><strong><code>REPEATABLE READ</code></strong>: the transaction sees a snapshot taken at its first statement. A’s second read still saw 45000, so its reads are consistent with each other. And when A tried to update a row that B had changed since that snapshot, PostgreSQL refused: A was working from an old picture. The application must retry.</li>
+<li><strong><code>SERIALIZABLE</code></strong> adds detection of every pattern that could not happen if the transactions ran one after another, as in the race above. It is the safest level and needs retries the most.</li>
+</ul>
+
+<p>A practical rule: keep the default, use atomic statements and constraints for the rules they can express, take row locks when code must decide between a read and a write, and use <code>SERIALIZABLE</code> (with retries) for complicated multi-row rules where it is hard to see every race. Reports that read many tables at once benefit from <code>REPEATABLE READ</code>, so their numbers come from one moment.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why didn’t wrapping the naive version in a transaction stop the oversale?</li><li>What does <code>FOR UPDATE</code> do to other transactions that read the same row?</li><li>A transaction fails with error <code>40001</code>. What should the application do?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Deadlocks</h2>
+
+<p>Locks have their own trap. Transaction A locks product 1 and then wants product 2; transaction B has locked product 2 and wants product 1. Each waits for the other, forever:</p>
+
+<!-- node -->
+<pre data-code="node/deadlock.ts" data-from="// " data-to="^}" data-title="node/deadlock.ts"></pre>
+
+<pre data-code="node-deadlock.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/deadlock.php" data-from="// " data-to="^}" data-title="php/deadlock.php"></pre>
+
+<pre data-code="php-deadlock.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+
+<p>PostgreSQL checks for such cycles after a second of waiting (<code>deadlock_timeout</code>), picks one transaction, and aborts it with error <code>40P01</code>, so the other can finish. Which one loses depends on timing. Two habits keep deadlocks rare: <strong>lock rows in a consistent order</strong> (for an order with several products, lock or update them sorted by id), and <strong>keep transactions short</strong>, with no network calls or user waits inside them. Like serialization failures, a deadlock victim can simply be retried.</p>
+
+<h2>{{n}}.5 Transactions in the framework</h2>
+
+<!-- node -->
+<p>With Kysely from Chapter {{n-1}}, a transaction is a callback; it commits when the callback returns and rolls back when it throws. Row locks and isolation levels are methods:</p>
+<ul>
+<li><code>await db.transaction().setIsolationLevel("serializable").execute(async (trx) =&gt; { … })</code>, using <code>trx</code>, not <code>db</code>, for every query inside.</li>
+<li><code>trx.selectFrom("products").selectAll().where("id", "=", id).forUpdate().executeTakeFirst()</code> for a row lock.</li>
+</ul>
+<p>Kysely does not retry for you: wrap the call in a small loop that retries on codes <code>40001</code> and <code>40P01</code>, a few times, with a short random pause between attempts. The race program above has exactly that loop.</p>
+<!-- /node -->
+<!-- laravel -->
+<p>Laravel wraps a transaction in a closure: <code>DB::transaction(function () { … })</code> commits when the closure returns and rolls back when it throws. Its second argument is a number of attempts: <code>DB::transaction($work, attempts: 5)</code> runs the closure again when the database reports a deadlock or a serialization failure, which is the retry loop of the race program, built in. Row locks are query builder methods: <code>Product::whereKey($id)-&gt;lockForUpdate()-&gt;first()</code>, or <code>sharedLock()</code> to stop others from changing the row while still letting them read it. Chapter {{n-3}}’s order controller used the atomic update inside <code>DB::transaction</code>.</p>
+<!-- /laravel -->
+
+<h2>{{n}}.6 Side effects and the outbox</h2>
+
+<p>A transaction can be rolled back; an email cannot be unsent. If the code sends “your order is confirmed” inside the transaction and the commit then fails (a deadlock, a constraint, a crash), the customer has an email for an order that does not exist. Sending after the commit has the opposite problem: if the process crashes between the commit and the send, the order exists and the email never goes.</p>
+
+<p>The reliable pattern is the <dfn>outbox</dfn>: inside the same transaction as the order, insert a row into an <code>outbox</code> table describing the message to send. The order and its message commit together or not at all. A separate worker reads the outbox, sends each message, and marks it sent; if it crashes, it sends again later, so the receiver must tolerate duplicates (idempotency again). Chapter {{n+4}} builds the worker with a queue<!-- laravel -->, and Laravel’s <code>afterCommit</code> option for jobs covers the simpler half of the problem<!-- /laravel -->.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: test races on purpose</p><p>A race does not appear in a test that runs one request at a time. For every “only if” rule (stock, seats, balances, unique names), write one test that starts many requests at the same moment, as this chapter’s race program does, and asserts on the final state: one sale, one booking, a balance never below zero. Such a test fails reliably on the naive code, which is the proof that it tests the right thing.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Check in code, then write</td><td>Two requests both pass the check</td><td>Atomic conditional update, constraint, or row lock</td></tr>
+<tr><td>Believing a transaction prevents races</td><td>Oversales inside perfectly good transactions</td><td>Locks, constraints or <code>SERIALIZABLE</code></td></tr>
+<tr><td>No retry on <code>40001</code> and <code>40P01</code></td><td>Errors for users at busy moments</td><td>Retry the whole transaction a few times</td></tr>
+<tr><td>Locking rows in random order</td><td>Deadlocks</td><td>Always the same order, such as by id</td></tr>
+<tr><td>Network calls inside a transaction</td><td>Long locks, everyone waits</td><td>Short transactions; call before or after</td></tr>
+<tr><td>Emails sent inside a transaction</td><td>Messages about changes that rolled back</td><td>An outbox committed with the change</td></tr>
+<tr><td>Testing concurrency one request at a time</td><td>Races found by customers</td><td>Tests that start many requests together</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A <strong>transaction</strong> makes several statements <strong>atomic</strong>: one failure, and <code>COMMIT</code> becomes <code>ROLLBACK</code>.</li>
+<li>Transactions do not stop <strong>races</strong>: “read, check in code, write” sells one item many times under load.</li>
+<li>Three fixes: an <strong>atomic conditional update</strong>, a <strong>row lock</strong> with <code>FOR UPDATE</code>, or <strong><code>SERIALIZABLE</code></strong> with retries.</li>
+<li><strong><code>READ COMMITTED</code></strong> sees each statement’s latest commits; <strong><code>REPEATABLE READ</code></strong> sees one snapshot and refuses updates to rows changed since.</li>
+<li><strong>Deadlocks</strong> are cycles of locks; PostgreSQL breaks them with <code>40P01</code>. Lock in a consistent order, keep transactions short, retry.</li>
+<li>Side effects belong after the commit, reliably through an <strong>outbox</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A transaction makes its own changes all-or-nothing, but under the default isolation level it does not stop other transactions from reading the same row at the same time, so all ten read “1” before any of them wrote. 2. Other <code>SELECT … FOR UPDATE</code> statements, and updates, on that row wait until the locking transaction commits or rolls back; plain <code>SELECT</code>s still read the last committed version without waiting. 3. Roll back and run the whole transaction again from the beginning, reading the data afresh, a limited number of times, ideally after a short random pause.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project is about correctness under concurrency. Prove each one with a test or a script that starts many requests at the same moment and checks the final state.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A safe stock reservation</h3>
+<p class="project-goal">Turn the race program into a reusable function that reserves several products for one order, safely, and prove it under load.</p>
+<p class="project-skills"><strong>You will practise:</strong> atomic updates, transactions with several statements, consistent lock order, and concurrency tests.</p>
+<ol class="steps">
+<li>Write <code>reserve(items)</code>: inside one transaction, take each product’s quantity with an atomic conditional update, and roll back the whole order if any item is short.</li>
+<li>Sort the items by product id before updating, and explain why.</li>
+<li>Start 50 concurrent orders for random baskets on a few products with small stocks, and check afterwards that no stock is negative and that the stock taken equals the quantities in the successful orders.</li>
+<li>Remove the sorting, run it again, and count the deadlocks.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the final check is the real test: the sum of quantities in successful orders, plus the remaining stock, must equal the starting stock, for every product.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Money between wallets</h3>
+<p class="project-goal">Build customer wallets with transfers that never lose or create money, whatever the concurrency.</p>
+<p class="project-skills"><strong>You will practise:</strong> double-entry thinking, row locks in order, <code>CHECK</code> constraints, and invariants.</p>
+<ol class="steps">
+<li>Create <code>wallets</code> (customer, balance in piastres, <code>CHECK (balance &gt;= 0)</code>) and <code>transfers</code> (from, to, amount, time).</li>
+<li>Write <code>transfer(from, to, amount)</code>: lock both wallets with <code>FOR UPDATE</code> in id order, check the balance, move the money, and record the transfer, in one transaction.</li>
+<li>Run 1,000 random transfers concurrently between 20 wallets, and check that the total of all balances never changed.</li>
+<li>Rewrite it with <code>SERIALIZABLE</code> and no explicit locks, with retries, and compare the number of retries and the time taken.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> real systems rarely store a balance alone; they keep a ledger of entries and compute or cache the balance from it. Your <code>transfers</code> table is the start of that ledger.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>An outbox that never loses a message</h3>
+<p class="project-goal">Send an order confirmation exactly when the order is committed, even if processes crash at the worst moments.</p>
+<p class="project-skills"><strong>You will practise:</strong> the outbox pattern, <code>FOR UPDATE SKIP LOCKED</code>, idempotent consumers, and crash testing.</p>
+<ol class="steps">
+<li>Create an <code>outbox</code> table (id, type, payload as JSON, created, sent). Insert a message in the same transaction as each order.</li>
+<li>Write a worker that, in a transaction, takes up to 10 unsent messages with <code>FOR UPDATE SKIP LOCKED</code>, “sends” them (write them to a file), and marks them sent.</li>
+<li>Run three workers at once and check that no message is sent twice by different workers in normal operation.</li>
+<li>Kill a worker in the middle of a batch (after writing to the file, before committing) and show that the message is sent again: make the receiver ignore duplicates by message id.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>SKIP LOCKED</code> lets each worker skip the rows another worker has locked, so several workers share the queue without waiting for each other. It is how PostgreSQL can serve as a simple job queue.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A transaction has updated three rows when the application crashes before <code>COMMIT</code>. What happens to the three changes, and to the locks on those rows?</li>
+<li><span class="level">Easy</span> Choose a fix for each, and say why: counting page views; booking a numbered seat; a username that must be unique.</li>
+<li><span class="level">Medium</span> Change the deadlock program so that both transactions update the two products without ever deadlocking, and run it.</li>
+<li><span class="level">Medium</span> Why is it wrong to call a payment service inside a transaction that holds a <code>FOR UPDATE</code> lock on the product? Propose a better order of steps for “reserve stock, charge the card, confirm the order”.</li>
+<li><span class="level">Challenge</span> Write a helper that runs a transaction function with retries on <code>40001</code> and <code>40P01</code>: at most five attempts, a random pause that grows with each attempt, and the original error if all attempts fail.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The database is now correct; next we make it fast for the questions asked thousands of times a minute. Redis keeps answers in memory: caching, invalidation, rate limits shared between servers, and locks across processes.</p>
+</div>
+</section>

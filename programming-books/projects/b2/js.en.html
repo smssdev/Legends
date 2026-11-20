@@ -1,0 +1,54 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project builds a small, reusable tool of the kind you find inside real libraries. Write it first in your own way, run it, compare your output with the one below, and only then look at the solution in the code repository.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A memoize helper</h3>
+<p class="project-goal">Write <code>memoize(fn)</code>, which returns a faster version of any one-argument function by remembering its answers.</p>
+<p class="project-skills"><strong>You will practise:</strong> closures, <code>Map</code>, and measuring a function by counting its calls.</p>
+<ol class="steps">
+<li>Inside <code>memoize</code>, create a <code>Map</code> called <code>cache</code>. The closure keeps it alive between calls.</li>
+<li>Return an arrow function that takes <code>arg</code>. If <code>cache.has(arg)</code>, return the saved value.</li>
+<li>Otherwise call <code>fn(arg)</code>, save the result with <code>cache.set</code>, and return it.</li>
+<li>Count the real calls of a slow function with a variable outside it, and prove that repeated arguments are free.</li>
+<li>Memoize a recursive Fibonacci function. It must call the <em>memoized</em> version of itself, or the cache is never used.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> memoize only <dfn>pure functions</dfn>: functions whose answer depends only on their arguments. A function that reads the clock or a server would return stale answers forever.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/memoize.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>An event emitter</h3>
+<p class="project-goal">Build the small class that sits at the heart of Node, browsers and many libraries: parts of a program announce events, and other parts listen.</p>
+<p class="project-skills"><strong>You will practise:</strong> classes, a private field, <code>Map</code> of <code>Set</code>s, rest parameters, and returning a clean-up function.</p>
+<ol class="steps">
+<li>Create <code>class Emitter</code> with a private <code>#listeners = new Map()</code>. Each key is an event name; each value is a <code>Set</code> of functions.</li>
+<li><code>on(event, fn)</code> adds the function, creating the <code>Set</code> the first time. Make it return <code>() =&gt; this.off(event, fn)</code>.</li>
+<li><code>off(event, fn)</code> removes it. Use <code>?.</code> so that removing from an unknown event is harmless.</li>
+<li><code>emit(event, ...args)</code> calls every listener with the arguments. Loop over a <em>copy</em> (<code>[...set]</code>), because a listener may remove itself while you loop.</li>
+<li><code>once(event, fn)</code> listens with a wrapper that stops itself before calling <code>fn</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> returning the “stop” function from <code>on</code> is a pattern you will meet again: React’s <code>useEffect</code> and Vue’s <code>watch</code> both use it. Whoever starts listening holds the way to stop.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/emitter.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Retry with exponential backoff</h3>
+<p class="project-goal">Networks fail for a moment all the time. Write <code>retry(fn, options)</code>, which tries an async function again, waiting longer each time, and gives up with a clear error.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>async</code>/<code>await</code> in a loop, default options with destructuring, <code>2 ** n</code>, and errors with <code>cause</code>.</p>
+<ol class="steps">
+<li>Write the <code>wait(ms)</code> helper that returns a promise.</li>
+<li>Give <code>retry</code> a second parameter <code>{ retries = 3, delay = 10 } = {}</code>, so it works with no options at all.</li>
+<li>Loop over attempts. In a <code>try</code>, <code>return await fn(attempt)</code>: the <code>await</code> is essential, or the <code>catch</code> never sees the failure.</li>
+<li>In the <code>catch</code>, give up when the attempts are used up, by throwing a new error with <code>{ cause: error }</code>. Otherwise wait <code>delay * 2 ** (attempt - 1)</code> and loop.</li>
+<li>Test it with a fake API, <code>flaky(n)</code>, that fails <code>n</code> times and then succeeds. Try one that recovers and one that never does.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in production, add a little randomness (“jitter”) to the pause, so that a thousand phones that lost the network together do not all retry at the same millisecond. And never retry actions that are not safe to repeat, such as charging a card, unless the server supports it.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/retry.mjs"></pre>
+</div>

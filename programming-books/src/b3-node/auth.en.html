@@ -1,0 +1,232 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/auth/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Authentication and Authorization</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell authentication (who are you?) from authorization (may you do this?)</li>
+<li>store passwords so that a stolen database does not reveal them</li>
+<li>register and sign users in, without telling attackers which emails exist</li>
+<li>issue session tokens you can revoke, and understand when a JWT is the better choice</li>
+<li>protect routes by role and by ownership</li>
+<li>slow down password guessing, and test all of it automatically</li>
+</ul>
+</div>
+
+<p class="lead">Until now, anyone could call every route of the shop’s API. A real shop needs to know who is calling: a customer sees their own orders and no one else’s, and only staff may see the list of customers. Getting this right is not hard, but almost every mistake in it is a security incident, and the mistakes are invisible until someone exploits them. This chapter builds it step by step with Node’s own crypto module, PostgreSQL and Fastify, and runs every request against the real server.</p>
+
+<aside class="bit" data-mood="think"><p>Years ago a site I used was breached, and the attackers published its user table. My password was right there, in plain text, next to my email. It was the same password I used on two other sites. That afternoon I changed seven passwords, and I promised myself that no table I build would ever hold one.</p></aside>
+
+<h2>{{n}}.1 Two questions</h2>
+
+<p>Every protected request answers two separate questions, in order:</p>
+<ul>
+<li><dfn>Authentication</dfn>: <em>who is calling?</em> The client proves an identity, with a password once and then with a token on every request. If it cannot, the answer is <code>401 Unauthorized</code> (a confusing name: it means “not authenticated”).</li>
+<li><dfn>Authorization</dfn>: <em>may this user do this?</em> The identity is known; the rules decide. If they say no, the answer is <code>403 Forbidden</code>, or <code>404 Not Found</code> when even the existence of the thing is private.</li>
+</ul>
+<p>Keeping them apart keeps the code clear: one function finds the user, and the rules about what each user may do live next to the routes they protect.</p>
+
+<h2>{{n}}.2 Storing passwords</h2>
+
+<p>A password must never be stored as it is, and never with an ordinary hash such as SHA-256 either. A fast hash is the problem: a graphics card computes billions of SHA-256 hashes a second, so an attacker with a stolen table tries every common password against every row in minutes. Password storage needs a hash that is <em>slow on purpose</em> and needs a lot of memory, so that each guess costs real time: <dfn>scrypt</dfn>, <dfn>Argon2</dfn> or <dfn>bcrypt</dfn>. Node has scrypt built in:</p>
+
+<pre data-code="src/password.ts" data-title="src/password.ts"></pre>
+
+<ul>
+<li>The <dfn>salt</dfn> is 16 random bytes, different for every hash, stored next to it. Two users with the same password get different hashes, so an attacker must attack each row separately, and precomputed tables of hashes are useless.</li>
+<li>The <strong>cost</strong> is stored inside the string. When computers get faster you raise <code>COST</code>; old hashes still verify with the cost they were made with, and can be upgraded when the user next signs in (exercise 3).</li>
+<li><code>timingSafeEqual</code> compares all 32 bytes every time. An ordinary comparison stops at the first different byte, and the time it takes can leak information.</li>
+<li><code>normalize("NFKC")</code> makes passwords typed on different keyboards compare equal when they look the same, which matters for Arabic and other non-Latin passwords.</li>
+</ul>
+
+<pre data-code="hash.sh" data-title="Terminal"></pre>
+
+<p>The same password gave two different strings, both verify, and one hash took tens of milliseconds: nothing for a user signing in, a great deal for an attacker trying a billion guesses.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: never write your own crypto</p><p>This chapter uses scrypt, HMAC and random bytes from Node’s <code>crypto</code> module, all written and reviewed by specialists. Combining well-known pieces in the standard way is fine; inventing your own hashing scheme, your own encryption or your own random token generator is not. <code>Math.random()</code> is never acceptable for anything secret: it is predictable. Use <code>randomBytes</code>.</p></aside>
+
+<h2>{{n}}.3 Registering and signing in</h2>
+
+<p>The users table follows Chapter {{n-3}}’s migrations. Emails are compared without their capitals, so the unique index is on <code>lower(email)</code>, not on the column:</p>
+
+<pre data-code="migrations/2026_11_08_001_users.ts" data-from="await db.schema" data-to=".execute();#2" data-title="migrations/2026_11_08_001_users.ts"></pre>
+
+<p>Registration validates the body, hashes the password and inserts the user. The unique index, not a check in code, decides whether the email is taken: <code>ON CONFLICT DO NOTHING</code> returns no row when it is, and two simultaneous registrations with the same email cannot both succeed (the lesson of Chapter {{n-2}}):</p>
+
+<pre data-code="src/routes/auth.ts" data-from="const Email" data-to="^  );" data-title="src/routes/auth.ts"></pre>
+
+<pre data-code="register.sh" data-title="Terminal"></pre>
+
+<p>Signing in is where attackers probe. Two details stop the login route from telling them which emails have accounts:</p>
+
+<pre data-code="src/routes/auth.ts" data-from="^  app.post(#2" data-to="^  });" data-title="src/routes/auth.ts"></pre>
+
+<ul>
+<li><strong>The same answer</strong> for an unknown email and a wrong password: “email or password is wrong”, never “no such user”.</li>
+<li><strong>The same time.</strong> Without the <code>DUMMY</code> hash, an unknown email would answer at once and a known one after a slow hash, and the time alone would reveal which emails exist. Verifying against a dummy hash makes both cost one hash.</li>
+</ul>
+
+<pre data-code="login.sh" data-title="Terminal"></pre>
+
+<p>(Registration still reveals that an email is taken; that is usually accepted for usability. Sites that must hide it send an email in both cases instead of answering differently.)</p>
+
+<h2>{{n}}.4 Sessions and tokens</h2>
+
+<p>After a successful sign-in the server gives the client a <dfn>session token</dfn>: proof of identity for the next requests, so the password is sent once. Our tokens are 32 random bytes, and the database stores only their SHA-256 hash:</p>
+
+<pre data-code="src/sessions.ts" data-from="const digest" data-title="src/sessions.ts"></pre>
+
+<p>A fast hash is right here, unlike for passwords: the token is 32 random bytes, not a word a person chose, so there is nothing to guess, and the hash only ensures that someone who reads the sessions table cannot use what they read. On every request, a <dfn>preHandler</dfn> reads the <code>Authorization</code> header and finds the user:</p>
+
+<pre data-code="src/auth.ts" data-from="// " data-title="src/auth.ts"></pre>
+
+<pre data-code="me.sh" data-title="Terminal"></pre>
+
+<p>Because sessions live in the database, signing out is a <code>DELETE</code>, and the token stops working at once. The database keeps only hashes, of passwords and of tokens:</p>
+
+<pre data-code="logout.sh" data-title="Terminal"></pre>
+
+<h3>What about JWTs?</h3>
+
+<p>A <dfn>JSON Web Token</dfn> takes the opposite approach: instead of a random key into a table, the token <em>contains</em> the data (the user id, the role, the expiry), signed with the server’s secret so that it cannot be changed. Here is one made by hand, to see what is inside:</p>
+
+<pre data-code="demos/jwt.ts" data-from="// " data-title="demos/jwt.ts"></pre>
+
+<pre data-code="jwt.sh" data-title="Terminal"></pre>
+
+<p>Changing the role to <code>admin</code> broke the signature, so a JWT cannot be forged. But anyone can read it, and the server checks it without looking anything up, which is both its strength and its weakness: it cannot be revoked. A user who signs out, changes their password or loses their role keeps a valid token until it expires. JWTs fit messages between your own services and short-lived tokens (minutes); for users of your own apps, opaque tokens in a table, or in Redis from Chapter {{n-1}}, are simpler and safer. Never put a secret in a JWT payload.</p>
+
+<aside class="box note"><p class="box-title">Note: tokens in browsers</p><p>A mobile app keeps the token in the phone’s secure storage and sends it in the <code>Authorization</code> header, as <code>curl</code> does here. A website should not keep it in <code>localStorage</code>, where any injected script can read it. Instead the server sets it in a cookie with <code>HttpOnly</code> (scripts cannot read it), <code>Secure</code> (HTTPS only) and <code>SameSite=Lax</code> (not sent with most requests from other sites), and reads the cookie instead of the header. Cookies bring a risk of their own, cross-site request forgery, which Chapter {{n+1}} deals with.</p></aside>
+
+<h2>{{n}}.5 Authorization: roles and ownership</h2>
+
+<p>Authentication found the user; now the routes decide what that user may do. Two kinds of rule cover most applications: a <dfn>role</dfn> (customer or admin) for whole areas, and <dfn>ownership</dfn> for single records:</p>
+
+<pre data-code="src/routes/orders.ts" data-from="export const" data-title="src/routes/orders.ts"></pre>
+
+<pre data-code="authz.sh" data-title="Terminal"></pre>
+
+<ul>
+<li><code>addHook("onRequest", authenticate)</code> protects every route of the plugin, including routes added to it later. A rule that each route must remember will one day be forgotten.</li>
+<li>The list of orders is <strong>filtered in the query</strong>: <code>WHERE user_id = …</code>. Fetching everything and filtering in code risks returning too much the day someone changes it.</li>
+<li>Omar asking for Sara’s order gets <strong>404</strong>, exactly as for an order that does not exist. A 403 would confirm that order 1 exists, and ids that count up would let him learn how many orders the shop has.</li>
+<li>The admin list returns 403: Omar knows the route exists, and he is told he lacks the role.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why is SHA-256 fine for session tokens but not for passwords?</li><li>A signed-in customer asks for <code>/admin/users</code>. Which status, and why not 401?</li><li>Why does the login route verify a dummy hash when the email does not exist?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Slowing down guessing</h2>
+
+<p>A slow hash protects a stolen table; the running server needs protection too, against a script that tries passwords one after another. The login route has its own rate limit (from Chapter {{n-5}}’s plugin), keyed on the client’s address <em>and</em> the email, so one attacker cannot try thousands of passwords on one account:</p>
+
+<pre data-code="limit.sh" data-title="Terminal"></pre>
+
+<p>The sixth attempt was refused before its password was even checked. In production the counters belong in Redis, shared by every server. Locking the account after a few failures is tempting but lets anyone lock out any user by typing wrong passwords for them; rate limits slow the attacker without punishing the owner. Adding a second factor (a code from an app) is the strongest protection of all.</p>
+
+<h2>{{n}}.7 Testing it</h2>
+
+<p>Security rules are exactly the kind of code that breaks silently, so each rule gets a test. Fastify’s <code>app.inject</code> sends requests to the application without a network, so the tests run fast:</p>
+
+<pre data-code="src/auth.test.ts" data-from="async function signIn" data-to="^});#2" data-title="src/auth.test.ts"></pre>
+
+<pre data-code="test.sh" data-title="Terminal"></pre>
+
+<p>Note what is tested: not only that the right user gets in, but that the wrong ones are kept out. A test suite that checks only the happy path would pass for an API with no security at all.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: test the “no” for every route</p><p>For every protected route, write at least two tests: one without a token (401) and one as a user who must not have access (403 or 404). Add them in the same pull request as the route. The day someone removes a hook or changes a query, these tests fail, which is far cheaper than finding out from a customer who saw someone else’s order.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Passwords in plain text, or with SHA-256 or MD5</td><td>A stolen table reveals most passwords</td><td>scrypt, Argon2 or bcrypt, with a salt</td></tr>
+<tr><td>“No such user” on login</td><td>Attackers learn which emails have accounts</td><td>One message, and a dummy hash for the same time</td></tr>
+<tr><td>Tokens from <code>Math.random()</code> or a counter</td><td>Tokens can be guessed</td><td><code>randomBytes(32)</code></td></tr>
+<tr><td>Tokens stored as they are</td><td>A leaked table opens every account</td><td>Store their hash</td></tr>
+<tr><td>Long-lived JWTs for sign-in</td><td>No way to sign a user out</td><td>Revocable tokens, or JWTs of minutes</td></tr>
+<tr><td>Checking the user in some routes only</td><td>The forgotten route is open</td><td>A hook on the whole plugin</td></tr>
+<tr><td>Loading a record, then checking the owner in code</td><td>Easy to forget; 403 reveals the record exists</td><td>Filter by owner in the query; 404</td></tr>
+<tr><td>No limit on login attempts</td><td>Password guessing at full speed</td><td>A rate limit per address and account</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Authentication</strong> finds out who is calling (401 if unknown); <strong>authorization</strong> decides what they may do (403, or 404 to hide existence).</li>
+<li>Passwords are stored with a <strong>slow, salted hash</strong> (scrypt here), compared in constant time.</li>
+<li>Sign-in gives <strong>the same answer and the same time</strong> for a wrong email and a wrong password.</li>
+<li><strong>Session tokens</strong> are random bytes, stored only as a hash, and revoked by deleting the row.</li>
+<li>A <strong>JWT</strong> carries signed data that anyone can read and nobody can revoke: good between services and for minutes, not for user sessions.</li>
+<li>Protect whole plugins with a hook, filter records by owner in the query, rate-limit login, and <strong>test every “no”</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A session token is 32 random bytes: there are far too many possibilities to try, so the hash only needs to stop someone who reads the table from using the values directly, and a fast hash does that. A password is chosen by a person from a small set of likely words, so an attacker can try the likely ones quickly unless each try is made deliberately slow. 2. 403 Forbidden: the server knows exactly who is calling (the token is valid), so the problem is not authentication; the user lacks the admin role. 3. So that the response takes the same time whether or not the email exists; otherwise an unknown email would be answered much faster, and the time would reveal which emails have accounts.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project extends this chapter’s API. Every new rule comes with tests for the users who must be refused.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Change your password</h3>
+<p class="project-goal">Let a signed-in user change their password safely.</p>
+<p class="project-skills"><strong>You will practise:</strong> verifying the current password, hashing, and revoking sessions.</p>
+<ol class="steps">
+<li>Add <code>POST /me/password</code> with <code>current_password</code> and <code>new_password</code> (at least 12 characters).</li>
+<li>Refuse with 401 if the current password is wrong, and with 422 if the new one equals the old one.</li>
+<li>After the change, delete every other session of the user, keeping the one making the request.</li>
+<li>Test the three cases, and that a second device’s token stops working.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> asking for the current password stops someone who finds an unlocked, signed-in laptop from taking over the account.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Staff with permissions</h3>
+<p class="project-goal">Replace the two fixed roles with permissions that can be combined.</p>
+<p class="project-skills"><strong>You will practise:</strong> modelling permissions, migrations, and a reusable authorization hook.</p>
+<ol class="steps">
+<li>Add tables for <code>roles</code>, <code>permissions</code> and the links between them and users, in a migration.</li>
+<li>Write <code>requirePermission("orders.refund")</code>, loading the user’s permissions once per request.</li>
+<li>Create a “support” role that may read every order and refund, but not see the user list.</li>
+<li>Test each route with a user who has the permission and one who does not.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> check permissions, not role names, in the routes. Roles are only a convenient way to give a set of permissions to many users at once.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Forgotten password</h3>
+<p class="project-goal">Build a password reset that cannot be used to take over someone else’s account.</p>
+<p class="project-skills"><strong>You will practise:</strong> single-use tokens, expiry, not leaking account existence, and side effects through an outbox.</p>
+<ol class="steps">
+<li><code>POST /auth/forgot</code> takes an email and always answers 202, whether or not the account exists.</li>
+<li>For an existing account, store the hash of a random token with a 30-minute expiry, and put the reset link in the outbox from Chapter {{n-2}} instead of sending it inside the request.</li>
+<li><code>POST /auth/reset</code> takes the token and a new password, works once, and deletes all the user’s sessions.</li>
+<li>Test an expired token, a reused token, and that the answer for an unknown email is identical.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the reset token is a password for 30 minutes. Treat it exactly like a session token: random, hashed in the database, and deleted when used.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A colleague proposes storing <code>sha256(salt + password)</code> with a random salt per user. What does the salt protect against, and what does it not?</li>
+<li><span class="level">Easy</span> Choose the status for each: no <code>Authorization</code> header; an expired token; a customer deleting a product; a customer reading another customer’s address.</li>
+<li><span class="level">Medium</span> You raise <code>COST</code> from <code>2 ** 15</code> to <code>2 ** 16</code>. How do the existing users’ hashes get the new cost, without asking anyone to reset their password?</li>
+<li><span class="level">Medium</span> Add “sign out on every device”, and show that a token from a second device stops working.</li>
+<li><span class="level">Challenge</span> Design (without code) an access token of 10 minutes as a JWT plus a refresh token in the database. What does each request check, what happens at sign-out, and what is gained compared with this chapter’s sessions?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Users can sign in; now the API must survive people who try to break it. Security: injection, cross-site attacks, secrets, headers, dependencies, and the OWASP list of what goes wrong most often.</p>
+</div>
+</section>

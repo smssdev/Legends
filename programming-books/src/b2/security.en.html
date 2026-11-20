@@ -1,0 +1,206 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/security/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Frontend Security</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>think like an attacker: what a frontend can and cannot protect</li>
+<li>prevent cross-site scripting (XSS) by escaping, sanitising and avoiding dangerous APIs</li>
+<li>add a Content Security Policy as a second line of defence</li>
+<li>store sessions safely, and stop cross-site request forgery (CSRF) and clickjacking</li>
+<li>keep your dependencies and build pipeline trustworthy</li>
+<li>check the security headers a site sends</li>
+</ul>
+</div>
+
+<p class="lead">Every input in your app is a door, and some visitors will try every door. In this chapter you will run real attacks against small pages on your own computer, see them succeed, and then see the defences that stop them. The goal is not fear but habits: a handful of rules, applied every day, prevent the large majority of frontend security bugs.</p>
+
+<aside class="bit" data-mood="think"><p>The most important sentence of this chapter: <strong>the browser belongs to the user</strong>. Anyone can open DevTools, change your JavaScript, skip your validation and send any request they like. So the frontend protects users from <em>other people</em>; only the server can protect the data.</p></aside>
+
+<aside class="box warn"><p class="box-title">Watch out: only attack what is yours</p><p>Every attack in this chapter runs against a page served by your own computer. Trying the same against a site you do not own, without written permission, is illegal in most countries, even “just to see”.</p></aside>
+
+<h2>{{n}}.1 Cross-site scripting (XSS)</h2>
+
+<p><dfn>Cross-site scripting</dfn> happens when text from a user is treated as code in someone else’s browser. The attacker’s script then runs with the victim’s identity: it can read the page, send requests as the victim, or show a fake sign-in form. Book 1 warned about <code>innerHTML</code>; here is the attack, for real. A small lab serves pages and opens them in Chromium:</p>
+
+<pre data-code="lab.ts" data-title="lab.ts"></pre>
+<pre data-code="xss.ts" data-title="xss.ts"></pre>
+<pre data-out="xss.mjs"></pre>
+
+<p>The “comment” contains a picture whose address does not exist, and an <code>onerror</code> handler. With <code>innerHTML</code>, the browser builds that picture, the load fails, and the attacker’s code runs. No <code>&lt;script&gt;</code> tag was needed. With <code>textContent</code>, the same characters are only shown.</p>
+
+<!-- react -->
+<p>React escapes everything you put in braces, so ordinary JSX is safe by default. The dangers are the exits from that safety:</p>
+
+<pre data-code="react/escape.tsx" data-title="escape.tsx"></pre>
+<pre data-out="react/escape.mjs"></pre>
+
+<ul>
+<li>Text in braces became harmless entities: <code>&amp;lt;img…</code>.</li>
+<li><code>dangerouslySetInnerHTML</code> put the raw HTML in the page. Its long, scary name is deliberate. Use it only with HTML you control, or after sanitising it.</li>
+<li>Addresses are code too: a link to <code>javascript:…</code> runs when clicked. When a URL comes from users, allow only <code>https:</code> and <code>http:</code>.</li>
+</ul>
+<!-- /react -->
+<!-- vue -->
+<p>Vue escapes everything you put in double braces, so ordinary templates are safe by default. The dangers are the exits from that safety:</p>
+
+<pre data-code="vue/Comment.vue" data-title="Comment.vue"></pre>
+<pre data-out="vue/escape.mjs"></pre>
+
+<ul>
+<li>Text in double braces became harmless entities: <code>&amp;lt;img…</code>.</li>
+<li><code>v-html</code> put the raw HTML in the page. Use it only with HTML you control, or after sanitising it. The official Vue linter rules warn about every <code>v-html</code>, so each one is a decision someone made on purpose.</li>
+<li>Addresses are code too: a link to <code>javascript:…</code> runs when clicked, and Vue does not block it. When a URL comes from users, allow only <code>https:</code> and <code>http:</code>.</li>
+</ul>
+<!-- /vue -->
+
+<p>When you really must show HTML from users, such as the formatted text of a comment, <dfn>sanitise</dfn> it first with a library like DOMPurify, which keeps the tags you allow and removes everything else. Project {{n}}.1 does this.</p>
+
+<h2>{{n}}.2 Content Security Policy</h2>
+
+<p>Escaping is the first line of defence. A <dfn>Content Security Policy</dfn> (CSP) is the second: a header that tells the browser which scripts, styles, images and connections the page is allowed to use. If an attacker manages to inject a script anyway, the browser refuses to run it:</p>
+
+<pre data-code="csp.html" data-title="csp.html"></pre>
+<pre data-code="csp.ts" data-title="csp.ts"></pre>
+<pre data-out="csp.mjs"></pre>
+
+<p>The inline script was blocked, and the app’s own script, a file from the same site, still ran. A strict policy means writing no inline scripts or <code>onclick</code> attributes yourself, which modern build tools make easy. Start new projects with a strict CSP; adding one to an old project later is much harder. You can also run a policy in “report-only” mode first, to see what it would block without breaking anything.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>The XSS comment contained no <code>&lt;script&gt;</code> tag. How did its code run?</li><li>Why is validating a form in the browser not a security measure?</li><li>A CSP allows <code>script-src 'self'</code>. Does an injected inline script run?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 Sessions, cookies and forged requests</h2>
+
+<p>After sign-in, the browser must prove who the user is on every request. Where that proof lives matters:</p>
+
+<table>
+<thead><tr><th>Storage</th><th>Readable by JavaScript?</th><th>Risk</th></tr></thead>
+<tbody>
+<tr><td><code>localStorage</code></td><td>Yes</td><td>Any XSS can steal the token and use it from anywhere</td></tr>
+<tr><td>Cookie with <code>HttpOnly</code></td><td>No</td><td>XSS cannot read it; CSRF must be prevented (below)</td></tr>
+</tbody>
+</table>
+
+<p>For most web apps the safer choice is a session cookie set by the server with all three protections:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">HTTP response header</div><pre class="code">Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax; Path=/</pre></div>
+
+<ul>
+<li><code>HttpOnly</code>: JavaScript cannot read the cookie, so an XSS bug cannot steal it.</li>
+<li><code>Secure</code>: it is only sent over HTTPS.</li>
+<li><code>SameSite=Lax</code>: it is not sent with requests that other sites start, such as a form on an evil page that posts to your server. That attack is called <dfn>cross-site request forgery</dfn> (CSRF). For extra safety, servers also check a CSRF token or the request’s <code>Origin</code> header on every change.</li>
+</ul>
+
+<p>A related attack, <dfn>clickjacking</dfn>, loads your site invisibly inside a frame on another site and tricks users into clicking your buttons. The CSP directive <code>frame-ancestors 'none'</code>, already in the policy above, forbids other sites from framing yours.</p>
+
+<h2>{{n}}.4 The supply chain</h2>
+
+<p>A typical frontend installs hundreds of packages, written by thousands of strangers, and each one runs on your computer when you install it and in your users’ browsers when they visit. Attackers know this, and sometimes publish packages with names one letter away from popular ones, or take over the account of a real maintainer. Protect your project:</p>
+<ul>
+<li>Commit the lockfile and install with <code>npm ci</code>, so you get exactly what you reviewed (Chapter 3).</li>
+<li>Run <code>npm audit</code> in CI, and let a bot such as Dependabot or Renovate propose updates.</li>
+<li>Before adding a package, check who publishes it, how many people use it, and whether you really need it. Ten lines of your own code beat a dependency you cannot trust.</li>
+<li>Load third-party scripts from your own server when you can; if you must use a CDN, add <dfn>Subresource Integrity</dfn> (<code>integrity="sha384-…"</code>), so the browser refuses a file that has been changed.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit: never trust the client, never put secrets in it</p><p>Validate and authorise everything again on the server, for every request. And remember Chapter 3: anything in the frontend bundle, keys included, is public. If a secret is needed, the server keeps it and acts on the user’s behalf.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>User text in <code>innerHTML</code> or <!-- react --><code>dangerouslySetInnerHTML</code><!-- /react --><!-- vue --><code>v-html</code><!-- /vue --></td><td>XSS</td><td><code>textContent</code> or <!-- react -->plain JSX<!-- /react --><!-- vue -->double braces<!-- /vue -->; sanitise if HTML is required</td></tr>
+<tr><td>Links built from user input</td><td><code>javascript:</code> URLs run code</td><td>Allow only <code>https:</code> and <code>http:</code></td></tr>
+<tr><td>Tokens in <code>localStorage</code></td><td>Any XSS can steal sessions</td><td><code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code> cookies</td></tr>
+<tr><td>Security checks only in the browser</td><td>Attackers skip them</td><td>Check everything on the server</td></tr>
+<tr><td>No CSP</td><td>One XSS bug is enough</td><td>A strict policy from day one</td></tr>
+<tr><td>Installing packages without thinking</td><td>Malicious or abandoned code in your app</td><td>Lockfiles, audits, fewer dependencies</td></tr>
+<tr><td>Secrets in frontend code</td><td>Anyone can read them</td><td>Keep them on the server</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>The browser belongs to the user: the frontend protects users from others, and only the server protects data.</li>
+<li><strong>XSS</strong> turns user text into code. Prevent it with escaping (<code>textContent</code>, <!-- react -->plain JSX<!-- /react --><!-- vue -->double braces<!-- /vue -->), sanitising when HTML is needed, and safe URLs.</li>
+<li>A strict <strong>Content Security Policy</strong> stops injected scripts even when an XSS bug exists.</li>
+<li>Keep sessions in <strong>HttpOnly, Secure, SameSite</strong> cookies; block <strong>CSRF</strong> with SameSite and server checks, and <strong>clickjacking</strong> with <code>frame-ancestors</code>.</li>
+<li>Protect the <strong>supply chain</strong> with lockfiles, audits, careful choices and Subresource Integrity.</li>
+<li>Never trust the client, and never put secrets in it.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Through an event handler: the broken image’s <code>onerror</code> attribute ran the code when the picture failed to load. 2. Because anyone can skip the browser and send any request directly to the server. 3. No: an inline script is not from <code>'self'</code>, so the browser blocks it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">In each project, write the attack first and watch it succeed, then add the defence and watch it fail. A defence you have never seen working is a defence you only hope works.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Comments with safe formatting</h3>
+<p class="project-goal">Let users format comments with bold, italics and links, without letting them run code.</p>
+<p class="project-skills"><strong>You will practise:</strong> sanitising with an allow-list, the difference between dangerous tags, attributes and URLs, and testing with attacks.</p>
+<ol class="steps">
+<li>Collect a list of inputs: harmless formatting, an image with <code>onerror</code>, a <code>javascript:</code> link, and a <code>&lt;script&gt;</code> tag followed by real text.</li>
+<li>Load DOMPurify into the page and sanitise each input with an <dfn>allow-list</dfn>: only <code>b</code>, <code>i</code>, <code>em</code>, <code>strong</code>, <code>a</code> and <code>p</code>, and only the <code>href</code> attribute.</li>
+<li>Print each input and its result side by side.</li>
+<li>Check the results: the formatting stays, the image disappears, the link loses its dangerous address but keeps its text, and the paragraph survives without the script.</li>
+<li>Only then put the sanitised HTML into the page.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> always list what is <em>allowed</em>, never what is forbidden. A deny-list must predict every trick attackers will ever invent; an allow-list only has to know what you need.</p>
+<pre data-out="projects/sanitize.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A strict policy for your own app</h3>
+<p class="project-goal">Add a strict Content Security Policy to one of your projects, prove that it blocks injected scripts, and keep every feature working.</p>
+<p class="project-skills"><strong>You will practise:</strong> CSP directives, report-only mode, finding what a policy breaks, and moving inline code into files.</p>
+<ol class="steps">
+<li>Start in report-only mode: send <code>Content-Security-Policy-Report-Only</code> with the policy from section {{n}}.2, open every page, and read the console.</li>
+<li>For each report, fix the cause: move inline scripts into files, replace <code>onclick</code> attributes with event listeners, and add the exact external hosts you really need, such as your API, to <code>connect-src</code>.</li>
+<li>When the console is clean, switch to the enforcing header.</li>
+<li>Prove it with the lab: inject an inline script and check that it does not run, while the app’s own scripts do.</li>
+<li>Add <code>frame-ancestors 'none'</code> unless another site must embed yours.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in production, the header is set by the server or the hosting platform, not by the app. In Vite’s development server, add it with a small plugin or in <code>server.headers</code> so that you meet problems early.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A security header checker</h3>
+<p class="project-goal">Write a tool that fetches a URL and reports which recommended security headers are present, which are missing, and why each one matters.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>fetch</code> in Node, reading response headers, and writing a small local server to test against.</p>
+<ol class="steps">
+<li>List the recommended headers with one sentence each on what they protect.</li>
+<li>Fetch the URL and check each header; header names are case-insensitive, and <code>headers.get</code> handles that.</li>
+<li>Print ✓ or ✗ for each, and a score at the end.</li>
+<li>Test it against a local server that sends only some of them, so you can see both results.</li>
+<li>Extend it: warn when the CSP contains <code>'unsafe-inline'</code>, or when <code>Strict-Transport-Security</code> has a <code>max-age</code> shorter than six months.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a header checker is only a start. Run it in CI against your staging site, so a configuration change that drops a header is noticed the day it happens.</p>
+<pre data-code="projects/headers.ts" data-title="headers.ts"></pre>
+<pre data-out="projects/headers.mjs"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Try three more attacks in <code>xss.ts</code>, such as <code>&lt;svg onload=…&gt;</code> and an <code>&lt;iframe&gt;</code>, against both ways. Which ones run with <code>innerHTML</code>?</li>
+<li><span class="level">Easy</span> Open the cookies of a site you use (DevTools, Application, Cookies). Which ones are <code>HttpOnly</code>, <code>Secure</code> and <code>SameSite</code>?</li>
+<li><span class="level">Medium</span> Run <code>csp.ts</code> with the policy in a <code>Content-Security-Policy-Report-Only</code> header instead. What changes in the output, and why is this mode useful?</li>
+<li><span class="level">Medium</span> Write a function <code>safeUrl(input: string): string</code> that returns the URL only if its protocol is <code>https:</code> or <code>http:</code> (use <code>new URL</code>), and <code>"#"</code> otherwise, with unit tests for five inputs.</li>
+<li><span class="level">Challenge</span> Run <code>npm audit</code> in one of your projects. If it reports problems, read one advisory fully: which package, which versions, how it can be exploited, and whether your app uses the vulnerable part.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The last chapter of this part is close to every Arabic developer’s heart: building interfaces in more than one language, with right-to-left layouts, numbers, dates and plurals that are correct in Arabic and in English.</p>
+</div>
+</section>
