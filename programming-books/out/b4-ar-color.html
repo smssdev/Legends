@@ -1,0 +1,498 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>هندسة البرمجيات الشاملة باحتراف</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "هندسة البرمجيات الشاملة باحتراف"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: من الفكرة إلى المواصفات"; } }
+@page ch01:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">من الصفر إلى الاحتراف · الكتاب الرابع</p>
+  <h1 class="cv-title">هندسة البرمجيات الشاملة باحتراف</h1>
+  <p class="cv-sub">تصميم الأنظمة والتسليم والقيادة من الفكرة إلى الإنتاج</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>System Design</span><span>CI/CD</span><span>Docker</span><span>Cloud</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">خبير</span><span class="cv-author">سليمان ماجد سعيد صلاح</span></div>
+</div></section><section class="front half-title"><p class="ht">هندسة البرمجيات الشاملة باحتراف</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الرابع</p>
+          <h1 class="tp-title">هندسة البرمجيات الشاملة باحتراف</h1>
+          <p class="tp-sub">تصميم الأنظمة والتسليم والقيادة من الفكرة إلى الإنتاج</p>
+          <p class="tp-level">خبير</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>هندسة البرمجيات الشاملة باحتراف</strong><br>تصميم الأنظمة والتسليم والقيادة من الفكرة إلى الإنتاج</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: من الطرف إلى الطرف</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">من الفكرة إلى المواصفات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">عقود الواجهة البرمجية بين الواجهة والخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">البرمجة الشاملة بـ Next.js</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">الهوية عبر الطبقات كلها</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">المدفوعات والبريد والملفات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: تصميم الأنظمة</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">أساسيات تصميم الأنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">التصميم على افتراض الفشل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">البيانات على نطاق واسع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">ست حالات في تصميم الأنظمة</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: التسليم</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">خطوط التكامل والنشر المستمر</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">السحابة والبنية ككود</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">المراقبة والتعامل مع الأعطال</span><span class="toc-p"></span></li><li class="toc-part">الجزء 4: القيادة</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">القيادة التقنية وقرارات المعمارية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">التقدير والتخطيط والعمل مع فريق المنتج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">المقابلات وتطوير مسارك المهني</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">المشروع الختامي: أطلق منتج SaaS</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b4/spec/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>من الفكرة إلى المواصفات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تحوّل فكرة غامضة إلى مشكلة بأرقام تستطيع التحقق منها لاحقاً</li>
+<li>تصف المستخدمين بالمهام التي يحتاجون إنجازها، لا بهوياتهم</li>
+<li>تكتب قصص المستخدم بمعايير قبول يستطيع اختبار أن يفحصها</li>
+<li>تصوغ المتطلبات غير الوظيفية أرقاماً، وترى كلفة كل رقم</li>
+<li>تجد القواعد التي يجب ألا ينكسرها النظام أبداً، وتسلّمها لقاعدة البيانات</li>
+<li>تقتطع نسخة أولى صغيرة ومفيدة وقابلة للإطلاق، وتضع المواصفات كلها في صفحة واحدة</li>
+</ul>
+</div>
+
+<p class="lead">علّمك الكتابان الثاني والثالث أن تبني واجهة المنتج وخادمه جيداً. وهذا الكتاب عن بناء المنتج <em>الصحيح</em> من طرفه إلى طرفه، وتشغيله: من أول حديث إلى نظام في الإنتاج، ومع الفريق من حوله. وكل شيء يبدأ بالمواصفات. لا وثيقة من مئة صفحة لا يقرؤها أحد، بل أقصر نص يتيح للجميع أن يتفقوا على ما يُبنى، وما لا يُبنى، وكيف نعرف أنه انتهى. وطوال الكتاب نبني منتجاً واحداً، <strong>بِت للحجوزات</strong> (Bit Booking): خدمة حجز إلكتروني للأعمال الصغيرة. وفي هذا الفصل نكتب مواصفاته.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أغلى خطأ أصلحته يوماً استغرق عشر دقائق من الكود. واستغرق العثور عليه ثلاثة أسابيع، لأن كل طرف كان يفهم «الإلغاء» فهماً مختلفاً: الزبون، وصاحب العمل، وقاعدة البيانات. وجملة واحدة في المواصفات كانت ستوفر الأسابيع الثلاثة كلها.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>لماذا نكتبها</span></h2>
+
+<p>سوء الفهم لا يكلّف شيئاً تقريباً في حديث، وقليلاً في المواصفات، وأكثر في الكود، وكثيراً بعد الإطلاق، وأكثر ما يكون بعد أن يعتمد الزبائن على السلوك الخطأ. فالمواصفات أرخص مكان لتكون فيه مخطئاً. وهي تفعل ثلاثة أشياء:</p>
+<ul>
+<li><strong>تجعلك تفكر.</strong> كتابة «يستطيع الزبون الإلغاء» تفرض الأسئلة: حتى متى؟ باسترداد؟ ومن يُبلَّغ؟ والأسئلة التي تظهر أثناء الكتابة هي الرخيصة.</li>
+<li><strong>تتيح للآخرين أن يخالفوك.</strong> صاحب العمل والمصمم والمطوّر يقرؤون الجملة نفسها. فإن تخيلوا أشياء مختلفة، ظهر ذلك الآن لا في المراجعة.</li>
+<li><strong>تعرّف «انتهى».</strong> كل قصة تنتهي بمعايير يستطيع اختبار أن يفحصها. فلا يعود «انتهى» شعوراً.</li>
+</ul>
+<p>المواصفات أداة للفريق، لا عقد ضده. تتغير حين تتعلم شيئاً، وتسجّل السبب. والمهم أن تتغير عمداً، كتابةً، لا بصمت في رأس أحد.</p>
+
+<h2><span class="sec">1.2</span> <span>من الفكرة إلى المشكلة</span></h2>
+
+<p>تصل الفكرة في صورة حل: <em>«تطبيق لحجز المواعيد»</em>. والمواصفات تبدأ قبل ذلك بخطوة، من <dfn>المشكلة</dfn>: من يعاني، وكم، وكيف سنعرف أن الحال تحسّن. تحدّث مع خمسة أصحاب أعمال حقيقيين قبل أن تكتب شيئاً. ومن أحاديث «بِت للحجوزات» خرج رقمان: يقضي أصحاب الأعمال نحو ساعة يومياً في الرد على رسائل الحجز، وحجز من كل ثمانية لا يحضر صاحبه.</p>
+
+<p>يصير هذان الرقمان <dfn>مقاييس النجاح</dfn>، أي سبب وجود المنتج. وبعد ثلاثة أشهر من الإطلاق سنسأل: هل صار أصحاب الأعمال يقضون وقتاً أقل في الحجوزات؟ وهل نزل الغياب تحت واحد من اثني عشر بفضل التذكيرات؟ والميزة التي لا تحرّك أياً من الرقمين ميزة يُسأل عنها.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: اسأل عن آخر مرة</p><p>سؤال «هل ستستعمل الحجز الإلكتروني؟» يأتيك بـ «نعم» مهذبة من الجميع. أما «حدّثني عن آخر حجز سار بشكل خاطئ» فيأتيك بالحقيقة: الحجز المزدوج يوم الثلاثاء الماضي، والزبون الذي جاء في اليوم الخطأ. اسأل عن السلوك الماضي، لا عن النوايا المستقبلية أبداً.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>المستخدمون ومهامهم</span></h2>
+
+<p>اكتب قائمة <dfn>الأدوار</dfn>، ولكلٍّ منها المهمة التي يستأجر المنتج لينجزها. في «بِت للحجوزات» ثلاثة: <strong>صاحب العمل</strong> يضبط الخدمات والموظفين والساعات ويريد أن يرى يومه بنظرة؛ و<strong>الموظف</strong> يريد يومه هو، وأن يعلّم من حضر؛ و<strong>الزبون</strong> يريد موعداً يناسبه في أقل من دقيقة، بلا إنشاء حساب.</p>
+
+<p>ثم امشِ في <dfn>رحلة</dfn> واحدة من أولها إلى آخرها، خطوة خطوة: يفتح الزبون الرابط من حساب الصالون على إنستغرام، ويختار «قص شعر» ومنى، ويرى مواعيد الثلاثاء المتاحة، ويحجز 10:30، ويصله بريد، ثم تذكير قبل يوم، ثم يأتي. كل خطوة شاشة أو بريد يجب أن يبنيه أحد، وكل سهم بين خطوتين مكان قد يخطئ فيه شيء: حُجز الموعد قبل ثانية، أو ارتد البريد، أو الزبون في منطقة زمنية أخرى. والرحلات تجد القصص التي تفوتها قائمة الميزات.</p>
+
+<h2><span class="sec">1.4</span> <span>قصص يستطيع اختبار أن يفحصها</span></h2>
+
+<p><dfn>قصة المستخدم</dfn> تسمّي من يريد ماذا، ولماذا: <em>«بصفتي زبوناً، أحجز موعداً، حتى لا أضطر إلى الاتصال.»</em> وهي وحدها وعد بالحديث، لا مواصفات. وما يجعلها محددة <dfn>معايير القبول</dfn>، وتُكتب بصيغة <em>إذا</em> (الحالة)، و<em>عندما</em> (الفعل)، و<em>فإن</em> (النتيجة):</p>
+
+<ul>
+<li><strong>إذا</strong> كانت منى تعمل من 10:00 إلى 14:00 ومحجوزة من 10:00 إلى 10:30، <strong>وعندما</strong> يطلب زبون قص شعر لثلاثين دقيقة، <strong>فإن</strong> 10:00 لا يُعرض و10:30 يُعرض.</li>
+<li><strong>إذا</strong> طلب زبونان الموعد نفسه في اللحظة نفسها، <strong>فإن</strong> حجزاً واحداً بالضبط يُصنع، ويرى الزبون الآخر أن الموعد محجوز.</li>
+</ul>
+
+<p>لاحظ أن المعيارين يستعملان أسماء وأوقاتاً وأرقاماً حقيقية، لا «موعداً صالحاً» ولا «يعالج التعارضات». والمعيار جيد حين يكتب المختبِر والمطوّر، كلٌّ وحده، الاختبار نفسه بعد قراءته. والمعيار الثاني أهم جملة في المواصفات أيضاً: فهو عن التزامن، ومن نوع القواعد التي يسهل قولها ويسهل الخطأ فيها في الكود.</p>
+
+<p>القصص الجيدة صغيرة بما يكفي لتنتهي في أيام، وذات قيمة وحدها، وقابلة للاختبار. وحين تكبر قصة («صاحب العمل يدير عمله»)، اقسمها حسب <em>خطوة العمل</em> (ضبط الساعات، وإضافة موظفين، وإضافة خدمات) أو حسب <em>القاعدة</em> (الحجز؛ ثم الحجز مع فاصل بين المواعيد)، ولا تقسمها حسب الطبقة أبداً: «ابنِ قاعدة البيانات للحجوزات» لا تسلّم شيئاً يستطيع أحد استعماله.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أعد كتابة «النظام يعالج الإلغاء بشكل صحيح» معيارَ قبول.</li><li>لماذا ليست «ابنِ جدول الحجوزات» قصة جيدة؟</li><li>يقول صاحب عمل: «هل سيحب الزبائن الحجز الإلكتروني؟ بالتأكيد!» لماذا هذا دليل ضعيف، وماذا تسأل بدلاً منه؟</li></ol></aside>
+
+<h2><span class="sec">1.5</span> <span>متطلبات بالأرقام</span></h2>
+
+<p>بعض المتطلبات عن <em>مدى الجودة</em> لا عن <em>ماذا</em>: السرعة، والتوافر، والحجم، ومدة حفظ البيانات. وتسمى <dfn>المتطلبات غير الوظيفية</dfn>، ولا فائدة منها إلا أرقاماً. «سريع» لا يمكن اختباره؛ و«95% من صفحات الحجز تجيب في أقل من 300 ms» يمكن. ولكل رقم كلفة، وسكربت قصير يُظهر الكلفة قبل أن يعد بها أحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">budget.ts</div><pre class="code"><span class="c line-bidi">// التوافر: كم توقفاً يسمح به كل هدف في شهر من 30 يوماً</span>
+<span class="k">const</span> minutesPerMonth = <span class="n">30</span> * <span class="n">24</span> * <span class="n">60</span>;
+console.log(<span class="s">&quot;الهدف&quot;</span>.padEnd(<span class="n">9</span>), <span class="s">&quot;التوقف&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> target <span class="k">of</span> [<span class="n">99</span>, <span class="n">99.5</span>, <span class="n">99.9</span>, <span class="n">99.95</span>, <span class="n">99.99</span>]) {
+  <span class="k">const</span> down = minutesPerMonth * (<span class="n">1</span> - target / <span class="n">100</span>);
+  console.log(<span class="s">`${target}%`</span>.padEnd(<span class="n">9</span>), <span class="s">`${down.toFixed(1)} دقيقة/شهر`</span>);
+}
+
+<span class="c line-bidi">// الحمل: من أرقام العمل في المواصفات إلى الطلبات في الثانية</span>
+<span class="k">const</span> businesses = 2_000;
+<span class="k">const</span> bookingsPerDay = <span class="n">25</span>;
+<span class="k">const</span> pageViewsPerBooking = <span class="n">12</span>; <span class="c line-bidi">// browsing, choosing, booking, the emails&#x27; links</span>
+<span class="k">const</span> requestsPerPageView = <span class="n">3</span>; <span class="c line-bidi">// the page, then the API calls it makes</span>
+<span class="k">const</span> perDay = businesses * bookingsPerDay * pageViewsPerBooking * requestsPerPageView;
+<span class="k">const</span> average = perDay / 86_400;
+console.log();
+console.log(perDay.toLocaleString(<span class="s">&quot;en&quot;</span>), <span class="s">&quot;طلب في اليوم&quot;</span>);
+console.log(average.toFixed(<span class="n">1</span>), <span class="s">&quot;المتوسط في الثانية&quot;</span>);
+console.log((average * <span class="n">4</span>).toFixed(<span class="n">1</span>), <span class="s">&quot;الذروة في الثانية (×4)&quot;</span>);
+
+<span class="c line-bidi">// البيانات: كم يكبر جدول الحجوزات في سنة</span>
+<span class="k">const</span> rowsPerYear = businesses * bookingsPerDay * <span class="n">365</span>;
+<span class="k">const</span> bytesPerRow = <span class="n">200</span>; <span class="c line-bidi">// the columns, the row header, and the indexes</span>
+console.log();
+console.log(rowsPerYear.toLocaleString(<span class="s">&quot;en&quot;</span>), <span class="s">&quot;حجز في السنة&quot;</span>);
+console.log(<span class="s">`${((rowsPerYear * bytesPerRow) / 1024 ** 3).toFixed(1)} GB`</span>, <span class="s">&quot;حجم الجدول في سنة&quot;</span>);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المتطلبات غير الوظيفية، أرقاماً</span>
+<span class="c">$ </span><span class="k">node budget.ts</span>
+الهدف     التوقف
+99%       432.0 دقيقة/شهر
+99.5%     216.0 دقيقة/شهر
+99.9%     43.2 دقيقة/شهر
+99.95%    21.6 دقيقة/شهر
+99.99%    4.3 دقيقة/شهر
+
+1,800,000 طلب في اليوم
+20.8 المتوسط في الثانية
+83.3 الذروة في الثانية (×4)
+
+18,250,000 حجز في السنة
+3.4 GB حجم الجدول في سنة</pre></div>
+
+<p>اقرأ الجدول الأول قائمة أسعار. 99.9% في الشهر تسمح بـ 43 دقيقة من التوقف: نشر سيئ واحد، تراجعتَ عنه بسرعة. و99.99% تسمح بأربع دقائق: لا يجوز لأي نشر أن يُوقف الموقع أبداً، ولكل جزء بديل، ويجب أن يُوقَظ أحد في الليل. ولموقع حجز للصالونات، 99.9% رقم صادق. والتسعة الإضافية ستكلّف أشهراً من العمل ولا تشتري شيئاً يُذكر.</p>
+
+<p>والحمل مفيد بالقدر نفسه. 2000 عمل يبدو كثيراً، ومع ذلك فالذروة أقل من مئة طلب في الثانية، والجدول يكبر 3.4 GB في السنة. وخادم PostgreSQL واحد يتحمّل ذلك براحة (الكتاب الثالث). وكتابة الأرقام أفضل حماية من التصميم لحجم لن يراه المنتج قبل سنوات.</p>
+
+<h2><span class="sec">1.6</span> <span>قواعد يجب ألا تنكسر أبداً</span></h2>
+
+<p>بين كل جمل المواصفات، قليل منها <dfn>ثوابت</dfn>: أشياء يجب أن تصح دائماً، مهما فعل الكود، وأياً كان الخادم الذي يعالج الطلب، ومهما نقر من زبائن في اللحظة نفسها. وأولها في «بِت للحجوزات»: «لا يُحجز موظف مرتين في الوقت نفسه أبداً». وعلّمك الكتاب الثالث أن قواعد كهذه مكانها قاعدة البيانات، حيث لا يستطيع سباق أن يتجاوزها. ويستطيع PostgreSQL أن يقول هذه القاعدة مباشرة، بـ <dfn>قيد استبعاد</dfn> (exclusion constraint):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> bookings (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  staff_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> staff (id),
+  service_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> services (id),
+  email text <span class="k">NOT</span> <span class="k">NULL</span>,
+  <span class="c line-bidi">-- [البداية, النهاية): النهاية غير داخلة، فلا يتداخل 10:00-10:30 مع 10:30-11:00</span>
+  during tstzrange <span class="k">NOT</span> <span class="k">NULL</span>,
+  status text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s">&#x27;confirmed&#x27;</span>
+    <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="s">&#x27;confirmed&#x27;</span>, <span class="s">&#x27;cancelled&#x27;</span>)),
+  <span class="c line-bidi">-- US-2: لا يُحجز موظف مرتين في الوقت نفسه أبداً؛ والحجز الملغى يحرر موعده</span>
+  <span class="k">CONSTRAINT</span> no_double_booking
+    EXCLUDE USING gist (staff_id <span class="k">WITH</span> =, during <span class="k">WITH</span> &amp;&amp;) <span class="k">WHERE</span> (status = <span class="s">&#x27;confirmed&#x27;</span>)
+);</pre></div>
+
+<p>يقول القيد: لا يجوز لصفين مؤكدين أن يكون لهما <code>staff_id</code> نفسه وأوقات متداخلة (<code>&amp;&amp;</code>). والمدى <code>[start, end)</code> يشمل بدايته ولا يشمل نهايته، فالمواعيد المتتالية مسموحة. والصفوف الملغاة متجاهَلة، فالإلغاء يحرر الموعد. وهذه قصة المواصفات، تفحصها قاعدة البيانات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># سارة تحجز منى الساعة 10:00 لثلاثين دقيقة</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;sara@example.com&#x27;, &#x27;[2026-12-01 10:00+02, 2026-12-01 10:30+02)&#x27;)&quot;</span>
+INSERT 0 1
+<span class="c line-bidi"># كريم يحاول منى الساعة 10:15: قاعدة البيانات ترفض</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;karim@example.com&#x27;, &#x27;[2026-12-01 10:15+02, 2026-12-01 10:45+02)&#x27;)&quot;</span>
+ERROR:  conflicting key value violates exclusion constraint &quot;no_double_booking&quot;
+DETAIL:  Key (staff_id, during)=(1, [&quot;2026-12-01 08:15:00+00&quot;,&quot;2026-12-01 08:45:00+00&quot;)) conflicts with existing key (staff_id, during)=(1, [&quot;2026-12-01 08:00:00+00&quot;,&quot;2026-12-01 08:30:00+00&quot;)).
+<span class="c line-bidi"># الوقت نفسه مع عمر مقبول</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (2, 1, &#x27;karim@example.com&#x27;, &#x27;[2026-12-01 10:15+02, 2026-12-01 10:45+02)&#x27;)&quot;</span>
+INSERT 0 1
+<span class="c line-bidi"># 10:30 مع منى مقبول أيضاً: المديان يتلامسان فقط</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;nour@example.com&#x27;, &#x27;[2026-12-01 10:30+02, 2026-12-01 11:00+02)&#x27;)&quot;</span>
+INSERT 0 1
+<span class="c line-bidi"># سارة تلغي، فيعود 10:00 متاحاً</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;UPDATE bookings SET status = &#x27;cancelled&#x27; WHERE id = 1&quot;</span>
+UPDATE 1
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;karim@example.com&#x27;, &#x27;[2026-12-01 10:00+02, 2026-12-01 10:30+02)&#x27;)&quot;</span>
+INSERT 0 1</pre></div>
+
+<p>هكذا يبدو تحويل المواصفات إلى نظام في أفضل حالاته: جملة من القصص صارت سطراً واحداً في المخطط، وكل ميزة قادمة وكل واجهة برمجية وكل خطأ عليها الآن أن تحترمه. سيظل التطبيق يفحص المواعيد المتاحة ليعطي إجابات لطيفة، لكن الصحة لم تعد تعتمد على ذلك الفحص.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: المناطق الزمنية جزء من المواصفات</p><p>خُزّن الحجز أعلاه <code>08:00+00</code>، مع أن الزبون كتب <code>10:00+02</code>. وهذا صحيح: خزّن اللحظات بتوقيت UTC، وحوّلها عند العرض. لكن «التذكير قبل 24 ساعة» و«ساعات العمل من 10:00 إلى 14:00» بالتوقيت المحلي <em>للعمل</em>، الذي يتغير مع التوقيت الصيفي في بلدان كثيرة. قرّر في المواصفات أي ساعة تستعملها كل قاعدة، واكتب ذلك بجانب القاعدة.</p></aside>
+
+<h2><span class="sec">1.7</span> <span>النسخة الأولى</span></h2>
+
+<p>الفكرة الكاملة دائماً أكبر من الإطلاق الأول. فاقتطعها بسؤال: <em>ما أصغر منتج يحل المشكلة لبعض المستخدمين من الآن؟</em> في «بِت للحجوزات»: يحجز الزبائن، ويصلهم بريد وتذكير، ويستطيعون الإلغاء؛ ويرى أصحاب الأعمال يومهم. خمس قصص. والدفع الإلكتروني يقلل الغياب أكثر، لكن التذكيرات قد تكفي، والدفع يجلب الحسابات والاسترداد واللوائح. فمكانه قائمة واضحة بعنوان <strong>خارج النسخة الأولى</strong>، وهي جزء من المواصفات تحمي الفريق من «وما دمت تعمل عليه…».</p>
+
+<p>ثم ابنِ أولاً <dfn>هيكلاً يمشي</dfn> (walking skeleton): أنحف نسخة من كل طبقة، موصولة ومنشورة. صفحة واحدة تحجز موعداً ثابتاً واحداً، وواجهة برمجية، وجدول، وبريد حقيقي، وخط نشر. لا تفعل شيئاً تقريباً، لكنها تثبت أن القطع تتلاءم، وكل قصة لاحقة تضيف لحماً إلى هيكل يمشي أصلاً. أما الفرق التي تبني طبقة بعد طبقة فتكتشف في الأسبوع الأخير أن القطع لا تتصل.</p>
+
+<h2><span class="sec">1.8</span> <span>المواصفات في صفحة</span></h2>
+
+<p>كل هذا يتسع لصفحة واحدة، وهذا هو المقصود: الصفحة تُقرأ وتُراجَع وتبقى محدّثة. ومواصفاتنا ملف Markdown في المستودع، بجانب الكود، فتغيير المواصفات طلب سحب كأي طلب آخر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/spec.md</div><pre class="code md"><b># بِت للحجوزات: مواصفات في صفحة</b>
+
+**الحالة:** مسودة للمراجعة · **المسؤول:** المنتج + القائد التقني · **التحديث:** 2026-11-20
+
+<b>## المشكلة</b>
+الأعمال الصغيرة (الصالونات والعيادات والمدرسون) تأخذ الحجوزات بالهاتف والمحادثات.
+يخسر أصحابها نحو ساعة يومياً في الرد، وحجز من كل 8 لا يحضر صاحبه.
+
+<b>## المستخدمون</b>
+- **صاحب العمل:** يحدد الخدمات والموظفين وساعات العمل؛ ويرى يومه.
+- **الموظف:** يرى يومه هو؛ ويعلّم الحجز «تم» أو «لم يحضر».
+- **الزبون:** يحجز أو يغيّر أو يلغي، بلا حساب.
+
+<b>## القصص (النسخة الأولى)</b>
+- **US-1** بصفتي زبوناً، أرى المواعيد المتاحة لخدمة وموظف.
+  - إذا كانت منى تعمل 10:00-14:00 ولديها حجز 10:00-10:30،
+    وطلبتُ قص شعر لثلاثين دقيقة، فلا يُعرض 10:00 ويُعرض 10:30.
+- **US-2** بصفتي زبوناً، أحجز موعداً.
+  - إذا طلب زبونان الموعد نفسه في اللحظة نفسها،
+    يُصنع حجز واحد بالضبط، ويرى الآخر «محجوز».
+- **US-3** بصفتي زبوناً، يصلني بريد تأكيد، وتذكير قبل الموعد بـ 24 ساعة.
+- **US-4** بصفتي زبوناً، ألغي حتى ساعتين قبل الموعد، من الرابط في البريد.
+- **US-5** بصفتي صاحب عمل، أرى حجوزات اليوم لكل موظف.
+
+<b>## خارج النسخة الأولى</b>
+الدفع الإلكتروني (العربون في النسخة 2)، وتطبيقات الجوال، والفروع المتعددة.
+
+<b>## الجودة</b>
+- توافر 99.9% في الشهر؛ وصفحة الحجز p95 أقل من 300 ms.
+- 2000 عمل في السنة الأولى؛ و25 حجزاً لكل عمل في اليوم.
+- البيانات الشخصية تُحفظ سنتين بعد آخر زيارة، ثم تُحذف.
+
+<b>## المخاطر والأسئلة المفتوحة</b>
+- المناطق الزمنية: قد يكون العمل وزبائنه في مناطق مختلفة.
+- هل يحتاج الزبائن حساباً ليروا سجلهم؟ (القرار قبل 2026-12-01)</pre></div>
+
+<p>كل قسم يجيب عن سؤال سيسأله القارئ: لماذا (المشكلة)، ولمن (المستخدمون)، وماذا (القصص)، وماذا لا (خارج النسخة الأولى)، وبأي جودة (الجودة)، وما الذي لا نعرفه بعد (المخاطر والأسئلة المفتوحة). وللسؤال المفتوح مسؤول وتاريخ؛ والسؤال الذي بلاهما قرار لن يتخذه أحد.</p>
+
+<p>راجع الصفحة مع من سيتأثرون بها: صاحب العمل يقرأ القصص، ومطوّر يقرأ القواعد والأرقام، ومصمم يقرأ الرحلة، وشخص من الدعم يقرأ قاعدة الإلغاء. وكلٌّ يجد ثغرات مختلفة. وعشرون دقيقة من هذه المراجعة توفر أسابيع.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اكتب القرار وسببه</p><p>حين تتغير المواصفات («العربون ينتقل إلى النسخة 2»)، اكتب التغيير وسببه في طلب السحب، واترك الإجابة القديمة ظاهرة في السجل. وبعد أشهر، حين يسأل أحد «لماذا لا نأخذ عربوناً؟»، تكون الإجابة على بُعد بحث واحد، ومعها الحقائق التي قد تبرر تغييرها.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>البدء من الحل</td><td>منتج لم يحتجه أحد، مبني جيداً</td><td>المشكلة أولاً، بالأرقام</td></tr>
+<tr><td>السؤال عن النوايا المستقبلية</td><td>«نعم» مهذبة لا تتنبأ بشيء</td><td>اسأل عن آخر مرة حدث فيها</td></tr>
+<tr><td>معايير غامضة («يعمل بشكل صحيح»)</td><td>كلٌّ يختبر شيئاً مختلفاً</td><td>إذا وعندما وفإن، بقيم حقيقية</td></tr>
+<tr><td>قصص مقسومة حسب الطبقة</td><td>أسابيع من العمل بلا شيء يُعرض</td><td>اقسم حسب خطوة العمل أو القاعدة</td></tr>
+<tr><td>«سريع» و«موثوق» بلا أرقام</td><td>وعود لا تُختبر، أو أنظمة مبالغ في بنائها</td><td>أرقام، مع حساب كلفتها</td></tr>
+<tr><td>الثوابت في كود التطبيق فقط</td><td>طلبان معاً يكسرانها</td><td>قيود في قاعدة البيانات</td></tr>
+<tr><td>لا قائمة «خارج النسخة الأولى»</td><td>النسخة الأولى لا تُطلق أبداً</td><td>اكتب ما هو خارجها، ولماذا</td></tr>
+<tr><td>مواصفات لا تتغير أبداً</td><td>الكود والوثيقة لا يتفقان</td><td>المواصفات في المستودع، تتغير بطلب سحب</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>المواصفات</strong> أرخص مكان لاكتشاف سوء الفهم؛ تجعلك تفكر، وتتيح للآخرين أن يخالفوك، وتعرّف «انتهى».</li>
+<li>ابدأ من <strong>المشكلة</strong> وأرقامها، التي تصير <strong>مقاييس النجاح</strong>.</li>
+<li>صِف <strong>الأدوار</strong> بالمهمة التي تحتاج إنجازها، وامشِ في <strong>رحلة</strong> من أولها إلى آخرها لتجد القصص.</li>
+<li>تصير <strong>القصة</strong> محددة <strong>بمعايير قبول</strong> بصيغة إذا وعندما وفإن، بقيم حقيقية.</li>
+<li><strong>المتطلبات غير الوظيفية</strong> أرقام، ولكل رقم كلفة تستطيع حسابها.</li>
+<li><strong>الثوابت</strong> مكانها قاعدة البيانات؛ وقيد الاستبعاد يجعل الحجز المزدوج مستحيلاً.</li>
+<li>اقتطع <strong>نسخة أولى</strong> صغيرة، واكتب ما هو خارجها، وابدأ من <strong>هيكل يمشي</strong>، وأبقِ المواصفات في <strong>صفحة واحدة</strong> في المستودع.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. مثلاً: «إذا كان لسارة حجز غداً الساعة 10:00، وعندما تفتح رابط الإلغاء غداً الساعة 07:59، فإن الحجز يُلغى، ويُعرض الموعد على غيرها، وترى منى أنه ذهب؛ وعندما تفتحه الساعة 08:01، فإنها ترى أن الإلغاء مسموح حتى ساعتين قبل الموعد فقط.» 2. لأنها لا تسلّم شيئاً يستطيع مستخدم أن يستعمله ولا يستطيع اختبار من المواصفات أن يفحصه، وتخفي السؤال الحقيقي (ماذا يجب أن يضمن الجدول) حتى تحتاجه القصص. اقسم بدلاً منها حسب خطوات يراها المستخدم، ودع كل قصة تضيف الأعمدة التي تحتاجها. 3. لأن الآراء عن المستقبل تخمينات مهذبة: لا أحد يدفع ثمن «نعم». اسأل عن السلوك الماضي: «كيف حجز الزبائن الأسبوع الماضي؟ حدّثني عن آخر حجز سار بشكل خاطئ. كم قضيت أمس في الرد على الرسائل؟»</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يُنتج وثائق وكوداً تحتفظ بها. راجع كل مواصفات مع شخص آخر واحد على الأقل قبل أن تقول إنها انتهت.</p>
+
+<div class="project">
+<p class="project-label">المشروع 1.1 · سهل</p>
+<h3>معايير للباقي</h3>
+<p class="project-goal">اكتب معايير قبول كاملة للقصص US-3 وUS-4 وUS-5 في المواصفات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إذا وعندما وفإن؛ والحالات الحدية؛ والقيم الحقيقية.</p>
+<ol class="steps">
+<li>لكل قصة اكتب معيارين على الأقل: الحالة العادية وحالة حدية واحدة.</li>
+<li>في US-3، قرّر ماذا يحدث حين يُصنع الحجز قبل موعده بأقل من 24 ساعة.</li>
+<li>في US-4، غطِّ إلغاءً عند حد الساعتين بالضبط.</li>
+<li>اطلب من أحد أن يقرأ معياراً واحداً ويصف الاختبار الذي سيكتبه؛ وقارنه باختبارك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الحالات الحدية تعيش عند الحدود (ساعتان بالضبط، ومنتصف الليل، وآخر موعد في اليوم) وعند أسهم الرحلة (ارتد البريد، أو حُجز الموعد للتو).</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 1.2 · متوسط</p>
+<h3>ساعات العمل في قاعدة البيانات</h3>
+<p class="project-goal">وسّع المخطط بحيث يستحيل حجز خارج ساعات عمل الموظف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تحويل القواعد إلى قيود، والمديات، واختبار القواعد بـ SQL.</p>
+<ol class="steps">
+<li>أضف جدولاً <code>shifts (staff_id, during tstzrange)</code>، بقيد استبعاد فلا تتداخل نوبات الشخص الواحد.</li>
+<li>اكتب مُطلِقاً (trigger) يرفض حجزاً مؤكداً لا يقع مداه داخل (<code>&lt;@</code>) إحدى نوبات الموظف.</li>
+<li>سجّل جلسة طرفية مثل <code>rules.sh</code>: حجز داخل نوبة، وآخر يعبر نهايتها، وثالث في يوم إجازة.</li>
+<li>اكتب أي جزء من القاعدة تركته للتطبيق، ولماذا.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> القيود لا تقرأ جداول أخرى، فالاحتواء في نوبة يحتاج مُطلِقاً؛ واجعل المُطلِق مقصوراً على ذلك الفحص وحده.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 1.3 · تحدٍّ</p>
+<h3>مواصفات لفكرتك أنت</h3>
+<p class="project-goal">خذ فكرة منتج خاصة بك من الأحاديث إلى مواصفات في صفحة، مراجَعة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المقابلات، والمقاييس، وتحديد النطاق، وتقدير الكلفة من الأرقام.</p>
+<ol class="steps">
+<li>قابل خمسة أشخاص لديهم المشكلة، واسألهم عن آخر مرة حدثت فقط. واكتب ما سمعت.</li>
+<li>اكتب المشكلة برقمين، ومقاييس النجاح التي ستُظهر أنها حُلّت.</li>
+<li>اكتب خمس قصص للنسخة الأولى بمعاييرها، وقائمة «خارج النسخة الأولى» لا تقل عنها طولاً.</li>
+<li>عدّل <code>budget.ts</code> لأرقامك، واكتب قسم الجودة من مخرجاته.</li>
+<li>جد ثابتاً واحداً على الأقل وعبّر عنه بقيد في قاعدة البيانات، مع جلسة طرفية.</li>
+<li>اطلب مراجعة المواصفات من شخصين بدورين مختلفين، وسجّل ما تغيّر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن كانت قائمة «خارج النسخة الأولى» أقصر من النسخة الأولى نفسها، فنسختك الأولى غالباً أكبر مما ينبغي.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> حوّل كلاً منها إلى متطلب قابل للقياس: «يجب أن يكون الموقع سريعاً»، و«يجب ألا نفقد البيانات»، و«يجب أن يتحمل مستخدمين كثيرين».</li>
+<li><span class="level">سهل</span> لماذا مدى الحجز <code>[start, end)</code> لا <code>[start, end]</code>؟ ما الذي سيخطئ مع الثاني؟</li>
+<li><span class="level medium">متوسط</span> غيّر <code>budget.ts</code> إلى 20,000 عمل ومعامل ذروة 10. ما الذي يتغير في التصميم، وما الذي لا يتغير؟</li>
+<li><span class="level medium">متوسط</span> يريد صالون فاصلاً للتنظيف عشر دقائق بعد كل قص شعر. أين تذهب هذه القاعدة: المواصفات، أم المخطط، أم التطبيق؟ اكتب المعيار واقترح التغيير.</li>
+<li><span class="level hard">تحدٍّ</span> يضمن قيد الاستبعاد ألا يحدث حجز مزدوج. صِف ما يراه الزبون حين يحجز شخصان آخر موعد في اللحظة نفسها، من النقرة إلى الشاشة، واكتب المعيار لتجربة الزبون الذي خسر.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+<p>المواصفات تقول ماذا نبني؛ والفصل التالي يقرر كيف تتحدث الواجهة والخادم عنه. عقود الواجهة البرمجية: وصف واحد لكل نقطة نهاية، يُفحص منه الطرفان كلاهما.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">جرّب كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف جوابك عن هذا فليس بالضرورة خاطئاً: فلمعظم المسائل أكثر من حل جيد. فإن عالج حلك الحالات العادية وغير المعتادة، واستطعت أن تشرح اختياراتك لزميل، فهو جواب جيد. والكود الكامل المختبر لكل حل في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li>«سريع»: 95% من صفحات الحجز تجيب في أقل من 300 ms، و99% في أقل من ثانية، مقيسة عند الخادم على مدى يوم. «لا نفقد البيانات»: الحجز المؤكد يبقى بعد فقد أي خادم واحد؛ ونسخ احتياطية كل ساعة تُحفظ 30 يوماً، واستعادة تُجرَّب كل شهر (أقصى ما يُفقد ساعة من البيانات، والعودة خلال أربع ساعات). «مستخدمون كثيرون»: 2000 عمل و85 طلباً في الثانية في الذروة في السنة الأولى، مع اختبار يُظهر أن النظام يتحمل أربعة أضعاف ذلك. وكلٌّ منها يسمّي الآن رقماً، وكيف يُقاس، وبالتالي ماذا يجب أن يُبنى.</li>
+<li>لأن المواعيد المتتالية تتلامس عند لحظة واحدة. مع <code>[start, end)</code> لا يشترك 10:00–10:30 و10:30–11:00 في أي لحظة، فيمكن حجزهما معاً. ومع <code>[start, end]</code> يحوي كلاهما 10:30 بالضبط، فيراهما قيد الاستبعاد متداخلين ويرفض الثاني: فلا يستطيع الصالون أبداً حجز منى لموعدين متتاليين. والمديات نصف المفتوحة تُجمع بنظافة أيضاً: اليوم المقسوم إلى مواعيد بلا فجوات ولا تداخل.</li>
+<li>تصير الطلبات في اليوم 36,000,000 (عشرة أضعاف)؛ والمتوسط نحو 417 في الثانية؛ والذروة بمعامل 10 نحو 4,170 في الثانية؛ والجدول نحو 34 GB في السنة. ما يتغير: قاعدة البيانات ما زالت تحفظ البيانات بسهولة، لكن 4000 طلب في الثانية تحتاج عدة خوادم تطبيق خلف موزّع حمل، وتخزيناً مؤقتاً لصفحات المواعيد العامة (التي تُقرأ أكثر بكثير مما تُكتب)، ومجمع اتصالات، وربما نسخاً للقراءة. وما لا يتغير: القصص، والثوابت، وقيد الاستبعاد. ولهذا مكان الأرقام في المواصفات: هي تقرر المعمارية، والقواعد تبقى كما هي.</li>
+<li>في الثلاثة. في المواصفات، معياراً: «إذا كان قص الشعر 30 دقيقة يليه فاصل 10 دقائق، وعندما تحجز سارة منى الساعة 10:00، فإن الموعد التالي المعروض لمنى 10:40.» وفي المخطط، فلا يمكن تجاوزه: أضف <code>buffer_minutes</code> إلى <code>services</code> وخزّن <code>during</code> للحجز مدةَ الموعد مع الفاصل (أو أضف عمود مدى ثانياً <code>blocked</code> يستعمله قيد الاستبعاد، فتظل رسائل البريد تعرض 10:00–10:30). ويحسب التطبيق المواعيد المعروضة من القاعدة نفسها، لكن الصحة تبقى مع القيد.</li>
+<li>تصل النقرتان إلى الخادم؛ وقد ينجح فحص المواعيد المتاحة في الاثنين؛ ويصل الإدراجان إلى PostgreSQL. فيترك القيد الأول يُعتمد ويُفشل الثاني بخرق استبعاد (رمز الخطأ 23P01). وتحوّل الواجهة البرمجية هذا الخطأ إلى 409 بمشكلة واضحة («حُجز هذا الموعد للتو»)، وتُظهرها الصفحة في مكانها، وتعرض أقرب المواعيد المتاحة للموظف والخدمة نفسيهما، وتحتفظ بما كتبه الزبون. والمعيار: «إذا أرسل كريم ونور منى الساعة 10:30 في اللحظة نفسها، وعندما يُحفظ حجز كريم أولاً، فإن نور ترى "حُجز 10:30 للتو"، مع أقرب ثلاثة مواعيد متاحة لمنى، ويبقى اسمها وبريدها مكتوبين؛ ولا يُرسل أي بريد إلى نور.»</li>
+</ol>
+
+</section>
+</body></html>

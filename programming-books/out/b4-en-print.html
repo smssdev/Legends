@@ -1,0 +1,396 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>Senior Full Stack Engineering</title><link rel="stylesheet" href="../style/book.css"><link rel="stylesheet" href="../style/print-bw.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.625in 0.8in 0.875in;
+  @top-center { content: "Senior Full Stack Engineering"; font: 700 8pt 'Inter', sans-serif; color: #555; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #111;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.625in; margin-right: 0.875in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: From Idea to Specification"; } }
+@page ch01:first { @top-center { content: none; } }
+@page answers { @top-center { content: "Answers to the Exercises"; } }
+@page answers:first { @top-center { content: none; } }
+</style></head>
+<body><section class="front half-title"><p class="ht">Senior Full Stack Engineering</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 4</p>
+          <h1 class="tp-title">Senior Full Stack Engineering</h1>
+          <p class="tp-sub">System Design, Delivery and Leadership from Idea to Production</p>
+          <p class="tp-level">Senior</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>Senior Full Stack Engineering</strong><br>System Design, Delivery and Leadership from Idea to Production</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
+          <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: End to End</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">From Idea to Specification</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">API Contracts Between Frontend and Backend</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Full Stack with Next.js</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Authentication Across the Stack</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Payments, Email and Files</span><span class="toc-p"></span></li><li class="toc-part">Part 2: System Design</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">System Design Fundamentals</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Designing for Failure</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Data at Scale</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Six System Design Case Studies</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Delivery</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">CI/CD Pipelines</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Cloud and Infrastructure as Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Observability and Incidents</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Leadership</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Technical Leadership and Architecture Decisions</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Estimation, Planning and Working with Product</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Interviews and Growing Your Career</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Capstone: Ship a SaaS Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b4/spec/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>From Idea to Specification</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>turn a vague idea into a problem with numbers you can check later</li>
+<li>describe users by the jobs they need done, not by who they are</li>
+<li>write user stories with acceptance criteria that a test can check</li>
+<li>state non-functional requirements as numbers, and see what each number costs</li>
+<li>find the rules the system must never break, and give them to the database</li>
+<li>cut a first version that is small, useful and shippable, and fit the whole spec on one page</li>
+</ul>
+</div>
+
+<p class="lead">Books 2 and 3 taught you to build the front and the back of a product well. This book is about building the <em>right</em> product, end to end, and running it: from the first conversation to a system in production, with the team around it. Everything starts with a specification. Not a hundred-page document that nobody reads, but the shortest text that lets everyone agree on what to build, what not to build, and how to tell when it is done. Throughout the book we build one product, <strong>Bit Booking</strong>: an online booking service for small businesses. This chapter writes its spec.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The most expensive bug I ever fixed took ten minutes to code. It took three weeks to find, because everyone had a different idea of what “cancel” meant: the customer, the owner, and the database. One sentence in a spec would have saved all three weeks.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>Why write it down</span></h2>
+
+<p>A misunderstanding costs almost nothing in a conversation, a little in a spec, more in code, a lot after release, and the most after customers depend on the wrong behaviour. A spec is the cheapest place to be wrong. It does three things:</p>
+<ul>
+<li><strong>It makes you think.</strong> Writing “a customer can cancel” forces the question: until when? With a refund? Who gets told? Questions found while writing are the cheap ones.</li>
+<li><strong>It lets others disagree.</strong> The owner, the designer and the developer read the same sentence. If they picture different things, it shows now, not in review.</li>
+<li><strong>It defines done.</strong> Every story ends with criteria a test can check. “Done” stops being a feeling.</li>
+</ul>
+<p>The spec is a tool for the team, not a contract against it. It changes when you learn something, and it records why. What matters is that it changes on purpose, in writing, rather than silently in someone’s head.</p>
+
+<h2><span class="sec">1.2</span> <span>From idea to problem</span></h2>
+
+<p>The idea arrives as a solution: <em>“an app for booking appointments”</em>. A spec starts one step earlier, with the <dfn>problem</dfn>: who suffers, how much, and how we will know it got better. Talk to five real owners before writing anything. For Bit Booking the conversations gave two numbers: owners spend about an hour a day answering booking messages, and one booking in eight is a no-show.</p>
+
+<p>Those numbers become the <dfn>success metrics</dfn>, the reason the product exists. Three months after launch we will ask: do owners spend less time on bookings? Did no-shows fall below one in twelve, thanks to reminders? A feature that moves neither number is a feature to question.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: ask about the last time</p><p>“Would you use online booking?” gets a polite yes from everyone. “Tell me about the last booking that went wrong” gets the truth: the double booking last Tuesday, the customer who came on the wrong day. Ask about past behaviour, never about future intentions.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>Users and their jobs</span></h2>
+
+<p>List the <dfn>roles</dfn>, and for each the job they hire the product to do. Bit Booking has three: the <strong>owner</strong> sets up services, staff and hours and wants to see the day at a glance; the <strong>staff member</strong> wants their own day and to mark who came; the <strong>customer</strong> wants a slot that suits them in under a minute, without creating an account.</p>
+
+<p>Then walk one <dfn>journey</dfn> end to end, step by step: the customer opens the link from the salon’s Instagram, picks “haircut” and Mona, sees Tuesday’s free times, books 10:30, gets an email, gets a reminder the day before, comes. Every step is a screen or an email someone must build, and every arrow between steps is a place where things go wrong: the slot was taken a second ago, the email bounced, the customer is in another time zone. Journeys find the stories that a list of features misses.</p>
+
+<h2><span class="sec">1.4</span> <span>Stories that a test can check</span></h2>
+
+<p>A <dfn>user story</dfn> names who wants what, and why: <em>“As a customer, I book a slot, so that I do not have to call.”</em> On its own it is a promise to talk, not a specification. What makes it specific is its <dfn>acceptance criteria</dfn>, written as <em>Given</em> (the situation), <em>When</em> (the action) and <em>Then</em> (the result):</p>
+
+<ul>
+<li><strong>Given</strong> Mona works 10:00 to 14:00 and is booked 10:00 to 10:30, <strong>when</strong> a customer asks for a 30-minute haircut, <strong>then</strong> 10:00 is not offered and 10:30 is.</li>
+<li><strong>Given</strong> two customers ask for the same slot at the same moment, <strong>then</strong> exactly one booking is made, and the other customer sees that the slot is taken.</li>
+</ul>
+
+<p>Notice that both criteria use concrete names, times and numbers, never “a valid slot” or “handles conflicts”. A criterion is good when a tester and a developer, reading it separately, would write the same test. The second criterion is also the most important sentence in the spec: it is about concurrency, and it is exactly the kind of rule that is easy to say and easy to get wrong in code.</p>
+
+<p>Good stories are small enough to finish in a few days, valuable on their own, and testable. When a story is too big (“the owner manages the business”), split it by <em>workflow step</em> (set hours, add staff, add services) or by <em>rule</em> (book; book with a buffer between appointments), never by layer: “build the database for bookings” delivers nothing anyone can use.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Rewrite “the system handles cancellations correctly” as an acceptance criterion.</li><li>Why is “build the bookings table” not a good story?</li><li>An owner says: “Would customers like booking online? Definitely!” Why is this weak evidence, and what would you ask instead?</li></ol></aside>
+
+<h2><span class="sec">1.5</span> <span>Requirements in numbers</span></h2>
+
+<p>Some requirements are about <em>how well</em> rather than <em>what</em>: speed, availability, scale, how long data is kept. They are called <dfn>non-functional requirements</dfn>, and they are only useful as numbers. “Fast” cannot be tested; “95% of booking pages answer in under 300 ms” can. Each number also has a cost, and a short script makes the cost visible before anyone promises it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">budget.ts</div><pre class="code"><span class="c line-bidi">// availability: how much downtime each target allows in a 30-day month</span>
+<span class="k">const</span> minutesPerMonth = <span class="n">30</span> * <span class="n">24</span> * <span class="n">60</span>;
+console.log(<span class="s">&quot;target&quot;</span>.padEnd(<span class="n">9</span>), <span class="s">&quot;downtime&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> target <span class="k">of</span> [<span class="n">99</span>, <span class="n">99.5</span>, <span class="n">99.9</span>, <span class="n">99.95</span>, <span class="n">99.99</span>]) {
+  <span class="k">const</span> down = minutesPerMonth * (<span class="n">1</span> - target / <span class="n">100</span>);
+  console.log(<span class="s">`${target}%`</span>.padEnd(<span class="n">9</span>), <span class="s">`${down.toFixed(1)} min/month`</span>);
+}
+
+<span class="c line-bidi">// load: from the business numbers in the spec to requests per second</span>
+<span class="k">const</span> businesses = 2_000;
+<span class="k">const</span> bookingsPerDay = <span class="n">25</span>;
+<span class="k">const</span> pageViewsPerBooking = <span class="n">12</span>; <span class="c line-bidi">// browsing, choosing, booking, the emails&#x27; links</span>
+<span class="k">const</span> requestsPerPageView = <span class="n">3</span>; <span class="c line-bidi">// the page, then the API calls it makes</span>
+<span class="k">const</span> perDay = businesses * bookingsPerDay * pageViewsPerBooking * requestsPerPageView;
+<span class="k">const</span> average = perDay / 86_400;
+console.log();
+console.log(perDay.toLocaleString(<span class="s">&quot;en&quot;</span>), <span class="s">&quot;requests a day&quot;</span>);
+console.log(average.toFixed(<span class="n">1</span>), <span class="s">&quot;average per second&quot;</span>);
+console.log((average * <span class="n">4</span>).toFixed(<span class="n">1</span>), <span class="s">&quot;peak per second (x4)&quot;</span>);
+
+<span class="c line-bidi">// data: how much the bookings table grows in a year</span>
+<span class="k">const</span> rowsPerYear = businesses * bookingsPerDay * <span class="n">365</span>;
+<span class="k">const</span> bytesPerRow = <span class="n">200</span>; <span class="c line-bidi">// the columns, the row header, and the indexes</span>
+console.log();
+console.log(rowsPerYear.toLocaleString(<span class="s">&quot;en&quot;</span>), <span class="s">&quot;bookings a year&quot;</span>);
+console.log(<span class="s">`${((rowsPerYear * bytesPerRow) / 1024 ** 3).toFixed(1)} GB`</span>, <span class="s">&quot;table size a year&quot;</span>);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The non-functional requirements, as numbers</span>
+<span class="c">$ </span><span class="k">node budget.ts</span>
+target    downtime
+99%       432.0 min/month
+99.5%     216.0 min/month
+99.9%     43.2 min/month
+99.95%    21.6 min/month
+99.99%    4.3 min/month
+
+1,800,000 requests a day
+20.8 average per second
+83.3 peak per second (x4)
+
+18,250,000 bookings a year
+3.4 GB table size a year</pre></div>
+
+<p>Read the first table as a price list. 99.9% a month allows 43 minutes of downtime: one bad deployment, quickly rolled back. 99.99% allows four minutes: no deployment may ever take the site down, every part needs a spare, and someone must be woken at night. For a booking site for salons, 99.9% is honest. The extra nine would cost months of work and buy almost nothing.</p>
+
+<p>The load is just as instructive. 2,000 businesses sound like a lot, yet the peak is under a hundred requests a second, and the table grows by 3.4 GB a year. One PostgreSQL server handles that comfortably (Book 3). Writing the numbers down is the best protection against designing for a scale the product will not see for years.</p>
+
+<h2><span class="sec">1.6</span> <span>Rules that must never break</span></h2>
+
+<p>Among all the sentences in a spec, a few are <dfn>invariants</dfn>: things that must be true always, whatever the code does, whichever server handles the request, however many customers click at once. For Bit Booking the first is “a staff member is never booked twice at the same time”. Book 3 taught that rules like this belong in the database, where no race can bypass them. PostgreSQL can state this one directly, with an <dfn>exclusion constraint</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> bookings (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  staff_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> staff (id),
+  service_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> services (id),
+  email text <span class="k">NOT</span> <span class="k">NULL</span>,
+  <span class="c line-bidi">-- [start, end): the end is not included, so 10:00-10:30 and 10:30-11:00 do not overlap</span>
+  during tstzrange <span class="k">NOT</span> <span class="k">NULL</span>,
+  status text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s">&#x27;confirmed&#x27;</span>
+    <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="s">&#x27;confirmed&#x27;</span>, <span class="s">&#x27;cancelled&#x27;</span>)),
+  <span class="c line-bidi">-- US-2: a staff member is never booked twice at the same time; cancelled bookings free the slot</span>
+  <span class="k">CONSTRAINT</span> no_double_booking
+    EXCLUDE USING gist (staff_id <span class="k">WITH</span> =, during <span class="k">WITH</span> &amp;&amp;) <span class="k">WHERE</span> (status = <span class="s">&#x27;confirmed&#x27;</span>)
+);</pre></div>
+
+<p>The constraint reads: no two confirmed rows may have the same <code>staff_id</code> and overlapping (<code>&amp;&amp;</code>) times. The range <code>[start, end)</code> includes its start and excludes its end, so back-to-back appointments are allowed. Cancelled rows are ignored, so a cancellation frees the slot. Here is the spec’s story, checked by the database:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Sara books Mona at 10:00 for 30 minutes</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;sara@example.com&#x27;, &#x27;[2026-12-01 10:00+02, 2026-12-01 10:30+02)&#x27;)&quot;</span>
+INSERT 0 1
+<span class="c line-bidi"># Karim tries Mona at 10:15: the database refuses</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;karim@example.com&#x27;, &#x27;[2026-12-01 10:15+02, 2026-12-01 10:45+02)&#x27;)&quot;</span>
+ERROR:  conflicting key value violates exclusion constraint &quot;no_double_booking&quot;
+DETAIL:  Key (staff_id, during)=(1, [&quot;2026-12-01 08:15:00+00&quot;,&quot;2026-12-01 08:45:00+00&quot;)) conflicts with existing key (staff_id, during)=(1, [&quot;2026-12-01 08:00:00+00&quot;,&quot;2026-12-01 08:30:00+00&quot;)).
+<span class="c line-bidi"># The same time with Omar is fine</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (2, 1, &#x27;karim@example.com&#x27;, &#x27;[2026-12-01 10:15+02, 2026-12-01 10:45+02)&#x27;)&quot;</span>
+INSERT 0 1
+<span class="c line-bidi"># 10:30 with Mona is fine too: the ranges only touch</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;nour@example.com&#x27;, &#x27;[2026-12-01 10:30+02, 2026-12-01 11:00+02)&#x27;)&quot;</span>
+INSERT 0 1
+<span class="c line-bidi"># Sara cancels, and 10:00 is free again</span>
+<span class="c">$ </span><span class="k">psql shop -c &quot;UPDATE bookings SET status = &#x27;cancelled&#x27; WHERE id = 1&quot;</span>
+UPDATE 1
+<span class="c">$ </span><span class="k">psql shop -c &quot;INSERT INTO bookings (staff_id, service_id, email, during) VALUES (1, 1, &#x27;karim@example.com&#x27;, &#x27;[2026-12-01 10:00+02, 2026-12-01 10:30+02)&#x27;)&quot;</span>
+INSERT 0 1</pre></div>
+
+<p>This is what turning a spec into a system looks like at its best: a sentence from the stories became one line of schema, and every future feature, every API and every bug now has to respect it. The application will still check for free slots to give friendly answers, but correctness no longer depends on that check.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: time zones are part of the spec</p><p>The booking above was stored as <code>08:00+00</code>, though the customer typed <code>10:00+02</code>. That is correct: store instants in UTC, and convert for display. But “the reminder 24 hours before” and “opening hours 10:00 to 14:00” are in the <em>business’s</em> local time, which changes with daylight saving in many countries. Decide in the spec which clock each rule uses, and write it next to the rule.</p></aside>
+
+<h2><span class="sec">1.7</span> <span>The first version</span></h2>
+
+<p>The full idea is always bigger than the first release. Cut it with the question: <em>what is the smallest product that already solves the problem for some users?</em> For Bit Booking: customers book, get an email and a reminder, and can cancel; owners see their day. That is five stories. Online payment reduces no-shows further, but reminders may be enough, and payment brings accounts, refunds and regulations. It goes in a clearly written <strong>Not in the MVP</strong> list, which is part of the spec and protects the team from “while you are at it…”.</p>
+
+<p>Then build a <dfn>walking skeleton</dfn> first: the thinnest version of every layer, connected and deployed. One page that books one fixed slot, an API, a table, a real email, a deployment pipeline. It does almost nothing, but it proves that the pieces fit, and every later story adds flesh to a skeleton that already walks. Teams that build layer by layer discover in the last week that the pieces do not join.</p>
+
+<h2><span class="sec">1.8</span> <span>The one-page spec</span></h2>
+
+<p>All of this fits on one page, which is the point: a page gets read, reviewed and kept up to date. Ours is a Markdown file in the repository, next to the code, so that changing the spec is a pull request like any other:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/spec.md</div><pre class="code md"><b># Bit Booking: one-page spec</b>
+
+**Status:** draft for review · **Owner:** product + tech lead · **Updated:** 2026-11-20
+
+<b>## Problem</b>
+Small businesses (salons, clinics, tutors) take bookings by phone and chat.
+Owners lose about an hour a day answering, and 1 booking in 8 is a no-show.
+
+<b>## Users</b>
+- **Owner:** sets services, staff and opening hours; sees the day.
+- **Staff:** sees their own day; marks a booking done or no-show.
+- **Customer:** books, moves or cancels, without an account.
+
+<b>## Stories (MVP)</b>
+- **US-1** As a customer, I see free slots for a service and a staff member.
+  - Given Mona works 10:00-14:00 and has a booking 10:00-10:30,
+    when I ask for a 30-minute haircut, then 10:00 is not offered and 10:30 is.
+- **US-2** As a customer, I book a slot.
+  - Given two customers ask for the same slot at the same time,
+    then exactly one booking is made and the other sees &quot;taken&quot;.
+- **US-3** As a customer, I get a confirmation email, and a reminder 24 h before.
+- **US-4** As a customer, I cancel up to 2 h before, from the link in the email.
+- **US-5** As an owner, I see today&#x27;s bookings for every staff member.
+
+<b>## Not in the MVP</b>
+Online payment (deposits come in version 2), mobile apps, several branches.
+
+<b>## Quality</b>
+- Availability 99.9% a month; booking page p95 &lt; 300 ms.
+- 2,000 businesses in year one; 25 bookings a business a day.
+- Personal data kept 2 years after the last visit, then deleted.
+
+<b>## Risks and open questions</b>
+- Time zones: a business and its customers may be in different zones.
+- Do customers need an account to see their history? (decide by 2026-12-01)</pre></div>
+
+<p>Each section answers one question a reader will ask: why (Problem), for whom (Users), what (Stories), what not (Not in the MVP), how well (Quality), and what we do not know yet (Risks and open questions). An open question has an owner and a date; one without them is a decision nobody will make.</p>
+
+<p>Review the page with the people who will be affected: the owner reads the stories, a developer reads the rules and the numbers, a designer reads the journey, and someone from support reads the cancellation rule. Each finds different holes. Twenty minutes of that review saves weeks.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: write the decision and the reason</p><p>When the spec changes (“deposits move to version 2”), write the change and the reason in the pull request, and leave the old answer visible in the history. Months later, when someone asks “why don’t we take deposits?”, the answer is one search away, together with the facts that would justify changing it.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Starting from the solution</td><td>A product nobody needed, built well</td><td>The problem first, with numbers</td></tr>
+<tr><td>Asking about future intentions</td><td>Polite yeses that predict nothing</td><td>Ask about the last time it happened</td></tr>
+<tr><td>Vague criteria (“works correctly”)</td><td>Each person tests something different</td><td>Given, When, Then, with real values</td></tr>
+<tr><td>Stories split by layer</td><td>Weeks of work with nothing to show</td><td>Split by workflow step or by rule</td></tr>
+<tr><td>“Fast” and “reliable” without numbers</td><td>Untestable promises, or overbuilt systems</td><td>Numbers, with their cost calculated</td></tr>
+<tr><td>Invariants only in application code</td><td>Two requests at once break them</td><td>Constraints in the database</td></tr>
+<tr><td>No “not in the MVP” list</td><td>The first version never ships</td><td>Write what is out, and why</td></tr>
+<tr><td>A spec that never changes</td><td>The code and the document disagree</td><td>The spec in the repository, changed by pull request</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>spec</strong> is the cheapest place to find a misunderstanding; it makes you think, lets others disagree, and defines done.</li>
+<li>Start with the <strong>problem</strong> and its numbers, which become the <strong>success metrics</strong>.</li>
+<li>Describe <strong>roles</strong> by the job they need done, and walk a <strong>journey</strong> end to end to find the stories.</li>
+<li>A <strong>story</strong> becomes specific through <strong>acceptance criteria</strong> in Given, When, Then, with concrete values.</li>
+<li><strong>Non-functional requirements</strong> are numbers, and each number has a cost you can calculate.</li>
+<li><strong>Invariants</strong> belong in the database; an exclusion constraint makes double booking impossible.</li>
+<li>Cut a small <strong>MVP</strong>, write what is out, start from a <strong>walking skeleton</strong>, and keep the spec on <strong>one page</strong> in the repository.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. For example: “Given Sara has a booking tomorrow at 10:00, when she opens the cancel link at 07:59 tomorrow, then the booking is cancelled, the slot is offered to others, and Mona sees it gone; when she opens it at 08:01, then she sees that bookings can only be cancelled up to 2 hours before.” 2. It delivers nothing a user can use or a test from the spec can check, and it hides the real question (what the table must guarantee) until stories need it. Split by user-visible steps instead, and let each story add the columns it needs. 3. Because opinions about the future are polite guesses: nobody pays for a yes. Ask about past behaviour: “How did customers book last week? Tell me about the last booking that went wrong. How long did you spend answering messages yesterday?”</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project produces documents and code that you keep. Review every spec with at least one other person before calling it done.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>Criteria for the rest</h3>
+<p class="project-goal">Write full acceptance criteria for US-3, US-4 and US-5 of the spec.</p>
+<p class="project-skills"><strong>You will practise:</strong> Given, When, Then; edge cases; concrete values.</p>
+<ol class="steps">
+<li>For each story write at least two criteria: the normal case and one edge case.</li>
+<li>For US-3, decide what happens when a booking is made less than 24 hours ahead.</li>
+<li>For US-4, cover a cancellation exactly at the 2-hour limit.</li>
+<li>Ask someone to read one criterion and describe the test they would write; compare with yours.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> edge cases live at boundaries (exactly 2 hours, midnight, the last slot of the day) and at the arrows of the journey (the email bounced, the slot was just taken).</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.2 · Medium</p>
+<h3>Opening hours in the database</h3>
+<p class="project-goal">Extend the schema so that bookings outside a staff member’s working hours are impossible.</p>
+<p class="project-skills"><strong>You will practise:</strong> turning rules into constraints, ranges, and testing rules in SQL.</p>
+<ol class="steps">
+<li>Add a table <code>shifts (staff_id, during tstzrange)</code>, with an exclusion constraint so that one person’s shifts do not overlap.</li>
+<li>Write a trigger that refuses a confirmed booking whose range is not contained (<code>&lt;@</code>) in one of the staff member’s shifts.</li>
+<li>Record a transcript like <code>rules.sh</code>: a booking inside a shift, one that crosses its end, and one on a day off.</li>
+<li>Write down which part of the rule you left to the application, and why.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> constraints cannot read other tables, so containment in a shift needs a trigger; keep the trigger to that one check.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 1.3 · Challenge</p>
+<h3>A spec for your own idea</h3>
+<p class="project-goal">Take a product idea of your own from conversations to a reviewed one-page spec.</p>
+<p class="project-skills"><strong>You will practise:</strong> interviewing, metrics, scoping, and estimating cost from numbers.</p>
+<ol class="steps">
+<li>Interview five people who have the problem, asking only about the last time it happened. Write what you heard.</li>
+<li>Write the problem with two numbers, and the success metrics that would show it solved.</li>
+<li>Write five MVP stories with criteria, and a “not in the MVP” list at least as long.</li>
+<li>Adapt <code>budget.ts</code> to your numbers, and write the quality section from its output.</li>
+<li>Find at least one invariant and express it as a database constraint, with a transcript.</li>
+<li>Have the spec reviewed by two people with different roles, and record what changed.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if your “not in the MVP” list is shorter than your MVP, your first version is probably too big.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Turn each into a measurable requirement: “the site should be fast”, “we must not lose data”, “it should handle lots of users”.</li>
+<li><span class="level">Easy</span> Why is the booking range <code>[start, end)</code> rather than <code>[start, end]</code>? What would go wrong with the second?</li>
+<li><span class="level medium">Medium</span> Change <code>budget.ts</code> for 20,000 businesses and a peak factor of 10. What changes in the design, and what does not?</li>
+<li><span class="level medium">Medium</span> A salon wants a 10-minute cleaning gap after every haircut. Where does this rule go: the spec, the schema, the application? Write the criterion and propose the change.</li>
+<li><span class="level hard">Challenge</span> The exclusion constraint guarantees no double booking. Describe what the customer sees when two people book the last slot at the same moment, from the click to the screen, and write the criterion for the losing customer’s experience.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+<p>The spec says what to build; the next chapter decides how the front end and the back end talk about it. API contracts: one description of every endpoint, from which both sides are checked.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most problems have several good solutions. If yours handles normal and unusual cases, and you can explain your choices to a colleague, it is a good answer. The full, tested code for every answer is in the book’s code repository.</p>
+
+<h2 class="plain-h">Chapter 1</h2>
+<ol class="exercises">
+<li>“Fast”: 95% of booking pages answer in under 300 ms, and 99% in under 1 s, measured at the server over a day. “Not lose data”: a confirmed booking survives the loss of any one server; backups every hour, kept 30 days, and a restore tried every month (at most one hour of data lost, back online within four hours). “Lots of users”: 2,000 businesses and 85 requests a second at peak in year one, with a test showing the system handles four times that. Each one now names a number, how it is measured, and therefore what must be built.</li>
+<li>Because back-to-back appointments touch at one instant. With <code>[start, end)</code>, 10:00–10:30 and 10:30–11:00 share no instant, so both can be booked. With <code>[start, end]</code>, both contain 10:30 exactly, so the exclusion constraint would see them as overlapping and refuse the second: the salon could never book Mona for two appointments in a row. Half-open ranges also add up cleanly: a day split into slots has no gaps and no overlaps.</li>
+<li>Requests a day become 36,000,000 (ten times more); the average about 417 a second; the peak with a factor of 10 about 4,170 a second; the table about 34 GB a year. What changes: the database still holds the data easily, but 4,000 requests a second needs several application servers behind a load balancer, caching for the public slot pages (which are read far more than written), connection pooling, and perhaps read replicas. What does not change: the stories, the invariants and the exclusion constraint. That is why the numbers belong in the spec: they decide the architecture, while the rules stay the same.</li>
+<li>All three. In the spec, as a criterion: “Given a haircut takes 30 minutes and is followed by a 10-minute gap, when Sara books Mona at 10:00, then the next slot offered for Mona is 10:40.” In the schema, so it cannot be bypassed: add <code>buffer_minutes</code> to <code>services</code> and store the booking’s <code>during</code> as the appointment plus the buffer (or add a second range column <code>blocked</code> used by the exclusion constraint, so emails still show 10:00–10:30). The application computes the offered slots from the same rule, but correctness stays with the constraint.</li>
+<li>Both clicks reach the server; both checks for free slots may pass; both inserts reach PostgreSQL. The constraint lets the first commit and makes the second fail with an exclusion violation (error code 23P01). The API turns that error into a 409 with a clear Problem (“This time was just taken”), and the page shows it in place, offers the nearest free slots for the same staff member and service, and keeps what the customer typed. Criterion: “Given Karim and Nour submit Mona at 10:30 at the same moment, when Karim’s booking is saved first, then Nour sees ‘10:30 was just taken’, with the next three free times for Mona, and her name and email still filled in; no email is sent to Nour.”</li>
+</ol>
+
+</section>
+</body></html>

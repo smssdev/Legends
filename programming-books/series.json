@@ -885,7 +885,8 @@
           "chapters": [
             {
               "en": "From Idea to Specification",
-              "ar": "من الفكرة إلى المواصفات"
+              "ar": "من الفكرة إلى المواصفات",
+              "src": "b4/spec"
             },
             {
               "en": "API Contracts Between Frontend and Backend",
