@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "الفصل 6: المعاملات والأقفال والاتساق"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "الفصل 7: التخزين المؤقت بـ Redis"; } }
+@page ch07:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -3509,6 +3511,370 @@ A: انتهت</pre></div>
 <p>قاعدة البيانات صحيحة الآن؛ وبعدها نجعلها سريعة للأسئلة التي تُسأل آلاف المرات في الدقيقة. Redis يحفظ الإجابات في الذاكرة: التخزين المؤقت وإبطاله، وحدود المعدل المشتركة بين الخوادم، والأقفال عبر العمليات.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b3/redis/ar">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">الفصل 7</p><h1>Redis: التخزين المؤقت وحدود المعدل والأقفال</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تستخدم Redis من سطر الأوامر: النصوص، والعدادات، وانتهاء الصلاحية، والجداول المصغرة، والمجموعات المرتبة</li>
+<li>تضع ذاكرة مؤقتة أمام استعلام بطيء، وتُبقيها صحيحة حين تتغير البيانات</li>
+<li>تمنع تدافع الطلبات على قاعدة البيانات دفعة واحدة، بقفل</li>
+<li>تأخذ قفلاً وتحرره بأمان عبر العمليات والخوادم</li>
+<li>تبني حداً للمعدل تتقاسمه عدة خوادم</li>
+<li>تقرر ما مكانه Redis وما يجب أن يبقى في قاعدة البيانات</li>
+</ul>
+</div>
+
+<p class="lead">PostgreSQL حريص: يكتب على القرص، ويفحص القيود، ويحفظ كل معاملة. ولهذا الحرص ثمن يُقاس بالمللي ثانية، وبعض الأسئلة تُسأل آلاف المرات في الدقيقة بالجواب نفسه. وRedis أداة من النوع المعاكس: خادم يحفظ كل شيء في الذاكرة ويجيب في أقل من مللي ثانية بكثير. وكل خادم خلفي تقريباً في الإنتاج يضع واحداً بجانب قاعدة بياناته، لثلاث مهام يبنيها هذا الفصل فعلاً: ذاكرة مؤقتة، وقفل تحترمه عمليات كثيرة، وعدادات تتقاسمها عدة خوادم.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول مرة وضعت ذاكرة مؤقتة أمام أبطأ صفحاتنا، نزل زمن استجابتها من 900 مللي ثانية إلى 4. شعرت أني ساحر طوال أسبوع. ثم اشتكى زبون أن سعراً غيّره قبل ساعة ما زال يظهر بقيمته القديمة، فتعلمت النصف الآخر من التخزين المؤقت: أن تعرف متى تكون النسخة خاطئة.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>Redis في خمس دقائق</span></h2>
+
+<p><dfn>Redis</dfn> خادم يحفظ <dfn>مفاتيح</dfn> (keys) وقيمها في الذاكرة. ويكلمه العملاء عبر الشبكة كقاعدة البيانات، و<code>redis-cli</code> عميله في سطر الأوامر. وأبسط القيم نصوص، ويمكن أن يحمل المفتاح وقت انتهاء:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># النصوص والعدادات وانتهاء الصلاحية</span>
+<span class="c">$ </span><span class="k">redis-cli SET greeting hello</span>
+OK
+<span class="c">$ </span><span class="k">redis-cli GET greeting</span>
+&quot;hello&quot;
+<span class="c">$ </span><span class="k">redis-cli GET nothing</span>
+(nil)
+<span class="c">$ </span><span class="k">redis-cli INCR visits</span>
+(integer) 1
+<span class="c">$ </span><span class="k">redis-cli INCR visits</span>
+(integer) 2
+<span class="c">$ </span><span class="k">redis-cli SET session:7f3a 42 EX 1800</span>
+OK
+<span class="c">$ </span><span class="k">redis-cli TTL session:7f3a</span>
+(integer) 1800
+<span class="c">$ </span><span class="k">redis-cli SET once yes NX</span>
+OK
+<span class="c">$ </span><span class="k">redis-cli SET once again NX</span>
+(nil)</pre></div>
+
+<ul>
+<li><code>GET</code> لمفتاح غير موجود تجيب <code>(nil)</code>.</li>
+<li><code>INCR</code> تضيف 1 وتعيد القيمة الجديدة في خطوة واحدة: عميلان يزيدان في اللحظة نفسها يأخذان 1 و2، لا 1 و1 أبداً. فـ Redis ينفذ أمراً واحداً في كل مرة، وكل أمر وحده ذري.</li>
+<li><code>EX 1800</code> تجعل المفتاح يختفي بعد 1800 ثانية، و<code>TTL</code> تقول كم بقي له. والجلسات والذاكرة المؤقتة وحدود المعدل كلها تعتمد على هذا.</li>
+<li><code>NX</code> تضبط المفتاح فقط إن لم يكن موجوداً: <code>SET … NX</code> الثانية لم تغيّر شيئاً. وهذا الخيار الواحد أساس القفل (القسم 7.3).</li>
+</ul>
+
+<p>ويمكن أن تكون القيم بُنى أيضاً. <dfn>الجدول المصغر</dfn> (hash) جدول صغير من الحقول تحت مفتاح واحد؛ و<dfn>المجموعة المرتبة</dfn> (sorted set) تحفظ أعضاءها مرتبين بدرجة، فتسهل لوحات الصدارة ونوافذ الوقت:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الجداول المصغرة والمجموعات المرتبة</span>
+<span class="c">$ </span><span class="k">redis-cli HSET product:2 name &#x27;عجلات احتياطية&#x27; price 6000</span>
+(integer) 2
+<span class="c">$ </span><span class="k">redis-cli HGET product:2 price</span>
+&quot;6000&quot;
+<span class="c">$ </span><span class="k">redis-cli ZADD scores 120 sara 95 omar 140 lina</span>
+(integer) 3
+<span class="c">$ </span><span class="k">redis-cli ZINCRBY scores 30 omar</span>
+&quot;125&quot;
+<span class="c">$ </span><span class="k">redis-cli ZREVRANGE scores 0 2 WITHSCORES</span>
+1) &quot;lina&quot;
+2) &quot;140&quot;
+3) &quot;omar&quot;
+4) &quot;125&quot;
+5) &quot;sara&quot;
+6) &quot;120&quot;</pre></div>
+
+<p>أسماء المفاتيح نص حر؛ والعرف أجزاء تفصلها نقطتان، من العام إلى الخاص: <code>product:2</code>، و<code>session:7f3a</code>، و<code>rate:203.0.113.7</code>. فتبقى المفاتيح مقروءة، وتجدها ببادئتها عند تتبع الأخطاء.</p>
+
+<h2><span class="sec">7.2</span> <span>ذاكرة مؤقتة أمام استعلام بطيء</span></h2>
+
+<p>أشيع الأنماط هو <dfn>التخزين جانباً</dfn> (cache-aside): يبحث التطبيق في Redis أولاً؛ وعند <dfn>الغياب</dfn> (cache miss) يسأل قاعدة البيانات ويحفظ نسخة في Redis للمرة القادمة؛ وعند <dfn>الإصابة</dfn> (cache hit) لا تُلمس قاعدة البيانات. وهنا تجعل <code>pg_sleep(0.2)</code> الاستعلام يستغرق 200 مللي ثانية، كتقرير ثقيل:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/cache.ts</div><pre class="code"><span class="c line-bidi">// الاستعلام البطيء: pg_sleep تمثل تقريراً ثقيلاً أو ربطاً بين جداول كبيرة</span>
+<span class="k">async</span> <span class="k">function</span> productFromDb(id: number): Promise&lt;Product&gt; {
+  <span class="k">const</span> sql = <span class="s">&quot;SELECT id, name, price FROM products, pg_sleep(0.2) WHERE id = $1&quot;</span>;
+  <span class="k">return</span> (<span class="k">await</span> db.query(sql, [id])).rows[<span class="n">0</span>];
+}
+
+<span class="c line-bidi">// التخزين جانباً: ابحث في Redis أولاً؛ وعند الغياب اسأل قاعدة البيانات واحفظ الجواب</span>
+<span class="k">async</span> <span class="k">function</span> product(id: number) {
+  <span class="k">const</span> key = <span class="s">`product:${id}`</span>;
+  <span class="k">const</span> cached = <span class="k">await</span> redis.get(key);
+  <span class="k">if</span> (cached !== <span class="k">null</span>) <span class="k">return</span> { product: JSON.parse(cached) as Product, <span class="k">from</span>: <span class="s">&quot;Redis&quot;</span> };
+  <span class="k">const</span> fresh = <span class="k">await</span> productFromDb(id);
+  <span class="c line-bidi">// يُنسى بعد 60 ثانية، حتى لو لم يحذفه أحد</span>
+  <span class="k">await</span> redis.set(key, JSON.stringify(fresh), { EX: <span class="n">60</span> });
+  <span class="k">return</span> { product: fresh, <span class="k">from</span>: <span class="s">&quot;PostgreSQL&quot;</span> };
+}
+
+<span class="c line-bidi">// تغيير البيانات: حدّث قاعدة البيانات أولاً، ثم احذف النسخة المخزنة</span>
+<span class="k">async</span> <span class="k">function</span> setPrice(id: number, price: number) {
+  <span class="k">await</span> db.query(<span class="s">&quot;UPDATE products SET price = $1 WHERE id = $2&quot;</span>, [price, id]);
+  <span class="k">await</span> redis.del(<span class="s">`product:${id}`</span>);
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ذاكرة مؤقتة أمام استعلام بطيء</span>
+<span class="c">$ </span><span class="k">node node/cache.ts</span>
+الطلب الأول      عدة الروبوت, 45000, من PostgreSQL في 213 ms
+الطلب الثاني     عدة الروبوت, 45000, من Redis في 1 ms
+الطلب الثالث     عدة الروبوت, 45000, من Redis في 1 ms
+تغير السعر إلى 47000، وحُذفت النسخة المخزنة
+بعد التغيير      عدة الروبوت, 47000, من PostgreSQL في 203 ms
+الثواني الباقية في Redis: 60</pre></div>
+
+<p>دفع الطلب الأول 200 مللي ثانية كاملة؛ وجاء التاليان من الذاكرة في نحو واحدة. هذه هي المكافأة. والثمن أن للبيانات الآن نسختين، وقد تخطئ النسخة. وقاعدتان تُبقيانها صحيحة:</p>
+<ul>
+<li><strong>أبطِل عند التغيير.</strong> كل ما يغيّر البيانات يحذف النسخة المخزنة، بعد نجاح الكتابة في قاعدة البيانات. فتغيب القراءة التالية وتجلب القيمة الجديدة: ظهر السعر 47000 في الحال. والحذف أأمن من كتابة القيمة الجديدة في الذاكرة المؤقتة، لأن كاتبَين متزامنين قد يتركان القيمة الأقدم فيها.</li>
+<li><strong>اضبط انتهاء الصلاحية دائماً.</strong> سينسى تغيير ما يوماً أن يُبطل: إصلاح بـ SQL مباشرة، أو مسار كود جديد، أو خطأ. وTTL يحدّ عمر النسخة الخاطئة. واختره من السؤال «كم يجوز أن تتقادم؟»: ثوانٍ لكميات المخزون، ودقائق لصفحة منتج، وساعات لقائمة الدول.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: خزّن المشترك، لا الخاص</p><p>يجب أن يحتوي مفتاح الذاكرة المؤقتة كل ما يعتمد عليه الجواب. فصفحة منتج بلغتين تحتاج <code>product:2:ar</code> و<code>product:2:en</code>، وكل ما يعتمد على المستخدم (سلته، وأسعاره، وصلاحياته) يحتاج المستخدم في المفتاح، أو لا تخزين أصلاً. وتقديم بيانات زبون مخزنة لزبون آخر حادثة أمنية، لا خطأ أداء.</p></aside>
+
+<h2><span class="sec">7.3</span> <span>التدافع والأقفال</span></h2>
+
+<p>للذاكرة المؤقتة لحظة خطرة: حين تنتهي صلاحية مفتاح مشهور. فكل طلب يصل في الـ 200 مللي ثانية التالية يغيب، وكل واحد منها يسأل قاعدة البيانات السؤال الثقيل نفسه. هذا هو <dfn>التدافع</dfn> (cache stampede). يرسل البرنامج عشرين طلباً معاً لمنتج غير مخزن، أولاً بلا حماية، ثم بقفل يسمح لطلب واحد فقط بإعادة بناء الذاكرة المؤقتة، بينما ينتظر الآخرون ثم يبحثون مرة أخرى:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/stampede.ts</div><pre class="code"><span class="c line-bidi">// احذف القفل فقط إن كان ما زال لنا، في خطوة واحدة على الخادم</span>
+<span class="k">const</span> RELEASE = <span class="s">`if redis.call(&quot;GET&quot;, KEYS[1]) == ARGV[1]
+  then return redis.call(&quot;DEL&quot;, KEYS[1]) else return 0 end`</span>;
+
+<span class="k">async</span> <span class="k">function</span> product(id: number) {
+  <span class="k">const</span> key = <span class="s">`product:${id}`</span>;
+  <span class="k">for</span> (;;) {
+    <span class="k">const</span> cached = <span class="k">await</span> redis.get(key);
+    <span class="k">if</span> (cached !== <span class="k">null</span>) <span class="k">return</span> JSON.parse(cached);
+    <span class="k">if</span> (mode === <span class="s">&quot;naive&quot;</span>) <span class="k">break</span>;
+    <span class="c line-bidi">// الطلب الذي يأخذ القفل وحده يسأل قاعدة البيانات؛ والباقون ينتظرون ثم يبحثون مرة أخرى</span>
+    <span class="k">const</span> token = randomUUID(); <span class="c line-bidi">// رمز عشوائي: صاحب القفل وحده يحرره</span>
+    <span class="k">if</span> (<span class="k">await</span> redis.set(<span class="s">`lock:${key}`</span>, token, { NX: <span class="k">true</span>, PX: <span class="n">5000</span> })) {
+      <span class="k">try</span> {
+        <span class="k">const</span> fresh = <span class="k">await</span> productFromDb(id);
+        <span class="k">await</span> redis.set(key, JSON.stringify(fresh), { EX: <span class="n">60</span> });
+        <span class="k">return</span> fresh;
+      } <span class="k">finally</span> {
+        <span class="k">await</span> redis.eval(RELEASE, { keys: [<span class="s">`lock:${key}`</span>], arguments: [token] });
+      }
+    }
+    <span class="k">await</span> sleep(<span class="n">50</span>);
+  }
+  <span class="k">const</span> fresh = <span class="k">await</span> productFromDb(id);
+  <span class="k">await</span> redis.set(key, JSON.stringify(fresh), { EX: <span class="n">60</span> });
+  <span class="k">return</span> fresh;
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عشرون طلباً على ذاكرة مؤقتة باردة</span>
+<span class="c">$ </span><span class="k">node node/stampede.ts naive</span>
+naive   20 طلباً, استعلامات قاعدة البيانات: 20, 428 ms
+<span class="c">$ </span><span class="k">node node/stampede.ts locked</span>
+locked  20 طلباً, استعلامات قاعدة البيانات: 1, 264 ms</pre></div>
+
+<p>بلا قفل، صنع عشرون طلباً عشرين استعلاماً متطابقاً؛ وبه استعلاماً واحداً. ومع تقرير حقيقي يستغرق ثانيتين وصفحة يفتحها ألف زائر في ذلك الوقت، هذا هو الفرق بين صفحة بطيئة وقاعدة بيانات تسقط. والقفل ثلاث أفكار:</p>
+<ul>
+<li><strong>خذه بـ <code>SET key token NX PX 5000</code>.</strong> <code>NX</code> تعني أن عميلاً واحداً فقط يستطيع إنشاء المفتاح؛ والآخرون يأخذون <code>null</code> فيعرفون أن غيرهم يعمل. و<code>PX 5000</code> تجعل القفل ينتهي بعد 5 ثوانٍ، فلا تستطيع عملية انهارت وهي تمسكه أن تحبس الجميع إلى الأبد.</li>
+<li><strong>رمز عشوائي قيمةً له.</strong> إن استغرق العمل أكثر من 5 ثوانٍ انتهى القفل، وقد تمسكه الآن عملية أخرى. وحذف المفتاح دون فحص يحرر <em>قفلها هي</em>.</li>
+<li><strong>حرّره بسكربت.</strong> «اقرأ القيمة، وقارنها، واحذف المفتاح» يجب أن تحدث في خطوة واحدة، وإلا انتقل القفل لغيرك بين القراءة والحذف. وRedis ينفذ سكربت Lua ذرياً كأمر واحد، فيفحص التحرير الرمز ويحذف في خطوة واحدة.</li>
+</ul>
+
+<p>قفل Redis جيد للكفاءة: لتجنب العمل المكرر كما هنا. لكنه ليس ضماناً للصحة، لأن قفلاً ينتهي وصاحبه ما زال يعمل (توقف طويل، أو شبكة بطيئة) يُدخل عمليتين. وحين يُفسد عملُ عمليتين معاً البيانات، يبقى خط الدفاع الأخير في قاعدة البيانات: قيد، أو تحديث شرطي، أو قفل صف، من الفصل 6.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يحذف كود التخزين جانباً النسخة المخزنة بعد التحديث بدل كتابة القيمة الجديدة فيها؟</li><li>ماذا سيحدث لو لم يكن للقفل وقت انتهاء؟</li><li>لماذا يحتاج القفل رمزاً عشوائياً بدل القيمة <code>1</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>حد للمعدل تتقاسمه الخوادم</span></h2>
+
+
+<p>حدّ الفصل 3 الطلبات بـ <code>@fastify/rate-limit</code>، التي تعدّ في ذاكرة الخادم نفسه.</p>
+<p>ومع عدادات في ذاكرة كل خادم، يأخذ عميل يوزع طلباته على خادمين ضعف الحد، وإعادة التشغيل تصفّر الجميع. ومكان العداد Redis، حيث يرى كل خادم الرقم نفسه:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/ratelimit.ts</div><pre class="code"><span class="k">import</span> { createClient } <span class="k">from</span> <span class="s">&quot;redis&quot;</span>;
+
+<span class="k">const</span> LIMIT = <span class="n">5</span>;
+<span class="k">const</span> WINDOW = <span class="n">10</span>; <span class="c line-bidi">// seconds</span>
+
+<span class="c line-bidi">// عداد لكل عميل؛ وأول طلب يبدأ نافذة من 10 ثوانٍ</span>
+<span class="k">async</span> <span class="k">function</span> allow(redis: ReturnType&lt;<span class="k">typeof</span> createClient&gt;, client: string) {
+  <span class="k">const</span> key = <span class="s">`rate:${client}`</span>;
+  <span class="c line-bidi">// MULTI/EXEC: الأمران ينفذان معاً، ولا شيء بينهما</span>
+  <span class="k">const</span> [count] = <span class="k">await</span> redis.multi().incr(key).expire(key, WINDOW, <span class="s">&quot;NX&quot;</span>).exec();
+  <span class="k">return</span> { allowed: Number(count) &lt;= LIMIT, count: Number(count), key };
+}
+
+<span class="c line-bidi">// خادمان، واتصالان، وRedis واحد: الحد مشترك</span>
+<span class="k">const</span> servers = {
+  A: <span class="k">await</span> createClient({ url: <span class="s">&quot;redis://localhost:6379&quot;</span> }).connect(),
+  B: <span class="k">await</span> createClient({ url: <span class="s">&quot;redis://localhost:6379&quot;</span> }).connect(),
+};
+<span class="k">await</span> servers.A.del(<span class="s">&quot;rate:203.0.113.7&quot;</span>);
+<span class="k">for</span> (<span class="k">let</span> i = <span class="n">1</span>; i &lt;= <span class="n">8</span>; i++) {
+  <span class="k">const</span> name = i % <span class="n">2</span> === <span class="n">1</span> ? <span class="s">&quot;A&quot;</span> : <span class="s">&quot;B&quot;</span>;
+  <span class="k">const</span> redis = servers[name];
+  <span class="k">const</span> { allowed, count, key } = <span class="k">await</span> allow(redis, <span class="s">&quot;203.0.113.7&quot;</span>);
+  <span class="k">const</span> answer = allowed
+    ? <span class="s">`مسموح (${count} من ${LIMIT})`</span>
+    : <span class="s">`مرفوض، 429، حاول بعد ${await redis.ttl(key)} ث`</span>;
+  console.log(<span class="s">`الطلب ${i} عبر الخادم ${name}: ${answer}`</span>);
+}
+<span class="k">await</span> servers.A.close();
+<span class="k">await</span> servers.B.close();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># خمسة طلبات كل 10 ثوانٍ، يتقاسمها خادمان</span>
+<span class="c">$ </span><span class="k">node node/ratelimit.ts</span>
+الطلب 1 عبر الخادم A: مسموح (1 من 5)
+الطلب 2 عبر الخادم B: مسموح (2 من 5)
+الطلب 3 عبر الخادم A: مسموح (3 من 5)
+الطلب 4 عبر الخادم B: مسموح (4 من 5)
+الطلب 5 عبر الخادم A: مسموح (5 من 5)
+الطلب 6 عبر الخادم B: مرفوض، 429، حاول بعد 10 ث
+الطلب 7 عبر الخادم A: مرفوض، 429، حاول بعد 10 ث
+الطلب 8 عبر الخادم B: مرفوض، 429، حاول بعد 10 ث</pre></div>
+
+<p>تبادلت الطلبات بين الخادمين A وB، ورُفض السادس أياً كان الخادم الذي استقبله. وتفصيلتان تجعلانه صحيحاً:</p>
+<ul>
+<li><strong><code>EXPIRE … NX</code></strong> تضبط الانتهاء فقط إن لم يكن للمفتاح انتهاء، فيبدأ الطلب الأول نافذة العشر ثوانٍ، ولا تمددها الطلبات التالية.</li>
+<li><strong><code>MULTI</code> و<code>EXEC</code></strong> ترسلان الأمرين معاملةً واحدة: ينفذهما Redis معاً، بلا أمر من عميل آخر بينهما. ومع أمرين منفصلين، عملية انهارت بعد <code>INCR</code> وقبل <code>EXPIRE</code> تترك عداداً لا ينتهي أبداً، وذلك العميل محجوب إلى الأبد.</li>
+</ul>
+
+<p>هذه <dfn>نافذة ثابتة</dfn> (fixed window): بسيطة ورخيصة، لكن العميل يستطيع إرسال 5 طلبات في آخر نافذة و5 أخرى في أول التالية. و<dfn>النافذة المنزلقة</dfn> (sliding window) تعدّ طلبات آخر 10 ثوانٍ في كل لحظة، بمجموعة مرتبة من الأوقات؛ وهي التمرين 5.</p>
+
+<h2><span class="sec">7.5</span> <span>Redis في الإطار</span></h2>
+
+
+<p>في تطبيق Fastify، أنشئ عميل Redis واحداً حين يبدأ الخادم، وشاركه بـ <code>app.decorate("redis", client)</code>، وأغلقه في خطاف <code>onClose</code>، تماماً كمجمّع قاعدة البيانات. والقطع الجاهزة تقبله:</p>
+<ul>
+<li><code>@fastify/rate-limit</code> تأخذ الخيار <code>redis</code>، فتحفظ عداداتها هناك بدل الذاكرة، مشتركة بين كل الخوادم.</li>
+<li>والتخزين المؤقت يبقى أسطراً قليلة من كودك، مثل <code>product()</code> أعلاه، وكثيراً ما تُلف في دالة مساعدة صغيرة <code>cached(key, ttl, load)</code>.</li>
+<li>وللأقفال التي تتجدد تلقائياً وللطوابير حزم مبنية على هذه الأوامر نفسها؛ والفصل 10 يستخدم Redis لطابور مهام.</li>
+</ul>
+
+<h2><span class="sec">7.6</span> <span>ما مكانه Redis</span></h2>
+
+<p>يحفظ Redis كل شيء في الذاكرة، والذاكرة صغيرة وغالية مقارنة بالقرص. وثلاثة إعدادات تقرر سلوكه حين تسوء الأمور:</p>
+<ul>
+<li><strong><code>maxmemory</code></strong> تحدّ الذاكرة التي يجوز لـ Redis استخدامها، و<strong><code>maxmemory-policy</code></strong> تقرر ما يحدث عند الحد. ولذاكرة مؤقتة خالصة، <code>allkeys-lru</code> تطرد المفاتيح الأقل استخداماً مؤخراً، وهذا تماماً ما يجب أن تنساه الذاكرة المؤقتة. أما الافتراضي، <code>noeviction</code>، فيرفض الكتابات الجديدة بدلاً من ذلك.</li>
+<li><strong>الحفظ الدائم</strong> (لقطات RDB وسجل AOF) يحفظ البيانات على القرص، فلا تفرغها إعادة التشغيل. والذاكرة المؤقتة تستغني عنه؛ والجلسات والطوابير تحتاجه.</li>
+<li>Redis لذاكرة مؤقتة يجوز أن تنسى، وآخر (أو إعداد آخر) لبيانات لا يجوز أن تضيع: طابور تختفي مهامه تحت ضغط الذاكرة يضيّع طلبات.</li>
+</ul>
+
+<p>والقاعدة التي تنتج: <strong>Redis يحفظ النسخ والحالة قصيرة العمر؛ وقاعدة البيانات تحفظ الحقيقة.</strong> لو فُرّغ Redis الآن، يجب أن يصير التطبيق أبطأ، ويُخرج المستخدمين من حساباتهم في أسوأ الأحوال، لكن لا يضيع شيء مهم.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: قِس قبل أن تخزّن</p><p>الذاكرة المؤقتة تضيف نسخة ثانية من البيانات، وكود إبطال، وطريقة جديدة للخطأ. فقبل أن تضيفها، قِس: أي استعلام بطيء، وكم مرة يُنفذ، وهل يصلحه فهرس (الفصل 4) أو استعلام أفضل بلا نسخة أصلاً. ثم خزّن الأجوبة القليلة الساخنة الغالية المشتركة، وراقب نسبة الإصابة: ذاكرة مؤقتة تُصاب 20% من الوقت عبءٌ في الغالب.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>تخزين بلا TTL</td><td>إبطال فائت يدوم إلى الأبد</td><td>كل مفتاح له انتهاء</td></tr>
+<tr><td>كتابة القيمة الجديدة في الذاكرة المؤقتة عند التحديث</td><td>كاتبان متزامنان يتركان القيمة القديمة</td><td>احذف المفتاح؛ والقراءة التالية تعيد التحميل</td></tr>
+<tr><td>مفتاح ينقصه بعض ما يعتمد عليه الجواب</td><td>مستخدم يرى بيانات غيره</td><td>اللغة والمستخدم والمرشحات في المفتاح</td></tr>
+<tr><td>قفل بلا انتهاء</td><td>انهيار يحبس الجميع إلى الأبد</td><td><code>SET … NX PX</code></td></tr>
+<tr><td>تحرير القفل بـ <code>DEL</code> عادية</td><td>تحرير قفل غيرك</td><td>رمز، وسكربت Lua يقارن ثم يحذف</td></tr>
+<tr><td><code>INCR</code> ثم <code>EXPIRE</code> أمرين منفصلين</td><td>عدادات لا تنتهي أبداً</td><td><code>MULTI</code>/<code>EXEC</code>، أو <code>EXPIRE … NX</code> معاً</td></tr>
+<tr><td>حدود المعدل في ذاكرة كل خادم</td><td>الحد مضروب في عدد الخوادم</td><td>العدادات في Redis</td></tr>
+<tr><td>Redis النسخة الوحيدة لبيانات مهمة</td><td>بيانات تضيع بالطرد أو إعادة التشغيل</td><td>قاعدة البيانات تحفظ الحقيقة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>Redis</strong> يحفظ المفاتيح في الذاكرة ويجيب في أقل من مللي ثانية؛ وكل أمر وحده <strong>ذري</strong>.</li>
+<li><strong>التخزين جانباً:</strong> اقرأ Redis، وعند الغياب اقرأ قاعدة البيانات واحفظ نسخة بـ <strong>TTL</strong>؛ وعند التغيير <strong>احذف</strong> النسخة.</li>
+<li><strong>التدافع</strong> يرسل كل طلب إلى قاعدة البيانات حين ينتهي مفتاح ساخن؛ و<strong>القفل</strong> يدع واحداً يعيد بناءه.</li>
+<li>القفل الآمن: <code>SET key token NX PX</code>، والتحرير بـ <strong>سكربت Lua</strong> يفحص الرمز. أقفال Redis توفر العمل؛ والصحة تبقى في قاعدة البيانات.</li>
+<li>مكان <strong>حدود المعدل</strong> Redis لتتقاسمها الخوادم؛ و<code>MULTI</code>/<code>EXEC</code> تُبقي العداد وانتهاءه معاً.</li>
+<li>Redis يحفظ النسخ والحالة قصيرة العمر؛ و<strong>قاعدة البيانات تحفظ الحقيقة</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. قد يحدث تحديثان في وقت متقارب جداً؛ فإن كتب كل منهما قيمته في الذاكرة المؤقتة، قد يكتب الأبطأ القيمة الأقدم فوق الأحدث، فتبقى الذاكرة المؤقتة خاطئة حتى ينتهي TTL. والحذف واحد أياً كان الترتيب، والقراءة التالية تحمّل القيمة الحالية من قاعدة البيانات. 2. لو انهارت العملية الممسكة بالقفل أو علقت، لما اختفى المفتاح أبداً، ولانتظر كل طلب لاحق إلى الأبد ذاكرة مؤقتة لا يعيد بناءها أحد. 3. حين ينتهي القفل وصاحبه ما زال يعمل، تستطيع عملية أخرى أخذه؛ وقيمة ثابتة تسمح للعملية الأولى، حين تنتهي، بحذف قفل الثانية. والرمز يجعل كل عملية تحذف القفل الذي أخذته هي فقط.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يضيف Redis إلى متجر الفصول السابقة. قِس قبل وبعد، وأثبت دعاوى الصحة بطلبات متزامنة.</p>
+
+<div class="project">
+<p class="project-label">المشروع 7.1 · سهل</p>
+<h3>قائمة منتجات مخزنة</h3>
+<p class="project-goal">خزّن قائمة المنتجات المقسمة إلى صفحات في API المتجر، وأبقِها صحيحة حين يتغير أي منتج.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التخزين جانباً، ومفاتيح تتضمن كل وسيط، والإبطال، وTTL.</p>
+<ol class="steps">
+<li>خزّن استجابة قائمة المنتجات 60 ثانية، بمفتاح يتضمن مؤشر الصفحة وحجمها واللغة.</li>
+<li>حين يُنشأ أي منتج أو يُحدَّث أو يُحذف، يجب أن تتغير القائمة في الحال. وحذف كل مفاتيح القوائم مربك، فاحفظ رقم إصدار في <code>products:version</code>، وضعه في كل مفتاح قائمة، وزِده بـ <code>INCR</code> مع كل تغيير.</li>
+<li>قِس زمن استجابة القائمة بالذاكرة المؤقتة وبدونها، ونسبة الإصابة بعد مئة طلب عشوائي.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> بعد تغير الإصدار، لا تُقرأ المفاتيح القديمة أبداً، وتنتهي ببساطة مع TTL؛ فلا حاجة لإيجادها وحذفها.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 7.2 · متوسط</p>
+<h3>لوحة صدارة حية</h3>
+<p class="project-goal">ابنِ لوحة «الأكثر مبيعاً هذا الأسبوع» تتحدث مع كل طلب وتجيب في الحال.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المجموعات المرتبة، ومفاتيح لكل فترة زمنية، والزيادات الذرية، وإعادة البناء من قاعدة البيانات.</p>
+<ol class="steps">
+<li>مع كل طلب، زِد درجة المنتج بالكمية بـ <code>ZINCRBY</code> في مفتاح للأسبوع الحالي، مثل <code>bestsellers:2026-W47</code>، بانتهاء بعد بضعة أسابيع.</li>
+<li>أضف <code>GET /products/bestsellers</code> تعيد أول 10 بـ <code>ZREVRANGE … WITHSCORES</code>، مع أسمائها من قاعدة البيانات في استعلام واحد.</li>
+<li>اكتب أمراً يعيد بناء لوحة الأسبوع الحالي من جدول الطلبات، ليوم يُفرَّغ فيه Redis، وتحقق أن نتيجته تساوي اللوحة الحية.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إعادة البناء هي ما يجعل هذا آمناً: اللوحة في Redis نسخة محسوبة من الطلبات، فضياعها يكلّف دقيقة عمل، لا بيانات.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 7.3 · تحدٍّ</p>
+<h3>ذاكرة مؤقتة لا تتدافع أبداً</h3>
+<p class="project-goal">اكتب دالة مساعدة قابلة لإعادة الاستخدام <code>cached(key, ttl, load)</code>، سريعة، وصحيحة تحت الضغط، وآمنة حين يتعطل Redis.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأقفال بالرموز، وتقديم القديم أثناء التحديث، والتراجع المتدرج، واختبار الحمل.</p>
+<ol class="steps">
+<li>احفظ مع كل قيمة وقت «طازجة حتى» داخل JSON، وTTL في Redis أطول منه بكثير.</li>
+<li>حين تكون القيمة قديمة لكنها موجودة، أعدها في الحال، ودع طلباً واحداً (الذي يأخذ القفل) يعيد تحميلها في الخلفية.</li>
+<li>حين لا يمكن الوصول إلى Redis، سجّل تحذيراً ونادِ <code>load()</code> مباشرة، فيصير التطبيق أبطأ لكنه يعمل.</li>
+<li>اختبرها بحمل 200 طلب متزامن على مفتاح منتهٍ، وبيّن أن قاعدة البيانات تستقبل استعلاماً واحداً ولا ينتظره أي طلب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذه فكرة التوجيه <code>stale-while-revalidate</code> في تخزين HTTP المؤقت.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اختر TTL لكل مما يلي، وقل لماذا: سعر منتج في صفحته؛ وسعر الصرف المعروض بجانب الأسعار؛ وقائمة الدول في نموذج العنوان؛ وجلسة دخول المستخدم.</li>
+<li><span class="level">سهل</span> ما الخطأ في حد المعدل هذا: <code>count = INCR key</code>، ثم <code>if count == 1: EXPIRE key 60</code>، أمرين منفصلين؟</li>
+<li><span class="level medium">متوسط</span> صفحة منتج مخزنة تحت <code>product:2</code>. وتعرض الصفحة أيضاً اسم تصنيف المنتج. ماذا يجب أن يحدث حين يُغيَّر اسم تصنيف؟ اقترح حلين وقارن بينهما.</li>
+<li><span class="level medium">متوسط</span> قفل أُخذ بـ <code>PX 5000</code> يحمي مهمة تستغرق عادة ثانية واحدة، لكنها استغرقت مرة 7 ثوانٍ. صف بالضبط ما حدث، وثلاث طرق لحماية البيانات.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب حداً للمعدل بنافذة منزلقة ومجموعة مرتبة: 3 طلبات على الأكثر في أي ثانيتين. وبيّن أن الطلب الرابع في دفعة يُرفض، وأن طلباً بعد ثانيتين يُسمح به.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 8</p>
+<p>المتجر صحيح وسريع؛ والآن يحتاج أن يعرف من يتصل. المصادقة: كلمات مرور تُحفظ كما يجب، والجلسات والرموز، والقواعد التي تقرر ما يجوز لكل مستخدم أن يفعل.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3599,6 +3965,38 @@ A: انتهت</pre></div>
 }
 // await retrying(() =&gt; db.transaction().setIsolationLevel("serializable").execute(work));</code></pre>
 الوقفة عشوائية كي لا تعيد معاملتان تصادمتا في اللحظة نفسها فتتصادما مرة أخرى؛ وتكبر كي تأخذ لحظة الزحام وقتها لتمر. ولا يُعاد إلا المعاملة كلها، لا جملة واحدة منها أبداً، لأن كل ما قرأته ربما تغيّر.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 7</h2>
+<ol class="exercises">
+<li>سعر المنتج: بضع دقائق، مع إبطال عند كل تغيير، لأن سعراً خاطئاً يظهر دقائق مقبول فقط إن كانت التغييرات تحذف المفتاح في الحال أيضاً. وسعر الصرف: ما دام مصدره يحدّثه، وكثيراً ما يكون ساعة، فكل صفحة تقرؤه ويتغير بجدول. وقائمة الدول: يوم أو أكثر؛ فهي لا تكاد تتغير، والنشر يستطيع مسحها. وجلسة الدخول: حد خمولها، كثلاثين دقيقة، يتجدد مع كل طلب؛ وهنا TTL هو القاعدة نفسها (اخرج بعد 30 دقيقة خمول)، لا شبكة أمان.</li>
+<li>إن توقفت العملية بين الأمرين (انهيار، أو نشر، أو اتصال مفقود)، يبقى المفتاح بلا انتهاء. فلا يُحذف أبداً، ويكبر العدد فقط، ويُرفض ذلك العميل إلى الأبد. أرسل الأمرين في معاملة <code>MULTI</code>/<code>EXEC</code> واحدة، أو استخدم <code>EXPIRE key 60 NX</code> في المعاملة نفسها كما يفعل برنامج الفصل، أو سكربت Lua يفعل الاثنين.</li>
+<li>يجب إبطال كل صفحة منتج مخزنة تعرض التصنيف. الحل الأول: حين يُغيَّر اسم تصنيف، جِد منتجاته واحذف كل <code>product:{id}</code>؛ دقيق، لكنه يكلّف استعلاماً وحذوفات كثيرة، وكل مكان جديد يعرض اسم تصنيف يجب أن يتذكره. والحل الثاني: خزّن المنتج بلا اسم التصنيف، وخزّن التصنيفات وحدها تحت <code>category:{id}</code>، وركّب الصفحة من الاثنين؛ فيحذف تغيير الاسم مفتاحاً واحداً. والثاني أبسط في إبقائه صحيحاً، بثمن قراءتين من الذاكرة المؤقتة لكل صفحة (رحلة واحدة بـ <code>MGET</code>).</li>
+<li>أخذت العملية A القفل وتوقفت 7 ثوانٍ (استعلام طويل، أو توقف لجمع المهملات، أو شبكة بطيئة). وعند 5 ثوانٍ انتهى القفل؛ فأخذته العملية B وبدأت العمل نفسه. وطوال ثانيتين عملت الاثنتان معاً، وحين انتهت A رأى سكربت تحريرها رمز B فترك قفل B كما يجب. والحمايات: (1) اجعل العمل آمناً إن نُفذ مرتين، بقيود قاعدة البيانات أو التحديثات الشرطية أو مفاتيح عدم التكرار، فلا يضر التكرار؛ (2) TTL بهامش واسع، ومراقب يجدد القفل (فقط إن كان الرمز ما زال لنا) ما دام العمل مستمراً؛ (3) رمز تسييج (fencing token): رقم متزايد يُعطى مع القفل ويُحفظ مع كل كتابة، فترفض قاعدة البيانات كتابة تحمل رقماً أقدم من رقم رأته من قبل.</li>
+<li>
+
+<div class="listing" dir="ltr"><div class="listing-title">node/sliding.ts</div><pre class="code"><span class="c line-bidi">// التمرين 5: نافذة منزلقة، عضو في مجموعة مرتبة لكل طلب، ودرجته وقته</span>
+<span class="k">async</span> <span class="k">function</span> allow(client: string) {
+  <span class="k">const</span> key = <span class="s">`sliding:${client}`</span>;
+  <span class="k">const</span> now = Date.now();
+  <span class="k">const</span> [, , count] = <span class="k">await</span> redis
+    .multi()
+    .zRemRangeByScore(key, <span class="n">0</span>, now - WINDOW_MS)
+    .zAdd(key, { score: now, value: <span class="s">`${now}-${Math.random()}`</span> })
+    .zCard(key)
+    .pExpire(key, WINDOW_MS)
+    .exec();
+  <span class="k">return</span> Number(count) &lt;= LIMIT;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c">$ </span><span class="k">node node/sliding.ts</span>
+الطلب 1: مسموح
+الطلب 2: مسموح
+الطلب 3: مسموح
+الطلب 4: مرفوض، 429
+(بعد ثانيتين)
+الطلب 5: مسموح</pre></div>
+كل طلب يضيف عضواً درجته وقته بالمللي ثانية (مع لاحقة عشوائية، فيبقى طلبان في المللي ثانية نفسها مختلفين). وتحذف المعاملة أولاً الأعضاء الأقدم من النافذة، ثم تعدّ ما بقي. وهذه النسخة تسجل الطلبات المرفوضة أيضاً، فيبقى العميل الذي يواصل الإلحاح محجوباً؛ ولعدّ الطلبات المقبولة وحدها، افحص العدد قبل الإضافة، في سكربت Lua.</li>
 </ol>
 
 </section>

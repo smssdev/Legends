@@ -1,0 +1,10 @@
+#!/bin/sh
+# Starts Redis 8 for the book's examples (in Docker, nothing saved to disk, gone when it stops), and waits
+# until it answers. A fresh, empty Redis each time:
+#   redis-start --fresh
+if [ "$1" = "--fresh" ]; then docker rm -f b3-redis >/dev/null 2>&1; fi
+if ! docker ps --format '{{.Names}}' | grep -qx b3-redis; then
+  docker rm -f b3-redis >/dev/null 2>&1
+  docker run -d --name b3-redis --network host redis:8 redis-server --save "" --appendonly no >/dev/null
+fi
+until docker exec b3-redis redis-cli ping >/dev/null 2>&1; do sleep 0.3; done

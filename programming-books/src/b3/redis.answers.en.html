@@ -1,0 +1,16 @@
+<ol class="exercises">
+<li>The product price: a few minutes, with invalidation on every change, because a wrong price shown for minutes is tolerable only if changes also delete the key at once. The exchange rate: as long as its source updates it, often an hour, since every page reads it and it changes on a schedule. The list of countries: a day or more; it almost never changes, and a deploy can clear it. The login session: its idle limit, such as 30 minutes, renewed on every request; here the TTL is the rule itself (log out after 30 idle minutes), not a safety net.</li>
+<li>If the process stops between the two commands (a crash, a deploy, a lost connection), the key exists with no expiry. It is never deleted, the count only grows, and that client is refused forever. Send both in one <code>MULTI</code>/<code>EXEC</code> transaction, or use <code>EXPIRE key 60 NX</code> in the same transaction, as the chapter’s program does, or a Lua script that does both.</li>
+<li>Every cached product page that shows the category must be invalidated. Solution one: when a category is renamed, find its products and delete each <code>product:{id}</code>; precise, but it costs one query and many deletes, and every new place that shows a category name must remember it. Solution two: cache the product without the category name, cache categories separately under <code>category:{id}</code>, and assemble the page from both; a rename then deletes one key. The second is simpler to keep correct, at the cost of two cache reads per page (one round trip with <code>MGET</code>).</li>
+<li>Process A took the lock and paused for 7 seconds (a long query, a garbage-collection pause, a slow network). At 5 seconds the lock expired; process B took it and started the same work. For 2 seconds both worked at once, and when A finished, its release script saw B’s token and correctly left B’s lock alone. Protections: (1) make the work safe to run twice, with database constraints, conditional updates or idempotency keys, so a duplicate does no harm; (2) a TTL with a wide margin, and a watchdog that renews the lock (only if the token is still ours) while the work continues; (3) a fencing token: an increasing number given with the lock and stored with every write, so the database refuses a write carrying an older number than one it has already seen.</li>
+<li>
+<!-- node -->
+<pre data-code="node/sliding.ts" data-from="^// " data-to="^}" data-title="node/sliding.ts"></pre>
+<pre data-code="node-answers.sh" data-title="Terminal"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/sliding.php" data-from="^// " data-to="^}" data-title="php/sliding.php"></pre>
+<pre data-code="php-answers.sh" data-title="Terminal"></pre>
+<!-- /laravel -->
+Each request adds a member scored by its time in milliseconds (with a random suffix, so two requests in the same millisecond stay distinct). The transaction first removes members older than the window, then counts what is left. This version also records refused requests, so a client that keeps hammering stays blocked; to count only accepted requests, check the count before adding, in a Lua script.</li>
+</ol>

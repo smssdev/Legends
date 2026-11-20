@@ -1,0 +1,4 @@
+#!/bin/sh
+# Runs redis-cli (from the Redis container started by redis-start) as if it were installed here; --no-raw
+# prints (nil) and (integer) as redis-cli does in a terminal.
+exec docker exec -i b3-redis redis-cli --no-raw "$@"

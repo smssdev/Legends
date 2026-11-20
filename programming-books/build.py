@@ -195,7 +195,10 @@ def fill_code(chapter, lang):
             # containing data-to (or, for data-to="^}#2", the second line that is exactly "}"); without
             # data-to, to the end of the file.
             lines = src.split("\n")
-            start = next(i for i, l in enumerate(lines) if html.unescape(part.group(1)) in l)
+            # data-from="^// " is a line that starts with it (a comment at the top level, not inside a function)
+            first = html.unescape(part.group(1))
+            start = next(i for i, l in enumerate(lines)
+                         if (l.startswith(first[1:]) if first.startswith("^") else first in l))
             end = len(lines) - 1
             to = re.search(r'data-to="([^"]+)"', attrs)
             if to:
@@ -374,6 +377,12 @@ def answers_by_chapter(book, lang):
             if src.exists():
                 body = re.sub(r"\{\{n(?:([+-]\d+))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
                 body = only_edition(body, book)
+                if "<pre data-code=" in body:
+                    # Listings and transcripts in an answer come from the chapter's own code folder.
+                    chapter = Path(str(src).replace(".answers.", "."))
+                    folder = re.search(r'data-code="([^"]+)"', chapter.read_text()).group(1)
+                    marker = f'<i data-code="{folder}"></i>'
+                    body = fill_code(marker + body, lang).replace(marker, "", 1)
                 out.append(f'<h2>{TEXT[lang]["chapter"]} {k}</h2>\n{body}')
     return "\n\n".join(out)
 

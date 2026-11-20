@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: Transactions, Locks and Consistency"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Caching with Redis"; } }
+@page ch07:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3401,6 +3403,370 @@ A: done</pre></div>
 <p>The database is now correct; next we make it fast for the questions asked thousands of times a minute. Redis keeps answers in memory: caching, invalidation, rate limits shared between servers, and locks across processes.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b3/redis/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Redis: Caching, Rate Limits and Locks</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>use Redis from the command line: strings, counters, expiry, hashes and sorted sets</li>
+<li>put a cache in front of a slow query, and keep it correct when the data changes</li>
+<li>stop a stampede of requests from hitting the database at once, with a lock</li>
+<li>take and release a lock across processes and servers safely</li>
+<li>build a rate limit that several servers share</li>
+<li>decide what belongs in Redis and what must stay in the database</li>
+</ul>
+</div>
+
+<p class="lead">PostgreSQL is careful: it writes to disk, checks constraints and keeps every transaction safe. That care has a price, measured in milliseconds, and some questions are asked thousands of times a minute with the same answer. Redis is the opposite kind of tool: a server that keeps everything in memory and answers in well under a millisecond. Almost every production backend has one beside its database, for three jobs this chapter builds for real: a cache, a lock that many processes respect, and counters that several servers share.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first time I put a cache in front of our slowest page, its response time went from 900 milliseconds to 4. I felt like a magician for a week. Then a customer complained that a price they had changed an hour earlier still showed the old value, and I learned the other half of caching: knowing when the copy is wrong.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>Redis in five minutes</span></h2>
+
+<p><dfn>Redis</dfn> is a server that stores <dfn>keys</dfn> and their values in memory. Clients talk to it over the network, like a database, and <code>redis-cli</code> is its command-line client. The simplest values are strings, and a key can carry an expiry time:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Strings, counters and expiry</span>
+<span class="c">$ </span><span class="k">redis-cli SET greeting hello</span>
+OK
+<span class="c">$ </span><span class="k">redis-cli GET greeting</span>
+&quot;hello&quot;
+<span class="c">$ </span><span class="k">redis-cli GET nothing</span>
+(nil)
+<span class="c">$ </span><span class="k">redis-cli INCR visits</span>
+(integer) 1
+<span class="c">$ </span><span class="k">redis-cli INCR visits</span>
+(integer) 2
+<span class="c">$ </span><span class="k">redis-cli SET session:7f3a 42 EX 1800</span>
+OK
+<span class="c">$ </span><span class="k">redis-cli TTL session:7f3a</span>
+(integer) 1800
+<span class="c">$ </span><span class="k">redis-cli SET once yes NX</span>
+OK
+<span class="c">$ </span><span class="k">redis-cli SET once again NX</span>
+(nil)</pre></div>
+
+<ul>
+<li><code>GET</code> of a key that does not exist answers <code>(nil)</code>.</li>
+<li><code>INCR</code> adds 1 and returns the new value, in one step: two clients incrementing at the same moment get 1 and 2, never 1 and 1. Redis runs one command at a time, so every single command is atomic.</li>
+<li><code>EX 1800</code> makes the key disappear after 1,800 seconds, and <code>TTL</code> says how long it has left. Sessions, caches and rate limits all depend on this.</li>
+<li><code>NX</code> sets the key only if it does not exist yet: the second <code>SET … NX</code> changed nothing. This one flag is the base of a lock (section 7.3).</li>
+</ul>
+
+<p>Values can also be structures. A <dfn>hash</dfn> is a small table of fields under one key; a <dfn>sorted set</dfn> keeps members ordered by a score, which makes leaderboards and time windows easy:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Hashes and sorted sets</span>
+<span class="c">$ </span><span class="k">redis-cli HSET product:2 name &#x27;Spare wheels&#x27; price 6000</span>
+(integer) 2
+<span class="c">$ </span><span class="k">redis-cli HGET product:2 price</span>
+&quot;6000&quot;
+<span class="c">$ </span><span class="k">redis-cli ZADD scores 120 sara 95 omar 140 lina</span>
+(integer) 3
+<span class="c">$ </span><span class="k">redis-cli ZINCRBY scores 30 omar</span>
+&quot;125&quot;
+<span class="c">$ </span><span class="k">redis-cli ZREVRANGE scores 0 2 WITHSCORES</span>
+1) &quot;lina&quot;
+2) &quot;140&quot;
+3) &quot;omar&quot;
+4) &quot;125&quot;
+5) &quot;sara&quot;
+6) &quot;120&quot;</pre></div>
+
+<p>Key names are free text; the convention is parts separated by colons, from general to specific: <code>product:2</code>, <code>session:7f3a</code>, <code>rate:203.0.113.7</code>. It keeps keys readable and lets you find them by prefix when debugging.</p>
+
+<h2><span class="sec">7.2</span> <span>A cache in front of a slow query</span></h2>
+
+<p>The most common pattern is <dfn>cache-aside</dfn>: the application looks in Redis first; on a <dfn>cache miss</dfn> it asks the database and keeps a copy in Redis for next time; on a <dfn>cache hit</dfn> the database is not touched. Here a <code>pg_sleep(0.2)</code> makes the query take 200 milliseconds, like a heavy report:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/cache.ts</div><pre class="code"><span class="c line-bidi">// the slow query: pg_sleep stands for a heavy report or a join over big tables</span>
+<span class="k">async</span> <span class="k">function</span> productFromDb(id: number): Promise&lt;Product&gt; {
+  <span class="k">const</span> sql = <span class="s">&quot;SELECT id, name, price FROM products, pg_sleep(0.2) WHERE id = $1&quot;</span>;
+  <span class="k">return</span> (<span class="k">await</span> db.query(sql, [id])).rows[<span class="n">0</span>];
+}
+
+<span class="c line-bidi">// cache-aside: look in Redis first; on a miss, ask the database and keep the answer</span>
+<span class="k">async</span> <span class="k">function</span> product(id: number) {
+  <span class="k">const</span> key = <span class="s">`product:${id}`</span>;
+  <span class="k">const</span> cached = <span class="k">await</span> redis.get(key);
+  <span class="k">if</span> (cached !== <span class="k">null</span>) <span class="k">return</span> { product: JSON.parse(cached) as Product, <span class="k">from</span>: <span class="s">&quot;Redis&quot;</span> };
+  <span class="k">const</span> fresh = <span class="k">await</span> productFromDb(id);
+  <span class="c line-bidi">// forgotten after 60 seconds, even if nobody deletes it</span>
+  <span class="k">await</span> redis.set(key, JSON.stringify(fresh), { EX: <span class="n">60</span> });
+  <span class="k">return</span> { product: fresh, <span class="k">from</span>: <span class="s">&quot;PostgreSQL&quot;</span> };
+}
+
+<span class="c line-bidi">// changing the data: update the database first, then delete the cached copy</span>
+<span class="k">async</span> <span class="k">function</span> setPrice(id: number, price: number) {
+  <span class="k">await</span> db.query(<span class="s">&quot;UPDATE products SET price = $1 WHERE id = $2&quot;</span>, [price, id]);
+  <span class="k">await</span> redis.del(<span class="s">`product:${id}`</span>);
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A cache in front of a slow query</span>
+<span class="c">$ </span><span class="k">node node/cache.ts</span>
+first request    Robot kit, 45000, from PostgreSQL in 216 ms
+second request   Robot kit, 45000, from Redis in 1 ms
+third request    Robot kit, 45000, from Redis in 1 ms
+price changed to 47000, cached copy deleted
+after the change Robot kit, 47000, from PostgreSQL in 204 ms
+seconds left in Redis: 60</pre></div>
+
+<p>The first request paid the full 200 milliseconds; the next two came from memory in about one. That is the reward. The cost is that there are now two copies of the data, and the copy can be wrong. Two rules keep it right:</p>
+<ul>
+<li><strong>Invalidate on change.</strong> Whatever changes the data deletes the cached copy, after the database write has succeeded. The next read misses and fetches the new value: the price 47000 appeared at once. Deleting is safer than writing the new value into the cache, because two concurrent writers could otherwise leave the older value there.</li>
+<li><strong>Always set an expiry.</strong> Some change will one day forget to invalidate: a direct SQL fix, a new code path, a bug. A TTL limits how long a wrong copy can live. Choose it from the question “how stale may this be?”: seconds for stock levels, minutes for a product page, hours for a list of countries.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: cache what is shared, not what is private</p><p>A cache key must contain everything the answer depends on. A product page in two languages needs <code>product:2:ar</code> and <code>product:2:en</code>, and anything that depends on the user (their basket, their prices, their permissions) needs the user in the key, or no cache at all. Serving one customer’s cached data to another is a security incident, not a performance bug.</p></aside>
+
+<h2><span class="sec">7.3</span> <span>Stampedes and locks</span></h2>
+
+<p>A cache has a dangerous moment: when a popular key expires. Every request that arrives in the next 200 milliseconds misses, and every one of them asks the database the same heavy question. This is a <dfn>cache stampede</dfn>. The program sends twenty requests at once for a product that is not cached, first without protection, then with a lock that lets only one request rebuild the cache while the others wait and look again:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/stampede.ts</div><pre class="code"><span class="c line-bidi">// delete the lock only if it is still ours, in one step on the server</span>
+<span class="k">const</span> RELEASE = <span class="s">`if redis.call(&quot;GET&quot;, KEYS[1]) == ARGV[1]
+  then return redis.call(&quot;DEL&quot;, KEYS[1]) else return 0 end`</span>;
+
+<span class="k">async</span> <span class="k">function</span> product(id: number) {
+  <span class="k">const</span> key = <span class="s">`product:${id}`</span>;
+  <span class="k">for</span> (;;) {
+    <span class="k">const</span> cached = <span class="k">await</span> redis.get(key);
+    <span class="k">if</span> (cached !== <span class="k">null</span>) <span class="k">return</span> JSON.parse(cached);
+    <span class="k">if</span> (mode === <span class="s">&quot;naive&quot;</span>) <span class="k">break</span>;
+    <span class="c line-bidi">// only the request that gets the lock asks the database; the others wait and look again</span>
+    <span class="k">const</span> token = randomUUID(); <span class="c line-bidi">// a random token: only the owner of the lock may release it</span>
+    <span class="k">if</span> (<span class="k">await</span> redis.set(<span class="s">`lock:${key}`</span>, token, { NX: <span class="k">true</span>, PX: <span class="n">5000</span> })) {
+      <span class="k">try</span> {
+        <span class="k">const</span> fresh = <span class="k">await</span> productFromDb(id);
+        <span class="k">await</span> redis.set(key, JSON.stringify(fresh), { EX: <span class="n">60</span> });
+        <span class="k">return</span> fresh;
+      } <span class="k">finally</span> {
+        <span class="k">await</span> redis.eval(RELEASE, { keys: [<span class="s">`lock:${key}`</span>], arguments: [token] });
+      }
+    }
+    <span class="k">await</span> sleep(<span class="n">50</span>);
+  }
+  <span class="k">const</span> fresh = <span class="k">await</span> productFromDb(id);
+  <span class="k">await</span> redis.set(key, JSON.stringify(fresh), { EX: <span class="n">60</span> });
+  <span class="k">return</span> fresh;
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Twenty requests on a cold cache</span>
+<span class="c">$ </span><span class="k">node node/stampede.ts naive</span>
+naive   20 requests, database queries: 20, 440 ms
+<span class="c">$ </span><span class="k">node node/stampede.ts locked</span>
+locked  20 requests, database queries: 1, 259 ms</pre></div>
+
+<p>Without the lock, twenty requests made twenty identical queries; with it, one. With a real report that takes two seconds and a page that a thousand visitors open in that time, this is the difference between a slow page and a database that falls over. The lock is three ideas:</p>
+<ul>
+<li><strong>Take it with <code>SET key token NX PX 5000</code>.</strong> <code>NX</code> means only one client can create the key; the others get <code>null</code> and know someone else is working. <code>PX 5000</code> makes the lock expire after 5 seconds, so a process that crashes while holding it cannot block everyone forever.</li>
+<li><strong>A random token as the value.</strong> If the work took longer than 5 seconds, the lock expired and another process may hold it now. Deleting the key blindly would release <em>their</em> lock.</li>
+<li><strong>Release with a script.</strong> “Read the value, compare it, delete the key” must happen in one step, or the lock could change hands between the read and the delete. Redis runs a Lua script atomically, like a single command, so the release checks the token and deletes in one step.</li>
+</ul>
+
+<p>A Redis lock is good for efficiency: avoiding duplicate work, as here. It is not a guarantee of correctness, because a lock that expires while its owner is still working (a long pause, a slow network) lets two processes in. When two processes doing the work at once would corrupt data, the last line of defence stays in the database: a constraint, a conditional update or a row lock, from Chapter 6.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does the cache-aside code delete the cached copy after an update instead of writing the new value into it?</li><li>What would go wrong if the lock had no expiry time?</li><li>Why does the lock need a random token instead of the value <code>1</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>A rate limit that servers share</span></h2>
+
+
+<p>Chapter 3 limited requests with <code>@fastify/rate-limit</code>, which counts in the server’s own memory.</p>
+<p>With counters in each server’s memory, a client who spreads requests across two servers gets twice the limit, and a restart resets everyone. The counter belongs in Redis, where every server sees the same number:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/ratelimit.ts</div><pre class="code"><span class="k">import</span> { createClient } <span class="k">from</span> <span class="s">&quot;redis&quot;</span>;
+
+<span class="k">const</span> LIMIT = <span class="n">5</span>;
+<span class="k">const</span> WINDOW = <span class="n">10</span>; <span class="c line-bidi">// seconds</span>
+
+<span class="c line-bidi">// one counter per client; the first request starts a 10-second window</span>
+<span class="k">async</span> <span class="k">function</span> allow(redis: ReturnType&lt;<span class="k">typeof</span> createClient&gt;, client: string) {
+  <span class="k">const</span> key = <span class="s">`rate:${client}`</span>;
+  <span class="c line-bidi">// MULTI/EXEC: both commands run together, nothing in between</span>
+  <span class="k">const</span> [count] = <span class="k">await</span> redis.multi().incr(key).expire(key, WINDOW, <span class="s">&quot;NX&quot;</span>).exec();
+  <span class="k">return</span> { allowed: Number(count) &lt;= LIMIT, count: Number(count), key };
+}
+
+<span class="c line-bidi">// two servers, two connections, one Redis: the limit is shared</span>
+<span class="k">const</span> servers = {
+  A: <span class="k">await</span> createClient({ url: <span class="s">&quot;redis://localhost:6379&quot;</span> }).connect(),
+  B: <span class="k">await</span> createClient({ url: <span class="s">&quot;redis://localhost:6379&quot;</span> }).connect(),
+};
+<span class="k">await</span> servers.A.del(<span class="s">&quot;rate:203.0.113.7&quot;</span>);
+<span class="k">for</span> (<span class="k">let</span> i = <span class="n">1</span>; i &lt;= <span class="n">8</span>; i++) {
+  <span class="k">const</span> name = i % <span class="n">2</span> === <span class="n">1</span> ? <span class="s">&quot;A&quot;</span> : <span class="s">&quot;B&quot;</span>;
+  <span class="k">const</span> redis = servers[name];
+  <span class="k">const</span> { allowed, count, key } = <span class="k">await</span> allow(redis, <span class="s">&quot;203.0.113.7&quot;</span>);
+  <span class="k">const</span> answer = allowed
+    ? <span class="s">`allowed (${count} of ${LIMIT})`</span>
+    : <span class="s">`refused, 429, try again in ${await redis.ttl(key)} s`</span>;
+  console.log(<span class="s">`request ${i} via server ${name}: ${answer}`</span>);
+}
+<span class="k">await</span> servers.A.close();
+<span class="k">await</span> servers.B.close();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Five requests per 10 seconds, shared by two servers</span>
+<span class="c">$ </span><span class="k">node node/ratelimit.ts</span>
+request 1 via server A: allowed (1 of 5)
+request 2 via server B: allowed (2 of 5)
+request 3 via server A: allowed (3 of 5)
+request 4 via server B: allowed (4 of 5)
+request 5 via server A: allowed (5 of 5)
+request 6 via server B: refused, 429, try again in 10 s
+request 7 via server A: refused, 429, try again in 10 s
+request 8 via server B: refused, 429, try again in 10 s</pre></div>
+
+<p>The requests alternated between servers A and B, and the sixth was refused whichever server received it. Two details make it right:</p>
+<ul>
+<li><strong><code>EXPIRE … NX</code></strong> sets the expiry only if the key has none, so the first request starts the 10-second window and later requests do not extend it.</li>
+<li><strong><code>MULTI</code> and <code>EXEC</code></strong> send both commands as one transaction: Redis runs them together, with no other client’s command in between. With two separate commands, a process that crashed after <code>INCR</code> and before <code>EXPIRE</code> would leave a counter that never expires, and that client blocked forever.</li>
+</ul>
+
+<p>This is a <dfn>fixed window</dfn>: simple and cheap, but a client can send 5 requests at the end of one window and 5 more at the start of the next. A <dfn>sliding window</dfn> counts the requests of the last 10 seconds at every moment, with a sorted set of timestamps; it is exercise 5.</p>
+
+<h2><span class="sec">7.5</span> <span>Redis in the framework</span></h2>
+
+
+<p>In a Fastify application, create one Redis client when the server starts, share it with <code>app.decorate("redis", client)</code>, and close it in an <code>onClose</code> hook, exactly like the database pool. The ready-made pieces accept it:</p>
+<ul>
+<li><code>@fastify/rate-limit</code> takes a <code>redis</code> option, and then keeps its counters there instead of in memory, shared by every server.</li>
+<li>Caching stays a few lines of your own code, like <code>product()</code> above, often wrapped in a small helper <code>cached(key, ttl, load)</code>.</li>
+<li>For locks with automatic renewal and for queues, there are packages built on these same commands; Chapter 10 uses Redis for a job queue.</li>
+</ul>
+
+<h2><span class="sec">7.6</span> <span>What belongs in Redis</span></h2>
+
+<p>Redis keeps everything in memory, and memory is small and expensive compared with disk. Three settings decide how it behaves when things go wrong:</p>
+<ul>
+<li><strong><code>maxmemory</code></strong> limits the memory Redis may use, and <strong><code>maxmemory-policy</code></strong> decides what happens at the limit. For a pure cache, <code>allkeys-lru</code> evicts the least recently used keys, which is exactly what a cache should forget. The default, <code>noeviction</code>, refuses new writes instead.</li>
+<li><strong>Persistence</strong> (RDB snapshots and the AOF log) can save the data to disk, so a restart does not empty it. A cache can do without; sessions and queues need it.</li>
+<li>One Redis for a cache that may forget, and another (or another configuration) for data that must not: a queue whose jobs vanish under memory pressure loses orders.</li>
+</ul>
+
+<p>The rule that follows: <strong>Redis holds copies and short-lived state; the database holds the truth.</strong> If Redis were emptied right now, the application should get slower, log users out at worst, but lose nothing that matters.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: measure before you cache</p><p>A cache adds a second copy of the data, invalidation code, and a new way to be wrong. Before adding one, measure: which query is slow, how often it runs, and whether an index (Chapter 4) or a better query would fix it with no copy at all. Then cache the few hot, expensive, shared answers, and watch the hit rate: a cache that is hit 20% of the time is mostly overhead.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Caching without a TTL</td><td>A missed invalidation lasts forever</td><td>Every key gets an expiry</td></tr>
+<tr><td>Writing the new value into the cache on update</td><td>Concurrent writers leave the old value</td><td>Delete the key; the next read reloads</td></tr>
+<tr><td>A key missing part of what the answer depends on</td><td>One user sees another’s data</td><td>Language, user and filters in the key</td></tr>
+<tr><td>A lock without an expiry</td><td>A crash blocks everyone forever</td><td><code>SET … NX PX</code></td></tr>
+<tr><td>Releasing a lock with a plain <code>DEL</code></td><td>Releasing someone else’s lock</td><td>Token, and a Lua compare-and-delete</td></tr>
+<tr><td><code>INCR</code> then <code>EXPIRE</code> as two commands</td><td>Counters that never expire</td><td><code>MULTI</code>/<code>EXEC</code>, or <code>EXPIRE … NX</code> together</td></tr>
+<tr><td>Rate limits in each server’s memory</td><td>Limits multiplied by the number of servers</td><td>Counters in Redis</td></tr>
+<tr><td>Redis as the only copy of important data</td><td>Data lost on eviction or restart</td><td>The database holds the truth</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Redis</strong> keeps keys in memory and answers in under a millisecond; every single command is <strong>atomic</strong>.</li>
+<li><strong>Cache-aside:</strong> read Redis, on a miss read the database and keep a copy with a <strong>TTL</strong>; on change, <strong>delete</strong> the copy.</li>
+<li>A <strong>stampede</strong> sends every request to the database when a hot key expires; a <strong>lock</strong> lets one rebuild it.</li>
+<li>A safe lock: <code>SET key token NX PX</code>, and release with a <strong>Lua script</strong> that checks the token. Redis locks save work; correctness stays in the database.</li>
+<li><strong>Rate limits</strong> belong in Redis so that servers share them; <code>MULTI</code>/<code>EXEC</code> keeps counter and expiry together.</li>
+<li>Redis holds copies and short-lived state; the <strong>database holds the truth</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Two updates can happen at nearly the same time; if each writes its value into the cache, the slower one can overwrite the newer value with the older, and the cache stays wrong until the TTL. Deleting is the same whatever the order, and the next read loads the current value from the database. 2. If the process holding the lock crashed or hung, the key would never disappear, and every later request would wait forever for a cache that nobody rebuilds. 3. When the lock expires while its owner is still working, another process can take it; a fixed value would let the first process, when it finishes, delete the second one’s lock. The token lets each process delete only the lock it took.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project adds Redis to the shop from the earlier chapters. Measure before and after, and prove the correctness claims with concurrent requests.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>A cached product list</h3>
+<p class="project-goal">Cache the paginated product list of the shop’s API, and keep it correct when any product changes.</p>
+<p class="project-skills"><strong>You will practise:</strong> cache-aside, cache keys that include every parameter, invalidation and TTLs.</p>
+<ol class="steps">
+<li>Cache the response of the product list for 60 seconds, with a key that includes the page cursor, the page size and the language.</li>
+<li>When any product is created, updated or deleted, the list must change at once. Deleting every list key is awkward, so keep a version number in <code>products:version</code>, put it in every list key, and <code>INCR</code> it on every change.</li>
+<li>Measure the response time of the list with and without the cache, and the hit rate after a hundred random requests.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> after the version changes, the old keys are never read again and simply expire with their TTL; nothing needs to find and delete them.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>A live leaderboard</h3>
+<p class="project-goal">Build a “best sellers this week” board that updates on every order and answers instantly.</p>
+<p class="project-skills"><strong>You will practise:</strong> sorted sets, keys per time period, atomic increments, and rebuilding from the database.</p>
+<ol class="steps">
+<li>On every order, <code>ZINCRBY</code> the product’s score by the quantity in a key for the current week, such as <code>bestsellers:2026-W47</code>, with an expiry a few weeks away.</li>
+<li>Add <code>GET /products/bestsellers</code> that returns the top 10 with <code>ZREVRANGE … WITHSCORES</code>, joined to the names from the database in one query.</li>
+<li>Write a command that rebuilds the current week’s board from the orders table, for the day Redis is emptied, and check that its result equals the live board.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the rebuild is what makes this safe: the board in Redis is a copy computed from orders, so losing it costs a minute of work, not data.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>A cache that never stampedes</h3>
+<p class="project-goal">Write a reusable <code>cached(key, ttl, load)</code> helper that is fast, correct under load and safe when Redis is down.</p>
+<p class="project-skills"><strong>You will practise:</strong> locks with tokens, stale-while-revalidate, graceful degradation and load testing.</p>
+<ol class="steps">
+<li>Store each value with its own “fresh until” time inside the JSON, and a Redis TTL much longer than that.</li>
+<li>When the value is stale but present, return it at once, and let one request (the one that gets the lock) reload it in the background.</li>
+<li>When Redis cannot be reached, log a warning and call <code>load()</code> directly, so the application is slower but still works.</li>
+<li>Load test it with 200 concurrent requests on an expired key, and show that the database receives one query and no request waits for it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the idea behind the <code>stale-while-revalidate</code> directive of HTTP caching.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Choose a TTL for each and say why: a product’s price on its page; the exchange rate shown next to prices; the list of countries in the address form; a user’s login session.</li>
+<li><span class="level">Easy</span> What is wrong with this rate limit: <code>count = INCR key</code>, then <code>if count == 1: EXPIRE key 60</code>, as two separate commands?</li>
+<li><span class="level medium">Medium</span> A product page is cached under <code>product:2</code>. The page also shows the product’s category name. What must happen when a category is renamed? Propose two solutions and compare them.</li>
+<li><span class="level medium">Medium</span> A lock taken with <code>PX 5000</code> protects a job that usually takes 1 second, but once took 7. Describe exactly what happened, and three ways to protect the data.</li>
+<li><span class="level hard">Challenge</span> Write a sliding-window rate limit with a sorted set: at most 3 requests in any 2 seconds. Show that the fourth request in a burst is refused and that a request 2 seconds later is allowed.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>The shop is correct and fast; now it needs to know who is calling. Authentication: passwords stored properly, sessions and tokens, and the rules that decide what each user may do.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3491,6 +3857,38 @@ A: done</pre></div>
 }
 // await retrying(() =&gt; db.transaction().setIsolationLevel("serializable").execute(work));</code></pre>
 The pause is random so that two transactions that collided do not retry at the same instant and collide again; it grows so that a busy moment gets time to pass. Only the whole transaction is retried, never a single statement, because everything it read may have changed.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 7</h2>
+<ol class="exercises">
+<li>The product price: a few minutes, with invalidation on every change, because a wrong price shown for minutes is tolerable only if changes also delete the key at once. The exchange rate: as long as its source updates it, often an hour, since every page reads it and it changes on a schedule. The list of countries: a day or more; it almost never changes, and a deploy can clear it. The login session: its idle limit, such as 30 minutes, renewed on every request; here the TTL is the rule itself (log out after 30 idle minutes), not a safety net.</li>
+<li>If the process stops between the two commands (a crash, a deploy, a lost connection), the key exists with no expiry. It is never deleted, the count only grows, and that client is refused forever. Send both in one <code>MULTI</code>/<code>EXEC</code> transaction, or use <code>EXPIRE key 60 NX</code> in the same transaction, as the chapter’s program does, or a Lua script that does both.</li>
+<li>Every cached product page that shows the category must be invalidated. Solution one: when a category is renamed, find its products and delete each <code>product:{id}</code>; precise, but it costs one query and many deletes, and every new place that shows a category name must remember it. Solution two: cache the product without the category name, cache categories separately under <code>category:{id}</code>, and assemble the page from both; a rename then deletes one key. The second is simpler to keep correct, at the cost of two cache reads per page (one round trip with <code>MGET</code>).</li>
+<li>Process A took the lock and paused for 7 seconds (a long query, a garbage-collection pause, a slow network). At 5 seconds the lock expired; process B took it and started the same work. For 2 seconds both worked at once, and when A finished, its release script saw B’s token and correctly left B’s lock alone. Protections: (1) make the work safe to run twice, with database constraints, conditional updates or idempotency keys, so a duplicate does no harm; (2) a TTL with a wide margin, and a watchdog that renews the lock (only if the token is still ours) while the work continues; (3) a fencing token: an increasing number given with the lock and stored with every write, so the database refuses a write carrying an older number than one it has already seen.</li>
+<li>
+
+<div class="listing" dir="ltr"><div class="listing-title">node/sliding.ts</div><pre class="code"><span class="c line-bidi">// exercise 5: a sliding window, one sorted-set member per request, scored by its time</span>
+<span class="k">async</span> <span class="k">function</span> allow(client: string) {
+  <span class="k">const</span> key = <span class="s">`sliding:${client}`</span>;
+  <span class="k">const</span> now = Date.now();
+  <span class="k">const</span> [, , count] = <span class="k">await</span> redis
+    .multi()
+    .zRemRangeByScore(key, <span class="n">0</span>, now - WINDOW_MS)
+    .zAdd(key, { score: now, value: <span class="s">`${now}-${Math.random()}`</span> })
+    .zCard(key)
+    .pExpire(key, WINDOW_MS)
+    .exec();
+  <span class="k">return</span> Number(count) &lt;= LIMIT;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c">$ </span><span class="k">node node/sliding.ts</span>
+request 1: allowed
+request 2: allowed
+request 3: allowed
+request 4: refused, 429
+(2 seconds later)
+request 5: allowed</pre></div>
+Each request adds a member scored by its time in milliseconds (with a random suffix, so two requests in the same millisecond stay distinct). The transaction first removes members older than the window, then counts what is left. This version also records refused requests, so a client that keeps hammering stays blocked; to count only accepted requests, check the count before adding, in a Lua script.</li>
 </ol>
 
 </section>
