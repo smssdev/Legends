@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Caching with Redis"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: Authentication with Sanctum and Policies"; } }
+@page ch09:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -4635,6 +4637,562 @@ request 8 via server B: refused, 429, try again in 10 s</pre></div>
 <p>The shop is correct and fast; now it needs to know who is calling. Authentication: passwords stored properly, sessions and tokens, and the rules that decide what each user may do.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b3/laravel/auth/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>Authentication and Authorization with Sanctum</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell authentication (who are you?) from authorization (may you do this?)</li>
+<li>store passwords so that a stolen database does not reveal them</li>
+<li>register and sign users in with Sanctum’s API tokens, without telling attackers which emails exist</li>
+<li>revoke tokens, and understand when a JWT is the better choice</li>
+<li>protect routes with gates and policies, by role and by ownership</li>
+<li>slow down password guessing, and test all of it automatically</li>
+</ul>
+</div>
+
+<p class="lead">Until now, anyone could call every route of the shop’s API. A real shop needs to know who is calling: a customer sees their own orders and no one else’s, and only staff may see the list of customers. Getting this right is not hard, but almost every mistake in it is a security incident, and the mistakes are invisible until someone exploits them. Laravel gives you most of the pieces; this chapter puts them together with Sanctum, PostgreSQL and a fresh project, and runs every request against the real server.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Years ago a site I used was breached, and the attackers published its user table. My password was right there, in plain text, next to my email. It was the same password I used on two other sites. That afternoon I changed seven passwords, and I promised myself that no table I build would ever hold one.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>Two questions</span></h2>
+
+<p>Every protected request answers two separate questions, in order:</p>
+<ul>
+<li><dfn>Authentication</dfn>: <em>who is calling?</em> The client proves an identity, with a password once and then with a token on every request. If it cannot, the answer is <code>401 Unauthorized</code> (a confusing name: it means “not authenticated”).</li>
+<li><dfn>Authorization</dfn>: <em>may this user do this?</em> The identity is known; the rules decide. If they say no, the answer is <code>403 Forbidden</code>, or <code>404 Not Found</code> when even the existence of the thing is private.</li>
+</ul>
+<p>Laravel keeps them apart too: <dfn>guards</dfn> and the <code>auth</code> middleware answer the first question; <dfn>gates</dfn> and <dfn>policies</dfn> answer the second.</p>
+
+<h2><span class="sec">9.2</span> <span>Storing passwords</span></h2>
+
+<p>A password must never be stored as it is, and never with an ordinary hash such as SHA-256 either. A fast hash is the problem: a graphics card computes billions of SHA-256 hashes a second, so an attacker with a stolen table tries every common password against every row in minutes. Password storage needs a hash that is <em>slow on purpose</em>: <dfn>bcrypt</dfn>, <dfn>Argon2</dfn> or <dfn>scrypt</dfn>. Laravel’s <code>Hash</code> facade uses bcrypt by default, and the <code>User</code> model hashes automatically, because its <code>password</code> attribute has the <code>hashed</code> cast. A small Artisan command shows what it produces:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:hash&#x27;</span>, <span class="k">function</span> () {
+    $password = <span class="s">&#x27;correct horse battery staple&#x27;</span>;
+    $a = Hash::make($password);
+    $b = Hash::make($password);
+    $<span class="k">this</span>-&gt;line(<span class="s">&quot;hash 1 $a&quot;</span>);
+    $<span class="k">this</span>-&gt;line(<span class="s">&quot;hash 2 $b&quot;</span>);
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;right password: &#x27;</span>.json_encode(Hash::check($password, $a)));
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;wrong password: &#x27;</span>.json_encode(Hash::check($password.<span class="s">&#x27;r&#x27;</span>, $a)));
+    $start = hrtime(<span class="k">true</span>);
+    Hash::make($password);
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;one hash took &#x27;</span>.round((hrtime(<span class="k">true</span>) - $start) / 1e6).<span class="s">&#x27; ms&#x27;</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Two hashes of the same password</span>
+<span class="c">$ </span><span class="k">php artisan shop:hash</span>
+hash 1 $2y$12$CkIDWa0SXNvORrQpyNsRhuCFbE59kaY1WgtKZ2CfEhkC1NeWSf1AK
+hash 2 $2y$12$bbUlCbSM.oFBcBrB6f4yY.rmjxtMuDBYW5sPE275U/M4DpmLGAMCm
+right password: true
+wrong password: false
+one hash took 233 ms</pre></div>
+
+<ul>
+<li><code>$2y$</code> names the algorithm (bcrypt), <code>12</code> is the cost (2<sup>12</sup> rounds), and the next 22 characters are the <dfn>salt</dfn>: random, different for every hash. Two users with the same password get different hashes, so an attacker must attack each row separately, and precomputed tables of hashes are useless.</li>
+<li>Because the cost is inside the string, raising it later (<code>BCRYPT_ROUNDS</code> in <code>.env</code>) does not break old hashes; they can be upgraded when their owner next signs in (exercise 3).</li>
+<li>One hash took about a quarter of a second: nothing for a user signing in, a great deal for an attacker trying a billion guesses. <code>Hash::check</code> compares in constant time, so the time taken reveals nothing about the stored value.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never write your own crypto</p><p><code>Hash</code>, <code>Str::random()</code> and <code>hash_hmac</code> are written and reviewed by specialists. Combining well-known pieces in the standard way is fine; inventing your own hashing scheme, your own encryption or your own token generator is not. <code>rand()</code> and <code>mt_rand()</code> are never acceptable for anything secret: they are predictable. Use <code>random_bytes()</code> or <code>Str::random()</code>.</p></aside>
+
+<h2><span class="sec">9.3</span> <span>Sanctum and tokens</span></h2>
+
+<p>An API client cannot keep a browser session, so after signing in it receives a <dfn>token</dfn>: proof of identity sent with every later request, so the password is sent once. <dfn>Sanctum</dfn>, Laravel’s package for this, is installed together with the API routes file by one command, <code>php artisan install:api</code>. It adds a <code>personal_access_tokens</code> table and the <code>HasApiTokens</code> trait for the <code>User</code> model:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Models/User.php</div><pre class="code">#[Fillable([<span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;password&#x27;</span>])]
+#[Hidden([<span class="s">&#x27;password&#x27;</span>, <span class="s">&#x27;remember_token&#x27;</span>])]
+<span class="k">class</span> User <span class="k">extends</span> Authenticatable
+{
+    /** @<span class="k">use</span> HasFactory&lt;UserFactory&gt; */
+    <span class="k">use</span> HasApiTokens, HasFactory, Notifiable;
+
+    <span class="k">protected</span> <span class="k">function</span> casts(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="s">&#x27;email_verified_at&#x27;</span> =&gt; <span class="s">&#x27;datetime&#x27;</span>,
+            <span class="s">&#x27;password&#x27;</span> =&gt; <span class="s">&#x27;hashed&#x27;</span>,
+        ];
+    }
+
+    <span class="k">public</span> <span class="k">function</span> orders(): HasMany
+    {
+        <span class="k">return</span> $<span class="k">this</span>-&gt;hasMany(Order::<span class="k">class</span>);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> isAdmin(): <span class="k">bool</span>
+    {
+        <span class="k">return</span> $<span class="k">this</span>-&gt;role === <span class="s">&#x27;admin&#x27;</span>;
+    }
+}</pre></div>
+
+<p>The migration of this chapter adds a <code>role</code> column, <code>customer</code> by default, and the <code>orders</code> table. The routes file says which routes need a token: the <code>auth:sanctum</code> middleware answers 401 for any request without a valid one, and <code>throttle:login</code> limits sign-in attempts (section 9.6):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">Route::controller(AuthController::<span class="k">class</span>)-&gt;group(<span class="k">function</span> () {
+    Route::post(<span class="s">&#x27;auth/register&#x27;</span>, <span class="s">&#x27;register&#x27;</span>);
+    Route::post(<span class="s">&#x27;auth/login&#x27;</span>, <span class="s">&#x27;login&#x27;</span>)-&gt;middleware(<span class="s">&#x27;throttle:login&#x27;</span>);
+
+    Route::middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>)-&gt;group(<span class="k">function</span> () {
+        Route::post(<span class="s">&#x27;auth/logout&#x27;</span>, <span class="s">&#x27;logout&#x27;</span>);
+        Route::post(<span class="s">&#x27;auth/logout-all&#x27;</span>, <span class="s">&#x27;logoutAll&#x27;</span>);
+        Route::get(<span class="s">&#x27;me&#x27;</span>, <span class="s">&#x27;me&#x27;</span>);
+    });
+});
+
+Route::middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>)
+    -&gt;controller(OrderController::<span class="k">class</span>)
+    -&gt;group(<span class="k">function</span> () {
+        Route::get(<span class="s">&#x27;orders&#x27;</span>, <span class="s">&#x27;index&#x27;</span>);
+        Route::get(<span class="s">&#x27;orders/{order}&#x27;</span>, <span class="s">&#x27;show&#x27;</span>);
+        Route::get(<span class="s">&#x27;admin/users&#x27;</span>, <span class="s">&#x27;users&#x27;</span>)-&gt;middleware(<span class="s">&#x27;can:admin&#x27;</span>);
+    });</pre></div>
+
+<h2><span class="sec">9.4</span> <span>Registering and signing in</span></h2>
+
+<p>Registration validates the body, and <code>User::create</code> hashes the password through the cast. Emails are stored in lower case so that <code>Lina@Example.com</code> and <code>lina@example.com</code> are one account. The <code>unique</code> rule gives a friendly message, but it checks and then inserts, a race from Chapter 7: the unique index on the column is what really decides, and the exception it throws becomes a 409:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> register(Request $request): JsonResponse
+    {
+        <span class="c line-bidi">// emails in lower case: Lina@Example.com is lina@example.com</span>
+        $request-&gt;merge([<span class="s">&#x27;email&#x27;</span> =&gt; Str::lower((<span class="k">string</span>) $request-&gt;input(<span class="s">&#x27;email&#x27;</span>))]);
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;max:254&#x27;</span>, <span class="s">&#x27;unique:users&#x27;</span>],
+            <span class="s">&#x27;name&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:100&#x27;</span>],
+            <span class="s">&#x27;password&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, Password::min(<span class="n">12</span>), <span class="s">&#x27;max:128&#x27;</span>],
+        ]);
+        <span class="k">try</span> {
+            $user = User::create($data)-&gt;refresh();
+        } <span class="k">catch</span> (UniqueConstraintViolationException) {
+            <span class="c line-bidi">// two registrations at once: the unique index decides, not the rule</span>
+            abort(<span class="n">409</span>, __(<span class="s">&#x27;Email already registered.&#x27;</span>));
+        }
+
+        <span class="k">return</span> response()-&gt;json($user-&gt;only(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;role&#x27;</span>), <span class="n">201</span>);
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Registering</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:8000/api/auth/register -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;Lina@Example.com&quot;,&quot;name&quot;:&quot;Lina&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27;</span>
+HTTP/1.1 201 Created
+Content-Type: application/json
+{&quot;id&quot;:4,&quot;email&quot;:&quot;lina@example.com&quot;,&quot;name&quot;:&quot;Lina&quot;,&quot;role&quot;:&quot;customer&quot;}
+<span class="c line-bidi"># The same email again</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/register -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;name&quot;:&quot;Lina&quot;,&quot;password&quot;:&quot;another long sentence&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;The email has already been taken.&quot;,
+  &quot;errors&quot;: {
+    &quot;email&quot;: [
+      &quot;The email has already been taken.&quot;
+    ]
+  }
+}
+<span class="c line-bidi"># A password that is too short</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/register -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sam@example.com&quot;,&quot;name&quot;:&quot;Sam&quot;,&quot;password&quot;:&quot;short&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;The password field must be at least 12 characters.&quot;,
+  &quot;errors&quot;: {
+    &quot;password&quot;: [
+      &quot;The password field must be at least 12 characters.&quot;
+    ]
+  }
+}</pre></div>
+
+<p>Signing in is where attackers probe. Two details stop the login route from telling them which emails have accounts:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> login(Request $request): JsonResponse
+    {
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:254&#x27;</span>],
+            <span class="s">&#x27;password&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:128&#x27;</span>],
+        ]);
+        $user = User::where(<span class="s">&#x27;email&#x27;</span>, Str::lower($data[<span class="s">&#x27;email&#x27;</span>]))-&gt;first();
+        <span class="c line-bidi">// an unknown email still costs one hash: the time reveals nothing</span>
+        $ok = Hash::check($data[<span class="s">&#x27;password&#x27;</span>], $user-&gt;password ?? <span class="k">self</span>::dummy());
+        <span class="c line-bidi">// the same answer for a wrong email and a wrong password</span>
+        <span class="k">if</span> (! $user || ! $ok) {
+            abort(<span class="n">401</span>, __(<span class="s">&#x27;Email or password is wrong.&#x27;</span>));
+        }
+        <span class="c line-bidi">// Sanctum stores only the SHA-256 of the token; the client gets the only copy</span>
+        $token = $user-&gt;createToken(<span class="s">&#x27;api&#x27;</span>, [<span class="s">&#x27;*&#x27;</span>], now()-&gt;addDays(<span class="n">30</span>))-&gt;plainTextToken;
+
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;token&#x27;</span> =&gt; $token, <span class="s">&#x27;expires_in&#x27;</span> =&gt; <span class="n">30</span> * <span class="n">24</span> * <span class="n">3600</span>]);
+    }</pre></div>
+
+<ul>
+<li><strong>The same answer</strong> for an unknown email and a wrong password: “email or password is wrong”, never “no such user”.</li>
+<li><strong>The same time.</strong> Without a dummy hash, an unknown email would answer at once and a known one after a quarter of a second, and the time alone would reveal which emails exist. Checking against a dummy hash, made once per process, makes both cost one hash.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Signing in</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27; | jq</span>
+{
+  &quot;token&quot;: &quot;1|qu8uqJFpMFyaijcVN9DQPlDNWEY5m9CVZfUeSxh17fda9374&quot;,
+  &quot;expires_in&quot;: 2592000
+}
+<span class="c line-bidi"># A wrong password, and an unknown email: the same answer</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a wrong sentence&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;Email or password is wrong.&quot;
+}
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;nobody@example.com&quot;,&quot;password&quot;:&quot;a wrong sentence&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;Email or password is wrong.&quot;
+}</pre></div>
+
+<p>The token has two parts: the id of its row, and a secret of 40 random characters followed by an 8-character checksum (which lets secret scanners recognise a leaked token). Sanctum stores only the SHA-256 hash of the secret, so someone who reads the table cannot use what they read. A fast hash is right here, unlike for passwords: the token is random, not a word a person chose, so there is nothing to guess. The token was created with an expiry of 30 days.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Without a token</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/me -H &#x27;Accept: application/json&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;Unauthenticated.&quot;
+}
+<span class="c line-bidi"># With the token</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27; | jq -r .token)</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/me -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $TOKEN&quot; | jq</span>
+{
+  &quot;id&quot;: 4,
+  &quot;email&quot;: &quot;lina@example.com&quot;,
+  &quot;name&quot;: &quot;Lina&quot;,
+  &quot;role&quot;: &quot;customer&quot;
+}</pre></div>
+
+<p>Signing out deletes the token’s row, and it stops working at once. The database keeps only hashes, of passwords and of tokens:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> logout(Request $request): JsonResponse
+    {
+        <span class="c line-bidi">// only the token that made this request</span>
+        $request-&gt;user()-&gt;currentAccessToken()-&gt;delete();
+
+        <span class="k">return</span> response()-&gt;json(<span class="k">null</span>, <span class="n">204</span>);
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Signing out</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -X POST localhost:8000/api/auth/logout -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $TOKEN&quot;</span>
+204
+<span class="c line-bidi"># The same token afterwards</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/me -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $TOKEN&quot; | jq -c</span>
+{&quot;message&quot;:&quot;Unauthenticated.&quot;}
+<span class="c line-bidi"># What the database keeps</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT email, left(password, 30) AS password FROM users ORDER BY id&#x27;</span>
+       email       |            password            
+-------------------+--------------------------------
+ sara@example.com  | $2y$12$9BUYGLMcP5MGpupHHcSnPet
+ omar@example.com  | $2y$12$OthbF7Ayc6VNkewfPzqMUuY
+ admin@example.com | $2y$12$pAjBoRKoK36q.HFHJ.OYIuc
+ lina@example.com  | $2y$12$4KwbgjD/tx4rV.GQI5ltWOd
+(4 rows)
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT tokenable_id, left(token, 16) AS token, expires_at::date FROM personal_access_tokens ORDER BY id&#x27;</span>
+ tokenable_id |      token       | expires_at 
+--------------+------------------+------------
+            4 | 2e0b2817c318eb72 | 2026-12-20
+            2 | 17b9a12004f16328 | 2026-12-20
+            3 | 36b1a9a075866e9e | 2026-12-20
+(3 rows)</pre></div>
+
+<h3>What about JWTs?</h3>
+
+<p>A <dfn>JSON Web Token</dfn> takes the opposite approach: instead of a random key into a table, the token <em>contains</em> the data (the user id, the role, the expiry), signed with the server’s secret so that it cannot be changed. Here is one made by hand, to see what is inside:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:jwt&#x27;</span>, <span class="k">function</span> () {
+    $secret = <span class="s">&#x27;a secret only the server knows&#x27;</span>;
+    $url = <span class="k">fn</span> (<span class="k">string</span> $bytes) =&gt; rtrim(strtr(base64_encode($bytes), <span class="s">&#x27;+/&#x27;</span>, <span class="s">&#x27;-_&#x27;</span>), <span class="s">&#x27;=&#x27;</span>);
+    $b64 = <span class="k">fn</span> (<span class="k">array</span> $value) =&gt; $url(json_encode($value));
+    $sign = <span class="k">fn</span> (<span class="k">string</span> $data) =&gt; $url(hash_hmac(<span class="s">&#x27;sha256&#x27;</span>, $data, $secret, <span class="k">true</span>));
+
+    <span class="c line-bidi">// a JWT: header and payload in base64url, then their HMAC</span>
+    $header = $b64([<span class="s">&#x27;alg&#x27;</span> =&gt; <span class="s">&#x27;HS256&#x27;</span>, <span class="s">&#x27;typ&#x27;</span> =&gt; <span class="s">&#x27;JWT&#x27;</span>]);
+    $payload = $b64([<span class="s">&#x27;sub&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;role&#x27;</span> =&gt; <span class="s">&#x27;customer&#x27;</span>, <span class="s">&#x27;exp&#x27;</span> =&gt; <span class="n">1795000000</span>]);
+    $token = <span class="s">&quot;$header.$payload.&quot;</span>.$sign(<span class="s">&quot;$header.$payload&quot;</span>);
+    $<span class="k">this</span>-&gt;line(<span class="s">&quot;token: $token&quot;</span>);
+
+    <span class="c line-bidi">// anyone can read the payload: it is encoded, not encrypted</span>
+    $read = <span class="k">fn</span> (<span class="k">string</span> $part) =&gt; base64_decode(strtr($part, <span class="s">&#x27;-_&#x27;</span>, <span class="s">&#x27;+/&#x27;</span>));
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;payload, read without the key: &#x27;</span>.$read(explode(<span class="s">&#x27;.&#x27;</span>, $token)[<span class="n">1</span>]));
+
+    $valid = <span class="k">function</span> (<span class="k">string</span> $jwt) <span class="k">use</span> ($sign) {
+        [$h, $p, $signature] = explode(<span class="s">&#x27;.&#x27;</span>, $jwt);
+
+        <span class="k">return</span> hash_equals($sign(<span class="s">&quot;$h.$p&quot;</span>), $signature);
+    };
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;signature valid: &#x27;</span>.json_encode($valid($token)));
+    <span class="c line-bidi">// change the payload, keep the signature</span>
+    $forged = $b64([<span class="s">&#x27;sub&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;role&#x27;</span> =&gt; <span class="s">&#x27;admin&#x27;</span>, <span class="s">&#x27;exp&#x27;</span> =&gt; <span class="n">1795000000</span>]);
+    $signature = explode(<span class="s">&#x27;.&#x27;</span>, $token)[<span class="n">2</span>];
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;tampered token valid: &#x27;</span>.json_encode($valid(<span class="s">&quot;$header.$forged.$signature&quot;</span>)));
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Inside a JWT</span>
+<span class="c">$ </span><span class="k">php artisan shop:jwt</span>
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInJvbGUiOiJjdXN0b21lciIsImV4cCI6MTc5NTAwMDAwMH0.FIARINURub56u1m-5b1qFNKR31jo58HiVsulPiTmtkU
+payload, read without the key: {&quot;sub&quot;:2,&quot;role&quot;:&quot;customer&quot;,&quot;exp&quot;:1795000000}
+signature valid: true
+tampered token valid: false</pre></div>
+
+<p>Changing the role to <code>admin</code> broke the signature, so a JWT cannot be forged. But anyone can read it, and the server checks it without looking anything up, which is both its strength and its weakness: it cannot be revoked. A user who signs out, changes their password or loses their role keeps a valid token until it expires. JWTs fit messages between your own services and short-lived tokens (minutes); for users of your own apps, Sanctum’s revocable tokens are simpler and safer. Never put a secret in a JWT payload.</p>
+
+<aside class="box note"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Note: Sanctum for your own website</p><p>A mobile app keeps the token in the phone’s secure storage and sends it in the <code>Authorization</code> header, as <code>curl</code> does here. A website should not keep a token where scripts can read it. For a single-page app on your own domain, Sanctum has a second mode: the app signs in through Laravel’s ordinary session, held in an <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Lax</code> cookie, and <code>auth:sanctum</code> accepts either the cookie or a token. You list the website’s domain in <code>SANCTUM_STATEFUL_DOMAINS</code>. Cookies bring a risk of their own, cross-site request forgery, which Chapter 10 deals with.</p></aside>
+
+<h2><span class="sec">9.5</span> <span>Authorization: gates and policies</span></h2>
+
+<p>Authentication found the user; now the rules decide what that user may do. A <dfn>gate</dfn> is one named yes-or-no rule, good for whole areas such as an admin section; it is defined once, in a service provider, and the <code>can:admin</code> middleware in the routes applies it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> boot(): <span class="k">void</span>
+    {
+        <span class="c line-bidi">// a gate: one yes-or-no rule with a name</span>
+        Gate::define(<span class="s">&#x27;admin&#x27;</span>, <span class="k">fn</span> (User $user) =&gt; $user-&gt;isAdmin());</pre></div>
+
+<p>A <dfn>policy</dfn> groups the rules for one model. Laravel finds <code>OrderPolicy</code> for the <code>Order</code> model by its name, and <code>Gate::authorize('view', $order)</code> in the controller calls its <code>view</code> method:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Policies/OrderPolicy.php</div><pre class="code"><span class="k">class</span> OrderPolicy
+{
+    <span class="k">public</span> <span class="k">function</span> view(User $user, Order $order): Response
+    {
+        <span class="c line-bidi">// another customer&#x27;s order is &#x27;not found&#x27;: its existence stays secret</span>
+        <span class="k">return</span> $user-&gt;id === $order-&gt;user_id || $user-&gt;isAdmin()
+            ? Response::allow()
+            : Response::denyAsNotFound();
+    }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> index(Request $request): JsonResponse
+    {
+        <span class="k">return</span> response()-&gt;json(
+            $request-&gt;user()-&gt;orders()-&gt;orderBy(<span class="s">&#x27;id&#x27;</span>)-&gt;get([<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;total&#x27;</span>]),
+        );
+    }
+
+    <span class="k">public</span> <span class="k">function</span> show(Order $order): JsonResponse
+    {
+        Gate::authorize(<span class="s">&#x27;view&#x27;</span>, $order);
+
+        <span class="k">return</span> response()-&gt;json($order-&gt;only(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;user_id&#x27;</span>, <span class="s">&#x27;total&#x27;</span>));
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Omar signs in</span>
+<span class="c">$ </span><span class="k">OMAR=$(curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;omar@example.com&quot;,&quot;password&quot;:&quot;omar-password-2026&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># His own orders</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $OMAR&quot; | jq -c</span>
+[{&quot;id&quot;:3,&quot;total&quot;:12000}]
+<span class="c line-bidi"># Sara&#x27;s order</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders/1 -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $OMAR&quot; | jq</span>
+{
+  &quot;message&quot;: &quot;Not Found&quot;
+}
+<span class="c line-bidi"># The admin list, as Omar</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/admin/users -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $OMAR&quot; | jq</span>
+{
+  &quot;message&quot;: &quot;This action is unauthorized.&quot;
+}
+<span class="c line-bidi"># The admin list, as an admin</span>
+<span class="c">$ </span><span class="k">ADMIN=$(curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;admin@example.com&quot;,&quot;password&quot;:&quot;admin-password-2026&quot;}&#x27; | jq -r .token)</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/admin/users -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $ADMIN&quot; | jq -c &#x27;.[]&#x27;</span>
+{&quot;id&quot;:1,&quot;email&quot;:&quot;sara@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}
+{&quot;id&quot;:2,&quot;email&quot;:&quot;omar@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}
+{&quot;id&quot;:3,&quot;email&quot;:&quot;admin@example.com&quot;,&quot;role&quot;:&quot;admin&quot;}
+{&quot;id&quot;:4,&quot;email&quot;:&quot;lina@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}</pre></div>
+
+<ul>
+<li>The list of orders goes through the relationship, <code>$request-&gt;user()-&gt;orders()</code>, so the query itself is limited to the user’s rows. Loading every order and filtering in code risks returning too much the day someone changes it.</li>
+<li>Omar asking for Sara’s order gets <strong>404</strong>, exactly as for an order that does not exist: <code>Response::denyAsNotFound()</code>. A 403 would confirm that order 1 exists, and ids that count up would let him learn how many orders the shop has.</li>
+<li>The admin list returns 403: Omar knows the route exists, and he is told he lacks the role.</li>
+<li>These are Laravel’s default JSON errors, <code>{"message": …}</code>; with Chapter 4’s exception renderer they become Problem Details like every other error.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is SHA-256 fine for Sanctum’s tokens but not for passwords?</li><li>A signed-in customer asks for <code>/api/admin/users</code>. Which status, and why not 401?</li><li>Why does the login route check a dummy hash when the email does not exist?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">9.6</span> <span>Slowing down guessing</span></h2>
+
+<p>A slow hash protects a stolen table; the running server needs protection too, against a script that tries passwords one after another. The <code>login</code> rate limiter (Chapter 3 introduced rate limiters) is keyed on the client’s address <em>and</em> the email, so one attacker cannot try thousands of passwords on one account:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">        RateLimiter::<span class="k">for</span>(<span class="s">&#x27;login&#x27;</span>, <span class="k">function</span> (Request $request) {
+            $key = $request-&gt;ip().<span class="s">&#x27;|&#x27;</span>.Str::lower((<span class="k">string</span>) $request-&gt;input(<span class="s">&#x27;email&#x27;</span>));
+
+            <span class="k">return</span> Limit::perMinute(<span class="n">5</span>)-&gt;by($key)-&gt;response(<span class="k">function</span> ($request, $headers) {
+                $seconds = $headers[<span class="s">&#x27;Retry-After&#x27;</span>];
+
+                <span class="k">return</span> response()-&gt;json([
+                    <span class="s">&#x27;message&#x27;</span> =&gt; __(<span class="s">&#x27;Too many attempts. Try again in :seconds seconds.&#x27;</span>, [<span class="s">&#x27;seconds&#x27;</span> =&gt; $seconds]),
+                ], <span class="n">429</span>, $headers);
+            });
+        });</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Six wrong passwords in a row</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w &quot;%{http_code} &quot; localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess number one&quot;}&#x27;; done; echo</span>
+401 401 401 401 401 429 
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess number seven&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;Too many attempts. Try again in 59 seconds.&quot;
+}</pre></div>
+
+<p>The sixth attempt was refused before its password was even checked. The limiter counts in the cache store, so with Redis (Chapter 8) every server shares the count. Locking the account after a few failures is tempting but lets anyone lock out any user by typing wrong passwords for them; rate limits slow the attacker without punishing the owner. Adding a second factor (a code from an app) is the strongest protection of all.</p>
+
+<h2><span class="sec">9.7</span> <span>Testing it</span></h2>
+
+<p>Security rules are exactly the kind of code that breaks silently, so each rule gets a test. The tests sign in through the real login route and use the token, as a client would:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/AuthTest.php</div><pre class="code">    <span class="k">private</span> <span class="k">function</span> signIn(<span class="k">string</span> $email, <span class="k">string</span> $password): <span class="k">array</span>
+    {
+        $token = $<span class="k">this</span>-&gt;postJson(<span class="s">&#x27;/api/auth/login&#x27;</span>, compact(<span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;password&#x27;</span>))
+            -&gt;assertOk()
+            -&gt;json(<span class="s">&#x27;token&#x27;</span>);
+
+        <span class="k">return</span> [<span class="s">&#x27;Authorization&#x27;</span> =&gt; <span class="s">&quot;Bearer $token&quot;</span>];
+    }
+
+    <span class="k">public</span> <span class="k">function</span> test_it_registers_signs_in_and_reads_me(): <span class="k">void</span>
+    {
+        $<span class="k">this</span>-&gt;postJson(<span class="s">&#x27;/api/auth/register&#x27;</span>, [
+            <span class="s">&#x27;email&#x27;</span> =&gt; <span class="s">&#x27;test@example.com&#x27;</span>,
+            <span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;Test&#x27;</span>,
+            <span class="s">&#x27;password&#x27;</span> =&gt; <span class="s">&#x27;a long test password&#x27;</span>,
+        ])-&gt;assertCreated();
+        $<span class="k">as</span> = $<span class="k">this</span>-&gt;signIn(<span class="s">&#x27;test@example.com&#x27;</span>, <span class="s">&#x27;a long test password&#x27;</span>);
+        $<span class="k">this</span>-&gt;getJson(<span class="s">&#x27;/api/me&#x27;</span>, $<span class="k">as</span>)-&gt;assertJsonPath(<span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;test@example.com&#x27;</span>);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> test_it_refuses_me_without_a_token(): <span class="k">void</span>
+    {
+        $<span class="k">this</span>-&gt;getJson(<span class="s">&#x27;/api/me&#x27;</span>)-&gt;assertUnauthorized();
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The tests</span>
+<span class="c">$ </span><span class="k">php artisan test --no-ansi tests/Feature/AuthTest.php</span>
+
+   PASS  Tests\Feature\AuthTest
+  ✓ it registers signs in and reads me                                   0.20s  
+  ✓ it refuses me without a token                                        0.01s  
+  ✓ it refuses the admin list to a customer                              0.01s  
+  ✓ it hides other customers orders                                      0.01s  
+  ✓ it rejects a token after sign out                                    0.01s  
+
+  Tests:    5 passed (12 assertions)
+  Duration: 0.31s</pre></div>
+
+<p>Note what is tested: not only that the right user gets in, but that the wrong ones are kept out. A test suite that checks only the happy path would pass for an API with no security at all. (For tests that do not care how the user signed in, <code>Sanctum::actingAs($user)</code> skips the login.)</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: test the “no” for every route</p><p>For every protected route, write at least two tests: one without a token (401) and one as a user who must not have access (403 or 404). Add them in the same pull request as the route. The day someone removes a middleware or changes a query, these tests fail, which is far cheaper than finding out from a customer who saw someone else’s order.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Passwords in plain text, or with <code>sha256</code> or <code>md5</code></td><td>A stolen table reveals most passwords</td><td><code>Hash::make</code> or the <code>hashed</code> cast</td></tr>
+<tr><td>“No such user” on login</td><td>Attackers learn which emails have accounts</td><td>One message, and a dummy hash for the same time</td></tr>
+<tr><td>Tokens from <code>rand()</code> or a counter</td><td>Tokens can be guessed</td><td>Sanctum, or <code>random_bytes()</code></td></tr>
+<tr><td>Tokens without an expiry</td><td>A leaked token works forever</td><td>An expiry on <code>createToken</code>, or in <code>config/sanctum.php</code></td></tr>
+<tr><td>Long-lived JWTs for sign-in</td><td>No way to sign a user out</td><td>Revocable tokens, or JWTs of minutes</td></tr>
+<tr><td><code>auth:sanctum</code> on some routes only</td><td>The forgotten route is open</td><td>A route group with the middleware</td></tr>
+<tr><td><code>Order::find($id)</code> without a policy</td><td>Any user reads any order</td><td><code>Gate::authorize</code>, and <code>denyAsNotFound</code></td></tr>
+<tr><td>No limit on login attempts</td><td>Password guessing at full speed</td><td>A rate limiter per address and account</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Authentication</strong> finds out who is calling (401 if unknown); <strong>authorization</strong> decides what they may do (403, or 404 to hide existence).</li>
+<li>Passwords are stored with a <strong>slow, salted hash</strong>: bcrypt through <code>Hash</code> and the <code>hashed</code> cast.</li>
+<li>Sign-in gives <strong>the same answer and the same time</strong> for a wrong email and a wrong password.</li>
+<li><strong>Sanctum tokens</strong> are random, stored only as a SHA-256 hash, given an expiry, and revoked by deleting the row.</li>
+<li>A <strong>JWT</strong> carries signed data that anyone can read and nobody can revoke: good between services and for minutes, not for user sessions.</li>
+<li><strong>Gates</strong> for areas, <strong>policies</strong> for records; rate-limit login, and <strong>test every “no”</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A token’s random part is 40 random characters: there are far too many possibilities to try, so the hash only needs to stop someone who reads the table from using the values directly, and a fast hash does that. A password is chosen by a person from a small set of likely words, so an attacker can try the likely ones quickly unless each try is made deliberately slow. 2. 403 Forbidden: the server knows exactly who is calling (the token is valid), so the problem is not authentication; the user lacks the admin role. 3. So that the response takes the same time whether or not the email exists; otherwise an unknown email would be answered much faster, and the time would reveal which emails have accounts.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project extends this chapter’s API. Every new rule comes with tests for the users who must be refused.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>Change your password</h3>
+<p class="project-goal">Let a signed-in user change their password safely.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>current_password</code> rule, hashing, and revoking tokens.</p>
+<ol class="steps">
+<li>Add <code>PUT /api/me/password</code> with <code>current_password</code> and <code>password</code> (confirmed, at least 12 characters).</li>
+<li>Use the <code>current_password:sanctum</code> validation rule, and refuse a new password equal to the old one.</li>
+<li>After the change, delete every other token of the user, keeping the one making the request.</li>
+<li>Test the failures, and that a second device’s token stops working.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>$user-&gt;tokens()-&gt;where('id', '!=', $user-&gt;currentAccessToken()-&gt;id)-&gt;delete()</code> keeps the current one.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>Tokens with abilities</h3>
+<p class="project-goal">Issue tokens that can do only part of what their user can, for scripts and integrations.</p>
+<p class="project-skills"><strong>You will practise:</strong> Sanctum abilities, the <code>abilities</code> and <code>ability</code> middleware, and combining them with policies.</p>
+<ol class="steps">
+<li>Add <code>POST /api/tokens</code> that creates a named token with abilities chosen from <code>orders:read</code> and <code>orders:write</code>, and lists the user’s tokens without their secrets.</li>
+<li>Protect the order routes with <code>ability:orders:read</code> and the write routes with <code>abilities:orders:write</code>.</li>
+<li>Show that a read-only token can list orders but not create one, even for an admin.</li>
+<li>Add <code>DELETE /api/tokens/{id}</code>, allowed only for the token’s owner (a policy again).</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> abilities limit the token; policies limit the user. A request needs both to say yes.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>Forgotten password</h3>
+<p class="project-goal">Build a password reset that cannot be used to take over someone else’s account.</p>
+<p class="project-skills"><strong>You will practise:</strong> Laravel’s password broker, not leaking account existence, and sending mail after the commit.</p>
+<ol class="steps">
+<li><code>POST /api/auth/forgot</code> takes an email and always answers 202, whether or not the account exists, using <code>Password::sendResetLink</code>.</li>
+<li>Look at the <code>password_reset_tokens</code> table: what is stored, and for how long (<code>config/auth.php</code>)?</li>
+<li><code>POST /api/auth/reset</code> takes the token, the email and a new password, works once, and deletes all the user’s tokens.</li>
+<li>Test an expired token, a reused token, and that the answer for an unknown email is identical.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in tests, <code>Notification::fake()</code> captures the reset email, so you can read the token from it.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A colleague proposes storing <code>hash('sha256', $salt.$password)</code> with a random salt per user. What does the salt protect against, and what does it not?</li>
+<li><span class="level">Easy</span> Choose the status for each: no <code>Authorization</code> header; an expired token; a customer deleting a product; a customer reading another customer’s address.</li>
+<li><span class="level medium">Medium</span> You raise <code>BCRYPT_ROUNDS</code> from 12 to 13. How do the existing users’ hashes get the new cost, without asking anyone to reset their password?</li>
+<li><span class="level medium">Medium</span> Add “sign out on every device”, and show that a token from a second device stops working.</li>
+<li><span class="level hard">Challenge</span> Design (without code) an access token of 10 minutes as a JWT plus a refresh token in the database. What does each request check, what happens at sign-out, and what is gained compared with this chapter’s tokens?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>Users can sign in; now the API must survive people who try to break it. Security: injection, cross-site attacks, secrets, headers, dependencies, and the OWASP list of what goes wrong most often.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -4770,6 +5328,32 @@ request 4: refused, 429
 (2 seconds later)
 request 5: allowed</pre></div>
 Each request adds a member scored by its time in milliseconds (with a random suffix, so two requests in the same millisecond stay distinct). The transaction first removes members older than the window, then counts what is left. This version also records refused requests, so a client that keeps hammering stays blocked; to count only accepted requests, check the count before adding, in a Lua script.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 9</h2>
+<ol class="exercises">
+<li>The salt makes every user’s hash different, so identical passwords do not show as identical hashes, one computation cannot attack every row at once, and precomputed tables are useless. It does not make each guess slower: SHA-256 is still billions of guesses a second, so a weak password in any single row falls in seconds. The fix is a slow function (bcrypt, Argon2), which <code>Hash::make</code> already is, salt included.</li>
+<li>No header: 401. An expired token: 401, since the server can no longer tell who is calling; the client should sign in again. A customer deleting a product: 403, as the customer is known and lacks the role. Another customer’s address: 404, with <code>denyAsNotFound</code> as for an order, so that the response does not confirm that the address exists.</li>
+<li>Upgrade on sign-in, when the plain password is available for a moment. After a successful <code>Hash::check</code>, ask <code>Hash::needsRehash($user-&gt;password)</code>: it compares the cost inside the stored hash with the configuration. If it says yes, assign the plain password again (<code>$user-&gt;password = $data['password']; $user-&gt;save();</code>), and the <code>hashed</code> cast stores a new hash with the new cost. Laravel’s own <code>Auth::attempt</code> does this for you. The run in the code repository shows a hash made with 10 rounds needing a rehash and one made with the configured 12 not:
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Signed in on two devices, then out of both</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -X POST localhost:8000/api/auth/logout-all -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $PHONE&quot;</span>
+204
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; localhost:8000/api/me -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $LAPTOP&quot;</span>
+401
+<span class="c line-bidi"># Raising the cost later</span>
+<span class="c">$ </span><span class="k">php artisan shop:rehash</span>
+needs rehash (10 rounds): true
+needs rehash (12 rounds): false</pre></div></li>
+<li>The route deletes every token of the current user (the commands are the first part of the transcript above):
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> logoutAll(Request $request): JsonResponse
+    {
+        $request-&gt;user()-&gt;tokens()-&gt;delete();
+
+        <span class="k">return</span> response()-&gt;json(<span class="k">null</span>, <span class="n">204</span>);
+    }</pre></div>
+The request came from the phone’s token, and the laptop’s token, which was never used in it, now answers 401.</li>
+<li>Sign-in returns two tokens: an access token, a JWT valid for 10 minutes carrying the user id and role, and a refresh token, random bytes stored as a hash in the database with a long expiry. Every API request checks only the JWT’s signature and expiry, without a database query. When the access token expires, the client sends the refresh token to <code>POST /api/auth/refresh</code>, which checks it in the database, replaces it with a new one (so a stolen refresh token works only once), and returns a new JWT. Sign-out deletes the refresh token; the access token stays valid for up to 10 minutes, which is the price. The gain is no database lookup on most requests, which matters when many services check tokens; for a single API with a database already involved in every request, Sanctum’s tokens are simpler.</li>
 </ol>
 
 </section>

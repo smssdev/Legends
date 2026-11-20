@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: التخزين المؤقت بـ Redis"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "الفصل 9: الهوية بـ Sanctum والصلاحيات بـ Policies"; } }
+@page ch09:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -4741,6 +4743,562 @@ $servers[<span class="s">&#x27;A&#x27;</span>]-&gt;del(<span class="s">&#x27;rat
 <p>المتجر صحيح وسريع؛ والآن يحتاج أن يعرف من يتصل. المصادقة: كلمات مرور تُحفظ كما يجب، والجلسات والرموز، والقواعد التي تقرر ما يجوز لكل مستخدم أن يفعل.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b3/laravel/auth/ar">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">الفصل 9</p><h1>المصادقة والتفويض بـ Sanctum</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تفرّق بين المصادقة (من أنت؟) والتفويض (هل يجوز لك هذا؟)</li>
+<li>تحفظ كلمات المرور بحيث لا تكشفها قاعدة بيانات مسروقة</li>
+<li>تسجّل المستخدمين وتُدخلهم برموز API من Sanctum، دون أن تخبر المهاجمين أي البُرد موجود</li>
+<li>تلغي الرموز، وتفهم متى يكون JWT الخيار الأفضل</li>
+<li>تحمي المسارات بالبوابات والسياسات، بالدور وبالملكية</li>
+<li>تبطئ تخمين كلمات المرور، وتختبر كل ذلك آلياً</li>
+</ul>
+</div>
+
+<p class="lead">حتى الآن، كان أي أحد يستطيع استدعاء كل مسارات API المتجر. والمتجر الحقيقي يحتاج أن يعرف من يتصل: الزبون يرى طلباته وحده لا طلبات غيره، والموظفون وحدهم يرون قائمة الزبائن. وإتقان هذا ليس صعباً، لكن كل خطأ فيه تقريباً حادثة أمنية، والأخطاء لا تُرى حتى يستغلها أحد. ويعطيك Laravel أغلب القطع؛ وهذا الفصل يجمعها مع Sanctum وPostgreSQL في مشروع جديد، وينفذ كل طلب على الخادم الحقيقي.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>قبل سنوات اختُرق موقع كنت أستخدمه، ونشر المهاجمون جدول مستخدميه. وكانت كلمة مروري هناك، نصاً صريحاً، بجانب بريدي. وكانت كلمة المرور نفسها التي أستخدمها في موقعين آخرين. في ذلك العصر غيّرت سبع كلمات مرور، ووعدت نفسي ألا يحفظ أي جدول أبنيه كلمة مرور أبداً.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>سؤالان</span></h2>
+
+<p>كل طلب محمي يجيب عن سؤالين منفصلين، بالترتيب:</p>
+<ul>
+<li><dfn>المصادقة</dfn> (authentication): <em>من يتصل؟</em> يثبت العميل هويته، بكلمة مرور مرة واحدة ثم برمز مع كل طلب. فإن عجز فالجواب <code>401 Unauthorized</code> (اسم مربك: معناه «لم تُثبت هويتك»).</li>
+<li><dfn>التفويض</dfn> (authorization): <em>هل يجوز لهذا المستخدم هذا؟</em> الهوية معروفة؛ والقواعد تقرر. فإن قالت لا، فالجواب <code>403 Forbidden</code>، أو <code>404 Not Found</code> حين يكون وجود الشيء نفسه سراً.</li>
+</ul>
+<p>وLaravel يفصل بينهما أيضاً: <dfn>الحرّاس</dfn> (guards) ووسيط <code>auth</code> يجيبون عن السؤال الأول؛ و<dfn>البوابات</dfn> (gates) و<dfn>السياسات</dfn> (policies) تجيب عن الثاني.</p>
+
+<h2><span class="sec">9.2</span> <span>حفظ كلمات المرور</span></h2>
+
+<p>لا يجوز حفظ كلمة المرور كما هي أبداً، ولا بتجزئة عادية مثل SHA-256 أيضاً. فالتجزئة السريعة هي المشكلة: بطاقة الرسوم تحسب مليارات تجزئات SHA-256 في الثانية، فيجرب المهاجم بجدول مسروق كل كلمات المرور الشائعة على كل صف في دقائق. وحفظ كلمات المرور يحتاج تجزئة <em>بطيئة عمداً</em>: <dfn>bcrypt</dfn> أو <dfn>Argon2</dfn> أو <dfn>scrypt</dfn>. وواجهة <code>Hash</code> في Laravel تستخدم bcrypt افتراضياً، والنموذج <code>User</code> يجزّئ تلقائياً، لأن لسمة <code>password</code> فيه التحويل <code>hashed</code>. وأمر Artisan صغير يبيّن ما تنتجه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:hash&#x27;</span>, <span class="k">function</span> () {
+    $password = <span class="s">&#x27;correct horse battery staple&#x27;</span>;
+    $a = Hash::make($password);
+    $b = Hash::make($password);
+    $<span class="k">this</span>-&gt;line(<span class="s">&quot;التجزئة 1 $a&quot;</span>);
+    $<span class="k">this</span>-&gt;line(<span class="s">&quot;التجزئة 2 $b&quot;</span>);
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;كلمة المرور الصحيحة: &#x27;</span>.json_encode(Hash::check($password, $a)));
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;كلمة مرور خطأ: &#x27;</span>.json_encode(Hash::check($password.<span class="s">&#x27;r&#x27;</span>, $a)));
+    $start = hrtime(<span class="k">true</span>);
+    Hash::make($password);
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;استغرقت التجزئة الواحدة &#x27;</span>.round((hrtime(<span class="k">true</span>) - $start) / 1e6).<span class="s">&#x27; ms&#x27;</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تجزئتان لكلمة المرور نفسها</span>
+<span class="c">$ </span><span class="k">php artisan shop:hash</span>
+التجزئة 1 $2y$12$x94xdZYOIvnl.B4MoPKobO9CToyue0eM2paDAv.1h841iXZ5yXUhu
+التجزئة 2 $2y$12$Z2TU/BaNLNxFR.fSSnLwD.LreMBnf7TG.NCkBBDMTk/D8/kjbbTXy
+كلمة المرور الصحيحة: true
+كلمة مرور خطأ: false
+استغرقت التجزئة الواحدة 197 ms</pre></div>
+
+<ul>
+<li><code>$2y$</code> تسمّي الخوارزمية (bcrypt)، و<code>12</code> هي الكلفة (2<sup>12</sup> جولة)، والأحرف الـ 22 التالية هي <dfn>الملح</dfn> (salt): عشوائي، ومختلف لكل تجزئة. فيأخذ مستخدمان بكلمة المرور نفسها تجزئتين مختلفتين، فيجب على المهاجم أن يهاجم كل صف وحده، وتصير جداول التجزئات المحسوبة مسبقاً بلا فائدة.</li>
+<li>ولأن الكلفة داخل النص، فرفعها لاحقاً (<code>BCRYPT_ROUNDS</code> في <code>.env</code>) لا يكسر التجزئات القديمة؛ ويمكن ترقيتها حين يدخل صاحبها في المرة التالية (التمرين 3).</li>
+<li>واستغرقت التجزئة الواحدة نحو ربع ثانية: لا شيء لمستخدم يدخل، وكثير جداً لمهاجم يجرب مليار تخمين. و<code>Hash::check</code> تقارن بزمن ثابت، فلا يكشف الوقت المستغرق شيئاً عن القيمة المحفوظة.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: لا تكتب تشفيرك بنفسك أبداً</p><p><code>Hash</code> و<code>Str::random()</code> و<code>hash_hmac</code> كتبها متخصصون وراجعوها. وتركيب قطع معروفة بالطريقة المعتادة لا بأس به؛ أما اختراع مخطط تجزئة خاص بك، أو تشفير خاص بك، أو مولّد رموز خاص بك، فلا. و<code>rand()</code> و<code>mt_rand()</code> غير مقبولتين أبداً لأي سر: إنهما قابلتان للتوقع. استخدم <code>random_bytes()</code> أو <code>Str::random()</code>.</p></aside>
+
+<h2><span class="sec">9.3</span> <span>Sanctum والرموز</span></h2>
+
+<p>عميل API لا يستطيع الاحتفاظ بجلسة متصفح، فيأخذ بعد الدخول <dfn>رمزاً</dfn> (token): إثبات هوية يُرسل مع كل طلب لاحق، فتُرسل كلمة المرور مرة واحدة. و<dfn>Sanctum</dfn>، حزمة Laravel لهذا، تُثبَّت مع ملف مسارات API بأمر واحد، <code>php artisan install:api</code>. فتضيف جدول <code>personal_access_tokens</code> والسمة <code>HasApiTokens</code> لنموذج <code>User</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Models/User.php</div><pre class="code">#[Fillable([<span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;password&#x27;</span>])]
+#[Hidden([<span class="s">&#x27;password&#x27;</span>, <span class="s">&#x27;remember_token&#x27;</span>])]
+<span class="k">class</span> User <span class="k">extends</span> Authenticatable
+{
+    /** @<span class="k">use</span> HasFactory&lt;UserFactory&gt; */
+    <span class="k">use</span> HasApiTokens, HasFactory, Notifiable;
+
+    <span class="k">protected</span> <span class="k">function</span> casts(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="s">&#x27;email_verified_at&#x27;</span> =&gt; <span class="s">&#x27;datetime&#x27;</span>,
+            <span class="s">&#x27;password&#x27;</span> =&gt; <span class="s">&#x27;hashed&#x27;</span>,
+        ];
+    }
+
+    <span class="k">public</span> <span class="k">function</span> orders(): HasMany
+    {
+        <span class="k">return</span> $<span class="k">this</span>-&gt;hasMany(Order::<span class="k">class</span>);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> isAdmin(): <span class="k">bool</span>
+    {
+        <span class="k">return</span> $<span class="k">this</span>-&gt;role === <span class="s">&#x27;admin&#x27;</span>;
+    }
+}</pre></div>
+
+<p>ويضيف ترحيل هذا الفصل عمود <code>role</code>، قيمته <code>customer</code> افتراضياً، وجدول <code>orders</code>. وملف المسارات يقول أي المسارات تحتاج رمزاً: وسيط <code>auth:sanctum</code> يجيب 401 لأي طلب بلا رمز صالح، و<code>throttle:login</code> يحدّ محاولات الدخول (القسم 9.6):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">Route::controller(AuthController::<span class="k">class</span>)-&gt;group(<span class="k">function</span> () {
+    Route::post(<span class="s">&#x27;auth/register&#x27;</span>, <span class="s">&#x27;register&#x27;</span>);
+    Route::post(<span class="s">&#x27;auth/login&#x27;</span>, <span class="s">&#x27;login&#x27;</span>)-&gt;middleware(<span class="s">&#x27;throttle:login&#x27;</span>);
+
+    Route::middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>)-&gt;group(<span class="k">function</span> () {
+        Route::post(<span class="s">&#x27;auth/logout&#x27;</span>, <span class="s">&#x27;logout&#x27;</span>);
+        Route::post(<span class="s">&#x27;auth/logout-all&#x27;</span>, <span class="s">&#x27;logoutAll&#x27;</span>);
+        Route::get(<span class="s">&#x27;me&#x27;</span>, <span class="s">&#x27;me&#x27;</span>);
+    });
+});
+
+Route::middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>)
+    -&gt;controller(OrderController::<span class="k">class</span>)
+    -&gt;group(<span class="k">function</span> () {
+        Route::get(<span class="s">&#x27;orders&#x27;</span>, <span class="s">&#x27;index&#x27;</span>);
+        Route::get(<span class="s">&#x27;orders/{order}&#x27;</span>, <span class="s">&#x27;show&#x27;</span>);
+        Route::get(<span class="s">&#x27;admin/users&#x27;</span>, <span class="s">&#x27;users&#x27;</span>)-&gt;middleware(<span class="s">&#x27;can:admin&#x27;</span>);
+    });</pre></div>
+
+<h2><span class="sec">9.4</span> <span>التسجيل والدخول</span></h2>
+
+<p>التسجيل يتحقق من الجسم، و<code>User::create</code> تجزّئ كلمة المرور عبر التحويل. وتُحفظ البُرد بأحرف صغيرة كي يكون <code>Lina@Example.com</code> و<code>lina@example.com</code> حساباً واحداً. وقاعدة <code>unique</code> تعطي رسالة لطيفة، لكنها تفحص ثم تُدخل، وهذا سباق من الفصل 7: الفهرس الفريد على العمود هو ما يقرر حقاً، والاستثناء الذي يرميه يصير 409:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> register(Request $request): JsonResponse
+    {
+        <span class="c line-bidi">// البُرد بأحرف صغيرة: Lina@Example.com هو lina@example.com</span>
+        $request-&gt;merge([<span class="s">&#x27;email&#x27;</span> =&gt; Str::lower((<span class="k">string</span>) $request-&gt;input(<span class="s">&#x27;email&#x27;</span>))]);
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;max:254&#x27;</span>, <span class="s">&#x27;unique:users&#x27;</span>],
+            <span class="s">&#x27;name&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:100&#x27;</span>],
+            <span class="s">&#x27;password&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, Password::min(<span class="n">12</span>), <span class="s">&#x27;max:128&#x27;</span>],
+        ]);
+        <span class="k">try</span> {
+            $user = User::create($data)-&gt;refresh();
+        } <span class="k">catch</span> (UniqueConstraintViolationException) {
+            <span class="c line-bidi">// تسجيلان معاً: الفهرس الفريد يقرر، لا قاعدة التحقق</span>
+            abort(<span class="n">409</span>, __(<span class="s">&#x27;البريد مسجّل من قبل.&#x27;</span>));
+        }
+
+        <span class="k">return</span> response()-&gt;json($user-&gt;only(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;role&#x27;</span>), <span class="n">201</span>);
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># التسجيل</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:8000/api/auth/register -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;Lina@Example.com&quot;,&quot;name&quot;:&quot;لينا&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27;</span>
+HTTP/1.1 201 Created
+Content-Type: application/json
+{&quot;id&quot;:4,&quot;email&quot;:&quot;lina@example.com&quot;,&quot;name&quot;:&quot;\u0644\u064a\u0646\u0627&quot;,&quot;role&quot;:&quot;customer&quot;}
+<span class="c line-bidi"># البريد نفسه مرة أخرى</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/register -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;name&quot;:&quot;لينا&quot;,&quot;password&quot;:&quot;another long sentence&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;The email has already been taken.&quot;,
+  &quot;errors&quot;: {
+    &quot;email&quot;: [
+      &quot;The email has already been taken.&quot;
+    ]
+  }
+}
+<span class="c line-bidi"># كلمة مرور أقصر من اللازم</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/register -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sam@example.com&quot;,&quot;name&quot;:&quot;Sam&quot;,&quot;password&quot;:&quot;short&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;The password field must be at least 12 characters.&quot;,
+  &quot;errors&quot;: {
+    &quot;password&quot;: [
+      &quot;The password field must be at least 12 characters.&quot;
+    ]
+  }
+}</pre></div>
+
+<p>والدخول هو حيث يتحسس المهاجمون. وتفصيلتان تمنعان مسار الدخول من إخبارهم أي البُرد لها حسابات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> login(Request $request): JsonResponse
+    {
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:254&#x27;</span>],
+            <span class="s">&#x27;password&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:128&#x27;</span>],
+        ]);
+        $user = User::where(<span class="s">&#x27;email&#x27;</span>, Str::lower($data[<span class="s">&#x27;email&#x27;</span>]))-&gt;first();
+        <span class="c line-bidi">// البريد المجهول يكلّف تجزئة أيضاً: الوقت لا يكشف شيئاً</span>
+        $ok = Hash::check($data[<span class="s">&#x27;password&#x27;</span>], $user-&gt;password ?? <span class="k">self</span>::dummy());
+        <span class="c line-bidi">// الجواب نفسه لبريد خطأ ولكلمة مرور خطأ</span>
+        <span class="k">if</span> (! $user || ! $ok) {
+            abort(<span class="n">401</span>, __(<span class="s">&#x27;البريد أو كلمة المرور خطأ.&#x27;</span>));
+        }
+        <span class="c line-bidi">// لا يحفظ Sanctum إلا SHA-256 للرمز؛ والعميل يأخذ النسخة الوحيدة</span>
+        $token = $user-&gt;createToken(<span class="s">&#x27;api&#x27;</span>, [<span class="s">&#x27;*&#x27;</span>], now()-&gt;addDays(<span class="n">30</span>))-&gt;plainTextToken;
+
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;token&#x27;</span> =&gt; $token, <span class="s">&#x27;expires_in&#x27;</span> =&gt; <span class="n">30</span> * <span class="n">24</span> * <span class="n">3600</span>]);
+    }</pre></div>
+
+<ul>
+<li><strong>الجواب نفسه</strong> لبريد مجهول ولكلمة مرور خطأ: «البريد أو كلمة المرور خطأ»، لا «لا يوجد مستخدم» أبداً.</li>
+<li><strong>الوقت نفسه.</strong> بلا تجزئة وهمية، سيُجاب البريد المجهول في الحال والمعروف بعد ربع ثانية، ويكشف الوقت وحده أي البُرد موجود. والفحص مقابل تجزئة وهمية، تُصنع مرة لكل عملية، يجعل الحالتين تكلّفان تجزئة واحدة.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تسجيل الدخول</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27; | jq</span>
+{
+  &quot;token&quot;: &quot;1|xvSLaOMIUHVAe4pmlTO2HXkbzmGKxsHWkiPUk4pT4c69f76d&quot;,
+  &quot;expires_in&quot;: 2592000
+}
+<span class="c line-bidi"># كلمة مرور خطأ، وبريد مجهول: الجواب نفسه</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a wrong sentence&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;البريد أو كلمة المرور خطأ.&quot;
+}
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;nobody@example.com&quot;,&quot;password&quot;:&quot;a wrong sentence&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;البريد أو كلمة المرور خطأ.&quot;
+}</pre></div>
+
+<p>للرمز جزءان: رقم صفه، وسر من 40 حرفاً عشوائياً يتبعه مجموع تحقق من 8 أحرف (يتيح لماسحات الأسرار التعرف على رمز مسرّب). ولا يحفظ Sanctum إلا تجزئة SHA-256 للسر، فلا يستطيع من يقرأ الجدول استخدام ما قرأه. والتجزئة السريعة صحيحة هنا، بخلاف كلمات المرور: فالرمز عشوائي لا كلمة اختارها إنسان، فلا شيء يُخمَّن. وقد أُنشئ الرمز بانتهاء بعد 30 يوماً.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># بلا رمز</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/me -H &#x27;Accept: application/json&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;Unauthenticated.&quot;
+}
+<span class="c line-bidi"># بالرمز</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;lina@example.com&quot;,&quot;password&quot;:&quot;a long and silly sentence&quot;}&#x27; | jq -r .token)</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/me -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $TOKEN&quot; | jq</span>
+{
+  &quot;id&quot;: 4,
+  &quot;email&quot;: &quot;lina@example.com&quot;,
+  &quot;name&quot;: &quot;لينا&quot;,
+  &quot;role&quot;: &quot;customer&quot;
+}</pre></div>
+
+<p>والخروج يحذف صف الرمز، فيتوقف عن العمل في الحال. ولا تحفظ قاعدة البيانات إلا التجزئات، لكلمات المرور وللرموز:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> logout(Request $request): JsonResponse
+    {
+        <span class="c line-bidi">// الرمز الذي أرسل هذا الطلب وحده</span>
+        $request-&gt;user()-&gt;currentAccessToken()-&gt;delete();
+
+        <span class="k">return</span> response()-&gt;json(<span class="k">null</span>, <span class="n">204</span>);
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تسجيل الخروج</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -X POST localhost:8000/api/auth/logout -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $TOKEN&quot;</span>
+204
+<span class="c line-bidi"># الرمز نفسه بعدها</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/me -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $TOKEN&quot; | jq -c</span>
+{&quot;message&quot;:&quot;Unauthenticated.&quot;}
+<span class="c line-bidi"># ما تحفظه قاعدة البيانات</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT email, left(password, 30) AS password FROM users ORDER BY id&#x27;</span>
+       email       |            password            
+-------------------+--------------------------------
+ sara@example.com  | $2y$12$aOEIBSVtHMFtUPMOZ/XDSuP
+ omar@example.com  | $2y$12$ub8cx3zHrvkhOh0L5QT/4ul
+ admin@example.com | $2y$12$0qNBx/Acy3pLFNv4FQFf9Ok
+ lina@example.com  | $2y$12$qaIoc/3zIusG6kB.M7jFEOP
+(4 rows)
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT tokenable_id, left(token, 16) AS token, expires_at::date FROM personal_access_tokens ORDER BY id&#x27;</span>
+ tokenable_id |      token       | expires_at 
+--------------+------------------+------------
+            4 | 4ace460ad7ae21a5 | 2026-12-20
+            2 | 7c1775dbb55ba9a3 | 2026-12-20
+            3 | 0a1951e387d55f8a | 2026-12-20
+(3 rows)</pre></div>
+
+<h3>وماذا عن JWT؟</h3>
+
+<p><dfn>رمز الويب JSON</dfn> (JSON Web Token) يسلك الطريق المعاكس: بدل مفتاح عشوائي إلى جدول، <em>يحتوي</em> الرمز البيانات (رقم المستخدم، والدور، والانتهاء)، موقّعة بسر الخادم فلا يمكن تغييرها. وهذا واحد مصنوع باليد، لنرى ما بداخله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:jwt&#x27;</span>, <span class="k">function</span> () {
+    $secret = <span class="s">&#x27;a secret only the server knows&#x27;</span>;
+    $url = <span class="k">fn</span> (<span class="k">string</span> $bytes) =&gt; rtrim(strtr(base64_encode($bytes), <span class="s">&#x27;+/&#x27;</span>, <span class="s">&#x27;-_&#x27;</span>), <span class="s">&#x27;=&#x27;</span>);
+    $b64 = <span class="k">fn</span> (<span class="k">array</span> $value) =&gt; $url(json_encode($value));
+    $sign = <span class="k">fn</span> (<span class="k">string</span> $data) =&gt; $url(hash_hmac(<span class="s">&#x27;sha256&#x27;</span>, $data, $secret, <span class="k">true</span>));
+
+    <span class="c line-bidi">// JWT: الرأس والحمولة بـ base64url، ثم HMAC لهما بسر الخادم</span>
+    $header = $b64([<span class="s">&#x27;alg&#x27;</span> =&gt; <span class="s">&#x27;HS256&#x27;</span>, <span class="s">&#x27;typ&#x27;</span> =&gt; <span class="s">&#x27;JWT&#x27;</span>]);
+    $payload = $b64([<span class="s">&#x27;sub&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;role&#x27;</span> =&gt; <span class="s">&#x27;customer&#x27;</span>, <span class="s">&#x27;exp&#x27;</span> =&gt; <span class="n">1795000000</span>]);
+    $token = <span class="s">&quot;$header.$payload.&quot;</span>.$sign(<span class="s">&quot;$header.$payload&quot;</span>);
+    $<span class="k">this</span>-&gt;line(<span class="s">&quot;الرمز: $token&quot;</span>);
+
+    <span class="c line-bidi">// أي أحد يقرأ الحمولة: إنها مرمّزة لا مشفّرة</span>
+    $read = <span class="k">fn</span> (<span class="k">string</span> $part) =&gt; base64_decode(strtr($part, <span class="s">&#x27;-_&#x27;</span>, <span class="s">&#x27;+/&#x27;</span>));
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;الحمولة، مقروءة بلا المفتاح: &#x27;</span>.$read(explode(<span class="s">&#x27;.&#x27;</span>, $token)[<span class="n">1</span>]));
+
+    $valid = <span class="k">function</span> (<span class="k">string</span> $jwt) <span class="k">use</span> ($sign) {
+        [$h, $p, $signature] = explode(<span class="s">&#x27;.&#x27;</span>, $jwt);
+
+        <span class="k">return</span> hash_equals($sign(<span class="s">&quot;$h.$p&quot;</span>), $signature);
+    };
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;التوقيع صالح: &#x27;</span>.json_encode($valid($token)));
+    <span class="c line-bidi">// غيّر الحمولة، وأبقِ التوقيع</span>
+    $forged = $b64([<span class="s">&#x27;sub&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;role&#x27;</span> =&gt; <span class="s">&#x27;admin&#x27;</span>, <span class="s">&#x27;exp&#x27;</span> =&gt; <span class="n">1795000000</span>]);
+    $signature = explode(<span class="s">&#x27;.&#x27;</span>, $token)[<span class="n">2</span>];
+    $<span class="k">this</span>-&gt;line(<span class="s">&#x27;الرمز المعدّل صالح: &#x27;</span>.json_encode($valid(<span class="s">&quot;$header.$forged.$signature&quot;</span>)));
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># داخل JWT</span>
+<span class="c">$ </span><span class="k">php artisan shop:jwt</span>
+الرمز: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInJvbGUiOiJjdXN0b21lciIsImV4cCI6MTc5NTAwMDAwMH0.FIARINURub56u1m-5b1qFNKR31jo58HiVsulPiTmtkU
+الحمولة، مقروءة بلا المفتاح: {&quot;sub&quot;:2,&quot;role&quot;:&quot;customer&quot;,&quot;exp&quot;:1795000000}
+التوقيع صالح: true
+الرمز المعدّل صالح: false</pre></div>
+
+<p>تغيير الدور إلى <code>admin</code> أفسد التوقيع، فلا يمكن تزوير JWT. لكن أي أحد يستطيع قراءته، ويفحصه الخادم دون أن يبحث عن شيء، وهذه قوته وضعفه معاً: لا يمكن إلغاؤه. فالمستخدم الذي يخرج، أو يغيّر كلمة مروره، أو يفقد دوره، يبقى رمزه صالحاً حتى ينتهي. وJWT يناسب الرسائل بين خدماتك والرموز قصيرة العمر (دقائق)؛ أما لمستخدمي تطبيقاتك، فرموز Sanctum القابلة للإلغاء أبسط وأأمن. ولا تضع سراً في حمولة JWT أبداً.</p>
+
+<aside class="box note"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>ملاحظة: Sanctum لموقعك أنت</p><p>تطبيق الجوال يحفظ الرمز في التخزين الآمن للهاتف ويرسله في الترويسة <code>Authorization</code>، كما يفعل <code>curl</code> هنا. أما الموقع فلا ينبغي أن يحفظ رمزاً حيث تقرؤه السكربتات. ولتطبيق صفحة واحدة على نطاقك أنت، لـ Sanctum وضع ثانٍ: يدخل التطبيق عبر جلسة Laravel العادية، المحفوظة في كوكي <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite=Lax</code>، و<code>auth:sanctum</code> تقبل الكوكي أو الرمز. وتضع نطاق الموقع في <code>SANCTUM_STATEFUL_DOMAINS</code>. وللكوكيز خطرها الخاص، تزوير الطلبات عبر المواقع، الذي يعالجه الفصل 10.</p></aside>
+
+<h2><span class="sec">9.5</span> <span>التفويض: البوابات والسياسات</span></h2>
+
+<p>وجدت المصادقة المستخدم؛ والآن تقرر القواعد ما يجوز له. و<dfn>البوابة</dfn> قاعدة واحدة بنعم أو لا ولها اسم، تصلح لمناطق كاملة كقسم الإدارة؛ تُعرَّف مرة في مزوّد خدمة، ويطبقها وسيط <code>can:admin</code> في المسارات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> boot(): <span class="k">void</span>
+    {
+        <span class="c line-bidi">// بوابة: قاعدة واحدة بنعم أو لا ولها اسم</span>
+        Gate::define(<span class="s">&#x27;admin&#x27;</span>, <span class="k">fn</span> (User $user) =&gt; $user-&gt;isAdmin());</pre></div>
+
+<p>و<dfn>السياسة</dfn> تجمع قواعد نموذج واحد. يجد Laravel السياسة <code>OrderPolicy</code> للنموذج <code>Order</code> باسمها، و<code>Gate::authorize('view', $order)</code> في المتحكم تستدعي دالتها <code>view</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Policies/OrderPolicy.php</div><pre class="code"><span class="k">class</span> OrderPolicy
+{
+    <span class="k">public</span> <span class="k">function</span> view(User $user, Order $order): Response
+    {
+        <span class="c line-bidi">// طلب غيرك «غير موجود» لا «غير مسموح»: لا يُكشف وجوده</span>
+        <span class="k">return</span> $user-&gt;id === $order-&gt;user_id || $user-&gt;isAdmin()
+            ? Response::allow()
+            : Response::denyAsNotFound();
+    }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> index(Request $request): JsonResponse
+    {
+        <span class="k">return</span> response()-&gt;json(
+            $request-&gt;user()-&gt;orders()-&gt;orderBy(<span class="s">&#x27;id&#x27;</span>)-&gt;get([<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;total&#x27;</span>]),
+        );
+    }
+
+    <span class="k">public</span> <span class="k">function</span> show(Order $order): JsonResponse
+    {
+        Gate::authorize(<span class="s">&#x27;view&#x27;</span>, $order);
+
+        <span class="k">return</span> response()-&gt;json($order-&gt;only(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;user_id&#x27;</span>, <span class="s">&#x27;total&#x27;</span>));
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عمر يسجّل الدخول</span>
+<span class="c">$ </span><span class="k">OMAR=$(curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;omar@example.com&quot;,&quot;password&quot;:&quot;omar-password-2026&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># طلباته هو</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $OMAR&quot; | jq -c</span>
+[{&quot;id&quot;:3,&quot;total&quot;:12000}]
+<span class="c line-bidi"># طلب سارة</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/orders/1 -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $OMAR&quot; | jq</span>
+{
+  &quot;message&quot;: &quot;Not Found&quot;
+}
+<span class="c line-bidi"># قائمة المدير، بصفة عمر</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/admin/users -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $OMAR&quot; | jq</span>
+{
+  &quot;message&quot;: &quot;This action is unauthorized.&quot;
+}
+<span class="c line-bidi"># قائمة المدير، بصفة مدير</span>
+<span class="c">$ </span><span class="k">ADMIN=$(curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;admin@example.com&quot;,&quot;password&quot;:&quot;admin-password-2026&quot;}&#x27; | jq -r .token)</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/admin/users -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $ADMIN&quot; | jq -c &#x27;.[]&#x27;</span>
+{&quot;id&quot;:1,&quot;email&quot;:&quot;sara@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}
+{&quot;id&quot;:2,&quot;email&quot;:&quot;omar@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}
+{&quot;id&quot;:3,&quot;email&quot;:&quot;admin@example.com&quot;,&quot;role&quot;:&quot;admin&quot;}
+{&quot;id&quot;:4,&quot;email&quot;:&quot;lina@example.com&quot;,&quot;role&quot;:&quot;customer&quot;}</pre></div>
+
+<ul>
+<li>قائمة الطلبات تمر عبر العلاقة، <code>$request-&gt;user()-&gt;orders()</code>، فيُقصر الاستعلام نفسه على صفوف المستخدم. وتحميل كل الطلبات ثم الترشيح في الكود يخاطر بإعادة أكثر من اللازم يوم يغيّره أحد.</li>
+<li>عمر حين يطلب طلب سارة يأخذ <strong>404</strong>، تماماً كطلب غير موجود: <code>Response::denyAsNotFound()</code>. فـ 403 تؤكد أن الطلب 1 موجود، والأرقام المتزايدة تتيح له معرفة عدد طلبات المتجر.</li>
+<li>وقائمة المدير تعيد 403: عمر يعرف أن المسار موجود، ويُقال له إنه لا يملك الدور.</li>
+<li>هذه أخطاء JSON الافتراضية في Laravel، <code>{"message": …}</code>؛ ومع مُخرج الاستثناءات من الفصل 4 تصير تفاصيل مشكلة (Problem Details) ككل خطأ آخر.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يصلح SHA-256 لرموز Sanctum ولا يصلح لكلمات المرور؟</li><li>زبون داخل يطلب <code>/api/admin/users</code>. أي حالة، ولماذا لا 401؟</li><li>لماذا يفحص مسار الدخول تجزئة وهمية حين لا يوجد البريد؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">9.6</span> <span>إبطاء التخمين</span></h2>
+
+<p>التجزئة البطيئة تحمي جدولاً مسروقاً؛ والخادم العامل يحتاج حماية أيضاً، من سكربت يجرب كلمات المرور واحدة بعد أخرى. ومحدد المعدل <code>login</code> (عرّف الفصل 3 محددات المعدل) مفتاحه عنوان العميل <em>و</em>البريد، فلا يستطيع مهاجم واحد تجربة آلاف كلمات المرور على حساب واحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">        RateLimiter::<span class="k">for</span>(<span class="s">&#x27;login&#x27;</span>, <span class="k">function</span> (Request $request) {
+            $key = $request-&gt;ip().<span class="s">&#x27;|&#x27;</span>.Str::lower((<span class="k">string</span>) $request-&gt;input(<span class="s">&#x27;email&#x27;</span>));
+
+            <span class="k">return</span> Limit::perMinute(<span class="n">5</span>)-&gt;by($key)-&gt;response(<span class="k">function</span> ($request, $headers) {
+                $seconds = $headers[<span class="s">&#x27;Retry-After&#x27;</span>];
+
+                <span class="k">return</span> response()-&gt;json([
+                    <span class="s">&#x27;message&#x27;</span> =&gt; __(<span class="s">&#x27;محاولات كثيرة. حاول مرة أخرى بعد :seconds ثانية.&#x27;</span>, [<span class="s">&#x27;seconds&#x27;</span> =&gt; $seconds]),
+                ], <span class="n">429</span>, $headers);
+            });
+        });</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ست كلمات مرور خطأ متتالية</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w &quot;%{http_code} &quot; localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess number one&quot;}&#x27;; done; echo</span>
+401 401 401 401 401 429 
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/auth/login -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess number seven&quot;}&#x27; | jq</span>
+{
+  &quot;message&quot;: &quot;محاولات كثيرة. حاول مرة أخرى بعد 59 ثانية.&quot;
+}</pre></div>
+
+<p>رُفضت المحاولة السادسة قبل أن تُفحص كلمة مرورها أصلاً. والمحدد يعدّ في مخزن الذاكرة المؤقتة، فمع Redis (الفصل 8) يتقاسم كل خادم العدد. وقفل الحساب بعد بضع محاولات فاشلة مغرٍ، لكنه يتيح لأي أحد أن يقفل حساب أي مستخدم بكتابة كلمات مرور خطأ باسمه؛ وحدود المعدل تبطئ المهاجم دون أن تعاقب صاحب الحساب. وإضافة عامل ثانٍ (رمز من تطبيق) أقوى الحمايات كلها.</p>
+
+<h2><span class="sec">9.7</span> <span>اختبارها</span></h2>
+
+<p>قواعد الأمان هي بالضبط نوع الكود الذي ينكسر بصمت، فلكل قاعدة اختبار. وتدخل الاختبارات عبر مسار الدخول الحقيقي وتستخدم الرمز، كما يفعل العميل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/AuthTest.php</div><pre class="code">    <span class="k">private</span> <span class="k">function</span> signIn(<span class="k">string</span> $email, <span class="k">string</span> $password): <span class="k">array</span>
+    {
+        $token = $<span class="k">this</span>-&gt;postJson(<span class="s">&#x27;/api/auth/login&#x27;</span>, compact(<span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;password&#x27;</span>))
+            -&gt;assertOk()
+            -&gt;json(<span class="s">&#x27;token&#x27;</span>);
+
+        <span class="k">return</span> [<span class="s">&#x27;Authorization&#x27;</span> =&gt; <span class="s">&quot;Bearer $token&quot;</span>];
+    }
+
+    <span class="k">public</span> <span class="k">function</span> test_it_registers_signs_in_and_reads_me(): <span class="k">void</span>
+    {
+        $<span class="k">this</span>-&gt;postJson(<span class="s">&#x27;/api/auth/register&#x27;</span>, [
+            <span class="s">&#x27;email&#x27;</span> =&gt; <span class="s">&#x27;test@example.com&#x27;</span>,
+            <span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;Test&#x27;</span>,
+            <span class="s">&#x27;password&#x27;</span> =&gt; <span class="s">&#x27;a long test password&#x27;</span>,
+        ])-&gt;assertCreated();
+        $<span class="k">as</span> = $<span class="k">this</span>-&gt;signIn(<span class="s">&#x27;test@example.com&#x27;</span>, <span class="s">&#x27;a long test password&#x27;</span>);
+        $<span class="k">this</span>-&gt;getJson(<span class="s">&#x27;/api/me&#x27;</span>, $<span class="k">as</span>)-&gt;assertJsonPath(<span class="s">&#x27;email&#x27;</span>, <span class="s">&#x27;test@example.com&#x27;</span>);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> test_it_refuses_me_without_a_token(): <span class="k">void</span>
+    {
+        $<span class="k">this</span>-&gt;getJson(<span class="s">&#x27;/api/me&#x27;</span>)-&gt;assertUnauthorized();
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الاختبارات</span>
+<span class="c">$ </span><span class="k">php artisan test --no-ansi tests/Feature/AuthTest.php</span>
+
+   PASS  Tests\Feature\AuthTest
+  ✓ it registers signs in and reads me                                   0.19s  
+  ✓ it refuses me without a token                                        0.01s  
+  ✓ it refuses the admin list to a customer                              0.01s  
+  ✓ it hides other customers orders                                      0.01s  
+  ✓ it rejects a token after sign out                                    0.01s  
+
+  Tests:    5 passed (12 assertions)
+  Duration: 0.32s</pre></div>
+
+<p>لاحظ ما يُختبر: ليس فقط أن المستخدم الصحيح يدخل، بل أن الخاطئين يُبقَون خارجاً. فمجموعة اختبارات تفحص المسار السعيد وحده تنجح على API بلا أي أمان. (وللاختبارات التي لا يهمها كيف دخل المستخدم، <code>Sanctum::actingAs($user)</code> تتخطى الدخول.)</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اختبر «لا» لكل مسار</p><p>لكل مسار محمي، اكتب اختبارين على الأقل: واحداً بلا رمز (401)، وآخر بصفة مستخدم يجب ألا يصل (403 أو 404). وأضفهما في طلب الدمج نفسه الذي فيه المسار. ويوم يحذف أحد وسيطاً أو يغيّر استعلاماً، تفشل هذه الاختبارات، وهذا أرخص بكثير من أن تعرف من زبون رأى طلب غيره.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>كلمات مرور نصاً صريحاً، أو بـ <code>sha256</code> أو <code>md5</code></td><td>جدول مسروق يكشف أغلب كلمات المرور</td><td><code>Hash::make</code> أو التحويل <code>hashed</code></td></tr>
+<tr><td>«لا يوجد مستخدم» عند الدخول</td><td>يعرف المهاجمون أي البُرد لها حسابات</td><td>رسالة واحدة، وتجزئة وهمية للوقت نفسه</td></tr>
+<tr><td>رموز من <code>rand()</code> أو عداد</td><td>يمكن تخمين الرموز</td><td>Sanctum، أو <code>random_bytes()</code></td></tr>
+<tr><td>رموز بلا انتهاء</td><td>رمز مسرّب يعمل إلى الأبد</td><td>انتهاء في <code>createToken</code>، أو في <code>config/sanctum.php</code></td></tr>
+<tr><td>JWT طويلة العمر للدخول</td><td>لا طريقة لإخراج مستخدم</td><td>رموز قابلة للإلغاء، أو JWT لدقائق</td></tr>
+<tr><td><code>auth:sanctum</code> على بعض المسارات فقط</td><td>المسار المنسي مفتوح</td><td>مجموعة مسارات بالوسيط</td></tr>
+<tr><td><code>Order::find($id)</code> بلا سياسة</td><td>أي مستخدم يقرأ أي طلب</td><td><code>Gate::authorize</code>، و<code>denyAsNotFound</code></td></tr>
+<tr><td>لا حد لمحاولات الدخول</td><td>تخمين كلمات المرور بأقصى سرعة</td><td>محدد معدل لكل عنوان وحساب</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>المصادقة</strong> تكشف من يتصل (401 إن كان مجهولاً)؛ و<strong>التفويض</strong> يقرر ما يجوز له (403، أو 404 لإخفاء الوجود).</li>
+<li>تُحفظ كلمات المرور بـ <strong>تجزئة بطيئة مملّحة</strong>: bcrypt عبر <code>Hash</code> والتحويل <code>hashed</code>.</li>
+<li>الدخول يعطي <strong>الجواب نفسه والوقت نفسه</strong> لبريد خطأ ولكلمة مرور خطأ.</li>
+<li><strong>رموز Sanctum</strong> عشوائية، تُحفظ تجزئة SHA-256 لها وحدها، ولها انتهاء، وتُلغى بحذف الصف.</li>
+<li><strong>JWT</strong> يحمل بيانات موقّعة يقرؤها أي أحد ولا يلغيها أحد: جيد بين الخدمات ولدقائق، لا لجلسات المستخدمين.</li>
+<li><strong>البوابات</strong> للمناطق، و<strong>السياسات</strong> للسجلات؛ وحدّ معدل الدخول، و<strong>اختبر كل «لا»</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. الجزء العشوائي من الرمز 40 حرفاً عشوائياً: الاحتمالات أكثر بكثير من أن تُجرَّب، فالتجزئة تحتاج فقط أن تمنع من يقرأ الجدول من استخدام القيم مباشرة، والتجزئة السريعة تفعل ذلك. أما كلمة المرور فيختارها إنسان من مجموعة صغيرة من الكلمات المحتملة، فيستطيع المهاجم تجربة المحتمل منها بسرعة ما لم تُجعل كل محاولة بطيئة عمداً. 2. 403 Forbidden: الخادم يعرف بالضبط من يتصل (الرمز صالح)، فالمشكلة ليست في المصادقة؛ المستخدم لا يملك دور المدير. 3. كي يستغرق الرد الوقت نفسه سواء وُجد البريد أم لا؛ وإلا أُجيب البريد المجهول أسرع بكثير، وكشف الوقت أي البُرد لها حسابات.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يوسّع API هذا الفصل. وكل قاعدة جديدة تأتي مع اختبارات للمستخدمين الذين يجب أن يُرفضوا.</p>
+
+<div class="project">
+<p class="project-label">المشروع 9.1 · سهل</p>
+<h3>غيّر كلمة مرورك</h3>
+<p class="project-goal">دع المستخدم الداخل يغيّر كلمة مروره بأمان.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القاعدة <code>current_password</code>، والتجزئة، وإلغاء الرموز.</p>
+<ol class="steps">
+<li>أضف <code>PUT /api/me/password</code> بـ <code>current_password</code> و<code>password</code> (مؤكَّدة، 12 حرفاً على الأقل).</li>
+<li>استخدم قاعدة التحقق <code>current_password:sanctum</code>، وارفض كلمة مرور جديدة تساوي القديمة.</li>
+<li>بعد التغيير، احذف كل رموز المستخدم الأخرى، وأبقِ الرمز الذي أرسل الطلب.</li>
+<li>اختبر حالات الفشل، وأن رمز جهاز ثانٍ يتوقف عن العمل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>$user-&gt;tokens()-&gt;where('id', '!=', $user-&gt;currentAccessToken()-&gt;id)-&gt;delete()</code> تُبقي الرمز الحالي.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 9.2 · متوسط</p>
+<h3>رموز بقدرات</h3>
+<p class="project-goal">أصدر رموزاً لا تستطيع إلا جزءاً مما يستطيعه صاحبها، للسكربتات والتكاملات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قدرات Sanctum، والوسيطين <code>abilities</code> و<code>ability</code>، وجمعهما مع السياسات.</p>
+<ol class="steps">
+<li>أضف <code>POST /api/tokens</code> تنشئ رمزاً مسمّى بقدرات تُختار من <code>orders:read</code> و<code>orders:write</code>، وتسرد رموز المستخدم بلا أسرارها.</li>
+<li>احمِ مسارات الطلبات بـ <code>ability:orders:read</code>، ومسارات الكتابة بـ <code>abilities:orders:write</code>.</li>
+<li>بيّن أن رمز القراءة وحدها يسرد الطلبات ولا ينشئ واحداً، حتى لمدير.</li>
+<li>أضف <code>DELETE /api/tokens/{id}</code>، مسموحة لصاحب الرمز وحده (سياسة مرة أخرى).</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> القدرات تحدّ الرمز؛ والسياسات تحدّ المستخدم. والطلب يحتاج أن يقول الاثنان نعم.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 9.3 · تحدٍّ</p>
+<h3>نسيت كلمة المرور</h3>
+<p class="project-goal">ابنِ استعادة لكلمة المرور لا يمكن استخدامها للاستيلاء على حساب غيرك.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> وسيط كلمات المرور في Laravel، وعدم تسريب وجود الحسابات، وإرسال البريد بعد التثبيت.</p>
+<ol class="steps">
+<li><code>POST /api/auth/forgot</code> تأخذ بريداً وتجيب دائماً 202، سواء وُجد الحساب أم لا، باستخدام <code>Password::sendResetLink</code>.</li>
+<li>انظر إلى جدول <code>password_reset_tokens</code>: ماذا يُحفظ، وإلى متى (<code>config/auth.php</code>)؟</li>
+<li><code>POST /api/auth/reset</code> تأخذ الرمز والبريد وكلمة مرور جديدة، وتعمل مرة واحدة، وتحذف كل رموز المستخدم.</li>
+<li>اختبر رمزاً منتهياً، ورمزاً مستخدماً من قبل، وأن الجواب لبريد مجهول مطابق تماماً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الاختبارات، <code>Notification::fake()</code> تلتقط بريد الاستعادة، فتقرأ الرمز منه.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> يقترح زميل حفظ <code>hash('sha256', $salt.$password)</code> بملح عشوائي لكل مستخدم. مما يحمي الملح، ومما لا يحمي؟</li>
+<li><span class="level">سهل</span> اختر الحالة لكل مما يلي: لا ترويسة <code>Authorization</code>؛ ورمز منتهٍ؛ وزبون يحذف منتجاً؛ وزبون يقرأ عنوان زبون آخر.</li>
+<li><span class="level medium">متوسط</span> رفعت <code>BCRYPT_ROUNDS</code> من 12 إلى 13. كيف تأخذ تجزئات المستخدمين الحاليين الكلفة الجديدة، دون أن تطلب من أحد استعادة كلمة مروره؟</li>
+<li><span class="level medium">متوسط</span> أضف «الخروج من كل الأجهزة»، وبيّن أن رمزاً من جهاز ثانٍ يتوقف عن العمل.</li>
+<li><span class="level hard">تحدٍّ</span> صمّم (بلا كود) رمز وصول لعشر دقائق بصيغة JWT مع رمز تجديد في قاعدة البيانات. ماذا يفحص كل طلب، وماذا يحدث عند الخروج، وما المكسب مقارنة برموز هذا الفصل؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 10</p>
+<p>المستخدمون يدخلون؛ والآن يجب أن يصمد API أمام من يحاولون كسره. الأمان: الحقن، والهجمات عبر المواقع، والأسرار، والترويسات، والاعتماديات، وقائمة OWASP لأكثر ما يسوء.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4876,6 +5434,32 @@ $servers[<span class="s">&#x27;A&#x27;</span>]-&gt;del(<span class="s">&#x27;rat
 (بعد ثانيتين)
 الطلب 5: مسموح</pre></div>
 كل طلب يضيف عضواً درجته وقته بالمللي ثانية (مع لاحقة عشوائية، فيبقى طلبان في المللي ثانية نفسها مختلفين). وتحذف المعاملة أولاً الأعضاء الأقدم من النافذة، ثم تعدّ ما بقي. وهذه النسخة تسجل الطلبات المرفوضة أيضاً، فيبقى العميل الذي يواصل الإلحاح محجوباً؛ ولعدّ الطلبات المقبولة وحدها، افحص العدد قبل الإضافة، في سكربت Lua.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 9</h2>
+<ol class="exercises">
+<li>الملح يجعل تجزئة كل مستخدم مختلفة، فلا تظهر كلمات المرور المتطابقة تجزئاتٍ متطابقة، ولا يهاجم حسابٌ واحد كل الصفوف معاً، وتصير الجداول المحسوبة مسبقاً بلا فائدة. لكنه لا يجعل كل تخمين أبطأ: SHA-256 ما زالت مليارات التخمينات في الثانية، فتسقط كلمة مرور ضعيفة في أي صف بمفرده في ثوانٍ. والإصلاح دالة بطيئة (bcrypt أو Argon2)، وهي ما تفعله <code>Hash::make</code> أصلاً، بملحها.</li>
+<li>لا ترويسة: 401. ورمز منتهٍ: 401، لأن الخادم لم يعد يعرف من يتصل؛ وعلى العميل أن يدخل مرة أخرى. وزبون يحذف منتجاً: 403، فالزبون معروف ولا يملك الدور. وعنوان زبون آخر: 404، بـ <code>denyAsNotFound</code> كما في الطلب، كي لا يؤكد الرد أن العنوان موجود.</li>
+<li>رقِّ عند الدخول، حين تكون كلمة المرور الصريحة متاحة للحظة. بعد <code>Hash::check</code> ناجحة، اسأل <code>Hash::needsRehash($user-&gt;password)</code>: تقارن الكلفة داخل التجزئة المحفوظة بالإعداد. فإن قالت نعم، أسند كلمة المرور الصريحة مرة أخرى (<code>$user-&gt;password = $data['password']; $user-&gt;save();</code>)، فيحفظ التحويل <code>hashed</code> تجزئة جديدة بالكلفة الجديدة. و<code>Auth::attempt</code> في Laravel تفعل هذا عنك. والتشغيل في مستودع الكود يبيّن أن تجزئة صُنعت بعشر جولات تحتاج إعادة تجزئة، والمصنوعة بالجولات الاثنتي عشرة المضبوطة لا تحتاج:
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># دخول من جهازين، ثم خروج من كليهما</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -X POST localhost:8000/api/auth/logout-all -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $PHONE&quot;</span>
+204
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &quot;%{http_code}\n&quot; localhost:8000/api/me -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer $LAPTOP&quot;</span>
+401
+<span class="c line-bidi"># رفع الكلفة لاحقاً</span>
+<span class="c">$ </span><span class="k">php artisan shop:rehash</span>
+تحتاج إعادة تجزئة (10 جولات): true
+تحتاج إعادة تجزئة (12 جولة): false</pre></div></li>
+<li>يحذف المسار كل رموز المستخدم الحالي (والأوامر في الجزء الأول من التشغيل أعلاه):
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> logoutAll(Request $request): JsonResponse
+    {
+        $request-&gt;user()-&gt;tokens()-&gt;delete();
+
+        <span class="k">return</span> response()-&gt;json(<span class="k">null</span>, <span class="n">204</span>);
+    }</pre></div>
+جاء الطلب برمز الهاتف، ورمز الحاسوب، الذي لم يُستخدم فيه، يجيب الآن 401.</li>
+<li>يعيد الدخول رمزين: رمز وصول، JWT صالح عشر دقائق يحمل رقم المستخدم ودوره، ورمز تجديد، بايتات عشوائية تُحفظ تجزئتها في قاعدة البيانات بانتهاء طويل. وكل طلب API يفحص توقيع JWT وانتهاءه فقط، بلا استعلام لقاعدة البيانات. وحين ينتهي رمز الوصول يرسل العميل رمز التجديد إلى <code>POST /api/auth/refresh</code>، الذي يفحصه في قاعدة البيانات، ويستبدله بجديد (فلا يعمل رمز تجديد مسروق إلا مرة)، ويعيد JWT جديداً. والخروج يحذف رمز التجديد؛ ويبقى رمز الوصول صالحاً حتى عشر دقائق، وهذا هو الثمن. والمكسب: لا بحث في قاعدة البيانات في أغلب الطلبات، وهذا مهم حين تفحص خدمات كثيرة الرموز؛ أما لـ API واحد تشارك قاعدة البيانات أصلاً في كل طلب فيه، فرموز Sanctum أبسط.</li>
 </ol>
 
 </section>
