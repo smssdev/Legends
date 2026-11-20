@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Designing for Failure"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "Chapter 8: Data at Scale"; } }
+@page ch08:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2740,6 +2742,290 @@ breaker     0      40    633 ms   1027 ms           24</pre></div>
 <p>Both load and failure end up at the same place: the data. The next chapter is about data at scale: replicas, caches, partitions, and the consistency each one costs.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b4/data/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Data at Scale</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>spread reads over replicas, and handle the lag that comes with them</li>
+<li>route a user’s reads so that they always see their own writes</li>
+<li>put a cache in front of expensive reads, and keep it honest when the data changes</li>
+<li>split a large table into partitions, and let the planner read only what it needs</li>
+<li>remove old data in milliseconds instead of minutes</li>
+<li>know when sharding is worth its cost, and how to choose the key</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 6 found that Bit Booking’s first real limit is its one database, and listed the ways to push it back. This chapter tries three of them for real. Each one takes load off the primary database, and each one costs some consistency: data that is a little old, in a place you have to keep in step. The skill is not in setting them up, which takes an afternoon, but in knowing exactly what each one may get wrong, and making sure customers never notice.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every technique in this chapter answers the same question differently: “how old may this data be?” For a list of free slots, a few seconds is fine. For a payment, it is never fine. Ask that question first, for every piece of data, and the right technique usually picks itself.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>Read replicas</span></h2>
+
+<p>A booking site reads far more than it writes: every booking follows dozens of views of free slots. A <dfn>read replica</dfn> is a second PostgreSQL server that receives every change from the primary and applies it, so it can answer reads. Writes still go to the primary, and there can be several replicas for the reads.</p>
+
+<p>The application needs two connection pools, and a rule for which to use:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">db.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> primary = <span class="k">new</span> pg.Pool({ connectionString: process.env.PRIMARY_URL });
+<span class="k">export</span> <span class="k">const</span> replica = <span class="k">new</span> pg.Pool({ connectionString: process.env.REPLICA_URL });
+
+<span class="k">const</span> lastWrite = <span class="k">new</span> Map&lt;string, number&gt;();
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> write(user: string, sql: string, params: unknown[]) {
+  <span class="k">const</span> result = <span class="k">await</span> primary.query(sql, params);
+  lastWrite.set(user, Date.now());
+  <span class="k">return</span> result;
+}
+
+<span class="c line-bidi">// read your own writes: for 5 seconds after a user writes, their reads go to the primary</span>
+<span class="k">export</span> <span class="k">function</span> readerFor(user: string) {
+  <span class="k">const</span> at = lastWrite.get(user);
+  <span class="k">return</span> at !== <span class="k">undefined</span> &amp;&amp; Date.now() - at &lt; <span class="n">5000</span> ? primary : replica;
+}</pre></div>
+
+<p>The rule exists because of <dfn>replication lag</dfn>: changes reach the replica a little after they commit on the primary. On a healthy network the lag is milliseconds, but under load, during a large migration, or when a replica is far away, it can be seconds or more. To make the lag visible, the replica in this example is set to apply changes three seconds late. A booking is written, and then read three ways:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Write on the primary, read on the replica</span>
+<span class="c">$ </span><span class="k">node --env-file=.env replica.ts</span>
+owner, just after booking, reads from primary: found
+another user reads from replica: not found
+~0 ms: not on the replica yet
+~500 ms: not on the replica yet
+~1000 ms: not on the replica yet
+~1500 ms: not on the replica yet
+~2000 ms: not on the replica yet
+~2500 ms: not on the replica yet
+booking 1: on the replica after ~3000 ms</pre></div>
+
+<p>The owner, who just made the booking, reads from the primary and finds it. Anyone else reads from the replica, which does not have it yet, and gets it three seconds later. Without the rule, the owner would book, be sent to the list of the day’s bookings, and not see the booking they just made: the most confusing bug a replica can cause. The rule is called <dfn>read your own writes</dfn>: for a short time after a user writes, their own reads go to the primary. This example keeps the time of the last write in memory; across several application copies it goes in a cookie or the session.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never decide from a replica</p><p>A replica may be stale, so it must never be the source for a decision that writes: “is this slot free?” before inserting a booking, “has this payment been applied?” before applying it. Those checks belong in the primary, inside the transaction that writes, and for bookings the exclusion constraint makes the final decision anyway. Replicas are for showing data, not for deciding with it.</p></aside>
+
+<h2><span class="sec">8.2</span> <span>Caches</span></h2>
+
+<p>A replica copies the whole database; a <dfn>cache</dfn> remembers individual answers. The free slots of one staff member on one day are a good candidate: computed by a query, read many times, changed only by a booking or a cancellation. The usual pattern is <dfn>cache-aside</dfn>: look in the cache, and on a miss ask the database and store the answer with a time limit:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cache.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> freeSlots(staff: number, day: string) {
+  <span class="k">const</span> cached = <span class="k">await</span> redis.get(key(staff, day));
+  <span class="k">if</span> (cached) <span class="k">return</span> { <span class="k">from</span>: <span class="s">&quot;cache&quot;</span>, slots: JSON.parse(cached) as string[] };
+  <span class="k">const</span> { rows } = <span class="k">await</span> primary.query&lt;{ slot: string }&gt;(
+    <span class="s">`SELECT to_char(t, &#x27;HH24:MI&#x27;) AS slot
+       FROM generate_series($2::date + time &#x27;10:00&#x27;, $2::date + time &#x27;13:30&#x27;, interval &#x27;30 min&#x27;) t
+      WHERE NOT EXISTS (SELECT 1 FROM bookings
+                         WHERE staff_id = $1 AND starts_at = t AT TIME ZONE &#x27;Africa/Cairo&#x27;)
+      ORDER BY t`</span>,
+    [staff, day],
+  );
+  <span class="k">const</span> slots = rows.map((r) =&gt; r.slot);
+  <span class="k">await</span> redis.set(key(staff, day), JSON.stringify(slots), { EX: <span class="n">30</span> });
+  <span class="k">return</span> { <span class="k">from</span>: <span class="s">&quot;database&quot;</span>, slots };
+}</pre></div>
+
+<p>The hard part of caching is not storing answers but knowing when they are wrong. A booking changes the free slots, so the function that makes a booking deletes the cached answer right after the insert. The time limit is a safety net for anything that changes the data without going through this code:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cache.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> book(
+  staff: number,
+  day: string,
+  time: string,
+  email: string,
+) {
+  <span class="k">await</span> primary.query(
+    <span class="s">`INSERT INTO bookings (staff_id, starts_at, email)
+     VALUES ($1, ($2::date + $3::time) AT TIME ZONE &#x27;Africa/Cairo&#x27;, $4)`</span>,
+    [staff, day, time, email],
+  );
+  <span class="k">await</span> redis.del(key(staff, day));
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The free slots, with a cache in front</span>
+<span class="c">$ </span><span class="k">node --env-file=.env cache-demo.ts</span>
+read 5.37 ms  from database  8 free slots
+read 0.54 ms  from cache     8 free slots
+read 0.31 ms  from cache     8 free slots
+booking made, cache cleared
+read 1.80 ms  from database  7 free slots
+read 0.28 ms  from cache     7 free slots</pre></div>
+
+<p>The first read misses and asks PostgreSQL; the next two are answered by Redis in a fraction of a millisecond. After the booking, the cache was cleared, so the next read asks the database again and sees one slot fewer, instead of offering for 30 seconds a time that is gone. The difference per read looks small, a millisecond or two, but it is a query that the database does not run, multiplied by every visitor of every business.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does the owner read from the primary right after making a booking?</li><li>The booking is written, and then the cached slots are deleted. What happens if a reader fills the cache between those two steps?</li><li>Why may the free-slot list come from a cache, while the decision to accept a booking may not?</li></ol></aside>
+
+<p>That second question has an uncomfortable answer: for a moment, an old answer can slip back into the cache, and stay until its time limit. This is why every cached value needs a time limit even when it is deleted on change, and why caches are used only for data whose staleness is harmless. Here the worst case is the “just taken” message of Chapter 3, never a double booking, because the booking itself is decided by the database.</p>
+
+<h2><span class="sec">8.3</span> <span>Partitions</span></h2>
+
+<p>Replicas and caches reduce how often the database works; <dfn>partitioning</dfn> reduces how much it must look at. One table of bookings grows forever, and every year makes its indexes deeper and its maintenance slower. PostgreSQL can split one table into many, by a key such as the booking’s month, while the application keeps using one name:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">partitions.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> bookings (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY,
+  staff_id integer <span class="k">NOT</span> <span class="k">NULL</span>,
+  starts_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span>,
+  email text <span class="k">NOT</span> <span class="k">NULL</span>
+) <span class="k">PARTITION</span> <span class="k">BY</span> RANGE (starts_at);
+
+DO $$
+DECLARE month date;
+<span class="k">BEGIN</span>
+  <span class="k">FOR</span> month <span class="k">IN</span> <span class="k">SELECT</span> generate_series(date <span class="s">&#x27;2025-01-01&#x27;</span>, date <span class="s">&#x27;2026-12-01&#x27;</span>, interval <span class="s">&#x27;1 month&#x27;</span>) LOOP
+    EXECUTE format(
+      <span class="s">&#x27;CREATE TABLE %I PARTITION OF bookings FOR VALUES FROM (%L) TO (%L)&#x27;</span>,
+      <span class="s">&#x27;bookings_&#x27;</span> || to_char(month, <span class="s">&#x27;YYYY_MM&#x27;</span>), month, month + interval <span class="s">&#x27;1 month&#x27;</span>);
+  <span class="k">END</span> LOOP;
+<span class="k">END</span> $$;</pre></div>
+
+<p>With two million bookings spread over 24 monthly partitions, a query for one month reads one partition. The planner sees the date range and skips the other 23, which is called <dfn>partition pruning</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># One month, out of 24 partitions</span>
+<span class="c">$ </span><span class="k">psql shop -At -c &quot;EXPLAIN (COSTS OFF) SELECT count(*) FROM bookings WHERE starts_at &gt;= &#x27;2026-03-01&#x27; AND starts_at &lt; &#x27;2026-04-01&#x27;&quot; | grep -v Filter</span>
+Aggregate
+  -&gt;  Seq Scan on bookings_2026_03 bookings</pre></div>
+
+<p>The bigger gain is in removing data. The spec says personal data is deleted two years after the last visit. With one table, that is a <code>DELETE</code> of hundreds of thousands of rows, which writes every one of them to the log, leaves dead rows for <code>VACUUM</code> to clean, and competes with the day’s bookings. With partitions, a month of old bookings is one table, and dropping it is almost free:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Removing six months: DELETE</span>
+<span class="c">$ </span><span class="k">psql shop -f delete.sql</span>
+DELETE 521279
+Time: 230.292 ms
+<span class="c line-bidi"># Removing six months: dropping partitions</span>
+<span class="c">$ </span><span class="k">psql shop -f drop.sql</span>
+DROP TABLE
+Time: 5.334 ms
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT count(*) FROM bookings&#x27;</span>
+ count  
+--------
+ 948801
+(1 row)</pre></div>
+
+<p>Six months of rows took about 200 ms to delete, and the same six months, as partitions, under 10 ms to drop, with nothing left behind to vacuum. On a production table with years of history, the difference is minutes of heavy load against an instant.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: choose the partition key from the queries</p><p>Partition by the column that almost every query filters on, and that old data is removed by: time, for bookings and logs. Partitioning by a column that queries rarely use makes every query read every partition, which is slower than one table.</p></aside>
+
+<h2><span class="sec">8.4</span> <span>Sharding, and why to wait</span></h2>
+
+<p>Partitions live in one database server. When one server can no longer take the writes, the data must be split across several servers: <dfn>sharding</dfn>. For Bit Booking the natural key is the business: all of one business’s staff, bookings and customers live on one shard, chosen by its id, and almost every query stays inside one shard.</p>
+
+<p>Sharding is the most powerful of these techniques and the most expensive. Queries across businesses (a report for the whole platform) must visit every shard. Transactions cannot span shards. Moving a large business to another shard is a project. Every tool, migration and backup multiplies by the number of shards. Do it only when the measurements of Chapter 6 say that one server, made as large as money allows, with replicas and caches, is not enough; for most products that day never comes. If it might, prepare cheaply now: keep the business id on every table, and every query filtered by it, as Chapter 4 already does for security.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: write down how stale each piece of data may be</p><p>Keep a short table in the design document: each kind of data, where it is read from, and how old it may be. “Free slots: cache, up to 30 seconds. Owner’s bookings: primary for 5 seconds after a write, else replica. Payments: primary, always fresh.” Every new cache or replica read is checked against the table in review, and nobody adds staleness by accident.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Every read from the replica</td><td>Users do not see what they just wrote</td><td>Read your own writes, for a short time</td></tr>
+<tr><td>Decisions made from a replica</td><td>Writes based on stale data</td><td>Decide in the primary, in the writing transaction</td></tr>
+<tr><td>Caching without invalidation</td><td>Old answers until they expire</td><td>Delete on change, and a time limit as well</td></tr>
+<tr><td>Caching without a time limit</td><td>A missed invalidation is stale forever</td><td>Every entry expires</td></tr>
+<tr><td>Caching data that must be exact</td><td>Wrong balances, wrong permissions</td><td>Cache only where staleness is harmless</td></tr>
+<tr><td>Partitioning by a rarely filtered column</td><td>Every query reads every partition</td><td>Partition by the filter and the retention key</td></tr>
+<tr><td>Huge DELETEs for retention</td><td>Hours of load and bloat</td><td>Drop old partitions</td></tr>
+<tr><td>Sharding early</td><td>Every operation becomes harder for years</td><td>Bigger server, replicas and caches first</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Every technique here trades <strong>freshness for capacity</strong>; decide for each piece of data how old it may be.</li>
+<li><strong>Read replicas</strong> take reads off the primary; their <strong>lag</strong> is real, so route a user’s reads to the primary just after they write.</li>
+<li>Never make a <strong>decision</strong> from a replica or a cache; decide in the primary, in the transaction that writes.</li>
+<li><strong>Cache-aside</strong> stores answers with a time limit; <strong>delete on change</strong>, and keep the limit as a safety net.</li>
+<li><strong>Partitions</strong> by time let the planner skip old data and make retention a <strong>DROP</strong> instead of a DELETE.</li>
+<li><strong>Sharding</strong> by business is the last resort; prepare for it cheaply by keeping the business id everywhere.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the replica may not have the booking yet: replication lag is usually milliseconds but can be seconds. The owner would book, look at the day, and not find what they just made. Reading from the primary for a few seconds after their own write guarantees they see it, while everyone else can still use the replica, for whom a few seconds’ delay is invisible. 2. A race: reader A misses the cache, reads the slots from the database just before the booking commits, the booking commits and deletes the cache entry, and then reader A stores its old answer. The cache now offers the taken slot until the entry’s time limit expires. That is why entries always have a time limit, and why only data whose staleness is harmless is cached. 3. Because showing a slot that was just taken costs, at worst, a polite “just taken” message, while accepting a booking on stale data would create a double booking. The list is advice; the booking is a decision, and decisions are made by the exclusion constraint in the primary database, which never reads the cache.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project applies one technique to Bit Booking, measured. Keep a note of how stale each change allows the data to be.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>Lag you can see</h3>
+<p class="project-goal">Show replication lag on the owner’s dashboard, and alert when it is too high.</p>
+<p class="project-skills"><strong>You will practise:</strong> replica monitoring, metrics, and thresholds.</p>
+<ol class="steps">
+<li>On the replica, query <code>now() - pg_last_xact_replay_timestamp()</code> every 10 seconds.</li>
+<li>Export it as a metric, and draw it.</li>
+<li>When lag passes 30 seconds, send every read to the primary until it recovers.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> on an idle primary the replay timestamp stops moving and the “lag” grows although nothing is behind; compare <code>pg_last_wal_receive_lsn()</code> and <code>pg_last_wal_replay_lsn()</code> as well.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>A cache that survives a stampede</h3>
+<p class="project-goal">Stop a popular cache entry from sending hundreds of identical queries when it expires.</p>
+<p class="project-skills"><strong>You will practise:</strong> cache stampedes, locks in Redis, and load testing.</p>
+<ol class="steps">
+<li>With the load script of Chapter 6, send 50 concurrent reads of the same slots just as the entry expires, and count the database queries.</li>
+<li>Add a short lock (<code>SET key NX PX 2000</code>): only the reader that takes it queries the database; the others wait briefly and read the new entry.</li>
+<li>Measure again, and compare.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> an alternative is to refresh the entry a little before it expires, from one background job; compare the two in a short note.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>Retention that runs itself</h3>
+<p class="project-goal">Partition Bit Booking’s bookings by month, and automate both new partitions and the two-year retention.</p>
+<p class="project-skills"><strong>You will practise:</strong> partition maintenance, scheduled jobs, and safe migrations.</p>
+<ol class="steps">
+<li>Write a migration that moves an existing <code>bookings</code> table to a partitioned one without losing rows (create, copy in batches, swap names in a transaction).</li>
+<li>Write a daily job that creates next month’s partition in advance.</li>
+<li>Write a monthly job that drops partitions older than two years, but only after exporting anonymised statistics.</li>
+<li>Explain what happens to the exclusion constraint, and how you keep it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> constraints on partitioned tables must include the partition key, so the no-double-booking rule must be checked per partition; a booking never crosses months, so that is enough.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, choose primary, replica or cache, and say how stale it may be: the public free slots; the owner’s list right after a cancellation; a payment’s status before refunding it; the count of bookings this month on the owner’s dashboard.</li>
+<li><span class="level">Easy</span> Why did deleting six months of rows take much longer than dropping six partitions holding the same rows?</li>
+<li><span class="level medium">Medium</span> The cache is in Redis, and Redis restarts. What happens to Bit Booking for the next minute? Is that acceptable, and what would make it worse?</li>
+<li><span class="level medium">Medium</span> A query for “all bookings of staff member 7” runs on the partitioned table. Why is it slower than on one table, and what would you do?</li>
+<li><span class="level hard">Challenge</span> Bit Booking is sharded by business across four servers. Design how the platform-wide report “bookings per day, last 30 days” is produced, and how a business is moved from one shard to another without downtime.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>Three chapters of principles. The next applies them to six systems you know, from a short-link service to a chat app, one design at a time.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2845,6 +3131,16 @@ export async function GET(request: Request) {
 <li>The first request reaches the provider and creates a charge, but the answer is slow and the client’s 500 ms deadline passes first. The client sees a timeout and retries; the provider receives a second, identical request and charges again. What prevents it is an idempotency key: the client generates one key per deposit (for example the payment row’s id) and sends it on every attempt; the provider recognises the second request as a repeat and returns the first result instead of charging again. The webhook handling of Chapter 5 is the same idea on the way back.</li>
 <li>With a threshold of 1, a single momentary failure (one timeout among thousands of successes) opens the breaker, and for the next 2 seconds every customer gets the fallback although the provider is healthy: the breaker causes outages. With a cool-down of 10 minutes, the breaker reacts well when the provider goes down, but after it recovers customers keep getting the fallback for up to 10 more minutes, because no trial call happens until then. Thresholds and cool-downs are tuned from the provider’s normal error rate and its typical recovery time, and watched on a dashboard.</li>
 <li>Every request now holds a database connection for 4 seconds instead of 4 ms, a thousand times longer, so the pool of each copy is used up almost at once. New requests queue for a connection, the copies’ memory and open requests grow, and their readiness checks (which also query the database) start failing; the load balancer may then remove every copy, turning a slow database into a complete outage. Customers first see very slow pages, then errors. Defences: a short query timeout (<code>statement_timeout</code>) and a timeout on waiting for a pool connection, so requests fail fast instead of piling up; a readiness check that does not mark every copy dead because a shared dependency is slow; a fallback for read pages (cached slot lists, marked as possibly stale); load shedding when the pool is exhausted; and, separately, finding why the database is slow (the next chapter).</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 8</h2>
+<ol class="exercises">
+<li>Public free slots: cache, up to 30 seconds (the booking itself is checked by the database). The owner’s list right after a cancellation: primary, for the few seconds after their write (read your own writes), then the replica, a second or two stale at most. A payment’s status before refunding it: primary, in the transaction that records the refund, never stale, because it decides a write involving money. The count of bookings this month on the dashboard: replica or a cache of a few minutes; nobody is harmed if it lags a little, and it can be expensive to compute.</li>
+<li>A <code>DELETE</code> works row by row: it finds each of the 521,279 rows, marks each as dead, writes each change to the write-ahead log (and so to every replica), and updates every index; the space is only reclaimed later by <code>VACUUM</code>. Dropping a partition removes whole files: the work is the same whatever the number of rows, a catalog change and a few file deletions, logged as one small record.</li>
+<li>Every cached answer is gone, so every read of free slots misses and goes to the database until the cache fills again, a stampede of misses that the database must absorb for a minute. That is acceptable if the database can serve the full read load on its own, which it must, because a cache can always be empty (restart, eviction, a new key). It would be worse if the system had been sized assuming the cache absorbs most reads: then the database is overloaded exactly while the cache refills, and slow queries delay the refill further. Never size the database on the cache’s hit rate; size it to survive without the cache, and use the cache for speed.</li>
+<li>The table is partitioned by month, and the query does not filter by time, so the planner cannot prune: it must search all 24 partitions, each with its own index, and combine the results. One table would need one index search. Options: add a time range to the query when the screen allows it (the owner usually wants the next weeks, not all time); keep an index on <code>(staff_id, starts_at)</code> in every partition so each search is short; or, for frequent “all time” questions, keep a small summary table maintained alongside the bookings.</li>
+<li>The report: each shard computes its own daily counts for the last 30 days (a small query, run in parallel on the four shards), and a coordinator adds the four results. Better, each shard writes its daily counts into a central analytics store every night, and the report reads only that store, never the shards. Moving a business: copy its rows to the new shard while it keeps running on the old one; keep copying the changes (logical replication filtered by business, or the outbox); when the new shard has caught up, block writes for that business for a few seconds, copy the last changes, switch the routing table that maps business id to shard, unblock; then delete the old rows after a safety period. The routing table must be the single source the application consults on every request.</li>
 </ol>
 
 </section>

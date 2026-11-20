@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "الفصل 7: التصميم على افتراض الفشل"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "الفصل 8: البيانات على نطاق واسع"; } }
+@page ch08:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2737,6 +2739,290 @@ breaker     0      40    484 ms    807 ms           24</pre></div>
 <p>الحمل والعطل ينتهيان كلاهما إلى المكان نفسه: البيانات. والفصل التالي عن البيانات على نطاق واسع: نسخ القراءة، والذاكرات المؤقتة، والتقسيمات، والاتساق الذي يكلّفه كلٌّ منها.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b4/data/ar">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">الفصل 8</p><h1>البيانات على نطاق واسع</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>توزّع القراءات على نسخ للقراءة، وتعالج التأخر الذي يأتي معها</li>
+<li>توجّه قراءات المستخدم بحيث يرى دائماً ما كتبه</li>
+<li>تضع ذاكرة مؤقتة أمام القراءات المكلفة، وتُبقيها صادقة حين تتغير البيانات</li>
+<li>تقسم جدولاً كبيراً إلى أقسام، وتدع المخطِّط يقرأ ما يحتاجه فقط</li>
+<li>تحذف البيانات القديمة في ميلي ثوانٍ بدل دقائق</li>
+<li>تعرف متى يستحق التجزيء كلفته، وكيف تختار مفتاحه</li>
+</ul>
+</div>
+
+<p class="lead">وجد الفصل 6 أن أول حد حقيقي في «بِت للحجوزات» قاعدة بياناته الواحدة، وسرد طرق دفعه إلى الوراء. وهذا الفصل يجرّب ثلاثاً منها فعلاً. كلٌّ منها يرفع حملاً عن قاعدة البيانات الرئيسية، وكلٌّ منها يكلّف شيئاً من الاتساق: بيانات قديمة قليلاً، في مكان يجب أن تُبقيه متزامناً. والمهارة ليست في إعدادها، فذلك يستغرق عصراً، بل في معرفة ما قد يخطئ فيه كلٌّ منها بالضبط، والتأكد أن الزبائن لا يلاحظون أبداً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل تقنية في هذا الفصل تجيب عن السؤال نفسه بطريقة مختلفة: «كم يجوز أن تكون هذه البيانات قديمة؟» لقائمة المواعيد المتاحة، بضع ثوانٍ لا بأس بها. وللدفعة، لا يجوز أبداً. اطرح هذا السؤال أولاً، لكل قطعة بيانات، وغالباً تختار التقنية الصحيحة نفسها.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>نسخ القراءة</span></h2>
+
+<p>موقع الحجز يقرأ أكثر بكثير مما يكتب: كل حجز تسبقه عشرات المشاهدات للمواعيد المتاحة. و<dfn>نسخة القراءة</dfn> (read replica) خادم PostgreSQL ثانٍ يستقبل كل تغيير من الرئيسي ويطبّقه، فيستطيع أن يجيب القراءات. وتبقى الكتابات إلى الرئيسي، ويمكن أن تكون هناك عدة نسخ للقراءة.</p>
+
+<p>يحتاج التطبيق مجمعي اتصالات، وقاعدة لاختيار أيهما:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">db.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> primary = <span class="k">new</span> pg.Pool({ connectionString: process.env.PRIMARY_URL });
+<span class="k">export</span> <span class="k">const</span> replica = <span class="k">new</span> pg.Pool({ connectionString: process.env.REPLICA_URL });
+
+<span class="k">const</span> lastWrite = <span class="k">new</span> Map&lt;string, number&gt;();
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> write(user: string, sql: string, params: unknown[]) {
+  <span class="k">const</span> result = <span class="k">await</span> primary.query(sql, params);
+  lastWrite.set(user, Date.now());
+  <span class="k">return</span> result;
+}
+
+<span class="c line-bidi">// اقرأ ما كتبته: خمس ثوانٍ بعد كتابة المستخدم، تذهب قراءاته إلى الرئيسية</span>
+<span class="k">export</span> <span class="k">function</span> readerFor(user: string) {
+  <span class="k">const</span> at = lastWrite.get(user);
+  <span class="k">return</span> at !== <span class="k">undefined</span> &amp;&amp; Date.now() - at &lt; <span class="n">5000</span> ? primary : replica;
+}</pre></div>
+
+<p>والقاعدة موجودة بسبب <dfn>تأخر النسخ</dfn> (replication lag): تصل التغييرات إلى النسخة بعد قليل من اعتمادها في الرئيسي. وفي شبكة سليمة يكون التأخر ميلي ثوانٍ، لكنه تحت الحمل، أو أثناء ترحيل كبير، أو حين تكون النسخة بعيدة، قد يصير ثوانيَ أو أكثر. ولنجعل التأخر ظاهراً، ضُبطت النسخة في هذا المثال لتطبق التغييرات متأخرة ثلاث ثوانٍ. يُكتب حجز، ثم يُقرأ بثلاث طرق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># اكتب في الرئيسية، واقرأ من النسخة</span>
+<span class="c">$ </span><span class="k">node --env-file=.env replica.ts</span>
+صاحب العمل، بعد الحجز مباشرة، يقرأ من primary: موجود
+مستخدم آخر يقرأ من replica: غير موجود
+~0 ms: ليس على النسخة بعد
+~500 ms: ليس على النسخة بعد
+~1000 ms: ليس على النسخة بعد
+~1500 ms: ليس على النسخة بعد
+~2000 ms: ليس على النسخة بعد
+~2500 ms: ليس على النسخة بعد
+booking 1: على النسخة بعد ~3000 ms</pre></div>
+
+<p>صاحب العمل، الذي صنع الحجز للتو، يقرأ من الرئيسي فيجده. وأي أحد آخر يقرأ من النسخة، التي لم يصلها بعد، فيحصل عليه بعد ثلاث ثوانٍ. وبلا القاعدة، سيحجز صاحب العمل، ويُرسل إلى قائمة حجوزات اليوم، ولا يرى الحجز الذي صنعه للتو: أكثر خطأ محيّر يمكن أن تسببه نسخة. وتُسمى القاعدة <dfn>اقرأ ما كتبته</dfn> (read your own writes): لوقت قصير بعد أن يكتب المستخدم، تذهب قراءاته هو إلى الرئيسي. ويحفظ هذا المثال وقت آخر كتابة في الذاكرة؛ وعبر عدة نسخ من التطبيق يُحفظ في كوكي أو في الجلسة.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: لا تقرر أبداً من نسخة</p><p>النسخة قد تكون قديمة، فلا يجوز أبداً أن تكون مصدراً لقرار يكتب: «هل هذا الموعد متاح؟» قبل إدراج حجز، أو «هل طُبّقت هذه الدفعة؟» قبل تطبيقها. مكان هذه الفحوص الرئيسي، داخل المعاملة التي تكتب، وفي الحجوزات يتخذ قيد الاستبعاد القرار الأخير على أي حال. النسخ لعرض البيانات، لا لاتخاذ القرار بها.</p></aside>
+
+<h2><span class="sec">8.2</span> <span>الذاكرات المؤقتة</span></h2>
+
+<p>النسخة تنسخ قاعدة البيانات كلها؛ أما <dfn>الذاكرة المؤقتة</dfn> (cache) فتتذكر إجابات بعينها. والمواعيد المتاحة لموظف واحد في يوم واحد مرشح جيد: يحسبها استعلام، وتُقرأ مرات كثيرة، ولا يغيّرها إلا حجز أو إلغاء. والنمط المعتاد <dfn>الذاكرة جانباً</dfn> (cache-aside): ابحث في الذاكرة المؤقتة، وعند غياب الإجابة اسأل قاعدة البيانات واحفظ الإجابة بحد زمني:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cache.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> freeSlots(staff: number, day: string) {
+  <span class="k">const</span> cached = <span class="k">await</span> redis.get(key(staff, day));
+  <span class="k">if</span> (cached) <span class="k">return</span> { <span class="k">from</span>: <span class="s">&quot;cache&quot;</span>, slots: JSON.parse(cached) as string[] };
+  <span class="k">const</span> { rows } = <span class="k">await</span> primary.query&lt;{ slot: string }&gt;(
+    <span class="s">`SELECT to_char(t, &#x27;HH24:MI&#x27;) AS slot
+       FROM generate_series($2::date + time &#x27;10:00&#x27;, $2::date + time &#x27;13:30&#x27;, interval &#x27;30 min&#x27;) t
+      WHERE NOT EXISTS (SELECT 1 FROM bookings
+                         WHERE staff_id = $1 AND starts_at = t AT TIME ZONE &#x27;Africa/Cairo&#x27;)
+      ORDER BY t`</span>,
+    [staff, day],
+  );
+  <span class="k">const</span> slots = rows.map((r) =&gt; r.slot);
+  <span class="k">await</span> redis.set(key(staff, day), JSON.stringify(slots), { EX: <span class="n">30</span> });
+  <span class="k">return</span> { <span class="k">from</span>: <span class="s">&quot;database&quot;</span>, slots };
+}</pre></div>
+
+<p>والجزء الصعب في التخزين المؤقت ليس حفظ الإجابات بل معرفة متى تكون خاطئة. الحجز يغيّر المواعيد المتاحة، فالدالة التي تصنع الحجز تحذف الإجابة المخزنة مباشرة بعد الإدراج. والحد الزمني شبكة أمان لكل ما يغيّر البيانات دون أن يمر بهذا الكود:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cache.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> book(
+  staff: number,
+  day: string,
+  time: string,
+  email: string,
+) {
+  <span class="k">await</span> primary.query(
+    <span class="s">`INSERT INTO bookings (staff_id, starts_at, email)
+     VALUES ($1, ($2::date + $3::time) AT TIME ZONE &#x27;Africa/Cairo&#x27;, $4)`</span>,
+    [staff, day, time, email],
+  );
+  <span class="k">await</span> redis.del(key(staff, day));
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المواعيد المتاحة، وأمامها ذاكرة مؤقتة</span>
+<span class="c">$ </span><span class="k">node --env-file=.env cache-demo.ts</span>
+قراءة 5.42 ms  من database  8 مواعيد متاحة
+قراءة 0.67 ms  من cache     8 مواعيد متاحة
+قراءة 0.39 ms  من cache     8 مواعيد متاحة
+صُنع حجز، وحُذفت الذاكرة
+قراءة 2.02 ms  من database  7 مواعيد متاحة
+قراءة 0.34 ms  من cache     7 مواعيد متاحة</pre></div>
+
+<p>القراءة الأولى لا تجد الإجابة فتسأل PostgreSQL؛ والتاليتان يجيبهما Redis في جزء من ميلي ثانية. وبعد الحجز حُذفت الذاكرة، فتسأل القراءة التالية قاعدة البيانات من جديد وترى موعداً أقل، بدل أن تعرض 30 ثانية وقتاً ذهب. والفرق في القراءة الواحدة يبدو صغيراً، ميلي ثانية أو اثنتان، لكنه استعلام لا تنفذه قاعدة البيانات، مضروباً في كل زائر لكل عمل.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يقرأ صاحب العمل من الرئيسي مباشرة بعد صنع حجز؟</li><li>يُكتب الحجز، ثم تُحذف المواعيد المخزنة. ماذا يحدث إن ملأ قارئٌ الذاكرةَ بين هاتين الخطوتين؟</li><li>لماذا يجوز أن تأتي قائمة المواعيد المتاحة من ذاكرة مؤقتة، بينما لا يجوز ذلك لقرار قبول الحجز؟</li></ol></aside>
+
+<p>وللسؤال الثاني إجابة مزعجة: للحظة، قد تتسلل إجابة قديمة إلى الذاكرة، وتبقى حتى حدها الزمني. ولهذا تحتاج كل قيمة مخزنة حداً زمنياً حتى لو كانت تُحذف عند التغيير، ولهذا لا تُخزَّن إلا البيانات التي لا يضر قِدمها. وهنا أسوأ حالة رسالة «حُجز للتو» في الفصل 3، لا حجز مزدوج أبداً، لأن الحجز نفسه تقرره قاعدة البيانات.</p>
+
+<h2><span class="sec">8.3</span> <span>الأقسام</span></h2>
+
+<p>نسخ القراءة والذاكرات المؤقتة تقلل عدد مرات عمل قاعدة البيانات؛ أما <dfn>التقسيم</dfn> (partitioning) فيقلل كمية ما يجب أن تنظر فيه. جدول الحجوزات الواحد يكبر إلى الأبد، وكل سنة تجعل فهارسه أعمق وصيانته أبطأ. ويستطيع PostgreSQL أن يقسم جدولاً واحداً إلى جداول كثيرة، بمفتاح مثل شهر الحجز، بينما يظل التطبيق يستعمل اسماً واحداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">partitions.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> bookings (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY,
+  staff_id integer <span class="k">NOT</span> <span class="k">NULL</span>,
+  starts_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span>,
+  email text <span class="k">NOT</span> <span class="k">NULL</span>
+) <span class="k">PARTITION</span> <span class="k">BY</span> RANGE (starts_at);
+
+DO $$
+DECLARE month date;
+<span class="k">BEGIN</span>
+  <span class="k">FOR</span> month <span class="k">IN</span> <span class="k">SELECT</span> generate_series(date <span class="s">&#x27;2025-01-01&#x27;</span>, date <span class="s">&#x27;2026-12-01&#x27;</span>, interval <span class="s">&#x27;1 month&#x27;</span>) LOOP
+    EXECUTE format(
+      <span class="s">&#x27;CREATE TABLE %I PARTITION OF bookings FOR VALUES FROM (%L) TO (%L)&#x27;</span>,
+      <span class="s">&#x27;bookings_&#x27;</span> || to_char(month, <span class="s">&#x27;YYYY_MM&#x27;</span>), month, month + interval <span class="s">&#x27;1 month&#x27;</span>);
+  <span class="k">END</span> LOOP;
+<span class="k">END</span> $$;</pre></div>
+
+<p>ومع مليوني حجز موزعة على 24 قسماً شهرياً، يقرأ استعلام لشهر واحد قسماً واحداً. يرى المخطِّط مدى التاريخ فيتخطى الثلاثة والعشرين الأخرى، وهذا يسمى <dfn>تشذيب الأقسام</dfn> (partition pruning):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># شهر واحد، من 24 قسماً</span>
+<span class="c">$ </span><span class="k">psql shop -At -c &quot;EXPLAIN (COSTS OFF) SELECT count(*) FROM bookings WHERE starts_at &gt;= &#x27;2026-03-01&#x27; AND starts_at &lt; &#x27;2026-04-01&#x27;&quot; | grep -v Filter</span>
+Aggregate
+  -&gt;  Seq Scan on bookings_2026_03 bookings</pre></div>
+
+<p>والمكسب الأكبر في حذف البيانات. تقول المواصفات إن البيانات الشخصية تُحذف بعد سنتين من آخر زيارة. ومع جدول واحد، هذا <code>DELETE</code> لمئات الآلاف من الصفوف، يكتب كلاً منها في السجل، ويترك صفوفاً ميتة ينظفها <code>VACUUM</code>، وينافس حجوزات اليوم. ومع الأقسام، شهر من الحجوزات القديمة جدول واحد، وإسقاطه شبه مجاني:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># حذف ستة أشهر: DELETE</span>
+<span class="c">$ </span><span class="k">psql shop -f delete.sql</span>
+DELETE 521279
+Time: 217.542 ms
+<span class="c line-bidi"># حذف ستة أشهر: إسقاط الأقسام</span>
+<span class="c">$ </span><span class="k">psql shop -f drop.sql</span>
+DROP TABLE
+Time: 7.506 ms
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT count(*) FROM bookings&#x27;</span>
+ count  
+--------
+ 948801
+(1 row)</pre></div>
+
+<p>استغرق حذف صفوف ستة أشهر نحو 200 ms، واستغرق إسقاط الأشهر الستة نفسها، أقساماً، أقل من 10 ms، بلا شيء متروك للتنظيف. وعلى جدول إنتاج فيه سنوات من التاريخ، الفرق دقائق من الحمل الثقيل مقابل لحظة.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: اختر مفتاح التقسيم من الاستعلامات</p><p>قسّم بالعمود الذي ترشّح به كل الاستعلامات تقريباً، والذي تُحذف به البيانات القديمة: الوقت، للحجوزات والسجلات. أما التقسيم بعمود نادراً ما تستعمله الاستعلامات فيجعل كل استعلام يقرأ كل الأقسام، وهذا أبطأ من جدول واحد.</p></aside>
+
+<h2><span class="sec">8.4</span> <span>التجزيء، ولماذا تنتظر</span></h2>
+
+<p>الأقسام تعيش في خادم قاعدة بيانات واحد. وحين لا يعود خادم واحد يتحمل الكتابات، يجب أن تُقسم البيانات على عدة خوادم: <dfn>التجزيء</dfn> (sharding). والمفتاح الطبيعي في «بِت للحجوزات» العمل: كل موظفي العمل الواحد وحجوزاته وزبائنه يعيشون في جزء واحد، يُختار برقمه، ويبقى كل استعلام تقريباً داخل جزء واحد.</p>
+
+<p>والتجزيء أقوى هذه التقنيات وأغلاها. الاستعلامات عبر الأعمال (تقرير للمنصة كلها) يجب أن تزور كل جزء. والمعاملات لا تمتد عبر الأجزاء. ونقل عمل كبير إلى جزء آخر مشروع بذاته. وكل أداة وترحيل ونسخة احتياطية تتضاعف بعدد الأجزاء. فلا تفعله إلا حين تقول قياسات الفصل 6 إن خادماً واحداً، بأكبر ما يسمح به المال، مع نسخ قراءة وذاكرات مؤقتة، لا يكفي؛ ولمعظم المنتجات لا يأتي ذلك اليوم أبداً. وإن كان قد يأتي، فاستعد له بثمن زهيد الآن: أبقِ رقم العمل في كل جدول، وكل استعلام مرشحاً به، كما يفعل الفصل 4 أصلاً من أجل الأمان.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اكتب كم يجوز أن تكون كل قطعة بيانات قديمة</p><p>احفظ جدولاً قصيراً في وثيقة التصميم: كل نوع من البيانات، ومن أين يُقرأ، وكم يجوز أن يكون قديماً. «المواعيد المتاحة: ذاكرة مؤقتة، حتى 30 ثانية. حجوزات صاحب العمل: الرئيسي خمس ثوانٍ بعد الكتابة، وإلا النسخة. المدفوعات: الرئيسي، حديثة دائماً.» وكل ذاكرة مؤقتة جديدة أو قراءة من نسخة تُفحص على الجدول في المراجعة، فلا يضيف أحد قِدماً بالمصادفة.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>كل القراءات من النسخة</td><td>المستخدمون لا يرون ما كتبوه للتو</td><td>اقرأ ما كتبته، لوقت قصير</td></tr>
+<tr><td>قرارات تُتخذ من نسخة</td><td>كتابات مبنية على بيانات قديمة</td><td>قرّر في الرئيسي، في معاملة الكتابة</td></tr>
+<tr><td>تخزين مؤقت بلا إبطال</td><td>إجابات قديمة حتى تنتهي</td><td>احذف عند التغيير، ومع حد زمني أيضاً</td></tr>
+<tr><td>تخزين مؤقت بلا حد زمني</td><td>إبطال فائت يبقى قديماً إلى الأبد</td><td>كل مدخل ينتهي</td></tr>
+<tr><td>تخزين بيانات يجب أن تكون دقيقة</td><td>أرصدة خاطئة، وصلاحيات خاطئة</td><td>خزّن فقط حيث لا يضر القِدم</td></tr>
+<tr><td>التقسيم بعمود نادراً ما يُرشَّح به</td><td>كل استعلام يقرأ كل الأقسام</td><td>قسّم بمفتاح الترشيح والحذف</td></tr>
+<tr><td>DELETE ضخمة للاحتفاظ</td><td>ساعات من الحمل والانتفاخ</td><td>أسقط الأقسام القديمة</td></tr>
+<tr><td>التجزيء مبكراً</td><td>كل عملية تصير أصعب لسنوات</td><td>خادم أكبر ونسخ قراءة وذاكرات مؤقتة أولاً</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>كل تقنية هنا تبادل <strong>الحداثة بالسعة</strong>؛ قرّر لكل قطعة بيانات كم يجوز أن تكون قديمة.</li>
+<li><strong>نسخ القراءة</strong> ترفع القراءات عن الرئيسي؛ و<strong>تأخرها</strong> حقيقي، فوجّه قراءات المستخدم إلى الرئيسي بعد كتابته مباشرة.</li>
+<li>لا تتخذ <strong>قراراً</strong> أبداً من نسخة أو ذاكرة مؤقتة؛ قرّر في الرئيسي، في المعاملة التي تكتب.</li>
+<li><strong>الذاكرة جانباً</strong> تحفظ الإجابات بحد زمني؛ <strong>احذف عند التغيير</strong>، وأبقِ الحد شبكة أمان.</li>
+<li><strong>الأقسام</strong> بالوقت تدع المخطِّط يتخطى البيانات القديمة وتجعل الاحتفاظ <strong>DROP</strong> بدل DELETE.</li>
+<li><strong>التجزيء</strong> بالعمل الملجأ الأخير؛ واستعد له بثمن زهيد بإبقاء رقم العمل في كل مكان.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن النسخة قد لا يكون الحجز وصلها بعد: تأخر النسخ ميلي ثوانٍ عادة لكنه قد يصير ثوانيَ. فسيحجز صاحب العمل، وينظر إلى اليوم، ولا يجد ما صنعه للتو. والقراءة من الرئيسي بضع ثوانٍ بعد كتابته تضمن أن يراه، بينما يستطيع الجميع غيره استعمال النسخة، فتأخر ثوانٍ قليلة غير مرئي لهم. 2. سباق: القارئ «أ» لا يجد الإجابة في الذاكرة، فيقرأ المواعيد من قاعدة البيانات قبيل اعتماد الحجز، ويُعتمد الحجز ويحذف مدخل الذاكرة، ثم يحفظ القارئ «أ» إجابته القديمة. فتعرض الذاكرة الآن الموعد المحجوز حتى ينتهي الحد الزمني للمدخل. ولهذا للمدخلات حد زمني دائماً، ولهذا لا تُخزَّن إلا البيانات التي لا يضر قِدمها. 3. لأن عرض موعد حُجز للتو يكلّف، في أسوأ الأحوال، رسالة مهذبة «حُجز للتو»، بينما قبول حجز على بيانات قديمة سيصنع حجزاً مزدوجاً. القائمة نصيحة؛ والحجز قرار، والقرارات يتخذها قيد الاستبعاد في قاعدة البيانات الرئيسية، الذي لا يقرأ الذاكرة المؤقتة أبداً.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يطبّق تقنية واحدة على «بِت للحجوزات»، بالقياس. واحتفظ بملاحظة عن كم يسمح كل تغيير بأن تكون البيانات قديمة.</p>
+
+<div class="project">
+<p class="project-label">المشروع 8.1 · سهل</p>
+<h3>تأخر تراه</h3>
+<p class="project-goal">اعرض تأخر النسخ في لوحة صاحب العمل، ونبّه حين يكون كبيراً جداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مراقبة النسخ، والمقاييس، والعتبات.</p>
+<ol class="steps">
+<li>على النسخة، استعلم <code>now() - pg_last_xact_replay_timestamp()</code> كل 10 ثوانٍ.</li>
+<li>صدّره مقياساً، وارسمه.</li>
+<li>حين يتجاوز التأخر 30 ثانية، أرسل كل القراءات إلى الرئيسي حتى يتعافى.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> على رئيسي خامل يتوقف طابع الإعادة الزمني عن الحركة ويكبر «التأخر» مع أن شيئاً لم يتأخر؛ فقارن <code>pg_last_wal_receive_lsn()</code> و<code>pg_last_wal_replay_lsn()</code> أيضاً.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 8.2 · متوسط</p>
+<h3>ذاكرة مؤقتة تنجو من التدافع</h3>
+<p class="project-goal">امنع مدخلاً مشهوراً في الذاكرة من إرسال مئات الاستعلامات المتطابقة حين ينتهي.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تدافع الذاكرة المؤقتة، والأقفال في Redis، واختبار الحمل.</p>
+<ol class="steps">
+<li>بسكربت الحمل من الفصل 6، أرسل 50 قراءة متزامنة للمواعيد نفسها لحظة انتهاء المدخل، وعدّ استعلامات قاعدة البيانات.</li>
+<li>أضف قفلاً قصيراً (<code>SET key NX PX 2000</code>): القارئ الذي يأخذه وحده يستعلم قاعدة البيانات؛ والآخرون ينتظرون قليلاً ويقرؤون المدخل الجديد.</li>
+<li>قِس من جديد، وقارن.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البديل أن يُحدَّث المدخل قبيل انتهائه بقليل، من مهمة خلفية واحدة؛ فقارن الاثنين في ملاحظة قصيرة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 8.3 · تحدٍّ</p>
+<h3>احتفاظ يدير نفسه</h3>
+<p class="project-goal">قسّم حجوزات «بِت للحجوزات» شهرياً، واجعل الأقسام الجديدة والاحتفاظ سنتين آليين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> صيانة الأقسام، والمهام المجدولة، والترحيلات الآمنة.</p>
+<ol class="steps">
+<li>اكتب ترحيلاً ينقل جدول <code>bookings</code> قائماً إلى جدول مقسَّم دون فقد صفوف (أنشئ، وانسخ على دفعات، وبدّل الأسماء في معاملة).</li>
+<li>اكتب مهمة يومية تنشئ قسم الشهر التالي مسبقاً.</li>
+<li>اكتب مهمة شهرية تُسقط الأقسام الأقدم من سنتين، لكن فقط بعد تصدير إحصاءات مجهولة الهوية.</li>
+<li>اشرح ما يحدث لقيد الاستبعاد، وكيف تحافظ عليه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> القيود على الجداول المقسَّمة يجب أن تتضمن مفتاح التقسيم، فيجب أن تُفحص قاعدة منع الحجز المزدوج لكل قسم؛ والحجز لا يعبر الأشهر أبداً، فهذا يكفي.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> لكلٍّ منها، اختر الرئيسي أو النسخة أو الذاكرة المؤقتة، وقل كم يجوز أن يكون قديماً: المواعيد المتاحة العامة؛ وقائمة صاحب العمل مباشرة بعد إلغاء؛ وحالة دفعة قبل استردادها؛ وعدد حجوزات هذا الشهر في لوحة صاحب العمل.</li>
+<li><span class="level">سهل</span> لماذا استغرق حذف صفوف ستة أشهر وقتاً أطول بكثير من إسقاط ستة أقسام تحوي الصفوف نفسها؟</li>
+<li><span class="level medium">متوسط</span> الذاكرة المؤقتة في Redis، ويُعاد تشغيل Redis. ماذا يحدث لـ «بِت للحجوزات» في الدقيقة التالية؟ وهل هذا مقبول، وما الذي سيجعله أسوأ؟</li>
+<li><span class="level medium">متوسط</span> يعمل استعلام «كل حجوزات الموظف 7» على الجدول المقسَّم. لماذا هو أبطأ منه على جدول واحد، وماذا تفعل؟</li>
+<li><span class="level hard">تحدٍّ</span> «بِت للحجوزات» مجزأ حسب العمل على أربعة خوادم. صمّم كيف يُنتج تقرير المنصة كلها «الحجوزات لكل يوم، آخر 30 يوماً»، وكيف يُنقل عمل من جزء إلى آخر بلا توقف.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 9</p>
+<p>ثلاثة فصول من المبادئ. والتالي يطبقها على ستة أنظمة تعرفها، من خدمة روابط قصيرة إلى تطبيق محادثة، تصميماً بعد تصميم.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2832,6 +3118,16 @@ export async function GET(request: Request) {
 <li>يصل الطلب الأول إلى المزوّد وينشئ خصماً، لكن الإجابة بطيئة فتمر مهلة العميل (500 ms) أولاً. فيرى العميل انتهاء مهلة ويعيد؛ ويستقبل المزوّد طلباً ثانياً مطابقاً فيخصم ثانية. والذي يمنع ذلك مفتاح منع التكرار: يولّد العميل مفتاحاً واحداً لكل عربون (رقم صف الدفعة مثلاً) ويرسله في كل محاولة؛ فيعرف المزوّد الطلب الثاني تكراراً ويعيد النتيجة الأولى بدل أن يخصم ثانية. ومعالجة الـ webhooks في الفصل 5 الفكرة نفسها في طريق العودة.</li>
 <li>بحد 1، عطل لحظي واحد (انتهاء مهلة واحد بين آلاف النجاحات) يفتح القاطع، فيحصل كل زبون في الثانيتين التاليتين على البديل والمزوّد سليم: يسبب القاطع أعطالاً. وبفترة تهدئة 10 دقائق، يتصرف القاطع جيداً حين يتوقف المزوّد، لكن بعد تعافيه يظل الزبائن يحصلون على البديل حتى 10 دقائق أخرى، لأنه لا نداء تجريبياً قبل ذلك. والحدود وفترات التهدئة تُضبط من معدل أخطاء المزوّد المعتاد ومدة تعافيه المعتادة، وتُراقب على لوحة.</li>
 <li>كل طلب يمسك الآن اتصال قاعدة بيانات 4 ثوانٍ بدل 4 ms، أي أطول بألف مرة، فيُستهلك مجمع كل نسخة فوراً تقريباً. وتصطف الطلبات الجديدة على اتصال، وتكبر ذاكرة النسخ وطلباتها المفتوحة، وتبدأ فحوص جاهزيتها (التي تستعلم قاعدة البيانات أيضاً) تفشل؛ فقد يُخرج موزّع الحمل كل النسخ، فتصير قاعدة بيانات بطيئة عطلاً كاملاً. ويرى الزبائن أولاً صفحات بطيئة جداً، ثم أخطاء. ووسائل الدفاع: مهلة قصيرة للاستعلام (<code>statement_timeout</code>) ومهلة لانتظار اتصال من المجمع، فتفشل الطلبات بسرعة بدل أن تتكدس؛ وفحص جاهزية لا يعلن كل نسخة ميتة لأن اعتمادية مشتركة بطيئة؛ وبديل لصفحات القراءة (قوائم مواعيد مخزنة مؤقتاً، معلَّمة بأنها قد تكون قديمة)؛ ورفض الحمل حين ينفد المجمع؛ وبشكل منفصل، إيجاد سبب بطء قاعدة البيانات (الفصل التالي).</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 8</h2>
+<ol class="exercises">
+<li>المواعيد المتاحة العامة: ذاكرة مؤقتة، حتى 30 ثانية (والحجز نفسه تفحصه قاعدة البيانات). وقائمة صاحب العمل مباشرة بعد إلغاء: الرئيسي، للثواني القليلة بعد كتابته (اقرأ ما كتبته)، ثم النسخة، متأخرة ثانية أو اثنتين على الأكثر. وحالة دفعة قبل استردادها: الرئيسي، في المعاملة التي تسجّل الاسترداد، ولا قِدم أبداً، لأنها تقرر كتابة فيها مال. وعدد حجوزات هذا الشهر في اللوحة: نسخة أو ذاكرة مؤقتة لبضع دقائق؛ لا يتضرر أحد إن تأخر قليلاً، وقد يكون حسابه مكلفاً.</li>
+<li><code>DELETE</code> تعمل صفاً صفاً: تجد كلاً من الصفوف الـ 521,279، وتعلّم كلاً منها ميتاً، وتكتب كل تغيير في سجل الكتابة المسبقة (ومنه إلى كل نسخة)، وتحدّث كل فهرس؛ ولا تُستعاد المساحة إلا لاحقاً بـ <code>VACUUM</code>. أما إسقاط قسم فيحذف ملفات كاملة: العمل نفسه أياً كان عدد الصفوف، تغيير في الفهرس العام وحذف بضعة ملفات، يُسجَّل في سجل صغير واحد.</li>
+<li>تذهب كل إجابة مخزنة، فكل قراءة للمواعيد المتاحة لا تجد شيئاً وتذهب إلى قاعدة البيانات حتى تمتلئ الذاكرة من جديد، تدافعٌ من القراءات الفائتة على قاعدة البيانات أن تتحمله دقيقة. وهذا مقبول إن كانت قاعدة البيانات تستطيع خدمة حمل القراءة كاملاً وحدها، ويجب أن تستطيع، لأن الذاكرة المؤقتة قد تكون فارغة دائماً (إعادة تشغيل، أو إخلاء، أو مفتاح جديد). وسيكون أسوأ لو حُدد حجم النظام على افتراض أن الذاكرة تمتص معظم القراءات: عندها تُحمَّل قاعدة البيانات فوق طاقتها تماماً وقت امتلاء الذاكرة، والاستعلامات البطيئة تؤخر الامتلاء أكثر. لا تحدد حجم قاعدة البيانات على نسبة نجاح الذاكرة؛ حدده لتنجو بلا ذاكرة، واستعمل الذاكرة للسرعة.</li>
+<li>الجدول مقسَّم بالشهر، والاستعلام لا يرشّح بالوقت، فلا يستطيع المخطِّط التشذيب: يجب أن يبحث في الأقسام الأربعة والعشرين كلها، لكلٍّ فهرسه، ويجمع النتائج. والجدول الواحد يحتاج بحثاً واحداً في الفهرس. والخيارات: أضف مدى زمنياً إلى الاستعلام حين تسمح الشاشة (صاحب العمل يريد الأسابيع القادمة عادة، لا كل الزمن)؛ وأبقِ فهرساً على <code>(staff_id, starts_at)</code> في كل قسم فيكون كل بحث قصيراً؛ أو، لأسئلة «كل الزمن» المتكررة، أبقِ جدول ملخص صغيراً يُحدَّث بجانب الحجوزات.</li>
+<li>التقرير: يحسب كل جزء أعداده اليومية لآخر 30 يوماً (استعلام صغير، يعمل متوازياً على الأجزاء الأربعة)، ويجمع منسّقٌ النتائج الأربع. والأفضل أن يكتب كل جزء أعداده اليومية في مخزن تحليلات مركزي كل ليلة، فلا يقرأ التقرير إلا ذلك المخزن، لا الأجزاء أبداً. ونقل عمل: انسخ صفوفه إلى الجزء الجديد بينما يظل يعمل على القديم؛ وواصل نسخ التغييرات (نسخ منطقي مرشَّح بالعمل، أو الصندوق الصادر)؛ وحين يلحق الجزء الجديد، امنع الكتابات لذلك العمل بضع ثوانٍ، وانسخ آخر التغييرات، وبدّل جدول التوجيه الذي يربط رقم العمل بالجزء، وارفع المنع؛ ثم احذف الصفوف القديمة بعد فترة أمان. ويجب أن يكون جدول التوجيه المصدرَ الوحيد الذي يستشيره التطبيق في كل طلب.</li>
 </ol>
 
 </section>
