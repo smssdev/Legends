@@ -11,7 +11,8 @@ const users = [
 ];
 for (const [email, role, business] of users) {
   await db.query(
-    "INSERT INTO users (email, password_hash, role, business_id) VALUES ($1, $2, $3, $4)",
+    `INSERT INTO users (email, password_hash, role, business_id)
+     VALUES ($1, $2, $3, $4)`,
     [email, hash, role, business],
   );
 }

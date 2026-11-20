@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "الفصل 3: البرمجة الشاملة بـ Next.js"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "الفصل 4: الهوية عبر الطبقات كلها"; } }
+@page ch04:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -1356,6 +1358,397 @@ export default async function BookPage({ params, searchParams }: Props) {
 <p>ما زال أي أحد يستطيع إلغاء حجز أي أحد. والفصل التالي يضيف الهوية عبر الطبقات كلها: أصحاب عمل وموظفون يسجّلون الدخول، وزبائن لا يسجّلونه، والفحوص التي تعمل على كل باب.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b4/auth/ar">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">الفصل 4</p><h1>الهوية عبر الطبقات كلها</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقرر من يجب أن يسجّل الدخول، ومن لا ينبغي أن يُضطر إليه</li>
+<li>تحفظ الجلسات رموزاً عشوائية لا يُخزَّن منها إلا بصماتها، ويمكن إلغاؤها في أي وقت</li>
+<li>تحمل الجلسة نفسها في كوكي للويب ورمز bearer للواجهة البرمجية</li>
+<li>تكتب فحص صلاحيات واحداً، وتناديه على كل باب: الصفحات والإجراءات والمسارات</li>
+<li>تُبقي بيانات كل عمل له وحده، باستعلامات يكون الشرط فيها هو الصلاحية</li>
+<li>تعرف لماذا التحويل في الوكيل راحة وليس القفل أبداً</li>
+</ul>
+</div>
+
+<p class="lead">في آخر الفصل الماضي كان أي أحد يستطيع مناداة الإجراء الذي يلغي حجزاً. بنى الكتاب الثالث المصادقة لواجهة برمجية واحدة؛ أما المنتج الشامل فله أبواب أكثر: صفحات تُرسم على الخادم، وإجراءات خادم، ومعالجات مسارات لتطبيق الجوال، ووكيل أمامها كلها. ويجب أن يسأل كل باب السؤالين نفسيهما، <em>من هذا؟</em> و<em>هل يجوز له هذا؟</em>، وأن يحصل على الإجابة نفسها. ولـ «بِت للحجوزات» نوع جديد من القواعد: يخدم أعمالاً كثيرة من قاعدة بيانات واحدة، فلا يجوز أبداً أن يرى صاحب صالون زبائن عيادة. وهذا الفصل يضيف ذلك كله.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>التسريبات الجدية التي رأيتها لم تكن كلمات مرور مكسورة. كانت باباً نسي أحد أن يقفله: مسار واجهة برمجية أُضيف لتطبيق الجوال، بلا الفحص الذي كان لصفحة الويب. وفحص واحد مشترك، يُنادى في كل مكان، يجعل النسيان أصعب بكثير.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>من يجب أن يُعرف</span></h2>
+
+<p>ابدأ من المواصفات، لا من شاشة دخول. لـ «بِت للحجوزات» ثلاثة أدوار، ولا يسجّل الدخول إلا اثنان منها:</p>
+<ul>
+<li><strong>الزبائن</strong> يحجزون بلا حساب، كما وعدت المواصفات. ويديرون حجزهم برابط في البريد، يحمل رمزاً لا يُخمَّن (تمرين الفصل الماضي). وفرض حساب عليهم سيكلّف حجوزات ولا يحمي شيئاً.</li>
+<li><strong>أصحاب العمل</strong> يرون كل شيء في عملهم ويغيّرونه.</li>
+<li><strong>الموظفون</strong> يرون يوم عملهم، لكن لا يلغون الحجوزات.</li>
+</ul>
+<p>كل صاحب عمل وموظف ينتمي إلى <dfn>مستأجر</dfn> (tenant) واحد بالضبط، أي عمل. وسؤالان يقرران الآن كل طلب: <em>الدور</em> (أي نوع من الأفعال مسموح) و<em>المستأجر</em> (أي البيانات يجوز أن يمسها). ومعظم الاختراقات الحقيقية في منتجات كهذه تأتي من السؤال الثاني، فله قسمه الخاص.</p>
+
+<h2><span class="sec">4.2</span> <span>الحسابات والجلسات</span></h2>
+
+<p>المستخدمون ينتمون إلى عمل ولهم دور؛ والجلسات تنتمي إلى مستخدم وتنتهي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> users (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  business_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> businesses (id),
+  email text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">UNIQUE</span>,
+  password_hash text <span class="k">NOT</span> <span class="k">NULL</span>,
+  role text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (role <span class="k">IN</span> (<span class="s">&#x27;owner&#x27;</span>, <span class="s">&#x27;staff&#x27;</span>))
+);
+<span class="k">CREATE</span> <span class="k">TABLE</span> sessions (
+  token_hash text <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  user_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> users (id) <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">CASCADE</span>,
+  expires_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span>
+);</pre></div>
+
+<p>تسجيل الدخول طريقة الكتاب الثالث: بصمة scrypt بطيئة لكلمة المرور، وبصمة وهمية للبُرُد المجهولة كي لا يكشف زمن الإجابة شيئاً، ورمز جلسة من 32 بايتاً عشوائياً لا يُخزَّن منه إلا بصمة SHA-256:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/auth.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> signIn(
+  email: string,
+  password: string,
+): Promise&lt;string | <span class="k">null</span>&gt; {
+  <span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;{ id: number; password_hash: string }&gt;(
+    <span class="s">&quot;SELECT id, password_hash FROM users WHERE email = lower($1)&quot;</span>,
+    [email],
+  );
+  <span class="k">const</span> user = rows[<span class="n">0</span>];
+  <span class="c line-bidi">// البريد المجهول يكلّف بصمة واحدة أيضاً، فلا يكشف الوقت شيئاً</span>
+  <span class="k">const</span> ok = <span class="k">await</span> verifyPassword(
+    password,
+    user?.password_hash ?? (<span class="k">await</span> (dummy ??= hashPassword(<span class="s">&quot;x&quot;</span>))),
+  );
+  <span class="k">if</span> (!user || !ok) <span class="k">return</span> <span class="k">null</span>;
+  <span class="k">const</span> token = randomBytes(<span class="n">32</span>).toString(<span class="s">&quot;base64url&quot;</span>);
+  <span class="c line-bidi">// لا تُخزَّن إلا بصمة الرمز: جدول مسروق لا يفتح أي حساب</span>
+  <span class="k">await</span> pool.query(
+    <span class="s">`INSERT INTO sessions (token_hash, user_id, expires_at)
+     VALUES ($1, $2, now() + $3 * interval &#x27;1 second&#x27;)`</span>,
+    [digest(token), user.id, WEEK],
+  );
+  <span class="k">return</span> token;
+}</pre></div>
+
+<p>لماذا رمز يُبحث عنه في جدول، لا رمز موقَّع مثل JWT لا يحتاج بحثاً؟ لأن الجلسة يجب أن تُلغى. حين يفصل صاحب عمل موظفاً، أو يُسرق جوال، فحذف الصف ينهي الجلسة فوراً، على كل جهاز؛ أما الرمز الموقَّع فيبقى صالحاً حتى تنتهي مدته. وبحث واحد مفهرس لكل طلب رخيص بحجم «بِت للحجوزات» (أقل من مئة طلب في الثانية، كما حسب الفصل 1)، والرموز بلا حالة يمكن أن تأتي لاحقاً، إن طلبها رقم حقيقي يوماً.</p>
+
+<h2><span class="sec">4.3</span> <span>جلسة واحدة، وحاملان</span></h2>
+
+<p>يحفظ تطبيق الويب الرمز في كوكي. وثلاث صفات تقوم بعمل الأمان:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/auth.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> startWebSession(token: string) {
+  (<span class="k">await</span> cookies()).set(COOKIE, token, {
+    <span class="c line-bidi">// httpOnly: لا يقرؤها سكربت؛ وsameSite lax: لا يرسلها نموذج موقع آخر</span>
+    httpOnly: <span class="k">true</span>,
+    sameSite: <span class="s">&quot;lax&quot;</span>,
+    secure: process.env.NODE_ENV === <span class="s">&quot;production&quot;</span>,
+    path: <span class="s">&quot;/&quot;</span>,
+    maxAge: WEEK,
+  });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">المتصفح</div><pre class="code"><span class="c line-bidi"># كوكي جلسة الويب، كما حفظها المتصفح</span>
+{&quot;name&quot;:&quot;session&quot;,&quot;value&quot;:&quot;DnVs2lcm…&quot;,&quot;httpOnly&quot;:true,&quot;sameSite&quot;:&quot;Lax&quot;,&quot;secure&quot;:true,&quot;days&quot;:7}</pre></div>
+
+<p><code>httpOnly</code> يُبعد الرمز عن JavaScript، فلا يستطيع سكربت محقون في الصفحة سرقته. و<code>sameSite: "lax"</code> يمنع المواقع الأخرى من إرساله مع النماذج والطلبات الخلفية، وهذا يزيل معظم تزوير الطلبات بين المواقع؛ ويقارن Next.js أيضاً ترويسة <code>Origin</code> في كل إجراء خادم بالمضيف. و<code>secure</code> يرسله عبر HTTPS فقط في الإنتاج. أما الرمز المحفوظ في <code>localStorage</code> فلا يحظى بأي من هذه الحمايات: يستطيع أي سكربت في الصفحة قراءته.</p>
+
+<p>تطبيق الجوال لا يستطيع استعمال كوكيز المتصفح، فيسجّل الدخول عبر معالج مسار، ويستقبل النوع نفسه من الرموز، ويرسله <code>Authorization: Bearer</code>. ودالة واحدة تقرأ أياً منهما:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/auth.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> currentUser(request?: Request): Promise&lt;User | <span class="k">null</span>&gt; {
+  <span class="k">const</span> bearer = request?.headers
+    .get(<span class="s">&quot;authorization&quot;</span>)
+    ?.match(/^Bearer (\S+)$/)?.[<span class="n">1</span>];
+  <span class="k">const</span> token = bearer ?? (<span class="k">await</span> cookies()).get(COOKIE)?.value;
+  <span class="k">if</span> (!token) <span class="k">return</span> <span class="k">null</span>;
+  <span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;User&gt;(
+    <span class="s">`SELECT u.id, u.email, u.role, u.business_id
+       FROM sessions s JOIN users u ON u.id = s.user_id
+      WHERE s.token_hash = $1 AND s.expires_at &gt; now()`</span>,
+    [digest(token)],
+  );
+  <span class="k">return</span> rows[<span class="n">0</span>] ?? <span class="k">null</span>;
+}
+
+<span class="c line-bidi">// الفحص الواحد الذي يناديه كل باب: 401 لمن لا هوية له، و403 للدور الخطأ</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> requireUser(
+  roles: User[<span class="s">&quot;role&quot;</span>][],
+  request?: Request,
+): Promise&lt;User&gt; {
+  <span class="k">const</span> user = <span class="k">await</span> currentUser(request);
+  <span class="k">if</span> (!user) <span class="k">throw</span> <span class="k">new</span> AuthError(<span class="n">401</span>);
+  <span class="k">if</span> (!roles.includes(user.role)) <span class="k">throw</span> <span class="k">new</span> AuthError(<span class="n">403</span>);
+  <span class="k">return</span> user;
+}</pre></div>
+
+<p><code>requireUser</code> هو الفحص الوحيد في قاعدة الكود. يجيب 401 حين لا يكون أحد مسجّلاً، و403 حين يكون الدور خطأ، ويعيد المستخدم، مع عمله، للخطوة التالية.</p>
+
+<h2><span class="sec">4.4</span> <span>الفحص نفسه على كل باب</span></h2>
+
+<p>تناديه صفحة صاحب العمل قبل أن تقرأ أي شيء، وترسل الزوار الذين بلا جلسة إلى صفحة الدخول:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/owner/page.tsx</div><pre class="code">async function signedIn() {
+  try {
+    return await requireUser([&quot;owner&quot;, &quot;staff&quot;]);
+  } catch (error) {
+    if (error instanceof AuthError &amp;&amp; error.status === 401) redirect(&quot;/login&quot;);
+    throw error;
+  }
+}
+
+// الصفحة تفحص أيضاً: قد يُضبط الوكيل خطأً أو يُتجاوز
+export default async function OwnerPage() {
+  const user = await signedIn();
+  const bookings = await bookingsFor(user);</pre></div>
+
+<p>وزر الإلغاء يرسل إلى إجراء خادم، يفحص <em>من جديد</em>. ويجب ذلك: كما حذّر الفصل الماضي، الإجراء نقطة نهاية عامة، والصفحة التي تخفي الزر عن الموظفين لا تمنع الموظفين، ولا أي أحد، من مناداة الإجراء:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/owner/actions.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> cancelAction(form: FormData) {
+  <span class="k">const</span> user = <span class="k">await</span> requireUser([<span class="s">&quot;owner&quot;</span>]);
+  <span class="k">await</span> cancelBooking(user, Number(form.get(<span class="s">&quot;id&quot;</span>)));
+  revalidatePath(<span class="s">&quot;/owner&quot;</span>);
+}</pre></div>
+
+<p>ومسار تطبيق الجوال يفعل الشيء نفسه، بالدالة نفسها، ويترجم النتيجة إلى Problem Details:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/api/owner/bookings/[id]/cancel/route.ts</div><pre class="code"><span class="k">import</span> { requireUser } <span class="k">from</span> <span class="s">&quot;@/lib/auth&quot;</span>;
+<span class="k">import</span> { authProblem, problem } <span class="k">from</span> <span class="s">&quot;@/lib/http&quot;</span>;
+<span class="k">import</span> { cancelBooking } <span class="k">from</span> <span class="s">&quot;@/lib/owner&quot;</span>;
+
+<span class="k">type</span> Context = { params: Promise&lt;{ id: string }&gt; };
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> POST(request: Request, { params }: Context) {
+  <span class="k">try</span> {
+    <span class="k">const</span> user = <span class="k">await</span> requireUser([<span class="s">&quot;owner&quot;</span>], request);
+    <span class="k">const</span> done = <span class="k">await</span> cancelBooking(user, Number((<span class="k">await</span> params).id));
+    <span class="k">return</span> done ? Response.json({ cancelled: <span class="k">true</span> }) : problem(<span class="n">404</span>, <span class="s">&quot;غير موجود&quot;</span>);
+  } <span class="k">catch</span> (error) {
+    <span class="k">return</span> authProblem(error);
+  }
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/login</span><b>560px</b></div><img src="img/b4-auth-ar-shots-login.png" alt=""><figcaption><b>الشكل 4.1:</b> كلمة مرور خاطئة. لا تقول الرسالة هل البريد موجود.</figcaption></figure>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/owner</span><b>560px</b></div><img src="img/b4-auth-ar-shots-owner.png" alt=""><figcaption><b>الشكل 4.2:</b> صفحة صاحبة العمل بعد الدخول: حجوزات عملها فقط، وأحدها ملغى من قبل.</figcaption></figure>
+
+<h2><span class="sec">4.5</span> <span>المستأجرون: الشرط هو الصلاحية</span></h2>
+
+<p>فحص الدور لا يكفي. صاحبة صالون بِت <em>صاحبة عمل</em> فعلاً، فيدعها <code>requireUser(["owner"])</code> تمر؛ فما الذي يمنعها من إلغاء حجوزات عيادة نور؟ ليس فحصاً منفصلاً قد ينساه أحد، بل الاستعلام نفسه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/owner.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> bookingsFor(user: User): Promise&lt;OwnerBooking[]&gt; {
+  <span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;OwnerBooking &amp; { starts_at: Date }&gt;(
+    <span class="s">`SELECT b.id, st.name AS staff, lower(b.during) AS starts_at, b.email, b.status
+       FROM bookings b JOIN staff st ON st.id = b.staff_id
+      WHERE st.business_id = $1
+      ORDER BY lower(b.during)`</span>,
+    [user.business_id],
+  );
+  <span class="k">return</span> rows.map((r) =&gt; ({ ...r, starts_at: r.starts_at.toISOString() }));
+}
+
+<span class="c line-bidi">// حجز عمل آخر لا يطابق أي صف: هو «غير موجود» لا «ممنوع»</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> cancelBooking(user: User, id: number): Promise&lt;boolean&gt; {
+  <span class="k">const</span> { rowCount } = <span class="k">await</span> pool.query(
+    <span class="s">`UPDATE bookings b SET status = &#x27;cancelled&#x27;
+       FROM staff st
+      WHERE b.id = $2 AND st.id = b.staff_id
+        AND st.business_id = $1 AND b.status = &#x27;confirmed&#x27;`</span>,
+    [user.business_id, id],
+  );
+  <span class="k">return</span> rowCount === <span class="n">1</span>;
+}</pre></div>
+
+<p>كل استعلام يمس بيانات عمل يأخذ <code>user</code> ويرشّح بـ <code>user.business_id</code>. وحجز عمل آخر لا يطابق أي صف ببساطة. ولاحظ الإجابة: تقول الواجهة البرمجية <em>غير موجود</em>، لا <em>ممنوع</em>. فقول «ممنوع» يؤكد أن الحجز 2 موجود، وهذا تسريب أصلاً في منتج أرقامه متسلسلة.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>صفحة صاحب العمل تخفي زر الإلغاء عن الموظفين أصلاً. فلماذا يجب أن ينادي <code>cancelAction</code> الدالة <code>requireUser(["owner"])</code> مع ذلك؟</li><li>لماذا يجيب إلغاء حجز عمل آخر بـ 404 لا 403؟</li><li>اذكر ميزة واحدة للجلسات المحفوظة في جدول على الرموز الموقَّعة مثل JWT، وكلفة واحدة.</li></ol></aside>
+
+<h2><span class="sec">4.6</span> <span>الوكيل ليس القفل</span></h2>
+
+<p>يستطيع Next.js تشغيل كود قبل كل طلب، في <code>proxy.ts</code> (كان اسمه middleware قبل Next.js 16). وهو المكان الطبيعي لإرسال الزوار الذين بلا جلسة إلى صفحة الدخول:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">proxy.ts</div><pre class="code"><span class="k">import</span> { NextResponse, <span class="k">type</span> NextRequest } <span class="k">from</span> <span class="s">&quot;next/server&quot;</span>;
+
+<span class="c line-bidi">// راحة لا قفل: أرسل الزوار الذين بلا كوكي إلى صفحة الدخول</span>
+<span class="k">export</span> <span class="k">function</span> proxy(request: NextRequest) {
+  <span class="k">if</span> (!request.cookies.has(<span class="s">&quot;session&quot;</span>)) {
+    <span class="k">return</span> NextResponse.redirect(<span class="k">new</span> URL(<span class="s">&quot;/login&quot;</span>, request.url));
+  }
+}
+
+<span class="k">export</span> <span class="k">const</span> config = { matcher: [<span class="s">&quot;/owner/:path*&quot;</span>] };</pre></div>
+
+<p>لاحظ ما يفحصه: فقط أن كوكي <em>اسمها</em> <code>session</code> موجودة. لا يبحث عن الرمز، لأن ذلك سيكلّف استعلاماً في كل طلب. وأي أحد يستطيع وضع كوكي بهذا الاسم. فالوكيل راحة للزوار الصادقين؛ والقفل هو <code>requireUser</code>، في الصفحة والإجراء والمسار. وليس هذا تمييزاً نظرياً. ففي 2025 سمحت ثغرة في Next.js (CVE-2025-29927) لترويسة طلب واحدة بتخطي middleware بالكامل، وصارت التطبيقات التي تفحص الصلاحيات <em>هناك فقط</em> مفتوحة على مصراعيها، بينما لم تخسر شيئاً التطبيقات التي تفحص في صفحاتها وطبقة بياناتها.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: التخطيطات ليست قفلاً أيضاً</p><p>الفحص في <code>app/owner/layout.tsx</code> يبدو كأنه يحمي كل صفحة تحته، لكن التخطيطات لا تُعاد في كل تنقّل، وإجراءات الخادم ومعالجات المسارات لا تمر بها أصلاً. ضع الفحص بجانب البيانات: في الدالة التي تقرؤها أو تغيّرها، أو في أول سطر من كل صفحة وإجراء ومسار يستعملها.</p></aside>
+
+<h2><span class="sec">4.7</span> <span>الإثبات</span></h2>
+
+<p>والتطبيق يعمل، يمكن فحص كل قاعدة من الطرفية. بلا جلسة، تحوّل الصفحة وتجيب الواجهة البرمجية 401:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># لا أحد سجّل الدخول</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code} → %{redirect_url}\n&#x27; localhost:3000/owner</span>
+307 → http://localhost:3000/login
+<span class="c">$ </span><span class="k">curl -s localhost:3000/api/owner/bookings | jq -c</span>
+{&quot;title&quot;:&quot;لم تسجّل الدخول&quot;,&quot;status&quot;:401}</pre></div>
+
+<p>تسجّل صاحبة الصالون وموظف الدخول عبر الواجهة البرمجية. ترى صاحبة العمل حجوزات عملها فقط؛ وحجز العيادة «غير موجود»؛ ولا يجوز للموظف أن يلغي؛ ويجوز لصاحبة العمل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># صاحبة صالون بِت تسجّل الدخول عبر الواجهة البرمجية</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:3000/api/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;owner@bithair.example&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -r .token)</span>
+<span class="c">$ </span><span class="k">OMAR=$(curl -s localhost:3000/api/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;omar@bithair.example&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># حجوزات عملها هي فقط</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/api/owner/bookings -H &quot;authorization: Bearer $TOKEN&quot; | jq -c &#x27;.data[] | [.id, .staff, .email, .status]&#x27;</span>
+[1,&quot;منى&quot;,&quot;sara@example.com&quot;,&quot;confirmed&quot;]
+[3,&quot;عمر&quot;,&quot;nour@example.com&quot;,&quot;confirmed&quot;]
+<span class="c line-bidi"># حجز في عيادة نور: غير موجود</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/api/owner/bookings/2/cancel -H &quot;authorization: Bearer $TOKEN&quot; | jq -c</span>
+{&quot;title&quot;:&quot;غير موجود&quot;,&quot;status&quot;:404}
+<span class="c line-bidi"># عمر موظف: يرى ولا يلغي</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/api/owner/bookings/1/cancel -H &quot;authorization: Bearer $OMAR&quot; | jq -c</span>
+{&quot;title&quot;:&quot;غير مسموح&quot;,&quot;status&quot;:403}
+<span class="c line-bidi"># صاحبة العمل تلغي حجزاً لها</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/api/owner/bookings/1/cancel -H &quot;authorization: Bearer $TOKEN&quot; | jq -c</span>
+{&quot;cancelled&quot;:true}</pre></div>
+
+<p>وفي قاعدة البيانات، لم يتغير إلا حجز صاحبة العمل نفسها، وجدول الجلسات يحفظ بصمات، لا فائدة منها لمن يسرقها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما تحفظه قاعدة البيانات</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT id, staff_id, email, status FROM bookings ORDER BY id&#x27;</span>
+ id | staff_id |      email       |  status   
+----+----------+------------------+-----------
+  1 |        1 | sara@example.com | cancelled
+  2 |        3 | ali@example.com  | confirmed
+  3 |        2 | nour@example.com | confirmed
+(3 rows)
+<span class="c">$ </span><span class="k">psql shop -c &quot;SELECT left(token_hash, 12) || &#x27;…&#x27; AS token_hash, user_id, expires_at &gt; now() AS valid FROM sessions&quot;</span>
+  token_hash   | user_id | valid 
+---------------+---------+-------
+ 84b716423e7f… |       1 | t
+ 78cdd0c7364f… |       2 | t
+(2 rows)</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اختبر المصفوفة، لا المسار السعيد</p><p>لكل عملية محمية، اكتب الجدول: لا أحد، وموظف، وصاحب هذا العمل، وصاحب عمل آخر؛ ولكلٍّ الإجابة المتوقعة. ثم حوّل الجدول إلى اختبارات. أخطاء الصلاحيات تختبئ في الخانات التي لم يجربها أحد، وغالباً «الدور الصحيح، والمستأجر الخطأ». والجلسة أعلاه هي ذلك الجدول، مشغَّلاً باليد؛ والمشروع التطبيقي الثالث يجعله آلياً.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>فحوص في الوكيل أو التخطيط فقط</td><td>الإجراءات والمسارات والتجاوزات تتخطاها</td><td>افحص في كل صفحة وإجراء ومسار، بجانب البيانات</td></tr>
+<tr><td>فحص لكل باب، مكتوب باليد</td><td>يُنسى باب</td><td><code>requireUser</code> واحد، يُنادى في كل مكان</td></tr>
+<tr><td>الدور مفحوص، والمستأجر لا</td><td>يقرأ عمل زبائن عمل آخر</td><td>كل استعلام مرشَّح بعمل المستخدم</td></tr>
+<tr><td>403 لأرقام مستأجرين آخرين</td><td>يؤكد ما هو موجود</td><td>404، كأي شيء غير موجود</td></tr>
+<tr><td>رموز الجلسات مخزنة كما هي</td><td>جدول مسرَّب يفتح كل حساب</td><td>خزّن البصمة فقط</td></tr>
+<tr><td>رموز في <code>localStorage</code></td><td>أي سكربت محقون يسرقها</td><td>كوكيز <code>httpOnly</code> و<code>sameSite</code> و<code>secure</code></td></tr>
+<tr><td>إخفاء الأزرار بدل رفض الأفعال</td><td>يبقى الإجراء يعمل لأي أحد</td><td>ارفض في الإجراء؛ وأخفِ للراحة فقط</td></tr>
+<tr><td>حسابات تُفرض على الزبائن</td><td>حجوزات أقل، بلا أمان مكتسب</td><td>الدخول فقط لمن يحتاجه</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>قرّر من المواصفات <strong>من يسجّل الدخول</strong>؛ ويدير الزبائن حجوزاتهم برابط لا يُخمَّن بدلاً من ذلك.</li>
+<li>الجلسات <strong>رموز عشوائية تُخزَّن بصماتها</strong>، في جدول، فيمكن <strong>إلغاؤها</strong> فوراً.</li>
+<li>يحمل الويب الرمز في <strong>كوكي httpOnly وsameSite وsecure</strong>؛ والواجهة البرمجية رمزَ <strong>bearer</strong>؛ ودالة واحدة تقرأ أياً منهما.</li>
+<li><strong>فحص واحد</strong>، <code>requireUser</code>، يحرس كل <strong>صفحة وإجراء خادم ومسار</strong>: 401 لمن لا هوية له، و403 للدور الخطأ.</li>
+<li><strong>الاستئجار</strong> يعيش في الاستعلامات: رشّح بعمل المستخدم، وأجب <strong>404</strong> عن أي شيء خارجه.</li>
+<li><strong>الوكيل</strong> يحوّل فقط؛ ولا تعتمد عليه أبداً، ولا على التخطيطات، قفلاً.</li>
+<li>اختبر <strong>كل دور مع كل مستأجر</strong>، لا المسار السعيد وحده.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن إخفاء الزر لا يغيّر إلا ما تعرضه الصفحة. والإجراء نقطة نهاية HTTP يستطيع أي أحد مناداتها بأي رقم، ومنهم موظف ينسخ الطلب من متصفح صاحب العمل، أو سكربت. والفحص يجب أن يكون حيث يحدث التغيير. 2. لأن 403 تقول للمنادي «هذا موجود، لكن ليس لك»، فتؤكد أن الحجز 2 موجود، وتتيح لأحد أن يرسم نشاط عمل آخر بتجربة الأرقام. و404 الإجابة نفسها التي لرقم لم يوجد قط، فلا تكشف شيئاً. 3. الميزة: الجلسة في جدول يمكن إنهاؤها فوراً (خروج من كل الأجهزة، أو موظف مفصول، أو جوال مسروق) بحذف صفها؛ أما الرمز الموقَّع فيبقى صالحاً حتى تنتهي مدته. والكلفة: بحث واحد في قاعدة البيانات لكل طلب، ومخزن جلسات مشترك حين تكون هناك عدة خوادم.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يقوّي طبقة الهوية في «بِت للحجوزات». ويجب أن يُبقي كل تغيير جلسة القسم 4.7 صحيحة، في المتصفح وعبر الواجهة البرمجية.</p>
+
+<div class="project">
+<p class="project-label">المشروع 4.1 · سهل</p>
+<h3>خروج هنا، وفي كل مكان</h3>
+<p class="project-goal">أضف «خروج» و«خروج من كل الأجهزة» لأصحاب العمل والموظفين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إلغاء الجلسات، والكوكيز، وإجراءات الخادم بفحوص.</p>
+<ol class="steps">
+<li>اكتب <code>signOut()</code> في <code>lib/auth.ts</code>: احذف صف الجلسة الحالية والكوكي.</li>
+<li>اكتب <code>signOutEverywhere(user)</code>: احذف كل جلسات المستخدم.</li>
+<li>أضف الاثنين زرين في صفحة صاحب العمل، كلٌّ عبر إجراء خادم.</li>
+<li>تحقق أن رمز bearer من الواجهة البرمجية يتوقف عن العمل بعد «كل الأجهزة».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حذف الكوكي وحده يُخرج متصفحاً واحداً؛ وحذف الصف هو ما يجعل الرمز بلا قيمة.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 4.2 · متوسط</p>
+<h3>الرابط الخاص بالزبون</h3>
+<p class="project-goal">دع الزبائن يرون حجزهم ويلغونه من الرابط في بريدهم، بلا حساب.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> رموز الصلاحية، والبصمات، وقواعد تعتمد على الوقت.</p>
+<ol class="steps">
+<li>حين يُصنع حجز، أنشئ 32 بايتاً عشوائياً، وخزّن بصمة SHA-256 لها في <code>bookings.manage_token_hash</code>، وابنِ الرابط <code>/manage/&lt;token&gt;</code>.</li>
+<li>تجد صفحة الإدارة الحجز ببصمة الرمز، ولا تعرض إلا وقته وموظفه وحالته.</li>
+<li>اسمح بالإلغاء حتى ساعتين قبل الموعد، في <code>lib/</code>، بتحديث شرطي واحد.</li>
+<li>اختبر أن الرمز الخاطئ أو القديم يعرض صفحة عامة «الرابط غير صالح».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الرمز كلمة مرور لحجز واحد: لا تسجّله أبداً، ولا تضعه في التحليلات، ولا تقارن إلا البصمات.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 4.3 · تحدٍّ</p>
+<h3>مصفوفة الصلاحيات، آلياً</h3>
+<p class="project-goal">ولّد اختبارات لكل عملية محمية مع كل نوع من المنادين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الاختبارات المبنية على جداول، والاستئجار، وخط دفاع ثانٍ في قاعدة البيانات.</p>
+<ol class="steps">
+<li>اكتب المصفوفة بيانات: العمليات (العرض، والإلغاء) × المنادون (لا أحد، وموظف، وصاحب عمل، وصاحب عمل آخر) ← الحالة المتوقعة.</li>
+<li>ولّد اختباراً لكل خانة على الواجهة البرمجية، وشغّلها في CI.</li>
+<li>أضف أمان مستوى الصف (row-level security) في PostgreSQL على <code>bookings</code>، مفتاحه <code>SET app.business_id</code> لكل طلب، خطاً ثانياً خلف الاستعلامات.</li>
+<li>أثبت أن السياسة صامدة حتى لو نسي مطوّر شرط <code>WHERE</code> في استعلام جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أمان مستوى الصف لا ينطبق على مالك الجدول افتراضياً؛ اتصل بدور منفصل، أو استعمل <code>FORCE ROW LEVEL SECURITY</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> لكلٍّ منها، قل من يجوز له فعلها في «بِت للحجوزات»، وبماذا تجيب الواجهة البرمجية الآخرين: رؤية حجوزات اليوم؛ وإلغاء حجز؛ وحجز موعد؛ وتغيير اسم موظف.</li>
+<li><span class="level">سهل</span> يقترح زميل حفظ رمز الجلسة في <code>localStorage</code> «ليقرأه تطبيق الويب للجوال». ما الخطر الذي يضيفه ذلك، وماذا تفعل بدلاً منه؟</li>
+<li><span class="level medium">متوسط</span> يفحص الوكيل فقط أن كوكي اسمها <code>session</code> موجودة. اكتب الطلب الذي سيرسله مهاجم ليصل إلى <code>/owner</code> متجاوزاً الوكيل، واشرح لماذا يفشل مع ذلك.</li>
+<li><span class="level medium">متوسط</span> مسار جديد يسرد بُرُد الزبائن لتصدير تسويقي. اكتبه بأنماط هذا الفصل نفسها، واسرد الفحوص التي يحتاجها.</li>
+<li><span class="level hard">تحدٍّ</span> يريد عمل صاحبين، وموظفين يعملون لعملين. غيّر المخطط و<code>requireUser</code>، واشرح كيف تعرف الاستعلامات لأي عمل الطلب.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 5</p>
+<p>صار أصحاب العمل المسجّلون يديرون يومهم. والفصل التالي يصل «بِت للحجوزات» بالعالم الخارجي: مدفوعات للعربون، ورسائل بريد تصل، وملفات تُرفع بأمان.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1411,6 +1804,26 @@ export default async function BookPage({ params, searchParams }: Props) {
 <li>يرى كريم الرسالة، لكن القائمة ما زالت تعرض 10:00، الوقت الذي قيل له للتو إنه محجوز، لأن الصفحة لا تُرسم من جديد. فإن اختاره ثانية رُفض ثانية؛ وإن اختار وقتاً آخر فقد يكون ذهب أيضاً دون أن يعلم. تناقض الصفحة رسالتها، ولا يعرف شيئاً عما هو متاح فعلاً. ومع <code>revalidatePath</code> تحمل الإجابة نفسها القائمة المحدّثة، فتتفق الرسالة والخيارات.</li>
 <li>الرقم متسلسل والصفحة لا تحتاج دليلاً على هوية السائل، فيستطيع أي أحد قراءة كل حجز بتجربة <code>/booking/1</code> و<code>/booking/2</code> و…، مع بُرُد الزبائن وأوقاتهم: إشارة مباشرة غير آمنة إلى كائن (الكتاب الثالث). وأصلحه بإعطاء كل حجز رمزاً لا يُخمَّن (مثلاً 32 بايتاً عشوائياً، يُخزَّن ببصمته كرموز الكتاب الثالث)، واستعماله في عنوان التأكيد وروابط البريد، وعرض الحد الأدنى فقط في تلك الصفحة. ويرى أصحاب العمل والموظفون الحجوزات عبر صفحاتهم بعد تسجيل الدخول، بفحوص صلاحيات.</li>
 <li>انقل لبّ العمل: يصير <code>lib/</code> خدمة واجهة برمجية منفصلة (بنشرها ووصولها إلى قاعدة البيانات وتوسعها)، تكشف عقد الفصل 2 الذي يبني عليه فريق الجوال. ويبقى في Next.js: صفحات الموقع وإجراءاته، التي تنادي الآن الواجهة البرمجية عبر العميل المولَّد ذي الأنواع بدل مناداة <code>lib/</code> مباشرة. والترتيب: أولاً تأكد أن كل باب لا ينادي إلا دوال <code>lib/</code> (لا استعلامات في الصفحات)؛ واكتب العقد واختباراته أو أكملها؛ وأقم الخدمة من <code>lib/</code> وشغّلها بجانب التطبيق؛ وحوّل معالجات المسارات ثم الإجراءات لمناداة الخدمة، واحداً واحداً، خلف مفتاح ميزة؛ وأخيراً احذف بيانات اعتماد قاعدة البيانات من تطبيق Next.js. وكل خطوة قابلة للإطلاق وحدها، واختبار العقد يحرس كلاً منها.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 4</h2>
+<ol class="exercises">
+<li>رؤية حجوزات اليوم: أصحاب ذلك العمل وموظفوه؛ ومن لا هوية له يحصل على 401، ومستخدم عمل آخر لا يرى إلا قائمة عمله (لا هذه أبداً). وإلغاء حجز: أصحاب ذلك العمل؛ ومن لا هوية له 401، والموظف 403، وصاحب عمل آخر 404. وحجز موعد: أي أحد، بلا تسجيل دخول (الزبون)؛ وقيد قاعدة البيانات والتحقق هما الفحص. وتغيير اسم موظف: أصحاب ذلك العمل؛ ومن لا هوية له 401، والموظف 403، وصاحب عمل آخر 404.</li>
+<li><code>localStorage</code> يقرؤه كل سكربت يعمل في الصفحة، فخطأ واحد في حقن السكربتات بين المواقع، أو سكربت طرف ثالث مخترق، يستطيع نسخ الرمز واستعماله من أي مكان حتى تنتهي مدته. احفظ الرمز في كوكي <code>httpOnly</code> و<code>sameSite</code> و<code>secure</code>، يرسلها المتصفح وحده ولا يقرؤها أي سكربت؛ وتطبيق <em>الويب</em> للجوال موقع لا أكثر ويستعمل الكوكي أيضاً. ولا يحفظ رمز bearer إلا التطبيقات الأصلية، التي لا كوكيز متصفح لها، في المخزن الآمن للمنصة (Keychain وKeystore).</li>
+<li><code>curl -s localhost:3000/owner -H 'cookie: session=anything'</code>. يرى الوكيل كوكي بالاسم الصحيح فيدع الطلب يمر. ثم تنادي الصفحة <code>requireUser</code>، فيبصم <code>anything</code>، ولا يجد جلسة بتلك البصمة، ولا يحصل على مستخدم؛ فتحوّل الصفحة إلى صفحة الدخول دون أن تقرأ أي بيانات. لم يكن الوكيل الفحص قط، فتجاوزه لا يكسب شيئاً.</li>
+<li><pre dir="ltr"><code>// app/api/owner/customers/route.ts
+export async function GET(request: Request) {
+  try {
+    const user = await requireUser(["owner"], request);
+    return Response.json({ data: await customerEmailsFor(user) });
+  } catch (error) {
+    return authProblem(error);
+  }
+}
+// lib/owner.ts: SELECT DISTINCT b.email FROM bookings b
+//   JOIN staff st ON st.id = b.staff_id WHERE st.business_id = $1</code></pre>الفحوص: مسجّل الدخول (401)، وصاحب العمل فقط، لأنه يصدّر بيانات شخصية (403 للموظفين)؛ ومحصور في عمل المستخدم داخل الاستعلام؛ وأبعد من الصلاحيات، قواعد البيانات الشخصية: صدّر فقط الزبائن الذين وافقوا على التسويق (عمود يجب أن تضيفه المواصفات أولاً)، وسجّل كل تصدير بمن ومتى، وحدّد معدله. ويجب أن تذكر سياسة الخصوصية التصدير قبل أن يُطلق.</li>
+<li>استبدل <code>users.business_id</code> و<code>role</code> بجدول عضوية: <code>memberships (user_id, business_id, role, PRIMARY KEY (user_id, business_id))</code>. ويجب أن يقول الطلب الآن لأي عمل هو: في تطبيق الويب العمل جزء من العنوان (<code>/b/12/owner</code>)، وفي الواجهة البرمجية جزء من المسار أو ترويسة. ويبحث <code>requireUser(roles, businessId, request)</code> عن الجلسة ثم عن العضوية في ذلك العمل، ويعيد <code>{ user, businessId, role }</code>؛ ولا عضوية تعني 404، والعضوية بالدور الخطأ تعني 403. وتبقى الاستعلامات ترشّح برقم عمل، مأخوذاً الآن من تلك النتيجة لا من صف المستخدم، فتبقى قاعدة «الشرط هو الصلاحية» كما هي.</li>
 </ol>
 
 </section>

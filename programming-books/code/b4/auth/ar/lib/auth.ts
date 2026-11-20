@@ -42,7 +42,8 @@ export async function signIn(
   const token = randomBytes(32).toString("base64url");
   // لا تُخزَّن إلا بصمة الرمز: جدول مسروق لا يفتح أي حساب
   await pool.query(
-    "INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + $3 * interval '1 second')",
+    `INSERT INTO sessions (token_hash, user_id, expires_at)
+     VALUES ($1, $2, now() + $3 * interval '1 second')`,
     [digest(token), user.id, WEEK],
   );
   return token;
@@ -50,7 +51,7 @@ export async function signIn(
 
 export async function startWebSession(token: string) {
   (await cookies()).set(COOKIE, token, {
-    // httpOnly: لا يقرؤها أي سكربت؛ وsameSite lax: لا ترسلها المواقع الأخرى مع نموذج
+    // httpOnly: لا يقرؤها سكربت؛ وsameSite lax: لا يرسلها نموذج موقع آخر
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

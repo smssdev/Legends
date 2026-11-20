@@ -42,7 +42,8 @@ export async function signIn(
   const token = randomBytes(32).toString("base64url");
   // only the hash of a token is stored: a stolen table opens no account
   await pool.query(
-    "INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + $3 * interval '1 second')",
+    `INSERT INTO sessions (token_hash, user_id, expires_at)
+     VALUES ($1, $2, now() + $3 * interval '1 second')`,
     [digest(token), user.id, WEEK],
   );
   return token;
@@ -50,7 +51,7 @@ export async function signIn(
 
 export async function startWebSession(token: string) {
   (await cookies()).set(COOKIE, token, {
-    // httpOnly: no script can read it; sameSite lax: other sites cannot send it with a form
+    // httpOnly: no script reads it; sameSite lax: no form on another site sends it
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

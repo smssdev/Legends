@@ -900,7 +900,8 @@
             },
             {
               "en": "Authentication Across the Stack",
-              "ar": "الهوية عبر الطبقات كلها"
+              "ar": "الهوية عبر الطبقات كلها",
+              "src": "b4/auth"
             },
             {
               "en": "Payments, Email and Files",

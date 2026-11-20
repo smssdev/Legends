@@ -30,6 +30,6 @@ $ psql shop -c 'SELECT id, staff_id, email, status FROM bookings ORDER BY id'
 $ psql shop -c "SELECT left(token_hash, 12) || '…' AS token_hash, user_id, expires_at > now() AS valid FROM sessions"
   token_hash   | user_id | valid 
 ---------------+---------+-------
- 3e90bd73c940… |       1 | t
- 94b90746e5da… |       2 | t
+ 84b716423e7f… |       1 | t
+ 78cdd0c7364f… |       2 | t
 (2 rows)

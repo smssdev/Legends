@@ -28,7 +28,7 @@ T = {
         w_cancelled="cancelled", w_m_unauth="Not signed in", w_m_forbidden="Not allowed", w_m_none="Not found",
         w_c_hash="only the hash of a token is stored: a stolen table opens no account",
         w_c_dummy="an unknown email still costs one hash, so timing reveals nothing",
-        w_c_cookie="httpOnly: no script can read it; sameSite lax: other sites cannot send it with a form",
+        w_c_cookie="httpOnly: no script reads it; sameSite lax: no form on another site sends it",
         w_c_who="who is calling: a bearer token (API) or the session cookie (web)",
         w_c_require="the one check every door calls: 401 for nobody, 403 for the wrong role",
         w_c_tenant="scoped to the user's business: the WHERE clause is the permission",
@@ -50,7 +50,7 @@ T = {
         w_cancelled="ملغى", w_m_unauth="لم تسجّل الدخول", w_m_forbidden="غير مسموح", w_m_none="غير موجود",
         w_c_hash="لا تُخزَّن إلا بصمة الرمز: جدول مسروق لا يفتح أي حساب",
         w_c_dummy="البريد المجهول يكلّف بصمة واحدة أيضاً، فلا يكشف الوقت شيئاً",
-        w_c_cookie="httpOnly: لا يقرؤها أي سكربت؛ وsameSite lax: لا ترسلها المواقع الأخرى مع نموذج",
+        w_c_cookie="httpOnly: لا يقرؤها سكربت؛ وsameSite lax: لا يرسلها نموذج موقع آخر",
         w_c_who="من المنادي: رمز bearer (الواجهة البرمجية) أو كوكي الجلسة (الويب)",
         w_c_require="الفحص الواحد الذي يناديه كل باب: 401 لمن لا هوية له، و403 للدور الخطأ",
         w_c_tenant="محصور في عمل المستخدم: شرط WHERE هو الصلاحية",
@@ -121,7 +121,8 @@ const users = [
 ];
 for (const [email, role, business] of users) {
   await db.query(
-    "INSERT INTO users (email, password_hash, role, business_id) VALUES ($1, $2, $3, $4)",
+    `INSERT INTO users (email, password_hash, role, business_id)
+     VALUES ($1, $2, $3, $4)`,
     [email, hash, role, business],
   );
 }
@@ -188,7 +189,8 @@ export async function signIn(email: string, password: string): Promise<string | 
   const token = randomBytes(32).toString("base64url");
   // {w_c_hash}
   await pool.query(
-    "INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + $3 * interval '1 second')",
+    `INSERT INTO sessions (token_hash, user_id, expires_at)
+     VALUES ($1, $2, now() + $3 * interval '1 second')`,
     [digest(token), user.id, WEEK],
   );
   return token;
@@ -250,7 +252,8 @@ export async function cancelBooking(user: User, id: number): Promise<boolean> {
   const { rowCount } = await pool.query(
     `UPDATE bookings b SET status = 'cancelled'
        FROM staff st
-      WHERE b.id = $2 AND st.id = b.staff_id AND st.business_id = $1 AND b.status = 'confirmed'`,
+      WHERE b.id = $2 AND st.id = b.staff_id
+        AND st.business_id = $1 AND b.status = 'confirmed'`,
     [user.business_id, id],
   );
   return rowCount === 1;

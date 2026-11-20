@@ -27,7 +27,8 @@ export async function cancelBooking(user: User, id: number): Promise<boolean> {
   const { rowCount } = await pool.query(
     `UPDATE bookings b SET status = 'cancelled'
        FROM staff st
-      WHERE b.id = $2 AND st.id = b.staff_id AND st.business_id = $1 AND b.status = 'confirmed'`,
+      WHERE b.id = $2 AND st.id = b.staff_id
+        AND st.business_id = $1 AND b.status = 'confirmed'`,
     [user.business_id, id],
   );
   return rowCount === 1;
