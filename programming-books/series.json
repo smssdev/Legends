@@ -951,7 +951,8 @@
             },
             {
               "en": "Cloud and Infrastructure as Code",
-              "ar": "السحابة والبنية ككود"
+              "ar": "السحابة والبنية ككود",
+              "src": "b4/infra"
             },
             {
               "en": "Observability and Incidents",
