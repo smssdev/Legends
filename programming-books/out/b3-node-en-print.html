@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Real-Time with WebSockets"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "Chapter 12: Testing the Backend"; } }
+@page ch12:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -5505,6 +5507,416 @@ ws: {&quot;order&quot;:1001,&quot;status&quot;:&quot;shipped&quot;,&quot;by&quot
 <p>The shop now has many moving parts. Testing: unit, integration and end-to-end tests, a real database in tests, and a suite fast enough to run on every change.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b3/node/testing/en">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">Chapter 12</p><h1>Testing</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide what to test with unit, integration and end-to-end tests</li>
+<li>write clear unit tests with Node’s own test runner, including table-driven tests</li>
+<li>test routes against a real PostgreSQL database, with files running in parallel</li>
+<li>replace slow or outside dependencies with test doubles, and control time</li>
+<li>read a failing test, and measure what the tests cover</li>
+<li>keep a test suite fast, reliable and worth trusting</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter so far ended with a few tests. This one is about the craft itself. A good test suite is what lets you change code on a Friday afternoon without fear: it tells you within a minute whether the shop still takes orders, still charges the right amount and still refuses what it must refuse. A bad one is slow, fails at random, and is ignored. The difference is not the tool, which here is the test runner built into Node, but the decisions about what to test and how.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>I once worked on a project with two thousand tests that took forty minutes and failed at random about once a day. Nobody believed a red build any more, so real bugs went out with the noise. We deleted a third of the tests, made the rest use a real database properly, and got the suite under three minutes. It caught more bugs with fewer tests.</p></div></div>
+
+<h2><span class="sec">12.1</span> <span>What to test, and at which level</span></h2>
+
+<ul>
+<li><dfn>Unit tests</dfn> call one function or class directly, with no network, database or clock. They are fast (thousands a second) and point straight at the broken line. They suit logic with many cases: prices, discounts, validation, state changes.</li>
+<li><dfn>Integration tests</dfn> run a real slice of the application: a route through its validation, its SQL and a real database. They are slower but test what the unit tests cannot: that the query is correct, that the transaction rolls back, that the status code is right.</li>
+<li><dfn>End-to-end tests</dfn> drive the whole system from the outside, often through a browser with Playwright (Book 2). They prove the main journeys work, and are the slowest and most fragile, so keep them few.</li>
+</ul>
+
+<p>The classic advice is a <dfn>pyramid</dfn>: many unit tests, fewer integration tests, a handful of end-to-end tests. For a backend whose value is mostly in its queries, many teams lean towards more integration tests, because a unit test with a mocked database cannot catch a wrong <code>WHERE</code>. The real rule: test each behaviour at the lowest level where a bug in it would actually show.</p>
+
+<h2><span class="sec">12.2</span> <span>Unit tests</span></h2>
+
+<p>The shop’s pricing is a <dfn>pure function</dfn>: it takes lines and a code and returns numbers, touching nothing else. That makes it ideal for unit tests:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/pricing.ts</div><pre class="code"><span class="k">export</span> <span class="k">function</span> total(lines: Line[], code?: string) {
+  <span class="k">const</span> subtotal = lines.reduce((sum, l) =&gt; sum + l.price * l.quantity, <span class="n">0</span>);
+  <span class="k">let</span> discount = <span class="n">0</span>;
+  <span class="k">if</span> (code) {
+    <span class="c line-bidi">// discount codes: a percentage off, or a fixed amount (never below zero)</span>
+    <span class="k">const</span> rule = CODES[code];
+    <span class="k">if</span> (!rule) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">`unknown discount code: ${code}`</span>);
+    discount = rule.percent
+      ? Math.round((subtotal * rule.percent) / <span class="n">100</span>)
+      : rule.amount!;
+    discount = Math.min(discount, subtotal);
+  }
+  <span class="c line-bidi">// VAT of 14% on the discounted subtotal, rounded to the nearest piastre</span>
+  <span class="c line-bidi">// exercise 1: a bug to find, switched on with BUG=1</span>
+  <span class="k">const</span> rate = process.env.BUG ? <span class="n">0.15</span> : <span class="n">0.14</span>;
+  <span class="k">const</span> vat = Math.round((subtotal - discount) * rate);
+  <span class="k">return</span> { subtotal, discount, vat, total: subtotal - discount + vat };
+}</pre></div>
+
+<p>Node’s test runner (<code>node:test</code>) provides <code>describe</code>, <code>it</code> (also called <code>test</code>), hooks, mocks and coverage, and <code>node:assert</code> provides the checks. Several cases that differ only in their data are best written as a <dfn>table</dfn>: one row per case, one loop that turns rows into tests:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/pricing.test.ts</div><pre class="code">describe(<span class="s">&quot;total&quot;</span>, () =&gt; {
+  <span class="c line-bidi">// one row per case: adding a case is one line</span>
+  <span class="k">const</span> cases = [
+    {
+      name: <span class="s">&quot;no code: subtotal plus VAT&quot;</span>,
+      code: <span class="k">undefined</span>,
+      want: { discount: <span class="n">0</span>, vat: <span class="n">7980</span>, total: <span class="n">64980</span> },
+    },
+    {
+      name: <span class="s">&quot;SAVE10 takes 10% off&quot;</span>,
+      code: <span class="s">&quot;SAVE10&quot;</span>,
+      want: { discount: <span class="n">5700</span>, vat: <span class="n">7182</span>, total: <span class="n">58482</span> },
+    },
+    {
+      name: <span class="s">&quot;FIXED50 takes 50 pounds off&quot;</span>,
+      code: <span class="s">&quot;FIXED50&quot;</span>,
+      want: { discount: <span class="n">5000</span>, vat: <span class="n">7280</span>, total: <span class="n">59280</span> },
+    },
+  ];
+  <span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> cases) {
+    it(c.name, () =&gt; {
+      assert.partialDeepStrictEqual(total([kit, wheels], c.code), c.want);
+    });
+  }
+
+  it(<span class="s">&quot;a fixed discount never goes below zero&quot;</span>, () =&gt; {
+    <span class="k">const</span> cheap = [{ price: <span class="n">3000</span>, quantity: <span class="n">1</span> }];
+    assert.deepEqual(total(cheap, <span class="s">&quot;FIXED50&quot;</span>), {
+      subtotal: <span class="n">3000</span>,
+      discount: <span class="n">3000</span>,
+      vat: <span class="n">0</span>,
+      total: <span class="n">0</span>,
+    });
+  });
+
+  it(<span class="s">&quot;refuses an unknown code&quot;</span>, () =&gt; {
+    assert.throws(() =&gt; total([kit], <span class="s">&quot;FREE&quot;</span>), /FREE/);
+  });
+});</pre></div>
+
+<ul>
+<li>Each test name says the behaviour, not the function: “a fixed discount never goes below zero” reads like a rule of the shop, and is what you see when it fails.</li>
+<li><code>partialDeepStrictEqual</code> checks the fields that matter for the case and ignores the rest; <code>deepEqual</code> checks the whole object when the whole object is the point.</li>
+<li>Error cases are tests too: <code>assert.throws</code> checks that an unknown code is refused, and that the message names it.</li>
+</ul>
+
+<h2><span class="sec">12.3</span> <span>Integration tests with a real database</span></h2>
+
+<p>The order route reads and writes PostgreSQL inside a transaction. Mocking the database would test only that the code calls the mock; the bugs worth catching are in the SQL. So the test runs the real route, through <code>app.inject</code>, against a real database:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/orders.test.ts</div><pre class="code"><span class="k">const</span> schema = <span class="s">`test_${process.pid}`</span>;
+<span class="k">const</span> db = connect(schema);
+<span class="c line-bidi">// a test double: records the calls instead of sending email</span>
+<span class="k">const</span> mailer = { send: mock.fn(<span class="k">async</span> (_to: string, _subject: string) =&gt; {}) };
+<span class="k">const</span> app = buildApp(db, mailer);
+
+before(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql
+    .raw(<span class="s">`CREATE SCHEMA ${schema}; SET search_path = ${schema}; ${SCHEMA}`</span>)
+    .execute(db);
+});
+beforeEach(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql<span class="s">`TRUNCATE orders RESTART IDENTITY; DELETE FROM products`</span>.execute(db);
+  <span class="k">await</span> db
+    .insertInto(<span class="s">&quot;products&quot;</span>)
+    .values({ id: <span class="n">1</span>, name: <span class="s">&quot;Kit&quot;</span>, price: <span class="n">45000</span>, stock: <span class="n">3</span> })
+    .execute();
+  mailer.send.mock.resetCalls();
+});
+after(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql.raw(<span class="s">`DROP SCHEMA ${schema} CASCADE`</span>).execute(db);
+  <span class="k">await</span> Promise.all([app.close(), db.destroy()]);
+});
+
+<span class="k">const</span> order = (quantity: number) =&gt;
+  app.inject({
+    method: <span class="s">&quot;POST&quot;</span>,
+    url: <span class="s">&quot;/orders&quot;</span>,
+    payload: { email: <span class="s">&quot;sara@example.com&quot;</span>, productId: <span class="n">1</span>, quantity, code: <span class="s">&quot;SAVE10&quot;</span> },
+  });
+
+test(<span class="s">&quot;creates an order with the right total, and sends one confirmation&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> res = <span class="k">await</span> order(<span class="n">2</span>);
+  assert.equal(res.statusCode, <span class="n">201</span>);
+  assert.deepEqual(res.json(), { id: <span class="n">1</span>, total: <span class="n">92340</span> });
+  <span class="k">const</span> { stock } = <span class="k">await</span> db
+    .selectFrom(<span class="s">&quot;products&quot;</span>)
+    .select(<span class="s">&quot;stock&quot;</span>)
+    .executeTakeFirstOrThrow();
+  assert.equal(stock, <span class="n">1</span>);
+  assert.equal(mailer.send.mock.callCount(), <span class="n">1</span>);
+  assert.deepEqual(mailer.send.mock.calls[<span class="n">0</span>]?.arguments, [
+    <span class="s">&quot;sara@example.com&quot;</span>,
+    <span class="s">&quot;Order 1&quot;</span>,
+  ]);
+});
+
+test(<span class="s">&quot;refuses an order larger than the stock, and changes nothing&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> res = <span class="k">await</span> order(<span class="n">4</span>);
+  assert.equal(res.statusCode, <span class="n">409</span>);
+  <span class="k">const</span> orders = <span class="k">await</span> db.selectFrom(<span class="s">&quot;orders&quot;</span>).selectAll().execute();
+  assert.equal(orders.length, <span class="n">0</span>);
+  assert.equal(mailer.send.mock.callCount(), <span class="n">0</span>);
+});</pre></div>
+
+<ul>
+<li><strong>Isolation between files.</strong> <code>node --test</code> runs each test file in its own process, in parallel. If two files shared tables, one could delete the other’s rows halfway through. Each file creates its own <dfn>schema</dfn> (a namespace inside the database), named after its process, and drops it at the end.</li>
+<li><strong>Isolation between tests.</strong> <code>beforeEach</code> resets the tables to a known state, so every test starts from the same data and tests can run in any order. A test that depends on another test’s leftovers will fail one day for no visible reason.</li>
+<li><strong>Checking the effects, not just the response.</strong> The first test checks the status, the body, the stock left in the database and the email; the second checks that a refused order left no row behind, which is the transaction of Chapter 6 doing its job.</li>
+</ul>
+
+<p>The mailer is the one dependency replaced. Sending real email from tests would be slow and would reach real people, so the app receives a <dfn>test double</dfn>: <code>mock.fn</code> records every call, and the test asserts how it was called. This works because <code>buildApp</code> takes the mailer as a parameter instead of importing it, a design that makes code testable without any tricks (<dfn>dependency injection</dfn>).</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: mock the edges, not the middle</p><p>Replace what is slow, outside your control or has effects in the world: email, payment providers, other companies’ APIs, the clock. Do not mock your own database, your own modules or the framework: tests full of mocks pass while the real thing is broken, and break whenever the code is reorganised even when nothing is wrong. If a test needs ten mocks, the code under test probably does too much.</p></aside>
+
+<h2><span class="sec">12.4</span> <span>Controlling time</span></h2>
+
+<p>A basket left alone for 30 minutes is released. Testing that by waiting 30 minutes is absurd, and testing it with the real clock is fragile. The runner can replace the clock with one the test moves by hand:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/baskets.test.ts</div><pre class="code"><span class="k">import</span> assert <span class="k">from</span> <span class="s">&quot;node:assert/strict&quot;</span>;
+<span class="k">import</span> { test } <span class="k">from</span> <span class="s">&quot;node:test&quot;</span>;
+<span class="k">import</span> { isExpired } <span class="k">from</span> <span class="s">&quot;../src/baskets.ts&quot;</span>;
+
+test(<span class="s">&quot;a basket touched recently is kept&quot;</span>, (t) =&gt; {
+  <span class="c line-bidi">// the clock is mocked: the test moves time instead of waiting 30 minutes</span>
+  t.mock.timers.enable({ apis: [<span class="s">&quot;Date&quot;</span>], now: <span class="n">0</span> });
+  <span class="k">const</span> touched = Date.now();
+  t.mock.timers.tick(<span class="n">29</span> * <span class="n">60</span> * <span class="n">1000</span>);
+  assert.equal(isExpired(touched), <span class="k">false</span>);
+});
+
+test(<span class="s">&quot;a basket left for 30 minutes is released&quot;</span>, (t) =&gt; {
+  t.mock.timers.enable({ apis: [<span class="s">&quot;Date&quot;</span>], now: <span class="n">0</span> });
+  <span class="k">const</span> touched = Date.now();
+  t.mock.timers.tick(<span class="n">30</span> * <span class="n">60</span> * <span class="n">1000</span>);
+  assert.equal(isExpired(touched), <span class="k">true</span>);
+});</pre></div>
+
+<p><code>t.mock.timers</code> makes <code>Date.now()</code> start at the given moment and advance only when the test calls <code>tick</code>, and it is restored automatically when the test ends. The two tests check both sides of the boundary, 29 and 30 minutes, which is where off-by-one bugs live. The same API controls <code>setTimeout</code> and <code>setInterval</code>, for code that schedules work.</p>
+
+<h2><span class="sec">12.5</span> <span>Running and reading tests</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># All the tests</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ a basket touched recently is kept (…ms)
+✔ a basket left for 30 minutes is released (…ms)
+✔ creates an order with the right total, and sends one confirmation (…ms)
+✔ refuses an order larger than the stock, and changes nothing (…ms)
+▶ total
+  ✔ no code: subtotal plus VAT (…ms)
+  ✔ SAVE10 takes 10% off (…ms)
+  ✔ FIXED50 takes 50 pounds off (…ms)
+  ✔ a fixed discount never goes below zero (…ms)
+  ✔ refuses an unknown code (…ms)
+✔ total (…ms)
+ℹ tests 9
+ℹ suites 1
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms …</pre></div>
+
+<p>Nine tests across three files, run in parallel processes, in well under a second including the database work. While working on one part, run one file (the runner accepts file names and <code>--test-name-pattern</code>):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># One file, while working on it</span>
+<span class="c">$ </span><span class="k">npm test -- test/pricing.test.ts</span>
+▶ total
+  ✔ no code: subtotal plus VAT (…ms)
+  ✔ SAVE10 takes 10% off (…ms)
+  ✔ FIXED50 takes 50 pounds off (…ms)
+  ✔ a fixed discount never goes below zero (…ms)
+  ✔ refuses an unknown code (…ms)
+✔ total (…ms)
+ℹ tests 5</pre></div>
+
+<p>A test is only useful if its failure tells you what is wrong. Here a bug has been switched on, and the VAT rate is wrong:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A test that fails</span>
+<span class="c">$ </span><span class="k">BUG=1 npm test -- test/pricing.test.ts</span>
+✖ failing tests:
+test at test/pricing.test.ts:28:5
+✖ no code: subtotal plus VAT (…ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be partially and strictly deep-equal:
+  + actual - expected
+  
+    {
+      discount: 0,
+  +   subtotal: 57000,
+  +   total: 65550,
+  +   vat: 8550
+  -   total: 64980,
+  -   vat: 7980
+    }
+  
+      at TestContext.&lt;anonymous&gt; (file://test/pricing.test.ts:29:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)</pre></div>
+
+<p>The output names the behaviour that broke, the file and line, and a diff: the expected VAT of 7980 against the 8550 received. That is enough to suspect the rate without opening a debugger. Good names and focused assertions are what make failures this readable.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does each test file create its own schema?</li><li>Why is the mailer replaced with a test double, but not the database?</li><li>What does <code>t.mock.timers.tick(30 * 60 * 1000)</code> change, and what does it not?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">12.6</span> <span>Coverage</span></h2>
+
+<p><dfn>Coverage</dfn> measures which lines and branches the tests ran:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># How much of the code the tests run</span>
+<span class="c">$ </span><span class="k">npm run coverage</span>
+start of coverage report
+------------------------------------------------------------
+file        | line % | branch % | funcs % | uncovered lines
+------------------------------------------------------------
+src         |        |          |         | 
+ app.ts     | 100.00 |   100.00 |  100.00 | 
+ baskets.ts | 100.00 |   100.00 |  100.00 | 
+ db.ts      | 100.00 |   100.00 |  100.00 | 
+ pricing.ts | 100.00 |    90.91 |  100.00 | 
+------------------------------------------------------------
+all files   | 100.00 |    95.65 |  100.00 | 
+------------------------------------------------------------
+end of coverage report</pre></div>
+
+<p>Every line ran, and one branch in <code>pricing.ts</code> did not (exercise 2). Coverage is a good flashlight and a bad target. Low coverage reliably shows code nobody tests; high coverage proves only that lines were executed, not that anything was checked: a test with no assertions reaches 100% too. Use it to find untested areas, look at the uncovered lines of every change in review, and never chase a percentage for its own sake.</p>
+
+<h2><span class="sec">12.7</span> <span>A suite worth trusting</span></h2>
+
+<ul>
+<li><strong>Fast.</strong> A suite that runs in seconds is run before every commit; one that takes twenty minutes is run by CI and ignored until it fails. Parallel files, small datasets, and no sleeps.</li>
+<li><strong>Deterministic.</strong> The same code gives the same result every time. Flaky tests usually come from shared data, real time, random values, the order of results without <code>ORDER BY</code>, or waiting for something with a fixed delay. Fix them at once, or delete them: a flaky test teaches the team to ignore red.</li>
+<li><strong>Testing behaviour.</strong> Assert what the user or caller sees (responses, rows, emails sent), not how the code is arranged inside. Then the code can be improved without rewriting the tests.</li>
+<li><strong>Written with the bug.</strong> When a bug is found, first write a test that fails because of it, then fix it. The test proves the fix and keeps the bug from coming back.</li>
+<li><strong>Run on every change.</strong> In CI, on every pull request, against a real PostgreSQL started as a service, and the merge blocked while it is red.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a failing test first, for every bug</p><p>Before fixing a bug, reproduce it with a test and watch the test fail for the right reason. Only then fix the code and watch it pass. It takes a few minutes, it often reveals that the bug is not where you thought, and it adds to the suite exactly the case that real life proved you had missed.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Mocking the database</td><td>Wrong SQL passes the tests</td><td>Integration tests against a real database</td></tr>
+<tr><td>Tests sharing data</td><td>Failures that depend on order and timing</td><td>A schema per file, a reset per test</td></tr>
+<tr><td>Real time and real sleeps</td><td>Slow, flaky tests</td><td>Mocked timers; inject the clock</td></tr>
+<tr><td>Only the happy path</td><td>Refusals and errors break unnoticed</td><td>Tests for every “no” and every error</td></tr>
+<tr><td>Testing private details</td><td>Tests break when code is reorganised</td><td>Assert behaviour: responses, rows, calls at the edges</td></tr>
+<tr><td>Vague names and huge assertions</td><td>Failures that say nothing</td><td>One behaviour per test, named as a rule</td></tr>
+<tr><td>Chasing a coverage number</td><td>Tests that run code but check nothing</td><td>Coverage as a flashlight, assertions as the point</td></tr>
+<tr><td>Living with flaky tests</td><td>Nobody trusts a red build</td><td>Fix or delete them at once</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Unit tests</strong> for logic with many cases, <strong>integration tests</strong> for routes and SQL against a real database, a few <strong>end-to-end tests</strong> for the main journeys.</li>
+<li>Node’s <strong><code>node:test</code></strong> and <strong><code>node:assert</code></strong> are enough: <code>describe</code>, <code>it</code>, hooks, tables of cases, <code>mock.fn</code>, mocked timers and coverage.</li>
+<li>Integration tests stay independent with a <strong>schema per file</strong> and a <strong>reset per test</strong>, and check effects as well as responses.</li>
+<li><strong>Test doubles</strong> replace the edges (email, payments, the clock), passed in through parameters; never the database or your own code.</li>
+<li>A failure should explain itself: <strong>behaviour names</strong> and focused assertions.</li>
+<li>Coverage finds untested code; a <strong>fast, deterministic</strong> suite run on every change is what makes it trustworthy.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Test files run in parallel processes; with shared tables, one file’s <code>TRUNCATE</code> or inserts could change another file’s data in the middle of its tests. A schema per file gives each its own tables in the same database. 2. Email has effects outside the system (real messages) and is slow, so the test only needs to know it was asked for, correctly. The database is where the bugs worth catching live (queries, constraints, transactions), so it must be the real one. 3. It moves the mocked <code>Date.now()</code> (and mocked timers) forward by 30 minutes instantly; it does not make real time pass, and it is undone when the test ends.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project improves the tests of an application from the earlier chapters. Run every suite at least ten times in a row to prove it is deterministic.</p>
+
+<div class="project">
+<p class="project-label">Project 12.1 · Easy</p>
+<h3>Cover the pricing rules</h3>
+<p class="project-goal">Extend the pricing function and its table of tests together.</p>
+<p class="project-skills"><strong>You will practise:</strong> table-driven tests, boundary values, and writing the test before the code.</p>
+<ol class="steps">
+<li>Add a rule: orders above 1,000 pounds before discount get free shipping, others pay 40 pounds. Write the test rows first, including exactly 1,000.</li>
+<li>Add codes that expire on a date, and test them with mocked time on both sides of the date.</li>
+<li>Reach 100% branch coverage of <code>pricing.ts</code> with meaningful tests.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> boundary values (999.99, 1,000, 1,000.01) are where off-by-one bugs live; give each its own row.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 12.2 · Medium</p>
+<h3>Integration tests for the shop’s API</h3>
+<p class="project-goal">Give the API of Chapters 3 to 8 a complete integration suite on a real database.</p>
+<p class="project-skills"><strong>You will practise:</strong> schemas per file, migrations in tests, factories for test data, and testing refusals.</p>
+<ol class="steps">
+<li>Create the schema of each test file by running the real migrations, not hand-written SQL.</li>
+<li>Write small factory functions (<code>makeCustomer</code>, <code>makeProduct</code>) with sensible defaults that each test can override.</li>
+<li>For every route, test the success, the validation errors, the 401, the 403 or 404, and the 409 cases.</li>
+<li>Run the suite in CI against PostgreSQL started as a service.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> running migrations once per schema is slower than hand-written SQL but tests the migrations too; keep it fast by creating the schema once per file, not per test.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 12.3 · Challenge</p>
+<h3>Testing the worker</h3>
+<p class="project-goal">Test the queue worker of Chapter 10 without a real mail service and without waiting for real backoffs.</p>
+<p class="project-skills"><strong>You will practise:</strong> separating logic from infrastructure, test doubles for services, and testing retries.</p>
+<ol class="steps">
+<li>Move the job’s logic into a plain function that receives the order id and a mailer, and test it directly.</li>
+<li>Test that a mailer failure throws (so the queue retries), and that an invalid address throws <code>UnrecoverableError</code>.</li>
+<li>Write one integration test with a real Redis that queues a job, runs a worker with concurrency 1, and waits for the <code>completed</code> event.</li>
+<li>Make the retry delays configurable, and use tiny delays in the test.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> most of a worker’s behaviour can be tested as ordinary functions; keep the tests that need Redis few and focused.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Run the pricing tests with <code>BUG=1</code>. Which tests fail, which pass, and what does that tell you about where the bug is?</li>
+<li><span class="level">Easy</span> The coverage report shows 90.91% of branches in <code>pricing.ts</code>. Which branch never runs, and should a test cover it?</li>
+<li><span class="level medium">Medium</span> A colleague’s test fails about once in twenty runs with “expected 2 orders, got 3”. List three likely causes and how to find which it is.</li>
+<li><span class="level medium">Medium</span> The order route sends the email after the transaction. Write the test that proves a refused order sends no email, and explain why it would not catch an email sent <em>inside</em> a transaction that later rolls back.</li>
+<li><span class="level hard">Challenge</span> Design the tests for “an order is cancelled automatically if it is not paid within 15 minutes”: which levels, which doubles, and how to control time in each.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 13</p>
+<p>Tests prove the code works before it ships; production needs proof that it keeps working. Observability: structured logs, metrics, traces and alerts that tell you what is wrong before the customers do.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -5711,6 +6123,16 @@ In a real shop the address would be corrected on the customer’s record, and a 
 : connected to server 3000</pre></div>
 The message published while nobody was subscribed went nowhere: pub/sub does not store messages. This is why a connecting client must first get the current state from the database, and treat live messages as updates on top of it.</li>
 <li>Client: reconnect after a random delay that grows with each failed attempt (for example a random time between 0 and 2<sup>attempt</sup> seconds, capped at a minute), instead of at once; after reconnecting, load the current state with one request. Server: deploy gradually (one server at a time, so only part of the clients reconnect at once), close connections during shutdown with a “reconnect later” signal (SSE’s <code>retry:</code> field sets the browser’s delay), limit new connections per second at the load balancer, and keep the reconnect path cheap: authentication cached, and the initial state served from a cache rather than a heavy query.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 12</h2>
+<ol class="exercises">
+<li>The three table rows fail and the two other tests pass. The rows are exactly the cases where VAT is charged on a positive amount; the “fixed discount never goes below zero” case has nothing left to tax (VAT of 0 at any rate), and the unknown code throws before VAT is computed. So the bug is in the VAT step, not in the discounts or the codes, and the diff (8550 instead of 7980, which is 15% instead of 14% of 57000) points at the rate. Good tests narrow a bug down by which of them fail.</li>
+<li>The branch where <code>process.env.BUG</code> is set: the tests never switch the bug on. It should not be covered by a test; it is not a feature of the shop but a switch put there for this exercise, and real code would not contain it. That is why coverage is a flashlight: an uncovered branch is a question (“is this tested, should it exist?”), not an order to write a test.</li>
+<li>(1) Shared data: another test file, or a previous test, inserts orders into the same table; check whether the test resets its data and whether files share a schema. (2) Order of execution: the test counts orders that a test running earlier or at the same time created; run it alone with <code>--test-name-pattern</code> many times, and then with the whole suite. (3) Something asynchronous still running: an order created by a request or job that was not awaited lands after the reset; look for missing <code>await</code>s and jobs or timers left running. Running the test alone a hundred times and checking whether it ever fails separates (3) from (1) and (2).</li>
+<li>The second integration test, “refuses an order larger than the stock, and changes nothing”, already asserts <code>mailer.send.mock.callCount()</code> is 0 after a 409. It cannot catch an email sent inside a transaction that later rolls back, because the double only records that <code>send</code> was called; in that bug the email is sent (the double records one call) and the order disappears afterwards, so the test that would catch it is the opposite one: force the transaction to fail after the point where the email is sent (for example with a failing insert), and assert that <code>send</code> was not called. The better fix is in the design: send after the commit, or through an outbox.</li>
+<li>Unit level: a pure function <code>isUnpaidTooLong(order, now)</code> tested with a table of times on both sides of 15 minutes, without any clock. Integration level: the job or scheduled command that cancels orders, run against a real database, with orders whose <code>created_at</code> is set in the past by the test (rather than waiting), checking that only the unpaid old ones are cancelled and that stock is returned. The clock is controlled by passing <code>now</code> in (or with <code>mock.timers</code> for <code>Date</code>), never by sleeping. One end-to-end check at most, if the cancellation is visible to customers, using the same past timestamps. The queue itself needs no test of its timing: trust the library, test your code.</li>
 </ol>
 
 </section>

@@ -1,0 +1,199 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/testing/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Testing</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide what to test with unit, integration and end-to-end tests</li>
+<li>write clear unit tests with Node’s own test runner, including table-driven tests</li>
+<li>test routes against a real PostgreSQL database, with files running in parallel</li>
+<li>replace slow or outside dependencies with test doubles, and control time</li>
+<li>read a failing test, and measure what the tests cover</li>
+<li>keep a test suite fast, reliable and worth trusting</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter so far ended with a few tests. This one is about the craft itself. A good test suite is what lets you change code on a Friday afternoon without fear: it tells you within a minute whether the shop still takes orders, still charges the right amount and still refuses what it must refuse. A bad one is slow, fails at random, and is ignored. The difference is not the tool, which here is the test runner built into Node, but the decisions about what to test and how.</p>
+
+<aside class="bit" data-mood="think"><p>I once worked on a project with two thousand tests that took forty minutes and failed at random about once a day. Nobody believed a red build any more, so real bugs went out with the noise. We deleted a third of the tests, made the rest use a real database properly, and got the suite under three minutes. It caught more bugs with fewer tests.</p></aside>
+
+<h2>{{n}}.1 What to test, and at which level</h2>
+
+<ul>
+<li><dfn>Unit tests</dfn> call one function or class directly, with no network, database or clock. They are fast (thousands a second) and point straight at the broken line. They suit logic with many cases: prices, discounts, validation, state changes.</li>
+<li><dfn>Integration tests</dfn> run a real slice of the application: a route through its validation, its SQL and a real database. They are slower but test what the unit tests cannot: that the query is correct, that the transaction rolls back, that the status code is right.</li>
+<li><dfn>End-to-end tests</dfn> drive the whole system from the outside, often through a browser with Playwright (Book 2). They prove the main journeys work, and are the slowest and most fragile, so keep them few.</li>
+</ul>
+
+<p>The classic advice is a <dfn>pyramid</dfn>: many unit tests, fewer integration tests, a handful of end-to-end tests. For a backend whose value is mostly in its queries, many teams lean towards more integration tests, because a unit test with a mocked database cannot catch a wrong <code>WHERE</code>. The real rule: test each behaviour at the lowest level where a bug in it would actually show.</p>
+
+<h2>{{n}}.2 Unit tests</h2>
+
+<p>The shop’s pricing is a <dfn>pure function</dfn>: it takes lines and a code and returns numbers, touching nothing else. That makes it ideal for unit tests:</p>
+
+<pre data-code="src/pricing.ts" data-from="export function total" data-title="src/pricing.ts"></pre>
+
+<p>Node’s test runner (<code>node:test</code>) provides <code>describe</code>, <code>it</code> (also called <code>test</code>), hooks, mocks and coverage, and <code>node:assert</code> provides the checks. Several cases that differ only in their data are best written as a <dfn>table</dfn>: one row per case, one loop that turns rows into tests:</p>
+
+<pre data-code="test/pricing.test.ts" data-from="describe(&quot;total&quot;" data-title="test/pricing.test.ts"></pre>
+
+<ul>
+<li>Each test name says the behaviour, not the function: “a fixed discount never goes below zero” reads like a rule of the shop, and is what you see when it fails.</li>
+<li><code>partialDeepStrictEqual</code> checks the fields that matter for the case and ignores the rest; <code>deepEqual</code> checks the whole object when the whole object is the point.</li>
+<li>Error cases are tests too: <code>assert.throws</code> checks that an unknown code is refused, and that the message names it.</li>
+</ul>
+
+<h2>{{n}}.3 Integration tests with a real database</h2>
+
+<p>The order route reads and writes PostgreSQL inside a transaction. Mocking the database would test only that the code calls the mock; the bugs worth catching are in the SQL. So the test runs the real route, through <code>app.inject</code>, against a real database:</p>
+
+<pre data-code="test/orders.test.ts" data-from="const schema" data-title="test/orders.test.ts"></pre>
+
+<ul>
+<li><strong>Isolation between files.</strong> <code>node --test</code> runs each test file in its own process, in parallel. If two files shared tables, one could delete the other’s rows halfway through. Each file creates its own <dfn>schema</dfn> (a namespace inside the database), named after its process, and drops it at the end.</li>
+<li><strong>Isolation between tests.</strong> <code>beforeEach</code> resets the tables to a known state, so every test starts from the same data and tests can run in any order. A test that depends on another test’s leftovers will fail one day for no visible reason.</li>
+<li><strong>Checking the effects, not just the response.</strong> The first test checks the status, the body, the stock left in the database and the email; the second checks that a refused order left no row behind, which is the transaction of Chapter {{n-6}} doing its job.</li>
+</ul>
+
+<p>The mailer is the one dependency replaced. Sending real email from tests would be slow and would reach real people, so the app receives a <dfn>test double</dfn>: <code>mock.fn</code> records every call, and the test asserts how it was called. This works because <code>buildApp</code> takes the mailer as a parameter instead of importing it, a design that makes code testable without any tricks (<dfn>dependency injection</dfn>).</p>
+
+<aside class="box warn"><p class="box-title">Watch out: mock the edges, not the middle</p><p>Replace what is slow, outside your control or has effects in the world: email, payment providers, other companies’ APIs, the clock. Do not mock your own database, your own modules or the framework: tests full of mocks pass while the real thing is broken, and break whenever the code is reorganised even when nothing is wrong. If a test needs ten mocks, the code under test probably does too much.</p></aside>
+
+<h2>{{n}}.4 Controlling time</h2>
+
+<p>A basket left alone for 30 minutes is released. Testing that by waiting 30 minutes is absurd, and testing it with the real clock is fragile. The runner can replace the clock with one the test moves by hand:</p>
+
+<pre data-code="test/baskets.test.ts" data-title="test/baskets.test.ts"></pre>
+
+<p><code>t.mock.timers</code> makes <code>Date.now()</code> start at the given moment and advance only when the test calls <code>tick</code>, and it is restored automatically when the test ends. The two tests check both sides of the boundary, 29 and 30 minutes, which is where off-by-one bugs live. The same API controls <code>setTimeout</code> and <code>setInterval</code>, for code that schedules work.</p>
+
+<h2>{{n}}.5 Running and reading tests</h2>
+
+<pre data-code="run.sh" data-title="Terminal"></pre>
+
+<p>Nine tests across three files, run in parallel processes, in well under a second including the database work. While working on one part, run one file (the runner accepts file names and <code>--test-name-pattern</code>):</p>
+
+<pre data-code="one.sh" data-title="Terminal"></pre>
+
+<p>A test is only useful if its failure tells you what is wrong. Here a bug has been switched on, and the VAT rate is wrong:</p>
+
+<pre data-code="fail.sh" data-title="Terminal"></pre>
+
+<p>The output names the behaviour that broke, the file and line, and a diff: the expected VAT of 7980 against the 8550 received. That is enough to suspect the rate without opening a debugger. Good names and focused assertions are what make failures this readable.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does each test file create its own schema?</li><li>Why is the mailer replaced with a test double, but not the database?</li><li>What does <code>t.mock.timers.tick(30 * 60 * 1000)</code> change, and what does it not?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Coverage</h2>
+
+<p><dfn>Coverage</dfn> measures which lines and branches the tests ran:</p>
+
+<pre data-code="coverage.sh" data-title="Terminal"></pre>
+
+<p>Every line ran, and one branch in <code>pricing.ts</code> did not (exercise 2). Coverage is a good flashlight and a bad target. Low coverage reliably shows code nobody tests; high coverage proves only that lines were executed, not that anything was checked: a test with no assertions reaches 100% too. Use it to find untested areas, look at the uncovered lines of every change in review, and never chase a percentage for its own sake.</p>
+
+<h2>{{n}}.7 A suite worth trusting</h2>
+
+<ul>
+<li><strong>Fast.</strong> A suite that runs in seconds is run before every commit; one that takes twenty minutes is run by CI and ignored until it fails. Parallel files, small datasets, and no sleeps.</li>
+<li><strong>Deterministic.</strong> The same code gives the same result every time. Flaky tests usually come from shared data, real time, random values, the order of results without <code>ORDER BY</code>, or waiting for something with a fixed delay. Fix them at once, or delete them: a flaky test teaches the team to ignore red.</li>
+<li><strong>Testing behaviour.</strong> Assert what the user or caller sees (responses, rows, emails sent), not how the code is arranged inside. Then the code can be improved without rewriting the tests.</li>
+<li><strong>Written with the bug.</strong> When a bug is found, first write a test that fails because of it, then fix it. The test proves the fix and keeps the bug from coming back.</li>
+<li><strong>Run on every change.</strong> In CI, on every pull request, against a real PostgreSQL started as a service, and the merge blocked while it is red.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit: a failing test first, for every bug</p><p>Before fixing a bug, reproduce it with a test and watch the test fail for the right reason. Only then fix the code and watch it pass. It takes a few minutes, it often reveals that the bug is not where you thought, and it adds to the suite exactly the case that real life proved you had missed.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Mocking the database</td><td>Wrong SQL passes the tests</td><td>Integration tests against a real database</td></tr>
+<tr><td>Tests sharing data</td><td>Failures that depend on order and timing</td><td>A schema per file, a reset per test</td></tr>
+<tr><td>Real time and real sleeps</td><td>Slow, flaky tests</td><td>Mocked timers; inject the clock</td></tr>
+<tr><td>Only the happy path</td><td>Refusals and errors break unnoticed</td><td>Tests for every “no” and every error</td></tr>
+<tr><td>Testing private details</td><td>Tests break when code is reorganised</td><td>Assert behaviour: responses, rows, calls at the edges</td></tr>
+<tr><td>Vague names and huge assertions</td><td>Failures that say nothing</td><td>One behaviour per test, named as a rule</td></tr>
+<tr><td>Chasing a coverage number</td><td>Tests that run code but check nothing</td><td>Coverage as a flashlight, assertions as the point</td></tr>
+<tr><td>Living with flaky tests</td><td>Nobody trusts a red build</td><td>Fix or delete them at once</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Unit tests</strong> for logic with many cases, <strong>integration tests</strong> for routes and SQL against a real database, a few <strong>end-to-end tests</strong> for the main journeys.</li>
+<li>Node’s <strong><code>node:test</code></strong> and <strong><code>node:assert</code></strong> are enough: <code>describe</code>, <code>it</code>, hooks, tables of cases, <code>mock.fn</code>, mocked timers and coverage.</li>
+<li>Integration tests stay independent with a <strong>schema per file</strong> and a <strong>reset per test</strong>, and check effects as well as responses.</li>
+<li><strong>Test doubles</strong> replace the edges (email, payments, the clock), passed in through parameters; never the database or your own code.</li>
+<li>A failure should explain itself: <strong>behaviour names</strong> and focused assertions.</li>
+<li>Coverage finds untested code; a <strong>fast, deterministic</strong> suite run on every change is what makes it trustworthy.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Test files run in parallel processes; with shared tables, one file’s <code>TRUNCATE</code> or inserts could change another file’s data in the middle of its tests. A schema per file gives each its own tables in the same database. 2. Email has effects outside the system (real messages) and is slow, so the test only needs to know it was asked for, correctly. The database is where the bugs worth catching live (queries, constraints, transactions), so it must be the real one. 3. It moves the mocked <code>Date.now()</code> (and mocked timers) forward by 30 minutes instantly; it does not make real time pass, and it is undone when the test ends.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project improves the tests of an application from the earlier chapters. Run every suite at least ten times in a row to prove it is deterministic.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Cover the pricing rules</h3>
+<p class="project-goal">Extend the pricing function and its table of tests together.</p>
+<p class="project-skills"><strong>You will practise:</strong> table-driven tests, boundary values, and writing the test before the code.</p>
+<ol class="steps">
+<li>Add a rule: orders above 1,000 pounds before discount get free shipping, others pay 40 pounds. Write the test rows first, including exactly 1,000.</li>
+<li>Add codes that expire on a date, and test them with mocked time on both sides of the date.</li>
+<li>Reach 100% branch coverage of <code>pricing.ts</code> with meaningful tests.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> boundary values (999.99, 1,000, 1,000.01) are where off-by-one bugs live; give each its own row.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Integration tests for the shop’s API</h3>
+<p class="project-goal">Give the API of Chapters {{n-9}} to {{n-4}} a complete integration suite on a real database.</p>
+<p class="project-skills"><strong>You will practise:</strong> schemas per file, migrations in tests, factories for test data, and testing refusals.</p>
+<ol class="steps">
+<li>Create the schema of each test file by running the real migrations, not hand-written SQL.</li>
+<li>Write small factory functions (<code>makeCustomer</code>, <code>makeProduct</code>) with sensible defaults that each test can override.</li>
+<li>For every route, test the success, the validation errors, the 401, the 403 or 404, and the 409 cases.</li>
+<li>Run the suite in CI against PostgreSQL started as a service.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> running migrations once per schema is slower than hand-written SQL but tests the migrations too; keep it fast by creating the schema once per file, not per test.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Testing the worker</h3>
+<p class="project-goal">Test the queue worker of Chapter {{n-2}} without a real mail service and without waiting for real backoffs.</p>
+<p class="project-skills"><strong>You will practise:</strong> separating logic from infrastructure, test doubles for services, and testing retries.</p>
+<ol class="steps">
+<li>Move the job’s logic into a plain function that receives the order id and a mailer, and test it directly.</li>
+<li>Test that a mailer failure throws (so the queue retries), and that an invalid address throws <code>UnrecoverableError</code>.</li>
+<li>Write one integration test with a real Redis that queues a job, runs a worker with concurrency 1, and waits for the <code>completed</code> event.</li>
+<li>Make the retry delays configurable, and use tiny delays in the test.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> most of a worker’s behaviour can be tested as ordinary functions; keep the tests that need Redis few and focused.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Run the pricing tests with <code>BUG=1</code>. Which tests fail, which pass, and what does that tell you about where the bug is?</li>
+<li><span class="level">Easy</span> The coverage report shows 90.91% of branches in <code>pricing.ts</code>. Which branch never runs, and should a test cover it?</li>
+<li><span class="level">Medium</span> A colleague’s test fails about once in twenty runs with “expected 2 orders, got 3”. List three likely causes and how to find which it is.</li>
+<li><span class="level">Medium</span> The order route sends the email after the transaction. Write the test that proves a refused order sends no email, and explain why it would not catch an email sent <em>inside</em> a transaction that later rolls back.</li>
+<li><span class="level">Challenge</span> Design the tests for “an order is cancelled automatically if it is not paid within 15 minutes”: which levels, which doubles, and how to control time in each.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Tests prove the code works before it ships; production needs proof that it keeps working. Observability: structured logs, metrics, traces and alerts that tell you what is wrong before the customers do.</p>
+</div>
+</section>

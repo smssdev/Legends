@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الزمن الحقيقي بـ WebSockets"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "الفصل 12: اختبار الخادم"; } }
+@page ch12:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -5513,6 +5515,416 @@ ws: {&quot;order&quot;:1001,&quot;status&quot;:&quot;shipped&quot;,&quot;by&quot
 <p>صار في المتجر أجزاء متحركة كثيرة. الاختبار: اختبارات الوحدة والتكامل والطرف إلى الطرف، وقاعدة بيانات حقيقية في الاختبارات، ومجموعة اختبارات سريعة بما يكفي لتعمل مع كل تغيير.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b3/node/testing/ar">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">الفصل 12</p><h1>الاختبار</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقرر ما تختبره باختبارات الوحدة والتكامل والطرف إلى الطرف</li>
+<li>تكتب اختبارات وحدة واضحة بمشغّل الاختبارات الخاص بـ Node، ومنها الاختبارات المبنية على الجداول</li>
+<li>تختبر المسارات مقابل قاعدة PostgreSQL حقيقية، والملفات تعمل بالتوازي</li>
+<li>تستبدل الاعتماديات البطيئة أو الخارجية ببدائل اختبار، وتتحكم في الوقت</li>
+<li>تقرأ اختباراً فاشلاً، وتقيس ما تغطيه الاختبارات</li>
+<li>تُبقي مجموعة الاختبارات سريعة وموثوقة وجديرة بالثقة</li>
+</ul>
+</div>
+
+<p class="lead">كل فصل حتى الآن انتهى ببضعة اختبارات. وهذا الفصل عن الصنعة نفسها. فمجموعة الاختبارات الجيدة هي ما يتيح لك تغيير الكود عصر الجمعة بلا خوف: تخبرك خلال دقيقة هل ما زال المتجر يقبل الطلبات، ويحسب المبلغ الصحيح، ويرفض ما يجب أن يرفضه. والسيئة بطيئة، وتفشل عشوائياً، ويتجاهلها الجميع. والفرق ليس في الأداة، وهي هنا مشغّل الاختبارات المبني في Node، بل في القرارات: ماذا تختبر وكيف.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>عملت مرة على مشروع فيه ألفا اختبار تستغرق أربعين دقيقة وتفشل عشوائياً نحو مرة في اليوم. لم يعد أحد يصدّق بناءً أحمر، فخرجت أخطاء حقيقية مع الضجيج. حذفنا ثلث الاختبارات، وجعلنا الباقي يستخدم قاعدة بيانات حقيقية كما يجب، فنزلت المجموعة تحت ثلاث دقائق. وصارت تلتقط أخطاء أكثر باختبارات أقل.</p></div></div>
+
+<h2><span class="sec">12.1</span> <span>ماذا تختبر، وفي أي مستوى</span></h2>
+
+<ul>
+<li><dfn>اختبارات الوحدة</dfn> (unit tests) تنادي دالة أو صنفاً واحداً مباشرة، بلا شبكة ولا قاعدة بيانات ولا ساعة. سريعة (آلاف في الثانية) وتشير مباشرة إلى السطر المكسور. وتناسب المنطق ذا الحالات الكثيرة: الأسعار، والخصومات، والتحقق، وتغيّرات الحالة.</li>
+<li><dfn>اختبارات التكامل</dfn> (integration tests) تشغّل شريحة حقيقية من التطبيق: مساراً عبر تحققه وSQL الخاص به وقاعدة بيانات حقيقية. أبطأ، لكنها تختبر ما لا تستطيعه اختبارات الوحدة: أن الاستعلام صحيح، وأن المعاملة تتراجع، وأن رمز الحالة صحيح.</li>
+<li><dfn>اختبارات الطرف إلى الطرف</dfn> (end-to-end) تقود النظام كله من الخارج، كثيراً عبر متصفح بـ Playwright (الكتاب الثاني). تثبت أن الرحلات الرئيسية تعمل، وهي الأبطأ والأهشّ، فأبقِها قليلة.</li>
+</ul>
+
+<p>والنصيحة الكلاسيكية <dfn>هرم</dfn>: اختبارات وحدة كثيرة، واختبارات تكامل أقل، وحفنة من اختبارات الطرف إلى الطرف. ولخادم خلفي أغلب قيمته في استعلاماته، تميل فرق كثيرة إلى اختبارات تكامل أكثر، لأن اختبار وحدة بقاعدة بيانات وهمية لا يستطيع التقاط <code>WHERE</code> خاطئة. والقاعدة الحقيقية: اختبر كل سلوك في أدنى مستوى يظهر فيه خطأ فيه فعلاً.</p>
+
+<h2><span class="sec">12.2</span> <span>اختبارات الوحدة</span></h2>
+
+<p>تسعير المتجر <dfn>دالة نقية</dfn>: تأخذ أسطراً وكوداً وتعيد أرقاماً، ولا تلمس شيئاً آخر. وهذا يجعلها مثالية لاختبارات الوحدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/pricing.ts</div><pre class="code"><span class="k">export</span> <span class="k">function</span> total(lines: Line[], code?: string) {
+  <span class="k">const</span> subtotal = lines.reduce((sum, l) =&gt; sum + l.price * l.quantity, <span class="n">0</span>);
+  <span class="k">let</span> discount = <span class="n">0</span>;
+  <span class="k">if</span> (code) {
+    <span class="c line-bidi">// أكواد الخصم: نسبة مئوية، أو مبلغ ثابت (لا ينزل تحت الصفر أبداً)</span>
+    <span class="k">const</span> rule = CODES[code];
+    <span class="k">if</span> (!rule) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">`كود خصم مجهول: ${code}`</span>);
+    discount = rule.percent
+      ? Math.round((subtotal * rule.percent) / <span class="n">100</span>)
+      : rule.amount!;
+    discount = Math.min(discount, subtotal);
+  }
+  <span class="c line-bidi">// ضريبة 14% على المجموع بعد الخصم، مقرَّبة إلى أقرب قرش</span>
+  <span class="c line-bidi">// التمرين 1: خطأ يُبحث عنه، يُشغَّل بـ BUG=1</span>
+  <span class="k">const</span> rate = process.env.BUG ? <span class="n">0.15</span> : <span class="n">0.14</span>;
+  <span class="k">const</span> vat = Math.round((subtotal - discount) * rate);
+  <span class="k">return</span> { subtotal, discount, vat, total: subtotal - discount + vat };
+}</pre></div>
+
+<p>يقدّم مشغّل الاختبارات في Node (<code>node:test</code>) الدوال <code>describe</code> و<code>it</code> (وتُسمّى أيضاً <code>test</code>)، والخطافات، والبدائل الوهمية، والتغطية، وتقدّم <code>node:assert</code> الفحوص. والحالات الكثيرة التي لا تختلف إلا في بياناتها أفضل ما تُكتب <dfn>جدولاً</dfn>: صف لكل حالة، وحلقة واحدة تحوّل الصفوف إلى اختبارات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/pricing.test.ts</div><pre class="code">describe(<span class="s">&quot;total&quot;</span>, () =&gt; {
+  <span class="c line-bidi">// صف لكل حالة: إضافة حالة سطر واحد</span>
+  <span class="k">const</span> cases = [
+    {
+      name: <span class="s">&quot;بلا كود: المجموع والضريبة&quot;</span>,
+      code: <span class="k">undefined</span>,
+      want: { discount: <span class="n">0</span>, vat: <span class="n">7980</span>, total: <span class="n">64980</span> },
+    },
+    {
+      name: <span class="s">&quot;SAVE10 تخصم 10%&quot;</span>,
+      code: <span class="s">&quot;SAVE10&quot;</span>,
+      want: { discount: <span class="n">5700</span>, vat: <span class="n">7182</span>, total: <span class="n">58482</span> },
+    },
+    {
+      name: <span class="s">&quot;FIXED50 تخصم 50 جنيهاً&quot;</span>,
+      code: <span class="s">&quot;FIXED50&quot;</span>,
+      want: { discount: <span class="n">5000</span>, vat: <span class="n">7280</span>, total: <span class="n">59280</span> },
+    },
+  ];
+  <span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> cases) {
+    it(c.name, () =&gt; {
+      assert.partialDeepStrictEqual(total([kit, wheels], c.code), c.want);
+    });
+  }
+
+  it(<span class="s">&quot;الخصم الثابت لا ينزل تحت الصفر أبداً&quot;</span>, () =&gt; {
+    <span class="k">const</span> cheap = [{ price: <span class="n">3000</span>, quantity: <span class="n">1</span> }];
+    assert.deepEqual(total(cheap, <span class="s">&quot;FIXED50&quot;</span>), {
+      subtotal: <span class="n">3000</span>,
+      discount: <span class="n">3000</span>,
+      vat: <span class="n">0</span>,
+      total: <span class="n">0</span>,
+    });
+  });
+
+  it(<span class="s">&quot;يرفض كوداً مجهولاً&quot;</span>, () =&gt; {
+    assert.throws(() =&gt; total([kit], <span class="s">&quot;FREE&quot;</span>), /FREE/);
+  });
+});</pre></div>
+
+<ul>
+<li>اسم كل اختبار يقول السلوك، لا الدالة: «الخصم الثابت لا ينزل تحت الصفر أبداً» تُقرأ كقاعدة من قواعد المتجر، وهي ما تراه حين يفشل.</li>
+<li><code>partialDeepStrictEqual</code> تفحص الحقول المهمة للحالة وتتجاهل الباقي؛ و<code>deepEqual</code> تفحص الكائن كله حين يكون الكائن كله هو المقصود.</li>
+<li>حالات الخطأ اختبارات أيضاً: <code>assert.throws</code> تفحص أن الكود المجهول يُرفض، وأن الرسالة تسمّيه.</li>
+</ul>
+
+<h2><span class="sec">12.3</span> <span>اختبارات التكامل بقاعدة بيانات حقيقية</span></h2>
+
+<p>مسار الطلب يقرأ PostgreSQL ويكتب فيها داخل معاملة. وتوهيم قاعدة البيانات لن يختبر إلا أن الكود ينادي البديل الوهمي؛ والأخطاء التي تستحق الالتقاط في SQL. فيشغّل الاختبار المسار الحقيقي، عبر <code>app.inject</code>، مقابل قاعدة بيانات حقيقية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/orders.test.ts</div><pre class="code"><span class="k">const</span> schema = <span class="s">`test_${process.pid}`</span>;
+<span class="k">const</span> db = connect(schema);
+<span class="c line-bidi">// بديل اختبار: يسجّل الاستدعاءات بدل إرسال البريد</span>
+<span class="k">const</span> mailer = { send: mock.fn(<span class="k">async</span> (_to: string, _subject: string) =&gt; {}) };
+<span class="k">const</span> app = buildApp(db, mailer);
+
+before(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql
+    .raw(<span class="s">`CREATE SCHEMA ${schema}; SET search_path = ${schema}; ${SCHEMA}`</span>)
+    .execute(db);
+});
+beforeEach(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql<span class="s">`TRUNCATE orders RESTART IDENTITY; DELETE FROM products`</span>.execute(db);
+  <span class="k">await</span> db
+    .insertInto(<span class="s">&quot;products&quot;</span>)
+    .values({ id: <span class="n">1</span>, name: <span class="s">&quot;Kit&quot;</span>, price: <span class="n">45000</span>, stock: <span class="n">3</span> })
+    .execute();
+  mailer.send.mock.resetCalls();
+});
+after(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql.raw(<span class="s">`DROP SCHEMA ${schema} CASCADE`</span>).execute(db);
+  <span class="k">await</span> Promise.all([app.close(), db.destroy()]);
+});
+
+<span class="k">const</span> order = (quantity: number) =&gt;
+  app.inject({
+    method: <span class="s">&quot;POST&quot;</span>,
+    url: <span class="s">&quot;/orders&quot;</span>,
+    payload: { email: <span class="s">&quot;sara@example.com&quot;</span>, productId: <span class="n">1</span>, quantity, code: <span class="s">&quot;SAVE10&quot;</span> },
+  });
+
+test(<span class="s">&quot;ينشئ طلباً بالمجموع الصحيح، ويرسل تأكيداً واحداً&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> res = <span class="k">await</span> order(<span class="n">2</span>);
+  assert.equal(res.statusCode, <span class="n">201</span>);
+  assert.deepEqual(res.json(), { id: <span class="n">1</span>, total: <span class="n">92340</span> });
+  <span class="k">const</span> { stock } = <span class="k">await</span> db
+    .selectFrom(<span class="s">&quot;products&quot;</span>)
+    .select(<span class="s">&quot;stock&quot;</span>)
+    .executeTakeFirstOrThrow();
+  assert.equal(stock, <span class="n">1</span>);
+  assert.equal(mailer.send.mock.callCount(), <span class="n">1</span>);
+  assert.deepEqual(mailer.send.mock.calls[<span class="n">0</span>]?.arguments, [
+    <span class="s">&quot;sara@example.com&quot;</span>,
+    <span class="s">&quot;Order 1&quot;</span>,
+  ]);
+});
+
+test(<span class="s">&quot;يرفض طلباً أكبر من المخزون، ولا يغيّر شيئاً&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> res = <span class="k">await</span> order(<span class="n">4</span>);
+  assert.equal(res.statusCode, <span class="n">409</span>);
+  <span class="k">const</span> orders = <span class="k">await</span> db.selectFrom(<span class="s">&quot;orders&quot;</span>).selectAll().execute();
+  assert.equal(orders.length, <span class="n">0</span>);
+  assert.equal(mailer.send.mock.callCount(), <span class="n">0</span>);
+});</pre></div>
+
+<ul>
+<li><strong>العزل بين الملفات.</strong> يشغّل <code>node --test</code> كل ملف اختبار في عمليته، بالتوازي. ولو تشارك ملفان الجداول، لاستطاع أحدهما حذف صفوف الآخر في منتصف عمله. فكل ملف ينشئ <dfn>مخططه</dfn> (schema، مساحة أسماء داخل قاعدة البيانات)، مسمّى باسم عمليته، ويحذفه في النهاية.</li>
+<li><strong>العزل بين الاختبارات.</strong> <code>beforeEach</code> تعيد الجداول إلى حالة معروفة، فيبدأ كل اختبار من البيانات نفسها وتعمل الاختبارات بأي ترتيب. والاختبار الذي يعتمد على بقايا اختبار آخر سيفشل يوماً بلا سبب ظاهر.</li>
+<li><strong>فحص الآثار، لا الرد وحده.</strong> الاختبار الأول يفحص الحالة، والجسم، والمخزون الباقي في قاعدة البيانات، والبريد؛ والثاني يفحص أن الطلب المرفوض لم يترك صفاً، وهذه معاملة الفصل 6 تؤدي عملها.</li>
+</ul>
+
+<p>ومرسل البريد هو الاعتمادية الوحيدة المستبدلة. فإرسال بريد حقيقي من الاختبارات بطيء ويصل إلى أناس حقيقيين، فيأخذ التطبيق <dfn>بديل اختبار</dfn> (test double): <code>mock.fn</code> تسجّل كل استدعاء، والاختبار يتحقق كيف استُدعيت. وهذا يعمل لأن <code>buildApp</code> تأخذ مرسل البريد معاملاً بدل استيراده، وهو تصميم يجعل الكود قابلاً للاختبار بلا أي حيل (<dfn>حقن الاعتماديات</dfn>).</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: وهّم الأطراف، لا الوسط</p><p>استبدل ما هو بطيء، أو خارج سيطرتك، أو له آثار في العالم: البريد، ومزوّدو الدفع، وAPIs شركات أخرى، والساعة. ولا تُوهّم قاعدة بياناتك، ولا وحداتك، ولا الإطار: فالاختبارات المليئة بالبدائل الوهمية تنجح والشيء الحقيقي مكسور، وتنكسر كلما أُعيد ترتيب الكود حتى لو لم يكن فيه خطأ. وإن احتاج اختبار عشرة بدائل وهمية، فالكود المختبَر غالباً يفعل أكثر من اللازم.</p></aside>
+
+<h2><span class="sec">12.4</span> <span>التحكم في الوقت</span></h2>
+
+<p>السلة المتروكة 30 دقيقة تُحرَّر. واختبار ذلك بانتظار 30 دقيقة عبث، واختباره بالساعة الحقيقية هش. ويستطيع المشغّل استبدال الساعة بأخرى يحرّكها الاختبار بيده:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/baskets.test.ts</div><pre class="code"><span class="k">import</span> assert <span class="k">from</span> <span class="s">&quot;node:assert/strict&quot;</span>;
+<span class="k">import</span> { test } <span class="k">from</span> <span class="s">&quot;node:test&quot;</span>;
+<span class="k">import</span> { isExpired } <span class="k">from</span> <span class="s">&quot;../src/baskets.ts&quot;</span>;
+
+test(<span class="s">&quot;السلة التي لُمست مؤخراً تبقى&quot;</span>, (t) =&gt; {
+  <span class="c line-bidi">// الساعة وهمية: الاختبار يحرّك الوقت بدل انتظار 30 دقيقة</span>
+  t.mock.timers.enable({ apis: [<span class="s">&quot;Date&quot;</span>], now: <span class="n">0</span> });
+  <span class="k">const</span> touched = Date.now();
+  t.mock.timers.tick(<span class="n">29</span> * <span class="n">60</span> * <span class="n">1000</span>);
+  assert.equal(isExpired(touched), <span class="k">false</span>);
+});
+
+test(<span class="s">&quot;السلة المتروكة 30 دقيقة تُحرَّر&quot;</span>, (t) =&gt; {
+  t.mock.timers.enable({ apis: [<span class="s">&quot;Date&quot;</span>], now: <span class="n">0</span> });
+  <span class="k">const</span> touched = Date.now();
+  t.mock.timers.tick(<span class="n">30</span> * <span class="n">60</span> * <span class="n">1000</span>);
+  assert.equal(isExpired(touched), <span class="k">true</span>);
+});</pre></div>
+
+<p>تجعل <code>t.mock.timers</code> الدالة <code>Date.now()</code> تبدأ من اللحظة المعطاة ولا تتقدم إلا حين ينادي الاختبار <code>tick</code>، وتُستعاد تلقائياً حين ينتهي الاختبار. والاختباران يفحصان جانبي الحد، 29 و30 دقيقة، حيث تعيش أخطاء الفرق بواحد. والواجهة نفسها تتحكم في <code>setTimeout</code> و<code>setInterval</code>، للكود الذي يجدول عملاً.</p>
+
+<h2><span class="sec">12.5</span> <span>تشغيل الاختبارات وقراءتها</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># كل الاختبارات</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ السلة التي لُمست مؤخراً تبقى (…ms)
+✔ السلة المتروكة 30 دقيقة تُحرَّر (…ms)
+✔ ينشئ طلباً بالمجموع الصحيح، ويرسل تأكيداً واحداً (…ms)
+✔ يرفض طلباً أكبر من المخزون، ولا يغيّر شيئاً (…ms)
+▶ total
+  ✔ بلا كود: المجموع والضريبة (…ms)
+  ✔ SAVE10 تخصم 10% (…ms)
+  ✔ FIXED50 تخصم 50 جنيهاً (…ms)
+  ✔ الخصم الثابت لا ينزل تحت الصفر أبداً (…ms)
+  ✔ يرفض كوداً مجهولاً (…ms)
+✔ total (…ms)
+ℹ tests 9
+ℹ suites 1
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms …</pre></div>
+
+<p>تسعة اختبارات في ثلاثة ملفات، تعمل في عمليات متوازية، في أقل كثيراً من ثانية بما فيها عمل قاعدة البيانات. وأثناء العمل على جزء، شغّل ملفاً واحداً (يقبل المشغّل أسماء الملفات و<code>--test-name-pattern</code>):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ملف واحد، أثناء العمل عليه</span>
+<span class="c">$ </span><span class="k">npm test -- test/pricing.test.ts</span>
+▶ total
+  ✔ بلا كود: المجموع والضريبة (…ms)
+  ✔ SAVE10 تخصم 10% (…ms)
+  ✔ FIXED50 تخصم 50 جنيهاً (…ms)
+  ✔ الخصم الثابت لا ينزل تحت الصفر أبداً (…ms)
+  ✔ يرفض كوداً مجهولاً (…ms)
+✔ total (…ms)
+ℹ tests 5</pre></div>
+
+<p>والاختبار لا يفيد إلا إن أخبرك فشله بما هو خطأ. وهنا شُغّل خطأ، فصارت نسبة الضريبة خاطئة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># اختبار يفشل</span>
+<span class="c">$ </span><span class="k">BUG=1 npm test -- test/pricing.test.ts</span>
+✖ failing tests:
+test at test/pricing.test.ts:28:5
+✖ بلا كود: المجموع والضريبة (…ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be partially and strictly deep-equal:
+  + actual - expected
+  
+    {
+      discount: 0,
+  +   subtotal: 57000,
+  +   total: 65550,
+  +   vat: 8550
+  -   total: 64980,
+  -   vat: 7980
+    }
+  
+      at TestContext.&lt;anonymous&gt; (file://test/pricing.test.ts:29:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)</pre></div>
+
+<p>يسمّي المخرج السلوك الذي انكسر، والملف والسطر، وفرقاً: الضريبة المتوقعة 7980 مقابل 8550 المستقبَلة. وهذا يكفي للشك في النسبة دون فتح مصحّح. والأسماء الجيدة والفحوص المركّزة هي ما يجعل الإخفاقات مقروءة هكذا.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا ينشئ كل ملف اختبار مخططه؟</li><li>لماذا يُستبدل مرسل البريد ببديل اختبار، ولا تُستبدل قاعدة البيانات؟</li><li>ماذا تغيّر <code>t.mock.timers.tick(30 * 60 * 1000)</code>، وماذا لا تغيّر؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">12.6</span> <span>التغطية</span></h2>
+
+<p><dfn>التغطية</dfn> (coverage) تقيس أي الأسطر والفروع نفذتها الاختبارات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># كم من الكود تنفذه الاختبارات</span>
+<span class="c">$ </span><span class="k">npm run coverage</span>
+start of coverage report
+------------------------------------------------------------
+file        | line % | branch % | funcs % | uncovered lines
+------------------------------------------------------------
+src         |        |          |         | 
+ app.ts     | 100.00 |   100.00 |  100.00 | 
+ baskets.ts | 100.00 |   100.00 |  100.00 | 
+ db.ts      | 100.00 |   100.00 |  100.00 | 
+ pricing.ts | 100.00 |    90.91 |  100.00 | 
+------------------------------------------------------------
+all files   | 100.00 |    95.65 |  100.00 | 
+------------------------------------------------------------
+end of coverage report</pre></div>
+
+<p>نُفذ كل سطر، ولم يُنفذ فرع واحد في <code>pricing.ts</code> (التمرين 2). والتغطية مصباح جيد وهدف سيئ. فالتغطية المنخفضة تبيّن بموثوقية كوداً لا يختبره أحد؛ والعالية لا تثبت إلا أن الأسطر نُفذت، لا أن شيئاً فُحص: فاختبار بلا فحوص يبلغ 100% أيضاً. استخدمها لتجد المناطق غير المختبرة، وانظر إلى الأسطر غير المغطاة في كل تغيير أثناء المراجعة، ولا تطارد نسبة لذاتها أبداً.</p>
+
+<h2><span class="sec">12.7</span> <span>مجموعة جديرة بالثقة</span></h2>
+
+<ul>
+<li><strong>سريعة.</strong> المجموعة التي تعمل في ثوانٍ تُشغَّل قبل كل إيداع؛ والتي تستغرق عشرين دقيقة يشغّلها CI وتُتجاهل حتى تفشل. ملفات متوازية، وبيانات صغيرة، وبلا انتظارات.</li>
+<li><strong>حتمية.</strong> الكود نفسه يعطي النتيجة نفسها في كل مرة. والاختبارات المتقلبة تأتي عادة من بيانات مشتركة، أو وقت حقيقي، أو قيم عشوائية، أو ترتيب نتائج بلا <code>ORDER BY</code>، أو انتظار شيء بتأخير ثابت. أصلحها في الحال، أو احذفها: فالاختبار المتقلب يعلّم الفريق تجاهل الأحمر.</li>
+<li><strong>تختبر السلوك.</strong> تحقق مما يراه المستخدم أو المنادي (الردود، والصفوف، والبريد المرسل)، لا كيف رُتّب الكود في داخله. فيمكن تحسين الكود دون إعادة كتابة الاختبارات.</li>
+<li><strong>تُكتب مع الخطأ.</strong> حين يُكتشف خطأ، اكتب أولاً اختباراً يفشل بسببه، ثم أصلحه. فيثبت الاختبار الإصلاح ويمنع الخطأ من العودة.</li>
+<li><strong>تعمل مع كل تغيير.</strong> في CI، مع كل طلب دمج، مقابل PostgreSQL حقيقية تُشغَّل خدمةً، والدمج ممنوع ما دامت حمراء.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اختبار فاشل أولاً، لكل خطأ</p><p>قبل إصلاح خطأ، أعد إنتاجه باختبار وراقب الاختبار يفشل للسبب الصحيح. ثم أصلح الكود وراقبه ينجح. يستغرق ذلك دقائق، وكثيراً ما يكشف أن الخطأ ليس حيث ظننت، ويضيف إلى المجموعة بالضبط الحالة التي أثبتت الحياة الحقيقية أنك فوّتها.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>توهيم قاعدة البيانات</td><td>SQL خاطئ ينجح في الاختبارات</td><td>اختبارات تكامل مقابل قاعدة بيانات حقيقية</td></tr>
+<tr><td>اختبارات تتشارك البيانات</td><td>إخفاقات تعتمد على الترتيب والتوقيت</td><td>مخطط لكل ملف، وإعادة ضبط لكل اختبار</td></tr>
+<tr><td>وقت حقيقي وانتظارات حقيقية</td><td>اختبارات بطيئة ومتقلبة</td><td>مؤقتات وهمية؛ واحقن الساعة</td></tr>
+<tr><td>المسار السعيد وحده</td><td>الرفض والأخطاء تنكسر دون أن يلاحظ أحد</td><td>اختبارات لكل «لا» ولكل خطأ</td></tr>
+<tr><td>اختبار التفاصيل الداخلية</td><td>الاختبارات تنكسر حين يُعاد ترتيب الكود</td><td>تحقق من السلوك: الردود، والصفوف، والاستدعاءات عند الأطراف</td></tr>
+<tr><td>أسماء مبهمة وفحوص ضخمة</td><td>إخفاقات لا تقول شيئاً</td><td>سلوك واحد لكل اختبار، مسمّى كقاعدة</td></tr>
+<tr><td>مطاردة رقم تغطية</td><td>اختبارات تنفذ الكود ولا تفحص شيئاً</td><td>التغطية مصباح، والفحوص هي المقصود</td></tr>
+<tr><td>التعايش مع الاختبارات المتقلبة</td><td>لا أحد يثق ببناء أحمر</td><td>أصلحها أو احذفها في الحال</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>اختبارات الوحدة</strong> للمنطق ذي الحالات الكثيرة، و<strong>اختبارات التكامل</strong> للمسارات وSQL مقابل قاعدة بيانات حقيقية، وقليل من <strong>اختبارات الطرف إلى الطرف</strong> للرحلات الرئيسية.</li>
+<li><strong><code>node:test</code></strong> و<strong><code>node:assert</code></strong> في Node تكفيان: <code>describe</code> و<code>it</code>، والخطافات، وجداول الحالات، و<code>mock.fn</code>، والمؤقتات الوهمية، والتغطية.</li>
+<li>تبقى اختبارات التكامل مستقلة بـ <strong>مخطط لكل ملف</strong> و<strong>إعادة ضبط لكل اختبار</strong>، وتفحص الآثار كما تفحص الردود.</li>
+<li><strong>بدائل الاختبار</strong> تستبدل الأطراف (البريد، والدفع، والساعة)، وتُمرَّر عبر المعاملات؛ ولا تستبدل قاعدة البيانات ولا كودك أبداً.</li>
+<li>ينبغي أن يشرح الفشل نفسه: <strong>أسماء سلوكية</strong> وفحوص مركّزة.</li>
+<li>التغطية تجد الكود غير المختبر؛ والمجموعة <strong>السريعة الحتمية</strong> التي تعمل مع كل تغيير هي ما يجعلها جديرة بالثقة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ملفات الاختبار تعمل في عمليات متوازية؛ ومع جداول مشتركة، قد يغيّر <code>TRUNCATE</code> ملف أو إدخالاته بيانات ملف آخر في منتصف اختباراته. والمخطط لكل ملف يعطي كلاً منها جداوله في قاعدة البيانات نفسها. 2. للبريد آثار خارج النظام (رسائل حقيقية) وهو بطيء، فلا يحتاج الاختبار إلا أن يعرف أنه طُلب، بشكل صحيح. أما قاعدة البيانات فهي حيث تعيش الأخطاء التي تستحق الالتقاط (الاستعلامات، والقيود، والمعاملات)، فيجب أن تكون الحقيقية. 3. تقدّم <code>Date.now()</code> الوهمية (والمؤقتات الوهمية) 30 دقيقة في الحال؛ ولا تجعل وقتاً حقيقياً يمر، وتُلغى حين ينتهي الاختبار.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يحسّن اختبارات تطبيق من الفصول السابقة. شغّل كل مجموعة عشر مرات متتالية على الأقل لتثبت أنها حتمية.</p>
+
+<div class="project">
+<p class="project-label">المشروع 12.1 · سهل</p>
+<h3>غطِّ قواعد التسعير</h3>
+<p class="project-goal">وسّع دالة التسعير وجدول اختباراتها معاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الاختبارات المبنية على الجداول، وقيم الحدود، وكتابة الاختبار قبل الكود.</p>
+<ol class="steps">
+<li>أضف قاعدة: الطلبات فوق 1000 جنيه قبل الخصم شحنها مجاني، والباقي يدفع 40 جنيهاً. اكتب صفوف الاختبار أولاً، ومنها 1000 بالضبط.</li>
+<li>أضف أكواداً تنتهي في تاريخ، واختبرها بوقت وهمي على جانبي التاريخ.</li>
+<li>ابلغ تغطية فروع 100% لـ <code>pricing.ts</code> باختبارات ذات معنى.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قيم الحدود (999.99، و1000، و1000.01) هي حيث تعيش أخطاء الفرق بواحد؛ أعطِ كلاً منها صفه.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 12.2 · متوسط</p>
+<h3>اختبارات تكامل لـ API المتجر</h3>
+<p class="project-goal">أعطِ API الفصول 3 إلى 8 مجموعة تكامل كاملة على قاعدة بيانات حقيقية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المخططات لكل ملف، والترحيلات في الاختبارات، ومصانع بيانات الاختبار، واختبار الرفض.</p>
+<ol class="steps">
+<li>أنشئ مخطط كل ملف اختبار بتشغيل الترحيلات الحقيقية، لا SQL مكتوب باليد.</li>
+<li>اكتب دوال مصانع صغيرة (<code>makeCustomer</code> و<code>makeProduct</code>) بقيم افتراضية معقولة يستطيع كل اختبار تغييرها.</li>
+<li>لكل مسار، اختبر النجاح، وأخطاء التحقق، و401، و403 أو 404، وحالات 409.</li>
+<li>شغّل المجموعة في CI مقابل PostgreSQL تُشغَّل خدمةً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> تشغيل الترحيلات مرة لكل مخطط أبطأ من SQL مكتوب باليد لكنه يختبر الترحيلات أيضاً؛ أبقِه سريعاً بإنشاء المخطط مرة لكل ملف، لا لكل اختبار.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 12.3 · تحدٍّ</p>
+<h3>اختبار العامل</h3>
+<p class="project-goal">اختبر عامل الطابور من الفصل 10 بلا خدمة بريد حقيقية وبلا انتظار تراجعات حقيقية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> فصل المنطق عن البنية، وبدائل الاختبار للخدمات، واختبار الإعادات.</p>
+<ol class="steps">
+<li>انقل منطق المهمة إلى دالة عادية تتلقى رقم الطلب ومرسل بريد، واختبرها مباشرة.</li>
+<li>اختبر أن فشل مرسل البريد يرمي خطأً (فيعيد الطابور)، وأن العنوان غير الصالح يرمي <code>UnrecoverableError</code>.</li>
+<li>اكتب اختبار تكامل واحداً بـ Redis حقيقي يضع مهمة في الطابور، ويشغّل عاملاً بتزامن 1، وينتظر حدث <code>completed</code>.</li>
+<li>اجعل تأخيرات الإعادة قابلة للضبط، واستخدم تأخيرات ضئيلة في الاختبار.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أغلب سلوك العامل يمكن اختباره دوالَّ عادية؛ فأبقِ الاختبارات التي تحتاج Redis قليلة ومركّزة.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> شغّل اختبارات التسعير مع <code>BUG=1</code>. أي الاختبارات تفشل، وأيها ينجح، وماذا يخبرك ذلك عن مكان الخطأ؟</li>
+<li><span class="level">سهل</span> يبيّن تقرير التغطية 90.91% من الفروع في <code>pricing.ts</code>. أي فرع لا يُنفذ أبداً، وهل ينبغي أن يغطيه اختبار؟</li>
+<li><span class="level medium">متوسط</span> اختبار لزميل يفشل نحو مرة في عشرين تشغيلاً بـ «توقعت طلبين، وجاء 3». اسرد ثلاثة أسباب محتملة وكيف تعرف أيها هو.</li>
+<li><span class="level medium">متوسط</span> مسار الطلب يرسل البريد بعد المعاملة. اكتب الاختبار الذي يثبت أن الطلب المرفوض لا يرسل بريداً، واشرح لماذا لن يلتقط بريداً يُرسل <em>داخل</em> معاملة تتراجع بعدها.</li>
+<li><span class="level hard">تحدٍّ</span> صمّم اختبارات «يُلغى الطلب تلقائياً إن لم يُدفع خلال 15 دقيقة»: أي المستويات، وأي البدائل، وكيف تتحكم في الوقت في كل منها.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 13</p>
+<p>الاختبارات تثبت أن الكود يعمل قبل أن يُشحن؛ والإنتاج يحتاج دليلاً على أنه يبقى يعمل. قابلية الملاحظة: سجلات منظمة، ومقاييس، وتتبعات، وتنبيهات تخبرك بما هو خطأ قبل أن يخبرك الزبائن.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -5719,6 +6131,16 @@ order-1004 أُعيدت
 : متصل بـ server 3000</pre></div>
 الرسالة التي نُشرت ولا مشترك لم تذهب إلى أي مكان: النشر والاشتراك لا يحفظ الرسائل. ولهذا يجب على العميل المتصل أن يأخذ أولاً الحالة الحالية من قاعدة البيانات، ويعامل الرسائل الحية تحديثات فوقها.</li>
 <li>العميل: أعد الاتصال بعد تأخير عشوائي يكبر مع كل محاولة فاشلة (مثلاً وقت عشوائي بين 0 و2<sup>المحاولة</sup> ثانية، بحد أقصى دقيقة)، لا في الحال؛ وبعد إعادة الاتصال، حمّل الحالة الحالية بطلب واحد. والخادم: انشر بالتدريج (خادماً بعد خادم، فلا يعيد الاتصال إلا جزء من العملاء معاً)، وأغلق الاتصالات أثناء الإيقاف بإشارة «أعد الاتصال لاحقاً» (الحقل <code>retry:</code> في SSE يضبط تأخير المتصفح)، وحدّ الاتصالات الجديدة في الثانية عند موازن الحمل، واجعل مسار إعادة الاتصال رخيصاً: المصادقة مخزنة مؤقتاً، والحالة الأولى تُقدَّم من ذاكرة مؤقتة لا من استعلام ثقيل.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 12</h2>
+<ol class="exercises">
+<li>تفشل صفوف الجدول الثلاثة وينجح الاختباران الآخران. والصفوف هي بالضبط الحالات التي تُفرض فيها الضريبة على مبلغ موجب؛ وحالة «الخصم الثابت لا ينزل تحت الصفر» لم يبقَ فيها ما يُضرب (ضريبة 0 بأي نسبة)، والكود المجهول يرمي خطأً قبل حساب الضريبة. فالخطأ في خطوة الضريبة، لا في الخصومات ولا الأكواد، والفرق (8550 بدل 7980، أي 15% بدل 14% من 57000) يشير إلى النسبة. فالاختبارات الجيدة تضيّق مكان الخطأ بأيها يفشل.</li>
+<li>الفرع الذي تكون فيه <code>process.env.BUG</code> مضبوطة: الاختبارات لا تشغّل الخطأ أبداً. ولا ينبغي أن يغطيه اختبار؛ فهو ليس ميزة من ميزات المتجر بل مفتاح وُضع لهذا التمرين، والكود الحقيقي لن يحتويه. ولهذا التغطية مصباح: الفرع غير المغطى سؤال («هل هذا مختبر، وهل ينبغي أن يوجد؟»)، لا أمر بكتابة اختبار.</li>
+<li>(1) بيانات مشتركة: ملف اختبار آخر، أو اختبار سابق، يُدخل طلبات في الجدول نفسه؛ افحص هل يعيد الاختبار ضبط بياناته وهل تتشارك الملفات مخططاً. (2) ترتيب التنفيذ: الاختبار يعدّ طلبات أنشأها اختبار يعمل قبله أو معه؛ شغّله وحده بـ <code>--test-name-pattern</code> مرات كثيرة، ثم مع المجموعة كلها. (3) شيء غير متزامن ما زال يعمل: طلب أنشأه طلب أو مهمة لم يُنتظر يصل بعد إعادة الضبط؛ ابحث عن <code>await</code> ناقصة ومهام أو مؤقتات بقيت تعمل. وتشغيل الاختبار وحده مئة مرة وفحص هل يفشل أبداً يفصل (3) عن (1) و(2).</li>
+<li>اختبار التكامل الثاني، «يرفض طلباً أكبر من المخزون، ولا يغيّر شيئاً»، يتحقق أصلاً أن <code>mailer.send.mock.callCount()</code> تساوي 0 بعد 409. ولا يستطيع التقاط بريد يُرسل داخل معاملة تتراجع بعدها، لأن البديل لا يسجّل إلا أن <code>send</code> استُدعيت؛ وفي ذلك الخطأ يُرسل البريد (يسجّل البديل استدعاءً واحداً) ويختفي الطلب بعدها، فالاختبار الذي يلتقطه هو العكس: أجبر المعاملة على الفشل بعد النقطة التي يُرسل فيها البريد (بإدخال يفشل مثلاً)، وتحقق أن <code>send</code> لم تُستدعَ. والإصلاح الأفضل في التصميم: أرسل بعد التثبيت، أو عبر صندوق صادر.</li>
+<li>مستوى الوحدة: دالة نقية <code>isUnpaidTooLong(order, now)</code> تُختبر بجدول أوقات على جانبي 15 دقيقة، بلا أي ساعة. ومستوى التكامل: المهمة أو الأمر المجدول الذي يلغي الطلبات، يعمل مقابل قاعدة بيانات حقيقية، بطلبات يضبط الاختبار <code>created_at</code> لها في الماضي (بدل الانتظار)، ويتحقق أن القديمة غير المدفوعة وحدها تُلغى وأن المخزون يعود. والساعة يُتحكم فيها بتمرير <code>now</code> (أو بـ <code>mock.timers</code> لـ <code>Date</code>)، لا بالنوم أبداً. وفحص واحد من الطرف إلى الطرف على الأكثر، إن كان الإلغاء ظاهراً للزبائن، بالأوقات الماضية نفسها. والطابور نفسه لا يحتاج اختباراً لتوقيته: ثق بالمكتبة، واختبر كودك.</li>
 </ol>
 
 </section>
