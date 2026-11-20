@@ -33,6 +33,8 @@
 @page ch12:first { @top-center { content: none; } }
 @page ch13 { @top-center { content: "الفصل 13: السجلات والمقاييس والتتبع"; } }
 @page ch13:first { @top-center { content: none; } }
+@page ch14 { @top-center { content: "الفصل 14: الأداء والتوسع"; } }
+@page ch14:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -6274,6 +6276,301 @@ app.get(<span class="s">&quot;/ready&quot;</span>, { logLevel: <span class="s">&
 <p>الإشارات تبيّن أين المتجر بطيء؛ والآن نجعله سريعاً. الأداء: القياس تحت الحمل، وإيجاد عنق الزجاجة، والفهارس وخطط الاستعلام، وحلقة الأحداث.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch14" data-chapter="14" data-code="b3/performance/ar">
+<div class="opener"><span class="opener-num">14</span><p class="chapter-kicker">الفصل 14</p><h1>الأداء</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقيس الأداء تحت الحمل بدل التخمين</li>
+<li>تقرأ المئينات والإنتاجية، وتعرف أيها يهم ومتى</li>
+<li>تجد عنق الزجاجة، وهو قاعدة البيانات في الغالب، وتصلحه بالفهرس الصحيح</li>
+<li>تفهم نموذج التزامن في حلقة أحداث Node، وحدوده</li>
+<li>تختار بين كود أسرع، والتخزين المؤقت، والعمل في الخلفية، وخوادم أكثر</li>
+</ul>
+</div>
+
+<p class="lead">«اجعله سريعاً» ليست مهمة حتى يكون لها رقم: كم طلباً في الثانية، وكم يجوز أن تبطئ أبطأ الطلبات، وكيف يُقاس ذلك. وهذا الفصل يتبع الترتيب الذي ينجح عملياً. قِس أولاً، تحت حمل واقعي. ثم جد الشيء الوحيد الذي يحدّ النظام، <dfn>عنق الزجاجة</dfn> (bottleneck). أصلحه، وقِس مرة أخرى. وفي كل مرة تقريباً، لا يكون عنق الزجاجة حيث يشير الحدس، ويكون الإصلاح أصغر مما يُخشى. وهنا يجعل سطر SQL واحد استعلام منتجات المتجر أسرع مئة مرة تقريباً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>قضيت مرة أسبوعاً أعيد كتابة مُسلسِل JSON لأجعل API أسرع. صار أسرع بـ 30% في التسلسل، وصار API أسرع بـ 1%، لأن 95% من كل طلب كانت تُقضى في انتظار استعلام واحد بلا فهرس. وإضافة الفهرس استغرقت دقيقة. ومنذ ذلك الحين أقيس قبل أن أحسّن.</p></div></div>
+
+<h2><span class="sec">14.1</span> <span>القياس</span></h2>
+
+<p>للأداء رقمان مهمان، وهما مختلفان:</p>
+<ul>
+<li><dfn>زمن الاستجابة</dfn> (latency): كم يستغرق طلب واحد، كما يراه العميل. أبلغ عنه بالمئينات (الفصل 13): الوسيط (p50) طلب نموذجي، وp99 أبطأ طلب من كل مئة، وهو في موقع مزدحم شخصٌ كل ثانية.</li>
+<li><dfn>الإنتاجية</dfn> (throughput): كم طلباً في الثانية ينجز النظام. وهي مهمة للسعة: كم مستخدماً يحمل خادم واحد.</li>
+</ul>
+
+<p>و<dfn>اختبار الحمل</dfn> (load test) يقيس الاثنين بإرسال طلبات كثيرة معاً. و<dfn>autocannon</dfn>، أداة لاختبار الحمل مكتوبة بـ Node، تفتح عدداً من الاتصالات وتُبقيها مشغولة بضع ثوانٍ. وفي المتجر 500000 منتج في 2000 تصنيف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="c line-bidi">-- 500000 منتج في 2000 تصنيف، في كل منها 250</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> products (
+  id       bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  name     text <span class="k">NOT</span> <span class="k">NULL</span>,
+  category text <span class="k">NOT</span> <span class="k">NULL</span>,
+  price    integer <span class="k">NOT</span> <span class="k">NULL</span>
+);
+<span class="k">INSERT</span> <span class="k">INTO</span> products (name, category, price)
+<span class="k">SELECT</span> <span class="s">&#x27;Product &#x27;</span> || n,
+       (ARRAY[<span class="s">&#x27;kits&#x27;</span>, <span class="s">&#x27;wheels&#x27;</span>, <span class="s">&#x27;cables&#x27;</span>, <span class="s">&#x27;sensors&#x27;</span>, <span class="s">&#x27;motors&#x27;</span>, <span class="s">&#x27;tools&#x27;</span>, <span class="s">&#x27;lights&#x27;</span>, <span class="s">&#x27;cases&#x27;</span>])[<span class="n">1</span> + n % <span class="n">8</span>]
+         || <span class="s">&#x27;-&#x27;</span> || (n % <span class="n">250</span>),
+       (n * <span class="n">37</span>) % <span class="n">100000</span> + <span class="n">100</span>
+<span class="k">FROM</span> generate_series(<span class="n">1</span>, <span class="n">500000</span>) <span class="k">AS</span> n;
+<span class="k">ANALYZE</span> products;</pre></div>
+
+<p>قائمة المنتجات تطلب أرخص 20 منتجاً في تصنيف واحد. عشرون عميلاً، خمس ثوانٍ:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># 20 عميلاً لمدة 5 ثوانٍ، بلا فهرس</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 20 -d 5 &#x27;localhost:3000/products?category=cables-42&#x27;</span>
+{&quot;requests_per_s&quot;:92.2,&quot;p50_ms&quot;:204,&quot;p99_ms&quot;:343,&quot;errors&quot;:0}</pre></div>
+
+<p>نحو 90 طلباً في الثانية، والعميل النموذجي ينتظر 200 مللي ثانية. ولقائمة، هذا بطيء. والمشتبه بهم البديهيون Node وFastify وJSON. والخطوة الصحيحة أن تنظر.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: قِس كالإنتاج</p><p>اختبار حمل على حاسوب محمول بعشرة صفوف لا يخبرك شيئاً. استخدم أحجام بيانات قريبة من الإنتاج (عنق الزجاجة هنا لا يظهر إلا لأن الجدول كبير)، وقاعدة البيانات نفسها، وخادماً مضبوطاً كالإنتاج (بلا تسجيل تصحيح)، ومولّد حمل على جهاز آخر حين تهم الأرقام. وسخّن أولاً، وشغّل مرات عدة، وغيّر شيئاً واحداً في كل مرة.</p></aside>
+
+<h2><span class="sec">14.2</span> <span>إيجاد عنق الزجاجة</span></h2>
+
+<p>قابلية الملاحظة من الفصل 13 تشير إليه مباشرة عادة: مدرّج مسار القائمة بطيء، وتتبعه يبيّن أن أغلب الوقت كله داخل استعلام SQL واحد. ويستطيع PostgreSQL أن يشرح كيف ينفذ استعلاماً، ومع <code>ANALYZE</code> ينفذه ويبلغ عن الأوقات الحقيقية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">query.sql</div><pre class="code"><span class="k">EXPLAIN</span> (<span class="k">ANALYZE</span>, COSTS OFF)
+<span class="k">SELECT</span> id, name, price <span class="k">FROM</span> products
+<span class="k">WHERE</span> category = <span class="s">&#x27;cables-42&#x27;</span>
+<span class="k">ORDER</span> <span class="k">BY</span> price
+<span class="k">LIMIT</span> <span class="n">20</span>;</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># خطة الاستعلام، بلا فهرس</span>
+<span class="c">$ </span><span class="k">psql shop -f query.sql</span>
+                                           QUERY PLAN                                            
+-------------------------------------------------------------------------------------------------
+ Limit (actual time=21.074..25.353 rows=20.00 loops=1)
+   Buffers: shared hit=4170
+   -&gt;  Sort (actual time=21.071..25.347 rows=20.00 loops=1)
+         Sort Key: price
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=4170
+         -&gt;  Gather (actual time=0.617..25.086 rows=500.00 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=4167
+               -&gt;  Parallel Seq Scan on products (actual time=0.058..16.213 rows=166.67 loops=3)
+                     Filter: (category = &#x27;cables-42&#x27;::text)
+                     Rows Removed by Filter: 166500
+                     Buffers: shared hit=4167
+ Planning:
+   Buffers: shared hit=86 read=4
+ Planning Time: 0.847 ms
+ Execution Time: 25.410 ms
+(18 rows)</pre></div>
+
+<p>اقرأ الخطة من الداخل إلى الخارج. الخطوة الأعمق <dfn>Parallel Seq Scan</dfn>: ثلاث عمليات تقرأ <em>الجدول كله</em>، وتفحص كل صف مقابل التصنيف، و«Rows Removed by Filter» تقول إن 166500 صف لكل عملية قُرئت ورُميت لإيجاد 250. ثم ترتّب المطابقات وتدمجها، وتُبقي 20. نحو 20 مللي ثانية لكل استعلام، ومع عشرين عميلاً تنشغل قاعدة البيانات بقراءة الجدول نفسه مرة بعد مرة: هذا هو عنق الزجاجة. (عرّف الفصل 4 الفهارس؛ وهذا ما يكلّفه غياب واحد منها.)</p>
+
+<h2><span class="sec">14.3</span> <span>الفهرس الصحيح</span></h2>
+
+<p>فهرس على <code>category</code> وحده سيجد الصفوف الـ 250 بسرعة، لكنها ستحتاج ترتيباً. أما فهرس على <code>(category, price)</code> فيُبقي صفوف كل تصنيف مرتبة بالسعر أصلاً، فتستطيع قاعدة البيانات قراءة أول 20 مدخلاً من تصنيف واحد والتوقف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># فهرس يطابق الاستعلام</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;CREATE INDEX products_category_price ON products (category, price)&#x27;</span>
+CREATE INDEX
+<span class="c line-bidi"># خطة الاستعلام نفسها، بالفهرس</span>
+<span class="c">$ </span><span class="k">psql shop -f query.sql</span>
+                                                QUERY PLAN                                                
+----------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.135..0.406 rows=20.00 loops=1)
+   Buffers: shared hit=20 read=3
+   -&gt;  Index Scan using products_category_price on products (actual time=0.132..0.398 rows=20.00 loops=1)
+         Index Cond: (category = &#x27;cables-42&#x27;::text)
+         Index Searches: 1
+         Buffers: shared hit=20 read=3
+ Planning:
+   Buffers: shared hit=123 read=1
+ Planning Time: 1.016 ms
+ Execution Time: 0.469 ms
+(10 rows)</pre></div>
+
+<p><dfn>Index Scan</dfn> يقرأ 20 مدخلاً، بلا ترتيب، ونحو ربع مللي ثانية بدل 20: عمل أقل بنحو مئة مرة. وتحت الحمل نفسه:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الحمل نفسه، بالفهرس</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 20 -d 5 &#x27;localhost:3000/products?category=cables-42&#x27;</span>
+{&quot;requests_per_s&quot;:9800,&quot;p50_ms&quot;:1,&quot;p99_ms&quot;:6,&quot;errors&quot;:0}</pre></div>
+
+<p>من نحو 90 إلى نحو 7000 طلب في الثانية، والوسيط من 200 مللي ثانية إلى 2. ولم يتغير شيء في Node.</p>
+
+<p>والفهارس ليست مجانية: كل منها يأخذ مساحة قرص ويبطئ كل إدخال وتحديث قليلاً، لأنه يجب أن يبقى محدَّثاً. أضفها للاستعلامات التي تُنفذ كثيراً أو البطيئة، مطابقةً أعمدة <code>WHERE</code> و<code>ORDER BY</code> فيها بالترتيب، وتحقق بـ <code>EXPLAIN</code> أنها تُستخدم. والعادة نفسها تجد مشاكل قاعدة البيانات الأخرى: استعلامات N+1 من الفصل 5، و<code>SELECT *</code> على الجداول العريضة، وترقيم الصفحات بالإزاحة الذي يقرأ آلاف الصفوف ليتخطاها.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يهم زمن الاستجابة p99 المستخدمين أكثر من المتوسط؟</li><li>في الخطة الأولى، ماذا أخبرتك «Rows Removed by Filter: 166500»؟</li><li>لماذا <code>(category, price)</code> لا <code>(price, category)</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+
+<h2><span class="sec">14.4</span> <span>حلقة الأحداث</span></h2>
+
+<p>ينفذ Node كود JavaScript على خيط واحد، <dfn>حلقة الأحداث</dfn> (event loop). ولهذا تستطيع عملية واحدة خدمة آلاف الطلبات: بينما ينتظر طلب قاعدة البيانات، تنفذ الحلقة غيره. ويعني ذلك أيضاً أن أي JavaScript يعمل وقتاً طويلاً دون انتظار يعطّل <em>كل</em> طلب في العملية. ومساران يؤديان العمل الغالي نفسه، تجزئة كلمة مرور بـ 100000 جولة، بطريقتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code">app.get(<span class="s">&quot;/hash/sync&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="c line-bidi">// خطر: 100000 جولة تجزئة على حلقة الأحداث: لا شيء آخر يعمل في الأثناء</span>
+  <span class="k">const</span> key = pbkdf2Sync(<span class="s">&quot;password&quot;</span>, <span class="s">&quot;salt&quot;</span>, 100_000, <span class="n">32</span>, <span class="s">&quot;sha256&quot;</span>);
+  <span class="k">return</span> { key: key.toString(<span class="s">&quot;hex&quot;</span>).slice(<span class="n">0</span>, <span class="n">8</span>) };
+});
+
+<span class="k">const</span> pbkdf2Async = promisify(pbkdf2);
+app.get(<span class="s">&quot;/hash/async&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="c line-bidi">// العمل نفسه على مجمّع خيوط libuv: تبقى حلقة الأحداث حرة</span>
+  <span class="k">const</span> key = <span class="k">await</span> pbkdf2Async(<span class="s">&quot;password&quot;</span>, <span class="s">&quot;salt&quot;</span>, 100_000, <span class="n">32</span>, <span class="s">&quot;sha256&quot;</span>);
+  <span class="k">return</span> { key: key.toString(<span class="s">&quot;hex&quot;</span>).slice(<span class="n">0</span>, <span class="n">8</span>) };
+});</pre></div>
+
+<p>وبينما ينادي أربعة عملاء أحدهما، ينادي عشرة آخرون <code>/ping</code>، الذي لا يفعل شيئاً أصلاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># /ping، بينما ينادي عملاء آخرون /hash/sync</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 10 -d 4 localhost:3000/ping</span>
+{&quot;requests_per_s&quot;:103.75,&quot;p50_ms&quot;:89,&quot;p99_ms&quot;:470,&quot;errors&quot;:0}
+<span class="c line-bidi"># /ping، بينما ينادي عملاء آخرون /hash/async</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 10 -d 4 localhost:3000/ping</span>
+{&quot;requests_per_s&quot;:22560,&quot;p50_ms&quot;:0,&quot;p99_ms&quot;:2,&quot;errors&quot;:0}
+<span class="c line-bidi"># /ping وحده، للمقارنة</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 10 -d 4 localhost:3000/ping</span>
+{&quot;requests_per_s&quot;:33172,&quot;p50_ms&quot;:0,&quot;p99_ms&quot;:1,&quot;errors&quot;:0}</pre></div>
+
+<p>مع النسخة المتزامنة، نزل <code>/ping</code> من نحو 35000 طلب في الثانية إلى أقل من 100، وصعد وسيطه فوق 100 مللي ثانية: لقد انتظر في الصف خلف كل تجزئة. ومع النسخة غير المتزامنة، تعمل التجزئة على مجمّع خيوط libuv، خارج حلقة الأحداث، فبقي <code>/ping</code> سريعاً. والدروس:</p>
+<ul>
+<li>لا تستخدم أبداً دوال <code>…Sync</code> في <code>fs</code> و<code>crypto</code> و<code>zlib</code> في معالجات الطلبات.</li>
+<li>الحساب الثقيل في JavaScript (معالجة الصور، وJSON الكبير، والتقارير المعقدة) مكانه <dfn>خيط عامل</dfn> (worker thread)، أو عملية منفصلة، أو مهمة خلفية (الفصل 10).</li>
+<li>راقب تأخر حلقة الأحداث (المقاييس الافتراضية في <code>prom-client</code>، الفصل 13): حين يكبر، فشيء ما يعطّل.</li>
+<li>العملية الواحدة تستخدم نواة معالج واحدة لـ JavaScript. شغّل عملية لكل نواة (عدة حاويات، أو وحدة <code>cluster</code> في Node) لتستخدم الجهاز كله.</li>
+</ul>
+
+<h2><span class="sec">14.5</span> <span>ترتيب الإصلاحات</span></h2>
+
+<p>حين تبيّن القياسات مشكلة حقيقية، جرّب الإصلاحات بهذا الترتيب، الأرخص أولاً:</p>
+<ol>
+<li><strong>افعل عملاً أقل.</strong> فهرس، أو استعلام أفضل، أو استعلامات أقل، أو ردود أصغر، ولا عمل لم يطلبه العميل. وهذا أكبر مكسب عادة.</li>
+<li><strong>افعل العمل لاحقاً.</strong> البريد والتقارير والاستدعاءات للشركاء في مهام خلفية، فيعود الطلب في الحال.</li>
+<li><strong>افعل العمل مرة.</strong> خزّن مؤقتاً الأجوبة التي تتشاركها طلبات كثيرة (الفصل 7)، ودع ذاكرات HTTP المؤقتة وشبكات توصيل المحتوى تقدّم ما لا يتغير (<code>Cache-Control</code> و<code>ETag</code>).</li>
+<li><strong>افعل العمل بالتوازي.</strong> عمليات أو خوادم أكثر خلف موازن حمل. وهذا لا ينجح إلا للأجزاء التي يمكن توزيعها: فقاعدة البيانات خلفها لا تصير أسرع بإضافة خوادم ويب، ولهذا أُصلحت قاعدة البيانات أولاً.</li>
+<li><strong>خذ جهازاً أكبر.</strong> أحياناً أرخص خيار على الإطلاق، ويستحق دائماً أن تعرف ثمنه قبل شهر من الهندسة.</li>
+</ol>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: ميزانية أداء تُفحص تلقائياً</p><p>اكتب الأهداف («القائمة: p95 تحت 100 مللي ثانية عند 200 طلب في الثانية»)، واحفظ اختبار حمل للمسارات الرئيسية في المستودع، وشغّله قبل الإصدارات على بيانات قريبة من الإنتاج. فالتراجع الذي يلتقطه اختبار يكلّف تراجعاً عن تغيير؛ والذي يلتقطه الزبائن يكلّف صبرهم. واحفظ أرقام ما قبل كل تحسين وما بعده: إنها الدليل على أن العمل كان يستحق.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>التحسين بلا قياس</td><td>أسابيع على كود لم يكن المشكلة</td><td>اختبار حمل، وتحليل، ثم إصلاح عنق الزجاجة</td></tr>
+<tr><td>الاختبار ببيانات ضئيلة</td><td>فهارس ناقصة لا تُرى حتى الإنتاج</td><td>أحجام قريبة من الإنتاج</td></tr>
+<tr><td>النظر إلى المتوسطات</td><td>طلبات بطيئة مختبئة</td><td>p50 وp95 وp99</td></tr>
+<tr><td>استعلامات بلا فهارس مطابقة</td><td>مسح الجداول كاملة تحت الحمل</td><td><code>EXPLAIN ANALYZE</code> والفهارس المركّبة</td></tr>
+<tr><td>فهارس على كل شيء</td><td>كتابات بطيئة، ومساحة ضائعة، وفهارس لا تُستخدم</td><td>فهارس لاستعلامات حقيقية متكررة</td></tr>
+<tr><td>عمل متزامن على حلقة الأحداث</td><td>كل الطلبات تبطؤ معاً</td><td>واجهات غير متزامنة، وخيوط عاملة، ومهام</td></tr>
+<tr><td>إضافة خوادم لعنق زجاجة في قاعدة البيانات</td><td>كلفة أكثر، والسرعة نفسها، وقاعدة بيانات أكثر انشغالاً</td><td>أصلح الاستعلامات أولاً</td></tr>
+<tr><td>التخزين المؤقت لإخفاء استعلام بطيء</td><td>بيانات قديمة وتدافع، والاستعلام ما زال بطيئاً</td><td>أصلح الاستعلام؛ وخزّن ما هو مشترك حقاً</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>قِس أولاً</strong>: زمن الاستجابة مئيناتٍ، والإنتاجية طلباتٍ في الثانية، تحت حمل واقعي ببيانات واقعية.</li>
+<li>جد <strong>عنق الزجاجة</strong> بالمقاييس والتتبعات و<strong><code>EXPLAIN ANALYZE</code></strong>؛ وهو استعلام في الغالب.</li>
+<li><strong>فهرس مركّب</strong> يطابق <code>WHERE</code> و<code>ORDER BY</code> حوّل مسحاً كاملاً إلى قراءة 20 مدخلاً.</li>
+<li><strong>حلقة الأحداث</strong> في Node تنفذ شيئاً واحداً في كل مرة: لا تعطّلها أبداً؛ وانقل العمل الثقيل.</li><li>أصلح بالترتيب: <strong>عمل أقل، وعمل لاحق، وعمل مرة، وعمل بالتوازي</strong>، وجهاز أكبر.</li>
+<li>احفظ <strong>ميزانية أداء</strong> واختبار حمل، وسجّل أرقام ما قبل وما بعد.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. كل مستخدم يرسل طلبات كثيرة، فيلقى أغلب المستخدمين الطلبات البطيئة بانتظام؛ والأغلبية السريعة تسحب المتوسط إلى أسفل، فتخفي أقلية تنتظر ثواني. وp99 يصف كيف تبدو أسوأ التجارب المتكررة. 2. أن قاعدة البيانات قرأت 166500 صف لكل عملية ورمتها، لتجد المئات القليلة التي تحتاجها: مسح كامل للجدول، علامة فهرس ناقص. 3. الفهرس مرتب بعموده الأول، ثم الثاني داخله. ومع <code>(category, price)</code>، صفوف التصنيف الواحد معاً ومرتبة بالسعر أصلاً، فيقرأ الاستعلام أول 20. ومع <code>(price, category)</code>، صفوف التصنيف الواحد مبعثرة في الفهرس كله، وسيضطر قاعدة البيانات إلى مسح أغلبه.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبدأ بقياس وينتهي بقياس. احفظ أرقام ما قبل وما بعد.</p>
+
+<div class="project">
+<p class="project-label">المشروع 14.1 · سهل</p>
+<h3>فهرس استعلامات المتجر الحقيقية</h3>
+<p class="project-goal">جد استعلامات المتجر البطيئة من الفصول السابقة وأصلحها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> البيانات الواقعية، و<code>EXPLAIN ANALYZE</code>، والفهارس المركّبة، وسجل الاستعلامات البطيئة.</p>
+<ol class="steps">
+<li>ولّد بيانات واقعية: 100000 زبون، ومليون طلب وأصنافها.</li>
+<li>شغّل <code>log_min_duration_statement = 50</code> في PostgreSQL واستخدم API مدة؛ واجمع الاستعلامات البطيئة.</li>
+<li>اشرح كلاً منها، وأضف الفهرس المناسب، واشرح مرة أخرى.</li>
+<li>اختبر المسارات المتأثرة بالحمل قبل وبعد، واكتب الأرقام في تقرير قصير.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إضافة <code>pg_stat_statements</code> ترتّب الاستعلامات بإجمالي الوقت المستهلك، وهذا كثيراً أنفع من أبطأ استعلام منفرد.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 14.2 · متوسط</p>
+<h3>اختبار حمل في المستودع</h3>
+<p class="project-goal">اجعل الأداء قابلاً للفحص من أي أحد، قبل كل إصدار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختبارات الحمل المكتوبة سكربتاً، وميزانيات الأداء، ومقارنة التشغيلات.</p>
+<ol class="steps">
+<li>اكتب سكربتاً يزرع بيانات قريبة من الإنتاج، ويشغّل الخادم، وينفذ autocannon على المسارات الخمسة الرئيسية.</li>
+<li>اكتب ميزانية كل مسار (p95 والطلبات في الثانية) في ملف، واجعل السكربت يفشل حين يخالفها مسار.</li>
+<li>أدخل تراجعاً عمداً (احذف فهرساً، أو أضف حلقة بطيئة) وبيّن أن السكربت يلتقطه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اختبارات الحمل على أجهزة CI المشتركة صاخبة؛ قارن بميزانية بهامش، وشغّل الاختبار الكامل على جهاز مخصص قبل الإصدارات.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 14.3 · تحدٍّ</p>
+<h3>خارج حلقة الأحداث</h3>
+
+<p class="project-goal">انقل ميزة ثقيلة على المعالج خارج حلقة الأحداث، وأثبت أن باقي API يبقى سريعاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الخيوط العاملة، وقياس تأخر حلقة الأحداث، ومقارنة التصاميم.</p>
+<ol class="steps">
+<li>أضف مساراً يولّد فاتورة PDF (أو يصغّر صورة) تزامنياً، وقِس <code>/ping</code> تحت الحمل أثناء عمله.</li>
+<li>انقل العمل إلى مجمّع خيوط عاملة (<code>node:worker_threads</code>، أو مكتبة Piscina)، وقِس مرة أخرى.</li>
+<li>انقله بدلاً من ذلك إلى مهمة خلفية (الفصل 10) مع مسار للحالة، وقارن تجربة المستخدم في التصميمين.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>perf_hooks.monitorEventLoopDelay()</code> تقيس كم تتأخر الحلقة؛ ارسمها أثناء كل اختبار.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> مسار يعالج 2000 طلب في الثانية بوسيط 5 مللي ثوانٍ وp99 من 900. ماذا يخبرك ذلك، وأين تنظر أولاً؟</li>
+<li><span class="level">سهل</span> أي فهرس تضيف لـ <code>SELECT * FROM orders WHERE customer_id = $1 AND status = 'paid' ORDER BY created_at DESC LIMIT 10</code>، ولماذا بذلك الترتيب للأعمدة؟</li>
+<li><span class="level medium">متوسط</span> عشرة عملاء ينادون مساراً ينفذ <code>JSON.parse</code> على ملف من 50 MB يُقرأ بـ <code>readFileSync</code>. صف ما يحدث للمسارات الأخرى، وطريقتين لإصلاحه.</li>
+<li><span class="level medium">متوسط</span> بعد إضافة خادمَي ويب، لم يصر API أسرع، ومعالج قاعدة البيانات عند 100%. اشرح، واقترح ما تفعله بدلاً من ذلك.</li>
+<li><span class="level hard">تحدٍّ</span> صفحة المنتج ترسل 12 استعلاماً، وتستغرق 300 مللي ثانية، وهي أكثر الصفحات زيارة. اقترح خطة، بترتيب هذا الفصل، وكيف تقيس كل خطوة.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 15</p>
+<p>الكود يعمل، وآمن، وقابل للملاحظة، وسريع؛ والآن يجب أن يبقى سهل التغيير وهو يكبر. البنية: الطبقات، والوحدات، وأين مكان قواعد العمل.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -6500,6 +6797,16 @@ order-1004 أُعيدت
 <li>كل زبون ينشئ سلسلة جديدة لكل مسار وحالة، فيكبر عدد السلاسل مع قاعدة الزبائن: بعد شهر، مئات آلاف السلاسل، وتنفجر الذاكرة والتخزين في نظام المقاييس، وتصير الاستعلامات بطيئة أو تفشل. والسؤال («أي الزبائن يصادفون أخطاء؟» أو «كم طلباً يرسل هذا الزبون؟») مكانه السجلات أو التتبعات، التي تحمل رقم الزبون في كل حدث ويمكن البحث فيها وعدّها عند الحاجة؛ أو جدول عمل مخصص إن سُئل كثيراً.</li>
 <li>بلا مهلة، قاعدة بيانات تعلق (بدل أن ترفض الاتصالات) تجعل كل فحص جاهزية يعلق؛ فتنتهي مهلة فحص المنصة، لكن الخادم يراكم فحوصاً واتصالات مفتوحة، ويصير التعافي أبطأ. وفحص API شريك بطيء أسوأ: حين يبطؤ الشريك، يبلغ كل خادم «غير جاهز»، فيزيلها موازن الحمل كلها، ويسقط المتجر كله لأن ميزة اختيارية واحدة متعثرة. وينبغي أن تفحص الجاهزية ما لا يستطيع هذا الخادم العمل بدونه وحده، بمهل قصيرة؛ والشركاء يُراقبون بالمقاييس والتنبيهات بدلاً من ذلك.</li>
 <li>هدف الخدمة: على مدى 30 يوماً، تنجح 99.5% من طلبات الدفع (أي حالة تحت 500) وتكتمل 95% خلال 800 مللي ثانية. وتنبيه الإيقاظ: ميزانية الأخطاء تحترق بسرعة، مثلاً أكثر من 5% من عمليات الدفع تفشل في آخر 5 دقائق وفي آخر ساعة (كلاهما، فلا توقظ رجفة واحدة أحداً)؛ وهذا يعني أن الزبائن يخسرون طلبات الآن. وتنبيه التذكرة: الميزانية تحترق ببطء، مثلاً p95 فوق 800 مللي ثانية ثلاث ساعات، أو 1% من عمليات الدفع تفشل على مدى يوم؛ وهذا يحتاج اهتماماً في ساعات العمل، لا ليلاً. والفرق هو إلحاحه على المستخدمين: أيقظ أحداً فقط حين يتأثر الناس الآن ويجب أن يتصرف أحد في الحال.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 14</h2>
+<ol class="exercises">
+<li>أغلب الطلبات سريعة، فالمسار نفسه ليس بطيئاً عموماً؛ وطلب من كل مئة يستغرق نحو ثانية. شيء ما يؤثر في بعض الطلبات وحدها: استعلام بطيء لمعاملات معيّنة (زبون كبير، أو تصنيف بلا فهرس)، أو قفل تنتظره بعض الطلبات، أو غياب من الذاكرة المؤقتة يعيد الحساب، أو استدعاء عرضي لخدمة بطيئة، أو توقفات جمع المهملات. ابدأ من تتبعات الطلبات البطيئة (الفصل 13) وقارنها بالسريعة: الفرق يبيّن أين يذهب الوقت.</li>
+<li><code>CREATE INDEX ON orders (customer_id, status, created_at)</code>. شرطا المساواة أولاً، فيضيّق الفهرس مباشرة إلى طلبات زبون واحد المدفوعة؛ وداخلها المدخلات مرتبة بـ <code>created_at</code>، فتقرأ قاعدة البيانات آخر 10 مدخلات (يمكن قراءة الفهرس عكسياً لـ <code>DESC</code>) وتتوقف، بلا ترتيب. ومع <code>created_at</code> أولاً، سيكون الفهرس مرتباً بالوقت عبر كل الزبائن، وسيجب فحص الشروط مدخلاً بعد مدخل.</li>
+<li><code>readFileSync</code> و<code>JSON.parse</code> كلاهما يعمل على حلقة الأحداث: بينما يقرأ كل من الطلبات العشرة 50 MB ويحللها، وهذا يستغرق مئات المللي ثواني، لا يستطيع أي طلب آخر في العملية أن يعمل، فتصير كل المسارات بطيئة معاً، وتقفز الذاكرة لحفظ عشر نسخ. والإصلاحات: لا تحلله لكل طلب (حلله مرة عند البدء، أو احفظ البيانات في قاعدة بيانات واستعلم ما يلزم)؛ أو انقل العمل خارج الحلقة، بالقراءة بـ <code>fs.promises.readFile</code> غير المتزامنة والتحليل في خيط عامل، أو في مهمة خلفية تحفظ النتيجة.</li>
+<li>عنق الزجاجة قاعدة البيانات، لا خوادم الويب: كل خادم ويب يرسل الاستعلامات الغالية نفسها إلى قاعدة البيانات نفسها، فإضافة الخوادم ترسل إليها عملاً أكثر في الوقت نفسه فقط (واتصالات أكثر). جد الاستعلامات الغالية (سجل الاستعلامات البطيئة، و<code>pg_stat_statements</code>، و<code>EXPLAIN ANALYZE</code>)، وأصلحها بالفهارس واستعلامات أفضل، وأزل أنماط N+1، وخزّن مؤقتاً ما هو مشترك، وبعدها فقط فكّر في نسخ القراءة أو خادم قاعدة بيانات أكبر.</li>
+<li>قِس أولاً: اختبار حمل للصفحة ببيانات واقعية، وp50 وp95 وp99، وتتبع لطلب واحد يبيّن الاستعلامات الاثني عشر وأوقاتها. (1) عمل أقل: اجمع الاستعلامات بالتحميل المسبق أو الربط، وأضف فهارس للبطيئة، واختر الأعمدة المعروضة وحدها؛ وقِس مرة أخرى. (2) عمل لاحق: كل ما لا يلزم لعرض الصفحة (عدّادات المشاهدة، والتوصيات المحسوبة لكل زيارة) يذهب إلى مهمة خلفية أو يُحمَّل منفصلاً. (3) عمل مرة: خزّن بيانات المنتج المشتركة بين كل الزوار في Redis مع إبطال عند التغيير، واضبط <code>Cache-Control</code> فتستطيع شبكة توصيل محتوى تقديم الصفحة أو API الخاص بها بضع ثوانٍ؛ وقِس نسبة الإصابة وزمن الاستجابة. (4) فقط إن بقيت الصفحة أبطأ من اللازم تحت الحمل المستهدف، أضف خوادم، متحققاً أن قاعدة البيانات تبقى سليمة. وتُبقى كل خطوة فقط إن تحسنت الأرقام.</li>
 </ol>
 
 </section>

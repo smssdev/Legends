@@ -33,6 +33,8 @@
 @page ch12:first { @top-center { content: none; } }
 @page ch13 { @top-center { content: "Chapter 13: Logging, Metrics and Tracing"; } }
 @page ch13:first { @top-center { content: none; } }
+@page ch14 { @top-center { content: "Chapter 14: Performance and Scaling"; } }
+@page ch14:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -6368,6 +6370,301 @@ app.get(<span class="s">&quot;/ready&quot;</span>, { logLevel: <span class="s">&
 <p>The signals show where the shop is slow; now we make it fast. Performance: measuring under load, finding the bottleneck, indexes and query plans, and the event loop.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch14" data-chapter="14" data-code="b3/performance/en">
+<div class="opener"><span class="opener-num">14</span><p class="chapter-kicker">Chapter 14</p><h1>Performance</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>measure performance under load instead of guessing</li>
+<li>read percentiles and throughput, and know which matters when</li>
+<li>find the bottleneck, which is usually the database, and fix it with the right index</li>
+<li>understand the concurrency model of Node’s event loop, and its limits</li>
+<li>choose between faster code, caching, background work and more servers</li>
+</ul>
+</div>
+
+<p class="lead">“Make it fast” is not a task until it has a number: how many requests a second, how slow the slowest ones may be, measured how. This chapter follows the order that works in practice. First measure, under realistic load. Then find the one thing that limits the system, the <dfn>bottleneck</dfn>. Fix that, and measure again. Almost every time, the bottleneck is not where intuition points, and the fix is smaller than feared. Here a single line of SQL makes the shop’s product query almost a hundred times faster.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>I once spent a week rewriting a JSON serialiser to make an API faster. It became 30% quicker at serialising, and the API became 1% faster, because 95% of each request was spent waiting for one query without an index. The index took a minute to add. I have measured before optimising ever since.</p></div></div>
+
+<h2><span class="sec">14.1</span> <span>Measuring</span></h2>
+
+<p>Performance has two numbers that matter, and they are different:</p>
+<ul>
+<li><dfn>Latency</dfn>: how long one request takes, as seen by the client. Report it as percentiles (Chapter 13): the median (p50) is a typical request, the p99 is the slowest one in a hundred, which on a busy site is someone every second.</li>
+<li><dfn>Throughput</dfn>: how many requests per second the system completes. It matters for capacity: how many users one server can carry.</li>
+</ul>
+
+<p>A <dfn>load test</dfn> measures both by sending many requests at once. <dfn>autocannon</dfn>, a load-testing tool written in Node, opens a number of connections and keeps them busy for a few seconds. The shop has 500,000 products in 2,000 categories:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="c line-bidi">-- 500,000 products in 2,000 categories of 250 each</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> products (
+  id       bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  name     text <span class="k">NOT</span> <span class="k">NULL</span>,
+  category text <span class="k">NOT</span> <span class="k">NULL</span>,
+  price    integer <span class="k">NOT</span> <span class="k">NULL</span>
+);
+<span class="k">INSERT</span> <span class="k">INTO</span> products (name, category, price)
+<span class="k">SELECT</span> <span class="s">&#x27;Product &#x27;</span> || n,
+       (ARRAY[<span class="s">&#x27;kits&#x27;</span>, <span class="s">&#x27;wheels&#x27;</span>, <span class="s">&#x27;cables&#x27;</span>, <span class="s">&#x27;sensors&#x27;</span>, <span class="s">&#x27;motors&#x27;</span>, <span class="s">&#x27;tools&#x27;</span>, <span class="s">&#x27;lights&#x27;</span>, <span class="s">&#x27;cases&#x27;</span>])[<span class="n">1</span> + n % <span class="n">8</span>]
+         || <span class="s">&#x27;-&#x27;</span> || (n % <span class="n">250</span>),
+       (n * <span class="n">37</span>) % <span class="n">100000</span> + <span class="n">100</span>
+<span class="k">FROM</span> generate_series(<span class="n">1</span>, <span class="n">500000</span>) <span class="k">AS</span> n;
+<span class="k">ANALYZE</span> products;</pre></div>
+
+<p>The product listing asks for the 20 cheapest products in one category. Twenty clients, five seconds:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># 20 clients for 5 seconds, without an index</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 20 -d 5 &#x27;localhost:3000/products?category=cables-42&#x27;</span>
+{&quot;requests_per_s&quot;:93.6,&quot;p50_ms&quot;:205,&quot;p99_ms&quot;:320,&quot;errors&quot;:0}</pre></div>
+
+<p>About 90 requests a second, and the typical client waits 200 milliseconds. For a listing, that is slow. The obvious suspects are Node, Fastify, JSON. The right move is to look.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: measure like production</p><p>A load test on a laptop with ten rows tells you nothing. Use production-like data volumes (the bottleneck here appears only because the table is big), the same database, a server configured as in production (no debug logging), and a load generator on a different machine when the numbers matter. Warm up first, run several times, and change one thing at a time.</p></aside>
+
+<h2><span class="sec">14.2</span> <span>Finding the bottleneck</span></h2>
+
+<p>The observability of Chapter 13 usually points straight at it: the histogram of the listing route is slow, and its trace shows nearly all the time inside one SQL query. PostgreSQL can explain how it runs a query, and with <code>ANALYZE</code> it runs the query and reports the real times:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">query.sql</div><pre class="code"><span class="k">EXPLAIN</span> (<span class="k">ANALYZE</span>, COSTS OFF)
+<span class="k">SELECT</span> id, name, price <span class="k">FROM</span> products
+<span class="k">WHERE</span> category = <span class="s">&#x27;cables-42&#x27;</span>
+<span class="k">ORDER</span> <span class="k">BY</span> price
+<span class="k">LIMIT</span> <span class="n">20</span>;</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The query plan, without an index</span>
+<span class="c">$ </span><span class="k">psql shop -f query.sql</span>
+                                           QUERY PLAN                                            
+-------------------------------------------------------------------------------------------------
+ Limit (actual time=20.416..28.366 rows=20.00 loops=1)
+   Buffers: shared hit=4170
+   -&gt;  Sort (actual time=20.413..28.360 rows=20.00 loops=1)
+         Sort Key: price
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=4170
+         -&gt;  Gather (actual time=0.333..28.204 rows=500.00 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=4167
+               -&gt;  Parallel Seq Scan on products (actual time=0.036..17.474 rows=166.67 loops=3)
+                     Filter: (category = &#x27;cables-42&#x27;::text)
+                     Rows Removed by Filter: 166500
+                     Buffers: shared hit=4167
+ Planning:
+   Buffers: shared hit=86 read=4
+ Planning Time: 0.412 ms
+ Execution Time: 28.420 ms
+(18 rows)</pre></div>
+
+<p>Read a plan from the inside out. The innermost step is a <dfn>Parallel Seq Scan</dfn>: three processes read the <em>whole table</em>, checking every row against the category, and “Rows Removed by Filter” says that 166,500 rows per process were read and thrown away to find 250. Then they sort and merge the matches, and keep 20. About 20 milliseconds per query, and with twenty clients the database is busy reading the same table over and over: that is the bottleneck. (Chapter 4 introduced indexes; here is what the lack of one costs.)</p>
+
+<h2><span class="sec">14.3</span> <span>The right index</span></h2>
+
+<p>An index on <code>category</code> alone would find the 250 rows quickly, but they would still need sorting. An index on <code>(category, price)</code> keeps the rows of each category already sorted by price, so the database can read the first 20 entries of one category and stop:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An index that matches the query</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;CREATE INDEX products_category_price ON products (category, price)&#x27;</span>
+CREATE INDEX
+<span class="c line-bidi"># The same query plan, with the index</span>
+<span class="c">$ </span><span class="k">psql shop -f query.sql</span>
+                                                QUERY PLAN                                                
+----------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.066..0.185 rows=20.00 loops=1)
+   Buffers: shared hit=20 read=3
+   -&gt;  Index Scan using products_category_price on products (actual time=0.065..0.182 rows=20.00 loops=1)
+         Index Cond: (category = &#x27;cables-42&#x27;::text)
+         Index Searches: 1
+         Buffers: shared hit=20 read=3
+ Planning:
+   Buffers: shared hit=123 read=1
+ Planning Time: 0.450 ms
+ Execution Time: 0.209 ms
+(10 rows)</pre></div>
+
+<p>An <dfn>Index Scan</dfn> reading 20 entries, no sort, and about a quarter of a millisecond instead of 20: almost a hundred times less work. And under the same load:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same load, with the index</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 20 -d 5 &#x27;localhost:3000/products?category=cables-42&#x27;</span>
+{&quot;requests_per_s&quot;:7076.6,&quot;p50_ms&quot;:2,&quot;p99_ms&quot;:13,&quot;errors&quot;:0}</pre></div>
+
+<p>From about 90 to about 7,000 requests a second, and the median from 200 milliseconds to 2. Nothing in Node changed.</p>
+
+<p>Indexes are not free: each one takes disk space and slows down every insert and update a little, because it must be kept up to date. Add them for the queries that run often or are slow, matching their <code>WHERE</code> and <code>ORDER BY</code> columns in order, and check with <code>EXPLAIN</code> that they are used. The same habit finds the other database problems: the N+1 queries of Chapter 5, <code>SELECT *</code> on wide tables, and offset pagination that reads thousands of rows to skip them.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is the p99 latency more important than the average for users?</li><li>In the first plan, what did “Rows Removed by Filter: 166500” tell you?</li><li>Why <code>(category, price)</code> and not <code>(price, category)</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+
+<h2><span class="sec">14.4</span> <span>The event loop</span></h2>
+
+<p>Node runs your JavaScript on a single thread, the <dfn>event loop</dfn>. That is why one process can serve thousands of requests: while one request waits for the database, the loop runs others. It also means that any JavaScript that runs for a long time without waiting blocks <em>every</em> request in the process. Two routes do the same expensive work, hashing a password with 100,000 rounds, in two ways:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">node/server.ts</div><pre class="code">app.get(<span class="s">&quot;/hash/sync&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="c line-bidi">// DANGER: 100,000 rounds of hashing on the event loop: nothing else runs meanwhile</span>
+  <span class="k">const</span> key = pbkdf2Sync(<span class="s">&quot;password&quot;</span>, <span class="s">&quot;salt&quot;</span>, 100_000, <span class="n">32</span>, <span class="s">&quot;sha256&quot;</span>);
+  <span class="k">return</span> { key: key.toString(<span class="s">&quot;hex&quot;</span>).slice(<span class="n">0</span>, <span class="n">8</span>) };
+});
+
+<span class="k">const</span> pbkdf2Async = promisify(pbkdf2);
+app.get(<span class="s">&quot;/hash/async&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="c line-bidi">// the same work on libuv&#x27;s thread pool: the event loop stays free</span>
+  <span class="k">const</span> key = <span class="k">await</span> pbkdf2Async(<span class="s">&quot;password&quot;</span>, <span class="s">&quot;salt&quot;</span>, 100_000, <span class="n">32</span>, <span class="s">&quot;sha256&quot;</span>);
+  <span class="k">return</span> { key: key.toString(<span class="s">&quot;hex&quot;</span>).slice(<span class="n">0</span>, <span class="n">8</span>) };
+});</pre></div>
+
+<p>While four clients call one of them, ten others call <code>/ping</code>, which does nothing at all:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># /ping, while other clients call /hash/sync</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 10 -d 4 localhost:3000/ping</span>
+{&quot;requests_per_s&quot;:65.75,&quot;p50_ms&quot;:137,&quot;p99_ms&quot;:595,&quot;errors&quot;:0}
+<span class="c line-bidi"># /ping, while other clients call /hash/async</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 10 -d 4 localhost:3000/ping</span>
+{&quot;requests_per_s&quot;:20223,&quot;p50_ms&quot;:0,&quot;p99_ms&quot;:2,&quot;errors&quot;:0}
+<span class="c line-bidi"># /ping alone, for comparison</span>
+<span class="c">$ </span><span class="k">npx autocannon -c 10 -d 4 localhost:3000/ping</span>
+{&quot;requests_per_s&quot;:34970,&quot;p50_ms&quot;:0,&quot;p99_ms&quot;:1,&quot;errors&quot;:0}</pre></div>
+
+<p>With the synchronous version, <code>/ping</code> fell from about 35,000 requests a second to under 100, and its median rose to over 100 milliseconds: it waited in line behind each hash. With the asynchronous version, the hashing runs on libuv’s thread pool, outside the event loop, and <code>/ping</code> stayed fast. The lessons:</p>
+<ul>
+<li>Never use the <code>…Sync</code> functions of <code>fs</code>, <code>crypto</code> and <code>zlib</code> in request handlers.</li>
+<li>Heavy computation in JavaScript (image processing, big JSON, complex reports) belongs in a <dfn>worker thread</dfn>, a separate process, or a background job (Chapter 10).</li>
+<li>Watch the event loop delay (<code>prom-client</code>’s default metrics, Chapter 13): when it grows, something is blocking.</li>
+<li>One process uses one CPU core for JavaScript. Run one process per core (several containers, or Node’s <code>cluster</code> module) to use the whole machine.</li>
+</ul>
+
+<h2><span class="sec">14.5</span> <span>The order of fixes</span></h2>
+
+<p>When the measurements show a real problem, try the fixes in this order, cheapest first:</p>
+<ol>
+<li><strong>Do less work.</strong> An index, a better query, fewer queries, smaller responses, no work the client did not ask for. Usually the biggest win.</li>
+<li><strong>Do the work later.</strong> Emails, reports and calls to partners in background jobs, so the request returns at once.</li>
+<li><strong>Do the work once.</strong> Cache answers that many requests share (Chapter 7), and let HTTP caches and CDNs serve what does not change (<code>Cache-Control</code>, <code>ETag</code>).</li>
+<li><strong>Do the work in parallel.</strong> More processes or servers behind a load balancer. This works only for the parts that can be shared out: the database behind them does not get faster by adding web servers, which is why the database was fixed first.</li>
+<li><strong>Get a bigger machine.</strong> Sometimes the cheapest option of all, and always worth pricing before a month of engineering.</li>
+</ol>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a performance budget, checked automatically</p><p>Write down the targets (“the listing: p95 under 100 ms at 200 requests a second”), keep a load test for the main routes in the repository, and run it before releases against production-like data. A regression caught by a test costs a revert; one caught by customers costs their patience. And keep the before-and-after numbers of every optimisation: they are the proof that the work was worth it.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Optimising without measuring</td><td>Weeks spent on code that was not the problem</td><td>Load test, profile, then fix the bottleneck</td></tr>
+<tr><td>Testing with tiny data</td><td>Missing indexes invisible until production</td><td>Production-like volumes</td></tr>
+<tr><td>Looking at averages</td><td>Slow requests hidden</td><td>p50, p95 and p99</td></tr>
+<tr><td>Queries without matching indexes</td><td>Full table scans under load</td><td><code>EXPLAIN ANALYZE</code> and composite indexes</td></tr>
+<tr><td>Indexes on everything</td><td>Slow writes, wasted space, unused indexes</td><td>Indexes for real, frequent queries</td></tr>
+<tr><td>Synchronous work on the event loop</td><td>Every request slows down together</td><td>Async APIs, worker threads, jobs</td></tr>
+<tr><td>Adding servers for a database bottleneck</td><td>More cost, same speed, a busier database</td><td>Fix the queries first</td></tr>
+<tr><td>Caching to hide a slow query</td><td>Stale data and stampedes, the query still slow</td><td>Fix the query; cache what is truly shared</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Measure first</strong>: latency as percentiles, throughput as requests per second, under realistic load with realistic data.</li>
+<li>Find the <strong>bottleneck</strong> with metrics, traces and <strong><code>EXPLAIN ANALYZE</code></strong>; it is usually a query.</li>
+<li>A <strong>composite index</strong> matching <code>WHERE</code> and <code>ORDER BY</code> turned a full scan into reading 20 entries.</li>
+<li>Node’s <strong>event loop</strong> runs one thing at a time: never block it; offload heavy work.</li><li>Fix in order: <strong>less work, later work, work once, work in parallel</strong>, a bigger machine.</li>
+<li>Keep a <strong>performance budget</strong> and a load test, and record before-and-after numbers.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Each user makes many requests, so most users meet the slow ones regularly; and a fast majority pulls the average down, hiding a minority that waits for seconds. The p99 describes what the unluckiest regular experiences look like. 2. That the database read 166,500 rows per process and discarded them, to find the few hundred it needed: a full table scan, the sign of a missing index. 3. An index is sorted by its first column, then the second within it. With <code>(category, price)</code>, the rows of one category are together and already ordered by price, so the query reads the first 20. With <code>(price, category)</code>, the rows of one category are scattered through the whole index, and the database would have to scan most of it.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project starts from a measurement and ends with one. Keep the before-and-after numbers.</p>
+
+<div class="project">
+<p class="project-label">Project 14.1 · Easy</p>
+<h3>Index the shop’s real queries</h3>
+<p class="project-goal">Find and fix the slow queries of the shop from the earlier chapters.</p>
+<p class="project-skills"><strong>You will practise:</strong> realistic data, <code>EXPLAIN ANALYZE</code>, composite indexes, and the slow query log.</p>
+<ol class="steps">
+<li>Generate realistic data: 100,000 customers, 1,000,000 orders and their items.</li>
+<li>Turn on <code>log_min_duration_statement = 50</code> in PostgreSQL and use the API for a while; collect the slow queries.</li>
+<li>Explain each, add the index that fits, and explain again.</li>
+<li>Load test the affected routes before and after, and write the numbers in a short report.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the <code>pg_stat_statements</code> extension ranks queries by total time spent, which is often more useful than the slowest single query.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 14.2 · Medium</p>
+<h3>A load test in the repository</h3>
+<p class="project-goal">Make performance checkable by anyone, before every release.</p>
+<p class="project-skills"><strong>You will practise:</strong> scripted load tests, performance budgets, and comparing runs.</p>
+<ol class="steps">
+<li>Write a script that seeds production-like data, starts the server, and runs autocannon against the five main routes.</li>
+<li>Write the budget for each route (p95 and requests per second) in a file, and make the script fail when a route misses it.</li>
+<li>Introduce a regression on purpose (drop an index, add a slow loop) and show that the script catches it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> load tests on shared CI machines are noisy; compare against a budget with a margin, and run the full test on a dedicated machine before releases.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 14.3 · Challenge</p>
+<h3>Off the event loop</h3>
+
+<p class="project-goal">Move a CPU-heavy feature off the event loop, and prove the rest of the API stays fast.</p>
+<p class="project-skills"><strong>You will practise:</strong> worker threads, measuring event loop delay, and comparing designs.</p>
+<ol class="steps">
+<li>Add a route that generates a PDF invoice (or resizes an image) synchronously, and measure <code>/ping</code> under load while it runs.</li>
+<li>Move the work to a pool of worker threads (<code>node:worker_threads</code>, or the Piscina library), and measure again.</li>
+<li>Move it instead to a background job (Chapter 10) with a status route, and compare the user experience of both designs.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>perf_hooks.monitorEventLoopDelay()</code> measures how late the loop runs; plot it during each test.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A route handles 2,000 requests a second with a p50 of 5 ms and a p99 of 900 ms. What does that tell you, and where would you look first?</li>
+<li><span class="level">Easy</span> Which index would you add for <code>SELECT * FROM orders WHERE customer_id = $1 AND status = 'paid' ORDER BY created_at DESC LIMIT 10</code>, and why in that column order?</li>
+<li><span class="level medium">Medium</span> Ten clients call a route that does <code>JSON.parse</code> on a 50 MB file read with <code>readFileSync</code>. Describe what happens to other routes, and two ways to fix it.</li>
+<li><span class="level medium">Medium</span> After adding two web servers, the API is no faster, and the database’s CPU is at 100%. Explain, and propose what to do instead.</li>
+<li><span class="level hard">Challenge</span> The product page makes 12 queries, takes 300 ms, and is the most visited page. Propose a plan, in the order of this chapter, with how you would measure each step.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 15</p>
+<p>The code works, is secure, observable and fast; now it must stay easy to change as it grows. Architecture: layers, modules, and where business rules belong.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6594,6 +6891,16 @@ The message published while nobody was subscribed went nowhere: pub/sub does not
 <li>Every customer creates a new series for every route and status, so the number of series grows with the customer base: after a month, hundreds of thousands of series, memory and storage in the metrics system explode, and queries become slow or fail. The question (“which customers get errors?” or “how many requests does this customer make?”) belongs to the logs or traces, which carry the customer id on each event and can be searched and counted when needed; or to a dedicated business table if it is asked often.</li>
 <li>Without a timeout, a database that hangs (rather than refusing connections) makes every readiness check hang; the platform’s check times out, but the server piles up open checks and connections, and recovery is slower. Checking a slow partner API is worse: when the partner is slow, every server reports “not ready”, the load balancer removes all of them, and the whole shop goes down because one optional feature is degraded. Readiness should check only what this server cannot work without, with short timeouts; partners are watched with metrics and alerts instead.</li>
 <li>SLO: over 30 days, 99.5% of checkout requests succeed (any status below 500) and 95% complete within 800 ms. Paging alert: the error budget is burning fast, for example more than 5% of checkouts failing over the last 5 minutes and over the last hour (both, so a single blip does not wake anyone); this means customers are losing orders now. Ticket alert: the budget is burning slowly, for example the p95 above 800 ms for three hours, or 1% of checkouts failing over a day; this needs attention during working hours, not at night. The difference is urgency for users: page only when people are affected now and someone must act at once.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 14</h2>
+<ol class="exercises">
+<li>Most requests are fast, so the route itself is not slow in general; one request in a hundred takes nearly a second. Something affects only some requests: a slow query for certain parameters (a big customer, a category without an index), a lock that some requests wait for, a cache miss that recomputes, an occasional call to a slow service, or garbage collection pauses. Start from the traces of the slow requests (Chapter 13) and compare them with fast ones: the difference shows where the time goes.</li>
+<li><code>CREATE INDEX ON orders (customer_id, status, created_at)</code>. The two equality conditions come first, so that the index narrows straight to one customer’s paid orders; within them the entries are sorted by <code>created_at</code>, so the database reads the last 10 entries (an index can be read backwards for <code>DESC</code>) and stops, without sorting. With <code>created_at</code> first, the index would be ordered by time across all customers, and the conditions would have to be checked entry by entry.</li>
+<li>Both <code>readFileSync</code> and <code>JSON.parse</code> run on the event loop: while each of the ten requests reads and parses 50 MB, which takes hundreds of milliseconds, no other request in the process can run, so every route becomes slow at once, and memory spikes as ten copies are held. Fixes: do not parse it per request (parse once at start-up, or keep the data in a database and query what is needed); or move the work off the loop, reading with the asynchronous <code>fs.promises.readFile</code> and parsing in a worker thread, or in a background job that stores the result.</li>
+<li>The bottleneck is the database, not the web servers: every web server sends the same expensive queries to the same database, so adding servers only sends it more work at the same time (and more connections). Find the expensive queries (the slow query log, <code>pg_stat_statements</code>, <code>EXPLAIN ANALYZE</code>), fix them with indexes and better queries, remove N+1 patterns, cache what is shared, and only then consider read replicas or a bigger database server.</li>
+<li>Measure first: a load test of the page with realistic data, p50/p95/p99, and a trace of one request showing the 12 queries and their times. (1) Do less: combine the queries with eager loading or joins, add indexes for the slow ones, select only the columns shown; measure again. (2) Do later: anything not needed to render the page (view counts, recommendations computed per visit) goes to a background job or is loaded separately. (3) Do once: cache the product data shared by all visitors in Redis with invalidation on change, and set <code>Cache-Control</code> so a CDN can serve the page or its API for a few seconds; measure the hit rate and the latency. (4) Only if the page is still too slow under the target load, add servers, checking the database stays healthy. Each step is kept only if the numbers improved.</li>
 </ol>
 
 </section>

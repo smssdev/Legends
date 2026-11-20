@@ -10,5 +10,5 @@ exec docker run --rm -i --init --network host -v "$PWD":"$PWD" -w "$PWD" \
   ${B3_PROXY:+-e NO_PROXY=localhost,127.0.0.1 -e no_proxy=localhost,127.0.0.1} \
   ${B3_CERTS:+-v "$B3_CERTS":/etc/ssl/certs/ca-certificates.crt:ro} \
   ${B3_ENV:+--env-file "$B3_ENV"} \
-  -e BUG -e SHOP_STRICT -e SHOP_RATE_LIMIT -e APP_DEBUG -e APP_ENV -e QUEUE_CONNECTION -e LOG_LEVEL \
+  -e BUG -e PHP_CLI_SERVER_WORKERS -e SHOP_STRICT -e SHOP_RATE_LIMIT -e APP_DEBUG -e APP_ENV -e QUEUE_CONNECTION -e LOG_LEVEL \
   b3-php "$(basename "$0")" "$@"
