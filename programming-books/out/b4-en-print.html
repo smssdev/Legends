@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Data at Scale"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: Six System Design Case Studies"; } }
+@page ch09:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3026,6 +3028,322 @@ Time: 5.334 ms
 <p>Three chapters of principles. The next applies them to six systems you know, from a short-link service to a chat app, one design at a time.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b4/cases/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>Six System Design Case Studies</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>approach any design question with the same seven steps</li>
+<li>turn sequence numbers into short, unique codes</li>
+<li>limit requests across many servers, atomically, with a few lines of Lua</li>
+<li>run millions of jobs at the right time, without a cron line per job</li>
+<li>choose between fan-out on write and on read for a feed</li>
+<li>keep chat messages in order, and make prefix search fast</li>
+</ul>
+</div>
+
+<p class="lead">The last three chapters gave the principles: components and state, failure, data at scale. This chapter applies them six times, to systems you have used: a short-link service, a rate limiter, a reminder scheduler, a feed, a chat, and an autocomplete box. Each case follows the same steps, and each one ends with the single idea that makes it work, run for real. These are also the systems that appear most often in design interviews (Chapter 15), but the aim is not to memorise answers: it is to practise the method until it is how you think.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every case here is small enough to sketch in an afternoon and deep enough to keep a team busy for a year. Do the sketch first, with the numbers; the year is mostly details on top of it.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>The method</span></h2>
+
+<p>Use the same seven steps for every design, in order, and say each one out loud when you work with others:</p>
+<ol>
+<li><strong>Requirements.</strong> What must it do, and what is explicitly out? Who are the users?</li>
+<li><strong>Numbers.</strong> Users, requests per second at peak, data per day, read-to-write ratio, latency targets (Chapter 1’s <code>budget.ts</code>).</li>
+<li><strong>Interface.</strong> The few operations, as API calls with their inputs and outputs (Chapter 2).</li>
+<li><strong>Data.</strong> What is stored, its shape and size, and which queries it must serve.</li>
+<li><strong>Design.</strong> Components, state and flows (Chapter 6); the simplest design that meets the numbers.</li>
+<li><strong>The hard part.</strong> Every system has one or two ideas that make it work; find them and get them right.</li>
+<li><strong>Trade-offs and failures.</strong> What breaks first as it grows, what happens when a part fails, what you chose not to do.</li>
+</ol>
+
+<h2><span class="sec">9.2</span> <span>Short links</span></h2>
+
+<p><strong>Requirements:</strong> turn a long address into a short one, such as Bit Booking’s booking links in text messages, and redirect visitors to the original. <strong>Numbers:</strong> a million new links a day (about 12 a second) and a hundred times as many visits: a strongly read-heavy system. <strong>Data:</strong> a code and an address per link, a few hundred bytes each, about 100 GB over three years.</p>
+
+<p><strong>Design:</strong> a table <code>links (id, url)</code>, a service that creates links and redirects, and a cache in front of the redirects, since a popular link is visited thousands of times. <strong>The hard part</strong> is the short code: unique, short, and generated without checking for collisions. The simplest answer is the database’s own sequence number, written in base 62 (digits and letters):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">base62.ts</div><pre class="code"><span class="c line-bidi">// 62 characters that are safe in any URL</span>
+<span class="k">const</span> ALPHABET = <span class="s">&quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> encode(n: bigint): string {
+  <span class="k">let</span> code = <span class="s">&quot;&quot;</span>;
+  <span class="k">do</span> {
+    code = ALPHABET[Number(n % 62n)] + code;
+    n /= 62n;
+  } <span class="k">while</span> (n &gt; 0n);
+  <span class="k">return</span> code;
+}
+
+<span class="k">export</span> <span class="k">function</span> decode(code: string): bigint {
+  <span class="k">let</span> n = 0n;
+  <span class="k">for</span> (<span class="k">const</span> char <span class="k">of</span> code) n = n * 62n + BigInt(ALPHABET.indexOf(char));
+  <span class="k">return</span> n;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Sequence numbers as short codes</span>
+<span class="c">$ </span><span class="k">node base62.ts</span>
+           1 → 1       → 1
+          61 → Z       → 61
+          62 → 10      → 62
+        3843 → ZZ      → 3843
+     1000000 → 4c92    → 1000000
+ 56800235583 → ZZZZZZ  → 56800235583</pre></div>
+
+<p>Six characters hold 56 billion links, and every code is unique because every id is. <strong>Trade-offs:</strong> sequential codes reveal how many links exist and let anyone list them by counting; if that matters, encrypt the id with a fixed secret permutation before encoding, which keeps codes unique and short but unpredictable. Redirects are read-only and cacheable for a long time, so the service survives the database being down for minutes.</p>
+
+<h2><span class="sec">9.3</span> <span>A rate limiter</span></h2>
+
+<p><strong>Requirements:</strong> at most 5 login attempts a second per client address, across every copy of the application (Chapter 6 showed why: a login costs a tenth of a second of CPU). <strong>Numbers:</strong> every request checks the limit, so it must cost well under a millisecond.</p>
+
+<p><strong>The hard part</strong> is counting correctly when many servers check at the same moment. A count read by one command and written by another would let two servers both see 4 and both allow a fifth. Redis runs a Lua script <em>atomically</em>: nothing else happens between its steps. The script keeps the times of recent requests in a sorted set, removes those older than the window, and allows the request only if fewer than the limit remain:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ratelimit.ts</div><pre class="code"><span class="k">const</span> SLIDING = <span class="s">`
+  local key, now, window, limit = KEYS[1], tonumber(ARGV[1]), tonumber(ARGV[2]), tonumber(ARGV[3])
+  -- drop the requests older than the window, count the rest, and add this one if allowed
+  redis.call(&quot;ZREMRANGEBYSCORE&quot;, key, 0, now - window)
+  if redis.call(&quot;ZCARD&quot;, key) &gt;= limit then return 0 end
+  redis.call(&quot;ZADD&quot;, key, now, ARGV[4])
+  redis.call(&quot;PEXPIRE&quot;, key, window)
+  return 1
+`</span>;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># 5 requests a second for one client, 8 tries</span>
+<span class="c">$ </span><span class="k">node --env-file=.env ratelimit.ts</span>
+request   ms   
+      1     0 allowed
+      2     0 allowed
+      3     0 allowed
+      4     0 allowed
+      5     0 allowed
+      6     0 refused
+      7  1000 allowed
+      8  1000 allowed</pre></div>
+
+<p>Five requests pass, the sixth is refused, and after a second the window has moved and requests pass again. <strong>Trade-offs:</strong> a sorted set per client costs memory proportional to the limit; for large limits, two counters (this window and the previous one, weighted) give a close approximation in constant memory. And decide what happens when Redis is down: refuse logins (safer) or allow them (friendlier), as Chapter 7’s failure table demands.</p>
+
+<h2><span class="sec">9.4</span> <span>Reminders at the right time</span></h2>
+
+<p><strong>Requirements:</strong> send each booking’s reminder 24 hours before it (US-3), exactly once, even with millions of bookings and several workers. <strong>The hard part:</strong> finding the jobs that are due, quickly, and making sure two workers never take the same one.</p>
+
+<p>A Redis sorted set is a natural timetable: each job is a member, its <em>score</em> the time it is due, and the set stays sorted by score. A worker asks for the earliest job due by now, and removes it in the same atomic step:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">delayed.ts</div><pre class="code"><span class="k">const</span> CLAIM = <span class="s">`
+  local due = redis.call(&quot;ZRANGEBYSCORE&quot;, KEYS[1], &quot;-inf&quot;, ARGV[1], &quot;LIMIT&quot;, 0, 1)
+  if #due == 0 then return false end
+  redis.call(&quot;ZREM&quot;, KEYS[1], due[1])
+  return due[1]
+`</span>;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Reminders due at different times</span>
+<span class="c">$ </span><span class="k">node --env-file=.env delayed.ts</span>
+scheduled: 3
+ran: remind booking 41
+ran: remind booking 42
+still waiting: [ &#x27;remind booking 43&#x27; ]</pre></div>
+
+<p>The two due jobs ran; the one due in an hour waits. <strong>Trade-offs:</strong> a job removed and then lost (the worker crashes before sending) is never retried; for reminders that is tolerable, and the database outbox of Chapter 5 can serve as the record of what was sent. The PostgreSQL version of the same idea (<code>SELECT … WHERE due_at &lt;= now() FOR UPDATE SKIP LOCKED</code>) is often enough, and keeps everything in one place.</p>
+
+<h2><span class="sec">9.5</span> <span>A feed</span></h2>
+
+<p><strong>Requirements:</strong> each user sees the latest posts of the accounts they follow, newest first. Imagine Bit Booking adding a “what’s new” feed of offers from the businesses a customer follows. <strong>The hard part</strong> is when to do the work. <dfn>Fan-out on write</dfn> copies each new post into the feed of every follower, so reading a feed is one quick lookup. <dfn>Fan-out on read</dfn> stores each post once, and builds a feed when it is viewed, by merging the latest posts of every account followed. The numbers decide:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The cost of a feed</span>
+<span class="c">$ </span><span class="k">node fanout.ts</span>
+strategy                  writes per post    reads per feed view
+ordinary account (300 followers)
+  fan-out on write                    300                      1
+  fan-out on read                       1                    200
+popular account (2,000,000 followers)
+  fan-out on write              2,000,000                      1
+  fan-out on read                       1                    200</pre></div>
+
+<p>For ordinary accounts, fan-out on write is cheap per post and makes every view instant. For one very popular account, a single post means two million writes. Real systems use both: fan-out on write for ordinary accounts, and for the few very popular ones, merge their posts in at read time. <strong>Trade-offs:</strong> fan-out on write stores many copies and delays a post’s arrival while the copies are made; fan-out on read makes every view do work, so its latency depends on how many accounts a user follows.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why do short-link codes from a sequence never collide, and what do they reveal?</li><li>Why must the rate limiter’s check-and-add be one atomic script rather than two Redis commands?</li><li>A feed system has many accounts with 100 followers and ten with 5 million. Which strategy for which, and why?</li></ol></aside>
+
+<h2><span class="sec">9.6</span> <span>Chat between customer and salon</span></h2>
+
+<p><strong>Requirements:</strong> a customer and a salon exchange messages about a booking; messages appear at once on every device, in the same order everywhere, and a phone that was offline catches up when it reconnects. <strong>Design:</strong> WebSocket connections to a set of chat servers (Book 3’s real-time chapter), PostgreSQL for the messages, and a publish-subscribe channel (Redis) so that the server holding the salon’s connection hears about a message the customer sent through another server.</p>
+
+<p><strong>The hard part</strong> is order. Timestamps from different servers disagree by milliseconds, and two messages sent at once can be stored in either order. The fix is a number per conversation, given by the database in the same statement that stores the message:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">sequence.sql</div><pre class="code"><span class="k">CREATE</span> FUNCTION send(conversation bigint, text text) RETURNS integer <span class="k">AS</span> $$
+  <span class="k">WITH</span> next <span class="k">AS</span> (
+    <span class="k">UPDATE</span> conversations <span class="k">SET</span> last_seq = last_seq + <span class="n">1</span> <span class="k">WHERE</span> id = conversation <span class="k">RETURNING</span> last_seq
+  )
+  <span class="k">INSERT</span> <span class="k">INTO</span> messages (conversation_id, seq, body)
+  <span class="k">SELECT</span> conversation, last_seq, text <span class="k">FROM</span> next
+  <span class="k">RETURNING</span> seq;
+$$ LANGUAGE sql;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c">$ </span><span class="k">psql shop -At -c &quot;SELECT send(1, &#x27;Hi, is 10:30 free?&#x27;), send(2, &#x27;Hello&#x27;), send(1, &#x27;Yes, booked for you&#x27;), send(1, &#x27;Thanks!&#x27;)&quot;</span>
+1|1|2|3
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT conversation_id, seq, body FROM messages ORDER BY conversation_id, seq&#x27;</span>
+ conversation_id | seq |        body         
+-----------------+-----+---------------------
+               1 |   1 | Hi, is 10:30 free?
+               1 |   2 | Yes, booked for you
+               1 |   3 | Thanks!
+               2 |   1 | Hello
+(4 rows)</pre></div>
+
+<p>Each conversation counts on its own, without gaps, and the update holds a lock on that conversation’s row for a moment, so two messages never get the same number. Clients display messages by <code>seq</code>, notice a gap (“I have 1 and 3: fetch 2”), and resume after being offline by asking for “everything after 3”. <strong>Trade-offs:</strong> the counter row serialises writes per conversation, which is exactly right for a chat between two parties and would be a bottleneck for a channel with ten thousand writers.</p>
+
+<h2><span class="sec">9.7</span> <span>Autocomplete</span></h2>
+
+<p><strong>Requirements:</strong> as a customer types a business name, show the first five matches, in under 50 ms including the network, for 500,000 businesses. <strong>The hard part</strong> is the index: the search must find names by prefix <em>and</em> return them in order, from the index alone, without reading every match. Here is the same search twice, with two different indexes:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Names starting with “bit h”, among 500,000</span>
+<span class="c">$ </span><span class="k">psql shop -At -c &quot;SELECT name FROM businesses WHERE lower(name) LIKE &#x27;bit h%&#x27; ORDER BY lower(name) LIMIT 5&quot; | head -2</span>
+Bit Hair 100032
+Bit Hair 100096
+<span class="c">$ </span><span class="k">psql shop -At -c &quot;EXPLAIN (ANALYZE, COSTS OFF) SELECT name FROM businesses WHERE lower(name) LIKE &#x27;bit h%&#x27; ORDER BY lower(name) LIMIT 5&quot; | grep -E &#x27;^ *(-&gt;|Limit|Exec)&#x27;</span>
+Limit
+  -&gt;  Sort
+        -&gt;  Bitmap Heap Scan on businesses
+              -&gt;  Bitmap Index Scan on businesses_name_prefix
+Execution Time: 15.212 ms
+<span class="c">$ </span><span class="k">psql shop -At -c &quot;SELECT name FROM businesses WHERE search_key LIKE &#x27;bit h%&#x27; ORDER BY search_key LIMIT 5&quot; | head -2</span>
+Bit Hair 100032
+Bit Hair 100096
+<span class="c">$ </span><span class="k">psql shop -At -c &quot;EXPLAIN (ANALYZE, COSTS OFF) SELECT name FROM businesses WHERE search_key LIKE &#x27;bit h%&#x27; ORDER BY search_key LIMIT 5&quot; | grep -E &#x27;^ *(-&gt;|Limit|Exec)&#x27;</span>
+Limit
+  -&gt;  Index Scan using businesses_search_key on businesses
+Execution Time: 0.068 ms</pre></div>
+
+<p>The first index can find names by prefix, but its order is not the order the query asks for, so PostgreSQL fetched every one of the thousands of matches and sorted them: 15 ms, growing with the number of matches. The second index is on a column stored in lower case with byte-by-byte (<code>C</code>) ordering, so one index range gives the matches already in order, and the database stops after five: well under a millisecond, whatever the number of matches.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">autocomplete.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> businesses (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  name text <span class="k">NOT</span> <span class="k">NULL</span>,
+  <span class="c line-bidi">-- the name in lower case, ordered byte by byte (C): one index serves the prefix and the order</span>
+  search_key text COLLATE <span class="s">&quot;C&quot;</span> GENERATED ALWAYS <span class="k">AS</span> (lower(name)) STORED
+);</pre></div>
+
+<p><strong>Trade-offs:</strong> byte order is right for English, and wrong for languages whose alphabetical order differs from their byte order; for those, keep the C-ordered key for finding and sort the five results with the language’s collation. For typing mistakes (“bit hiar”), prefix search is not enough: trigram indexes (<code>pg_trgm</code>) or a search engine find near matches, at more cost.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: name the hard part out loud</p><p>In every design review, ask “what is the one thing this design must get right?” and make sure it has a short, tested answer: the code generator, the atomic check, the claim of a due job, the sequence, the index. Teams that cannot name the hard part usually have not solved it; they have hidden it.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Designing before the numbers</td><td>The wrong part is over-built</td><td>Requirements and numbers first</td></tr>
+<tr><td>Random codes checked for collisions</td><td>Extra reads, and rare failures under load</td><td>Encode a unique sequence</td></tr>
+<tr><td>Read, then write, in a distributed limit</td><td>Several servers allow the same last slot</td><td>One atomic script</td></tr>
+<tr><td>A cron line or timer per job</td><td>Millions of timers, lost on restart</td><td>A sorted timetable, claimed atomically</td></tr>
+<tr><td>One fan-out strategy for everyone</td><td>Popular accounts flood the system</td><td>Mix strategies by account size</td></tr>
+<tr><td>Ordering messages by timestamp</td><td>Messages shuffle between devices</td><td>A sequence number per conversation</td></tr>
+<tr><td>An index whose order differs from the query’s</td><td>Every match fetched and sorted</td><td>One index for both the filter and the order</td></tr>
+<tr><td>Skipping failures and trade-offs</td><td>Surprises in production</td><td>End every design with step 7</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Use the same <strong>seven steps</strong> for every design: requirements, numbers, interface, data, design, the hard part, trade-offs.</li>
+<li><strong>Short links:</strong> encode a database sequence in base 62; unique by construction, and permuted if counts must stay private.</li>
+<li><strong>Rate limits:</strong> a sliding window in Redis, updated by one <strong>atomic Lua script</strong>.</li>
+<li><strong>Scheduled jobs:</strong> a timetable sorted by due time, from which workers <strong>claim atomically</strong>.</li>
+<li><strong>Feeds:</strong> fan-out on write for ordinary accounts, on read for very popular ones.</li>
+<li><strong>Chat:</strong> a <strong>sequence number per conversation</strong> gives order, gap detection and easy catch-up.</li>
+<li><strong>Autocomplete:</strong> an index that serves both the <strong>prefix and the order</strong>, so the database stops after five rows.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the database never gives the same sequence number twice, and base 62 is a one-to-one way of writing a number, so different ids always give different codes. They reveal the order and the count: code <code>4c92</code> is the millionth link, and anyone can enumerate links by counting codes; a fixed secret permutation of the id before encoding hides both. 2. Because between a separate read and write, another server can do the same: both read “4 requests in the window”, both decide “one more is allowed”, and both add, so the limit is exceeded. Redis runs a script without interleaving any other command, so check and add happen as one step. 3. Fan-out on write for the many ordinary accounts (100 writes per post, and every feed view is a single read); fan-out on read for the ten very popular accounts (one write per post instead of 5 million), merging their latest posts into each follower’s feed when it is viewed.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project takes one case further. Write the seven steps on a page before the code, and measure the hard part.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>Unpredictable short codes</h3>
+<p class="project-goal">Make short-link codes unique and short, but impossible to enumerate.</p>
+<p class="project-skills"><strong>You will practise:</strong> permutations, reversible encodings, and testing for uniqueness.</p>
+<ol class="steps">
+<li>Write a reversible permutation of 36-bit numbers driven by a secret key (a small Feistel network of four rounds).</li>
+<li>Encode <code>permute(id)</code> instead of <code>id</code>, and decode with the inverse.</li>
+<li>Test that the first million ids give a million different codes, and that consecutive ids give unrelated codes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a Feistel network is reversible whatever its round function is, so the round function can be an HMAC of the half and the key.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>A rate limiter for every route</h3>
+<p class="project-goal">Turn the script into middleware for Bit Booking’s API, with limits per route and standard headers.</p>
+<p class="project-skills"><strong>You will practise:</strong> middleware, HTTP rate-limit headers, and choosing limits.</p>
+<ol class="steps">
+<li>Read limits from a table: login 5 a second per address, booking 20 a minute per address, owner API 100 a second per account.</li>
+<li>Answer refused requests with 429, <code>Retry-After</code>, and <code>RateLimit-Remaining</code>.</li>
+<li>Decide and implement what happens when Redis is unreachable, per route.</li>
+<li>Load-test one route and show the limit holding across two application copies.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> return the remaining count from the Lua script too, so the headers cost no extra round trip.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>Chat that catches up</h3>
+<p class="project-goal">Build the customer–salon chat with WebSockets, ordering and catch-up after being offline.</p>
+<p class="project-skills"><strong>You will practise:</strong> real-time delivery, sequence numbers, and publish-subscribe across servers.</p>
+<ol class="steps">
+<li>Store messages with <code>send()</code>; publish each one on a Redis channel per conversation.</li>
+<li>Run two chat servers; connect the customer to one and the salon to the other, and show messages crossing.</li>
+<li>On reconnect, the client sends its last <code>seq</code> and receives everything after it, before live messages.</li>
+<li>Disconnect a client for a minute while messages are sent, and prove that it ends with all of them, in order, without duplicates.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> subscribe to the channel <em>before</em> loading the missed messages, and drop live messages whose <code>seq</code> you already have; otherwise one can slip between the two.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> How many short links can codes of at most 7 characters represent? How long would that last at a million links a day?</li>
+<li><span class="level">Easy</span> The rate limiter refused request 6 at the same moment as request 5 was allowed. What would a fixed window (a counter per whole second) have allowed at the boundary between two seconds?</li>
+<li><span class="level medium">Medium</span> A reminder worker crashes after removing a job from the sorted set and before sending. Change the design so the reminder is still sent, and say what new risk that introduces.</li>
+<li><span class="level medium">Medium</span> Write the seven steps, briefly, for “show owners how many people are viewing their booking page right now”.</li>
+<li><span class="level hard">Challenge</span> Autocomplete must also work for Arabic business names, typed with or without diacritics and with different forms of alef. Propose how to store and index the names, and how to order the results.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>The design is the plan; delivery is how it reaches customers safely, many times a day. Part 3 starts with CI/CD: the pipeline that tests, builds and ships every change.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3141,6 +3459,16 @@ export async function GET(request: Request) {
 <li>Every cached answer is gone, so every read of free slots misses and goes to the database until the cache fills again, a stampede of misses that the database must absorb for a minute. That is acceptable if the database can serve the full read load on its own, which it must, because a cache can always be empty (restart, eviction, a new key). It would be worse if the system had been sized assuming the cache absorbs most reads: then the database is overloaded exactly while the cache refills, and slow queries delay the refill further. Never size the database on the cache’s hit rate; size it to survive without the cache, and use the cache for speed.</li>
 <li>The table is partitioned by month, and the query does not filter by time, so the planner cannot prune: it must search all 24 partitions, each with its own index, and combine the results. One table would need one index search. Options: add a time range to the query when the screen allows it (the owner usually wants the next weeks, not all time); keep an index on <code>(staff_id, starts_at)</code> in every partition so each search is short; or, for frequent “all time” questions, keep a small summary table maintained alongside the bookings.</li>
 <li>The report: each shard computes its own daily counts for the last 30 days (a small query, run in parallel on the four shards), and a coordinator adds the four results. Better, each shard writes its daily counts into a central analytics store every night, and the report reads only that store, never the shards. Moving a business: copy its rows to the new shard while it keeps running on the old one; keep copying the changes (logical replication filtered by business, or the outbox); when the new shard has caught up, block writes for that business for a few seconds, copy the last changes, switch the routing table that maps business id to shard, unblock; then delete the old rows after a safety period. The routing table must be the single source the application consults on every request.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 9</h2>
+<ol class="exercises">
+<li>Codes of 1 to 7 characters can hold 62 + 62² + … + 62⁷, but with a sequence the codes simply count up, so the limit is 62⁷ ≈ 3.5 trillion ids (all numbers below that fit in 7 characters). At a million a day that is about 3.5 million days, nearly 10,000 years. Six characters (56.8 billion) would last about 155 years at the same rate.</li>
+<li>A fixed window counts per whole second, so a client can send 5 requests at the very end of one second and 5 more at the very start of the next: 10 requests within a few milliseconds, all allowed, because each falls in a different window. The sliding window looks at the last 1,000 ms from every request, so no 1-second span ever contains more than 5.</li>
+<li>Do not remove the job when claiming it; move it instead: in the same atomic script, take the due job and re-add it with a new score of “now + 5 minutes” (a lease), then delete it only after the reminder is sent. If the worker crashes, the job becomes due again after the lease and another worker sends it. The new risk is a duplicate: a worker that sent the reminder but crashed before deleting the job causes a second reminder. Make sending idempotent (record the reminder as sent in the database, keyed by the booking, and skip it if already recorded), and the duplicate is avoided except in the narrowest window.</li>
+<li>Requirements: owners see a live count of visitors on their booking page; approximate is fine; nothing is stored long term. Numbers: at peak perhaps 5,000 pages open across the platform, each sending a heartbeat every 15 seconds (about 330 writes a second), read by a few hundred owners’ dashboards. Interface: the page sends <code>POST /presence/{business}</code> every 15 s; the dashboard reads <code>GET /presence/{business}</code> or listens on a WebSocket. Data: per business, a Redis sorted set of visitor ids scored by last heartbeat time. Design: heartbeats go to the API, which updates Redis; the count is the number of members with a score in the last 30 s. The hard part: expiring visitors who left without saying so, which the time-scored set does by itself (remove members older than 30 s before counting). Trade-offs: counts are approximate by up to 30 s; if Redis is down, the widget shows nothing rather than a wrong number; visitor ids are random per tab, never personal data.</li>
+<li>Store a search key normalised for Arabic: remove diacritics (tashkeel) and tatweel, unify the forms of alef (أ إ آ to ا), alef maqsura (ى to ي) and taa marbuta (ة to ه), lower-case any Latin letters, and keep it in a generated column with <code>C</code> collation and a B-tree index, as in section 9.7. Apply exactly the same normalisation to what the customer types before searching, so both sides meet. The index then finds the matches by prefix, in key order, and stops after a few. For display order, sort those few results with an Arabic collation (for example an ICU collation such as <code>"ar-x-icu"</code>), which costs nothing for five rows. For spelling mistakes, add a trigram index on the same normalised key.</li>
 </ol>
 
 </section>
