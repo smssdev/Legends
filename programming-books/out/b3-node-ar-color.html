@@ -15,6 +15,10 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "الفصل 4: SQL وPostgreSQL"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "الفصل 5: نمذجة البيانات والترحيلات"; } }
+@page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "الفصل 6: المعاملات والأقفال والاتساق"; } }
+@page ch06:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -2592,6 +2596,919 @@ console.log(sara.rows[<span class="n">0</span>], <span class="k">typeof</span> s
 <p>كتابة SQL باليد لكل جدول تصير مكررة، والمخططات تتغير مع الوقت. ونمذج البيانات تالياً بـ TypeScript، ونغيّر المخطط بأمان بالترحيلات، ونختار بين منشئ الاستعلامات وORM.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b3/node/modelling/ar">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">الفصل 5</p><h1>نمذجة البيانات والترحيلات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تحوّل مجال العمل إلى جداول: الكيانات، والعلاقات، وما يُخزَّن وما يُحسب</li>
+<li>تغيّر المخطط بترحيلات يشغّلها كل جهاز بالطريقة نفسها، وتتراجع عنها</li>
+<li>تغيّر مخططاً حياً دون توقف، بالتوسيع ثم التقليص</li>
+<li>تولّد أنواع TypeScript من قاعدة البيانات الحقيقية، فيفحص <code>tsc</code> استعلاماتك</li>
+<li>تكتب استعلامات بأنواع بـ Kysely، منشئ استعلامات قريب من SQL</li>
+<li>ترى مشكلة N+1 بالأرقام، وتصلحها باستعلام واحد</li>
+</ul>
+</div>
+
+<p class="lead">في الفصل 4 أنشأنا جداول المتجر بتشغيل ملف SQL مرة واحدة. أما المخططات الحقيقية فلا تُكتب مرة واحدة أبداً: كل شهر يأتي بعمود جديد، وجدول جديد، وقاعدة تتغير. وقاعدة البيانات في الإنتاج مليئة ببيانات يجب أن تنجو من كل تغيير، والكود الذي يقرؤها يجب أن يتفق معها في كل لحظة. وهذا الفصل عن إبقاء المخطط والبيانات والكود متوافقة بأمان، وعن كتابة استعلامات يفحصها المترجم.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>في بداية عملي غيّرت اسم عمود مباشرة على قاعدة بيانات الإنتاج عصر يوم جمعة. لم يكن الكود الجديد قد نُشر بعد، فظل الكود القديم يطلب الاسم القديم. وطوال عشرين دقيقة فشل كل طلب. ومنذ ذلك اليوم تمر تغييرات المخطط بالترحيلات، بخطوات صغيرة، ولا تكون يوم الجمعة أبداً.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>نمذجة المتجر</span></h2>
+
+<p>يبدأ نموذج البيانات من <dfn>كيانات</dfn> المجال (العملاء، والمنتجات، والطلبات) و<dfn>العلاقات</dfn> بينها:</p>
+<ul>
+<li><strong>واحد إلى كثير:</strong> للعميل طلبات كثيرة، وللطلب عميل واحد. والجهة «الكثيرة» تحمل المفتاح الأجنبي: <code>orders.customer_id</code>.</li>
+<li><strong>كثير إلى كثير:</strong> في الطلب منتجات كثيرة، والمنتج في طلبات كثيرة. وجدول ثالث يربطهما، <code>order_items</code>، وكثيراً ما يحمل بياناته الخاصة: الكمية، والسعر وقتها.</li>
+<li><strong>واحد إلى واحد</strong> نادر: يعني غالباً أن الجدولين كيان واحد، أو أن بعض البيانات الاختيارية فُصلت (بيانات فوترة العميل مثلاً).</li>
+</ul>
+
+<p>وثلاثة أسئلة تحسم معظم التصميمات:</p>
+<ul>
+<li><strong>نخزّن أم نحسب؟</strong> إجمالي الطلب يمكن حسابه من عناصره، فتخزينه أيضاً يصنع حقيقتين قد تختلفان. خزّن الحقائق، واحسب ما يُشتق منها، حتى تقول القياسات إن نسخة مخزّنة لازمة للسرعة. والسعر في <code>order_items</code> ليس نسخة: إنه حقيقة مختلفة، السعر <em>حينها</em>.</li>
+<li><strong>أي القواعد مكانها قاعدة البيانات؟</strong> كل قاعدة لا يجوز أن تُكسر أبداً، أياً كان الكود الذي يكتب البيانات: الأنواع، و<code>NOT NULL</code>، والتفرد، والمفاتيح الأجنبية، والمدى.</li>
+<li><strong>ماذا يحدث عند الحذف؟</strong> حذف عميل له طلبات إما أن يُرفض (الافتراضي)، أو يتسلسل، أو يُستبدل بتعليم الصف غير نشط. قرر لكل علاقة، واكتبه في المفتاح الأجنبي.</li>
+</ul>
+
+<h2><span class="sec">5.2</span> <span>الترحيلات</span></h2>
+
+<p><dfn>الترحيل</dfn> (migration) تغيير واحد في المخطط، مكتوب كوداً ومحفوظ في المستودع: دالة <code>up</code> تُحدث التغيير، ودالة <code>down</code> تتراجع عنه. وكل جهاز (حاسوبك، وحاسوب زميلك، وCI، والإنتاج) يشغّل الترحيلات التي لم يشغّلها بعد، بالترتيب، ويسجّل ما عمل منها. ولا أحد يغيّر قاعدة بيانات مشتركة بيده.</p>
+
+<p>ونستخدم <dfn>Kysely</dfn>، منشئ استعلامات SQL بأنواع آمنة لـ TypeScript، فيه مشغّل ترحيلات. والترحيل الأول يُنشئ جداول الفصل 4:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">migrations/2026_11_01_001_initial.ts</div><pre class="code"><span class="k">import</span> { <span class="k">type</span> Kysely, sql } <span class="k">from</span> <span class="s">&quot;kysely&quot;</span>;
+
+<span class="c line-bidi">// up: ما يضيفه هذا الترحيل</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> up(db: Kysely&lt;unknown&gt;): Promise&lt;void&gt; {
+  <span class="k">await</span> db.schema
+    .createTable(<span class="s">&quot;customers&quot;</span>)
+    .addColumn(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;bigint&quot;</span>, (c) =&gt; c.primaryKey().generatedAlwaysAsIdentity())
+    .addColumn(<span class="s">&quot;name&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt; c.notNull())
+    .addColumn(<span class="s">&quot;email&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt; c.notNull().unique())
+    .addColumn(<span class="s">&quot;created_at&quot;</span>, <span class="s">&quot;timestamptz&quot;</span>, (c) =&gt;
+      c.notNull().defaultTo(sql<span class="s">`now()`</span>),
+    )
+    .execute();
+
+  <span class="k">await</span> db.schema
+    .createTable(<span class="s">&quot;products&quot;</span>)
+    .addColumn(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;bigint&quot;</span>, (c) =&gt; c.primaryKey().generatedAlwaysAsIdentity())
+    .addColumn(<span class="s">&quot;name&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt; c.notNull())
+    .addColumn(<span class="s">&quot;price&quot;</span>, <span class="s">&quot;integer&quot;</span>, (c) =&gt; c.notNull().check(sql<span class="s">`price &gt; 0`</span>))
+    .addColumn(<span class="s">&quot;stock&quot;</span>, <span class="s">&quot;integer&quot;</span>, (c) =&gt;
+      c
+        .notNull()
+        .defaultTo(<span class="n">0</span>)
+        .check(sql<span class="s">`stock &gt;= 0`</span>),
+    )
+    .execute();
+
+  <span class="k">await</span> db.schema
+    .createTable(<span class="s">&quot;orders&quot;</span>)
+    .addColumn(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;bigint&quot;</span>, (c) =&gt; c.primaryKey().generatedAlwaysAsIdentity())
+    .addColumn(<span class="s">&quot;customer_id&quot;</span>, <span class="s">&quot;bigint&quot;</span>, (c) =&gt;
+      c.notNull().references(<span class="s">&quot;customers.id&quot;</span>),
+    )
+    .addColumn(<span class="s">&quot;status&quot;</span>, <span class="s">&quot;text&quot;</span>, (c) =&gt;
+      c
+        .notNull()
+        .defaultTo(<span class="s">&quot;pending&quot;</span>)
+        .check(sql<span class="s">`status IN (&#x27;pending&#x27;, &#x27;paid&#x27;, &#x27;shipped&#x27;, &#x27;cancelled&#x27;)`</span>),
+    )
+    .addColumn(<span class="s">&quot;created_at&quot;</span>, <span class="s">&quot;timestamptz&quot;</span>, (c) =&gt;
+      c.notNull().defaultTo(sql<span class="s">`now()`</span>),
+    )
+    .execute();
+  <span class="k">await</span> db.schema
+    .createIndex(<span class="s">&quot;orders_customer_id_idx&quot;</span>)
+    .on(<span class="s">&quot;orders&quot;</span>)
+    .column(<span class="s">&quot;customer_id&quot;</span>)
+    .execute();
+
+  <span class="k">await</span> db.schema
+    .createTable(<span class="s">&quot;order_items&quot;</span>)
+    .addColumn(<span class="s">&quot;order_id&quot;</span>, <span class="s">&quot;bigint&quot;</span>, (c) =&gt;
+      c.notNull().references(<span class="s">&quot;orders.id&quot;</span>).onDelete(<span class="s">&quot;cascade&quot;</span>),
+    )
+    .addColumn(<span class="s">&quot;product_id&quot;</span>, <span class="s">&quot;bigint&quot;</span>, (c) =&gt; c.notNull().references(<span class="s">&quot;products.id&quot;</span>))
+    .addColumn(<span class="s">&quot;quantity&quot;</span>, <span class="s">&quot;integer&quot;</span>, (c) =&gt;
+      c.notNull().check(sql<span class="s">`quantity BETWEEN 1 AND 99`</span>),
+    )
+    .addColumn(<span class="s">&quot;price&quot;</span>, <span class="s">&quot;integer&quot;</span>, (c) =&gt; c.notNull())
+    .addPrimaryKeyConstraint(<span class="s">&quot;order_items_pkey&quot;</span>, [<span class="s">&quot;order_id&quot;</span>, <span class="s">&quot;product_id&quot;</span>])
+    .execute();
+}
+
+<span class="c line-bidi">// down: كيف يُتراجع عنه بالضبط</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> down(db: Kysely&lt;unknown&gt;): Promise&lt;void&gt; {
+  <span class="k">for</span> (<span class="k">const</span> table <span class="k">of</span> [<span class="s">&quot;order_items&quot;</span>, <span class="s">&quot;orders&quot;</span>, <span class="s">&quot;products&quot;</span>, <span class="s">&quot;customers&quot;</span>]) {
+    <span class="k">await</span> db.schema.dropTable(table).execute();
+  }
+}</pre></div>
+
+<p>يُقرأ منشئ المخطط كالـ SQL التي يكتبها، و<code>sql`…`</code> موجودة لكل ما لا يغطيه، مثل الفحوص. واسم الملف يبدأ بالتاريخ، لأن الترحيلات تعمل بترتيب أسمائها. ولاحظ الفهرس على <code>orders.customer_id</code>: فقد أظهر الفصل 4 أن PostgreSQL لا تفهرس المفاتيح الأجنبية وحدها. وسكربت صغير يشغّل المرحّل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/migrate.ts</div><pre class="code"><span class="k">import</span> { promises as fs } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> path <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+<span class="k">import</span> { Kysely, PostgresDialect } <span class="k">from</span> <span class="s">&quot;kysely&quot;</span>;
+<span class="k">import</span> { FileMigrationProvider, Migrator } <span class="k">from</span> <span class="s">&quot;kysely/migration&quot;</span>;
+<span class="k">import</span> pg <span class="k">from</span> <span class="s">&quot;pg&quot;</span>;
+
+<span class="k">const</span> db = <span class="k">new</span> Kysely&lt;unknown&gt;({
+  dialect: <span class="k">new</span> PostgresDialect({
+    pool: <span class="k">new</span> pg.Pool({ connectionString: process.env.DATABASE_URL }),
+  }),
+});
+<span class="k">const</span> migrator = <span class="k">new</span> Migrator({
+  db,
+  provider: <span class="k">new</span> FileMigrationProvider({
+    fs,
+    path,
+    migrationFolder: path.join(<span class="k">import</span>.meta.dirname, <span class="s">&quot;../migrations&quot;</span>),
+  }),
+});
+
+<span class="k">const</span> { error, results } =
+  process.argv[<span class="n">2</span>] === <span class="s">&quot;down&quot;</span>
+    ? <span class="k">await</span> migrator.migrateDown()
+    : <span class="k">await</span> migrator.migrateToLatest();
+<span class="k">for</span> (<span class="k">const</span> r <span class="k">of</span> results ?? []) {
+  console.log(<span class="s">`${r.status.padEnd(7)} ${r.direction.padEnd(4)} ${r.migrationName}`</span>);
+}
+<span class="k">if</span> (error) {
+  console.error(<span class="s">&quot;migration failed:&quot;</span>, error);
+  process.exitCode = <span class="n">1</span>;
+}
+<span class="k">if</span> (!results?.length) console.log(<span class="s">&quot;nothing to do&quot;</span>);
+<span class="k">await</span> db.destroy();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># شغّل كل ترحيل لم يعمل بعد</span>
+<span class="c">$ </span><span class="k">npm run migrate --silent</span>
+Success Up   2026_11_01_001_initial
+Success Up   2026_11_02_001_product_sku_expand
+Success Up   2026_11_03_001_product_sku_contract</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الجدول بعد الترحيلات الثلاثة</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;\d products&#x27;</span>
+                        Table &quot;public.products&quot;
+ Column |  Type   | Collation | Nullable |           Default            
+--------+---------+-----------+----------+------------------------------
+ id     | bigint  |           | not null | generated always as identity
+ name   | text    |           | not null | 
+ price  | integer |           | not null | 
+ stock  | integer |           | not null | 0
+ sku    | text    |           | not null | 
+Indexes:
+    &quot;products_pkey&quot; PRIMARY KEY, btree (id)
+    &quot;products_sku_key&quot; UNIQUE, btree (sku)
+Check constraints:
+    &quot;products_price_check&quot; CHECK (price &gt; 0)
+    &quot;products_stock_check&quot; CHECK (stock &gt;= 0)
+Referenced by:
+    TABLE &quot;order_items&quot; CONSTRAINT &quot;order_items_product_id_fkey&quot; FOREIGN KEY (product_id) REFERENCES products(id)
+<span class="c line-bidi"># يسجّل Kysely ما عمل، في جدول خاص به</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT name, timestamp FROM kysely_migration ORDER BY name&#x27;</span>
+                name                 |        timestamp         
+-------------------------------------+--------------------------
+ 2026_11_01_001_initial              | 2026-11-19T21:14:02.169Z
+ 2026_11_02_001_product_sku_expand   | 2026-11-19T21:14:02.171Z
+ 2026_11_03_001_product_sku_contract | 2026-11-19T21:14:02.173Z
+(3 rows)</pre></div>
+
+<p>يحفظ Kysely قائمة الترحيلات التي عملت في جدول خاص به، <code>kysely_migration</code>، فيبدأ التشغيل التالي بعد آخرها. ويمكن التراجع عن كل ترحيل، وعليك أن تجرّب ذلك مرة على جهازك مع كل ترحيل جديد، لأن <code>down</code> التي لم تعمل أبداً <code>down</code> لا تعمل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تراجع عن آخر ترحيل، ثم شغّله مرة أخرى</span>
+<span class="c">$ </span><span class="k">npm run migrate --silent -- down</span>
+Success Down 2026_11_03_001_product_sku_contract
+<span class="c">$ </span><span class="k">npm run migrate --silent</span>
+Success Up   2026_11_03_001_product_sku_contract</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: لا تعدّل ترحيلاً عمل في مكان آخر</p><p>حين يُدمج الترحيل تكون أجهزة أخرى قد شغّلته، وتغيير ملفه لا يغيّر شيئاً هناك: فتختلف قاعدتهم عن قاعدتك بصمت. ولتصلح خطأ اكتب ترحيلاً جديداً. وقبل الدمج شغّل كل الترحيلات صعوداً، ثم كلها نزولاً، ثم كلها صعوداً، على قاعدة فارغة في CI. يستغرق ذلك ثواني، ويكشف دوال <code>down</code> المعطوبة والخطوات الناقصة.</p></aside>
+
+<h2><span class="sec">5.3</span> <span>تغيير مخطط حي: التوسيع ثم التقليص</span></h2>
+
+<p>يحتاج المتجر رمز SKU، رمز مخزون، لكل منتج، إلزامياً وفريداً. والترحيل البديهي يضيف عموداً <code>NOT NULL UNIQUE</code> بخطوة واحدة. وعلى نظام حي تفشل هذه الخطوة أو تكسر شيئاً: فالصفوف الموجودة بلا SKU، والكود العامل في الإنتاج لا يرسله حين يُنشئ منتجاً. وأثناء نشر الكود الجديد تعمل النسختان القديمة والجديدة جنباً إلى جنب.</p>
+
+<p>والنمط الآمن هو <dfn>التوسيع ثم التقليص</dfn> (expand and contract): غيّر المخطط بخطوات، كل منها متوافق مع الكود العامل في تلك اللحظة.</p>
+<ol>
+<li><strong>التوسيع:</strong> أضف العمود اختيارياً. فالكود القديم يتجاهله، ولا ينكسر شيء.</li>
+<li><strong>انشر كوداً يكتبه</strong> لكل منتج جديد، واملأ الصفوف الموجودة.</li>
+<li><strong>التقليص:</strong> حين يصير لكل صف قيمة، اجعله إلزامياً وفريداً.</li>
+</ol>
+
+<div class="listing" dir="ltr"><div class="listing-title">migrations/2026_11_02_001_product_sku_expand.ts</div><pre class="code"><span class="k">import</span> <span class="k">type</span> { Kysely } <span class="k">from</span> <span class="s">&quot;kysely&quot;</span>;
+
+<span class="c line-bidi">// الخطوة 1، التوسيع: عمود جديد يجوز أن يكون فارغاً، فيبقى الكود القديم يعمل.</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> up(db: Kysely&lt;unknown&gt;): Promise&lt;void&gt; {
+  <span class="k">await</span> db.schema.alterTable(<span class="s">&quot;products&quot;</span>).addColumn(<span class="s">&quot;sku&quot;</span>, <span class="s">&quot;text&quot;</span>).execute();
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> down(db: Kysely&lt;unknown&gt;): Promise&lt;void&gt; {
+  <span class="k">await</span> db.schema.alterTable(<span class="s">&quot;products&quot;</span>).dropColumn(<span class="s">&quot;sku&quot;</span>).execute();
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">migrations/2026_11_03_001_product_sku_contract.ts</div><pre class="code"><span class="k">import</span> { <span class="k">type</span> Kysely, sql } <span class="k">from</span> <span class="s">&quot;kysely&quot;</span>;
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> up(db: Kysely&lt;unknown&gt;): Promise&lt;void&gt; {
+  <span class="c line-bidi">// الخطوة 2: املأ العمود لكل صف موجود.</span>
+  <span class="k">await</span> sql<span class="s">`UPDATE products SET sku = &#x27;BIT-&#x27; || lpad(id::text, 4, &#x27;0&#x27;) WHERE sku IS NULL`</span>.execute(
+    db,
+  );
+  <span class="c line-bidi">// الخطوة 3، التقليص: الآن لكل صف رمز SKU، فاجعله إلزامياً وفريداً.</span>
+  <span class="k">await</span> db.schema
+    .alterTable(<span class="s">&quot;products&quot;</span>)
+    .alterColumn(<span class="s">&quot;sku&quot;</span>, (c) =&gt; c.setNotNull())
+    .execute();
+  <span class="k">await</span> db.schema
+    .createIndex(<span class="s">&quot;products_sku_key&quot;</span>)
+    .on(<span class="s">&quot;products&quot;</span>)
+    .column(<span class="s">&quot;sku&quot;</span>)
+    .unique()
+    .execute();
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> down(db: Kysely&lt;unknown&gt;): Promise&lt;void&gt; {
+  <span class="k">await</span> db.schema.dropIndex(<span class="s">&quot;products_sku_key&quot;</span>).execute();
+  <span class="k">await</span> db.schema
+    .alterTable(<span class="s">&quot;products&quot;</span>)
+    .alterColumn(<span class="s">&quot;sku&quot;</span>, (c) =&gt; c.dropNotNull())
+    .execute();
+}</pre></div>
+
+<p>والنمط نفسه يعيد تسمية عمود (أضف الجديد، واكتب الاثنين، واملأ، واقرأ الجديد، واحذف القديم)، أو يقسم جدولاً. يحتاج ترحيلات أكثر ونشرات أكثر، ولا يوقف المتجر أبداً. وتحذيران للجداول الكبيرة: ملء ملايين الصفوف يجب أن يعمل على دفعات خارج الترحيل، وبعض التغييرات تقفل الجدول أثناء عملها، ويُظهر الفصل 14 كيف ترى هذه الأقفال.</p>
+
+<h2><span class="sec">5.4</span> <span>الأنواع من قاعدة البيانات</span></h2>
+
+<p>الاستعلامات المكتوبة نصوصاً لا يراها <code>tsc</code>: فالعمود المكتوب خطأ يفشل وقت التشغيل، وربما في الإنتاج. ويحتاج Kysely وصفاً لقاعدة البيانات بـ TypeScript، ويكتبه <code>kysely-codegen</code> بقراءة المخطط الحقيقي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ولّد أنواع TypeScript من قاعدة البيانات الحقيقية</span>
+<span class="c">$ </span><span class="k">npm run db:types --silent 2&gt;&amp;1 | grep -v &#x27;^$&#x27;</span>
+• Loaded environment variables from &#x27;.env&#x27;.
+• No dialect specified. Assuming &#x27;postgres&#x27;.
+• Introspecting database...
+✓ Introspected 4 tables and generated ./src/db-types.ts in 32ms.
+  </pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/db-types.ts</div><pre class="code"><span class="k">export</span> <span class="k">interface</span> Customers {
+  created_at: Generated&lt;Timestamp&gt;;
+  email: string;
+  id: Generated&lt;number&gt;;
+  name: string;
+}
+
+<span class="k">export</span> <span class="k">interface</span> OrderItems {
+  order_id: number;
+  price: number;
+  product_id: number;
+  quantity: number;
+}
+
+<span class="k">export</span> <span class="k">interface</span> Orders {
+  created_at: Generated&lt;Timestamp&gt;;
+  customer_id: number;
+  id: Generated&lt;number&gt;;
+  status: Generated&lt;string&gt;;
+}
+
+<span class="k">export</span> <span class="k">interface</span> Products {
+  id: Generated&lt;number&gt;;
+  name: string;
+  price: number;
+  sku: string;
+  stock: Generated&lt;number&gt;;
+}
+
+<span class="k">export</span> <span class="k">interface</span> DB {
+  customers: Customers;
+  order_items: OrderItems;
+  orders: Orders;
+  products: Products;
+}</pre></div>
+
+<p>كل جدول واجهة (interface)، و<code>Generated&lt;…&gt;</code> تميّز الأعمدة التي تملؤها قاعدة البيانات، فيجوز للإدراج أن يتركها. وتعيين واحد يستحق كلمة: <code>bigint</code> في PostgreSQL يحمل أعداداً لا يحملها عدد JavaScript، فيُرجعه المشغّل <code>pg</code> نصاً افتراضياً، كما رأيت في الفصل 4. وأرقامنا لن تقترب أبداً من 2<sup>53</sup>، فيعيّن المشروع <code>int8</code> إلى <code>number</code> في المولّد، ويطلب من المشغّل أن يحلّلها بالطريقة نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/db.ts</div><pre class="code"><span class="k">import</span> { Kysely, PostgresDialect } <span class="k">from</span> <span class="s">&quot;kysely&quot;</span>;
+<span class="k">import</span> pg <span class="k">from</span> <span class="s">&quot;pg&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { DB } <span class="k">from</span> <span class="s">&quot;./db-types.ts&quot;</span>;
+
+<span class="c line-bidi">// أرقام bigint أعداداً: دقيقة حتى 2^53، أكثر بكثير مما سيحتاجه أي متجر</span>
+pg.types.setTypeParser(pg.types.builtins.INT8, (value) =&gt; Number(value));
+
+<span class="c line-bidi">// الاتصال في مكان واحد، وDB يصف كل جدول، مولَّداً من قاعدة البيانات.</span>
+<span class="k">export</span> <span class="k">let</span> queries = <span class="n">0</span>; <span class="c line-bidi">// كل استعلام يرسله التطبيق، معدوداً (ومطبوعاً مع DEBUG_SQL=1)</span>
+<span class="k">export</span> <span class="k">const</span> db = <span class="k">new</span> Kysely&lt;DB&gt;({
+  dialect: <span class="k">new</span> PostgresDialect({
+    pool: <span class="k">new</span> pg.Pool({ connectionString: process.env.DATABASE_URL }),
+  }),
+  log(event) {
+    <span class="k">if</span> (event.level === <span class="s">&quot;query&quot;</span>) {
+      queries++;
+      <span class="k">if</span> (process.env.DEBUG_SQL)
+        console.log(event.query.sql, event.query.parameters);
+    }
+  },
+});</pre></div>
+
+<p>الآن يعرف المترجم كل جدول وعمود. والخطأ الإملائي يُكتشف قبل أن يعمل الكود:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/typo.ts</div><pre class="code"><span class="k">import</span> { db } <span class="k">from</span> <span class="s">&quot;../src/db.ts&quot;</span>;
+
+<span class="k">const</span> rows = <span class="k">await</span> db.selectFrom(<span class="s">&quot;products&quot;</span>).select([<span class="s">&quot;name&quot;</span>, <span class="s">&quot;prise&quot;</span>]).execute(); <span class="c line-bidi">// عمود غير موجود</span>
+console.log(rows[<span class="n">0</span>]?.name.toUpperCase());</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># يعرف tsc كل جدول وكل عمود</span>
+<span class="c">$ </span><span class="k">npx tsc</span>
+demos/typo.ts(3,53): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type &#x27;string[]&#x27; is not assignable to parameter of type &#x27;SelectExpression&lt;DB, &quot;products&quot;&gt;&#x27;.</pre></div>
+
+<p>شغّل المولّد بعد كل ترحيل (في طلب الدمج نفسه)، فلا يمكن أن تختلف الأنواع والمخطط أبداً.</p>
+
+<h2><span class="sec">5.5</span> <span>استعلامات بأنواع</span></h2>
+
+<p>تُقرأ استعلامات Kysely كالـ SQL، وأنواع نتائجها تُبنى مما تختاره:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> findOrder(id: number) {
+  <span class="c line-bidi">// نوع النتيجة يُبنى من الأعمدة المختارة</span>
+  <span class="k">return</span> db
+    .selectFrom(<span class="s">&quot;orders as o&quot;</span>)
+    .innerJoin(<span class="s">&quot;customers as c&quot;</span>, <span class="s">&quot;c.id&quot;</span>, <span class="s">&quot;o.customer_id&quot;</span>)
+    .select((eb) =&gt; [
+      <span class="s">&quot;o.id&quot;</span>,
+      <span class="s">&quot;o.status&quot;</span>,
+      <span class="s">&quot;c.name as customer&quot;</span>,
+      <span class="c line-bidi">// العناصر مصفوفة JSON تبنيها PostgreSQL في الاستعلام نفسه</span>
+      jsonArrayFrom(
+        eb
+          .selectFrom(<span class="s">&quot;order_items as i&quot;</span>)
+          .innerJoin(<span class="s">&quot;products as p&quot;</span>, <span class="s">&quot;p.id&quot;</span>, <span class="s">&quot;i.product_id&quot;</span>)
+          .select([<span class="s">&quot;p.name&quot;</span>, <span class="s">&quot;i.quantity&quot;</span>, <span class="s">&quot;i.price&quot;</span>])
+          .whereRef(<span class="s">&quot;i.order_id&quot;</span>, <span class="s">&quot;=&quot;</span>, <span class="s">&quot;o.id&quot;</span>),
+      ).as(<span class="s">&quot;items&quot;</span>),
+    ])
+    .where(<span class="s">&quot;o.id&quot;</span>, <span class="s">&quot;=&quot;</span>, id)
+    .executeTakeFirst();
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># استعلام بأنواع: طلب مع عميله وعناصره</span>
+<span class="c">$ </span><span class="k">node --env-file=.env demos/order.ts</span>
+{
+  id: 2,
+  status: &#x27;shipped&#x27;,
+  customer: &#x27;سارة&#x27;,
+  items: [
+    { name: &#x27;عدة الروبوت&#x27;, quantity: 1, price: 45000 },
+    { name: &#x27;عجلات احتياطية&#x27;, quantity: 1, price: 6000 },
+    { name: &#x27;حزمة بطارية&#x27;, quantity: 1, price: 12500 }
+  ]
+}</pre></div>
+
+<p>نوع <code>order</code> هو بالضبط <code>{ id, status, customer, items: { name, quantity, price }[] }</code>، ونوع كل حقل من المخطط، فاختر عموداً آخر يتغير النوع معه. و<code>jsonArrayFrom</code> تطلب من PostgreSQL أن تبني العناصر مصفوفة JSON داخل الاستعلام نفسه، فيصل الطلب في رحلة واحدة، مشكّلاً من قبل.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: منشئ استعلامات أم ORM؟</p><p><dfn>الـ ORM</dfn> (Prisma وDrizzle وTypeORM) يربط الجداول بالكائنات ويكتب معظم SQL نيابة عنك، أما <dfn>منشئ الاستعلامات</dfn> مثل Kysely فيُبقيك قريباً من SQL ولا يضيف إلا الأنواع والتركيب. والـ ORM أسرع في أعمال الإنشاء والقراءة والتحديث والحذف البسيطة، ومنشئ الاستعلامات يجعل SQL التي تعمل واضحة، وهذا يهم حين يهم الأداء. وكلاهما اختيار جيد، والمهم أن يعرف الفريق SQL المرسلة. وفعّل تسجيل الاستعلامات أثناء التطوير أياً كان اختيارك.</p></aside>
+
+<h2><span class="sec">5.6</span> <span>مشكلة N+1</span></h2>
+
+<p>صفحة تعرض طلبات عميل بعناصرها. والنسخة الأولى الطبيعية تحمّل الطلبات، ثم تمر عليها في حلقة وتحمّل عناصر كل طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> customerOrdersOneByOne(customerId: number) {
+  <span class="k">const</span> orders = <span class="k">await</span> db
+    .selectFrom(<span class="s">&quot;orders&quot;</span>)
+    .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;status&quot;</span>])
+    .where(<span class="s">&quot;customer_id&quot;</span>, <span class="s">&quot;=&quot;</span>, customerId)
+    .execute();
+  <span class="k">const</span> result = [];
+  <span class="k">for</span> (<span class="k">const</span> order <span class="k">of</span> orders) {
+    <span class="k">const</span> items = <span class="k">await</span> db
+      .selectFrom(<span class="s">&quot;order_items&quot;</span>)
+      .select([<span class="s">&quot;product_id&quot;</span>, <span class="s">&quot;quantity&quot;</span>, <span class="s">&quot;price&quot;</span>])
+      .where(<span class="s">&quot;order_id&quot;</span>, <span class="s">&quot;=&quot;</span>, order.id)
+      .execute();
+    result.push({ ...order, items });
+  }
+  <span class="k">return</span> result;
+}</pre></div>
+
+<p>هذا استعلام واحد للطلبات، واستعلام آخر <em>لكل</em> طلب: 1 + N استعلام. والنسخة الثانية تطلب كل شيء دفعة واحدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> customerOrdersAtOnce(customerId: number) {
+  <span class="k">return</span> db
+    .selectFrom(<span class="s">&quot;orders as o&quot;</span>)
+    .select((eb) =&gt; [
+      <span class="s">&quot;o.id&quot;</span>,
+      <span class="s">&quot;o.status&quot;</span>,
+      jsonArrayFrom(
+        eb
+          .selectFrom(<span class="s">&quot;order_items as i&quot;</span>)
+          .select([<span class="s">&quot;i.product_id&quot;</span>, <span class="s">&quot;i.quantity&quot;</span>, <span class="s">&quot;i.price&quot;</span>])
+          .whereRef(<span class="s">&quot;i.order_id&quot;</span>, <span class="s">&quot;=&quot;</span>, <span class="s">&quot;o.id&quot;</span>),
+      ).as(<span class="s">&quot;items&quot;</span>),
+    ])
+    .where(<span class="s">&quot;o.customer_id&quot;</span>, <span class="s">&quot;=&quot;</span>, customerId)
+    .execute();
+}</pre></div>
+
+<p>ووحدة قاعدة البيانات تعدّ كل استعلام يرسله Kysely، فنقيس الاثنتين على عميل له 200 طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># التقرير نفسه بطريقتين: عُدّ الاستعلامات</span>
+<span class="c">$ </span><span class="k">node --env-file=.env demos/n-plus-one.ts</span>
+one by one  200 طلبات, 201 استعلامات, 116 ms
+at once     200 طلبات, 1 استعلامات, 4 ms</pre></div>
+
+<p>201 استعلام مقابل واحد، وأبطأ بمرات كثيرة، مع قاعدة بيانات على الجهاز نفسه. وعبر الشبكة، حيث تكلف كل رحلة ملّي ثانية أو أكثر، يصير الفرق ثواني. وN+1 أشيع خطأ أداء في الكود الكثير البيانات، لأن كل استعلام يبدو بريئاً والحلقة تخفي العدد. فراقب عدد الاستعلامات في كل طلب، ويحوّل الفصل 14 هذا إلى عادة.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر فهمك</p><ol><li>لماذا لا يجوز أبداً تعديل ترحيل دُمج؟</li><li>لماذا لا تستطيع أن تضيف عموداً <code>NOT NULL</code> بلا قيمة افتراضية إلى جدول حي بخطوة واحدة؟</li><li>صفحة تعرض 50 منتجاً، ولكل منها عدد مراجعاته، محمّلاً في حلقة. كم استعلاماً هذا، وما العلاج؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>تغيير المخطط باليد</td><td>تختلف الأجهزة، ولا أحد يعرف المخطط الحقيقي</td><td>ترحيلات في المستودع</td></tr>
+<tr><td>تعديل ترحيل عمل</td><td>تتباعد القواعد بصمت</td><td>ترحيل جديد</td></tr>
+<tr><td><code>down</code> لم تعمل أبداً</td><td>لا طريق للعودة حين تحتاجه</td><td>صعود ونزول وصعود في CI</td></tr>
+<tr><td>تغييرات كاسرة بخطوة واحدة</td><td>أخطاء حين يعمل الكود القديم والجديد معاً</td><td>وسّع، وانقل البيانات، ثم قلّص</td></tr>
+<tr><td>تخزين ما يمكن حسابه</td><td>حقيقتان تختلفان</td><td>خزّن الحقائق، واحفظ نسخاً لاحقاً عن قصد</td></tr>
+<tr><td>أنواع مكتوبة باليد</td><td>أنواع تكذب على المخطط</td><td>ولّدها بعد كل ترحيل</td></tr>
+<tr><td>استعلامات في حلقات</td><td>1 + N رحلة</td><td>الربط، أو <code>IN</code>، أو تجميع JSON</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>نمذج <strong>الكيانات</strong> و<strong>العلاقات</strong>: الجهة الكثيرة تحمل المفتاح الأجنبي، والكثير إلى كثير يستخدم جدول ربط بحقائقه الخاصة.</li>
+<li><strong>خزّن الحقائق واحسب الباقي</strong>، وضع كل قاعدة لا تُكسر في المخطط، وقرر ماذا يفعل الحذف.</li>
+<li><strong>الترحيلات</strong> تغييرات مرتبة ومسجلة وقابلة للتراجع في الكود. لا تعدّل ما عمل منها، واختبر الصعود والنزول والصعود.</li>
+<li><strong>التوسيع ثم التقليص</strong> يغيّر مخططاً حياً بخطوات متوافقة.</li>
+<li><strong>kysely-codegen</strong> يولّد الأنواع من قاعدة البيانات الحقيقية، فعيّن <code>bigint</code> عن قصد.</li>
+<li><strong>Kysely</strong> يكتب SQL بأنواع، وأنواع النتائج تتبع الاختيار، وتجميع JSON يشكّل البيانات المتداخلة في استعلام واحد.</li>
+<li><strong>N+1</strong>: استعلام لكل صف في قائمة. عُدّ الاستعلامات، وحمّل البيانات المرتبطة معاً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. قواعد بيانات أخرى شغّلته من قبل ولن تشغّله مرة أخرى أبداً، فسيوجد التغيير على بعض الأجهزة فقط، فأصلح الأخطاء بترحيل جديد. 2. الصفوف الموجودة بلا قيمة، فترفض قاعدة البيانات القيد (أو مع قيمة افتراضية يأخذ كل صف قيمة بلا معنى)، والكود القديم الذي ما زال يعمل لا يرسل العمود، فأضفه اختيارياً، ثم املأه، ثم اشترطه. 3. 1 + 50 = 51 استعلاماً، فحمّل الأعداد في الاستعلام نفسه بربط و<code>GROUP BY</code> أو باستعلام فرعي، أو في استعلام ثانٍ واحد بـ <code>WHERE product_id IN (…)</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يكمل مشروع Kysely في هذا الفصل. وكل تغيير في المخطط ترحيل بـ <code>down</code> تعمل، تتبعه أنواع مولَّدة من جديد.</p>
+
+<div class="project">
+<p class="project-label">المشروع 5.1 · سهل</p>
+<h3>العناوين</h3>
+<p class="project-goal">أعطِ العملاء عناوين توصيل عدة، أحدها الافتراضي، واربط عنواناً بكل طلب.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تصميم الواحد إلى كثير، والترحيلات بالمفاتيح الأجنبية، والفهارس الفريدة الجزئية، والاستعلامات بأنواع.</p>
+<ol class="steps">
+<li>اكتب ترحيلاً لـ <code>addresses</code> (العميل، والوصف، والشارع، والمدينة، و<code>is_default</code>) مع <code>down</code>.</li>
+<li>اسمح بعنوان افتراضي واحد على الأكثر لكل عميل بفهرس فريد <em>جزئي</em> على <code>customer_id</code> حيث <code>is_default</code> صحيحة.</li>
+<li>أضف <code>orders.address_id</code> بالتوسيع ثم التقليص: اختيارياً أولاً، ثم إلزامياً بعد ملء الطلبات القديمة.</li>
+<li>اكتب استعلاماً بأنواع يُرجع عميلاً مع كل عناوينه، الافتراضي أولاً، في استعلام واحد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هل يجب أن يشير الطلب إلى العنوان، أم ينسخه؟ إن عدّل العميل العنوان لاحقاً فيجب ألا يتغير عنوان توصيل طلب قديم. وهذا هو منطق السعر في <code>order_items</code> نفسه.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 5.2 · متوسط</p>
+<h3>الترحيلات في CI</h3>
+<p class="project-goal">اجعل CI يثبت مع كل طلب دمج أن الترحيلات تعمل صعوداً ونزولاً على قاعدة فارغة، وأن الأنواع المولَّدة محدّثة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حاويات الخدمات في GitHub Actions، والترحيلات بالسكربتات، واكتشاف الاختلاف.</p>
+<ol class="steps">
+<li>في سير عمل، شغّل PostgreSQL حاوية خدمة، ثم <code>npm run migrate</code>.</li>
+<li>أضف سكربت <code>migrate:reset</code> يرحّل نزولاً حتى لا يبقى شيء، وشغّله، ثم رحّل صعوداً مرة أخرى.</li>
+<li>ولّد الأنواع من جديد، وأفشل المهمة إن وجد <code>git diff --exit-code src/db-types.ts</code> فرقاً.</li>
+<li>افتح طلب دمج يغيّر ترحيلاً دون توليد الأنواع، وتحقق أن CI يوقفه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>migrateDown()</code> في Kysely تتراجع عن ترحيل واحد في كل مرة، فكرّرها حتى تصير <code>results</code> فارغة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 5.3 · تحدٍّ</p>
+<h3>إعادة تسمية دون توقف</h3>
+<p class="project-goal">أعد تسمية <code>customers.name</code> إلى <code>full_name</code> على واجهة تعمل، خطوة خطوة، والحركة تتدفق طوال الوقت.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التوسيع ثم التقليص، والكتابة المزدوجة، والملء على دفعات، وإثبات التوافق.</p>
+<ol class="steps">
+<li>شغّل الواجهة من الفصل 3 تقرأ العملاء من هذه القاعدة، وسكربتاً يُنشئ العملاء ويقرؤهم في حلقة، ويبلغ عن أي خطأ.</li>
+<li>التوسيع: أضف <code>full_name</code>. وانشر كوداً يكتب العمودين وما زال يقرأ <code>name</code>.</li>
+<li>املأ <code>full_name</code> على دفعات من 1,000 صف، خارج الترحيل.</li>
+<li>انشر كوداً يقرأ <code>full_name</code>، ثم قلّص: اجعله <code>NOT NULL</code> واحذف <code>name</code>.</li>
+<li>أبقِ الحلقة تعمل عبر كل الخطوات، وتحقق أنها لم تبلغ عن خطأ أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يستطيع trigger في قاعدة البيانات أن يُبقي العمودين متوافقين بدل التطبيق، وهذا يفيد حين تكتب تطبيقات عدة في الجدول. وفي الحالتين سجّل في أي خطوة أنت: فإعادة التسمية الجارية حال يجب أن يعرفها الفريق.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب ترحيلاً يضيف عموداً اختيارياً <code>city</code> إلى <code>customers</code> مع <code>down</code>. شغّله، وتراجع عنه، وشغّله مرة أخرى.</li>
+<li><span class="level">سهل</span> النوع المولَّد لـ <code>orders.status</code> هو <code>string</code>، مع أن قاعدة البيانات لا تسمح إلا بأربع قيم. لماذا، وكيف يُنتج المولّد نوع الاتحاد بدلاً منه؟</li>
+<li><span class="level medium">متوسط</span> خطط الخطوات لإعادة تسمية <code>products.name</code> إلى <code>title</code> دون توقف. وقل لكل خطوة أي نسخ الكود تعمل بأمان.</li>
+<li><span class="level medium">متوسط</span> تقرير يعرض كل منتج مع الكمية الكلية المبيعة، مكتوب استعلاماً للمنتجات واستعلاماً لكل منتج للمجموع. أعد كتابته استعلام Kysely واحداً.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب سكربتاً يتحقق أن كل الترحيلات تعمل في الاتجاهين: على قاعدة فارغة شغّلها كلها صعوداً، ثم كلها نزولاً، ثم كلها صعوداً، وأفشل مع أي خطأ.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>عميلان يطلبان آخر عدّة روبوت في اللحظة نفسها. ونرى تالياً ما يحدث فعلاً داخل قاعدة البيانات حين تعمل الطلبات في الوقت نفسه، ونستخدم المعاملات ومستويات العزل والأقفال لنُبقي البيانات صحيحة.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b3/transactions/ar">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">الفصل 6</p><h1>المعاملات والأقفال والاتساق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تجمع التغييرات في معاملات تحدث كلها أو لا يحدث منها شيء</li>
+<li>ترى حالة سباق تبيع قطعة واحدة عشر مرات، ثم تصلحها بثلاث طرق مختلفة</li>
+<li>تختار مستوى العزل وأنت تعرف ما يسمح به كل مستوى للمعاملة أن ترى</li>
+<li>تتعرف على الاستعصاء، وتمنعه بترتيب ثابت للأقفال</li>
+<li>تعيد بأمان المعاملات التي ترفضها قاعدة البيانات</li>
+<li>تُبقي الآثار الجانبية، كالبريد والرسائل، خارج المعاملات التي قد تتراجع</li>
+</ul>
+</div>
+
+<p class="lead">كل ما في الجزء الأول افترض ضمناً طلباً واحداً في كل مرة. والمتجر الحقيقي يخدم زبائن كثيرين معاً، وقاعدة البيانات تنفذ طلباتهم جنباً إلى جنب. وفي أغلب الوقت يلمسون صفوفاً مختلفة فلا يحدث شيء يُذكر. ثم يشتري زبونان آخر عدّة روبوت في اللحظة نفسها، فيبيعها المتجر مرتين. هذه الأخطاء لا تظهر أبداً أثناء التطوير، حيث أنت المستخدم الوحيد؛ بل تظهر تحت الضغط، ونادراً، وتكلّف مالاً. وهذا الفصل يجعلها تحدث عمداً لتراها، ثم يجعلها مستحيلة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>جاءني بلاغ يقول: «بعنا 103 تذاكر لقاعة تتسع لـ 100». لم أستطع أن أكرره. كل الاختبارات نجحت، وكل قراءة للكود بدت صحيحة. لم يحدث إلا حين ضغط ثلاثة أشخاص «اشترِ» في عُشر الثانية نفسه. واحتجت أسبوعاً لأفهم أن كودي صحيح لمستخدم واحد وخاطئ لاثنين.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>المعاملات: كل شيء أو لا شيء</span></h2>
+
+<p><dfn>المعاملة</dfn> (transaction) تجمع جملاً لتعمل كأنها جملة واحدة. ولها أربع ضمانات تُعرف بـ <dfn>ACID</dfn>:</p>
+<ul>
+<li><strong>الذرية (Atomicity):</strong> إما أن يُحفظ كل تغيير، أو لا يُحفظ شيء.</li>
+<li><strong>الاتساق (Consistency):</strong> كل قواعد المخطط صحيحة في النهاية.</li>
+<li><strong>العزل (Isolation):</strong> المعاملات التي تجري معاً لا ترى عمل بعضها الذي لم يكتمل (وكم ترى بالضبط هو مستوى العزل، 6.3).</li>
+<li><strong>الديمومة (Durability):</strong> ما ثُبّت يبقى بعد أي انهيار.</li>
+</ul>
+
+<p>يستخدم هذا الفصل جدولين صغيرين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> products (
+  id    bigint <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  name  text <span class="k">NOT</span> <span class="k">NULL</span>,
+  price integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (price &gt; <span class="n">0</span>),
+  stock integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (stock &gt;= <span class="n">0</span>)
+);
+<span class="k">CREATE</span> <span class="k">TABLE</span> orders (
+  id         bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  product_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> products (id),
+  buyer      integer <span class="k">NOT</span> <span class="k">NULL</span>
+);
+<span class="k">INSERT</span> <span class="k">INTO</span> products <span class="k">VALUES</span> (<span class="n">1</span>, <span class="s">&#x27;عدة الروبوت&#x27;</span>, <span class="n">45000</span>, <span class="n">1</span>), (<span class="n">2</span>, <span class="s">&#x27;عجلات احتياطية&#x27;</span>, <span class="n">6000</span>, <span class="n">10</span>);</pre></div>
+
+<p><code>BEGIN</code> تبدأ معاملة، و<code>COMMIT</code> تثبّت تغييراتها، و<code>ROLLBACK</code> ترميها. داخل المعاملة يظهر التغيير؛ وبعد التراجع كأنه لم يحدث قط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المعاملة: كل شيء أو لا شيء</span>
+<span class="c">$ </span><span class="k">psql shop -a -f basics.sql 2&gt;&amp;1</span>
+BEGIN;
+BEGIN
+UPDATE products SET stock = stock + 5 WHERE id = 2;
+UPDATE 1
+SELECT name, stock FROM products WHERE id = 2;
+      name      | stock 
+----------------+-------
+ عجلات احتياطية |    15
+(1 row)
+
+ROLLBACK;
+ROLLBACK
+SELECT name, stock FROM products WHERE id = 2;
+      name      | stock 
+----------------+-------
+ عجلات احتياطية |    10
+(1 row)</pre></div>
+
+<p>وحين تفشل خطوة تصير المعاملة <em>مُجهَضة</em>: يتجاهل PostgreSQL كل جملة بعدها، وحتى <code>COMMIT</code> تصير <code>ROLLBACK</code>. والتحديث الأول، الذي نجح، يُلغى مع الباقي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># خطوة تفشل، فلا يحدث شيء</span>
+<span class="c">$ </span><span class="k">psql shop -a -f atomic.sql 2&gt;&amp;1</span>
+BEGIN;
+BEGIN
+UPDATE products SET stock = stock - 1 WHERE id = 2;
+UPDATE 1
+UPDATE products SET stock = stock - 100 WHERE id = 1;
+SELECT name, stock FROM products;
+psql:atomic.sql:3: ERROR:  new row for relation &quot;products&quot; violates check constraint &quot;products_stock_check&quot;
+DETAIL:  Failing row contains (1, عدة الروبوت, 45000, -99).
+psql:atomic.sql:4: ERROR:  current transaction is aborted, commands ignored until end of transaction block
+COMMIT;
+ROLLBACK
+SELECT name, stock FROM products;
+      name      | stock 
+----------------+-------
+ عدة الروبوت    |     1
+ عجلات احتياطية |    10
+(2 rows)</pre></div>
+
+<p>وهذا تماماً ما يحتاجه طلب فيه عدة أصناف: إن نفد مخزون الصنف الثالث فلا يجوز أن يُؤخذ مخزون الأولين. وكل جملة تنفذها خارج <code>BEGIN</code> معاملةٌ وحدها، تُثبَّت في الحال.</p>
+
+<h2><span class="sec">6.2</span> <span>سباق: عدّة واحدة وعشرة مشترين</span></h2>
+
+<p>هذه هي الطريقة البديهية لبيع منتج: اقرأ المخزون، وافحصه في الكود، واكتب المخزون الجديد، وسجّل الطلب. ولنرى ما يحدث تحت الضغط، يبدأ البرنامج عشرة مشترين في اللحظة نفسها، لكل منهم اتصاله بقاعدة البيانات، على منتج بقيت منه قطعة واحدة. ووقفة قصيرة بين القراءة والكتابة تمثل ما يفعله تطبيق حقيقي هناك، كاستدعاء خدمة دفع:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/race.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span> buy(buyer: number) {
+  <span class="k">const</span> db = <span class="k">new</span> pg.Client(url);
+  <span class="k">await</span> db.connect();
+  <span class="k">try</span> {
+    <span class="k">for</span> (;;) {
+      <span class="k">try</span> {
+        <span class="k">await</span> db.query(mode === <span class="s">&quot;serializable&quot;</span> ? <span class="s">&quot;BEGIN ISOLATION LEVEL SERIALIZABLE&quot;</span> : <span class="s">&quot;BEGIN&quot;</span>);
+        <span class="k">if</span> (mode === <span class="s">&quot;atomic&quot;</span>) {
+          <span class="c line-bidi">// جملة واحدة: تفحص قاعدة البيانات المخزون وتغيّره معاً</span>
+          <span class="k">const</span> taken = <span class="k">await</span> db.query(
+            <span class="s">&quot;UPDATE products SET stock = stock - 1 WHERE id = 1 AND stock &gt; 0&quot;</span>,
+          );
+          <span class="k">if</span> (taken.rowCount === <span class="n">1</span>) {
+            <span class="k">await</span> db.query(<span class="s">&quot;INSERT INTO orders (product_id, buyer) VALUES (1, $1)&quot;</span>, [buyer]);
+          }
+        } <span class="k">else</span> {
+          <span class="c line-bidi">// اقرأ، وقرر في الكود، ثم اكتب: السباق الكلاسيكي</span>
+          <span class="c line-bidi">// FOR UPDATE تقفل الصف: ينتظر المشترون الآخرون هنا حتى تنتهي هذه المعاملة</span>
+          <span class="k">const</span> lock = mode === <span class="s">&quot;lock&quot;</span> ? <span class="s">&quot; FOR UPDATE&quot;</span> : <span class="s">&quot;&quot;</span>;
+          <span class="k">const</span> { rows } = <span class="k">await</span> db.query(<span class="s">`SELECT stock FROM products WHERE id = 1${lock}`</span>);
+          <span class="c line-bidi">// الوقت الذي يمضيه تطبيق حقيقي بين القراءة والكتابة: استدعاء خدمة دفع مثلاً</span>
+          <span class="k">await</span> db.query(<span class="s">&quot;SELECT pg_sleep(0.1)&quot;</span>);
+          <span class="k">if</span> (rows[<span class="n">0</span>].stock &gt; <span class="n">0</span>) {
+            <span class="k">await</span> db.query(<span class="s">&quot;UPDATE products SET stock = $1 WHERE id = 1&quot;</span>, [rows[<span class="n">0</span>].stock - <span class="n">1</span>]);
+            <span class="k">await</span> db.query(<span class="s">&quot;INSERT INTO orders (product_id, buyer) VALUES (1, $1)&quot;</span>, [buyer]);
+          }
+        }
+        <span class="k">await</span> db.query(<span class="s">&quot;COMMIT&quot;</span>);
+        <span class="k">return</span>;
+      } <span class="k">catch</span> (error) {
+        <span class="k">await</span> db.query(<span class="s">&quot;ROLLBACK&quot;</span>);
+        <span class="c line-bidi">// فشل التسلسل: ابدأ المعاملة كلها من جديد</span>
+        <span class="k">if</span> ((error as { code?: string }).code !== <span class="s">&quot;40001&quot;</span>) <span class="k">throw</span> error;
+        retries++;
+      }
+    }
+  } <span class="k">finally</span> {
+    <span class="k">await</span> db.end();
+  }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عشرة مشترين، وعدّة روبوت واحدة، وأربع طرق لبيعها</span>
+<span class="c">$ </span><span class="k">node node/race.ts naive</span>
+naive        1 في المخزون, 10 مبيعات, المخزون الآن 0
+<span class="c">$ </span><span class="k">node node/race.ts atomic</span>
+atomic       1 في المخزون, 1 مبيعات, المخزون الآن 0
+<span class="c">$ </span><span class="k">node node/race.ts lock</span>
+lock         1 في المخزون, 1 مبيعات, المخزون الآن 0
+<span class="c">$ </span><span class="k">node node/race.ts serializable</span>
+serializable 1 في المخزون, 1 مبيعات, المخزون الآن 0, 9 إعادات</pre></div>
+
+<p>النسخة الساذجة باعت عدّة واحدة <strong>عشر مرات</strong>. كل مشترٍ قرأ «1 في المخزون» قبل أن يكتب أحد، وكل مشترٍ قرر أن يبيع، وكل مشترٍ كتب «0». والمعاملة لم تساعد: فهي تجعل التغييرات كلها أو لا شيء، لكنها لا تمنع معاملتين من قراءة القيمة نفسها. هذه <dfn>حالة سباق</dfn> (race condition)، من نوع <dfn>افحص ثم افعل</dfn> (check-then-act): كان الفحص صحيحاً حين جرى، وخاطئاً حين حدث الفعل.</p>
+
+<p>أما النسخ الثلاث الأخرى فباعت كل منها مرة واحدة. وهي الإصلاحات الثلاثة المعتادة:</p>
+<ul>
+<li><strong>تحديث ذري.</strong> <code>UPDATE products SET stock = stock - 1 WHERE id = 1 AND stock &gt; 0</code> تفحص وتغيّر في جملة واحدة. يقفل PostgreSQL الصف وهو يحدّثه، فينتظر تحديث المشتري الثاني، ثم يعيد فحص <code>stock &gt; 0</code> على القيمة الجديدة فلا يغيّر شيئاً. وعدد الصفوف المتغيرة يخبر الكود هل باع. وحين تتسع <code>WHERE</code> للقاعدة فهذا أبسط الإصلاحات وأسرعها.</li>
+<li><strong>قفل الصف.</strong> <code>SELECT … FOR UPDATE</code> تقرأ الصف وتقفله حتى تنتهي المعاملة. وكل مشترٍ آخر ينتظر عند ذلك السطر، ثم يقرأ المخزون بعد أن ثبّت الأول. استخدمه حين يحتاج القرار كوداً بين القراءة والكتابة (حساب سعر، أو استدعاء خدمة أخرى)، واجعل هذه المعاملات قصيرة، لأن الجميع ينتظر.</li>
+<li><strong>العزل التسلسلي.</strong> يبقى الكود ساذجاً، وتضمن قاعدة البيانات أن النتيجة تساوي تنفيذ المعاملات واحدة بعد أخرى. وحين تكتشف أن هذا مستحيل ترفض معاملة بالخطأ <code>40001</code>، فيعيدها الكود من البداية: وهنا رُفض تسعة من المشترين العشرة مرة، ووجدوا المخزون فارغاً عند الإعادة.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: الفحص في الكود لا يكفي أبداً</p><p>كل قاعدة من نوع «فقط إن…» (مخزون كافٍ، مقعد ما زال فارغاً، رصيد كافٍ، اسم مستخدم غير مأخوذ) سباقٌ حين تُفحص في الكود ثم يُكتب. ضع القاعدة حيث تستطيع قاعدة البيانات فرضها لحظة الكتابة: في تحديث مشروط، أو قيد تفرد، أو <code>CHECK</code>، أو قفل. وقيد <code>CHECK (stock &gt;= 0)</code> من الفصل 4 كان سيوقف البيع الزائد أيضاً، بخطأ بدل طلب ثانٍ صامت.</p></aside>
+
+<h2><span class="sec">6.3</span> <span>مستويات العزل</span></h2>
+
+<p><dfn>مستوى العزل</dfn> يقرر ما تراه المعاملة من معاملات أخرى تثبّت وهي تعمل. ويُظهر الفرقَ اتصالان: A تقرأ سعراً، وB تغيّره وتثبّت، وA تقرأ مرة أخرى ثم تحاول تغييره:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/isolation.ts</div><pre class="code"><span class="c line-bidi">// A تقرأ، وB تغيّر وتثبّت، وA تقرأ مرة أخرى، ثم تحاول A أن تغيّر</span>
+<span class="k">await</span> a.query(<span class="s">`BEGIN ISOLATION LEVEL ${level}`</span>);
+console.log(<span class="s">&quot;A تقرأ السعر:&quot;</span>, <span class="k">await</span> price());
+<span class="k">await</span> b.query(<span class="s">&quot;UPDATE products SET price = 50000 WHERE id = 1&quot;</span>);
+console.log(<span class="s">&quot;B تضبط السعر على 50000 وتثبّت&quot;</span>);
+console.log(<span class="s">&quot;A تقرؤه مرة أخرى:&quot;</span>, <span class="k">await</span> price());
+<span class="k">try</span> {
+  <span class="k">await</span> a.query(<span class="s">&quot;UPDATE products SET price = price + 1000 WHERE id = 1&quot;</span>);
+  <span class="k">await</span> a.query(<span class="s">&quot;COMMIT&quot;</span>);
+  console.log(<span class="s">&quot;A تضيف 1000 إلى السعر:&quot;</span>, (<span class="k">await</span> a.query(<span class="s">&quot;SELECT price FROM products WHERE id = 1&quot;</span>)).rows[<span class="n">0</span>].price);
+} <span class="k">catch</span> (error) {
+  <span class="k">await</span> a.query(<span class="s">&quot;ROLLBACK&quot;</span>);
+  console.log(<span class="s">&quot;A تضيف 1000 إلى السعر: ERROR&quot;</span>, (error as Error).message);
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># READ COMMITTED (افتراضي PostgreSQL)</span>
+<span class="c">$ </span><span class="k">node node/isolation.ts</span>
+A تقرأ السعر: 45000
+B تضبط السعر على 50000 وتثبّت
+A تقرؤه مرة أخرى: 50000
+A تضيف 1000 إلى السعر: 51000
+<span class="c line-bidi"># REPEATABLE READ</span>
+<span class="c">$ </span><span class="k">node node/isolation.ts &#x27;REPEATABLE READ&#x27;</span>
+A تقرأ السعر: 45000
+B تضبط السعر على 50000 وتثبّت
+A تقرؤه مرة أخرى: 45000
+A تضيف 1000 إلى السعر: ERROR could not serialize access due to concurrent update</pre></div>
+
+<ul>
+<li><strong><code>READ COMMITTED</code></strong>، افتراضي PostgreSQL: كل جملة ترى كل ما ثُبّت قبل أن تبدأ. فقراءة A الثانية رأت سعر B الجديد، فاختلفت قراءتان في معاملة واحدة، وبنى تحديث A على قيمة B.</li>
+<li><strong><code>REPEATABLE READ</code></strong>: ترى المعاملة لقطة أُخذت عند أول جملة فيها. فقراءة A الثانية رأت 45000 كما هي، وقراءاتها متسقة فيما بينها. وحين حاولت A أن تحدّث صفاً غيّرته B بعد تلك اللقطة رفض PostgreSQL: فـ A تعمل على صورة قديمة. وعلى التطبيق أن يعيد.</li>
+<li><strong><code>SERIALIZABLE</code></strong> يضيف كشف كل نمط لا يمكن أن يحدث لو نُفذت المعاملات واحدة بعد أخرى، كما في السباق أعلاه. وهو أكثر المستويات أماناً وأكثرها حاجة للإعادة.</li>
+</ul>
+
+<p>قاعدة عملية: أبقِ الافتراضي، واستخدم الجمل الذرية والقيود للقواعد التي تعبّر عنها، وخذ أقفال الصفوف حين يجب أن يقرر الكود بين قراءة وكتابة، واستخدم <code>SERIALIZABLE</code> (مع الإعادة) للقواعد المعقدة على صفوف كثيرة حيث يصعب أن ترى كل سباق. والتقارير التي تقرأ جداول كثيرة معاً تستفيد من <code>REPEATABLE READ</code>، لتأتي أرقامها من لحظة واحدة.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا لم يوقف لفُّ النسخة الساذجة في معاملة البيعَ الزائد؟</li><li>ماذا تفعل <code>FOR UPDATE</code> بالمعاملات الأخرى التي تقرأ الصف نفسه؟</li><li>فشلت معاملة بالخطأ <code>40001</code>. ماذا يجب أن يفعل التطبيق؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">6.4</span> <span>الاستعصاء</span></h2>
+
+<p>للأقفال فخها الخاص. المعاملة A تقفل المنتج 1 ثم تريد المنتج 2؛ والمعاملة B قفلت المنتج 2 وتريد المنتج 1. كل منهما تنتظر الأخرى، إلى الأبد:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/deadlock.ts</div><pre class="code"><span class="c line-bidi">// A تقفل المنتج 1 ثم 2، وB تقفل 2 ثم 1</span>
+<span class="k">async</span> <span class="k">function</span> run(name: string, first: number, second: number) {
+  <span class="k">const</span> db = <span class="k">new</span> pg.Client(url);
+  <span class="k">await</span> db.connect();
+  <span class="k">try</span> {
+    <span class="k">await</span> db.query(<span class="s">&quot;BEGIN&quot;</span>);
+    <span class="k">await</span> take(db, first);
+    <span class="k">await</span> sleep(<span class="n">200</span>);
+    <span class="k">await</span> take(db, second);
+    <span class="k">await</span> db.query(<span class="s">&quot;COMMIT&quot;</span>);
+    console.log(<span class="s">`${name}: انتهت`</span>);
+  } <span class="k">catch</span> (error) {
+    <span class="k">await</span> db.query(<span class="s">&quot;ROLLBACK&quot;</span>);
+    console.log(<span class="s">`${name}: فشلت, ${(error as { code?: string }).code}, ${(error as Error).message}`</span>);
+  } <span class="k">finally</span> {
+    <span class="k">await</span> db.end();
+  }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># معاملتان، والصفان نفسهما، بترتيبين متعاكسين</span>
+<span class="c">$ </span><span class="k">node node/deadlock.ts</span>
+B: فشلت, 40P01, deadlock detected
+A: انتهت</pre></div>
+
+<p>يبحث PostgreSQL عن هذه الدوائر بعد ثانية من الانتظار (<code>deadlock_timeout</code>)، فيختار معاملة ويُجهضها بالخطأ <code>40P01</code>، لتكمل الأخرى. وأيهما تخسر يتوقف على التوقيت. وعادتان تجعلان <dfn>الاستعصاء</dfn> (deadlock) نادراً: <strong>اقفل الصفوف بترتيب ثابت</strong> (لطلب فيه عدة منتجات، اقفلها أو حدّثها مرتبة بالرقم)، و<strong>اجعل المعاملات قصيرة</strong>، بلا استدعاءات شبكة ولا انتظار للمستخدم داخلها. وضحية الاستعصاء، مثل فشل التسلسل، تكفي إعادتها.</p>
+
+<h2><span class="sec">6.5</span> <span>المعاملات في الإطار</span></h2>
+
+
+<p>مع Kysely من الفصل 5، المعاملة دالة استدعاء؛ تُثبَّت حين تعود الدالة وتتراجع حين ترمي خطأ. وأقفال الصفوف ومستويات العزل دوال:</p>
+<ul>
+<li><code>await db.transaction().setIsolationLevel("serializable").execute(async (trx) =&gt; { … })</code>، باستخدام <code>trx</code> لا <code>db</code> لكل استعلام داخلها.</li>
+<li><code>trx.selectFrom("products").selectAll().where("id", "=", id).forUpdate().executeTakeFirst()</code> لقفل صف.</li>
+</ul>
+<p>ولا يعيد Kysely عنك: لفّ الاستدعاء في حلقة صغيرة تعيد عند الرمزين <code>40001</code> و<code>40P01</code>، مرات قليلة، بوقفة عشوائية قصيرة بين المحاولات. وبرنامج السباق أعلاه فيه هذه الحلقة بالضبط.</p>
+
+<h2><span class="sec">6.6</span> <span>الآثار الجانبية وصندوق الصادر</span></h2>
+
+<p>المعاملة يمكن أن تتراجع؛ والبريد لا يمكن استرجاعه. فإن أرسل الكود «طلبك مؤكد» داخل المعاملة ثم فشل التثبيت (استعصاء، أو قيد، أو انهيار)، صار عند الزبون بريد عن طلب غير موجود. والإرسال بعد التثبيت له المشكلة المعاكسة: إن انهارت العملية بين التثبيت والإرسال، فالطلب موجود والبريد لا يذهب أبداً.</p>
+
+<p>والنمط الموثوق هو <dfn>صندوق الصادر</dfn> (outbox): في المعاملة نفسها التي فيها الطلب، أدخل صفاً في جدول <code>outbox</code> يصف الرسالة المطلوب إرسالها. فيُثبَّت الطلب ورسالته معاً أو لا يُثبَّت أي منهما. وعامل منفصل يقرأ الصندوق، ويرسل كل رسالة، ويعلّمها مُرسلة؛ وإن انهار أرسلها مرة أخرى لاحقاً، فعلى المستقبِل أن يتحمل التكرار (عدم التأثر بالتكرار مرة أخرى). والفصل 10 يبني العامل بطابور.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اختبر السباقات عمداً</p><p>السباق لا يظهر في اختبار ينفذ طلباً واحداً في كل مرة. لكل قاعدة «فقط إن» (المخزون، والمقاعد، والأرصدة، والأسماء الفريدة)، اكتب اختباراً يبدأ طلبات كثيرة في اللحظة نفسها، كما يفعل برنامج السباق في هذا الفصل، ويتحقق من الحالة النهائية: بيع واحد، وحجز واحد، ورصيد لا ينزل تحت الصفر أبداً. ومثل هذا الاختبار يفشل دائماً على الكود الساذج، وهذا هو الدليل على أنه يختبر الشيء الصحيح.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>الفحص في الكود ثم الكتابة</td><td>طلبان يجتازان الفحص معاً</td><td>تحديث شرطي ذري، أو قيد، أو قفل صف</td></tr>
+<tr><td>الظن أن المعاملة تمنع السباقات</td><td>بيع زائد داخل معاملات سليمة تماماً</td><td>أقفال، أو قيود، أو <code>SERIALIZABLE</code></td></tr>
+<tr><td>لا إعادة عند <code>40001</code> و<code>40P01</code></td><td>أخطاء للمستخدمين في أوقات الزحام</td><td>أعد المعاملة كلها مرات قليلة</td></tr>
+<tr><td>قفل الصفوف بترتيب عشوائي</td><td>استعصاء</td><td>دائماً بالترتيب نفسه، كالرقم</td></tr>
+<tr><td>استدعاءات شبكة داخل معاملة</td><td>أقفال طويلة، والجميع ينتظر</td><td>معاملات قصيرة؛ استدعِ قبلها أو بعدها</td></tr>
+<tr><td>بريد يُرسل داخل معاملة</td><td>رسائل عن تغييرات تراجعت</td><td>صندوق صادر يُثبَّت مع التغيير</td></tr>
+<tr><td>اختبار التزامن بطلب واحد في كل مرة</td><td>سباقات يكتشفها الزبائن</td><td>اختبارات تبدأ طلبات كثيرة معاً</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>المعاملة</strong> تجعل عدة جمل <strong>ذرية</strong>: فشل واحد، فتصير <code>COMMIT</code> <code>ROLLBACK</code>.</li>
+<li>المعاملات لا تمنع <strong>السباقات</strong>: «اقرأ، وافحص في الكود، واكتب» تبيع القطعة الواحدة مرات كثيرة تحت الضغط.</li>
+<li>ثلاثة إصلاحات: <strong>تحديث شرطي ذري</strong>، أو <strong>قفل صف</strong> بـ <code>FOR UPDATE</code>، أو <strong><code>SERIALIZABLE</code></strong> مع الإعادة.</li>
+<li><strong><code>READ COMMITTED</code></strong> ترى آخر ما ثُبّت عند كل جملة؛ و<strong><code>REPEATABLE READ</code></strong> ترى لقطة واحدة وترفض تحديث صفوف تغيرت بعدها.</li>
+<li><strong>الاستعصاء</strong> دائرة أقفال يكسرها PostgreSQL بـ <code>40P01</code>. اقفل بترتيب ثابت، واجعل المعاملات قصيرة، وأعد.</li>
+<li>الآثار الجانبية مكانها بعد التثبيت، وبموثوقية عبر <strong>صندوق الصادر</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. المعاملة تجعل تغييراتها هي كلها أو لا شيء، لكنها في مستوى العزل الافتراضي لا تمنع معاملات أخرى من قراءة الصف نفسه في الوقت نفسه، فقرأ العشرة كلهم «1» قبل أن يكتب أي منهم. 2. جمل <code>SELECT … FOR UPDATE</code> الأخرى والتحديثات على ذلك الصف تنتظر حتى تثبّت المعاملة القافلة أو تتراجع؛ أما <code>SELECT</code> العادية فما زالت تقرأ آخر نسخة مثبّتة بلا انتظار. 3. تتراجع وتنفذ المعاملة كلها مرة أخرى من البداية، فتقرأ البيانات من جديد، عدداً محدوداً من المرات، ويُفضَّل بعد وقفة عشوائية قصيرة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع عن الصحة تحت التزامن. أثبت كلاً منها باختبار أو برنامج يبدأ طلبات كثيرة في اللحظة نفسها ويفحص الحالة النهائية.</p>
+
+<div class="project">
+<p class="project-label">المشروع 6.1 · سهل</p>
+<h3>حجز مخزون آمن</h3>
+<p class="project-goal">حوّل برنامج السباق إلى دالة قابلة لإعادة الاستخدام تحجز عدة منتجات لطلب واحد بأمان، وأثبتها تحت الضغط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التحديثات الذرية، والمعاملات متعددة الجمل، وترتيب الأقفال الثابت، واختبارات التزامن.</p>
+<ol class="steps">
+<li>اكتب <code>reserve(items)</code>: داخل معاملة واحدة، خذ كمية كل منتج بتحديث شرطي ذري، وتراجع عن الطلب كله إن نقص أي صنف.</li>
+<li>رتّب الأصناف برقم المنتج قبل التحديث، واشرح لماذا.</li>
+<li>ابدأ 50 طلباً متزامناً لسلال عشوائية على منتجات قليلة بمخزون صغير، وتحقق بعدها أن لا مخزون سالباً، وأن المخزون المأخوذ يساوي الكميات في الطلبات الناجحة.</li>
+<li>أزل الترتيب، وشغّله مرة أخرى، وعُدّ حالات الاستعصاء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الفحص الأخير هو الاختبار الحقيقي: مجموع الكميات في الطلبات الناجحة، مع المخزون الباقي، يجب أن يساوي المخزون الأصلي لكل منتج.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 6.2 · متوسط</p>
+<h3>المال بين المحافظ</h3>
+<p class="project-goal">ابنِ محافظ للزبائن بتحويلات لا تضيّع مالاً ولا تخلقه، مهما كان التزامن.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تفكير القيد المزدوج، وأقفال الصفوف بالترتيب، وقيود <code>CHECK</code>، والثوابت.</p>
+<ol class="steps">
+<li>أنشئ <code>wallets</code> (الزبون، والرصيد بالقروش، و<code>CHECK (balance &gt;= 0)</code>) و<code>transfers</code> (من، وإلى، والمبلغ، والوقت).</li>
+<li>اكتب <code>transfer(from, to, amount)</code>: اقفل المحفظتين بـ <code>FOR UPDATE</code> بترتيب الرقم، وافحص الرصيد، وانقل المال، وسجّل التحويل، في معاملة واحدة.</li>
+<li>نفّذ 1000 تحويل عشوائي متزامن بين 20 محفظة، وتحقق أن مجموع كل الأرصدة لم يتغير.</li>
+<li>أعد كتابتها بـ <code>SERIALIZABLE</code> بلا أقفال صريحة، مع الإعادة، وقارن عدد الإعادات والوقت المستغرق.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الأنظمة الحقيقية نادراً ما تخزّن الرصيد وحده؛ بل تحفظ دفتر قيود، وتحسب الرصيد منه أو تخزّنه مؤقتاً. وجدول <code>transfers</code> عندك بداية ذلك الدفتر.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 6.3 · تحدٍّ</p>
+<h3>صندوق صادر لا يضيّع رسالة</h3>
+<p class="project-goal">أرسل تأكيد الطلب حين يُثبَّت الطلب بالضبط، حتى لو انهارت العمليات في أسوأ اللحظات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نمط صندوق الصادر، و<code>FOR UPDATE SKIP LOCKED</code>، والمستهلكين الذين لا يتأثرون بالتكرار، واختبار الانهيار.</p>
+<ol class="steps">
+<li>أنشئ جدول <code>outbox</code> (الرقم، والنوع، والحمولة JSON، ووقت الإنشاء، ووقت الإرسال). وأدخل رسالة في معاملة كل طلب نفسها.</li>
+<li>اكتب عاملاً يأخذ، في معاملة، حتى 10 رسائل غير مرسلة بـ <code>FOR UPDATE SKIP LOCKED</code>، و«يرسلها» (يكتبها في ملف)، ويعلّمها مُرسلة.</li>
+<li>شغّل ثلاثة عمّال معاً، وتحقق أن لا رسالة يرسلها عاملان مختلفان في التشغيل العادي.</li>
+<li>اقتل عاملاً في منتصف دفعة (بعد الكتابة في الملف، وقبل التثبيت)، وبيّن أن الرسالة تُرسل مرة أخرى: واجعل المستقبِل يتجاهل التكرار برقم الرسالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>SKIP LOCKED</code> تجعل كل عامل يتخطى الصفوف التي قفلها عامل آخر، فيتقاسم عدة عمّال الطابور بلا انتظار لبعضهم. وبها يصلح PostgreSQL طابور مهام بسيطاً.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> معاملة حدّثت ثلاثة صفوف حين انهار التطبيق قبل <code>COMMIT</code>. ماذا يحدث للتغييرات الثلاثة، وللأقفال على تلك الصفوف؟</li>
+<li><span class="level">سهل</span> اختر إصلاحاً لكل مما يلي، وقل لماذا: عدّ مشاهدات الصفحة؛ وحجز مقعد مرقّم؛ واسم مستخدم يجب أن يكون فريداً.</li>
+<li><span class="level medium">متوسط</span> غيّر برنامج الاستعصاء لتحدّث المعاملتان المنتجين معاً بلا استعصاء أبداً، وشغّله.</li>
+<li><span class="level medium">متوسط</span> لماذا من الخطأ استدعاء خدمة دفع داخل معاملة تمسك قفل <code>FOR UPDATE</code> على المنتج؟ اقترح ترتيباً أفضل لخطوات «احجز المخزون، واخصم من البطاقة، وأكّد الطلب».</li>
+<li><span class="level hard">تحدٍّ</span> اكتب دالة مساعدة تنفذ دالة معاملة مع الإعادة عند <code>40001</code> و<code>40P01</code>: خمس محاولات على الأكثر، ووقفة عشوائية تكبر مع كل محاولة، والخطأ الأصلي إن فشلت كل المحاولات.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 7</p>
+<p>قاعدة البيانات صحيحة الآن؛ وبعدها نجعلها سريعة للأسئلة التي تُسأل آلاف المرات في الدقيقة. Redis يحفظ الإجابات في الذاكرة: التخزين المؤقت وإبطاله، وحدود المعدل المشتركة بين الخوادم، والأقفال عبر العمليات.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2647,6 +3564,41 @@ console.log(sara.rows[<span class="n">0</span>], <span class="k">typeof</span> s
 <li><code>SELECT p.name FROM products p LEFT JOIN order_items i ON i.product_id = p.id AND i.order_id &gt; 100000 GROUP BY p.id, p.name HAVING count(i.order_id) = 0;</code> تعطي حزمة البطارية وطقم الحساسات وجهاز التحكم وصندوق التروس. والشرط على <code>order_id</code> مكانه في <code>ON</code>: ففي <code>WHERE</code> سيحذف الصفوف التي فيها <code>NULL</code>، فيعود الربط الأيسر ربطاً داخلياً. و<code>WHERE NOT EXISTS (SELECT 1 FROM order_items i WHERE i.product_id = p.id AND i.order_id &gt; 100000)</code> تقول الشيء نفسه بطريقة أوضح.</li>
 <li><dfn>الفهرس الجزئي</dfn> لا يحتوي إلا الصفوف التي تطابق <code>WHERE</code> الخاصة به: <code>CREATE INDEX orders_pending_recent_idx ON orders (created_at) WHERE status = 'pending';</code>. ولأن الطلبات المنتظرة قليلة في أي وقت، يبقى الفهرس صغيراً جداً مهما كبر <code>orders</code>، ويُظهر <code>EXPLAIN</code> عبارة <code>Index Scan using orders_pending_recent_idx</code>. ويجب أن يحتوي الاستعلام <code>status = 'pending'</code> لتستخدمه PostgreSQL.</li>
 <li>جمّع بالشهر في CTE، ثم استخدم دالتي نافذة على الأشهر بترتيبها: <code>sum(revenue) OVER (ORDER BY month)</code> للإجمالي المتراكم، و<code>revenue - lag(revenue) OVER (ORDER BY month)</code> للتغير. و<code>lag</code> تقرأ الصف السابق، فيكون تغير الشهر الأول <code>NULL</code>. والاستعلام في مستودع الكود يُظهر أول الأشهر في البيانات المولَّدة، وأولها صغير لأن البيانات تبدأ في 19 نوفمبر، في منتصف الشهر.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 5</h2>
+<ol class="exercises">
+<li><code>up</code>: <code>await db.schema.alterTable("customers").addColumn("city", "text").execute();</code>، و<code>down</code>: <code>await db.schema.alterTable("customers").dropColumn("city").execute();</code>. سمِّ الملف بتاريخ بعد الملفات الموجودة، وشغّل <code>npm run migrate</code> ثم <code>npm run migrate -- down</code> ثم <code>npm run migrate</code> مرة أخرى، ثم ولّد الأنواع من جديد فيكسب <code>Customers</code> الحقل <code>city: string | null</code>.</li>
+<li>يرى المولّد عموداً <code>text</code>، و<code>CHECK</code> قاعدة لا نوع، فلا يستطيع وحده أن يحوّلها إلى اتحاد. أخبره بـ <code>--overrides</code>: <code>'{"columns":{"orders.status":"\"pending\" | \"paid\" | \"shipped\" | \"cancelled\""}}'</code>. والتشغيل في مستودع الكود يولّد <code>status: "pending" | "paid" | "shipped" | "cancelled"</code>. ولأن للعمود قيمة افتراضية، لُفّه بـ <code>Generated&lt;…&gt;</code> في التعيين، كي يبقى الإدراج قادراً على تركه. أما نوع <code>ENUM</code> في PostgreSQL فيُقرأ اتحاداً تلقائياً، وثمنه ترحيل لكل قيمة جديدة.</li>
+<li>(1) التوسيع: أضف <code>title</code> اختيارياً، والكود القديم يعمل بلا تغيير. (2) انشر كوداً يكتب <code>name</code> و<code>title</code> معاً وما زال يقرأ <code>name</code>، فيعمل القديم والجديد معاً. (3) املأ <code>title</code> من <code>name</code> على دفعات. (4) انشر كوداً يقرأ <code>title</code> (وما زال يكتب الاثنين تحسباً للتراجع). (5) انشر كوداً لم يعد يكتب <code>name</code>. (6) التقليص: اجعل <code>title</code> <code>NOT NULL</code>، واحذف <code>name</code>. وفي كل خطوة تتفق النسخ العاملة جنباً إلى جنب على المخطط.</li>
+<li><code>db.selectFrom("products as p").leftJoin("order_items as i", "i.product_id", "p.id").select(["p.id", "p.name", (eb) =&gt; eb.fn.coalesce(eb.fn.sum&lt;number&gt;("i.quantity"), eb.lit(0)).as("units")]).groupBy(["p.id", "p.name"]).execute()</code>. والربط الأيسر يُبقي المنتجات التي لم تُبع، و<code>coalesce</code> تحوّل مجموعها <code>NULL</code> إلى 0. استعلام واحد مهما كان عدد المنتجات.</li>
+<li>ابدأ قاعدة جديدة (<code>pg-start --fresh</code> في مستودع الكتاب، أو حاوية خدمة في CI)، واستدعِ <code>migrateToLatest()</code>، ثم <code>migrateDown()</code> في حلقة حتى لا تُرجع نتائج، ثم <code>migrateToLatest()</code> مرة أخرى، واضبط <code>process.exitCode = 1</code> إن أرجعت أي خطوة خطأ. وشغّله في CI مع كل طلب دمج يلمس <code>migrations/</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 6</h2>
+<ol class="exercises">
+<li>لا يُحفظ شيء من التغييرات الثلاثة. ينقطع الاتصال، فيرى PostgreSQL أن الجلسة انتهت بلا <code>COMMIT</code>، فيتراجع عن المعاملة؛ وتُحرَّر أقفال صفوفها في اللحظة نفسها، فتكمل المعاملات المنتظرة لتلك الصفوف. وانهيار خادم قاعدة البيانات نفسه له النتيجة ذاتها: عند إعادة التشغيل، المعاملة غير المثبّتة كأنها لم تحدث.</li>
+<li>مشاهدات الصفحة: تحديث ذري، <code>UPDATE pages SET views = views + 1 WHERE id = $1</code>، بلا قراءة في الكود؛ لا شيء يُفحص، فلا شيء يتسابق. والمقعد المرقّم: تحديث شرطي ذري (<code>UPDATE seats SET booked_by = $1 WHERE id = $2 AND booked_by IS NULL</code>، وانظر إلى عدد الصفوف المتغيرة) أو قيد تفرد على المقعد في جدول الحجوزات. واسم المستخدم الفريد: قيد تفرد (أو فهرس فريد)، وحوّل خطأه إلى 409؛ والفحص أولاً في الكود لرسالة لطيفة فقط، لا للضمان أبداً.</li>
+<li>اجعل المعاملتين تأخذان الصفوف بالترتيب نفسه، الرقم الأصغر أولاً: تنفذ B <code>run("B", 1, 2)</code> مثل A. فتنتظر B عند المنتج 1 حتى تثبّت A، ثم تكمل؛ ولا دائرة ممكنة. والبرنامجان يأخذان الوسيط <code>ordered</code> لهذا، والتشغيل في مستودع الكود يطبع «A: انتهت» و«B: انتهت» في النسختين. ومع عدة منتجات، رتّبها بالرقم قبل القفل أو التحديث.</li>
+<li>القفل يبقى طوال مدة استدعاء الشبكة، الذي قد يستغرق ثواني أو تنتهي مهلته، وكل مشترٍ آخر لذلك المنتج ينتظر في الأثناء؛ فتصير خدمة الدفع البطيئة متجراً بطيئاً. والأسوأ: إن نجح الخصم ثم فشل التثبيت، أُخذ المال لطلب غير موجود. والترتيب الأفضل: (1) معاملة قصيرة تحجز المخزون بتحديث ذري وتنشئ الطلب «قيد الانتظار»؛ (2) الخصم، خارج أي معاملة، بمفتاح عدم تكرار من رقم الطلب؛ (3) معاملة قصيرة تعلّم الطلب «مدفوعاً»، أو تحرر المخزون إن فشل الخصم. وعامل يلغي الطلبات التي تبقى قيد الانتظار أطول من اللازم.</li>
+<li>
+
+<pre><code>async function retrying&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;, attempts = 5): Promise&lt;T&gt; {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await work();
+    } catch (error) {
+      const code = (error as { code?: string }).code;
+      if (attempt === attempts || (code !== "40001" &amp;&amp; code !== "40P01")) throw error;
+      const pause = Math.random() * 20 * 2 ** attempt; // تكبر مع كل محاولة
+      await new Promise((resolve) =&gt; setTimeout(resolve, pause));
+    }
+  }
+}
+// await retrying(() =&gt; db.transaction().setIsolationLevel("serializable").execute(work));</code></pre>
+الوقفة عشوائية كي لا تعيد معاملتان تصادمتا في اللحظة نفسها فتتصادما مرة أخرى؛ وتكبر كي تأخذ لحظة الزحام وقتها لتمر. ولا يُعاد إلا المعاملة كلها، لا جملة واحدة منها أبداً، لأن كل ما قرأته ربما تغيّر.</li>
 </ol>
 
 </section>

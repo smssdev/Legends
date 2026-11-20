@@ -17,6 +17,10 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "Chapter 5: SQL and PostgreSQL"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "Chapter 6: Eloquent, Relationships and Migrations"; } }
+@page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Transactions, Locks and Consistency"; } }
+@page ch07:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3433,6 +3437,809 @@ array(2) {
 <p>Writing SQL by hand for every table gets repetitive. Next comes Eloquent, Laravel’s ORM, properly: models, relationships, migrations on PostgreSQL, and the N+1 problem that every ORM user must learn to see.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b3/laravel/eloquent/en">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">Chapter 6</p><h1>Eloquent, Relationships and Migrations</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>connect Laravel to PostgreSQL and change the schema with migrations you can undo</li>
+<li>change a live schema without downtime, with expand and contract</li>
+<li>model a domain with Eloquent: relationships, pivot data, enum casts, scopes and computed attributes</li>
+<li>see the SQL Eloquent sends, and count it</li>
+<li>find the N+1 problem, fix it with eager loading, and make Laravel refuse it in development</li>
+<li>protect models from mass assignment</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 4 used Eloquent for a few minutes, and Chapter 5 showed the SQL underneath. Eloquent is Laravel’s <dfn>ORM</dfn> (object-relational mapper): every table is a class, every row an object, and relationships are methods. It is pleasant to use and easy to misuse, because a single innocent line can send hundreds of queries. This chapter uses it properly, on PostgreSQL, and keeps an eye on the SQL the whole time.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The slowest page I ever shipped had twelve lines of Blade and sent 1,400 queries. Every line looked harmless: <code>$order-&gt;customer-&gt;name</code>, <code>$item-&gt;product-&gt;price</code>. Nothing was wrong with Eloquent; I simply never looked at what it sent. Now I count queries before I trust a page.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>PostgreSQL and migrations</span></h2>
+
+<p>A new Laravel project uses SQLite. Pointing it at PostgreSQL is a matter of settings in <code>.env</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Laravel talks to PostgreSQL: the settings in .env</span>
+<span class="c">$ </span><span class="k">grep &#x27;^DB_&#x27; .env</span>
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=shop
+DB_USERNAME=bit
+DB_PASSWORD=secret</pre></div>
+
+<p>A <dfn>migration</dfn> is one change to the schema, written as code, with an <code>up</code> that makes it and a <code>down</code> that undoes it. Every machine runs the migrations it has not run yet, in order, and Laravel records which ran in a <code>migrations</code> table. Here is the shop:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_create_shop_tables.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> up(): <span class="k">void</span>
+    {
+        Schema::create(<span class="s">&#x27;customers&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;name&#x27;</span>);
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;email&#x27;</span>)-&gt;unique();
+            $table-&gt;timestampsTz(); <span class="c line-bidi">// timestamptz, as Chapter 5 advised</span>
+        });
+
+        Schema::create(<span class="s">&#x27;products&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;name&#x27;</span>);
+            $table-&gt;unsignedInteger(<span class="s">&#x27;price&#x27;</span>); <span class="c line-bidi">// piastres</span>
+            $table-&gt;unsignedInteger(<span class="s">&#x27;stock&#x27;</span>)-&gt;<span class="k">default</span>(<span class="n">0</span>);
+            $table-&gt;timestampsTz(); <span class="c line-bidi">// timestamptz, as Chapter 5 advised</span>
+        });
+
+        Schema::create(<span class="s">&#x27;orders&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;foreignId(<span class="s">&#x27;customer_id&#x27;</span>)-&gt;index()-&gt;constrained(); <span class="c line-bidi">// PostgreSQL adds no index itself</span>
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;status&#x27;</span>)-&gt;<span class="k">default</span>(<span class="s">&#x27;pending&#x27;</span>);
+            $table-&gt;timestampsTz(); <span class="c line-bidi">// timestamptz, as Chapter 5 advised</span>
+        });
+
+        <span class="c line-bidi">// order_items joins orders and products, and carries its own facts</span>
+        Schema::create(<span class="s">&#x27;order_items&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;foreignId(<span class="s">&#x27;order_id&#x27;</span>)-&gt;constrained()-&gt;cascadeOnDelete();
+            $table-&gt;foreignId(<span class="s">&#x27;product_id&#x27;</span>)-&gt;constrained();
+            $table-&gt;unsignedInteger(<span class="s">&#x27;quantity&#x27;</span>);
+            $table-&gt;unsignedInteger(<span class="s">&#x27;price&#x27;</span>);
+            $table-&gt;primary([<span class="s">&#x27;order_id&#x27;</span>, <span class="s">&#x27;product_id&#x27;</span>]);
+        });
+    }</pre></div>
+
+<p>Laravel’s schema builder hides SQL details. <code>id()</code> is a <code>bigint</code> primary key, and <code>foreignId('customer_id')-&gt;constrained()</code> adds the foreign key. On PostgreSQL a foreign key gets no index by itself (MySQL adds one), so <code>-&gt;index()</code> adds it: every “orders of this customer” query needs it. One default needs correcting: <code>timestamps()</code> creates columns <em>without</em> a time zone, the type Chapter 5 warned against. <code>timestampsTz()</code> creates <code>timestamptz</code>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Run the migrations</span>
+<span class="c">$ </span><span class="k">php artisan migrate --no-ansi</span>
+
+   INFO  Preparing database.  
+
+  Creating migration table ....................................... 7.92ms DONE
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table ........................... 7.90ms DONE
+  0001_01_01_000001_create_cache_table ........................... 7.03ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 11.71ms DONE
+  2026_11_01_000001_create_shop_tables .......................... 17.95ms DONE
+  2026_11_02_000001_add_sku_to_products .......................... 1.22ms DONE
+  2026_11_03_000001_require_product_sku .......................... 4.55ms DONE</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The table after the three migrations</span>
+<span class="c">$ </span><span class="k">php artisan db:table products --no-ansi</span>
+
+  public.products ............................................................  
+  Columns .................................................................. 7  
+  Size .............................................................. 24.00 KB  
+
+  Column ................................................................ Type  
+  id int8, autoincrement ......... nextval(&#x27;products_id_seq&#x27;::regclass) bigint  
+  name varchar ........................................ character varying(255)  
+  price int4 ......................................................... integer  
+  stock int4 ....................................................... 0 integer  
+  created_at timestamptz, nullable ............... timestamp(0) with time zone  
+  updated_at timestamptz, nullable ............... timestamp(0) with time zone  
+  sku varchar ......................................... character varying(255)  
+
+  Index ......................................................................  
+  products_pkey id ............................................ btree, primary  
+  products_sku_unique sku ...................................... btree, unique  </pre></div>
+
+<p>Every migration can be undone, and you should try it once for every new migration on your machine, because a <code>down</code> that has never run is a <code>down</code> that does not work:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Undo the last migration, then run it again</span>
+<span class="c">$ </span><span class="k">php artisan migrate:rollback --step=1 --no-ansi</span>
+
+   INFO  Rolling back migrations.  
+
+  2026_11_03_000001_require_product_sku .......................... 8.00ms DONE
+<span class="c">$ </span><span class="k">php artisan migrate --no-ansi</span>
+
+   INFO  Running migrations.  
+
+  2026_11_03_000001_require_product_sku .......................... 5.96ms DONE</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: never edit a migration that has run elsewhere</p><p>Once a migration is merged, other machines have run it, and changing its file changes nothing there: their database and yours now differ, silently. Fix mistakes with a new migration. In CI, run <code>php artisan migrate</code>, <code>migrate:rollback</code> to the start, and <code>migrate</code> again on an empty database; it takes seconds and catches broken <code>down</code> methods.</p></aside>
+
+<h2><span class="sec">6.2</span> <span>Changing a live schema: expand and contract</span></h2>
+
+<p>Every product needs a SKU, a stock code, required and unique. Adding a required column in one step fails on a live system: existing rows have no value, and the code still running in production does not send one. The safe pattern is <dfn>expand and contract</dfn>:</p>
+<ol>
+<li><strong>Expand:</strong> add the column as nullable. The running code ignores it.</li>
+<li><strong>Deploy code that writes it</strong>, and fill it for the existing rows.</li>
+<li><strong>Contract:</strong> make it required and unique.</li>
+</ol>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_add_sku_to_products.php</div><pre class="code"><span class="k">return</span> <span class="k">new</span> <span class="k">class</span> <span class="k">extends</span> Migration
+{
+    <span class="k">public</span> <span class="k">function</span> up(): <span class="k">void</span>
+    {
+        Schema::table(<span class="s">&#x27;products&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;sku&#x27;</span>)-&gt;nullable();
+        });
+    }
+
+    <span class="k">public</span> <span class="k">function</span> down(): <span class="k">void</span>
+    {
+        Schema::table(<span class="s">&#x27;products&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;dropColumn(<span class="s">&#x27;sku&#x27;</span>);
+        });
+    }
+};</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_require_product_sku.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> up(): <span class="k">void</span>
+    {
+        <span class="c line-bidi">// Step 2: fill it for the existing rows, in chunks.</span>
+        DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;whereNull(<span class="s">&#x27;sku&#x27;</span>)-&gt;chunkById(<span class="n">500</span>, <span class="k">function</span> ($products) {
+            <span class="k">foreach</span> ($products <span class="k">as</span> $product) {
+                DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $product-&gt;id)
+                    -&gt;update([<span class="s">&#x27;sku&#x27;</span> =&gt; sprintf(<span class="s">&#x27;BIT-%04d&#x27;</span>, $product-&gt;id)]);
+            }
+        });
+
+        <span class="c line-bidi">// Step 3, contract: every row has a SKU now; make it required and unique.</span>
+        Schema::table(<span class="s">&#x27;products&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;sku&#x27;</span>)-&gt;nullable(<span class="k">false</span>)-&gt;unique()-&gt;change();
+        });
+    }</pre></div>
+
+<p><code>chunkById</code> fills the rows 500 at a time, so a large table is never loaded into memory at once. On a table of millions of rows, run the backfill as a separate command or job rather than inside a migration. The same pattern renames a column (add the new one, write both, backfill, read the new one, drop the old one) without the shop ever stopping.</p>
+
+<h2><span class="sec">6.3</span> <span>Models and relationships</span></h2>
+
+<p>Each table gets a model. Relationships are methods that return relationship objects:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Models/Order.php</div><pre class="code"><span class="k">class</span> Order <span class="k">extends</span> Model
+{
+    <span class="k">protected</span> $fillable = [<span class="s">&#x27;customer_id&#x27;</span>, <span class="s">&#x27;status&#x27;</span>];
+
+    <span class="k">protected</span> <span class="k">function</span> casts(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [<span class="s">&#x27;status&#x27;</span> =&gt; OrderStatus::<span class="k">class</span>]; <span class="c line-bidi">// the column holds text; the model gives you the enum</span>
+    }
+
+    <span class="k">public</span> <span class="k">function</span> customer(): BelongsTo
+    {
+        <span class="k">return</span> $<span class="k">this</span>-&gt;belongsTo(Customer::<span class="k">class</span>);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> products(): BelongsToMany
+    {
+        <span class="k">return</span> $<span class="k">this</span>-&gt;belongsToMany(Product::<span class="k">class</span>, <span class="s">&#x27;order_items&#x27;</span>)-&gt;withPivot(<span class="s">&#x27;quantity&#x27;</span>, <span class="s">&#x27;price&#x27;</span>);
+    }
+
+    <span class="c line-bidi">// a reusable condition: Order::query()-&gt;shipped()</span>
+    #[Scope]
+    <span class="k">protected</span> <span class="k">function</span> shipped(Builder $query): <span class="k">void</span>
+    {
+        $query-&gt;where(<span class="s">&#x27;status&#x27;</span>, OrderStatus::Shipped);
+    }
+
+    <span class="c line-bidi">// The total, computed from the items: piastres, as stored.</span>
+    <span class="k">protected</span> <span class="k">function</span> total(): Attribute
+    {
+        <span class="k">return</span> Attribute::get(<span class="k">fn</span> () =&gt; $<span class="k">this</span>-&gt;products-&gt;sum(
+            <span class="k">fn</span> (Product $p) =&gt; $p-&gt;pivot-&gt;quantity * $p-&gt;pivot-&gt;price,
+        ));
+    }
+}</pre></div>
+
+<ul>
+<li><strong><code>belongsTo</code></strong> on the side with the foreign key (an order belongs to a customer), and <strong><code>hasMany</code></strong> on the other (a customer has many orders).</li>
+<li><strong><code>belongsToMany</code></strong> for many-to-many, through <code>order_items</code>. <code>withPivot</code> brings the joining table’s own facts, the quantity and the price at the time, onto each product as <code>$product-&gt;pivot</code>.</li>
+<li>A <strong>cast</strong> converts a column when it is read and written. The status column holds text; the model gives you the <code>OrderStatus</code> enum from Chapter 2, with its labels.</li>
+<li>A <strong>scope</strong> is a named, reusable condition, marked with <code>#[Scope]</code>: <code>Order::shipped()</code>.</li>
+<li>An <strong>attribute</strong> such as <code>total</code> is computed from the items when read: <code>$order-&gt;total</code>. It is not stored, so it cannot disagree with them.</li>
+</ul>
+
+<h2><span class="sec">6.4</span> <span>Seeing the SQL</span></h2>
+
+<p>Every query Laravel sends passes through the database layer, and <code>DB::listen</code> can watch them. The book’s Artisan commands collect the SQL of each piece of work:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code"><span class="k">function</span> countQueries(callable $work): <span class="k">array</span>
+{
+    $queries = [];
+    DB::listen(<span class="k">function</span> ($query) <span class="k">use</span> (&amp;$queries) {
+        $queries[] = $query-&gt;sql;
+    });
+    $result = $work();
+    DB::flushQueryLog();
+
+    <span class="k">return</span> [$result, $queries];
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An order with its customer and products, and the queries behind it</span>
+<span class="c">$ </span><span class="k">php artisan shop:order 2</span>
+<span class="c line-bidi">#2 Sara · On its way · 63500</span>
+  1 × Robot kit (45000)
+  1 × Spare wheels (6000)
+  1 × Battery pack (12500)
+SQL: select * from &quot;orders&quot; where &quot;orders&quot;.&quot;id&quot; = ? limit 1
+SQL: select * from &quot;customers&quot; where &quot;customers&quot;.&quot;id&quot; in (1)
+SQL: select &quot;products&quot;.*, &quot;order_items&quot;.&quot;order_id&quot; as &quot;pivot_order_id&quot;, &quot;order_items&quot;.&quot;product_id&quot; as &quot;pivot_product_id&quot;, &quot;order_items&quot;.&quot;quantity&quot; as &quot;pivot_quantity&quot;, &quot;order_items&quot;.&quot;price&quot; as &quot;pivot_price&quot; from &quot;products&quot; inner join &quot;order_items&quot; on &quot;products&quot;.&quot;id&quot; = &quot;order_items&quot;.&quot;product_id&quot; where &quot;order_items&quot;.&quot;order_id&quot; in (2)</pre></div>
+
+<p><code>Order::with(['customer', 'products'])</code> asks for the relationships up front: one query for the order, one for its customer, one for its products with the pivot columns. Three queries, whatever the number of products. Read the SQL Eloquent writes now and then: it is the best way to understand what your code costs.</p>
+
+<h2><span class="sec">6.5</span> <span>The N+1 problem</span></h2>
+
+<p>A report lists every shipped order with its products. Written the natural way, it loads the orders, then touches <code>$order-&gt;products</code> for each one, and Eloquent loads them <em>lazily</em>, one order at a time:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:report {mode}&#x27;</span>, <span class="k">function</span> (<span class="k">string</span> $mode) {
+    $start = hrtime(<span class="k">true</span>);
+    [$orders, $queries] = countQueries(<span class="k">function</span> () <span class="k">use</span> ($mode) {
+        $orders = $mode === <span class="s">&#x27;eager&#x27;</span>
+            ? Order::shipped()-&gt;with(<span class="s">&#x27;products&#x27;</span>)-&gt;get() <span class="c line-bidi">// two queries: the orders, then all their products at once</span>
+            : Order::shipped()-&gt;get();
+        <span class="c line-bidi">// each -&gt;products loads that order&#x27;s products: one more query per order</span>
+        $orders-&gt;each(<span class="k">fn</span> (Order $order) =&gt; $order-&gt;products-&gt;count());
+
+        <span class="k">return</span> $orders;
+    });
+    $ms = intdiv(hrtime(<span class="k">true</span>) - $start, 1_000_000);
+    $<span class="k">this</span>-&gt;line(sprintf(<span class="s">&#x27;%-5s %d orders, %d queries, %d ms&#x27;</span>, $mode, $orders-&gt;count(),
+        count($queries), $ms));
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same report two ways: count the queries</span>
+<span class="c">$ </span><span class="k">SHOP_STRICT=false php artisan shop:report lazy</span>
+lazy  200 orders, 201 queries, 166 ms
+<span class="c">$ </span><span class="k">SHOP_STRICT=false php artisan shop:report eager</span>
+eager 200 orders, 2 queries, 55 ms</pre></div>
+
+<p>Lazy: one query for the orders and one more for each of the 200 orders, 201 queries. Eager, with <code>with('products')</code>: two queries, the orders and then all their products with <code>WHERE order_id IN (…)</code>. Several times faster on a database on the same machine; across a network, the difference grows to seconds. This is the <dfn>N+1 problem</dfn>, the most common performance bug in Laravel applications, because every line looks innocent.</p>
+
+<p>Laravel can turn it into an error. In the service provider:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> boot(): <span class="k">void</span>
+    {
+        <span class="c line-bidi">// in development: no lazy loading, no silently ignored attributes</span>
+        Model::preventLazyLoading(config(<span class="s">&#x27;shop.strict&#x27;</span>));
+        Model::preventSilentlyDiscardingAttributes(config(<span class="s">&#x27;shop.strict&#x27;</span>));
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># With lazy loading turned off, the N+1 is an error in development</span>
+<span class="c">$ </span><span class="k">php artisan shop:report lazy 2&gt;&amp;1 | grep -E &#x27;LazyLoadingViolation|Attempted to&#x27; | head -2</span>
+   Illuminate\Database\LazyLoadingViolationException 
+  Attempted to lazy load [products] on model [App\Models\Order] but lazy loading is disabled.</pre></div>
+
+<p>In development and tests, the lazy version now fails at once, naming the relationship and the model, so the N+1 is fixed before it ships. In production the setting is off, so a missed case slows a page down instead of breaking it.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What is the difference between <code>$order-&gt;products</code> and <code>$order-&gt;products()</code>?</li><li>A page shows 50 orders with their customers’ names. How many queries does it send without eager loading, and with it?</li><li>Why does the migration use <code>timestampsTz()</code> instead of <code>timestamps()</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">6.6</span> <span>Mass assignment</span></h2>
+
+<p><code>Product::create($request-&gt;all())</code> would let a client set any column it names, including ones it must never touch. <code>$fillable</code> lists the attributes that may be set from an array; everything else is ignored, or, with <code>preventSilentlyDiscardingAttributes</code>, refused loudly:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Mass assignment: only the fillable attributes</span>
+<span class="c">$ </span><span class="k">php artisan shop:mass 2&gt;&amp;1 | grep -E &#x27;^\{|MassAssignmentException|fillable property&#x27; | head -3</span>
+{&quot;name&quot;:&quot;Test&quot;,&quot;price&quot;:100,&quot;stock&quot;:1}
+   Illuminate\Database\Eloquent\MassAssignmentException 
+  Add fillable property [id] to allow mass assignment on [App\Models\Product].</pre></div>
+
+<p>The first line shows the fillable attributes being set. The second call tried to set <code>id</code>, and in development Laravel refused instead of silently dropping it, so a typo or a forgotten field in <code>$fillable</code> is noticed at once. Combine it with Chapter 3’s rule: pass <code>$request-&gt;validated()</code>, never <code>$request-&gt;all()</code>.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: Model::shouldBeStrict()</p><p>One call, <code>Model::shouldBeStrict(! app()-&gt;isProduction())</code>, turns on three protections together: no lazy loading, no silently discarded attributes, and an error when you read an attribute that was not selected. Put it in a service provider of every new project.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Relationships used in loops without <code>with</code></td><td>1 + N queries</td><td>Eager loading; <code>preventLazyLoading</code> in development</td></tr>
+<tr><td><code>timestamps()</code> on PostgreSQL</td><td>Times without a time zone</td><td><code>timestampsTz()</code></td></tr>
+<tr><td>Editing a migration that ran</td><td>Databases silently diverge</td><td>A new migration</td></tr>
+<tr><td>A required column added in one step</td><td>Failures while old code runs</td><td>Expand, backfill, contract</td></tr>
+<tr><td><code>$guarded = []</code> or <code>$request-&gt;all()</code></td><td>Clients set any column</td><td><code>$fillable</code> and <code>validated()</code></td></tr>
+<tr><td>Strings for statuses in code</td><td>Typos stored as statuses</td><td>Enum casts</td></tr>
+<tr><td>Totals stored beside their items</td><td>Two truths that disagree</td><td>Computed attributes, or a deliberate cache</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Laravel talks to PostgreSQL through <code>.env</code> settings; <strong>migrations</strong> are ordered, recorded, reversible schema changes. Never edit one that ran.</li>
+<li><strong>Expand and contract</strong> changes a live schema in compatible steps; <code>chunkById</code> backfills safely.</li>
+<li>Models declare <strong>relationships</strong>: <code>belongsTo</code>, <code>hasMany</code>, <code>belongsToMany</code> with <code>withPivot</code>.</li>
+<li><strong>Casts</strong>, <strong>scopes</strong> and computed <strong>attributes</strong> keep domain rules on the model.</li>
+<li><strong><code>DB::listen</code></strong> shows the SQL; count queries before you trust a page.</li>
+<li><strong>N+1</strong>: one query per row. <strong><code>with()</code></strong> loads relationships together; <strong><code>preventLazyLoading</code></strong> makes the mistake an error in development.</li>
+<li><strong><code>$fillable</code></strong> and <code>preventSilentlyDiscardingAttributes</code> stop mass assignment.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>$order-&gt;products</code> is the loaded collection of products (loaded now, lazily, if it was not eager loaded); <code>$order-&gt;products()</code> is the relationship object, a query builder you can add conditions to, such as <code>$order-&gt;products()-&gt;where('price', '&gt;', 10000)-&gt;get()</code>. 2. Without eager loading, 1 + 50 = 51; with <code>with('customer')</code>, 2. 3. <code>timestamps()</code> creates <code>timestamp</code> columns without a time zone, which store a clock reading without saying where; <code>timestampsTz()</code> creates <code>timestamptz</code>, an exact instant.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project continues this chapter’s project on PostgreSQL. Every schema change is a migration with a working <code>down</code>, and every page or command is checked for its query count.</p>
+
+<div class="project">
+<p class="project-label">Project 6.1 · Easy</p>
+<h3>Reviews</h3>
+<p class="project-goal">Add product reviews with relationships, counts and averages, in a fixed number of queries.</p>
+<p class="project-skills"><strong>You will practise:</strong> migrations, <code>hasMany</code> and <code>belongsTo</code>, <code>withCount</code> and <code>withAvg</code>, and unique rules.</p>
+<ol class="steps">
+<li>Create a <code>Review</code> model with a migration: a product, a customer, a rating from 1 to 5, a text, and <code>timestampsTz</code>. A customer may review a product once: add a unique index on the pair.</li>
+<li>Add the relationships on <code>Product</code>, <code>Customer</code> and <code>Review</code>.</li>
+<li>Write a command that lists every product with its number of reviews and average rating, using <code>withCount</code> and <code>withAvg</code>, and check it sends one query.</li>
+<li>Add a <code>Review</code> factory and seed 5,000 reviews to check the command stays at one query.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>withCount</code> and <code>withAvg</code> add subqueries to the main query, so the numbers arrive with the products, without loading a single review.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 6.2 · Medium</p>
+<h3>A query budget in tests</h3>
+<p class="project-goal">Make the test suite fail when a page or an API endpoint sends more queries than its budget.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>DB::listen</code> in tests, custom assertions, and keeping performance from regressing.</p>
+<ol class="steps">
+<li>Write a helper <code>assertQueryCount(int $max, callable $work)</code> in your base test case, using <code>DB::enableQueryLog()</code> and <code>DB::getQueryLog()</code>.</li>
+<li>Add the Chapter 4 API to this project, and test that listing orders sends at most 3 queries with 10 orders and with 100.</li>
+<li>Remove a <code>with()</code> on purpose and check the test fails and names the queries.</li>
+<li>Turn on <code>Model::shouldBeStrict()</code> in tests, and explain what it catches that the budget does not.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> testing with both 10 and 100 rows is what reveals N+1: a correct page sends the same number of queries for both.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 6.3 · Challenge</p>
+<h3>A rename without downtime</h3>
+<p class="project-goal">Rename <code>customers.name</code> to <code>full_name</code> while a script reads and writes customers in a loop, without a single error.</p>
+<p class="project-skills"><strong>You will practise:</strong> expand and contract, accessors for dual reading, backfilling in chunks, and verifying compatibility.</p>
+<ol class="steps">
+<li>Write a command that creates and reads customers in an endless loop and reports any exception.</li>
+<li>Expand: add <code>full_name</code>. Change the model so it writes both columns (a model event in <code>booted()</code>) and still reads <code>name</code>.</li>
+<li>Backfill <code>full_name</code> with <code>chunkById</code> in a separate command.</li>
+<li>Switch reading to <code>full_name</code>; then contract: make it required and drop <code>name</code>.</li>
+<li>Keep the loop running through every step, and check it never reported an error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> at each step, ask: “if the previous version of the code were still running, would it work?” A step that fails that question needs to be split.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a migration that adds an optional <code>city</code> column to <code>customers</code>, with its <code>down</code>. Run it, roll it back, and run it again.</li>
+<li><span class="level">Easy</span> Count the shipped orders with the <code>shipped</code> scope, and explain what SQL it sends.</li>
+<li><span class="level medium">Medium</span> Plan the steps to rename <code>products.name</code> to <code>title</code> without downtime, and say which code versions can run during each step.</li>
+<li><span class="level medium">Medium</span> List every product with the total quantity sold, in one query, including products never sold (with 0).</li>
+<li><span class="level hard">Challenge</span> Write a CI step that proves all migrations work in both directions on an empty database.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 7</p>
+<p>Two customers order the last robot kit at the same moment. Next we see what really happens inside the database when requests run at the same time, and use transactions, isolation levels and locks to keep the data correct.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b3/transactions/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Transactions, Locks and Consistency</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>group changes into transactions that happen completely or not at all</li>
+<li>see a race condition sell one item ten times, and fix it three different ways</li>
+<li>choose an isolation level, knowing what each lets a transaction see</li>
+<li>recognise deadlocks, and prevent them with a consistent lock order</li>
+<li>retry the transactions the database refuses, safely</li>
+<li>keep side effects such as emails and messages out of transactions that might roll back</li>
+</ul>
+</div>
+
+<p class="lead">Everything in Part 1 quietly assumed one request at a time. A real shop serves many customers at once, and the database runs their requests side by side. Most of the time they touch different rows and nothing interesting happens. Then two customers buy the last robot kit at the same moment, and the shop sells it twice. These bugs never show in development, where you are the only user; they appear under load, rarely, and they cost money. This chapter makes them happen on purpose, so you can see them, and then makes them impossible.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>A bug report said: “we sold 103 tickets for a room of 100”. I could not reproduce it. Every test passed, every read of the code looked right. It only happened when three people pressed “buy” in the same tenth of a second. It took me a week to understand that my code was correct for one user and wrong for two.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>Transactions: all or nothing</span></h2>
+
+<p>A <dfn>transaction</dfn> groups statements so that they act as one. It has four guarantees, known as <dfn>ACID</dfn>:</p>
+<ul>
+<li><strong>Atomicity:</strong> either every change is kept, or none is.</li>
+<li><strong>Consistency:</strong> every rule of the schema holds at the end.</li>
+<li><strong>Isolation:</strong> transactions running at the same time do not see each other’s unfinished work (exactly how much they see is the isolation level, 7.3).</li>
+<li><strong>Durability:</strong> once committed, a change survives a crash.</li>
+</ul>
+
+<p>This chapter uses two small tables:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> products (
+  id    bigint <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  name  text <span class="k">NOT</span> <span class="k">NULL</span>,
+  price integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (price &gt; <span class="n">0</span>),
+  stock integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (stock &gt;= <span class="n">0</span>)
+);
+<span class="k">CREATE</span> <span class="k">TABLE</span> orders (
+  id         bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  product_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> products (id),
+  buyer      integer <span class="k">NOT</span> <span class="k">NULL</span>
+);
+<span class="k">INSERT</span> <span class="k">INTO</span> products <span class="k">VALUES</span> (<span class="n">1</span>, <span class="s">&#x27;Robot kit&#x27;</span>, <span class="n">45000</span>, <span class="n">1</span>), (<span class="n">2</span>, <span class="s">&#x27;Spare wheels&#x27;</span>, <span class="n">6000</span>, <span class="n">10</span>);</pre></div>
+
+<p><code>BEGIN</code> starts a transaction, <code>COMMIT</code> keeps its changes, <code>ROLLBACK</code> throws them away. Inside the transaction, the change is visible; after the rollback, it never happened:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A transaction: all or nothing</span>
+<span class="c">$ </span><span class="k">psql shop -a -f basics.sql 2&gt;&amp;1</span>
+BEGIN;
+BEGIN
+UPDATE products SET stock = stock + 5 WHERE id = 2;
+UPDATE 1
+SELECT name, stock FROM products WHERE id = 2;
+     name     | stock 
+--------------+-------
+ Spare wheels |    15
+(1 row)
+
+ROLLBACK;
+ROLLBACK
+SELECT name, stock FROM products WHERE id = 2;
+     name     | stock 
+--------------+-------
+ Spare wheels |    10
+(1 row)</pre></div>
+
+<p>When one step fails, the transaction is <em>aborted</em>: PostgreSQL ignores every later statement, and even <code>COMMIT</code> turns into a <code>ROLLBACK</code>. The first update, which succeeded, is undone with the rest:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># One step fails, so nothing happens</span>
+<span class="c">$ </span><span class="k">psql shop -a -f atomic.sql 2&gt;&amp;1</span>
+BEGIN;
+BEGIN
+UPDATE products SET stock = stock - 1 WHERE id = 2;
+UPDATE 1
+UPDATE products SET stock = stock - 100 WHERE id = 1;
+psql:atomic.sql:3: ERROR:  new row for relation &quot;products&quot; violates check constraint &quot;products_stock_check&quot;
+DETAIL:  Failing row contains (1, Robot kit, 45000, -99).
+SELECT name, stock FROM products;
+psql:atomic.sql:4: ERROR:  current transaction is aborted, commands ignored until end of transaction block
+COMMIT;
+ROLLBACK
+SELECT name, stock FROM products;
+     name     | stock 
+--------------+-------
+ Robot kit    |     1
+ Spare wheels |    10
+(2 rows)</pre></div>
+
+<p>That is exactly what an order with several items needs: if the third item is out of stock, the stock of the first two must not be taken. Every statement you run outside <code>BEGIN</code> is a transaction of its own, committed at once.</p>
+
+<h2><span class="sec">7.2</span> <span>A race: one kit, ten buyers</span></h2>
+
+<p>Here is the obvious way to sell a product: read the stock, check it in code, write the new stock, record the order. To see what happens under load, the program starts ten buyers at the same moment, each with its own database connection, for a product with one unit left. A short pause between reading and writing stands for what a real application does there, such as calling a payment service:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">php/race.php</div><pre class="code"><span class="k">function</span> buy(PDO $db, <span class="k">string</span> $mode, <span class="k">int</span> $buyer): <span class="k">int</span>
+{
+    $retries = <span class="n">0</span>;
+    <span class="k">while</span> (<span class="k">true</span>) {
+        <span class="k">try</span> {
+            $db-&gt;exec($mode === <span class="s">&#x27;serializable&#x27;</span> ? <span class="s">&#x27;BEGIN ISOLATION LEVEL SERIALIZABLE&#x27;</span> : <span class="s">&#x27;BEGIN&#x27;</span>);
+            <span class="k">if</span> ($mode === <span class="s">&#x27;atomic&#x27;</span>) {
+                <span class="c line-bidi">// one statement: the database checks and changes the stock together</span>
+                $taken = $db-&gt;exec(<span class="s">&#x27;UPDATE products SET stock = stock - 1 WHERE id = 1 AND stock &gt; 0&#x27;</span>);
+                <span class="k">if</span> ($taken === <span class="n">1</span>) {
+                    $db-&gt;prepare(<span class="s">&#x27;INSERT INTO orders (product_id, buyer) VALUES (1, ?)&#x27;</span>)-&gt;execute([$buyer]);
+                }
+            } <span class="k">else</span> {
+                <span class="c line-bidi">// read, decide in code, write: the classic race</span>
+                <span class="c line-bidi">// FOR UPDATE locks the row: other buyers wait here until this transaction ends</span>
+                $lock = $mode === <span class="s">&#x27;lock&#x27;</span> ? <span class="s">&#x27; FOR UPDATE&#x27;</span> : <span class="s">&#x27;&#x27;</span>;
+                $stock = (<span class="k">int</span>) $db-&gt;query(<span class="s">&quot;SELECT stock FROM products WHERE id = 1$lock&quot;</span>)-&gt;fetchColumn();
+                <span class="c line-bidi">// the time a real app spends between reading and writing: a call to a payment service, say</span>
+                $db-&gt;query(<span class="s">&#x27;SELECT pg_sleep(0.1)&#x27;</span>);
+                <span class="k">if</span> ($stock &gt; <span class="n">0</span>) {
+                    $db-&gt;prepare(<span class="s">&#x27;UPDATE products SET stock = ? WHERE id = 1&#x27;</span>)-&gt;execute([$stock - <span class="n">1</span>]);
+                    $db-&gt;prepare(<span class="s">&#x27;INSERT INTO orders (product_id, buyer) VALUES (1, ?)&#x27;</span>)-&gt;execute([$buyer]);
+                }
+            }
+            $db-&gt;exec(<span class="s">&#x27;COMMIT&#x27;</span>);
+            <span class="k">return</span> $retries;
+        } <span class="k">catch</span> (PDOException $e) {
+            $db-&gt;exec(<span class="s">&#x27;ROLLBACK&#x27;</span>);
+            <span class="c line-bidi">// serialization failure: start the whole transaction again</span>
+            <span class="k">if</span> ($e-&gt;getCode() !== <span class="s">&#x27;40001&#x27;</span>) {
+                <span class="k">throw</span> $e;
+            }
+            $retries++;
+        }
+    }
+}</pre></div>
+
+<p>The ten buyers are ten processes made with <code>pcntl_fork</code>, each with its own connection, like ten PHP workers serving ten requests:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">php/race.php</div><pre class="code">$setup = $connect();
+$setup-&gt;exec(<span class="s">&#x27;TRUNCATE orders; UPDATE products SET stock = 1 WHERE id = 1&#x27;</span>);
+$setup = <span class="k">null</span>; <span class="c line-bidi">// closed before forking: a child must never share its parent&#x27;s connection</span>
+
+<span class="c line-bidi">// Ten processes, each with its own connection, buying at the same moment.</span>
+$children = [];
+<span class="k">foreach</span> (range(<span class="n">1</span>, <span class="n">10</span>) <span class="k">as</span> $buyer) {
+    $pid = pcntl_fork();
+    <span class="k">if</span> ($pid === <span class="n">0</span>) {
+        exit(buy($connect(), $mode, $buyer));
+    }
+    $children[] = $pid;
+}
+$retries = <span class="n">0</span>;
+<span class="k">foreach</span> ($children <span class="k">as</span> $pid) {
+    pcntl_waitpid($pid, $status);
+    $retries += pcntl_wexitstatus($status);
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Ten buyers, one robot kit, four ways to sell it</span>
+<span class="c">$ </span><span class="k">php php/race.php naive</span>
+naive        1 in stock, 10 sold, stock now 0
+<span class="c">$ </span><span class="k">php php/race.php atomic</span>
+atomic       1 in stock, 1 sold, stock now 0
+<span class="c">$ </span><span class="k">php php/race.php lock</span>
+lock         1 in stock, 1 sold, stock now 0
+<span class="c">$ </span><span class="k">php php/race.php serializable</span>
+serializable 1 in stock, 1 sold, stock now 0, 9 retries</pre></div>
+
+<p>The naive version sold one kit <strong>ten times</strong>. Every buyer read “1 in stock” before anyone had written, every buyer decided to sell, and every buyer wrote “0”. The transaction did not help: it makes changes all-or-nothing, but it does not stop two transactions from reading the same value. This is a <dfn>race condition</dfn>, a <dfn>check-then-act</dfn> bug: the check was true when it ran and false by the time the action happened.</p>
+
+<p>The other three versions each sold it once. They are the three standard fixes:</p>
+<ul>
+<li><strong>An atomic update.</strong> <code>UPDATE products SET stock = stock - 1 WHERE id = 1 AND stock &gt; 0</code> checks and changes in one statement. PostgreSQL locks the row while it updates, so the second buyer’s update waits, then re-checks <code>stock &gt; 0</code> against the new value and changes nothing. The number of changed rows tells the code whether it sold. When the rule fits in a <code>WHERE</code>, this is the simplest and fastest fix.</li>
+<li><strong>A row lock.</strong> <code>SELECT … FOR UPDATE</code> reads the row and locks it until the transaction ends. Every other buyer waits at that line, then reads the stock after the first one committed. Use it when the decision needs code between the read and the write (a price calculation, a call to another service), and keep such transactions short, because everyone waits.</li>
+<li><strong>Serializable isolation.</strong> The code stays naive, and the database guarantees that the result equals running the transactions one after another. When it detects that this is impossible, it refuses a transaction with error <code>40001</code>, and the code runs it again from the start: here, nine of the ten buyers were refused once and found the stock empty on their retry.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: the check in code is never enough</p><p>Any rule of the form “only if …” (enough stock, a seat still free, a balance high enough, a username not taken) is a race when it is checked in code and then written. Put the rule where the database can enforce it at the moment of the write: in a conditional update, a unique constraint, a <code>CHECK</code>, or a lock. Chapter 5’s <code>CHECK (stock &gt;= 0)</code> would also have stopped the oversale, with an error instead of a quiet second order.</p></aside>
+
+<h2><span class="sec">7.3</span> <span>Isolation levels</span></h2>
+
+<p>The <dfn>isolation level</dfn> decides what a transaction sees of other transactions that commit while it is running. Two connections show the difference: A reads a price, B changes it and commits, A reads again and then tries to change it:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">php/isolation.php</div><pre class="code"><span class="c line-bidi">// A reads, B changes and commits, A reads again, then A tries to change it</span>
+$a-&gt;exec(<span class="s">&quot;BEGIN ISOLATION LEVEL $level&quot;</span>);
+<span class="k">echo</span> <span class="s">&#x27;A reads the price: &#x27;</span>, $price(), <span class="s">&quot;\n&quot;</span>;
+$b-&gt;exec(<span class="s">&#x27;UPDATE products SET price = 50000 WHERE id = 1&#x27;</span>);
+<span class="k">echo</span> <span class="s">&quot;B sets the price to 50000 and commits\n&quot;</span>;
+<span class="k">echo</span> <span class="s">&#x27;A reads it again: &#x27;</span>, $price(), <span class="s">&quot;\n&quot;</span>;
+<span class="k">try</span> {
+    $a-&gt;exec(<span class="s">&#x27;UPDATE products SET price = price + 1000 WHERE id = 1&#x27;</span>);
+    $a-&gt;exec(<span class="s">&#x27;COMMIT&#x27;</span>);
+    <span class="k">echo</span> <span class="s">&#x27;A adds 1000 to the price: &#x27;</span>, $price(), <span class="s">&quot;\n&quot;</span>;
+} <span class="k">catch</span> (PDOException $e) {
+    $a-&gt;exec(<span class="s">&#x27;ROLLBACK&#x27;</span>);
+    <span class="k">echo</span> <span class="s">&#x27;A adds 1000 to the price: ERROR &#x27;</span>, preg_replace(<span class="s">&#x27;/^ERROR:\s+/&#x27;</span>, <span class="s">&#x27;&#x27;</span>, $e-&gt;errorInfo[<span class="n">2</span>]), <span class="s">&quot;\n&quot;</span>;
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># READ COMMITTED (PostgreSQL&#x27;s default)</span>
+<span class="c">$ </span><span class="k">php php/isolation.php</span>
+A reads the price: 45000
+B sets the price to 50000 and commits
+A reads it again: 50000
+A adds 1000 to the price: 51000
+<span class="c line-bidi"># REPEATABLE READ</span>
+<span class="c">$ </span><span class="k">php php/isolation.php &#x27;REPEATABLE READ&#x27;</span>
+A reads the price: 45000
+B sets the price to 50000 and commits
+A reads it again: 45000
+A adds 1000 to the price: ERROR could not serialize access due to concurrent update</pre></div>
+
+<ul>
+<li><strong><code>READ COMMITTED</code></strong>, PostgreSQL’s default: every statement sees everything committed before it started. A’s second read saw B’s new price, so two reads in one transaction disagreed, and A’s update built on B’s value.</li>
+<li><strong><code>REPEATABLE READ</code></strong>: the transaction sees a snapshot taken at its first statement. A’s second read still saw 45000, so its reads are consistent with each other. And when A tried to update a row that B had changed since that snapshot, PostgreSQL refused: A was working from an old picture. The application must retry.</li>
+<li><strong><code>SERIALIZABLE</code></strong> adds detection of every pattern that could not happen if the transactions ran one after another, as in the race above. It is the safest level and needs retries the most.</li>
+</ul>
+
+<p>A practical rule: keep the default, use atomic statements and constraints for the rules they can express, take row locks when code must decide between a read and a write, and use <code>SERIALIZABLE</code> (with retries) for complicated multi-row rules where it is hard to see every race. Reports that read many tables at once benefit from <code>REPEATABLE READ</code>, so their numbers come from one moment.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why didn’t wrapping the naive version in a transaction stop the oversale?</li><li>What does <code>FOR UPDATE</code> do to other transactions that read the same row?</li><li>A transaction fails with error <code>40001</code>. What should the application do?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>Deadlocks</span></h2>
+
+<p>Locks have their own trap. Transaction A locks product 1 and then wants product 2; transaction B has locked product 2 and wants product 1. Each waits for the other, forever:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">php/deadlock.php</div><pre class="code"><span class="c line-bidi">// A locks product 1 then 2; B locks 2 then 1</span>
+<span class="k">function</span> run(<span class="k">string</span> $name, <span class="k">int</span> $first, <span class="k">int</span> $second): <span class="k">void</span>
+{
+    $db = <span class="k">new</span> PDO(<span class="s">&#x27;pgsql:host=localhost;dbname=shop&#x27;</span>, <span class="s">&#x27;bit&#x27;</span>, <span class="s">&#x27;secret&#x27;</span>,
+        [PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION]);
+    $take = $db-&gt;prepare(<span class="s">&#x27;UPDATE products SET stock = stock + 1 WHERE id = ?&#x27;</span>);
+    <span class="k">try</span> {
+        $db-&gt;exec(<span class="s">&#x27;BEGIN&#x27;</span>);
+        $take-&gt;execute([$first]);
+        usleep(200_000);
+        $take-&gt;execute([$second]);
+        $db-&gt;exec(<span class="s">&#x27;COMMIT&#x27;</span>);
+        <span class="k">echo</span> <span class="s">&quot;$name: done\n&quot;</span>;
+    } <span class="k">catch</span> (PDOException $e) {
+        $db-&gt;exec(<span class="s">&#x27;ROLLBACK&#x27;</span>);
+        $message = preg_replace(<span class="s">&#x27;/^ERROR:\s+/&#x27;</span>, <span class="s">&#x27;&#x27;</span>, strtok($e-&gt;errorInfo[<span class="n">2</span>], <span class="s">&quot;\n&quot;</span>));
+        <span class="k">echo</span> <span class="s">&quot;$name: failed, {$e-&gt;getCode()}, $message\n&quot;</span>; <span class="c line-bidi">// one echo: two processes print at once</span>
+    }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Two transactions, the same two rows, in opposite orders</span>
+<span class="c">$ </span><span class="k">php php/deadlock.php</span>
+B: failed, 40P01, deadlock detected
+A: done</pre></div>
+
+<p>PostgreSQL checks for such cycles after a second of waiting (<code>deadlock_timeout</code>), picks one transaction, and aborts it with error <code>40P01</code>, so the other can finish. Which one loses depends on timing. Two habits keep deadlocks rare: <strong>lock rows in a consistent order</strong> (for an order with several products, lock or update them sorted by id), and <strong>keep transactions short</strong>, with no network calls or user waits inside them. Like serialization failures, a deadlock victim can simply be retried.</p>
+
+<h2><span class="sec">7.5</span> <span>Transactions in the framework</span></h2>
+
+
+<p>Laravel wraps a transaction in a closure: <code>DB::transaction(function () { … })</code> commits when the closure returns and rolls back when it throws. Its second argument is a number of attempts: <code>DB::transaction($work, attempts: 5)</code> runs the closure again when the database reports a deadlock or a serialization failure, which is the retry loop of the race program, built in. Row locks are query builder methods: <code>Product::whereKey($id)-&gt;lockForUpdate()-&gt;first()</code>, or <code>sharedLock()</code> to stop others from changing the row while still letting them read it. Chapter 4’s order controller used the atomic update inside <code>DB::transaction</code>.</p>
+
+<h2><span class="sec">7.6</span> <span>Side effects and the outbox</span></h2>
+
+<p>A transaction can be rolled back; an email cannot be unsent. If the code sends “your order is confirmed” inside the transaction and the commit then fails (a deadlock, a constraint, a crash), the customer has an email for an order that does not exist. Sending after the commit has the opposite problem: if the process crashes between the commit and the send, the order exists and the email never goes.</p>
+
+<p>The reliable pattern is the <dfn>outbox</dfn>: inside the same transaction as the order, insert a row into an <code>outbox</code> table describing the message to send. The order and its message commit together or not at all. A separate worker reads the outbox, sends each message, and marks it sent; if it crashes, it sends again later, so the receiver must tolerate duplicates (idempotency again). Chapter 11 builds the worker with a queue, and Laravel’s <code>afterCommit</code> option for jobs covers the simpler half of the problem.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: test races on purpose</p><p>A race does not appear in a test that runs one request at a time. For every “only if” rule (stock, seats, balances, unique names), write one test that starts many requests at the same moment, as this chapter’s race program does, and asserts on the final state: one sale, one booking, a balance never below zero. Such a test fails reliably on the naive code, which is the proof that it tests the right thing.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Check in code, then write</td><td>Two requests both pass the check</td><td>Atomic conditional update, constraint, or row lock</td></tr>
+<tr><td>Believing a transaction prevents races</td><td>Oversales inside perfectly good transactions</td><td>Locks, constraints or <code>SERIALIZABLE</code></td></tr>
+<tr><td>No retry on <code>40001</code> and <code>40P01</code></td><td>Errors for users at busy moments</td><td>Retry the whole transaction a few times</td></tr>
+<tr><td>Locking rows in random order</td><td>Deadlocks</td><td>Always the same order, such as by id</td></tr>
+<tr><td>Network calls inside a transaction</td><td>Long locks, everyone waits</td><td>Short transactions; call before or after</td></tr>
+<tr><td>Emails sent inside a transaction</td><td>Messages about changes that rolled back</td><td>An outbox committed with the change</td></tr>
+<tr><td>Testing concurrency one request at a time</td><td>Races found by customers</td><td>Tests that start many requests together</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>transaction</strong> makes several statements <strong>atomic</strong>: one failure, and <code>COMMIT</code> becomes <code>ROLLBACK</code>.</li>
+<li>Transactions do not stop <strong>races</strong>: “read, check in code, write” sells one item many times under load.</li>
+<li>Three fixes: an <strong>atomic conditional update</strong>, a <strong>row lock</strong> with <code>FOR UPDATE</code>, or <strong><code>SERIALIZABLE</code></strong> with retries.</li>
+<li><strong><code>READ COMMITTED</code></strong> sees each statement’s latest commits; <strong><code>REPEATABLE READ</code></strong> sees one snapshot and refuses updates to rows changed since.</li>
+<li><strong>Deadlocks</strong> are cycles of locks; PostgreSQL breaks them with <code>40P01</code>. Lock in a consistent order, keep transactions short, retry.</li>
+<li>Side effects belong after the commit, reliably through an <strong>outbox</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A transaction makes its own changes all-or-nothing, but under the default isolation level it does not stop other transactions from reading the same row at the same time, so all ten read “1” before any of them wrote. 2. Other <code>SELECT … FOR UPDATE</code> statements, and updates, on that row wait until the locking transaction commits or rolls back; plain <code>SELECT</code>s still read the last committed version without waiting. 3. Roll back and run the whole transaction again from the beginning, reading the data afresh, a limited number of times, ideally after a short random pause.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project is about correctness under concurrency. Prove each one with a test or a script that starts many requests at the same moment and checks the final state.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>A safe stock reservation</h3>
+<p class="project-goal">Turn the race program into a reusable function that reserves several products for one order, safely, and prove it under load.</p>
+<p class="project-skills"><strong>You will practise:</strong> atomic updates, transactions with several statements, consistent lock order, and concurrency tests.</p>
+<ol class="steps">
+<li>Write <code>reserve(items)</code>: inside one transaction, take each product’s quantity with an atomic conditional update, and roll back the whole order if any item is short.</li>
+<li>Sort the items by product id before updating, and explain why.</li>
+<li>Start 50 concurrent orders for random baskets on a few products with small stocks, and check afterwards that no stock is negative and that the stock taken equals the quantities in the successful orders.</li>
+<li>Remove the sorting, run it again, and count the deadlocks.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the final check is the real test: the sum of quantities in successful orders, plus the remaining stock, must equal the starting stock, for every product.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>Money between wallets</h3>
+<p class="project-goal">Build customer wallets with transfers that never lose or create money, whatever the concurrency.</p>
+<p class="project-skills"><strong>You will practise:</strong> double-entry thinking, row locks in order, <code>CHECK</code> constraints, and invariants.</p>
+<ol class="steps">
+<li>Create <code>wallets</code> (customer, balance in piastres, <code>CHECK (balance &gt;= 0)</code>) and <code>transfers</code> (from, to, amount, time).</li>
+<li>Write <code>transfer(from, to, amount)</code>: lock both wallets with <code>FOR UPDATE</code> in id order, check the balance, move the money, and record the transfer, in one transaction.</li>
+<li>Run 1,000 random transfers concurrently between 20 wallets, and check that the total of all balances never changed.</li>
+<li>Rewrite it with <code>SERIALIZABLE</code> and no explicit locks, with retries, and compare the number of retries and the time taken.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> real systems rarely store a balance alone; they keep a ledger of entries and compute or cache the balance from it. Your <code>transfers</code> table is the start of that ledger.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>An outbox that never loses a message</h3>
+<p class="project-goal">Send an order confirmation exactly when the order is committed, even if processes crash at the worst moments.</p>
+<p class="project-skills"><strong>You will practise:</strong> the outbox pattern, <code>FOR UPDATE SKIP LOCKED</code>, idempotent consumers, and crash testing.</p>
+<ol class="steps">
+<li>Create an <code>outbox</code> table (id, type, payload as JSON, created, sent). Insert a message in the same transaction as each order.</li>
+<li>Write a worker that, in a transaction, takes up to 10 unsent messages with <code>FOR UPDATE SKIP LOCKED</code>, “sends” them (write them to a file), and marks them sent.</li>
+<li>Run three workers at once and check that no message is sent twice by different workers in normal operation.</li>
+<li>Kill a worker in the middle of a batch (after writing to the file, before committing) and show that the message is sent again: make the receiver ignore duplicates by message id.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>SKIP LOCKED</code> lets each worker skip the rows another worker has locked, so several workers share the queue without waiting for each other. It is how PostgreSQL can serve as a simple job queue.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A transaction has updated three rows when the application crashes before <code>COMMIT</code>. What happens to the three changes, and to the locks on those rows?</li>
+<li><span class="level">Easy</span> Choose a fix for each, and say why: counting page views; booking a numbered seat; a username that must be unique.</li>
+<li><span class="level medium">Medium</span> Change the deadlock program so that both transactions update the two products without ever deadlocking, and run it.</li>
+<li><span class="level medium">Medium</span> Why is it wrong to call a payment service inside a transaction that holds a <code>FOR UPDATE</code> lock on the product? Propose a better order of steps for “reserve stock, charge the card, confirm the order”.</li>
+<li><span class="level hard">Challenge</span> Write a helper that runs a transaction function with retries on <code>40001</code> and <code>40P01</code>: at most five attempts, a random pause that grows with each attempt, and the original error if all attempts fail.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>The database is now correct; next we make it fast for the questions asked thousands of times a minute. Redis keeps answers in memory: caching, invalidation, rate limits shared between servers, and locks across processes.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3498,6 +4305,43 @@ array(2) {
 <li><code>SELECT p.name FROM products p LEFT JOIN order_items i ON i.product_id = p.id AND i.order_id &gt; 100000 GROUP BY p.id, p.name HAVING count(i.order_id) = 0;</code> gives Battery pack, Sensor set, Remote control and Gear box. The condition on <code>order_id</code> belongs in the <code>ON</code> clause: in the <code>WHERE</code> clause, it would remove the rows with <code>NULL</code> and turn the left join back into an inner join. <code>WHERE NOT EXISTS (SELECT 1 FROM order_items i WHERE i.product_id = p.id AND i.order_id &gt; 100000)</code> says the same more directly.</li>
 <li>A <dfn>partial index</dfn> contains only the rows that match its <code>WHERE</code>: <code>CREATE INDEX orders_pending_recent_idx ON orders (created_at) WHERE status = 'pending';</code>. Since few orders are pending at any time, the index stays tiny however large <code>orders</code> grows, and <code>EXPLAIN</code> shows <code>Index Scan using orders_pending_recent_idx</code>. The query must include <code>status = 'pending'</code> for PostgreSQL to use it.</li>
 <li>Group by month in a CTE, then use two window functions over the months in order: <code>sum(revenue) OVER (ORDER BY month)</code> for the running total, and <code>revenue - lag(revenue) OVER (ORDER BY month)</code> for the change. <code>lag</code> reads the previous row, so the first month’s change is <code>NULL</code>. The query in the code repository shows the first months of the generated data; the first is small because the data starts on 19 November, part of the way through the month.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 6</h2>
+<ol class="exercises">
+<li><code>php artisan make:migration add_city_to_customers</code>, then <code>up</code>: <code>Schema::table('customers', fn (Blueprint $table) =&gt; $table-&gt;string('city')-&gt;nullable());</code> and <code>down</code>: <code>Schema::table('customers', fn (Blueprint $table) =&gt; $table-&gt;dropColumn('city'));</code>. Run <code>php artisan migrate</code>, <code>php artisan migrate:rollback --step=1</code> and <code>php artisan migrate</code> again.</li>
+<li><code>Order::shipped()-&gt;count()</code> sends one query, <code>select count(*) as aggregate from "orders" where "status" = ?</code>, with <code>'shipped'</code> as the parameter: the scope adds its condition, the cast turns the enum into its value, and <code>count()</code> counts in the database instead of loading the rows. The run in the code repository prints <code>shipped: 200</code>.</li>
+<li>(1) Expand: add <code>title</code>, nullable; the running code is unaffected. (2) Deploy code that writes both <code>name</code> and <code>title</code> and still reads <code>name</code>. (3) Backfill <code>title</code> with <code>chunkById</code>. (4) Deploy code that reads <code>title</code>, still writing both in case of a rollback. (5) Deploy code that no longer writes <code>name</code>. (6) Contract: make <code>title</code> required, drop <code>name</code>. At every step, the versions running side by side agree on the schema.</li>
+<li><code>Product::withSum('orders as units', 'order_items.quantity')-&gt;get()</code> adds a subquery that sums the pivot’s quantities for each product, in the same query. A product that never sold gets <code>null</code>, not 0, because <code>sum</code> of no rows is <code>NULL</code> in SQL; print it with <code>$product-&gt;units ?? 0</code>, as the run in the code repository does (the USB cable shows 0).</li>
+<li>In the CI job, start PostgreSQL as a service, then run <code>php artisan migrate --force</code>, <code>php artisan migrate:reset --force</code> (which rolls back every migration) and <code>php artisan migrate --force</code> again; any failure fails the job. <code>migrate:fresh</code> would not test the <code>down</code> methods, because it drops every table instead of rolling back.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 7</h2>
+<ol class="exercises">
+<li>Nothing of the three changes is kept. The connection drops, PostgreSQL sees the session end without a <code>COMMIT</code>, and rolls the transaction back; its row locks are released at the same moment, so the transactions waiting for those rows continue. A crash of the database server itself has the same result: on restart, an uncommitted transaction never happened.</li>
+<li>Page views: an atomic update, <code>UPDATE pages SET views = views + 1 WHERE id = $1</code>, with no read in code; nothing to check, so nothing can race. A numbered seat: an atomic conditional update (<code>UPDATE seats SET booked_by = $1 WHERE id = $2 AND booked_by IS NULL</code>, and look at the number of changed rows) or a unique constraint on the seat in a bookings table. A unique username: a unique constraint (or unique index), and turn its error into a 409; checking first in code is only for a friendly message, never the guarantee.</li>
+<li>Make both transactions take the rows in the same order, lowest id first: B runs <code>run("B", 1, 2)</code> like A. Then B waits at product 1 until A commits, and continues; no cycle is possible. The programs take an <code>ordered</code> argument for this, and the run in the code repository prints “A: done” and “B: done” in both editions. With several products, sort them by id before locking or updating.</li>
+<li>The lock is held for the whole duration of the network call, which can take seconds or time out, and every other buyer of that product waits in the meantime; a slow payment service becomes a slow shop. Worse, if the charge succeeds and the commit then fails, money is taken for an order that does not exist. A better order: (1) a short transaction that reserves the stock with an atomic update and creates the order as “pending”; (2) the charge, outside any transaction, with an idempotency key made from the order id; (3) a short transaction that marks the order “paid”, or releases the stock if the charge failed. A worker cancels pending orders that stay pending too long.</li>
+<li>
+
+<pre><code>function retrying(Closure $work, int $attempts = 5): mixed
+{
+    for ($attempt = 1; ; $attempt++) {
+        try {
+            return DB::transaction($work);
+        } catch (QueryException $e) {
+            $code = $e-&gt;getCode();
+            if ($attempt === $attempts || ! in_array($code, ['40001', '40P01'], true)) {
+                throw $e;
+            }
+            usleep(random_int(0, 20_000 * 2 ** $attempt)); // grows with each attempt
+        }
+    }
+}</code></pre>
+<p>In a real Laravel project <code>DB::transaction($work, attempts: 5)</code> already retries deadlocks and serialization failures; this helper adds the growing random pause.</p>
+The pause is random so that two transactions that collided do not retry at the same instant and collide again; it grows so that a busy moment gets time to pass. Only the whole transaction is retried, never a single statement, because everything it read may have changed.</li>
 </ol>
 
 </section>
