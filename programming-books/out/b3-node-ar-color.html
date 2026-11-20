@@ -19,26 +19,30 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "الفصل 6: المعاملات والأقفال والاتساق"; } }
 @page ch06:first { @top-center { content: none; } }
-@page ch07 { @top-center { content: "الفصل 7: التخزين المؤقت بـ Redis"; } }
+@page ch07 { @top-center { content: "الفصل 7: Redis: التخزين المؤقت وحدود المعدل والأقفال"; } }
 @page ch07:first { @top-center { content: none; } }
-@page ch08 { @top-center { content: "الفصل 8: التحقق من الهوية والصلاحيات"; } }
+@page ch08 { @top-center { content: "الفصل 8: المصادقة والتفويض"; } }
 @page ch08:first { @top-center { content: none; } }
-@page ch09 { @top-center { content: "الفصل 9: الأمان: أخطر عشر ثغرات (OWASP)"; } }
+@page ch09 { @top-center { content: "الفصل 9: الأمان: الهجمات والدفاعات"; } }
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: المهام الخلفية والطوابير"; } }
 @page ch10:first { @top-center { content: none; } }
-@page ch11 { @top-center { content: "الفصل 11: الزمن الحقيقي بـ WebSockets"; } }
+@page ch11 { @top-center { content: "الفصل 11: الميزات الفورية"; } }
 @page ch11:first { @top-center { content: none; } }
-@page ch12 { @top-center { content: "الفصل 12: اختبار الخادم"; } }
+@page ch12 { @top-center { content: "الفصل 12: الاختبار"; } }
 @page ch12:first { @top-center { content: none; } }
-@page ch13 { @top-center { content: "الفصل 13: السجلات والمقاييس والتتبع"; } }
+@page ch13 { @top-center { content: "الفصل 13: قابلية الملاحظة: السجلات والمقاييس والتتبعات"; } }
 @page ch13:first { @top-center { content: none; } }
-@page ch14 { @top-center { content: "الفصل 14: الأداء والتوسع"; } }
+@page ch14 { @top-center { content: "الفصل 14: الأداء"; } }
 @page ch14:first { @top-center { content: none; } }
-@page ch15 { @top-center { content: "الفصل 15: المعمارية: الكتلة الواحدة والوحدات والخدمات"; } }
+@page ch15 { @top-center { content: "الفصل 15: البنية: إبقاء الكود سهل التغيير"; } }
 @page ch15:first { @top-center { content: none; } }
-@page ch16 { @top-center { content: "الفصل 16: Docker والنشر"; } }
+@page ch16 { @top-center { content: "الفصل 16: Docker: شحن الشيء نفسه إلى كل مكان"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "الفصل 17: المشروع الختامي: واجهة برمجية للإنتاج"; } }
+@page ch17:first { @top-center { content: none; } }
+@page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
+@page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -120,16 +124,14 @@ if (isMember && day === "Tuesday") {
   <p class="cv-series">من الصفر إلى الاحتراف · الكتاب الثالث</p>
   <h1 class="cv-title">هندسة الخوادم باحتراف</h1>
   <p class="cv-sub">الواجهات البرمجية وقواعد البيانات والأمان والتوسع بـ Node.js وPostgreSQL</p><p class="cv-edition">إصدار Node.js</p>
-  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
-<span class="k">let</span> price;
-
-<span class="k">if</span> (age &lt; <span class="n">13</span>) {
-  price = <span class="n">6</span>;
-} <span class="k">else</span> {
-  price = <span class="n">10</span>;
-}
-
-console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>Node.js</span><span>TypeScript</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="s"></span>app.post(<span class="s">&quot;/orders&quot;</span>, (req) =&gt;
+  db.transaction().execute(
+    <span class="k">async</span> (trx) =&gt; {
+      <span class="k">await</span> takeStock(trx, req);
+      <span class="k">return</span> placeOrder(trx, req);
+    },
+  ),
+);</pre></div><div class="cv-tracks"><span>Node.js</span><span>TypeScript</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
 <rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
@@ -171,7 +173,80 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: الأساسيات</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل الخوادم: HTTP بعمق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Node.js وTypeScript على الخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">تصميم واجهات REST</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: البيانات</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">SQL وPostgreSQL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">نمذجة البيانات والترحيلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">المعاملات والأقفال والاتساق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">التخزين المؤقت بـ Redis</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التحقق من الهوية والصلاحيات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأمان: أخطر عشر ثغرات (OWASP)</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">المهام الخلفية والطوابير</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الزمن الحقيقي بـ WebSockets</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">اختبار الخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">السجلات والمقاييس والتتبع</span><span class="toc-p"></span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأداء والتوسع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">المعمارية: الكتلة الواحدة والوحدات والخدمات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Docker والنشر</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: واجهة برمجية للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: الأساسيات</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل الخوادم: HTTP بعمق</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Node.js وTypeScript على الخادم</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">تصميم واجهات REST</span><span class="toc-p">62</span></li><li class="toc-part">الجزء 2: البيانات</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">SQL وPostgreSQL</span><span class="toc-p">89</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">نمذجة البيانات والترحيلات</span><span class="toc-p">111</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">المعاملات والأقفال والاتساق</span><span class="toc-p">131</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Redis: التخزين المؤقت وحدود المعدل والأقفال</span><span class="toc-p">145</span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">المصادقة والتفويض</span><span class="toc-p">159</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأمان: الهجمات والدفاعات</span><span class="toc-p">183</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">المهام الخلفية والطوابير</span><span class="toc-p">201</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الميزات الفورية</span><span class="toc-p">215</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الاختبار</span><span class="toc-p">228</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قابلية الملاحظة: السجلات والمقاييس والتتبعات</span><span class="toc-p">244</span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأداء</span><span class="toc-p">259</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">البنية: إبقاء الكود سهل التغيير</span><span class="toc-p">271</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Docker: شحن الشيء نفسه إلى كل مكان</span><span class="toc-p">289</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: واجهة برمجية للإنتاج</span><span class="toc-p">300</span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">328</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b3/preface/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">هذا الكتاب لمطوّرين يستطيعون بناء واجهة برمجية صغيرة، ويريدون بناء الخدمات كما يبنيها مهندسو الخوادم الخبراء: صحيحة تحت التزامن، وآمنة من المهاجمين، ومرئية في الإنتاج، وسريعة حيث يهم ذلك، وسهلة التغيير على الفريق. إن أنهيت <em>البرمجة من الصفر</em>، الكتاب الأول في هذه السلسلة، فأنت مستعد. وإن تعلّمت في مكان آخر، فأنت تحتاج أن ترتاح في لغة برمجة واحدة، وسطر الأوامر، وJSON، وGit؛ ويشرح الكتاب HTTP وSQL وكل ما بعدهما من البداية.</p>
+
+<h2 class="plain-h">إصداران لكتاب واحد</h2>
+<p>للكتاب إصداران، واحد لـ <strong>Node.js مع TypeScript</strong> وواحد لـ <strong>PHP مع Laravel</strong>، وهما من أوسع طرق بناء خوادم الويب استعمالاً. والفصول التي لا تعتمد على اللغة، مثل HTTP وSQL والمعاملات وRedis والمراقبة والأداء وDocker، واحدة في الإصدارين، وتُعرض أمثلتها باللغتين جنباً إلى جنب حيث يلزم كود. أما الفصول الأخرى فتبني واجهة المتجر البرمجية نفسها بلغة إصدارك، بالجداول نفسها ونقاط النهاية نفسها والاختبارات نفسها.
+أنت تقرأ <strong>إصدار Node.js</strong>.وإن كان فريقك يستعمل الآخر، فالأفكار تنطبق كما هي حرفاً بحرف: لا يتغير إلا الصياغة.</p>
+
+<h2 class="plain-h">كيف نُظّم الكتاب</h2>
+<p>فصول الكتاب السبعة عشر في أربعة أجزاء:</p><ul>
+<li><strong>الأساسيات</strong> يشرح HTTP بعمق، وNode.js وTypeScript للخوادم، وكيف تصمم واجهة REST يعتمد عليها العملاء.</li><li><strong>البيانات</strong> يغطي SQL مع PostgreSQL، والنمذجة والترحيلات مع Kysely، والمعاملات والأقفال، وRedis للتخزين المؤقت والعدّ.</li><li><strong>الإنتاج</strong> هو ما تحتاجه الخدمة قبل أن يصل مستخدمون حقيقيون: المصادقة، والأمان، والمهام في الخلفية، والرسائل الفورية، والاختبار، والمراقبة.</li>
+<li><strong>عمل الخبير</strong> يقيس الأداء ويحسّنه، ويُبقي الكود سهل التغيير، ويشحنه في حاويات، وينتهي بواجهة برمجية كاملة للإنتاج تُبنى من مجلد فارغ.</li>
+</ul>
+<p>اقرأ الجزأين الأولين بالترتيب. وبعدها يمكن قراءة الفصول بالترتيب الذي يحتاجه عملك، مع أن كل فصل يفترض الأجزاء التي قبله، والفصل الأخير يستعملها كلها.</p>
+
+<h2 class="plain-h">كل فصل</h2>
+<p>يتبع كل فصل النمط نفسه، فتعرف دائماً أين أنت: ما ستتعلمه؛ وشرح مبني على أمثلة حقيقية تعمل؛ و«اختبر نفسك» في المنتصف؛ وصناديق فيها عادات المحترفين والفخاخ الشائعة؛ وجدول بالأخطاء الشائعة؛ وملخص؛ و<strong>ثلاثة مشاريع تطبيقية</strong> (سهل ومتوسط وتحدٍّ) بخطوات وتلميحات؛ وتمارين بثلاثة مستويات. وإجابات «اختبر نفسك» بعد كل ملخص، وإجابات التمارين في آخر الكتاب.</p>
+<p>المشاريع أهم من أي شيء آخر في الكتاب. القراءة عن مهارة ليست امتلاكها. أنجز مشروعاً واحداً على الأقل في كل فصل، والأفضل المتوسط، قبل أن تنتقل.</p>
+
+<h2 class="plain-h">كود حقيقي ومخرجات حقيقية</h2>
+<p>كل كود في هذا الكتاب ملف حقيقي، وكل مخرج في الطرفية وكل تشغيل اختبار وكل قياس نتج عن تشغيله، على PostgreSQL حقيقي وRedis حقيقي، أثناء إعداد الكتاب. وحين يعرض الفصل الأخير ست كلمات مرور خاطئة أُجيبت بـ <code>401 401 401 401 429 429</code>، أو طلباً أُرسل مرتين فصنع طلباً واحداً، فذلك ما طبعه الخادم. وسترى النتائج نفسها إن استعملت الإصدارات نفسها:</p>
+<table>
+<thead><tr><th>الأداة</th><th>الإصدار</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>TypeScript</td><td>7.0</td></tr>
+<tr><td>Fastify</td><td>5.12</td></tr>
+<tr><td>Kysely</td><td>0.29</td></tr>
+<tr><td>node-postgres (pg)</td><td>8.23</td></tr>
+<tr><td>zod</td><td>4.6</td></tr>
+<tr><td>BullMQ (مع ioredis 6.0)</td><td>6.7</td></tr>
+<tr><td>node-redis</td><td>6.3</td></tr>
+<tr><td>prom-client</td><td>15.1</td></tr>
+<tr><td>autocannon</td><td>9.0</td></tr><tr><td>PostgreSQL</td><td>18.7</td></tr>
+<tr><td>Redis</td><td>8.10</td></tr>
+<tr><td>Docker (مع Compose 5.6)</td><td>29.9</td></tr>
+</tbody>
+</table>
+<p>تتغير الأدوات بسرعة. فإن طبع إصدار أحدث شيئاً مختلفاً قليلاً، فاقرأ الفرق: غالباً ما يعلّمك ما الذي تغيّر ولماذا.</p>
+<ul>
+<li>اللسان الداكن فوق الكود يذكر اسم الملف ومساره في المشروع.</li>
+<li>الصندوق ذو النقاط الملونة الثلاث يعرض ما ظهر في <strong>الطرفية</strong>. السطر الذي يبدأ بـ <code>$</code> أمر، والأسطر تحته إجابته، والأسطر التي تبدأ بـ <code>#</code> تعليقات تقول لماذا الأمر التالي.</li>
+<li>حين يطول المخرج، يعرض الكتاب الأسطر المهمة. والأزمنة التي تتغير في كل تشغيل تُكتب <code>…</code>.</li>
+</ul>
+
+<h2 class="plain-h">ما تحتاجه</h2>
+<ul>
+<li>حاسوب بنظام Windows أو macOS أو Linux، بذاكرة 8 GB على الأقل.</li>
+<li>Node.js 22 أو أحدث، وGit، و<code>curl</code>، و<code>jq</code>، ومحرر مثل Visual Studio Code.</li><li><strong>Docker</strong>، الذي يشغّل PostgreSQL وRedis لكل فصل دون تثبيتهما، والنظام كله في الفصول الأخيرة.</li>
+<li>كل مكتبة وأداة في الكتاب مجانية ومفتوحة المصدر.</li>
+</ul>
+
+<h2 class="plain-h">مستودع الكود</h2>
+<p>كل مثال وكل مشروع وكل إجابة تمرين موجودة في مستودع كود الكتاب، في مجلد لكل فصل، ومعها السكربتات التي أنتجت كل مخرج. اكتب الأمثلة بنفسك أولاً، ثم استعمل المستودع للمقارنة، أو لتخرج حين تعلق.</p>
+
+<h2 class="plain-h">كلمة من المؤلف</h2>
+<p>معظم ما يخطئ في الخادم يخطئ بهدوء: طلب حُفظ مرتين، وقفل أُمسك أطول مما يجب، ورمز لا تنتهي صلاحيته، وخطأ لم يسجله أحد. لا يظهر شيء من ذلك في عرض تجريبي، ويظهر كله في يوم مزدحم. هذا الكتاب عن بناء خدمات تفي بوعودها حين تتعطل الشبكة ويكبر الحمل ويتغير الكود، وعن العادات التي تجعل ذلك أمراً عادياً لا بطولة. وككل كتب السلسلة، كُتب لكل لغة من لغتيه لا مترجماً كلمة بكلمة. أرجو أن يساعدك على أن تصير المهندس الذي يأتمنه الآخرون على الأنظمة المهمة.</p>
+<p><strong>سليمان ماجد سعيد صلاح</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/ar">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>كيف تعمل الخوادم: HTTP بعمق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -5438,7 +5513,7 @@ data: {&quot;order&quot;:1001,&quot;status&quot;:&quot;shipped&quot;,&quot;by&qu
 
 <p>ظهر تغييرا الحالة في الطرفية الأولى لحظة إجرائهما. وفي المتصفح، الجانب المستقبِل بضعة أسطر، بلا مكتبة:</p>
 
-<pre><code>const events = new EventSource("/orders/1001/events");
+<pre dir="ltr"><code>const events = new EventSource("/orders/1001/events");
 events.addEventListener("status", (e) =&gt; show(JSON.parse(e.data)));</code></pre>
 
 <p>وإن انقطع الاتصال، تعيد <code>EventSource</code> الاتصال وحدها بعد بضع ثوانٍ وترسل آخر <code>id</code> رأته في ترويسة <code>Last-Event-ID</code>، فيستطيع خادم يحتفظ بالأحداث الأخيرة أن يرسل ما فات (التمرين 3).</p>
@@ -7412,6 +7487,685 @@ Volume shop_db-data Removed </pre></div>
 <p>كل شيء في مكانه. والمشروع الختامي يجمع الكتاب كله: API متجر كامل، آمن، ومختبر، وقابل للملاحظة، يُبنى من مجلد فارغ إلى حاوية عاملة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b3/node/capstone/ar">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">الفصل 17</p><h1>المشروع الختامي: واجهة برمجية للإنتاج</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل سوف</p>
+<ul>
+<li>تحوّل وصفاً قصيراً إلى نقاط النهاية والجداول وأهداف الجودة لواجهة برمجية حقيقية</li>
+<li>تبني الحسابات والمنتجات والطلبات في قاعدة كود واحدة، كلٌّ بتقنيات فصله</li>
+<li>تجعل الطلب يحدث مرة واحدة بالضبط، حتى لو أرسله العميل مرتين</li>
+<li>ترسل بريد الطلب من صندوق صادر، لا من داخل المعاملة أبداً</li>
+<li>تثبت ذلك باختبارات على قاعدة بيانات حقيقية، ثم تشغّل النظام كله في حاويات</li>
+<li>تراجع النتيجة على قائمة فحص الإنتاج، وتعرف ما الذي ما زال ناقصاً</li>
+</ul>
+</div>
+
+<p class="lead">حلّ كل فصل من هذا الكتاب مشكلة واحدة على مثال صغير: مسار، ومعاملة، وقفل، ورمز، ومهمة، ومقياس. والخدمة الحقيقية تحتاجها كلها معاً، والصعب ليس أي تقنية وحدها بل كيف تتلاءم. في هذا الفصل الأخير نبني واجهة متجر Bit البرمجية من مجلد فارغ إلى نظام من أربع حاويات: نحو 600 سطر من TypeScript، كل سطر شُغّل، وكل اختبار نجح، وكل إجابة أدناه طبعها الخادم الحقيقي.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل قسم يذكر الفصل الذي جاء منه قراره. وحين يبدو لك شيء جديداً، فتلك إشارتك لتعود إلى ذلك الفصل وتقرأه ثانية: ستفهمه أفضل الآن وأنت ترى موضعه.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>الوصف</span></h2>
+
+<p>يكتب صاحب المتجر: <em>«يجب أن ينشئ الزبائن حساباً، ويتصفحوا المنتجات، ويطلبوا. ولا يجوز أن يُحاسَب طلب مرتين أبداً، ويجب أن يصلهم بريد حين يُسجَّل الطلب. ويجب أن يبقى المتجر يعمل حين نكون مشغولين.»</em> وكما في كل مشروع حقيقي، أول مهمة أن نحوّل ذلك إلى شيء يمكن اختباره:</p>
+
+<table>
+<thead><tr><th>بصفتي زبوناً، أريد أن…</th><th>ينتهي حين…</th></tr></thead>
+<tbody>
+<tr><td>أنشئ حساباً وأسجّل الدخول</td><td>يعيد <code>POST /auth/register</code> و<code>POST /auth/login</code> مستخدماً ورمزاً؛ وقاعدة بيانات مسروقة لا تفتح أي حساب</td></tr>
+<tr><td>أتصفح المنتجات، الأرخص أولاً</td><td>يعيد <code>GET /products</code> صفحات بمؤشر؛ ولا يُتخطى منتج ولا يتكرر، مهما كبر الجدول</td></tr>
+<tr><td>أضع طلباً</td><td>يأخذ <code>POST /orders</code> المخزون ويحفظ الطلب معاً، أو لا يفعل أياً منهما؛ والطلب نفسه مرسلاً مرتين يصنع طلباً واحداً</td></tr>
+<tr><td>يصلني بريد حين أطلب</td><td>بريد واحد بالضبط لكل طلب، حتى لو تعطلت خدمة البريد أو العامل فترة</td></tr>
+</tbody>
+</table>
+
+<p>والصفات التي يجب أن تحققها كل نقطة نهاية أيضاً:</p>
+<ul>
+<li><strong>آمنة:</strong> كلمات المرور ببصمة بطيئة، والرموز مخزنة كبصمات فقط، ومحاولات الدخول محدودة (الفصلان 8 و9).</li>
+<li><strong>متسقة:</strong> المخزون لا ينزل تحت الصفر أبداً، والمال بأعداد صحيحة، ولا طلب محفوظ نصفه (الفصلان 4 و6).</li>
+<li><strong>واضحة:</strong> كل خطأ بصيغة Problem Details نفسها، وكل مدخل مُتحقَّق منه (الفصل 3).</li>
+<li><strong>قابلة للمراقبة:</strong> سجلات منظمة ومقاييس وفحوص صحة من أول يوم (الفصل 13).</li>
+<li><strong>مختبرة وجاهزة للشحن:</strong> اختبارات على قاعدة بيانات حقيقية، وأمر واحد يشغّل كل شيء (الفصلان 12 و16).</li>
+</ul>
+
+<h2><span class="sec">17.2</span> <span>الخطة</span></h2>
+
+<p>المشروع تطبيق Fastify واحد وعامل واحد يتشاركان الكود نفسه وقاعدة البيانات نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المشروع</span>
+<span class="c">$ </span><span class="k">ls src test; ls</span>
+src:
+app.ts
+auth.ts
+config.ts
+db.ts
+metrics.ts
+orders.ts
+password.ts
+problem.ts
+products.ts
+server.ts
+worker.ts
+
+test:
+api.test.ts
+Dockerfile
+compose.yaml
+package.json
+schema.sql
+src
+test
+tsconfig.json</pre></div>
+
+<table>
+<thead><tr><th>الملف</th><th>يحوي</th><th>من الفصل</th></tr></thead>
+<tbody>
+<tr><td><code>schema.sql</code></td><td>ستة جداول وقيودها وفهرس واحد</td><td>4، 5، 14</td></tr>
+<tr><td><code>config.ts</code>، <code>db.ts</code></td><td>إعدادات تُفحص عند البدء؛ وقاعدة البيانات بأنواعها</td><td>2، 5</td></tr>
+<tr><td><code>problem.ts</code></td><td>كل خطأ يمكن أن تعطيه الواجهة</td><td>3</td></tr>
+<tr><td><code>password.ts</code>، <code>auth.ts</code></td><td>البصمات، والرموز، وحد الدخول</td><td>8، 9، 7</td></tr>
+<tr><td><code>products.ts</code>، <code>orders.ts</code></td><td>صفحات المؤشر؛ ومعاملة الطلب</td><td>3، 6</td></tr>
+<tr><td><code>worker.ts</code></td><td>يرسل رسائل البريد في الصندوق الصادر</td><td>10، 6</td></tr>
+<tr><td><code>metrics.ts</code>، <code>app.ts</code>، <code>server.ts</code></td><td>المقاييس، والصحة، ومعالجة الأخطاء؛ وجذر التركيب</td><td>13، 15</td></tr>
+</tbody>
+</table>
+
+<p>كل وحدة مسارات دالة تستقبل اعتمادياتها، <code>{ db, redis }</code>، وتعيد إضافة Fastify. و<code>server.ts</code> وحده ينشئ الاتصالات الحقيقية؛ والاختبارات تنشئ اتصالاتها. ذلك جذر التركيب في الفصل 15، بالحجم الذي يحتاجه هذا المشروع: بلا طبقة حالات استخدام، لأن المسارات هنا قصيرة بما يكفي لتُقرأ كاملة.</p>
+
+<h2><span class="sec">17.3</span> <span>الإعدادات والجداول</span></h2>
+
+<p>الخدمة التي تبدأ بإعداد ناقص وتفشل عند أول طلب خدمة تفشل في الثالثة فجراً. لذلك تُقرأ الإعدادات من البيئة مرة واحدة، وتُفحص بـ zod، ويرفض التطبيق أن يبدأ بدونها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c line-bidi">// كل إعداد من البيئة، ويُفحص مرة عند البدء: الناقص يوقف التطبيق هنا، لا عند أول طلب</span>
+<span class="k">export</span> <span class="k">const</span> config = z
+  .object({
+    DATABASE_URL: z.url(),
+    REDIS_URL: z.url(),
+    PORT: z.coerce.number().int().<span class="k">default</span>(<span class="n">3000</span>),
+    LOG_LEVEL: z.enum([<span class="s">&quot;silent&quot;</span>, <span class="s">&quot;error&quot;</span>, <span class="s">&quot;warn&quot;</span>, <span class="s">&quot;info&quot;</span>, <span class="s">&quot;debug&quot;</span>]).<span class="k">default</span>(<span class="s">&quot;info&quot;</span>),
+  })
+  .parse(process.env);</pre></div>
+
+<p>تحمل الجداول القواعد التي يجب أن تصح مهما فعل الكود: البريد فريد، والمخزون لا ينزل تحت الصفر، والسعر موجب، ولا يستعمل الزبون مفتاح Idempotency نفسه مرتين. والفهرس يخدم صفحات المنتجات مرتبة بالسعر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">INDEX</span> products_price_id <span class="k">ON</span> products (price, id);
+<span class="k">CREATE</span> <span class="k">TABLE</span> orders (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  user_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> users (id),
+  idempotency_key text <span class="k">NOT</span> <span class="k">NULL</span>,
+  request_hash text <span class="k">NOT</span> <span class="k">NULL</span>,
+  total integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="n">0</span>,
+  created_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now(),
+  <span class="k">UNIQUE</span> (user_id, idempotency_key)
+);</pre></div>
+
+<p>يتذكر <code>request_hash</code> ما طُلب مع كل مفتاح، فيمكن رفض مفتاح يعود بجسم مختلف. وجدول <code>outbox</code>، أسفل الملف، يحفظ رسائل يجب أن تُرسل بعد الاعتماد؛ ونعود إليه في القسم 17.7.</p>
+
+<h2><span class="sec">17.4</span> <span>الحسابات والرموز</span></h2>
+
+<p>التسجيل والدخول هما ما في الفصل 8: بصمات scrypt بملح، ورمز عشوائي معتم لا يُخزَّن منه إلا بصمة SHA-256. وكل مسار محمي يشغّل دالة واحدة أولاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/auth.ts</div><pre class="code"><span class="c line-bidi">// من المتصل؟ (Authorization: Bearer &lt;token&gt;)</span>
+<span class="k">export</span> <span class="k">const</span> authenticate = ({ db }: Deps) =&gt;
+  <span class="k">async</span> <span class="k">function</span> (request: FastifyRequest) {
+    <span class="k">const</span> [scheme, token] = (request.headers.authorization ?? <span class="s">&quot;&quot;</span>).split(<span class="s">&quot; &quot;</span>);
+    <span class="k">if</span> (scheme !== <span class="s">&quot;Bearer&quot;</span> || !token) <span class="k">throw</span> problems.unauthenticated();
+    <span class="k">const</span> session = <span class="k">await</span> db
+      .selectFrom(<span class="s">&quot;sessions&quot;</span>)
+      .select(<span class="s">&quot;user_id&quot;</span>)
+      .where(<span class="s">&quot;token_hash&quot;</span>, <span class="s">&quot;=&quot;</span>, digest(token))
+      .where(<span class="s">&quot;expires_at&quot;</span>, <span class="s">&quot;&gt;&quot;</span>, sql&lt;Date&gt;<span class="s">`now()`</span>)
+      .executeTakeFirst();
+    <span class="k">if</span> (!session) <span class="k">throw</span> problems.unauthenticated();
+    request.userId = session.user_id;
+  };</pre></div>
+
+<p>ويضيف مسار الدخول حدّ الفصل 9، بتغيير واحد مهم في الإنتاج: العدّ في Redis، ممرَّراً إلى <code>@fastify/rate-limit</code> في <code>app.ts</code>. ولو كان العدّ في الذاكرة، لسمحت ثلاث نسخ من التطبيق خلف موزّع الحمل بثلاثة أضعاف المحاولات، ولنسيها كلها أي إعادة تشغيل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/auth.ts</div><pre class="code">    app.post(
+      <span class="s">&quot;/auth/login&quot;</span>,
+      {
+        <span class="c line-bidi">// 5 محاولات في الدقيقة لكل عنوان وبريد، تُعدّ في Redis: كل نسخ التطبيق تتشارك العدّ</span>
+        config: {
+          rateLimit: {
+            max: <span class="n">5</span>,
+            timeWindow: <span class="s">&quot;1 minute&quot;</span>,
+            hook: <span class="s">&quot;preHandler&quot;</span>,
+            keyGenerator: (request) =&gt;
+              <span class="s">`login:${request.ip}:${(request.body as { email?: string }).email}`</span>,
+          },</pre></div>
+
+<h2><span class="sec">17.5</span> <span>المنتجات، صفحة صفحة</span></h2>
+
+<p>تستعمل قائمة المنتجات ترقيم المفاتيح من الفصل 3: المؤشر هو سعر آخر صف ورقمه، والصفحة التالية تبدأ بعد هذا الزوج. ومع الفهرس <code>(price, id)</code> يقفز PostgreSQL مباشرة إلى المكان الصحيح، فتكلّف الصفحة 1000 ما تكلّفه الصفحة 1 (الفصل 14). والمؤشر معتم للعملاء، والمؤشر الذي لا يُفك خطأ 422، لا 500:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/products.ts</div><pre class="code">      <span class="k">async</span> (request) =&gt; {
+        <span class="k">const</span> { limit, cursor } = request.query;
+        <span class="k">let</span> query = db
+          .selectFrom(<span class="s">&quot;products&quot;</span>)
+          .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;name&quot;</span>, <span class="s">&quot;price&quot;</span>, <span class="s">&quot;stock&quot;</span>])
+          .orderBy(<span class="s">&quot;price&quot;</span>)
+          .orderBy(<span class="s">&quot;id&quot;</span>)
+          .limit(limit + <span class="n">1</span>);
+        <span class="k">if</span> (cursor) {
+          <span class="c line-bidi">// المؤشر هو سعر آخر صف ورقمه؛ والفهرس (price, id) يجد من أين يبدأ</span>
+          <span class="k">const</span> [price, id] = decode(cursor);
+          query = query.where((eb) =&gt;
+            eb(eb.refTuple(<span class="s">&quot;price&quot;</span>, <span class="s">&quot;id&quot;</span>), <span class="s">&quot;&gt;&quot;</span>, eb.tuple(price, id)),
+          );
+        }
+        <span class="k">const</span> rows = <span class="k">await</span> query.execute();
+        <span class="k">const</span> page = rows.slice(<span class="n">0</span>, limit);
+        <span class="k">const</span> last = page.at(-<span class="n">1</span>);
+        <span class="k">return</span> {
+          data: page,
+          next_cursor:
+            rows.length &gt; limit &amp;&amp; last ? encode(last.price, last.id) : <span class="k">null</span>,
+        };
+      },</pre></div>
+
+<p>ليس <code>id</code> في المؤشر زينة: قد يتشارك منتجان السعر نفسه، وبلا مفتاح ثانٍ فريد قد تتخطى حدودُ صفحةٍ بينهما أحدَهما أو تعرضه مرتين.</p>
+
+<h2><span class="sec">17.6</span> <span>طلبات تحدث مرة واحدة</span></h2>
+
+<p>الطلب قلب المتجر، والمكان الذي يلتقي فيه معظم الكتاب. تفقد الجوالات اتصالها وسط الطلب؛ فيعيد التطبيق المحاولة؛ أو ينقر الزبون مرتين. ولو صنع كل طلب طلباً، لدفع الزبون مرتين. لذلك يرسل العميل ترويسة <dfn>Idempotency-Key</dfn>، قيمة يختارها مرة لكل طلب ويكررها في كل إعادة محاولة. والطلب كله معاملة واحدة (الفصل 6)، وأول جملة فيها تحجز المفتاح:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders.ts</div><pre class="code">        <span class="k">const</span> result = <span class="k">await</span> db.transaction().execute(<span class="k">async</span> (trx) =&gt; {
+          <span class="k">const</span> created = <span class="k">await</span> trx
+            .insertInto(<span class="s">&quot;orders&quot;</span>)
+            .values({ user_id: userId, idempotency_key: key, request_hash: hash })
+            .onConflict((c) =&gt;
+              c.columns([<span class="s">&quot;user_id&quot;</span>, <span class="s">&quot;idempotency_key&quot;</span>]).doNothing(),
+            )
+            .returning(<span class="s">&quot;id&quot;</span>)
+            .executeTakeFirst();
+          <span class="k">if</span> (!created) {
+            <span class="c line-bidi">// المفتاح استُعمل من قبل: أعد ذلك الطلب، إلا إن اختلف الجسم</span>
+            <span class="k">const</span> old = <span class="k">await</span> trx
+              .selectFrom(<span class="s">&quot;orders&quot;</span>)
+              .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;request_hash&quot;</span>])
+              .where(<span class="s">&quot;user_id&quot;</span>, <span class="s">&quot;=&quot;</span>, userId)
+              .where(<span class="s">&quot;idempotency_key&quot;</span>, <span class="s">&quot;=&quot;</span>, key)
+              .executeTakeFirstOrThrow();
+            <span class="k">if</span> (old.request_hash !== hash) <span class="k">throw</span> problems.keyReused();
+            <span class="k">return</span> { id: old.id, replayed: <span class="k">true</span> };
+          }
+
+          <span class="k">let</span> total = <span class="n">0</span>;</pre></div>
+
+<p>القيد الفريد يقوم بالعمل الصعب. فإن وصلت نسختان من الطلب نفسه معاً، انتظر <code>INSERT</code> الثاني المعاملةَ الأولى، ثم وجد المفتاح محجوزاً فأعاد ذلك الطلب. لا قفل في الكود، ولا سباق: قاعدة البيانات تضمن ذلك أصلاً. وإن عاد المفتاح بجسم <em>مختلف</em>، ففي العميل خلل، وقول ذلك خير من التخمين. (و<code>refine</code> على الجسم يرفض المنتج نفسه مرتين في طلب واحد، وهو ما كان المفتاح الأساسي للجدول سيرفضه بأدب أقل، بخطأ 500.)</p>
+
+<p>ثم يأخذ كل بند مخزونه بالتحديث المشروط من الفصل 6. وإن نقص أي بند، أرجع الخطأ المعاملة كلها: صف الطلب، والبنود التي أُخذت، والمفتاح المحجوز، كلها تختفي، فيستطيع العميل إصلاح الطلب وإعادة المحاولة بالمفتاح نفسه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders.ts</div><pre class="code">          <span class="k">let</span> total = <span class="n">0</span>;
+          <span class="k">for</span> (<span class="k">const</span> { product_id, quantity } <span class="k">of</span> request.body.items) {
+            <span class="c line-bidi">// لا يؤخذ المخزون إلا إن كفى، في الجملة نفسها</span>
+            <span class="k">const</span> product = <span class="k">await</span> trx
+              .updateTable(<span class="s">&quot;products&quot;</span>)
+              .set((eb) =&gt; ({ stock: eb(<span class="s">&quot;stock&quot;</span>, <span class="s">&quot;-&quot;</span>, quantity) }))
+              .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, product_id)
+              .where(<span class="s">&quot;stock&quot;</span>, <span class="s">&quot;&gt;=&quot;</span>, quantity)
+              .returning(<span class="s">&quot;price&quot;</span>)
+              .executeTakeFirst();
+            <span class="k">if</span> (!product) {
+              <span class="k">const</span> left = <span class="k">await</span> trx
+                .selectFrom(<span class="s">&quot;products&quot;</span>)
+                .select(<span class="s">&quot;stock&quot;</span>)
+                .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, product_id)
+                .executeTakeFirst();
+              <span class="k">throw</span> left
+                ? problems.outOfStock(product_id, left.stock)
+                : problems.unknownProduct(product_id);
+            }
+            total += product.price * quantity;
+            <span class="k">await</span> trx
+              .insertInto(<span class="s">&quot;order_items&quot;</span>)
+              .values({
+                order_id: created.id,
+                product_id,
+                quantity,
+                price: product.price,
+              })
+              .execute();
+          }
+          <span class="k">await</span> trx
+            .updateTable(<span class="s">&quot;orders&quot;</span>)
+            .set({ total })
+            .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, created.id)
+            .execute();
+          <span class="c line-bidi">// البريد صف في المعاملة نفسها؛ والعامل يرسله بعد الاعتماد</span>
+          <span class="k">await</span> trx
+            .insertInto(<span class="s">&quot;outbox&quot;</span>)
+            .values({
+              topic: <span class="s">&quot;order.placed&quot;</span>,
+              payload: JSON.stringify({ order_id: created.id }),
+            })
+            .execute();
+          <span class="k">return</span> { id: created.id, replayed: <span class="k">false</span> };</pre></div>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>انظر إلى ما لا يفعله الطلب: لا يرسل البريد. ذلك السطر الغائب وحده هو الفرق بين متجر يراسل الزبائن أحياناً عن طلبات غير موجودة، ومتجر لا يفعل ذلك أبداً.</p></div></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يُحجز المفتاح بـ <code>INSERT … ON CONFLICT DO NOTHING</code> بدل أن نفحص أولاً هل هو موجود؟</li><li>طلب من بندين، والثاني نفد مخزونه. ماذا يبقى في قاعدة البيانات بعدها؟</li><li>لماذا يحفظ حدّ الدخول عدّه في Redis لا في الذاكرة؟</li></ol></aside>
+
+<h2><span class="sec">17.7</span> <span>الصندوق الصادر والعامل</span></h2>
+
+<p>إرسال البريد داخل المعاملة خطأ مرتين: فقد تتراجع المعاملة بعد أن خرج البريد، وخدمة بريد بطيئة ستمسك أقفال الطلب. وإرساله بعد الاعتماد أفضل، لكن إن مات البرنامج بين الاعتماد والإرسال ضاع البريد. و<dfn>الصندوق الصادر</dfn> (outbox) يزيل المشكلتين: يكتب الطلب صفاً في جدول <code>outbox</code> <em>في المعاملة نفسها</em>، فتوجد الرسالة إذا وُجد الطلب وفقط إذا وُجد. وعامل منفصل يرسل ما في الصندوق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/worker.ts</div><pre class="code"><span class="c line-bidi">// العامل: أرسل ما في الصندوق الصادر، وعلّمه مُرسلاً، وكرّر</span>
+<span class="k">while</span> (running) {
+  <span class="k">const</span> sent = <span class="k">await</span> db.transaction().execute(<span class="k">async</span> (trx) =&gt; {
+    <span class="k">const</span> rows = <span class="k">await</span> trx
+      .selectFrom(<span class="s">&quot;outbox&quot;</span>)
+      .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;payload&quot;</span>])
+      .where(<span class="s">&quot;sent_at&quot;</span>, <span class="s">&quot;is&quot;</span>, <span class="k">null</span>)
+      .orderBy(<span class="s">&quot;id&quot;</span>)
+      .limit(<span class="n">10</span>)
+      <span class="c line-bidi">// SKIP LOCKED: لا يأخذ عاملان الصف نفسه أبداً</span>
+      .forUpdate()
+      .skipLocked()
+      .execute();
+    <span class="k">for</span> (<span class="k">const</span> row <span class="k">of</span> rows) {
+      <span class="k">const</span> { order_id } = row.payload as { order_id: number };
+      <span class="k">const</span> { email } = <span class="k">await</span> trx
+        .selectFrom(<span class="s">&quot;orders&quot;</span>)
+        .innerJoin(<span class="s">&quot;users&quot;</span>, <span class="s">&quot;users.id&quot;</span>, <span class="s">&quot;orders.user_id&quot;</span>)
+        .select(<span class="s">&quot;users.email&quot;</span>)
+        .where(<span class="s">&quot;orders.id&quot;</span>, <span class="s">&quot;=&quot;</span>, order_id)
+        .executeTakeFirstOrThrow();
+      console.log(JSON.stringify({ msg: <span class="s">&quot;email sent&quot;</span>, to: email, order_id }));
+      <span class="k">await</span> trx
+        .updateTable(<span class="s">&quot;outbox&quot;</span>)
+        .set({ sent_at: sql<span class="s">`now()`</span> })
+        .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, row.id)
+        .execute();
+    }
+    <span class="k">return</span> rows.length;
+  });
+  <span class="k">if</span> (sent === <span class="n">0</span>) <span class="k">await</span> sleep(<span class="n">500</span>);
+}
+<span class="k">await</span> db.destroy();</pre></div>
+
+<p>تسمح <code>FOR UPDATE SKIP LOCKED</code> بتشغيل عدة عمال: كل واحد يأخذ صفوفاً لا يمسكها غيره. ويُعلَّم الصف مُرسلاً في المعاملة نفسها التي أرسلته، فالعامل الذي يتعطل في منتصف عمله يحرر صفوفه للتالي. وهذا يجعل التسليم <em>مرة واحدة على الأقل</em>: في تعطل نادر بعد الإرسال وقبل الاعتماد، يخرج البريد مرتين. ومزوّد البريد الحقيقي يقبل مفتاح Idempotency أيضاً، ورقم صف الصندوق هو المفتاح الطبيعي لذلك. وطوابير الفصل 10 تعمل بالطريقة نفسها؛ وهنا PostgreSQL هو الطابور، وهذا يكفي لبضعة آلاف رسالة في الساعة ولا يحتاج شيئاً آخر ليعمل.</p>
+
+<h2><span class="sec">17.8</span> <span>الأخطاء والمقاييس والصحة</span></h2>
+
+<p>يجمع <code>app.ts</code> القطع. معالج أخطاء واحد يحوّل كل شيء إلى Problem Details: أخطاؤنا <code>Problem</code> كما هي، وأخطاء التحقق بالحقل الذي فشل، و429 حدّ المعدل بمدة الانتظار، وأي شيء آخر 500 تذهب تفاصيله إلى السجل، لا إلى العميل أبداً (الفصل 9):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  app.setErrorHandler((error: FastifyError, request, reply) =&gt; {
+    <span class="k">let</span> problem: Problem;
+    <span class="k">if</span> (error <span class="k">instanceof</span> Problem) {
+      problem = error;
+    } <span class="k">else</span> <span class="k">if</span> (hasZodFastifySchemaValidationErrors(error)) {
+      problem = problems.invalid(
+        error.validation.map((issue) =&gt; ({
+          field: [error.validationContext, ...String(issue.instancePath).split(<span class="s">&quot;/&quot;</span>)]
+            .filter(Boolean)
+            .join(<span class="s">&quot;.&quot;</span>),
+          message: issue.message ?? <span class="s">&quot;&quot;</span>,
+        })),
+      );
+    } <span class="k">else</span> <span class="k">if</span> (error.statusCode === <span class="n">429</span>) {
+      problem = problems.tooMany(Number(reply.getHeader(<span class="s">&quot;retry-after&quot;</span>) ?? <span class="n">60</span>));
+    } <span class="k">else</span> {
+      request.log.error(error);
+      problem = problems.server();
+    }
+    reply.code(problem.status).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>);
+    <span class="k">return</span> reply.send(problem.body(request.url));
+  });</pre></div>
+
+<p>ونقطتان تجيبان عن سؤالين مختلفين (الفصل 13). تقول <code>/health</code> إن البرنامج حي، ويعيد Docker تشغيل الحاوية حين تكف عن الإجابة. وتقول <code>/ready</code> إن البرنامج قادر على عمله، ويكف موزّع الحمل عن إرسال الطلبات ما دامت false:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  <span class="c line-bidi">// الجاهزية أن تجيب قاعدة البيانات وRedis معاً</span>
+  app.get(<span class="s">&quot;/ready&quot;</span>, <span class="k">async</span> (_request, reply) =&gt; {
+    <span class="k">try</span> {
+      <span class="k">await</span> sql<span class="s">`SELECT 1`</span>.execute(deps.db);
+      <span class="k">await</span> deps.redis.ping();
+      <span class="k">return</span> { ready: <span class="k">true</span> };
+    } <span class="k">catch</span> {
+      <span class="k">return</span> reply.code(<span class="n">503</span>).send({ ready: <span class="k">false</span> });
+    }
+  });</pre></div>
+
+<p>و<code>server.ts</code> الملف الوحيد الذي يعرف الاتصالات الحقيقية. وعند <code>SIGTERM</code>، الذي يرسله Docker قبل إيقاف الحاوية، ينهي الطلبات الجارية قبل أن يغلق مجمع اتصالات قاعدة البيانات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/server.ts</div><pre class="code"><span class="c line-bidi">// جذر التركيب: الملف الوحيد الذي ينشئ الاتصالات</span>
+<span class="k">const</span> db = connect();
+<span class="k">const</span> redis = <span class="k">new</span> Redis(config.REDIS_URL, { maxRetriesPerRequest: <span class="n">1</span> });
+<span class="k">const</span> app = <span class="k">await</span> buildApp({ db, redis });
+<span class="k">await</span> app.listen({ host: <span class="s">&quot;0.0.0.0&quot;</span>, port: config.PORT });
+
+<span class="c line-bidi">// عند SIGTERM: توقّف عن قبول الطلبات، وأنهِ الجارية، ثم أغلق الاتصالات</span>
+process.once(<span class="s">&quot;SIGTERM&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">await</span> app.close();
+  <span class="k">await</span> db.destroy();
+  <span class="k">await</span> redis.quit();
+});</pre></div>
+
+<h2><span class="sec">17.9</span> <span>اختبارات على قاعدة بيانات حقيقية</span></h2>
+
+<p>تستعمل الاختبارات <code>app.inject</code> من الفصل 12: طلبات حقيقية عبر المسارات الحقيقية، بلا فتح منفذ. وتعمل على PostgreSQL وRedis، على قاعدة بيانات منفصلة مذكورة في <code>.env.test</code>، وكل اختبار يعيد بناء المخطط من <code>schema.sql</code> نفسه الذي يستعمله الإنتاج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/api.test.ts</div><pre class="code"><span class="c line-bidi">// كل اختبار يبدأ من ملف المخطط، على قاعدة بياناته الخاصة</span>
+beforeEach(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql
+    .raw(<span class="s">`DROP SCHEMA public CASCADE; CREATE SCHEMA public; ${schema}`</span>)
+    .execute(db);
+});</pre></div>
+
+<p>كل اختبار يقرر وعداً واحداً من الوصف. وأهمها الأول، الذي يرسل الطلب نفسه مرتين ويتحقق أن هناك طلباً واحداً، وخصماً واحداً من المخزون، وصفاً واحداً في الصندوق الصادر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/api.test.ts</div><pre class="code">test(<span class="s">&quot;places an order once, however many times the same key is sent&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> auth = <span class="k">await</span> signIn();
+  <span class="k">const</span> items = [{ product_id: <span class="n">2</span>, quantity: <span class="n">3</span> }];
+  <span class="k">const</span> first = <span class="k">await</span> order(auth, <span class="s">&quot;key-0001&quot;</span>, items);
+  <span class="k">const</span> again = <span class="k">await</span> order(auth, <span class="s">&quot;key-0001&quot;</span>, items);
+  assert.equal(first.statusCode, <span class="n">201</span>);
+  assert.equal(again.statusCode, <span class="n">200</span>);
+  assert.equal(again.json().id, first.json().id);
+  assert.equal(<span class="k">await</span> stock(<span class="n">2</span>), <span class="n">47</span>);
+  <span class="k">const</span> outbox = <span class="k">await</span> db.selectFrom(<span class="s">&quot;outbox&quot;</span>).selectAll().execute();
+  assert.equal(outbox.length, <span class="n">1</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الاختبارات، على PostgreSQL وRedis</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ places an order once, however many times the same key is sent (…ms)
+✔ refuses a key reused with another body (…ms)
+✔ takes no stock when one line is short (…ms)
+✔ refuses an order without a token (…ms)
+✔ pages follow each other with no gaps and no repeats (…ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: اختبارات تنجح على قاعدة البيانات الخطأ</p><p>إعادة بناء المخطط في كل اختبار سريعة وتجعل الاختبارات مستقلة، لكنها تحذف كل جدول. لذلك تقرأ الاختبارات ملفها <code>.env.test</code>، الذي يشير إلى <code>shop_test</code>. لا تدع الاختبارات ترجع إلى إعدادات التطوير أبداً، ولا تعطِ مشغّل الاختبارات صلاحيات تصل إلى الإنتاج: يجب ألا يقدر متغير بيئة خاطئ واحد على تفريغ قاعدة بيانات حقيقية.</p></aside>
+
+<h2><span class="sec">17.10</span> <span>الشحن</span></h2>
+
+<p>ملف <code>Dockerfile</code> هو الملف متعدد المراحل في الفصل 16: الاعتماديات من ملف القفل، بلا أدوات تطوير، ومستخدم ليس root، وفحص صحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Dockerfile</div><pre class="code">FROM node:22-slim AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+FROM node:22-slim
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json schema.sql ./
+COPY src ./src
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=5s --timeout=2s \
+  CMD node -e &quot;fetch(&#x27;http://localhost:3000/health&#x27;).then(r =&gt; process.exit(r.ok ? 0 : 1)).catch(() =&gt; process.exit(1))&quot;
+CMD [&quot;node&quot;, &quot;src/server.ts&quot;]</pre></div>
+
+<p>ويشغّل Compose الأجزاء الأربعة. التطبيق والعامل <em>الصورة نفسها</em> بأمرين مختلفين، فلا يمكن أن يشغّلا نسختين مختلفتين من الكود. وكلاهما ينتظر حتى تعلن قاعدة البيانات وRedis صحتهما، ومراسي YAML (<code>&amp;env</code> و<code>*env</code>) تُبقي إعداداتهما المشتركة في مكان واحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">compose.yaml</div><pre class="code">  app:
+    build: .
+    image: shop-api
+    ports:
+      - &quot;3000:3000&quot;
+    environment: &amp;env
+      DATABASE_URL: postgres://shop:secret@db:5432/shop
+      REDIS_URL: redis://redis:6379
+    depends_on: &amp;ready
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: shop-api
+    command: [&quot;node&quot;, &quot;src/worker.ts&quot;]
+    environment: *env
+    depends_on: *ready
+    # the worker serves no HTTP, so the image&#x27;s health check does not apply
+    healthcheck:
+      disable: true</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الصورة</span>
+<span class="c">$ </span><span class="k">docker build -t shop-api .</span>
+<span class="c">$ </span><span class="k">docker image ls shop-api</span>
+shop-api:latest  371MB
+<span class="c line-bidi"># النظام كله: قاعدة البيانات وRedis والـ API والعامل</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait</span>
+Container shop-redis-1 Started
+Container shop-db-1 Started
+Container shop-redis-1 Healthy
+Container shop-db-1 Healthy
+Container shop-app-1 Started
+Container shop-worker-1 Started
+Container shop-worker-1 Healthy
+Container shop-app-1 Healthy
+<span class="c">$ </span><span class="k">docker compose ps --format &#x27;table {{.Service}}\t{{.Status}}&#x27;</span>
+SERVICE   STATUS
+app       Up 5 seconds (healthy)
+db        Up 8 seconds (healthy)
+redis     Up 8 seconds (healthy)
+worker    Up 5 seconds</pre></div>
+
+<h2><span class="sec">17.11</span> <span>إثبات أنه يعمل</span></h2>
+
+<p>والآن رحلة الزبون، على الحاويات العاملة. حساب، ورمز، والمنتجات، اثنان في كل صفحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># حساب</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/register -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;email&quot;:&quot;sara@example.com&quot;}
+<span class="c line-bidi"># رمز</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># أول صفحة من المنتجات، الأرخص أولاً</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/products?limit=2&#x27; | jq -c</span>
+{&quot;data&quot;:[{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:6000,&quot;stock&quot;:50},{&quot;id&quot;:4,&quot;name&quot;:&quot;حزمة بطاريات&quot;,&quot;price&quot;:9000,&quot;stock&quot;:30}],&quot;next_cursor&quot;:&quot;WzkwMDAsNF0&quot;}
+<span class="c line-bidi"># الصفحة التالية، من المؤشر</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/products?limit=2&amp;cursor=WzkwMDAsNF0&#x27; | jq -c &#x27;.data[].name, .next_cursor&#x27;</span>
+&quot;كاوية لحام&quot;
+&quot;طقم حساسات&quot;
+&quot;WzI1MDAwLDVd&quot;</pre></div>
+
+<p>طلب، ثم الطلب نفسه ثانية، كما يرسله جوال بعد أن ضاعت الإجابة الأولى. والإجابة الثانية <code>200</code> لا <code>201</code>: الطلب نفسه، معلَّماً بأنه إعادة. ثم الإخفاقات، كلٌّ منها Problem واضح:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># طلب، بمفتاح اختاره العميل</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 201 Created
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:34:38.226Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># فشلت الشبكة فأعاد العميل الإرسال، بالمفتاح نفسه</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 200 OK
+idempotent-replayed: true
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:34:38.226Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># أكثر من المخزون</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0002&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;المخزون لا يكفي&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;بقي من المنتج 1: 3.&quot;,&quot;instance&quot;:&quot;/orders&quot;}
+<span class="c line-bidi"># بلا رمز</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &#x27;idempotency-key: order-0003&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;لم تسجّل الدخول&quot;,&quot;status&quot;:401,&quot;detail&quot;:&quot;أرسل رمزاً صالحاً: Authorization: Bearer &lt;token&gt;.&quot;,&quot;instance&quot;:&quot;/orders&quot;}
+<span class="c line-bidi"># أحدهم يخمّن كلمة مرور</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess&quot;}&#x27;; done; echo</span>
+401 401 401 401 429 429 </pre></div>
+
+<p>أربع كلمات مرور خاطئة تجيب 401، ثم تُرفض المحاولة الخامسة في الدقيقة (الدخول الناجح عُدّ أولاها) قبل أن تُفحص كلمة المرور أصلاً. وأخيراً، ما يراه المشغّلون. تعدّ المقاييس كل إجابة حسب المسار والحالة، ويُظهر سجل العامل بريداً واحداً بالضبط للطلب الواحد، وفي سجل الـ API سطر JSON لكل طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما سيجمعه Prometheus</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/metrics | grep &#x27;^http_requests_total&#x27;</span>
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/register&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/login&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;GET&quot;,route=&quot;/products&quot;,status=&quot;200&quot;} 2
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;409&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;401&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/login&quot;,status=&quot;401&quot;} 4
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/login&quot;,status=&quot;429&quot;} 2
+<span class="c line-bidi"># العامل أرسل البريد، مرة واحدة</span>
+<span class="c">$ </span><span class="k">docker compose logs worker</span>
+{&quot;msg&quot;:&quot;email sent&quot;,&quot;to&quot;:&quot;sara@example.com&quot;,&quot;order_id&quot;:1}
+<span class="c line-bidi"># طلب واحد في سجل الـ API</span>
+<span class="c">$ </span><span class="k">docker compose logs app</span>
+{&quot;level&quot;:30,&quot;msg&quot;:&quot;incoming request&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;url&quot;:&quot;/orders&quot;}
+<span class="c line-bidi"># أوقف كل شيء واحذف البيانات</span>
+<span class="c">$ </span><span class="k">docker compose down -v</span>
+Container shop-app-1 Removed 
+Container shop-worker-1 Removed 
+Container shop-db-1 Removed 
+Container shop-redis-1 Removed 
+Network shop_default Removed 
+Volume shop_db-data Removed </pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: قائمة فحص الإنتاج</p><p>قبل أن تستقبل الخدمة حركة حقيقية، امرّ مع الفريق على قائمة مكتوبة قصيرة: الإعدادات تُفحص عند البدء والأسرار خارج الصورة؛ والترحيلات خطوة منفصلة، لا يشغّلها التطبيق عند بدئه؛ وفحصا الصحة والجاهزية موصولان بالمنصة؛ والسجلات تُجمع، وتنبيه على معدل الأخطاء وزمن الاستجابة؛ والنسخ الاحتياطية تؤخذ <em>واستعادة جُرّبت</em>؛ وحدود معدل على كل ما يكلّف مالاً أو يخمّن أسراراً؛ وتراجع جُرّب من قبل. القائمة مملة عمداً: نادراً ما تأتي الحوادث من أخطاء ذكية، وغالباً من سطر منسي في قائمة كهذه.</p></aside>
+
+<h2><span class="sec">17.12</span> <span>ما الذي بنيته</span></h2>
+
+<p>في نحو 600 سطر: حسابات بكلمات مرور مبصومة كما ينبغي ورموز يمكن إلغاؤها؛ وصفحات منتجات تبقى سريعة بأي حجم؛ وطلبات ذرية، لا تتكرر، ولا تبيع أكثر من المخزون أبداً؛ ورسائل بريد تُرسل إذا وُجد الطلب وفقط إذا وُجد؛ وProblem Details لكل خطأ؛ وسجلات ومقاييس ونوعان من فحص الصحة؛ واختبارات تثبت كل وعد على قاعدة بيانات حقيقية؛ وصورة واحدة يشغّلها Compose مع قاعدة بياناتها وRedis وعاملها.</p>
+
+<p>وما ستضيفه نسخة إنتاج، كلٌّ من فصل قرأته: ترحيلات بأداة بدل ملف <code>schema.sql</code> واحد (الفصل 5)؛ وأسرار من المنصة لا من <code>compose.yaml</code> (الفصل 16)؛ وHTTPS وترويسات الأمان في المقدمة (الفصل 9)؛ وتتبّع يشمل العامل (الفصل 13)؛ وخط CI يشغّل الاختبارات ويبني الصورة وينشرها. لا شيء منها يغيّر الكود الذي كتبته؛ كلٌّ منها يجلس حوله. وتلك علامة بنية جاهزة لأن تكبر.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>إعادة محاولة الطلبات بلا مفتاح Idempotency</td><td>زبائن يُحاسَبون مرتين على شبكة سيئة</td><td>مفتاح من العميل، يحجزه قيد فريد</td></tr>
+<tr><td>فحص ثم إدراج للمفتاح</td><td>طلبان يجتازان الفحص كلاهما</td><td><code>INSERT … ON CONFLICT DO NOTHING</code></td></tr>
+<tr><td>البريد يُرسل داخل المعاملة</td><td>رسائل عن طلبات تراجعت؛ وأقفال ممسوكة أثناء الانتظار</td><td>صف في الصندوق الصادر في المعاملة نفسها</td></tr>
+<tr><td>عدّ حدّ المعدل في الذاكرة</td><td>كل نسخة وكل إعادة تشغيل تعطي محاولات جديدة</td><td>العدّ في Redis، تتشاركه كل النسخ</td></tr>
+<tr><td>صفحات بالإزاحة على جدول يكبر</td><td>صفحات عميقة بطيئة؛ وصفوف تُتخطى أو تتكرر</td><td>مؤشر على مفتاح ترتيب مفهرس وفريد</td></tr>
+<tr><td>الإعدادات تُقرأ عند أول استعمال</td><td>تبدأ الخدمة ثم تفشل عند أول طلب</td><td>تحقق من البيئة عند البدء</td></tr>
+<tr><td>الاختبارات تتشارك قاعدة بيانات التطوير</td><td>بيانات ضائعة، واختبارات يعتمد بعضها على بعض</td><td>قاعدة اختبار منفصلة، يُعاد بناؤها لكل اختبار</td></tr>
+<tr><td>التطبيق والعامل يُبنيان منفصلين</td><td>نسختان من الكود تعملان على قاعدة بيانات واحدة</td><td>صورة واحدة، وأمران</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>حوّل الوصف إلى <strong>قصص مستخدم</strong> لكل منها اختبار «انتهى»، واكتب <strong>أهداف الجودة</strong> قبل الكود.</li>
+<li>دع <strong>قاعدة البيانات تضمن</strong> ما يجب أن يصح دائماً: المفاتيح الفريدة، والمخزون لا ينزل تحت الصفر، وطلب واحد لكل مفتاح Idempotency.</li>
+<li>اجعل إعادة المحاولة آمنة بـ <strong>Idempotency-Key</strong>: احجزه في معاملة الطلب، وأعد الإجابة نفسها، وارفض جسماً تغيّر.</li>
+<li>لا آثار جانبية داخل معاملة أبداً: اكتب صفاً في <strong>الصندوق الصادر</strong>، ودع عاملاً بـ <code>SKIP LOCKED</code> يرسله.</li>
+<li>أبقِ الحالة المشتركة، مثل <strong>عدّ حدّ المعدل</strong>، خارج البرنامج، فيتصرف أي عدد من النسخ كنسخة واحدة.</li>
+<li>أعطِ كل خطأ شكلاً واحداً بـ <strong>Problem Details</strong>، وكل خدمة <strong>سجلات ومقاييس وصحة وجاهزية</strong>.</li>
+<li>أثبت كل وعد <strong>باختبارات على قاعدة بيانات حقيقية</strong>، واشحن <strong>صورة واحدة</strong> للتطبيق وعامله.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن الفحص أولاً يترك ثغرة: نسختان من الطلب نفسه قد لا تجد كلتاهما طلباً بذلك المفتاح، فتنشئ كلتاهما طلباً. أما الإدراج فيحجز المفتاح ويفحصه في خطوة واحدة، والقيد الفريد يجعل الإدراج الثاني ينتظر المعاملة الأولى، ثم لا يفعل شيئاً. 2. لا شيء من هذا الطلب: الخطأ يُرجع المعاملة، فيُلغى صف الطلب، وبنده الأول، والمخزون الذي أُخذ له، والمفتاح المحجوز، ولا يوجد صف في الصندوق الصادر. ويستطيع العميل تصحيح الطلب وإرساله ثانية، حتى بالمفتاح نفسه. 3. لأن الذاكرة ملك برنامج واحد: مع ثلاث نسخ من التطبيق، يحصل المهاجم على ثلاثة أضعاف المحاولات، وكل إعادة تشغيل أو نشر تصفّر العدّ. وRedis يعطي كل النسخ عدّاً واحداً مشتركاً يبقى بعد إعادة التشغيل.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">تُنمّي هذه المشاريع الواجهة كما تنمو الواجهات الحقيقية. لكل مشروع، اكتب قصة المستخدم واختبارها أولاً، وضع القاعدة حيث تضمنها قاعدة البيانات متى أمكن، وشغّل الاختبارات والنظام كله في Compose قبل أن تقول إنه انتهى.</p>
+
+<div class="project">
+<p class="project-label">المشروع 17.1 · سهل</p>
+<h3>طلباتي</h3>
+<p class="project-goal">أضف <code>GET /orders</code>: طلبات الزبون المسجّل، الأحدث أولاً، في صفحات بمؤشر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المصادقة على مسار، وترقيم المفاتيح، وفهرس يطابق الاستعلام.</p>
+<ol class="steps">
+<li>اكتب اختباراً أولاً: زبونان يضع كل منهما طلبات؛ ولا يرى كل منهما إلا طلباته، الأحدث أولاً.</li>
+<li>أضف المسار إلى <code>orders.ts</code>، بـ <code>limit</code> و<code>cursor</code> كما في <code>products.ts</code>، على <code>(created_at, id)</code>.</li>
+<li>أضف فهرساً على <code>orders (user_id, created_at, id)</code> وتحقق بـ <code>EXPLAIN</code> أنه يُستعمل.</li>
+<li>اختبر أن مؤشراً من زبون لا يعطي الزبون الآخر شيئاً من طلبات الأول.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يجب أن يبقى الشرط على <code>user_id</code> في الاستعلام في كل صفحة؛ المؤشر يقول من أين تبدأ فقط، لا طلباتِ مَن تُعرض.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 17.2 · متوسط</p>
+<h3>إلغاء طلب</h3>
+<p class="project-goal">أضف <code>POST /orders/:id/cancel</code>: خلال 30 دقيقة من وضعه، يجوز للزبون الإلغاء، ويعود المخزون.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التحديثات المشروطة، والمعاملات، والصندوق الصادر، واختبار قواعد تعتمد على الوقت.</p>
+<ol class="steps">
+<li>أضف عمود <code>status</code> (<code>placed</code> و<code>cancelled</code>) بقيد check.</li>
+<li>في معاملة واحدة: اجعل الحالة <code>cancelled</code> فقط إن كانت <code>placed</code>، ويملكها المستخدم، وحديثة بما يكفي؛ ثم أعد كمية كل بند إلى المخزون؛ ثم اكتب صف <code>order.cancelled</code> في الصندوق الصادر.</li>
+<li>الإلغاء مرتين يجب ألا يضر: النداء الثاني لا يغيّر شيئاً ويقول ذلك.</li>
+<li>علّم العامل أن يرسل بريداً مختلفاً لـ <code>order.cancelled</code>.</li>
+<li>اختبر قاعدة الثلاثين دقيقة بإدراج طلب بـ <code>created_at</code> أقدم، لا بالانتظار.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ضع القاعدة كلها في <code>WHERE</code> التحديث وافحص كم صفاً تغيّر؛ عندها لا يستطيع إلغاءان معاً أن يعيدا المخزون كلاهما.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 17.3 · تحدٍّ</p>
+<h3>انجُ من يوم مزدحم</h3>
+<p class="project-goal">أثبت بالأرقام أن الواجهة تفي بوعودها تحت الحمل وحين تتعطل أجزاء منها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختبار الحمل، والتزامن، واختبار الأعطال، وقراءة المقاييس.</p>
+<ol class="steps">
+<li>بـ autocannon (الفصل 14)، أرسل 2000 طلب لمنتج مخزونه 100، من اتصالات كثيرة، لكل منها مفتاحه. وتحقق أن هناك 100 طلب بالضبط وأن المخزون 0.</li>
+<li>أرسل 50 نسخة من طلب واحد بالمفتاح <em>نفسه</em> معاً، وتحقق أن هناك طلباً واحداً بالضبط.</li>
+<li>شغّل ثلاثة عمال (<code>docker compose up --scale worker=3</code>) وتحقق أن كل صف في الصندوق أُرسل مرة واحدة بالضبط.</li>
+<li>أوقف Redis والتطبيق يعمل. بماذا تجيب <code>/ready</code> و<code>/health</code> ومحاولة دخول؟ قرر بماذا <em>يجب</em> أن تجيب، واجعلها كذلك.</li>
+<li>اكتب ما قِسته: الطلبات في الثانية، وأبطأ 1%، وأي شيء فاجأك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الخطوة 4، الحد الذي لا يمكن عدّه يجب أن يفشل بأمان مع ذلك. قرر هل يُرفض الدخول بلا Redis (أأمن) أم يُسمح به (ألطف)، واكتب السبب في سجل قرار.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في الرحلة، أجاب طلب الطلب الثاني بـ <code>200</code> مع الترويسة <code>idempotent-replayed: true</code>، وأجاب الأول بـ <code>201</code>. لماذا نعطيهما رمزي حالة مختلفين والجسم واحد؟</li>
+<li><span class="level">سهل</span> لماذا يحوي مؤشر المنتجات الرقم مع السعر؟ أعطِ مثالاً بمنتجين يخطئ فيه مؤشر بلا رقم.</li>
+<li><span class="level medium">متوسط</span> يعلّم العامل الصف مُرسلاً في المعاملة نفسها التي يرسل فيها البريد. صِف ما يحدث إن تعطل العامل (أ) قبل الإرسال، (ب) بعد الإرسال وقبل الاعتماد. أيهما قد يسبب تكراراً، وكيف يساعد مزوّد البريد؟</li>
+<li><span class="level medium">متوسط</span> يرسل زبون طلباً بالمفتاح <code>k1</code>؛ والمنتج نفد مخزونه فالإجابة 409. بعد عشر دقائق يُملأ المخزون، ويعيد العميل المحاولة بـ <code>k1</code>. ماذا يحدث، ولماذا هذا هو السلوك الصحيح؟</li>
+<li><span class="level hard">تحدٍّ</span> تبقى مفاتيح Idempotency في جدول <code>orders</code> إلى الأبد. اقترح كيف تنتهي صلاحيتها بعد 24 ساعة دون كسر الضمان لإعادات المحاولة خلال تلك المدة، واكتب التغيير في المخطط والاستعلام.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">إلى أين من هنا</p>
+<p>بدأت هذا الكتاب قادراً على بناء واجهة برمجية صغيرة، وتنهيه قادراً على تصميم خدمة وتأمينها واختبارها وقياسها وشحنها، خدمة تفي بوعودها حين تتعطل الشبكة ويكبر الحمل ويتغير الكود. والكتاب التالي في السلسلة يجمع النصفين: واجهة أمامية وخادم يُبنيان ويُختبران ويُشحنان معاً منتجاً واحداً متكاملاً.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -7488,7 +8242,7 @@ Volume shop_db-data Removed </pre></div>
 <li>القفل يبقى طوال مدة استدعاء الشبكة، الذي قد يستغرق ثواني أو تنتهي مهلته، وكل مشترٍ آخر لذلك المنتج ينتظر في الأثناء؛ فتصير خدمة الدفع البطيئة متجراً بطيئاً. والأسوأ: إن نجح الخصم ثم فشل التثبيت، أُخذ المال لطلب غير موجود. والترتيب الأفضل: (1) معاملة قصيرة تحجز المخزون بتحديث ذري وتنشئ الطلب «قيد الانتظار»؛ (2) الخصم، خارج أي معاملة، بمفتاح عدم تكرار من رقم الطلب؛ (3) معاملة قصيرة تعلّم الطلب «مدفوعاً»، أو تحرر المخزون إن فشل الخصم. وعامل يلغي الطلبات التي تبقى قيد الانتظار أطول من اللازم.</li>
 <li>
 
-<pre><code>async function retrying&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;, attempts = 5): Promise&lt;T&gt; {
+<pre dir="ltr"><code>async function retrying&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;, attempts = 5): Promise&lt;T&gt; {
   for (let attempt = 1; ; attempt++) {
     try {
       return await work();
@@ -7668,6 +8422,16 @@ order-1004 أُعيدت
 <li>(1) صورة أساسية أصغر، كنسخة Alpine أو صورة «distroless»: كثيراً نصف الحجم، لكن Alpine تستخدم مكتبة C مختلفة لا تدعمها بعض الوحدات أو الإضافات الأصلية، وصور distroless بلا صدفة للتصحيح. (2) احذف أدوات البناء في الطبقة نفسها التي استخدمتها (ثبّت أدوات البناء الأصلية في مرحلة الاعتماديات وحدها): أصغر وحزم أقل تحتاج ترقيعاً، لكن Dockerfile أعقد قليلاً. (3) اعتماديات أقل: افحص ما في <code>node_modules</code> بـ <code>npm ls --omit=dev</code> وأزل الحزم التي لا يحتاجها التطبيق؛ والمقايضة وقت يُبذل، وأحياناً ميزات الخيار الأكبر.</li>
 <li>يشغّل Compose الحاويات بترتيب الاعتماديات، لكنه مع <code>depends_on</code> العادية لا ينتظر إلا حتى <em>تبدأ</em> حاوية قاعدة البيانات، لا حتى تقبل PostgreSQL الاتصالات، وهذا يستغرق بضع ثوانٍ؛ فيبدأ التطبيق، ويفشل في الاتصال، وينهار (ويعمل لاحقاً بعد إعادة تشغيل أو إعادة محاولة). أعطِ قاعدة البيانات فحص حالة (<code>pg_isready</code>) واجعل التطبيق ينتظرها بـ <code>depends_on: db: condition: service_healthy</code>، كما يفعل ملف Compose في هذا الفصل؛ وينبغي أيضاً أن يعيد التطبيق محاولة الاتصال عند البدء، لأن قواعد البيانات تُعاد تشغيلها في الإنتاج أيضاً.</li>
 <li>التوسيع والتقليص (الفصل 5). الإصدار 1: ترحيل يضيف العمود قابلاً لأن يكون فارغاً (أو بقيمة افتراضية)، والكود يكتبه للصفوف الجديدة ويبقى يعمل بدونه؛ وCI يبني الصورة ويختبرها ويفحصها؛ ويعمل الترحيل حاويةً لمرة واحدة (الكود القديم لا يتأثر بعمود جديد قابل لأن يكون فارغاً)؛ وتحل الحاويات الجديدة محل القديمة تدريجياً خلف فحوص الحالة. ثم يملأ تعبئة العمود للصفوف الموجودة، على دفعات. والإصدار 2: ترحيل يجعل العمود إلزامياً (آمن الآن، لأن لكل صف قيمة)، ويبدأ الكود في الاعتماد عليه؛ ويُنشر بالطريقة نفسها. وفي كل لحظة، الكود العامل ومخطط قاعدة البيانات متوافقان، فلا يفشل أي طلب.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 17</h2>
+<ol class="exercises">
+<li>لأنهما يخبران العميل بشيئين مختلفين. <code>201 Created</code> تقول «هذا الطلب صنع طلباً جديداً»؛ و<code>200 OK</code> مع <code>idempotent-replayed: true</code> تقول «لم يحدث شيء جديد، هذا هو الطلب الذي صنعه طلبك السابق». والعميل يعدّ الاثنين نجاحاً عادةً، لكن سجلاته ومقاييسه وأي مطوّر يقرأ الحركة يرى أن إعادة محاولة حدثت، وكم مرة. وعدّ الإعادات أيضاً إشارة جيدة إلى مشكلات الشبكة بين التطبيق والواجهة.</li>
+<li>لأن السعر وحده لا يقول أين انتهت الصفحة حين يتشاركه عدة منتجات. لنقل إن المنتجين 7 و8 سعر كل منهما 6000 وحجم الصفحة 1. تنتهي الصفحة 1 عند المنتج 7، والمؤشر <code>6000</code> وحده يطلب <code>price &gt; 6000</code>، فيتخطى المنتج 8. وطلب <code>price &gt;= 6000</code> بدلاً منه سيعرض المنتج 7 ثانية. ومع <code>(6000, 7)</code> تطلب الصفحة التالية <code>(price, id) &gt; (6000, 7)</code>، وهو المنتج 8 بالضبط. الرقم يجعل مفتاح الترتيب فريداً، فلكل صف مكان واحد في الترتيب.</li>
+<li>(أ) قبل الإرسال: تتراجع المعاملة حين ينغلق الاتصال، ويتحرر قفل الصف، ويبقى الصف غير مُرسل، فيرسله العامل التالي (أو العامل نفسه بعد إعادة تشغيله). لا شيء يضيع ولا شيء يتكرر. (ب) بعد الإرسال وقبل الاعتماد: خرج البريد، لكن تحديث <code>sent_at</code> يتراجع، فيُرسل الصف ثانية: تكرار. (ب) وحدها تكرر. ويساعد المزوّد حين يقبل مفتاح Idempotency: أرسل رقم صف الصندوق مع كل بريد، فيعرف المزوّد الإرسال الثاني للصف 42 ويُسقطه. وبلا مفتاح كهذا، التكرار النادر ثمن عدم ضياع أي بريد.</li>
+<li>يصنع الطلب الثاني طلباً جديداً، وهذا صحيح. فقد أرجع الـ 409 المعاملة كلها، ومنها <code>INSERT</code> الذي حجز <code>k1</code>، فلا يوجد طلب بذلك المفتاح، وتجري إعادة المحاولة كأنها الأولى. ووعد مفتاح Idempotency هو «المفتاح نفسه لا يصنع طلبين أبداً»، لا «المفتاح نفسه يعطي الإجابة نفسها دائماً»: الطلب الذي فشل ولم يغيّر شيئاً يجوز أن يُعاد، ويحصل الزبون على الطلب الذي أراده حين يعود المخزون.</li>
+<li>انقل المفاتيح إلى جدولها الخاص، <code>CREATE TABLE idempotency_keys (user_id bigint NOT NULL, key text NOT NULL, request_hash text NOT NULL, order_id bigint NOT NULL REFERENCES orders (id), created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (user_id, key))</code>، واحذف أعمدة المفتاح من <code>orders</code>. ويُدرج الطلب صف مفتاحه في المعاملة نفسها، بـ <code>ON CONFLICT DO NOTHING</code> كما الآن. ومهمة مجدولة تحذف المفاتيح القديمة: <code>DELETE FROM idempotency_keys WHERE created_at &lt; now() - interval '24 hours'</code>، على دفعات مع فهرس على <code>created_at</code>. ويصح الضمان لأي إعادة محاولة خلال 24 ساعة، لأن الصف موجود حتى ذلك الحين؛ وأخبر العملاء (في توثيق الواجهة) أن المفتاح لا يُتذكر إلا 24 ساعة، فلا يجوز لهم إعادة المحاولة بمفتاح أقدم.</li>
 </ol>
 
 </section>

@@ -21,26 +21,30 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "الفصل 7: المعاملات والأقفال والاتساق"; } }
 @page ch07:first { @top-center { content: none; } }
-@page ch08 { @top-center { content: "الفصل 8: التخزين المؤقت بـ Redis"; } }
+@page ch08 { @top-center { content: "الفصل 8: Redis: التخزين المؤقت وحدود المعدل والأقفال"; } }
 @page ch08:first { @top-center { content: none; } }
-@page ch09 { @top-center { content: "الفصل 9: الهوية بـ Sanctum والصلاحيات بـ Policies"; } }
+@page ch09 { @top-center { content: "الفصل 9: المصادقة والتفويض بـ Sanctum"; } }
 @page ch09:first { @top-center { content: none; } }
-@page ch10 { @top-center { content: "الفصل 10: الأمان: أخطر عشر ثغرات (OWASP) في Laravel"; } }
+@page ch10 { @top-center { content: "الفصل 10: الأمان: الهجمات والدفاعات"; } }
 @page ch10:first { @top-center { content: none; } }
-@page ch11 { @top-center { content: "الفصل 11: الطوابير والمهام والمجدول"; } }
+@page ch11 { @top-center { content: "الفصل 11: الطوابير والمهام"; } }
 @page ch11:first { @top-center { content: none; } }
-@page ch12 { @top-center { content: "الفصل 12: الزمن الحقيقي بـ Laravel Reverb"; } }
+@page ch12 { @top-center { content: "الفصل 12: الميزات الفورية بـ Reverb"; } }
 @page ch12:first { @top-center { content: none; } }
 @page ch13 { @top-center { content: "الفصل 13: الاختبار بـ Pest"; } }
 @page ch13:first { @top-center { content: none; } }
-@page ch14 { @top-center { content: "الفصل 14: السجلات والمقاييس والتتبع"; } }
+@page ch14 { @top-center { content: "الفصل 14: قابلية الملاحظة: السجلات والمقاييس والتتبعات"; } }
 @page ch14:first { @top-center { content: none; } }
-@page ch15 { @top-center { content: "الفصل 15: الأداء والتوسع"; } }
+@page ch15 { @top-center { content: "الفصل 15: الأداء"; } }
 @page ch15:first { @top-center { content: none; } }
-@page ch16 { @top-center { content: "الفصل 16: المعمارية: الوحدات والأفعال والمجالات"; } }
+@page ch16 { @top-center { content: "الفصل 16: البنية: إبقاء الكود سهل التغيير"; } }
 @page ch16:first { @top-center { content: none; } }
-@page ch17 { @top-center { content: "الفصل 17: Docker والنشر"; } }
+@page ch17 { @top-center { content: "الفصل 17: Docker: شحن الشيء نفسه إلى كل مكان"; } }
 @page ch17:first { @top-center { content: none; } }
+@page ch18 { @top-center { content: "الفصل 18: المشروع الختامي: واجهة برمجية للإنتاج"; } }
+@page ch18:first { @top-center { content: none; } }
+@page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
+@page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -122,16 +126,14 @@ if (isMember && day === "Tuesday") {
   <p class="cv-series">من الصفر إلى الاحتراف · الكتاب الثالث</p>
   <h1 class="cv-title">هندسة الخوادم باحتراف</h1>
   <p class="cv-sub">الواجهات البرمجية وقواعد البيانات والأمان والتوسع بـ Laravel وPostgreSQL</p><p class="cv-edition">إصدار Laravel</p>
-  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
-<span class="k">let</span> price;
-
-<span class="k">if</span> (age &lt; <span class="n">13</span>) {
-  price = <span class="n">6</span>;
-} <span class="k">else</span> {
-  price = <span class="n">10</span>;
-}
-
-console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>PHP</span><span>Laravel</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="s"></span>Route::post(<span class="s">&#x27;orders&#x27;</span>, <span class="k">fn</span> () =&gt;
+    DB::transaction(<span class="k">fn</span> () =&gt;
+        Order::place(
+            request()-&gt;user(),
+            request(<span class="s">&#x27;items&#x27;</span>),
+        ),
+    ),
+)-&gt;middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>);</pre></div><div class="cv-tracks"><span>PHP</span><span>Laravel</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
 <rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
@@ -173,7 +175,77 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: الأساسيات</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل الخوادم: HTTP بعمق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">PHP الحديثة لمطوري JavaScript</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">أساسيات Laravel: المسارات والمتحكمات والطلبات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">تصميم واجهات REST بـ API Resources</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: البيانات</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">SQL وPostgreSQL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Eloquent والعلاقات والترحيلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">المعاملات والأقفال والاتساق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التخزين المؤقت بـ Redis</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الهوية بـ Sanctum والصلاحيات بـ Policies</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الأمان: أخطر عشر ثغرات (OWASP) في Laravel</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الطوابير والمهام والمجدول</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الزمن الحقيقي بـ Laravel Reverb</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">الاختبار بـ Pest</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">السجلات والمقاييس والتتبع</span><span class="toc-p"></span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">الأداء والتوسع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">المعمارية: الوحدات والأفعال والمجالات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Docker والنشر</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">المشروع الختامي: واجهة برمجية للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: الأساسيات</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل الخوادم: HTTP بعمق</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">PHP الحديثة لمطوري JavaScript</span><span class="toc-p">38</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">أساسيات Laravel: المسارات والمتحكمات والطلبات</span><span class="toc-p">64</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">تصميم واجهات REST بـ API Resources</span><span class="toc-p">94</span></li><li class="toc-part">الجزء 2: البيانات</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">SQL وPostgreSQL</span><span class="toc-p">123</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Eloquent والعلاقات والترحيلات</span><span class="toc-p">146</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">المعاملات والأقفال والاتساق</span><span class="toc-p">163</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Redis: التخزين المؤقت وحدود المعدل والأقفال</span><span class="toc-p">178</span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">المصادقة والتفويض بـ Sanctum</span><span class="toc-p">194</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الأمان: الهجمات والدفاعات</span><span class="toc-p">218</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الطوابير والمهام</span><span class="toc-p">237</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الميزات الفورية بـ Reverb</span><span class="toc-p">251</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">الاختبار بـ Pest</span><span class="toc-p">263</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">قابلية الملاحظة: السجلات والمقاييس والتتبعات</span><span class="toc-p">278</span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">الأداء</span><span class="toc-p">293</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">البنية: إبقاء الكود سهل التغيير</span><span class="toc-p">305</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Docker: شحن الشيء نفسه إلى كل مكان</span><span class="toc-p">321</span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">المشروع الختامي: واجهة برمجية للإنتاج</span><span class="toc-p">333</span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">361</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b3/preface/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">هذا الكتاب لمطوّرين يستطيعون بناء واجهة برمجية صغيرة، ويريدون بناء الخدمات كما يبنيها مهندسو الخوادم الخبراء: صحيحة تحت التزامن، وآمنة من المهاجمين، ومرئية في الإنتاج، وسريعة حيث يهم ذلك، وسهلة التغيير على الفريق. إن أنهيت <em>البرمجة من الصفر</em>، الكتاب الأول في هذه السلسلة، فأنت مستعد. وإن تعلّمت في مكان آخر، فأنت تحتاج أن ترتاح في لغة برمجة واحدة، وسطر الأوامر، وJSON، وGit؛ ويشرح الكتاب HTTP وSQL وكل ما بعدهما من البداية.</p>
+
+<h2 class="plain-h">إصداران لكتاب واحد</h2>
+<p>للكتاب إصداران، واحد لـ <strong>Node.js مع TypeScript</strong> وواحد لـ <strong>PHP مع Laravel</strong>، وهما من أوسع طرق بناء خوادم الويب استعمالاً. والفصول التي لا تعتمد على اللغة، مثل HTTP وSQL والمعاملات وRedis والمراقبة والأداء وDocker، واحدة في الإصدارين، وتُعرض أمثلتها باللغتين جنباً إلى جنب حيث يلزم كود. أما الفصول الأخرى فتبني واجهة المتجر البرمجية نفسها بلغة إصدارك، بالجداول نفسها ونقاط النهاية نفسها والاختبارات نفسها.
+أنت تقرأ <strong>إصدار Laravel</strong>.وإن كان فريقك يستعمل الآخر، فالأفكار تنطبق كما هي حرفاً بحرف: لا يتغير إلا الصياغة.</p>
+
+<h2 class="plain-h">كيف نُظّم الكتاب</h2>
+<p>فصول الكتاب الثمانية عشر في أربعة أجزاء:</p><ul>
+<li><strong>الأساسيات</strong> يشرح HTTP بعمق، وPHP الحديثة، وأجزاء Laravel التي يستعملها كل مشروع، وكيف تصمم واجهة REST يعتمد عليها العملاء.</li><li><strong>البيانات</strong> يغطي SQL مع PostgreSQL، وEloquent والترحيلات، والمعاملات والأقفال، وRedis للتخزين المؤقت والعدّ.</li><li><strong>الإنتاج</strong> هو ما تحتاجه الخدمة قبل أن يصل مستخدمون حقيقيون: المصادقة، والأمان، والمهام في الخلفية، والرسائل الفورية، والاختبار، والمراقبة.</li>
+<li><strong>عمل الخبير</strong> يقيس الأداء ويحسّنه، ويُبقي الكود سهل التغيير، ويشحنه في حاويات، وينتهي بواجهة برمجية كاملة للإنتاج تُبنى من مجلد فارغ.</li>
+</ul>
+<p>اقرأ الجزأين الأولين بالترتيب. وبعدها يمكن قراءة الفصول بالترتيب الذي يحتاجه عملك، مع أن كل فصل يفترض الأجزاء التي قبله، والفصل الأخير يستعملها كلها.</p>
+
+<h2 class="plain-h">كل فصل</h2>
+<p>يتبع كل فصل النمط نفسه، فتعرف دائماً أين أنت: ما ستتعلمه؛ وشرح مبني على أمثلة حقيقية تعمل؛ و«اختبر نفسك» في المنتصف؛ وصناديق فيها عادات المحترفين والفخاخ الشائعة؛ وجدول بالأخطاء الشائعة؛ وملخص؛ و<strong>ثلاثة مشاريع تطبيقية</strong> (سهل ومتوسط وتحدٍّ) بخطوات وتلميحات؛ وتمارين بثلاثة مستويات. وإجابات «اختبر نفسك» بعد كل ملخص، وإجابات التمارين في آخر الكتاب.</p>
+<p>المشاريع أهم من أي شيء آخر في الكتاب. القراءة عن مهارة ليست امتلاكها. أنجز مشروعاً واحداً على الأقل في كل فصل، والأفضل المتوسط، قبل أن تنتقل.</p>
+
+<h2 class="plain-h">كود حقيقي ومخرجات حقيقية</h2>
+<p>كل كود في هذا الكتاب ملف حقيقي، وكل مخرج في الطرفية وكل تشغيل اختبار وكل قياس نتج عن تشغيله، على PostgreSQL حقيقي وRedis حقيقي، أثناء إعداد الكتاب. وحين يعرض الفصل الأخير ست كلمات مرور خاطئة أُجيبت بـ <code>401 401 401 401 429 429</code>، أو طلباً أُرسل مرتين فصنع طلباً واحداً، فذلك ما طبعه الخادم. وسترى النتائج نفسها إن استعملت الإصدارات نفسها:</p>
+<table>
+<thead><tr><th>الأداة</th><th>الإصدار</th></tr></thead>
+<tbody>
+<tr><td>PHP</td><td>8.5</td></tr>
+<tr><td>Laravel</td><td>13.43</td></tr>
+<tr><td>Sanctum</td><td>4.5</td></tr>
+<tr><td>Reverb</td><td>1.14</td></tr>
+<tr><td>Pest</td><td>5.3</td></tr>
+<tr><td>Predis</td><td>3.7</td></tr>
+<tr><td>Monolog</td><td>3.13</td></tr><tr><td>PostgreSQL</td><td>18.7</td></tr>
+<tr><td>Redis</td><td>8.10</td></tr>
+<tr><td>Docker (مع Compose 5.6)</td><td>29.9</td></tr>
+</tbody>
+</table>
+<p>تتغير الأدوات بسرعة. فإن طبع إصدار أحدث شيئاً مختلفاً قليلاً، فاقرأ الفرق: غالباً ما يعلّمك ما الذي تغيّر ولماذا.</p>
+<ul>
+<li>اللسان الداكن فوق الكود يذكر اسم الملف ومساره في المشروع.</li>
+<li>الصندوق ذو النقاط الملونة الثلاث يعرض ما ظهر في <strong>الطرفية</strong>. السطر الذي يبدأ بـ <code>$</code> أمر، والأسطر تحته إجابته، والأسطر التي تبدأ بـ <code>#</code> تعليقات تقول لماذا الأمر التالي.</li>
+<li>حين يطول المخرج، يعرض الكتاب الأسطر المهمة. والأزمنة التي تتغير في كل تشغيل تُكتب <code>…</code>.</li>
+</ul>
+
+<h2 class="plain-h">ما تحتاجه</h2>
+<ul>
+<li>حاسوب بنظام Windows أو macOS أو Linux، بذاكرة 8 GB على الأقل.</li>
+<li>PHP 8.5 مع Composer (أو Laravel Herd الذي يثبّت الاثنين)، وGit، و<code>curl</code>، و<code>jq</code>، ومحرر مثل Visual Studio Code أو PhpStorm.</li><li><strong>Docker</strong>، الذي يشغّل PostgreSQL وRedis لكل فصل دون تثبيتهما، والنظام كله في الفصول الأخيرة.</li>
+<li>كل مكتبة وأداة في الكتاب مجانية ومفتوحة المصدر.</li>
+</ul>
+
+<h2 class="plain-h">مستودع الكود</h2>
+<p>كل مثال وكل مشروع وكل إجابة تمرين موجودة في مستودع كود الكتاب، في مجلد لكل فصل، ومعها السكربتات التي أنتجت كل مخرج. اكتب الأمثلة بنفسك أولاً، ثم استعمل المستودع للمقارنة، أو لتخرج حين تعلق.</p>
+
+<h2 class="plain-h">كلمة من المؤلف</h2>
+<p>معظم ما يخطئ في الخادم يخطئ بهدوء: طلب حُفظ مرتين، وقفل أُمسك أطول مما يجب، ورمز لا تنتهي صلاحيته، وخطأ لم يسجله أحد. لا يظهر شيء من ذلك في عرض تجريبي، ويظهر كله في يوم مزدحم. هذا الكتاب عن بناء خدمات تفي بوعودها حين تتعطل الشبكة ويكبر الحمل ويتغير الكود، وعن العادات التي تجعل ذلك أمراً عادياً لا بطولة. وككل كتب السلسلة، كُتب لكل لغة من لغتيه لا مترجماً كلمة بكلمة. أرجو أن يساعدك على أن تصير المهندس الذي يأتمنه الآخرون على الأنظمة المهمة.</p>
+<p><strong>سليمان ماجد سعيد صلاح</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/ar">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>كيف تعمل الخوادم: HTTP بعمق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -6177,7 +6249,7 @@ REVERB_SCHEME=http</pre></div>
 
 <p>يتكلم Reverb <dfn>بروتوكول Pusher</dfn>، مجموعة صغيرة من رسائل JSON فوق WebSocket، تفهمها مكتبات عملاء كثيرة. وفي المتصفح، يخفيه <dfn>Laravel Echo</dfn>:</p>
 
-<pre><code>Echo.channel("orders.1001").listen(".status", (e) =&gt; show(e.status));</code></pre>
+<pre dir="ltr"><code>Echo.channel("orders.1001").listen(".status", (e) =&gt; show(e.status));</code></pre>
 
 <p>ولنرى ما يفعله Echo، هذا عميل مكتوب باليد، بالصنف <code>WebSocket</code> المبني في Node والمتصفحات. يتصل بمفتاح التطبيق، وينتظر تحية الخادم، ويشترك في القناة:</p>
 
@@ -8035,6 +8107,682 @@ Volume shop_db-data Removed </pre></div>
 <p>كل شيء في مكانه. والمشروع الختامي يجمع الكتاب كله: API متجر كامل، آمن، ومختبر، وقابل للملاحظة، يُبنى من مجلد فارغ إلى حاوية عاملة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch18" data-chapter="18" data-code="b3/laravel/capstone/ar">
+<div class="opener"><span class="opener-num">18</span><p class="chapter-kicker">الفصل 18</p><h1>المشروع الختامي: واجهة برمجية للإنتاج</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل سوف</p>
+<ul>
+<li>تحوّل وصفاً قصيراً إلى نقاط النهاية والجداول وأهداف الجودة لواجهة برمجية حقيقية</li>
+<li>تبني الحسابات والمنتجات والطلبات في مشروع Laravel واحد، كلٌّ بتقنيات فصله</li>
+<li>تجعل الطلب يحدث مرة واحدة بالضبط، حتى لو أرسله العميل مرتين</li>
+<li>ترسل بريد الطلب عبر مهمة تُعتمد مع الطلب، لا قبله أبداً</li>
+<li>تثبت ذلك بـ Pest على قاعدة بيانات حقيقية، ثم تشغّل النظام كله في حاويات</li>
+<li>تراجع النتيجة على قائمة فحص الإنتاج، وتعرف ما الذي ما زال ناقصاً</li>
+</ul>
+</div>
+
+<p class="lead">حلّ كل فصل من هذا الكتاب مشكلة واحدة على مثال صغير: مسار، ومعاملة، وقفل، ورمز، ومهمة، ومقياس. والخدمة الحقيقية تحتاجها كلها معاً، والصعب ليس أي تقنية وحدها بل كيف تتلاءم. في هذا الفصل الأخير نبني واجهة متجر Bit البرمجية في مشروع Laravel جديد، ونشغّلها نظاماً من أربع حاويات: نحو 500 سطر من PHP كتبناها، كل سطر شُغّل، وكل اختبار نجح، وكل إجابة أدناه طبعها الخادم الحقيقي.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل قسم يذكر الفصل الذي جاء منه قراره. وحين يبدو لك شيء جديداً، فتلك إشارتك لتعود إلى ذلك الفصل وتقرأه ثانية: ستفهمه أفضل الآن وأنت ترى موضعه.</p></div></div>
+
+<h2><span class="sec">18.1</span> <span>الوصف</span></h2>
+
+<p>يكتب صاحب المتجر: <em>«يجب أن ينشئ الزبائن حساباً، ويتصفحوا المنتجات، ويطلبوا. ولا يجوز أن يُحاسَب طلب مرتين أبداً، ويجب أن يصلهم بريد حين يُسجَّل الطلب. ويجب أن يبقى المتجر يعمل حين نكون مشغولين.»</em> وكما في كل مشروع حقيقي، أول مهمة أن نحوّل ذلك إلى شيء يمكن اختباره:</p>
+
+<table>
+<thead><tr><th>بصفتي زبوناً، أريد أن…</th><th>ينتهي حين…</th></tr></thead>
+<tbody>
+<tr><td>أنشئ حساباً وأسجّل الدخول</td><td>يعيد <code>POST /api/auth/register</code> و<code>POST /api/auth/login</code> مستخدماً ورمزاً؛ وقاعدة بيانات مسروقة لا تفتح أي حساب</td></tr>
+<tr><td>أتصفح المنتجات، الأرخص أولاً</td><td>يعيد <code>GET /api/products</code> صفحات بمؤشر؛ ولا يُتخطى منتج ولا يتكرر، مهما كبر الجدول</td></tr>
+<tr><td>أضع طلباً</td><td>يأخذ <code>POST /api/orders</code> المخزون ويحفظ الطلب معاً، أو لا يفعل أياً منهما؛ والطلب نفسه مرسلاً مرتين يصنع طلباً واحداً</td></tr>
+<tr><td>يصلني بريد حين أطلب</td><td>بريد واحد بالضبط لكل طلب، حتى لو تعطلت خدمة البريد أو العامل فترة</td></tr>
+</tbody>
+</table>
+
+<p>والصفات التي يجب أن تحققها كل نقطة نهاية أيضاً:</p>
+<ul>
+<li><strong>آمنة:</strong> كلمات المرور مبصومة، والرموز مخزنة كبصمات فقط، ومحاولات الدخول محدودة (الفصلان 9 و10).</li>
+<li><strong>متسقة:</strong> المخزون لا ينزل تحت الصفر أبداً، والمال بأعداد صحيحة، ولا طلب محفوظ نصفه (الفصلان 5 و7).</li>
+<li><strong>واضحة:</strong> كل خطأ بصيغة Problem Details نفسها، وكل مدخل مُتحقَّق منه (الفصل 4).</li>
+<li><strong>قابلة للمراقبة:</strong> سجلات منظمة ومقاييس وفحوص صحة من أول يوم (الفصل 14).</li>
+<li><strong>مختبرة وجاهزة للشحن:</strong> اختبارات على قاعدة بيانات حقيقية، وأمر واحد يشغّل كل شيء (الفصلان 13 و17).</li>
+</ul>
+
+<h2><span class="sec">18.2</span> <span>الخطة</span></h2>
+
+<p>نبدأ من <code>composer create-project laravel/laravel shop</code>، ونضيف Sanctum بـ <code>php artisan install:api</code>، وPredis لـ Redis، وPest للاختبارات، كما في الفصول السابقة. وهذه الملفات التي نضيفها أو نغيّرها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الملفات التي يضيفها هذا الفصل إلى مشروع Laravel جديد</span>
+<span class="c">$ </span><span class="k">find app/Http app/Jobs app/Models bootstrap/app.php routes/api.php database/migrations/*shop* tests/Feature Dockerfile compose.yaml -type f | sort</span>
+Dockerfile
+app/Http/Controllers/AuthController.php
+app/Http/Controllers/Controller.php
+app/Http/Controllers/OrderController.php
+app/Http/Controllers/ProductController.php
+app/Http/Middleware/Measure.php
+app/Http/Problem.php
+app/Jobs/SendOrderEmail.php
+app/Models/Order.php
+app/Models/OrderItem.php
+app/Models/Product.php
+app/Models/User.php
+bootstrap/app.php
+compose.yaml
+database/migrations/2026_11_20_000001_create_shop_tables.php
+routes/api.php
+tests/Feature/ApiTest.php</pre></div>
+
+<table>
+<thead><tr><th>الملف</th><th>يحوي</th><th>من الفصل</th></tr></thead>
+<tbody>
+<tr><td>الترحيل، و<code>Models/</code></td><td>ثلاثة جداول وقيودها وفهرس واحد؛ وأربعة نماذج</td><td>5، 6، 15</td></tr>
+<tr><td><code>Problem.php</code>، <code>bootstrap/app.php</code></td><td>كل خطأ يمكن أن تعطيه الواجهة، وأين يُعرض</td><td>4</td></tr>
+<tr><td><code>AuthController</code>، <code>AppServiceProvider</code></td><td>التسجيل، ورموز Sanctum، وحد الدخول</td><td>9، 10، 8</td></tr>
+<tr><td><code>ProductController</code>، <code>OrderController</code></td><td>صفحات المؤشر؛ ومعاملة الطلب</td><td>4، 7</td></tr>
+<tr><td><code>SendOrderEmail</code></td><td>المهمة التي ترسل التأكيد</td><td>11</td></tr>
+<tr><td><code>Measure</code>، <code>routes/api.php</code></td><td>السجلات والمقاييس والجاهزية؛ والمسارات</td><td>14</td></tr>
+</tbody>
+</table>
+
+<p>تبقى المتحكمات رفيعة بما يكفي لتُقرأ كاملة، فلا طبقة أفعال منفصلة كما في الفصل 16: البنية على قدر المشكلة. وحاوية خدمات Laravel هي جذر التركيب؛ ولا شيء هنا ينشئ اتصالاته بنفسه.</p>
+
+<h2><span class="sec">18.3</span> <span>جداول تضمن القواعد</span></h2>
+
+<p>تحمل الجداول القواعد التي يجب أن تصح مهما فعل الكود. والزوج الفريد <code>(user_id, idempotency_key)</code> قلب الطلب، والفهرس <code>(price, id)</code> يخدم صفحات المنتجات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_create_shop_tables.php</div><pre class="code">        Schema::create(<span class="s">&#x27;orders&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;foreignId(<span class="s">&#x27;user_id&#x27;</span>)-&gt;constrained();
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;idempotency_key&#x27;</span>, <span class="n">100</span>);
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;request_hash&#x27;</span>, <span class="n">64</span>);
+            $table-&gt;integer(<span class="s">&#x27;total&#x27;</span>)-&gt;<span class="k">default</span>(<span class="n">0</span>);
+            $table-&gt;timestamps();
+            <span class="c line-bidi">// طلب واحد لكل زبون ومفتاح: قاعدة البيانات ترفض الثاني</span>
+            $table-&gt;unique([<span class="s">&#x27;user_id&#x27;</span>, <span class="s">&#x27;idempotency_key&#x27;</span>]);
+        });</pre></div>
+
+<p>المخزون الذي لا ينزل تحت الصفر والسعر الموجب قيدا <code>CHECK</code>، ولا دالة لهما في باني المخطط، فيكتبهما الترحيل بـ SQL:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_create_shop_tables.php</div><pre class="code">        DB::statement(<span class="s">&#x27;ALTER TABLE products ADD CHECK (price &gt; 0), ADD CHECK (stock &gt;= 0)&#x27;</span>);
+        DB::statement(<span class="s">&#x27;ALTER TABLE order_items ADD CHECK (quantity &gt; 0)&#x27;</span>);</pre></div>
+
+<p>يتذكر <code>request_hash</code> ما طُلب مع كل مفتاح، فيمكن رفض مفتاح يعود بجسم مختلف. ولا جدول صندوق صادر هنا: يبيّن القسم 18.6 لماذا جدول <code>jobs</code> في Laravel صندوق صادر أصلاً.</p>
+
+<h2><span class="sec">18.4</span> <span>الأخطاء والحسابات وحد الدخول</span></h2>
+
+<p>كل خطأ يخرج من الواجهة بصيغة Problem Details في الفصل 4. وأخطاؤنا <code>Problem</code> بدوال إنشاء مسماة، مثل <code>Problem::outOfStock($id, $stock)</code>، ودالة واحدة تحوّل استثناءات Laravel نفسه إلى مشكلات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Problem.php</div><pre class="code">    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="k">from</span>(Throwable $e): <span class="k">self</span>
+    {
+        <span class="k">return</span> <span class="k">match</span> (<span class="k">true</span>) {
+            $e <span class="k">instanceof</span> <span class="k">self</span> =&gt; $e,
+            $e <span class="k">instanceof</span> AuthenticationException =&gt; <span class="k">self</span>::unauthenticated(),
+            $e <span class="k">instanceof</span> ValidationException =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">422</span>, <span class="s">&#x27;طلب غير صالح&#x27;</span>, <span class="k">null</span>, [
+                <span class="s">&#x27;errors&#x27;</span> =&gt; collect($e-&gt;errors())-&gt;map(<span class="k">fn</span> ($messages, $field) =&gt; [
+                    <span class="s">&#x27;field&#x27;</span> =&gt; $field, <span class="s">&#x27;message&#x27;</span> =&gt; $messages[<span class="n">0</span>],
+                ])-&gt;values()-&gt;all(),
+            ]),
+            $e <span class="k">instanceof</span> ThrottleRequestsException =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">429</span>, <span class="s">&#x27;محاولات كثيرة&#x27;</span>,
+                __(<span class="s">&#x27;حاول بعد :seconds ثانية.&#x27;</span>, [<span class="s">&#x27;seconds&#x27;</span> =&gt; $e-&gt;getHeaders()[<span class="s">&#x27;Retry-After&#x27;</span>]]), [], $e-&gt;getHeaders()),
+            $e <span class="k">instanceof</span> NotFoundHttpException =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">404</span>, <span class="s">&#x27;غير موجود&#x27;</span>),
+            <span class="k">default</span> =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">500</span>, <span class="s">&#x27;خطأ في الخادم&#x27;</span>),
+        };
+    }</pre></div>
+
+<p>وأي شيء مجهول يصير 500 عنوانه لا يقول شيئاً: التفاصيل تذهب إلى السجل، لا إلى العميل أبداً (الفصل 10). ويعرض <code>bootstrap/app.php</code> كل خطأ تحت <code>/api</code> بهذه الطريقة، ويحفظ عدّ حدود المعدل في Redis، ويحيط كل طلب بالوسيط <code>Measure</code> من القسم 18.7:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bootstrap/app.php</div><pre class="code">    -&gt;withMiddleware(<span class="k">function</span> (Middleware $middleware): <span class="k">void</span> {
+        <span class="c line-bidi">// حدود المعدل تُعدّ في Redis، تتشاركها كل نسخ التطبيق؛ وMeasure يحيط بكل طلب، فيرى أيضاً 401 و429 من الوسائط</span>
+        $middleware-&gt;throttleWithRedis();
+        $middleware-&gt;append(Measure::<span class="k">class</span>);
+    })
+    -&gt;withExceptions(<span class="k">function</span> (Exceptions $exceptions): <span class="k">void</span> {
+        <span class="c line-bidi">// كل خطأ تحت /api يخرج بصيغة Problem Details</span>
+        $exceptions-&gt;render(<span class="k">function</span> (Throwable $e, Request $request) {
+            <span class="k">if</span> ($request-&gt;is(<span class="s">&#x27;api/*&#x27;</span>)) {
+                <span class="k">return</span> Problem::<span class="k">from</span>($e)-&gt;render($request);
+            }
+        });
+    })-&gt;create();</pre></div>
+
+<p>والدخول هو ما في الفصل 9: بصمة وهمية للبُرُد المجهولة، فلا يكشف زمن الإجابة شيئاً، ورمز Sanctum تنتهي صلاحيته، لا يُخزَّن منه إلا بصمة SHA-256:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> login(Request $request): JsonResponse
+    {
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:254&#x27;</span>],
+            <span class="s">&#x27;password&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:128&#x27;</span>],
+        ]);
+        $user = User::where(<span class="s">&#x27;email&#x27;</span>, Str::lower($data[<span class="s">&#x27;email&#x27;</span>]))-&gt;first();
+        <span class="c line-bidi">// البريد المجهول يكلّف بصمة واحدة أيضاً، فلا يكشف الوقت أي البُرُد موجود</span>
+        $ok = Hash::check($data[<span class="s">&#x27;password&#x27;</span>], $user-&gt;password ?? <span class="k">self</span>::dummy());
+        <span class="k">if</span> (! $user || ! $ok) {
+            <span class="k">throw</span> Problem::badLogin();
+        }
+        <span class="c line-bidi">// لا يخزّن Sanctum إلا بصمة الرمز: جدول مسرَّب لا يفتح أي حساب</span>
+        $token = $user-&gt;createToken(<span class="s">&#x27;api&#x27;</span>, [<span class="s">&#x27;*&#x27;</span>], now()-&gt;addDays(<span class="n">30</span>))-&gt;plainTextToken;
+
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;token&#x27;</span> =&gt; $token]);
+    }</pre></div>
+
+<p>وحدّ الفصل 10 خمس محاولات في الدقيقة لكل عنوان وبريد. ومع <code>throttleWithRedis()</code> يعيش العدّ في Redis: ولو كان في الذاكرة أو في ملف على كل خادم، لسمحت ثلاث نسخ من التطبيق خلف موزّع الحمل بثلاثة أضعاف المحاولات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">        RateLimiter::<span class="k">for</span>(<span class="s">&#x27;login&#x27;</span>, <span class="k">fn</span> (Request $request) =&gt; Limit::perMinute(<span class="n">5</span>)
+            -&gt;by($request-&gt;ip().<span class="s">&#x27;|&#x27;</span>.Str::lower((<span class="k">string</span>) $request-&gt;input(<span class="s">&#x27;email&#x27;</span>))));</pre></div>
+
+<h2><span class="sec">18.5</span> <span>المنتجات، صفحة صفحة</span></h2>
+
+<p><code>cursorPaginate</code> في Laravel هو ترقيم المفاتيح من الفصل 4: المؤشر يحمل <code>price</code> و<code>id</code> آخر صف، والصفحة التالية تطلب الصفوف بعد هذا الزوج. ومع الفهرس <code>(price, id)</code> يقفز PostgreSQL مباشرة إلى المكان الصحيح، فتكلّف الصفحة 1000 ما تكلّفه الصفحة 1 (الفصل 15):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/ProductController.php</div><pre class="code">        $limit = $request-&gt;validate([
+            <span class="s">&#x27;limit&#x27;</span> =&gt; [<span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:50&#x27;</span>],
+        ])[<span class="s">&#x27;limit&#x27;</span>] ?? <span class="n">20</span>;
+        <span class="c line-bidi">// صفحات المؤشر في Laravel: المؤشر يحمل سعر آخر صف ورقمه</span>
+        $page = Product::query()
+            -&gt;select(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;stock&#x27;</span>)
+            -&gt;orderBy(<span class="s">&#x27;price&#x27;</span>)
+            -&gt;orderBy(<span class="s">&#x27;id&#x27;</span>)
+            -&gt;cursorPaginate($limit);
+
+        <span class="k">return</span> response()-&gt;json([
+            <span class="s">&#x27;data&#x27;</span> =&gt; $page-&gt;items(),
+            <span class="s">&#x27;next_cursor&#x27;</span> =&gt; $page-&gt;nextCursor()?-&gt;encode(),
+        ]);
+    }</pre></div>
+
+<p>ليس <code>orderBy('id')</code> الثاني زينة: قد يتشارك منتجان السعر نفسه، وبلا مفتاح ثانٍ فريد قد تتخطى حدودُ صفحةٍ بينهما أحدَهما أو تعرضه مرتين. ولهذا السبب بالضبط يحتاج <code>cursorPaginate</code> ترتيباً فريداً.</p>
+
+<h2><span class="sec">18.6</span> <span>طلبات تحدث مرة واحدة</span></h2>
+
+<p>الطلب قلب المتجر، والمكان الذي يلتقي فيه معظم الكتاب. تفقد الجوالات اتصالها وسط الطلب؛ فيعيد التطبيق المحاولة؛ أو ينقر الزبون مرتين. ولو صنع كل طلب طلباً، لدفع الزبون مرتين. لذلك يرسل العميل ترويسة <dfn>Idempotency-Key</dfn>، قيمة يختارها مرة لكل طلب ويكررها في كل إعادة محاولة. والطلب كله معاملة واحدة (الفصل 7)، وأول جملة فيها تحجز المفتاح:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">        $items = $request-&gt;validate([
+            <span class="s">&#x27;items&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;array&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:20&#x27;</span>],
+            <span class="s">&#x27;items.*.product_id&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;distinct&#x27;</span>],
+            <span class="s">&#x27;items.*.quantity&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:10&#x27;</span>],
+        ])[<span class="s">&#x27;items&#x27;</span>];
+        $key = Validator::validate(
+            [<span class="s">&#x27;idempotency_key&#x27;</span> =&gt; $request-&gt;header(<span class="s">&#x27;Idempotency-Key&#x27;</span>)],
+            [<span class="s">&#x27;idempotency_key&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;min:8&#x27;</span>, <span class="s">&#x27;max:100&#x27;</span>]],
+        )[<span class="s">&#x27;idempotency_key&#x27;</span>];
+        $user = $request-&gt;user();
+        $hash = hash(<span class="s">&#x27;sha256&#x27;</span>, json_encode($items));
+
+        <span class="c line-bidi">// الكل أو لا شيء: الطلب وبنوده والمخزون والمهمة تُعتمد معاً</span>
+        [$order, $replayed] = DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($user, $key, $hash, $items) {
+            <span class="c line-bidi">// يُحجز المفتاح أولاً؛ وON CONFLICT DO NOTHING لا يُدرج شيئاً إن كان مستعملاً</span>
+            $claimed = DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;insertOrIgnore([
+                <span class="s">&#x27;user_id&#x27;</span> =&gt; $user-&gt;id, <span class="s">&#x27;idempotency_key&#x27;</span> =&gt; $key, <span class="s">&#x27;request_hash&#x27;</span> =&gt; $hash,
+                <span class="s">&#x27;created_at&#x27;</span> =&gt; now(), <span class="s">&#x27;updated_at&#x27;</span> =&gt; now(),
+            ]);
+            $order = $user-&gt;orders()-&gt;where(<span class="s">&#x27;idempotency_key&#x27;</span>, $key)-&gt;firstOrFail();
+            <span class="k">if</span> ($claimed === <span class="n">0</span>) {
+                <span class="c line-bidi">// المفتاح استُعمل من قبل: أعد ذلك الطلب، إلا إن اختلف الجسم</span>
+                <span class="k">if</span> ($order-&gt;request_hash !== $hash) {
+                    <span class="k">throw</span> Problem::keyReused();
+                }
+
+                <span class="k">return</span> [$order, <span class="k">true</span>];</pre></div>
+
+<p>يصير <code>insertOrIgnore</code> على PostgreSQL <code>INSERT … ON CONFLICT DO NOTHING</code>، والقيد الفريد يقوم بالعمل الصعب. فإن وصلت نسختان من الطلب نفسه معاً، انتظر الإدراج الثاني المعاملةَ الأولى، ثم لم يُدرج شيئاً، فأعاد الكود ذلك الطلب. لا قفل في الكود، ولا سباق: قاعدة البيانات تضمن ذلك أصلاً. وإن عاد المفتاح بجسم <em>مختلف</em>، ففي العميل خلل، وقول ذلك خير من التخمين. وقاعدة <code>distinct</code> ترفض المنتج نفسه مرتين في طلب واحد، وهو ما كان المفتاح الأساسي للجدول سيرفضه بأدب أقل.</p>
+
+<p>ثم يأخذ كل بند مخزونه بالتحديث المشروط من الفصل 7: <code>decrement</code> على استعلام فيه <code>where('stock', '&gt;=', $quantity)</code> يعيد عدد الصفوف التي تغيرت. وإن نقص أي بند، أرجع الـ <code>Problem</code> المعاملة كلها، ومعها المفتاح المحجوز، فيستطيع العميل إصلاح الطلب وإعادة المحاولة بالمفتاح نفسه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">            $total = <span class="n">0</span>;
+            <span class="k">foreach</span> ($items <span class="k">as</span> [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity]) {
+                <span class="c line-bidi">// لا يؤخذ المخزون إلا إن كفى، في الجملة نفسها</span>
+                $taken = Product::whereKey($id)-&gt;where(<span class="s">&#x27;stock&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $quantity)
+                    -&gt;decrement(<span class="s">&#x27;stock&#x27;</span>, $quantity);
+                <span class="k">if</span> ($taken === <span class="n">0</span>) {
+                    $stock = Product::whereKey($id)-&gt;value(<span class="s">&#x27;stock&#x27;</span>);
+                    <span class="k">throw</span> $stock === <span class="k">null</span>
+                        ? Problem::unknownProduct($id)
+                        : Problem::outOfStock($id, $stock);
+                }
+                $price = Product::whereKey($id)-&gt;value(<span class="s">&#x27;price&#x27;</span>);
+                $order-&gt;items()-&gt;create([<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity, <span class="s">&#x27;price&#x27;</span> =&gt; $price]);
+                $total += $price * $quantity;
+            }
+            $order-&gt;update([<span class="s">&#x27;total&#x27;</span> =&gt; $total]);
+            <span class="c line-bidi">// طابور قاعدة البيانات يكتب المهمة في هذه المعاملة نفسها: صندوق صادر، بلا جدول إضافي</span>
+            SendOrderEmail::dispatch($order-&gt;id);
+
+            <span class="k">return</span> [$order, <span class="k">false</span>];
+        });
+
+        <span class="k">return</span> response()-&gt;json(<span class="k">self</span>::present($order), $replayed ? <span class="n">200</span> : <span class="n">201</span>,
+            $replayed ? [<span class="s">&#x27;Idempotent-Replayed&#x27;</span> =&gt; <span class="s">&#x27;true&#x27;</span>] : []);</pre></div>
+
+<p>انظر أين تُرسل المهمة: <em>داخل</em> المعاملة. في الفصل 11 كان ذلك خطأً، وكتبنا <code>afterCommit()</code>: مع طابور Redis، المهمة المدفوعة قبل الاعتماد قد تعمل قبل أن يوجد الطلب، أو توجد لطلب تراجع. وهنا اتصال الطابور <code>database</code>، وطابور قاعدة البيانات يكتب المهمة صفاً في جدول <code>jobs</code> <em>عبر الاتصال نفسه، في المعاملة نفسها</em>. فتوجد المهمة إذا وُجد الطلب وفقط إذا وُجد. وذلك نمط <dfn>الصندوق الصادر</dfn> (outbox)، بلا جدول إضافي ولا كود إضافي.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>سطر الكود نفسه، <code>SendOrderEmail::dispatch()</code>، صحيح مع محرّك طابور وخطأ مع آخر. ومعرفة <em>السبب</em> هي ما يتيح لك الاختيار: طابور قاعدة البيانات يُعتمد مع بياناتك؛ وRedis أسرع، لكنه يحتاج <code>afterCommit()</code> ويقبل فجوة صغيرة بين الاعتماد والدفع.</p></div></div>
+
+<p>والمهمة نفسها تحمل رقم الطلب وحده وتقرأ الباقي حين تعمل، كما في الفصل 11. ويعطي <code>$tries</code> و<code>$backoff</code> خدمةَ بريد بطيئة بضع فرص قبل أن تُعلَّم المهمة فاشلة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Jobs/SendOrderEmail.php</div><pre class="code"><span class="k">class</span> SendOrderEmail <span class="k">implements</span> ShouldQueue
+{
+    <span class="k">use</span> Queueable;
+
+    <span class="k">public</span> <span class="k">int</span> $tries = <span class="n">5</span>;
+
+    <span class="k">public</span> <span class="k">array</span> $backoff = [<span class="n">5</span>, <span class="n">30</span>, <span class="n">120</span>];
+
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">public</span> <span class="k">int</span> $orderId) {}
+
+    <span class="k">public</span> <span class="k">function</span> handle(): <span class="k">void</span>
+    {
+        $order = Order::with(<span class="s">&#x27;user:id,email&#x27;</span>)-&gt;findOrFail($<span class="k">this</span>-&gt;orderId);
+        Log::info(<span class="s">&#x27;email sent&#x27;</span>, [<span class="s">&#x27;to&#x27;</span> =&gt; $order-&gt;user-&gt;email, <span class="s">&#x27;order_id&#x27;</span> =&gt; $order-&gt;id]);
+    }
+}</pre></div>
+
+<p>يأخذ العامل المهام بـ <code>FOR UPDATE SKIP LOCKED</code>، فلا يشغّل عاملان المهمة نفسها أبداً. والتسليم <em>مرة واحدة على الأقل</em>: العامل الذي يتعطل بعد الإرسال وقبل حذف المهمة يتركها للتالي، فيخرج البريد مرتين. ومزوّد البريد الحقيقي يقبل مفتاح Idempotency أيضاً، ورقم الطلب هو المفتاح الطبيعي لذلك.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يُحجز المفتاح بـ <code>insertOrIgnore</code> بدل أن نفحص أولاً هل يوجد طلب بذلك المفتاح؟</li><li>طلب من بندين، والثاني نفد مخزونه. ماذا يبقى في قاعدة البيانات بعدها، ومنها جدول <code>jobs</code>؟</li><li>لماذا يجوز استدعاء <code>SendOrderEmail::dispatch()</code> داخل المعاملة هنا، والفصل 11 استعمل <code>afterCommit()</code>؟</li></ol></aside>
+
+<h2><span class="sec">18.7</span> <span>السجلات والمقاييس والصحة</span></h2>
+
+<p>وسيط واحد، مضاف إلى كل طلب، يكتب سطر سجل JSON واحداً ويزيد عدّاداً واحداً في Redis، مفتاحه الطريقة والمسار والحالة. ولأنه يحيط بالموجّه كله، يرى أيضاً 401 من <code>auth:sanctum</code> و429 من حد المعدل، اللذين يحدثان قبل أن يعمل أي متحكم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/Measure.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $start = hrtime(<span class="k">true</span>);
+        $response = $next($request);
+        $route = $request-&gt;route()?-&gt;uri() ?? <span class="s">&#x27;unknown&#x27;</span>;
+        <span class="k">if</span> (in_array($route, [<span class="s">&#x27;up&#x27;</span>, <span class="s">&#x27;api/ready&#x27;</span>, <span class="s">&#x27;api/metrics&#x27;</span>])) {
+            <span class="k">return</span> $response;
+        }
+        $status = $response-&gt;getStatusCode();
+        Redis::hincrby(<span class="s">&#x27;metrics:requests&#x27;</span>, <span class="s">&quot;{$request-&gt;method()}|$route|$status&quot;</span>, <span class="n">1</span>);
+        Log::info(<span class="s">&#x27;request&#x27;</span>, [
+            <span class="s">&#x27;method&#x27;</span> =&gt; $request-&gt;method(),
+            <span class="s">&#x27;url&#x27;</span> =&gt; $request-&gt;getRequestUri(),
+            <span class="s">&#x27;status&#x27;</span> =&gt; $status,
+            <span class="s">&#x27;ms&#x27;</span> =&gt; intdiv(hrtime(<span class="k">true</span>) - $start, 1_000_000),
+        ]);
+
+        <span class="k">return</span> $response;
+    }</pre></div>
+
+<p>تعيش العدّادات في Redis لا في ذاكرة PHP لأن PHP ينسى كل شيء بين الطلبات، ولأن كل نسخ التطبيق يجب أن تضيف إلى الأرقام نفسها (الفصل 14). ويطبعها <code>Measure::metrics()</code> بصيغة Prometheus النصية. وتضيف المسارات نقطتي الصحة: <code>/up</code> الخاصة بـ Laravel تقول إن البرنامج حي، وهذا ما يسأله فحص صحة Docker؛ و<code>/api/ready</code> تقول إنه قادر على عمله، وهذا ما يسأله موزّع الحمل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">Route::post(<span class="s">&#x27;auth/register&#x27;</span>, [AuthController::<span class="k">class</span>, <span class="s">&#x27;register&#x27;</span>]);
+Route::post(<span class="s">&#x27;auth/login&#x27;</span>, [AuthController::<span class="k">class</span>, <span class="s">&#x27;login&#x27;</span>])-&gt;middleware(<span class="s">&#x27;throttle:login&#x27;</span>);
+Route::get(<span class="s">&#x27;products&#x27;</span>, [ProductController::<span class="k">class</span>, <span class="s">&#x27;index&#x27;</span>]);
+
+Route::middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>)-&gt;group(<span class="k">function</span> () {
+    Route::post(<span class="s">&#x27;orders&#x27;</span>, [OrderController::<span class="k">class</span>, <span class="s">&#x27;store&#x27;</span>]);
+    Route::get(<span class="s">&#x27;orders/{id}&#x27;</span>, [OrderController::<span class="k">class</span>, <span class="s">&#x27;show&#x27;</span>])-&gt;whereNumber(<span class="s">&#x27;id&#x27;</span>);
+});
+
+<span class="c line-bidi">// الجاهزية أن تجيب قاعدة البيانات وRedis معاً؛ و/up تقول فقط إن البرنامج حي</span>
+Route::get(<span class="s">&#x27;ready&#x27;</span>, <span class="k">function</span> () {
+    <span class="k">try</span> {
+        DB::select(<span class="s">&#x27;SELECT 1&#x27;</span>);
+        Redis::ping();
+
+        <span class="k">return</span> [<span class="s">&#x27;ready&#x27;</span> =&gt; <span class="k">true</span>];
+    } <span class="k">catch</span> (Throwable) {
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;ready&#x27;</span> =&gt; <span class="k">false</span>], <span class="n">503</span>);
+    }
+});
+Route::get(<span class="s">&#x27;metrics&#x27;</span>, [Measure::<span class="k">class</span>, <span class="s">&#x27;metrics&#x27;</span>]);</pre></div>
+
+<h2><span class="sec">18.8</span> <span>اختبارات على قاعدة بيانات حقيقية</span></h2>
+
+<p>الاختبارات اختبارات ميزات في Pest (الفصل 13): طلبات حقيقية عبر المسارات والوسائط وقاعدة البيانات الحقيقية. ويوجّهها <code>phpunit.xml</code> إلى قاعدة <code>shop_test</code> في PostgreSQL وإلى طابور <code>database</code>، فيستطيع الاختبار عدّ صفوف المهام. و<code>DatabaseTruncation</code> يرحّل مرة ويفرّغ كل جدول قبل كل اختبار، فيبدأ كل واحد بالمنتجات الخمسة نفسها، بالأرقام نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/ApiTest.php</div><pre class="code">pest()-&gt;<span class="k">use</span>(DatabaseTruncation::<span class="k">class</span>);
+
+beforeEach(<span class="k">fn</span> () =&gt; $<span class="k">this</span>-&gt;seed());
+
+<span class="k">function</span> signIn(): <span class="k">array</span>
+{
+    $user = [<span class="s">&#x27;email&#x27;</span> =&gt; <span class="s">&#x27;sara@example.com&#x27;</span>, <span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;Sara&#x27;</span>, <span class="s">&#x27;password&#x27;</span> =&gt; <span class="s">&#x27;a long password&#x27;</span>];
+    test()-&gt;postJson(<span class="s">&#x27;/api/auth/register&#x27;</span>, $user);
+    $token = test()-&gt;postJson(<span class="s">&#x27;/api/auth/login&#x27;</span>, $user)-&gt;json(<span class="s">&#x27;token&#x27;</span>);
+
+    <span class="k">return</span> [<span class="s">&#x27;Authorization&#x27;</span> =&gt; <span class="s">&quot;Bearer $token&quot;</span>];
+}
+
+<span class="k">function</span> order(<span class="k">array</span> $headers, <span class="k">string</span> $key, <span class="k">array</span> $items)
+{
+    <span class="k">return</span> test()-&gt;postJson(<span class="s">&#x27;/api/orders&#x27;</span>, [<span class="s">&#x27;items&#x27;</span> =&gt; $items], [...$headers, <span class="s">&#x27;Idempotency-Key&#x27;</span> =&gt; $key]);
+}</pre></div>
+
+<p>كل اختبار يقرر وعداً واحداً من الوصف. وأهمها الأول، الذي يرسل الطلب نفسه مرتين ويتحقق أن هناك طلباً واحداً، وخصماً واحداً من المخزون، ومهمة واحدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/ApiTest.php</div><pre class="code">test(<span class="s">&#x27;places an order once, however many times the same key is sent&#x27;</span>, <span class="k">function</span> () {
+    $auth = signIn();
+    $items = [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">3</span>]];
+    $first = order($auth, <span class="s">&#x27;key-0001&#x27;</span>, $items)-&gt;assertCreated();
+    order($auth, <span class="s">&#x27;key-0001&#x27;</span>, $items)-&gt;assertOk()-&gt;assertJsonPath(<span class="s">&#x27;id&#x27;</span>, $first-&gt;json(<span class="s">&#x27;id&#x27;</span>));
+    expect(Product::find(<span class="n">2</span>)-&gt;stock)-&gt;toBe(<span class="n">47</span>)
+        -&gt;and(DB::table(<span class="s">&#x27;jobs&#x27;</span>)-&gt;count())-&gt;toBe(<span class="n">1</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الاختبارات، على PostgreSQL وRedis</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest</span>
+
+   PASS  Tests\Feature\ApiTest
+  ✓ places an order once, however many times the same key is sent
+  ✓ refuses a key reused with another body
+  ✓ takes no stock when one line is short
+  ✓ refuses an order without a token
+  ✓ pages follow each other with no gaps and no repeats
+
+  Tests:    5 passed (14 assertions)
+  Duration: …</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: الاختبارات والبيانات الحقيقية</p><p>استعملت نسختنا الأولى <code>RefreshDatabase</code>، الذي يلف كل اختبار في معاملة ويُرجعها. وهذا سريع، لكن تسلسلات PostgreSQL لا تتراجع، فأخذت المنتجات أرقاماً جديدة في كل اختبار، وفشلت الاختبارات التي استعملت الرقمين 1 و2. والتفريغ يعيد ضبطها. وأياً كان اختيارك، يجب أن تستعمل الاختبارات قاعدة بياناتها الخاصة، المذكورة في <code>phpunit.xml</code>: لا تدع مشغّل الاختبارات يصل أبداً إلى صلاحيات الإنتاج، لأن تفريغ الجداول هو بالضبط ما تفعله الاختبارات.</p></aside>
+
+<h2><span class="sec">18.9</span> <span>الشحن</span></h2>
+
+<p>لملف <code>Dockerfile</code> مرحلتان. الأولى، من صورة Composer الرسمية، تثبّت الاعتماديات من ملف القفل، بلا اعتماديات التطوير، قبل نسخ الكود، فلا تُعاد هذه الطبقة إلا حين يتغير <code>composer.lock</code> (الفصل 17). والثانية PHP مع Apache ومشغّل PostgreSQL، ولا تستقبل إلا التطبيق الجاهز:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Dockerfile</div><pre class="code">FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+COPY . .
+RUN composer dump-autoload --optimize --no-dev
+
+FROM php:8.5-apache
+RUN apt-get update \
+ &amp;&amp; apt-get install -y --no-install-recommends libpq-dev \
+ &amp;&amp; docker-php-ext-install pdo_pgsql pcntl \
+ &amp;&amp; rm -rf /var/lib/apt/lists/*
+RUN mv &quot;$PHP_INI_DIR/php.ini-production&quot; &quot;$PHP_INI_DIR/php.ini&quot;
+RUN echo &quot;FallbackResource /index.php&quot; &gt; /etc/apache2/conf-enabled/laravel.conf \
+ &amp;&amp; echo &#x27;SetEnvIf Authorization &quot;(.+)&quot; HTTP_AUTHORIZATION=$1&#x27; &gt;&gt; /etc/apache2/conf-enabled/laravel.conf \
+ &amp;&amp; sed -i &#x27;s#/var/www/html#/var/www/html/public#&#x27; /etc/apache2/sites-available/000-default.conf
+WORKDIR /var/www/html
+COPY --from=vendor --chown=www-data:www-data /app ./
+HEALTHCHECK --interval=5s --timeout=2s CMD curl -fs http://localhost/up || exit 1</pre></div>
+
+<p>سطر واحد يستحق الانتباه: <code>SetEnvIf Authorization …</code>. لا يسلّم Apache ترويسة <code>Authorization</code> إلى PHP افتراضياً. وفي <code>public/.htaccess</code> في Laravel الإصلاح نفسه، لكن إعدادنا لا يقرأ ملفات <code>.htaccess</code>. وبلا هذا السطر ينجح كل دخول، ويجيب كل طلب مصادَق بـ 401: وهذا بالضبط ما طبعه أول تسجيل لهذا الفصل، حتى أضفناه.</p>
+
+<p>ويشغّل Compose الأجزاء الأربعة. التطبيق والعامل <em>الصورة نفسها</em> بأمرين مختلفين، فلا يمكن أن يشغّلا نسختين مختلفتين من الكود. والإعدادات من البيئة؛ ويُقرأ <code>APP_KEY</code> من ملف <code>.env</code> بجانب <code>compose.yaml</code>، الذي يُبقيه <code>.dockerignore</code> خارج الصورة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">compose.yaml</div><pre class="code">  app:
+    build: .
+    image: shop-api
+    ports:
+      - &quot;8080:80&quot;
+    environment: &amp;env
+      APP_ENV: production
+      APP_DEBUG: &quot;false&quot;
+      # read from the .env file next to this one, which never goes into the image
+      APP_KEY: ${APP_KEY:?APP_KEY is not set}
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_DATABASE: shop
+      DB_USERNAME: shop
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_CLIENT: predis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: database
+      LOG_CHANNEL: stderr
+      LOG_STDERR_FORMATTER: Monolog\Formatter\JsonFormatter
+    depends_on: &amp;ready
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: shop-api
+    command: [&quot;php&quot;, &quot;artisan&quot;, &quot;queue:work&quot;, &quot;--sleep=1&quot;]
+    environment: *env
+    depends_on: *ready
+    # the worker serves no HTTP, so the image&#x27;s health check does not apply
+    healthcheck:
+      disable: true</pre></div>
+
+<p>وتعمل الترحيلات خطوةً مستقلة، وقاعدة البيانات قائمة والنسخة الجديدة لم تبدأ الخدمة بعد. فالتطبيق الذي يرحّل حين يبدأ سيشغّل الترحيل مرة لكل نسخة، كلها في اللحظة نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الصورة</span>
+<span class="c">$ </span><span class="k">docker build -t shop-api .</span>
+<span class="c">$ </span><span class="k">docker image ls shop-api</span>
+shop-api:latest  841MB
+<span class="c line-bidi"># أولاً قاعدة البيانات وRedis، ثم الترحيلات، خطوةً مستقلة</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait db redis &gt; /dev/null 2&gt;&amp;1</span>
+<span class="c">$ </span><span class="k">docker compose run --rm app php artisan migrate --force --seed</span>
+Creating migration table … DONE
+0001_01_01_000000_create_users_table … DONE
+0001_01_01_000001_create_cache_table … DONE
+0001_01_01_000002_create_jobs_table … DONE
+2026_11_20_000001_create_shop_tables … DONE
+2026_11_20_153123_create_personal_access_tokens_table … DONE
+<span class="c line-bidi"># ثم الـ API والعامل</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait</span>
+Container shop-db-1 Healthy
+Container shop-redis-1 Healthy
+Container shop-app-1 Started
+Container shop-worker-1 Started
+Container shop-worker-1 Healthy
+Container shop-app-1 Healthy
+<span class="c">$ </span><span class="k">docker compose ps --format &#x27;table {{.Service}}\t{{.Status}}&#x27;</span>
+SERVICE   STATUS
+app       Up 5 seconds (healthy)
+db        Up 10 seconds (healthy)
+redis     Up 10 seconds (healthy)
+worker    Up 5 seconds</pre></div>
+
+<h2><span class="sec">18.10</span> <span>إثبات أنه يعمل</span></h2>
+
+<p>والآن رحلة الزبون، على الحاويات العاملة. حساب، ورمز، والمنتجات، اثنان في كل صفحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># حساب</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/auth/register -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;name&quot;:&quot;Sara&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;email&quot;:&quot;sara@example.com&quot;,&quot;name&quot;:&quot;Sara&quot;}
+<span class="c line-bidi"># رمز</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:8080/api/auth/login -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># أول صفحة من المنتجات، الأرخص أولاً</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8080/api/products?limit=2&#x27; | jq -c</span>
+{&quot;data&quot;:[{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:6000,&quot;stock&quot;:50},{&quot;id&quot;:4,&quot;name&quot;:&quot;حزمة بطاريات&quot;,&quot;price&quot;:9000,&quot;stock&quot;:30}],&quot;next_cursor&quot;:&quot;eyJwcmljZSI6OTAwMCwiaWQiOjQsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0&quot;}
+<span class="c line-bidi"># الصفحة التالية، من المؤشر</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8080/api/products?limit=2&amp;cursor=eyJwcmljZSI6OTAwMCwiaWQiOjQsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0&#x27; | jq -c &#x27;.data[].name, .next_cursor&#x27;</span>
+&quot;كاوية لحام&quot;
+&quot;طقم حساسات&quot;
+&quot;eyJwcmljZSI6MjUwMDAsImlkIjo1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9&quot;</pre></div>
+
+<p>طلب، ثم الطلب نفسه ثانية، كما يرسله جوال بعد أن ضاعت الإجابة الأولى. والإجابة الثانية <code>200</code> لا <code>201</code>: الطلب نفسه، معلَّماً بأنه إعادة. ثم الإخفاقات، كلٌّ منها Problem واضح:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># طلب، بمفتاح اختاره العميل</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 201 Created
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:31:47.000000Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># فشلت الشبكة فأعاد العميل الإرسال، بالمفتاح نفسه</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 200 OK
+Idempotent-Replayed: true
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:31:47.000000Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># أكثر من المخزون</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0002&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;المخزون لا يكفي&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;بقي من المنتج 1: 3.&quot;,&quot;instance&quot;:&quot;/api/orders&quot;}
+<span class="c line-bidi"># بلا رمز</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &#x27;idempotency-key: order-0003&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;لم تسجّل الدخول&quot;,&quot;status&quot;:401,&quot;detail&quot;:&quot;أرسل رمزاً صالحاً: Authorization: Bearer &lt;token&gt;.&quot;,&quot;instance&quot;:&quot;/api/orders&quot;}
+<span class="c line-bidi"># أحدهم يخمّن كلمة مرور</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:8080/api/auth/login -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess&quot;}&#x27;; done; echo</span>
+401 401 401 401 429 429 </pre></div>
+
+<p>أربع كلمات مرور خاطئة تجيب 401، ثم تُرفض المحاولة الخامسة في الدقيقة (الدخول الناجح عُدّ أولاها) قبل أن تُفحص كلمة المرور أصلاً. وأخيراً، ما يراه المشغّلون. تعدّ المقاييس كل إجابة حسب المسار والحالة، وشغّل العامل مهمة واحدة بالضبط للطلب الواحد، وفي سجل الـ API سطر JSON لكل طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما سيجمعه Prometheus</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/metrics | grep &#x27;^http_requests_total&#x27;</span>
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/register&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/login&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;GET&quot;,route=&quot;/api/products&quot;,status=&quot;200&quot;} 2
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;409&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;401&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/login&quot;,status=&quot;401&quot;} 4
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/login&quot;,status=&quot;429&quot;} 2
+<span class="c line-bidi"># العامل أرسل البريد، مرة واحدة</span>
+<span class="c">$ </span><span class="k">docker compose logs worker</span>
+  15:31:48 App\Jobs\SendOrderEmail … RUNNING
+{&quot;message&quot;:&quot;email sent&quot;,&quot;context&quot;:{&quot;to&quot;:&quot;sara@example.com&quot;,&quot;order_id&quot;:1},&quot;level&quot;:200,&quot;level_name&quot;:&quot;INFO&quot;,&quot;channel&quot;:&quot;production&quot;,&quot;extra&quot;:{}}
+  15:31:48 App\Jobs\SendOrderEmail … DONE
+<span class="c line-bidi"># طلب واحد في سجل الـ API</span>
+<span class="c">$ </span><span class="k">docker compose logs app</span>
+{&quot;level_name&quot;:&quot;INFO&quot;,&quot;message&quot;:&quot;request&quot;,&quot;context&quot;:{&quot;method&quot;:&quot;POST&quot;,&quot;url&quot;:&quot;/api/orders&quot;,&quot;status&quot;:201,&quot;ms&quot;:74}}
+<span class="c line-bidi"># أوقف كل شيء واحذف البيانات</span>
+<span class="c">$ </span><span class="k">docker compose down -v</span>
+Container shop-app-1 Removed 
+Container shop-worker-1 Removed 
+Container shop-db-1 Removed 
+Container shop-redis-1 Removed 
+Network shop_default Removed 
+Volume shop_db-data Removed </pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: قائمة فحص الإنتاج</p><p>قبل أن تستقبل الخدمة حركة حقيقية، امرّ مع الفريق على قائمة مكتوبة قصيرة: الإعدادات من البيئة والأسرار خارج الصورة؛ والترحيلات خطوة منفصلة؛ و<code>php artisan optimize</code> حين تبدأ الحاوية، فتُخزَّن الإعدادات والمسارات؛ وفحصا الصحة والجاهزية موصولان بالمنصة؛ والسجلات تُجمع، وتنبيه على معدل الأخطاء وزمن الاستجابة؛ والمهام الفاشلة تحت المراقبة؛ والنسخ الاحتياطية تؤخذ <em>واستعادة جُرّبت</em>؛ وحدود معدل على كل ما يكلّف مالاً أو يخمّن أسراراً؛ وتراجع جُرّب من قبل. القائمة مملة عمداً: نادراً ما تأتي الحوادث من أخطاء ذكية، وغالباً من سطر منسي في قائمة كهذه.</p></aside>
+
+<h2><span class="sec">18.11</span> <span>ما الذي بنيته</span></h2>
+
+<p>في نحو 500 سطر كتبناها: حسابات بكلمات مرور مبصومة ورموز تنتهي صلاحيتها؛ وصفحات منتجات تبقى سريعة بأي حجم؛ وطلبات ذرية، لا تتكرر، ولا تبيع أكثر من المخزون أبداً؛ ورسائل بريد تُعتمد مهامها مع الطلب؛ وProblem Details لكل خطأ؛ وسجلات ومقاييس ونوعان من فحص الصحة؛ واختبارات تثبت كل وعد على قاعدة بيانات حقيقية؛ وصورة واحدة يشغّلها Compose مع قاعدة بياناتها وRedis وعاملها.</p>
+
+<p>وما ستضيفه نسخة إنتاج، كلٌّ من فصل قرأته: أسرار من المنصة لا من الملفات (الفصل 17)؛ وHTTPS وترويسات الأمان في المقدمة (الفصل 10)؛ وتتبّع يشمل العامل (الفصل 14)؛ وصورة أصغر بـ PHP-FPM أو FrankenPHP إن كان حجمها مهماً (الفصل 17)؛ وخط CI يشغّل الاختبارات ويبني الصورة وينشرها. لا شيء منها يغيّر الكود الذي كتبته؛ كلٌّ منها يجلس حوله. وتلك علامة بنية جاهزة لأن تكبر.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>إعادة محاولة الطلبات بلا مفتاح Idempotency</td><td>زبائن يُحاسَبون مرتين على شبكة سيئة</td><td>مفتاح من العميل، يحجزه قيد فريد</td></tr>
+<tr><td>فحص ثم إدراج للمفتاح</td><td>طلبان يجتازان الفحص كلاهما</td><td><code>insertOrIgnore</code> على زوج فريد</td></tr>
+<tr><td>مهمة Redis تُرسل داخل المعاملة</td><td>المهمة تعمل قبل الاعتماد، أو لطلب تراجع</td><td><code>afterCommit()</code>، أو طابور قاعدة البيانات صندوقاً صادراً</td></tr>
+<tr><td>عدّ حدّ المعدل لكل خادم</td><td>كل نسخة تعطي محاولات جديدة</td><td><code>throttleWithRedis()</code></td></tr>
+<tr><td>صفحات بالإزاحة على جدول يكبر</td><td>صفحات عميقة بطيئة؛ وصفوف تُتخطى أو تتكرر</td><td><code>cursorPaginate</code> على ترتيب مفهرس وفريد</td></tr>
+<tr><td>Apache بلا إصلاح Authorization</td><td>كل طلب برمز يجيب 401</td><td><code>SetEnvIf Authorization</code>، أو <code>.htaccess</code> الخاص بـ Laravel</td></tr>
+<tr><td>كل حاوية تشغّل الترحيلات عند بدئها</td><td>عدة نسخ ترحّل في وقت واحد</td><td>خطوة <code>migrate --force</code> منفصلة</td></tr>
+<tr><td>الاختبارات تتشارك قاعدة بيانات التطوير</td><td>بيانات ضائعة، واختبارات يعتمد بعضها على بعض</td><td>قاعدة اختبار منفصلة في <code>phpunit.xml</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>حوّل الوصف إلى <strong>قصص مستخدم</strong> لكل منها اختبار «انتهى»، واكتب <strong>أهداف الجودة</strong> قبل الكود.</li>
+<li>دع <strong>قاعدة البيانات تضمن</strong> ما يجب أن يصح دائماً: المفاتيح الفريدة، والمخزون لا ينزل تحت الصفر، وطلب واحد لكل مفتاح Idempotency.</li>
+<li>اجعل إعادة المحاولة آمنة بـ <strong>Idempotency-Key</strong>: احجزه في معاملة الطلب، وأعد الإجابة نفسها، وارفض جسماً تغيّر.</li>
+<li>اعرف ما يفعله <strong>محرّك الطابور</strong> بالمعاملات: طابور قاعدة البيانات <strong>صندوق صادر</strong>؛ وRedis يحتاج <code>afterCommit()</code>.</li>
+<li>أبقِ الحالة المشتركة، مثل <strong>عدّ حدّ المعدل</strong> و<strong>المقاييس</strong>، في Redis، فيتصرف أي عدد من النسخ كنسخة واحدة.</li>
+<li>أعطِ كل خطأ شكلاً واحداً بـ <strong>Problem Details</strong>، وكل خدمة <strong>سجلات ومقاييس وصحة وجاهزية</strong>.</li>
+<li>أثبت كل وعد <strong>بـ Pest على قاعدة بيانات حقيقية</strong>، واشحن <strong>صورة واحدة</strong> للتطبيق وعامله، ورحّل في <strong>خطوة منفصلة</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن الفحص أولاً يترك ثغرة: نسختان من الطلب نفسه قد لا تجد كلتاهما طلباً بذلك المفتاح، فتنشئ كلتاهما طلباً. أما <code>insertOrIgnore</code> فيحجز المفتاح ويفحصه في جملة واحدة، والقيد الفريد يجعل الإدراج الثاني ينتظر المعاملة الأولى، ثم لا يُدرج شيئاً. 2. لا شيء من هذا الطلب: الـ <code>Problem</code> يُرجع المعاملة، فيُلغى صف الطلب، وبنده الأول، والمخزون الذي أُخذ له، والمفتاح المحجوز؛ ولأن المهمة تُرسل بعد الحلقة، لم يُكتب صف مهمة أصلاً (ولو كُتب لتراجع هو أيضاً). 3. لأن اتصال الطابور <code>database</code>: المهمة صف يُكتب عبر الاتصال نفسه، فتنتمي إلى المعاملة نفسها وتختفي إن تراجع الطلب. ومع طابور Redis يحدث الدفع فوراً وخارج المعاملة، ولهذا احتاج الفصل 11 إلى <code>afterCommit()</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">تُنمّي هذه المشاريع الواجهة كما تنمو الواجهات الحقيقية. لكل مشروع، اكتب قصة المستخدم واختبار Pest لها أولاً، وضع القاعدة حيث تضمنها قاعدة البيانات متى أمكن، وشغّل الاختبارات والنظام كله في Compose قبل أن تقول إنه انتهى.</p>
+
+<div class="project">
+<p class="project-label">المشروع 18.1 · سهل</p>
+<h3>طلباتي</h3>
+<p class="project-goal">أضف <code>GET /api/orders</code>: طلبات الزبون المسجّل، الأحدث أولاً، في صفحات بمؤشر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> Sanctum على مسار، و<code>cursorPaginate</code>، وفهرس يطابق الاستعلام.</p>
+<ol class="steps">
+<li>اكتب اختباراً أولاً: زبونان يضع كل منهما طلبات؛ ولا يرى كل منهما إلا طلباته، الأحدث أولاً.</li>
+<li>أضف <code>index</code> إلى <code>OrderController</code>، باستعمال <code>$request-&gt;user()-&gt;orders()</code> مرتبة بـ <code>created_at</code> و<code>id</code>، تنازلياً كلاهما.</li>
+<li>أضف فهرساً على <code>orders (user_id, created_at, id)</code> في ترحيل جديد، وتحقق بـ <code>EXPLAIN</code> أنه يُستعمل.</li>
+<li>اختبر أن مؤشراً من زبون لا يعطي الزبون الآخر شيئاً من طلبات الأول.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البدء من <code>$request-&gt;user()-&gt;orders()</code> يُبقي الشرط على <code>user_id</code> في كل صفحة؛ المؤشر يقول من أين تبدأ فقط، لا طلباتِ مَن تُعرض.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 18.2 · متوسط</p>
+<h3>إلغاء طلب</h3>
+<p class="project-goal">أضف <code>POST /api/orders/{id}/cancel</code>: خلال 30 دقيقة من وضعه، يجوز للزبون الإلغاء، ويعود المخزون.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التحديثات المشروطة، والمعاملات، ومهام تُعتمد مع البيانات، واختبار قواعد تعتمد على الوقت.</p>
+<ol class="steps">
+<li>أضف عمود <code>status</code> (<code>placed</code> و<code>cancelled</code>) بقيد check، في ترحيل جديد.</li>
+<li>في معاملة واحدة: حدّث الطلب إلى <code>cancelled</code> فقط حيث يكون <code>placed</code>، ويملكه المستخدم، وحديثاً بما يكفي؛ ثم زِد مخزون كل منتج ببنده بـ <code>increment</code>؛ ثم أرسل مهمة <code>SendCancellationEmail</code>.</li>
+<li>الإلغاء مرتين يجب ألا يضر: النداء الثاني لا يغيّر شيئاً ويقول ذلك.</li>
+<li>اختبر قاعدة الثلاثين دقيقة بـ <code>$this-&gt;travel(31)-&gt;minutes()</code>، لا بالانتظار.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ضع القاعدة كلها في <code>where</code> لـ <code>update</code> واحد وافحص العدد الذي يعيده؛ عندها لا يستطيع إلغاءان معاً أن يعيدا المخزون كلاهما.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 18.3 · تحدٍّ</p>
+<h3>انجُ من يوم مزدحم</h3>
+<p class="project-goal">أثبت بالأرقام أن الواجهة تفي بوعودها تحت الحمل وحين تتعطل أجزاء منها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختبار الحمل، والتزامن، واختبار الأعطال، وقراءة المقاييس.</p>
+<ol class="steps">
+<li>بأداة حمل (الفصل 15)، أرسل 2000 طلب لمنتج مخزونه 100، من اتصالات كثيرة، لكل منها مفتاحه. وتحقق أن هناك 100 طلب بالضبط وأن المخزون 0.</li>
+<li>أرسل 50 نسخة من طلب واحد بالمفتاح <em>نفسه</em> معاً، وتحقق أن هناك طلباً واحداً بالضبط ومهمة واحدة.</li>
+<li>شغّل ثلاثة عمال (<code>docker compose up --scale worker=3</code>) وتحقق أن مهمة كل طلب عملت مرة واحدة بالضبط.</li>
+<li>أوقف Redis والتطبيق يعمل. بماذا تجيب <code>/up</code> و<code>/api/ready</code> ومحاولة دخول؟ قرر بماذا <em>يجب</em> أن تجيب، واجعلها كذلك.</li>
+<li>اكتب ما قِسته: الطلبات في الثانية، وأبطأ 1%، وأي شيء فاجأك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الخطوة 4، لاحظ أن <code>Measure</code> يحتاج Redis أيضاً، في كل طلب. قرر هل يجب أن يُفشل مقياسٌ لا يمكن عدّه الطلبَ (لا يجب)، وماذا يفعل دخول بلا حد معدله؛ واكتب الأسباب في سجل قرار.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في الرحلة، أجاب طلب الطلب الثاني بـ <code>200</code> مع الترويسة <code>Idempotent-Replayed: true</code>، وأجاب الأول بـ <code>201</code>. لماذا نعطيهما رمزي حالة مختلفين والجسم واحد؟</li>
+<li><span class="level">سهل</span> فُكّ أول <code>next_cursor</code> في الرحلة (هو JSON بترميز base64url). ماذا يحوي، ولماذا يخطئ مؤشر فيه السعر وحده؟</li>
+<li><span class="level medium">متوسط</span> يغيّر أحدهم <code>QUEUE_CONNECTION</code> إلى <code>redis</code> في <code>compose.yaml</code> «لأنه أسرع». أي وعد في الوصف قد ينكسر الآن، وكيف، وما أصغر تغيير في الكود يعيده؟</li>
+<li><span class="level medium">متوسط</span> يرسل زبون طلباً بالمفتاح <code>k1</code>؛ والمنتج نفد مخزونه فالإجابة 409. بعد عشر دقائق يُملأ المخزون، ويعيد العميل المحاولة بـ <code>k1</code>. ماذا يحدث، ولماذا هذا هو السلوك الصحيح؟</li>
+<li><span class="level hard">تحدٍّ</span> تبقى مفاتيح Idempotency في جدول <code>orders</code> إلى الأبد. اقترح كيف تنتهي صلاحيتها بعد 24 ساعة دون كسر الضمان لإعادات المحاولة خلال تلك المدة، واكتب الترحيل والأمر المجدول.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">إلى أين من هنا</p>
+<p>بدأت هذا الكتاب قادراً على بناء واجهة برمجية صغيرة، وتنهيه قادراً على تصميم خدمة وتأمينها واختبارها وقياسها وشحنها، خدمة تفي بوعودها حين تتعطل الشبكة ويكبر الحمل ويتغير الكود. والكتاب التالي في السلسلة يجمع النصفين: واجهة أمامية وخادم يُبنيان ويُختبران ويُشحنان معاً منتجاً واحداً متكاملاً.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -8121,7 +8869,7 @@ Volume shop_db-data Removed </pre></div>
 <li>القفل يبقى طوال مدة استدعاء الشبكة، الذي قد يستغرق ثواني أو تنتهي مهلته، وكل مشترٍ آخر لذلك المنتج ينتظر في الأثناء؛ فتصير خدمة الدفع البطيئة متجراً بطيئاً. والأسوأ: إن نجح الخصم ثم فشل التثبيت، أُخذ المال لطلب غير موجود. والترتيب الأفضل: (1) معاملة قصيرة تحجز المخزون بتحديث ذري وتنشئ الطلب «قيد الانتظار»؛ (2) الخصم، خارج أي معاملة، بمفتاح عدم تكرار من رقم الطلب؛ (3) معاملة قصيرة تعلّم الطلب «مدفوعاً»، أو تحرر المخزون إن فشل الخصم. وعامل يلغي الطلبات التي تبقى قيد الانتظار أطول من اللازم.</li>
 <li>
 
-<pre><code>function retrying(Closure $work, int $attempts = 5): mixed
+<pre dir="ltr"><code>function retrying(Closure $work, int $attempts = 5): mixed
 {
     for ($attempt = 1; ; $attempt++) {
         try {
@@ -8301,6 +9049,16 @@ Access-Control-Max-Age: 0</pre></div>
 <li>(1) صورة أساسية أصغر، كنسخة Alpine أو صورة «distroless»: كثيراً نصف الحجم، لكن Alpine تستخدم مكتبة C مختلفة لا تدعمها بعض الوحدات أو الإضافات الأصلية، وصور distroless بلا صدفة للتصحيح. (2) احذف أدوات البناء في الطبقة نفسها التي استخدمتها (أزل <code>libpq-dev</code> وأبقِ <code>libpq5</code> اللازمة للتشغيل وحدها، أو ابنِ الإضافة في مرحلة منفصلة): أصغر وحزم أقل تحتاج ترقيعاً، لكن Dockerfile أعقد قليلاً. (3) اعتماديات أقل: استخدم صورة خادم ويب أخف (FrankenPHP مثلاً أو PHP-FPM بلا Apache) وثبّت الإضافات التي يستخدمها التطبيق وحدها؛ والمقايضة وقت يُبذل، وأحياناً ميزات الخيار الأكبر.</li>
 <li>يشغّل Compose الحاويات بترتيب الاعتماديات، لكنه مع <code>depends_on</code> العادية لا ينتظر إلا حتى <em>تبدأ</em> حاوية قاعدة البيانات، لا حتى تقبل PostgreSQL الاتصالات، وهذا يستغرق بضع ثوانٍ؛ فيبدأ التطبيق، ويفشل في الاتصال، وينهار (ويعمل لاحقاً بعد إعادة تشغيل أو إعادة محاولة). أعطِ قاعدة البيانات فحص حالة (<code>pg_isready</code>) واجعل التطبيق ينتظرها بـ <code>depends_on: db: condition: service_healthy</code>، كما يفعل ملف Compose في هذا الفصل؛ وينبغي أيضاً أن يعيد التطبيق محاولة الاتصال عند البدء، لأن قواعد البيانات تُعاد تشغيلها في الإنتاج أيضاً.</li>
 <li>التوسيع والتقليص (الفصل 6). الإصدار 1: ترحيل يضيف العمود قابلاً لأن يكون فارغاً (أو بقيمة افتراضية)، والكود يكتبه للصفوف الجديدة ويبقى يعمل بدونه؛ وCI يبني الصورة ويختبرها ويفحصها؛ ويعمل الترحيل حاويةً لمرة واحدة (الكود القديم لا يتأثر بعمود جديد قابل لأن يكون فارغاً)؛ وتحل الحاويات الجديدة محل القديمة تدريجياً خلف فحوص الحالة. ثم يملأ تعبئة العمود للصفوف الموجودة، على دفعات. والإصدار 2: ترحيل يجعل العمود إلزامياً (آمن الآن، لأن لكل صف قيمة)، ويبدأ الكود في الاعتماد عليه؛ ويُنشر بالطريقة نفسها. وفي كل لحظة، الكود العامل ومخطط قاعدة البيانات متوافقان، فلا يفشل أي طلب.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 18</h2>
+<ol class="exercises">
+<li>لأنهما يخبران العميل بشيئين مختلفين. <code>201 Created</code> تقول «هذا الطلب صنع طلباً جديداً»؛ و<code>200 OK</code> مع <code>Idempotent-Replayed: true</code> تقول «لم يحدث شيء جديد، هذا هو الطلب الذي صنعه طلبك السابق». والعميل يعدّ الاثنين نجاحاً عادةً، لكن سجلاته ومقاييسه وأي مطوّر يقرأ الحركة يرى أن إعادة محاولة حدثت، وكم مرة. وعدّ الإعادات أيضاً إشارة جيدة إلى مشكلات الشبكة بين التطبيق والواجهة.</li>
+<li>يُفك إلى <code>{"price":9000,"id":4,"_pointsToNextItems":true}</code>: قيم الترتيب لآخر صف في الصفحة، والاتجاه. ومع السعر وحده، تكسر المنتجاتُ التي تتشارك السعر حدودَ الصفحة. لنقل إن المنتجين 7 و8 سعر كل منهما 6000 وحجم الصفحة 1: تنتهي الصفحة 1 عند المنتج 7؛ وطلب <code>price &gt; 6000</code> يتخطى المنتج 8، و<code>price &gt;= 6000</code> يعرض المنتج 7 ثانية. ومع <code>(6000, 7)</code> تطلب الصفحة التالية <code>(price, id) &gt; (6000, 7)</code>، وهو المنتج 8 بالضبط. ولهذا يرتب الاستعلام بـ <code>id</code> أيضاً: فهو يجعل الترتيب فريداً.</li>
+<li>قد ينكسر وعد «بريد واحد بالضبط لكل طلب، وللطلبات الموجودة فقط». فمع Redis، يدفع <code>dispatch()</code> المهمة فوراً، خارج المعاملة. فإن تراجع الطلب بعدها (بند لاحق نفد مخزونه)، عملت المهمة مع ذلك لطلب غير موجود؛ وقد يشغّلها عامل سريع حتى قبل الاعتماد، حين لا يرى <code>Order::findOrFail</code> الطلب بعد. وأصغر إصلاح <code>SendOrderEmail::dispatch($order-&gt;id)-&gt;afterCommit();</code> (أو <code>public $afterCommit = true;</code> في المهمة)، كما في الفصل 11. ويبقى بعدها فجوة صغيرة: إن مات البرنامج بين الاعتماد والدفع ضاع البريد، وهو ما لا يسمح به طابور قاعدة البيانات.</li>
+<li>يصنع الطلب الثاني طلباً جديداً، وهذا صحيح. فقد أرجع الـ 409 المعاملة كلها، ومنها <code>insertOrIgnore</code> الذي حجز <code>k1</code>، فلا يوجد طلب بذلك المفتاح، وتجري إعادة المحاولة كأنها الأولى. ووعد مفتاح Idempotency هو «المفتاح نفسه لا يصنع طلبين أبداً»، لا «المفتاح نفسه يعطي الإجابة نفسها دائماً»: الطلب الذي فشل ولم يغيّر شيئاً يجوز أن يُعاد، ويحصل الزبون على الطلب الذي أراده حين يعود المخزون.</li>
+<li>انقل المفاتيح إلى جدولها الخاص في ترحيل جديد: <code>Schema::create('idempotency_keys', …)</code> فيه <code>user_id</code> و<code>key</code> و<code>request_hash</code> و<code>order_id</code> (مفتاح أجنبي) و<code>created_at</code>، ومفتاح أساسي على <code>['user_id', 'key']</code> وفهرس على <code>created_at</code>؛ ثم احذف الزوج الفريد والعمودين من <code>orders</code> في ترحيل لاحق، بعد أن يستعمل الكود الجدول الجديد. ويُدرج الطلب صف مفتاحه بـ <code>insertOrIgnore</code> في المعاملة نفسها، كما الآن. وأمر مجدول يحذف المفاتيح القديمة على دفعات: <code>Schedule::call(fn () =&gt; DB::table('idempotency_keys')-&gt;where('created_at', '&lt;', now()-&gt;subDay())-&gt;limit(1000)-&gt;delete())-&gt;everyFifteenMinutes();</code> في <code>routes/console.php</code>. ويصح الضمان لأي إعادة محاولة خلال 24 ساعة، لأن الصف موجود حتى ذلك الحين؛ ويجب أن يذكر توثيق الواجهة أن المفاتيح لا تُتذكر إلا 24 ساعة.</li>
 </ol>
 
 </section>

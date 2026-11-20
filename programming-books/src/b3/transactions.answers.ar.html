@@ -5,7 +5,7 @@
 <li>القفل يبقى طوال مدة استدعاء الشبكة، الذي قد يستغرق ثواني أو تنتهي مهلته، وكل مشترٍ آخر لذلك المنتج ينتظر في الأثناء؛ فتصير خدمة الدفع البطيئة متجراً بطيئاً. والأسوأ: إن نجح الخصم ثم فشل التثبيت، أُخذ المال لطلب غير موجود. والترتيب الأفضل: (1) معاملة قصيرة تحجز المخزون بتحديث ذري وتنشئ الطلب «قيد الانتظار»؛ (2) الخصم، خارج أي معاملة، بمفتاح عدم تكرار من رقم الطلب؛ (3) معاملة قصيرة تعلّم الطلب «مدفوعاً»، أو تحرر المخزون إن فشل الخصم. وعامل يلغي الطلبات التي تبقى قيد الانتظار أطول من اللازم.</li>
 <li>
 <!-- node -->
-<pre><code>async function retrying&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;, attempts = 5): Promise&lt;T&gt; {
+<pre dir="ltr"><code>async function retrying&lt;T&gt;(work: () =&gt; Promise&lt;T&gt;, attempts = 5): Promise&lt;T&gt; {
   for (let attempt = 1; ; attempt++) {
     try {
       return await work();
@@ -20,7 +20,7 @@
 // await retrying(() =&gt; db.transaction().setIsolationLevel("serializable").execute(work));</code></pre>
 <!-- /node -->
 <!-- laravel -->
-<pre><code>function retrying(Closure $work, int $attempts = 5): mixed
+<pre dir="ltr"><code>function retrying(Closure $work, int $attempts = 5): mixed
 {
     for ($attempt = 1; ; $attempt++) {
         try {

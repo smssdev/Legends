@@ -41,7 +41,7 @@
 
 <p>ظهر تغييرا الحالة في الطرفية الأولى لحظة إجرائهما. وفي المتصفح، الجانب المستقبِل بضعة أسطر، بلا مكتبة:</p>
 
-<pre><code>const events = new EventSource("/orders/1001/events");
+<pre dir="ltr"><code>const events = new EventSource("/orders/1001/events");
 events.addEventListener("status", (e) =&gt; show(JSON.parse(e.data)));</code></pre>
 
 <p>وإن انقطع الاتصال، تعيد <code>EventSource</code> الاتصال وحدها بعد بضع ثوانٍ وترسل آخر <code>id</code> رأته في ترويسة <code>Last-Event-ID</code>، فيستطيع خادم يحتفظ بالأحداث الأخيرة أن يرسل ما فات (التمرين 3).</p>

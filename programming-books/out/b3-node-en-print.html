@@ -19,26 +19,30 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: Transactions, Locks and Consistency"; } }
 @page ch06:first { @top-center { content: none; } }
-@page ch07 { @top-center { content: "Chapter 7: Caching with Redis"; } }
+@page ch07 { @top-center { content: "Chapter 7: Redis: Caching, Rate Limits and Locks"; } }
 @page ch07:first { @top-center { content: none; } }
-@page ch08 { @top-center { content: "Chapter 8: Authentication and Authorisation"; } }
+@page ch08 { @top-center { content: "Chapter 8: Authentication and Authorization"; } }
 @page ch08:first { @top-center { content: none; } }
-@page ch09 { @top-center { content: "Chapter 9: Security: The OWASP Top 10"; } }
+@page ch09 { @top-center { content: "Chapter 9: Security: Attacks and Defences"; } }
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Background Jobs and Queues"; } }
 @page ch10:first { @top-center { content: none; } }
-@page ch11 { @top-center { content: "Chapter 11: Real-Time with WebSockets"; } }
+@page ch11 { @top-center { content: "Chapter 11: Real-time Features"; } }
 @page ch11:first { @top-center { content: none; } }
-@page ch12 { @top-center { content: "Chapter 12: Testing the Backend"; } }
+@page ch12 { @top-center { content: "Chapter 12: Testing"; } }
 @page ch12:first { @top-center { content: none; } }
-@page ch13 { @top-center { content: "Chapter 13: Logging, Metrics and Tracing"; } }
+@page ch13 { @top-center { content: "Chapter 13: Observability: Logs, Metrics and Traces"; } }
 @page ch13:first { @top-center { content: none; } }
-@page ch14 { @top-center { content: "Chapter 14: Performance and Scaling"; } }
+@page ch14 { @top-center { content: "Chapter 14: Performance"; } }
 @page ch14:first { @top-center { content: none; } }
-@page ch15 { @top-center { content: "Chapter 15: Architecture: Monolith, Modules and Services"; } }
+@page ch15 { @top-center { content: "Chapter 15: Architecture: Keeping Code Easy to Change"; } }
 @page ch15:first { @top-center { content: none; } }
-@page ch16 { @top-center { content: "Chapter 16: Docker and Deployment"; } }
+@page ch16 { @top-center { content: "Chapter 16: Docker: Shipping the Same Thing Everywhere"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "Chapter 17: Capstone: A Production API"; } }
+@page ch17:first { @top-center { content: none; } }
+@page preface { @top-center { content: "How to Use This Book"; } }
+@page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -69,7 +73,80 @@
           <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
           <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: Foundations</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Servers Work: HTTP in Depth</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Node.js and TypeScript on the Server</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Designing REST APIs</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Data</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">SQL and PostgreSQL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Data Modelling and Migrations</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Transactions, Locks and Consistency</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Caching with Redis</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Authentication and Authorisation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Security: The OWASP Top 10</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Background Jobs and Queues</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Real-Time with WebSockets</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Testing the Backend</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Logging, Metrics and Tracing</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Performance and Scaling</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Architecture: Monolith, Modules and Services</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Docker and Deployment</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production API</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Foundations</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Servers Work: HTTP in Depth</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Node.js and TypeScript on the Server</span><span class="toc-p">33</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Designing REST APIs</span><span class="toc-p">56</span></li><li class="toc-part">Part 2: Data</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">SQL and PostgreSQL</span><span class="toc-p">80</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Data Modelling and Migrations</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Transactions, Locks and Consistency</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Redis: Caching, Rate Limits and Locks</span><span class="toc-p">130</span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Authentication and Authorization</span><span class="toc-p">143</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Security: Attacks and Defences</span><span class="toc-p">165</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Background Jobs and Queues</span><span class="toc-p">180</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Real-time Features</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Testing</span><span class="toc-p">204</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Observability: Logs, Metrics and Traces</span><span class="toc-p">218</span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Performance</span><span class="toc-p">231</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Architecture: Keeping Code Easy to Change</span><span class="toc-p">242</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Docker: Shipping the Same Thing Everywhere</span><span class="toc-p">258</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production API</span><span class="toc-p">269</span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">292</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b3/preface/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">This book is for developers who can already build a small API and want to build services the way senior backend engineers do: correct under concurrency, safe against attackers, observable in production, fast where it matters, and easy for a team to change. If you finished <em>Code from Zero</em>, the first book of this series, you are ready. If you learned elsewhere, you need to be comfortable with one programming language, the command line, JSON and Git; the book explains HTTP, SQL and everything after them from the beginning.</p>
+
+<h2 class="plain-h">Two editions, one book</h2>
+<p>The book exists in two editions, one for <strong>Node.js with TypeScript</strong> and one for <strong>PHP with Laravel</strong>, two of the most widely used ways to build web backends. The chapters that do not depend on the language, such as HTTP, SQL, transactions, Redis, observability, performance and Docker, are the same in both, and their examples are shown in both languages side by side where code is needed. The other chapters build the same shop API in the language of your edition, with the same tables, the same endpoints and the same tests.
+You are reading the <strong>Node.js edition</strong>.If your team uses the other one, the ideas still apply, word for word: only the syntax changes.</p>
+
+<h2 class="plain-h">How the book is organised</h2>
+<p>The seventeen chapters are grouped in four parts:</p><ul>
+<li><strong>Foundations</strong> explains HTTP in depth, Node.js and TypeScript for servers, and how to design a REST API that clients can rely on.</li><li><strong>Data</strong> covers SQL with PostgreSQL, modelling and migrations with Kysely, transactions and locks, and Redis for caching and counting.</li><li><strong>Production</strong> is what a service needs before real users arrive: authentication, security, background jobs, real-time messages, testing, and observability.</li>
+<li><strong>Senior Work</strong> measures and improves performance, keeps the code easy to change, ships it in containers, and ends with a complete production API built from an empty folder.</li>
+</ul>
+<p>Read the first two parts in order. After that, the chapters can be read in the order your work needs them, though each one assumes the parts before it, and the last chapter uses them all.</p>
+
+<h2 class="plain-h">Every chapter</h2>
+<p>Each chapter follows the same pattern, so you always know where you are: what you will learn; explanations built on real, running examples; a quick check in the middle; boxes with professional habits and common traps; a table of common mistakes; a summary; <strong>three practice projects</strong> (easy, medium and challenge) with steps and hints; and exercises at three levels. Answers to the quick checks follow each summary, and answers to the exercises are at the end of the book.</p>
+<p>The projects matter more than anything else in the book. Reading about a skill is not having it. Do at least one project per chapter, preferably the medium one, before moving on.</p>
+
+<h2 class="plain-h">Real code, real output</h2>
+<p>Every listing in this book is a real file, and every terminal output, test run and measurement was produced by running it, against a real PostgreSQL and a real Redis, while the book was being made. When the last chapter shows six wrong passwords answered <code>401 401 401 401 429 429</code>, or an order sent twice that makes one order, that is what the server printed. You will see the same results if you use the same versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>TypeScript</td><td>7.0</td></tr>
+<tr><td>Fastify</td><td>5.12</td></tr>
+<tr><td>Kysely</td><td>0.29</td></tr>
+<tr><td>node-postgres (pg)</td><td>8.23</td></tr>
+<tr><td>zod</td><td>4.6</td></tr>
+<tr><td>BullMQ (with ioredis 6.0)</td><td>6.7</td></tr>
+<tr><td>node-redis</td><td>6.3</td></tr>
+<tr><td>prom-client</td><td>15.1</td></tr>
+<tr><td>autocannon</td><td>9.0</td></tr><tr><td>PostgreSQL</td><td>18.7</td></tr>
+<tr><td>Redis</td><td>8.10</td></tr>
+<tr><td>Docker (with Compose 5.6)</td><td>29.9</td></tr>
+</tbody>
+</table>
+<p>Tools change quickly. If a newer version prints something slightly different, read the difference: it usually teaches you what changed and why.</p>
+<ul>
+<li>A dark tab above a listing gives the file’s name and path in the project.</li>
+<li>A box with three coloured dots shows what appeared in the <strong>terminal</strong>. A line starting with <code>$</code> is a command; the lines below it are the answer, and lines starting with <code>#</code> are comments that say what the next command is for.</li>
+<li>Where an output was long, the book shows the lines that matter. Times that change on every run are written as <code>…</code>.</li>
+</ul>
+
+<h2 class="plain-h">What you need</h2>
+<ul>
+<li>A computer with Windows, macOS or Linux, with at least 8 GB of memory.</li>
+<li>Node.js 22 or later, Git, <code>curl</code>, <code>jq</code>, and an editor such as Visual Studio Code.</li><li><strong>Docker</strong>, which runs PostgreSQL and Redis for every chapter without installing them, and the whole system in the last chapters.</li>
+<li>Every library and tool in the book is free and open source.</li>
+</ul>
+
+<h2 class="plain-h">The code repository</h2>
+<p>Every example, every project and every exercise answer is in the book’s code repository, in a folder per chapter, together with the scripts that produced each output. Type the examples yourself first, then use the repository to compare, or to recover when you are stuck.</p>
+
+<h2 class="plain-h">A word from the author</h2>
+<p>Most of what goes wrong in a backend goes wrong quietly: an order saved twice, a lock held too long, a token that never expires, an error that nobody logged. None of it shows in a demo, and all of it shows on a busy day. This book is about building services that keep their promises when the network fails, the traffic grows and the code changes, and about the habits that make that normal rather than heroic. Like every book of the series, it is written for each of its two languages rather than translated word for word. I hope it helps you become the engineer that others trust with the systems that matter.</p>
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/en">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>How Servers Work: HTTP in Depth</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -7302,6 +7379,685 @@ Network shop_default Removed </pre></div>
 <p>Everything is in place. The final project brings the whole book together: a complete, secure, tested and observable shop API, built from an empty folder to a running container.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b3/node/capstone/en">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">Chapter 17</p><h1>Capstone: A Production API</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>turn a short brief into the endpoints, tables and quality goals of a real API</li>
+<li>build accounts, products and orders in one codebase, each with the techniques of its chapter</li>
+<li>make an order happen exactly once, even when the client sends it twice</li>
+<li>send the order’s email from an outbox, never from inside the transaction</li>
+<li>prove it with tests against a real database, then run the whole system in containers</li>
+<li>check the result against a production checklist, and know what is still missing</li>
+</ul>
+</div>
+
+<p class="lead">Each chapter of this book solved one problem on a small example: a route, a transaction, a lock, a token, a job, a metric. A real service needs all of them at once, and the hard part is not any single technique but how they fit together. In this last chapter we build Bit’s shop API from an empty folder to a system of four containers: about 600 lines of TypeScript, each line run, each test passed, and each answer below printed by the real server.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every section says which chapter a decision comes from. When something feels new, that is your cue to go back and read that chapter again: you will understand it better now that you see where it fits.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>The brief</span></h2>
+
+<p>The shop owner writes: <em>“Customers should create an account, browse the products, and order. An order must never be charged twice, and they should get an email when it is placed. It has to stay up when we are busy.”</em> As in every real project, the first job is to turn that into something testable:</p>
+
+<table>
+<thead><tr><th>As a customer, I want to…</th><th>Done when…</th></tr></thead>
+<tbody>
+<tr><td>create an account and sign in</td><td><code>POST /auth/register</code> and <code>POST /auth/login</code> return a user and a token; a stolen database opens no account</td></tr>
+<tr><td>browse the products, cheapest first</td><td><code>GET /products</code> returns pages with a cursor; no product is skipped or repeated, however large the table</td></tr>
+<tr><td>place an order</td><td><code>POST /orders</code> takes the stock and saves the order together, or does neither; the same request sent twice makes one order</td></tr>
+<tr><td>get an email when I order</td><td>Exactly one email per order, even if the email service or the worker is down for a while</td></tr>
+</tbody>
+</table>
+
+<p>And the qualities that every endpoint must also meet:</p>
+<ul>
+<li><strong>Safe:</strong> passwords hashed slowly, tokens stored only as hashes, login attempts limited (Chapters 8 and 9).</li>
+<li><strong>Consistent:</strong> stock never below zero, money in integers, no half-saved order (Chapters 4 and 6).</li>
+<li><strong>Clear:</strong> every error in the same Problem Details form, every input validated (Chapter 3).</li>
+<li><strong>Observable:</strong> structured logs, metrics and health checks from the first day (Chapter 13).</li>
+<li><strong>Tested and shippable:</strong> tests against a real database, and one command to run everything (Chapters 12 and 16).</li>
+</ul>
+
+<h2><span class="sec">17.2</span> <span>The plan</span></h2>
+
+<p>The project is one Fastify application and one worker that share the same code and the same database:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The project</span>
+<span class="c">$ </span><span class="k">ls src test; ls</span>
+src:
+app.ts
+auth.ts
+config.ts
+db.ts
+metrics.ts
+orders.ts
+password.ts
+problem.ts
+products.ts
+server.ts
+worker.ts
+
+test:
+api.test.ts
+Dockerfile
+compose.yaml
+package.json
+schema.sql
+src
+test
+tsconfig.json</pre></div>
+
+<table>
+<thead><tr><th>File</th><th>Holds</th><th>From chapter</th></tr></thead>
+<tbody>
+<tr><td><code>schema.sql</code></td><td>Six tables, their constraints and one index</td><td>4, 5, 14</td></tr>
+<tr><td><code>config.ts</code>, <code>db.ts</code></td><td>Settings checked at start-up; the typed database</td><td>2, 5</td></tr>
+<tr><td><code>problem.ts</code></td><td>Every error the API can give</td><td>3</td></tr>
+<tr><td><code>password.ts</code>, <code>auth.ts</code></td><td>Hashing, tokens, the login limit</td><td>8, 9, 7</td></tr>
+<tr><td><code>products.ts</code>, <code>orders.ts</code></td><td>Cursor pages; the order transaction</td><td>3, 6</td></tr>
+<tr><td><code>worker.ts</code></td><td>Sends the emails in the outbox</td><td>10, 6</td></tr>
+<tr><td><code>metrics.ts</code>, <code>app.ts</code>, <code>server.ts</code></td><td>Metrics, health, error handling; the composition root</td><td>13, 15</td></tr>
+</tbody>
+</table>
+
+<p>Each route module is a function that receives its dependencies, <code>{ db, redis }</code>, and returns a Fastify plugin. Only <code>server.ts</code> creates real connections; the tests create their own. That is the composition root of Chapter 15, at the size this project needs: no use-case layer, because the routes here are short enough to read whole.</p>
+
+<h2><span class="sec">17.3</span> <span>Settings and tables</span></h2>
+
+<p>A service that starts with a missing setting and fails at the first request is a service that fails at 3 a.m. So the settings are read from the environment once, checked with zod, and the app refuses to start without them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c line-bidi">// every setting comes from the environment, checked once at start-up: a missing one stops the app here, not at the first request</span>
+<span class="k">export</span> <span class="k">const</span> config = z
+  .object({
+    DATABASE_URL: z.url(),
+    REDIS_URL: z.url(),
+    PORT: z.coerce.number().int().<span class="k">default</span>(<span class="n">3000</span>),
+    LOG_LEVEL: z.enum([<span class="s">&quot;silent&quot;</span>, <span class="s">&quot;error&quot;</span>, <span class="s">&quot;warn&quot;</span>, <span class="s">&quot;info&quot;</span>, <span class="s">&quot;debug&quot;</span>]).<span class="k">default</span>(<span class="s">&quot;info&quot;</span>),
+  })
+  .parse(process.env);</pre></div>
+
+<p>The tables carry the rules that must hold whatever the code does: an email is unique, stock cannot go below zero, a price is positive, and a customer cannot use the same idempotency key twice. The index serves the product pages, sorted by price:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">INDEX</span> products_price_id <span class="k">ON</span> products (price, id);
+<span class="k">CREATE</span> <span class="k">TABLE</span> orders (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  user_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> users (id),
+  idempotency_key text <span class="k">NOT</span> <span class="k">NULL</span>,
+  request_hash text <span class="k">NOT</span> <span class="k">NULL</span>,
+  total integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="n">0</span>,
+  created_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now(),
+  <span class="k">UNIQUE</span> (user_id, idempotency_key)
+);</pre></div>
+
+<p><code>request_hash</code> remembers what was asked with each key, so a key sent again with a different body can be refused. The <code>outbox</code> table, further down the file, holds messages that must be sent after a commit; we come back to it in section 17.7.</p>
+
+<h2><span class="sec">17.4</span> <span>Accounts and tokens</span></h2>
+
+<p>Registration and login are those of Chapter 8: scrypt hashes with a salt, and an opaque random token of which only the SHA-256 hash is stored. Every protected route runs one function first:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/auth.ts</div><pre class="code"><span class="c line-bidi">// who is calling? (Authorization: Bearer &lt;token&gt;)</span>
+<span class="k">export</span> <span class="k">const</span> authenticate = ({ db }: Deps) =&gt;
+  <span class="k">async</span> <span class="k">function</span> (request: FastifyRequest) {
+    <span class="k">const</span> [scheme, token] = (request.headers.authorization ?? <span class="s">&quot;&quot;</span>).split(<span class="s">&quot; &quot;</span>);
+    <span class="k">if</span> (scheme !== <span class="s">&quot;Bearer&quot;</span> || !token) <span class="k">throw</span> problems.unauthenticated();
+    <span class="k">const</span> session = <span class="k">await</span> db
+      .selectFrom(<span class="s">&quot;sessions&quot;</span>)
+      .select(<span class="s">&quot;user_id&quot;</span>)
+      .where(<span class="s">&quot;token_hash&quot;</span>, <span class="s">&quot;=&quot;</span>, digest(token))
+      .where(<span class="s">&quot;expires_at&quot;</span>, <span class="s">&quot;&gt;&quot;</span>, sql&lt;Date&gt;<span class="s">`now()`</span>)
+      .executeTakeFirst();
+    <span class="k">if</span> (!session) <span class="k">throw</span> problems.unauthenticated();
+    request.userId = session.user_id;
+  };</pre></div>
+
+<p>The login route adds the limit of Chapter 9, with one change that matters in production: the counts live in Redis, passed to <code>@fastify/rate-limit</code> in <code>app.ts</code>. With the counts in memory, three copies of the app behind a load balancer would allow three times the attempts, and a restart would forget them all:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/auth.ts</div><pre class="code">    app.post(
+      <span class="s">&quot;/auth/login&quot;</span>,
+      {
+        <span class="c line-bidi">// 5 tries a minute per address and email, counted in Redis: every copy of the app shares the count</span>
+        config: {
+          rateLimit: {
+            max: <span class="n">5</span>,
+            timeWindow: <span class="s">&quot;1 minute&quot;</span>,
+            hook: <span class="s">&quot;preHandler&quot;</span>,
+            keyGenerator: (request) =&gt;
+              <span class="s">`login:${request.ip}:${(request.body as { email?: string }).email}`</span>,
+          },</pre></div>
+
+<h2><span class="sec">17.5</span> <span>Products, page by page</span></h2>
+
+<p>The product list uses keyset pagination from Chapter 3: the cursor is the last row’s price and id, and the next page starts after that pair. With the index <code>(price, id)</code> PostgreSQL jumps straight to the right place, so page 1000 costs what page 1 costs (Chapter 14). The cursor is opaque to clients, and a cursor that does not decode is a 422, not a 500:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/products.ts</div><pre class="code">      <span class="k">async</span> (request) =&gt; {
+        <span class="k">const</span> { limit, cursor } = request.query;
+        <span class="k">let</span> query = db
+          .selectFrom(<span class="s">&quot;products&quot;</span>)
+          .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;name&quot;</span>, <span class="s">&quot;price&quot;</span>, <span class="s">&quot;stock&quot;</span>])
+          .orderBy(<span class="s">&quot;price&quot;</span>)
+          .orderBy(<span class="s">&quot;id&quot;</span>)
+          .limit(limit + <span class="n">1</span>);
+        <span class="k">if</span> (cursor) {
+          <span class="c line-bidi">// the cursor is the last row&#x27;s price and id; the index (price, id) finds where to start</span>
+          <span class="k">const</span> [price, id] = decode(cursor);
+          query = query.where((eb) =&gt;
+            eb(eb.refTuple(<span class="s">&quot;price&quot;</span>, <span class="s">&quot;id&quot;</span>), <span class="s">&quot;&gt;&quot;</span>, eb.tuple(price, id)),
+          );
+        }
+        <span class="k">const</span> rows = <span class="k">await</span> query.execute();
+        <span class="k">const</span> page = rows.slice(<span class="n">0</span>, limit);
+        <span class="k">const</span> last = page.at(-<span class="n">1</span>);
+        <span class="k">return</span> {
+          data: page,
+          next_cursor:
+            rows.length &gt; limit &amp;&amp; last ? encode(last.price, last.id) : <span class="k">null</span>,
+        };
+      },</pre></div>
+
+<p>The <code>id</code> in the cursor is not decoration: two products may share a price, and without a second, unique key a page boundary between them would skip one or show it twice.</p>
+
+<h2><span class="sec">17.6</span> <span>Orders that happen once</span></h2>
+
+<p>The order is the heart of the shop, and the place where most of the book meets. Phones lose their connection mid-request; the app retries; the customer taps twice. If each request made an order, the customer would pay twice. The client therefore sends an <dfn>Idempotency-Key</dfn> header, a value it chooses once per order and repeats on every retry. The whole order is one transaction (Chapter 6), and its first statement claims the key:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders.ts</div><pre class="code">        <span class="k">const</span> result = <span class="k">await</span> db.transaction().execute(<span class="k">async</span> (trx) =&gt; {
+          <span class="k">const</span> created = <span class="k">await</span> trx
+            .insertInto(<span class="s">&quot;orders&quot;</span>)
+            .values({ user_id: userId, idempotency_key: key, request_hash: hash })
+            .onConflict((c) =&gt;
+              c.columns([<span class="s">&quot;user_id&quot;</span>, <span class="s">&quot;idempotency_key&quot;</span>]).doNothing(),
+            )
+            .returning(<span class="s">&quot;id&quot;</span>)
+            .executeTakeFirst();
+          <span class="k">if</span> (!created) {
+            <span class="c line-bidi">// the key was used before: return that order, unless the body is different</span>
+            <span class="k">const</span> old = <span class="k">await</span> trx
+              .selectFrom(<span class="s">&quot;orders&quot;</span>)
+              .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;request_hash&quot;</span>])
+              .where(<span class="s">&quot;user_id&quot;</span>, <span class="s">&quot;=&quot;</span>, userId)
+              .where(<span class="s">&quot;idempotency_key&quot;</span>, <span class="s">&quot;=&quot;</span>, key)
+              .executeTakeFirstOrThrow();
+            <span class="k">if</span> (old.request_hash !== hash) <span class="k">throw</span> problems.keyReused();
+            <span class="k">return</span> { id: old.id, replayed: <span class="k">true</span> };
+          }
+
+          <span class="k">let</span> total = <span class="n">0</span>;</pre></div>
+
+<p>The unique constraint does the hard work. If two copies of the same request arrive together, the second <code>INSERT</code> waits for the first transaction, then finds the key taken and returns that order. No lock in the code, no race: the database already guarantees it. If the key comes back with a <em>different</em> body, the client has a bug, and saying so is better than guessing. (The <code>refine</code> on the body refuses the same product twice in one order, which the table’s primary key would refuse less politely, with a 500.)</p>
+
+<p>Then each line takes its stock with the conditional update of Chapter 6. If any line is short, the error rolls the whole transaction back: the order row, the lines already taken and the claimed key all disappear, so the client may fix the order and retry with the same key:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders.ts</div><pre class="code">          <span class="k">let</span> total = <span class="n">0</span>;
+          <span class="k">for</span> (<span class="k">const</span> { product_id, quantity } <span class="k">of</span> request.body.items) {
+            <span class="c line-bidi">// the stock is taken only if it is enough, in the same statement</span>
+            <span class="k">const</span> product = <span class="k">await</span> trx
+              .updateTable(<span class="s">&quot;products&quot;</span>)
+              .set((eb) =&gt; ({ stock: eb(<span class="s">&quot;stock&quot;</span>, <span class="s">&quot;-&quot;</span>, quantity) }))
+              .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, product_id)
+              .where(<span class="s">&quot;stock&quot;</span>, <span class="s">&quot;&gt;=&quot;</span>, quantity)
+              .returning(<span class="s">&quot;price&quot;</span>)
+              .executeTakeFirst();
+            <span class="k">if</span> (!product) {
+              <span class="k">const</span> left = <span class="k">await</span> trx
+                .selectFrom(<span class="s">&quot;products&quot;</span>)
+                .select(<span class="s">&quot;stock&quot;</span>)
+                .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, product_id)
+                .executeTakeFirst();
+              <span class="k">throw</span> left
+                ? problems.outOfStock(product_id, left.stock)
+                : problems.unknownProduct(product_id);
+            }
+            total += product.price * quantity;
+            <span class="k">await</span> trx
+              .insertInto(<span class="s">&quot;order_items&quot;</span>)
+              .values({
+                order_id: created.id,
+                product_id,
+                quantity,
+                price: product.price,
+              })
+              .execute();
+          }
+          <span class="k">await</span> trx
+            .updateTable(<span class="s">&quot;orders&quot;</span>)
+            .set({ total })
+            .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, created.id)
+            .execute();
+          <span class="c line-bidi">// the email is a row in the same transaction; the worker sends it after the commit</span>
+          <span class="k">await</span> trx
+            .insertInto(<span class="s">&quot;outbox&quot;</span>)
+            .values({
+              topic: <span class="s">&quot;order.placed&quot;</span>,
+              payload: JSON.stringify({ order_id: created.id }),
+            })
+            .execute();
+          <span class="k">return</span> { id: created.id, replayed: <span class="k">false</span> };</pre></div>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Look at what the order does not do: it does not send the email. That one missing line is the difference between a shop that sometimes emails customers about orders that do not exist, and one that never does.</p></div></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is the key claimed with <code>INSERT … ON CONFLICT DO NOTHING</code> rather than by first checking whether it exists?</li><li>An order has two lines, and the second is out of stock. What is left in the database afterwards?</li><li>Why does the login limit keep its counts in Redis instead of memory?</li></ol></aside>
+
+<h2><span class="sec">17.7</span> <span>The outbox and the worker</span></h2>
+
+<p>Sending the email inside the transaction is wrong twice: the transaction may still roll back after the email has gone, and a slow email service would hold the order’s locks. Sending it after the commit is better, but if the process dies between the commit and the send, the email is lost. The <dfn>outbox</dfn> removes both problems: the order writes a row into the <code>outbox</code> table <em>in the same transaction</em>, so the message exists if and only if the order does. A separate worker sends what the outbox holds:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/worker.ts</div><pre class="code"><span class="c line-bidi">// the worker: send what the outbox holds, mark it sent, repeat</span>
+<span class="k">while</span> (running) {
+  <span class="k">const</span> sent = <span class="k">await</span> db.transaction().execute(<span class="k">async</span> (trx) =&gt; {
+    <span class="k">const</span> rows = <span class="k">await</span> trx
+      .selectFrom(<span class="s">&quot;outbox&quot;</span>)
+      .select([<span class="s">&quot;id&quot;</span>, <span class="s">&quot;payload&quot;</span>])
+      .where(<span class="s">&quot;sent_at&quot;</span>, <span class="s">&quot;is&quot;</span>, <span class="k">null</span>)
+      .orderBy(<span class="s">&quot;id&quot;</span>)
+      .limit(<span class="n">10</span>)
+      <span class="c line-bidi">// SKIP LOCKED: two workers never take the same row</span>
+      .forUpdate()
+      .skipLocked()
+      .execute();
+    <span class="k">for</span> (<span class="k">const</span> row <span class="k">of</span> rows) {
+      <span class="k">const</span> { order_id } = row.payload as { order_id: number };
+      <span class="k">const</span> { email } = <span class="k">await</span> trx
+        .selectFrom(<span class="s">&quot;orders&quot;</span>)
+        .innerJoin(<span class="s">&quot;users&quot;</span>, <span class="s">&quot;users.id&quot;</span>, <span class="s">&quot;orders.user_id&quot;</span>)
+        .select(<span class="s">&quot;users.email&quot;</span>)
+        .where(<span class="s">&quot;orders.id&quot;</span>, <span class="s">&quot;=&quot;</span>, order_id)
+        .executeTakeFirstOrThrow();
+      console.log(JSON.stringify({ msg: <span class="s">&quot;email sent&quot;</span>, to: email, order_id }));
+      <span class="k">await</span> trx
+        .updateTable(<span class="s">&quot;outbox&quot;</span>)
+        .set({ sent_at: sql<span class="s">`now()`</span> })
+        .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, row.id)
+        .execute();
+    }
+    <span class="k">return</span> rows.length;
+  });
+  <span class="k">if</span> (sent === <span class="n">0</span>) <span class="k">await</span> sleep(<span class="n">500</span>);
+}
+<span class="k">await</span> db.destroy();</pre></div>
+
+<p><code>FOR UPDATE SKIP LOCKED</code> lets you run several workers: each takes rows that no other worker holds. And the row is marked sent in the same transaction that sent it, so a worker that crashes halfway releases its rows to the next one. That makes delivery <em>at least once</em>: in a rare crash after sending but before the commit, the email goes twice. A real email provider accepts an idempotency key too, and the outbox row’s id is the natural one to give it. The queues of Chapter 10 work the same way; here PostgreSQL is the queue, which is enough for a few thousand messages an hour and needs nothing else to run.</p>
+
+<h2><span class="sec">17.8</span> <span>Errors, metrics and health</span></h2>
+
+<p><code>app.ts</code> puts the pieces together. One error handler turns everything into Problem Details: our own <code>Problem</code>s as they are, validation errors with the field that failed, the rate limit’s 429 with how long to wait, and anything else as a 500 whose details go to the log, never to the client (Chapter 9):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  app.setErrorHandler((error: FastifyError, request, reply) =&gt; {
+    <span class="k">let</span> problem: Problem;
+    <span class="k">if</span> (error <span class="k">instanceof</span> Problem) {
+      problem = error;
+    } <span class="k">else</span> <span class="k">if</span> (hasZodFastifySchemaValidationErrors(error)) {
+      problem = problems.invalid(
+        error.validation.map((issue) =&gt; ({
+          field: [error.validationContext, ...String(issue.instancePath).split(<span class="s">&quot;/&quot;</span>)]
+            .filter(Boolean)
+            .join(<span class="s">&quot;.&quot;</span>),
+          message: issue.message ?? <span class="s">&quot;&quot;</span>,
+        })),
+      );
+    } <span class="k">else</span> <span class="k">if</span> (error.statusCode === <span class="n">429</span>) {
+      problem = problems.tooMany(Number(reply.getHeader(<span class="s">&quot;retry-after&quot;</span>) ?? <span class="n">60</span>));
+    } <span class="k">else</span> {
+      request.log.error(error);
+      problem = problems.server();
+    }
+    reply.code(problem.status).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>);
+    <span class="k">return</span> reply.send(problem.body(request.url));
+  });</pre></div>
+
+<p>Two endpoints answer different questions (Chapter 13). <code>/health</code> says the process is alive, and Docker restarts the container when it stops answering. <code>/ready</code> says the process can do its work, and a load balancer stops sending traffic while it is false:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  <span class="c line-bidi">// ready means the database and Redis both answer</span>
+  app.get(<span class="s">&quot;/ready&quot;</span>, <span class="k">async</span> (_request, reply) =&gt; {
+    <span class="k">try</span> {
+      <span class="k">await</span> sql<span class="s">`SELECT 1`</span>.execute(deps.db);
+      <span class="k">await</span> deps.redis.ping();
+      <span class="k">return</span> { ready: <span class="k">true</span> };
+    } <span class="k">catch</span> {
+      <span class="k">return</span> reply.code(<span class="n">503</span>).send({ ready: <span class="k">false</span> });
+    }
+  });</pre></div>
+
+<p>And <code>server.ts</code> is the only file that knows the real connections. On <code>SIGTERM</code>, which Docker sends before stopping a container, it finishes the requests in flight before closing the database pool:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/server.ts</div><pre class="code"><span class="c line-bidi">// the composition root: the only file that creates connections</span>
+<span class="k">const</span> db = connect();
+<span class="k">const</span> redis = <span class="k">new</span> Redis(config.REDIS_URL, { maxRetriesPerRequest: <span class="n">1</span> });
+<span class="k">const</span> app = <span class="k">await</span> buildApp({ db, redis });
+<span class="k">await</span> app.listen({ host: <span class="s">&quot;0.0.0.0&quot;</span>, port: config.PORT });
+
+<span class="c line-bidi">// on SIGTERM: stop taking requests, finish the ones in flight, then close the connections</span>
+process.once(<span class="s">&quot;SIGTERM&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">await</span> app.close();
+  <span class="k">await</span> db.destroy();
+  <span class="k">await</span> redis.quit();
+});</pre></div>
+
+<h2><span class="sec">17.9</span> <span>Tests against a real database</span></h2>
+
+<p>The tests use <code>app.inject</code> from Chapter 12: real requests through the real routes, without opening a port. They run against PostgreSQL and Redis, on a separate database named in <code>.env.test</code>, and each test rebuilds the schema from the same <code>schema.sql</code> that production uses:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/api.test.ts</div><pre class="code"><span class="c line-bidi">// each test starts from the schema file, on its own database</span>
+beforeEach(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> sql
+    .raw(<span class="s">`DROP SCHEMA public CASCADE; CREATE SCHEMA public; ${schema}`</span>)
+    .execute(db);
+});</pre></div>
+
+<p>Each test states one promise from the brief. The most important is the first, which sends the same order twice and checks that there is one order, one stock deduction and one outbox row:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/api.test.ts</div><pre class="code">test(<span class="s">&quot;places an order once, however many times the same key is sent&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> auth = <span class="k">await</span> signIn();
+  <span class="k">const</span> items = [{ product_id: <span class="n">2</span>, quantity: <span class="n">3</span> }];
+  <span class="k">const</span> first = <span class="k">await</span> order(auth, <span class="s">&quot;key-0001&quot;</span>, items);
+  <span class="k">const</span> again = <span class="k">await</span> order(auth, <span class="s">&quot;key-0001&quot;</span>, items);
+  assert.equal(first.statusCode, <span class="n">201</span>);
+  assert.equal(again.statusCode, <span class="n">200</span>);
+  assert.equal(again.json().id, first.json().id);
+  assert.equal(<span class="k">await</span> stock(<span class="n">2</span>), <span class="n">47</span>);
+  <span class="k">const</span> outbox = <span class="k">await</span> db.selectFrom(<span class="s">&quot;outbox&quot;</span>).selectAll().execute();
+  assert.equal(outbox.length, <span class="n">1</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The tests, against PostgreSQL and Redis</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ places an order once, however many times the same key is sent (…ms)
+✔ refuses a key reused with another body (…ms)
+✔ takes no stock when one line is short (…ms)
+✔ refuses an order without a token (…ms)
+✔ pages follow each other with no gaps and no repeats (…ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: tests that pass against the wrong database</p><p>Rebuilding the schema in every test is fast and makes tests independent, but it drops every table. That is why the tests read their own <code>.env.test</code>, pointing at <code>shop_test</code>. Never let tests fall back to the development settings, and never give a test runner credentials that reach production: one wrong environment variable must not be able to empty a real database.</p></aside>
+
+<h2><span class="sec">17.10</span> <span>Shipping it</span></h2>
+
+<p>The <code>Dockerfile</code> is the multi-stage file of Chapter 16: dependencies from the lock file, no development tools, a user that is not root, and a health check:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Dockerfile</div><pre class="code">FROM node:22-slim AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+FROM node:22-slim
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json schema.sql ./
+COPY src ./src
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=5s --timeout=2s \
+  CMD node -e &quot;fetch(&#x27;http://localhost:3000/health&#x27;).then(r =&gt; process.exit(r.ok ? 0 : 1)).catch(() =&gt; process.exit(1))&quot;
+CMD [&quot;node&quot;, &quot;src/server.ts&quot;]</pre></div>
+
+<p>Compose runs the four parts. The app and the worker are the <em>same image</em> with different commands, so they can never run different versions of the code. Both wait until the database and Redis report healthy, and the YAML anchors (<code>&amp;env</code>, <code>*env</code>) keep their shared settings in one place:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">compose.yaml</div><pre class="code">  app:
+    build: .
+    image: shop-api
+    ports:
+      - &quot;3000:3000&quot;
+    environment: &amp;env
+      DATABASE_URL: postgres://shop:secret@db:5432/shop
+      REDIS_URL: redis://redis:6379
+    depends_on: &amp;ready
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: shop-api
+    command: [&quot;node&quot;, &quot;src/worker.ts&quot;]
+    environment: *env
+    depends_on: *ready
+    # the worker serves no HTTP, so the image&#x27;s health check does not apply
+    healthcheck:
+      disable: true</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The image</span>
+<span class="c">$ </span><span class="k">docker build -t shop-api .</span>
+<span class="c">$ </span><span class="k">docker image ls shop-api</span>
+shop-api:latest  371MB
+<span class="c line-bidi"># The whole system: database, Redis, the API and the worker</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait</span>
+Container shop-redis-1 Started
+Container shop-db-1 Started
+Container shop-redis-1 Healthy
+Container shop-db-1 Healthy
+Container shop-worker-1 Started
+Container shop-app-1 Started
+Container shop-worker-1 Healthy
+Container shop-app-1 Healthy
+<span class="c">$ </span><span class="k">docker compose ps --format &#x27;table {{.Service}}\t{{.Status}}&#x27;</span>
+SERVICE   STATUS
+app       Up 5 seconds (healthy)
+db        Up 8 seconds (healthy)
+redis     Up 8 seconds (healthy)
+worker    Up 5 seconds</pre></div>
+
+<h2><span class="sec">17.11</span> <span>Proving that it works</span></h2>
+
+<p>Now the customer’s journey, against the running containers. An account, a token, and the products, two per page:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An account</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/auth/register -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;email&quot;:&quot;sara@example.com&quot;}
+<span class="c line-bidi"># A token</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># The first page of products, cheapest first</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/products?limit=2&#x27; | jq -c</span>
+{&quot;data&quot;:[{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000,&quot;stock&quot;:50},{&quot;id&quot;:4,&quot;name&quot;:&quot;Battery pack&quot;,&quot;price&quot;:9000,&quot;stock&quot;:30}],&quot;next_cursor&quot;:&quot;WzkwMDAsNF0&quot;}
+<span class="c line-bidi"># The next page, from the cursor</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/products?limit=2&amp;cursor=WzkwMDAsNF0&#x27; | jq -c &#x27;.data[].name, .next_cursor&#x27;</span>
+&quot;Soldering iron&quot;
+&quot;Sensor set&quot;
+&quot;WzI1MDAwLDVd&quot;</pre></div>
+
+<p>An order, then the same order again, as a phone would send it after losing the first answer. The second answer is a <code>200</code>, not a <code>201</code>: the same order, marked as a replay. Then the failures, each a clear Problem:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An order, with a key the client chose</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 201 Created
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:34:18.619Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># The network failed and the client sends it again, with the same key</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 200 OK
+idempotent-replayed: true
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:34:18.619Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># More than the stock</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0002&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;Not enough stock&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;Product 1 has 3 left.&quot;,&quot;instance&quot;:&quot;/orders&quot;}
+<span class="c line-bidi"># No token</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &#x27;content-type: application/json&#x27; -H &#x27;idempotency-key: order-0003&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;Not signed in&quot;,&quot;status&quot;:401,&quot;detail&quot;:&quot;Send a valid token: Authorization: Bearer &lt;token&gt;.&quot;,&quot;instance&quot;:&quot;/orders&quot;}
+<span class="c line-bidi"># Someone guesses a password</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:3000/auth/login -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess&quot;}&#x27;; done; echo</span>
+401 401 401 401 429 429 </pre></div>
+
+<p>Four wrong passwords answer 401, then the fifth attempt in the minute (the successful login counted as the first) is refused before the password is even checked. Finally, what the operators see. The metrics count every answer by route and status, the worker’s log shows exactly one email for the one order, and the API’s log has one JSON line per request:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># What Prometheus would collect</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/metrics | grep &#x27;^http_requests_total&#x27;</span>
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/register&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/login&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;GET&quot;,route=&quot;/products&quot;,status=&quot;200&quot;} 2
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;409&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/orders&quot;,status=&quot;401&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/login&quot;,status=&quot;401&quot;} 4
+http_requests_total{method=&quot;POST&quot;,route=&quot;/auth/login&quot;,status=&quot;429&quot;} 2
+<span class="c line-bidi"># The worker sent the email, once</span>
+<span class="c">$ </span><span class="k">docker compose logs worker</span>
+{&quot;msg&quot;:&quot;email sent&quot;,&quot;to&quot;:&quot;sara@example.com&quot;,&quot;order_id&quot;:1}
+<span class="c line-bidi"># One request in the API&#x27;s log</span>
+<span class="c">$ </span><span class="k">docker compose logs app</span>
+{&quot;level&quot;:30,&quot;msg&quot;:&quot;incoming request&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;url&quot;:&quot;/orders&quot;}
+<span class="c line-bidi"># Stop everything and delete the data</span>
+<span class="c">$ </span><span class="k">docker compose down -v</span>
+Container shop-app-1 Removed 
+Container shop-worker-1 Removed 
+Container shop-db-1 Removed 
+Container shop-redis-1 Removed 
+Network shop_default Removed 
+Volume shop_db-data Removed </pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a production checklist</p><p>Before a service takes real traffic, walk a short written list with the team: settings checked at start-up and secrets outside the image; migrations run as a separate step, never by the app on start; health and readiness probes wired to the platform; logs collected and an alert on the error rate and the latency; backups taken <em>and a restore tried</em>; rate limits on everything that costs money or guesses secrets; and a rollback that has been practised. The list is boring on purpose: incidents rarely come from clever bugs, mostly from a forgotten line on a list like this.</p></aside>
+
+<h2><span class="sec">17.12</span> <span>What you built</span></h2>
+
+<p>In about 600 lines: accounts with properly hashed passwords and revocable tokens; product pages that stay fast at any size; orders that are atomic, idempotent and never oversell; emails that are sent if and only if the order exists; Problem Details for every error; logs, metrics and two kinds of health check; tests that prove each promise against a real database; and one image, run by Compose, with its database, Redis and worker.</p>
+
+<p>What a production version would add, each from a chapter you have read: migrations with a tool instead of one <code>schema.sql</code> (Chapter 5); secrets from the platform, not from <code>compose.yaml</code> (Chapter 16); HTTPS and security headers in front (Chapter 9); tracing across the worker (Chapter 13); and a CI pipeline that runs the tests, builds the image and deploys it. None of them changes the code you wrote; each one sits around it. That is the sign of a structure that is ready to grow.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Retried orders without an idempotency key</td><td>Customers charged twice on a bad network</td><td>A client key, claimed by a unique constraint</td></tr>
+<tr><td>Check, then insert, for the key</td><td>Two requests both pass the check</td><td><code>INSERT … ON CONFLICT DO NOTHING</code></td></tr>
+<tr><td>Email sent inside the transaction</td><td>Emails about orders that rolled back; locks held while waiting</td><td>An outbox row in the same transaction</td></tr>
+<tr><td>Rate-limit counts in memory</td><td>Each copy and each restart gives new attempts</td><td>Counts in Redis, shared by every copy</td></tr>
+<tr><td>Offset pages on a growing table</td><td>Slow deep pages; rows skipped or repeated</td><td>A cursor on an indexed, unique sort key</td></tr>
+<tr><td>Settings read when first used</td><td>The service starts, then fails at the first request</td><td>Validate the environment at start-up</td></tr>
+<tr><td>Tests sharing the development database</td><td>Lost data, and tests that depend on each other</td><td>A separate test database, rebuilt per test</td></tr>
+<tr><td>App and worker built separately</td><td>Two versions of the code running against one database</td><td>One image, two commands</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Turn a brief into <strong>user stories</strong> with a test for “done”, and write the <strong>quality goals</strong> before the code.</li>
+<li>Let the <strong>database guarantee</strong> what must always be true: unique keys, stock never below zero, one order per idempotency key.</li>
+<li>Make retries safe with an <strong>Idempotency-Key</strong>: claim it in the order’s transaction, replay the same answer, refuse a changed body.</li>
+<li>Never do side effects inside a transaction: write an <strong>outbox</strong> row, and let a worker with <code>SKIP LOCKED</code> send it.</li>
+<li>Keep shared state, such as <strong>rate-limit counts</strong>, outside the process, so any number of copies behaves as one.</li>
+<li>Give every error one <strong>Problem Details</strong> shape, and every service <strong>logs, metrics, health and readiness</strong>.</li>
+<li>Prove each promise with <strong>tests against a real database</strong>, and ship <strong>one image</strong> for the app and its worker.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because checking first leaves a gap: two copies of the same request can both find no order with that key, and both create one. The insert claims the key and checks it in one step, and the unique constraint makes the second insert wait for the first transaction, then do nothing. 2. Nothing from this order: the error rolls back the transaction, so the order row, its first line, the stock taken for it and the claimed key are all undone, and no outbox row exists. The client may correct the order and send it again, even with the same key. 3. Because memory belongs to one process: with three copies of the app, an attacker gets three times the attempts, and every restart or deployment resets the count. Redis gives all copies one shared count that survives restarts.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects grow the API the way a real one grows. For each one, write the user story and its test first, put the rule where the database can guarantee it when possible, and run the tests and the whole system in Compose before calling it done.</p>
+
+<div class="project">
+<p class="project-label">Project 17.1 · Easy</p>
+<h3>My orders</h3>
+<p class="project-goal">Add <code>GET /orders</code>: the signed-in customer’s orders, newest first, in cursor pages.</p>
+<p class="project-skills"><strong>You will practise:</strong> authentication on a route, keyset pagination, and an index that matches the query.</p>
+<ol class="steps">
+<li>Write a test first: two customers each place orders; each sees only their own, newest first.</li>
+<li>Add the route to <code>orders.ts</code>, with <code>limit</code> and <code>cursor</code> as in <code>products.ts</code>, on <code>(created_at, id)</code>.</li>
+<li>Add an index on <code>orders (user_id, created_at, id)</code> and check with <code>EXPLAIN</code> that it is used.</li>
+<li>Test that a cursor from one customer gives the other customer nothing of the first one’s.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the filter on <code>user_id</code> must stay in the query on every page; the cursor only says where to start, never whose orders to show.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 17.2 · Medium</p>
+<h3>Cancel an order</h3>
+<p class="project-goal">Add <code>POST /orders/:id/cancel</code>: within 30 minutes of placing it, a customer may cancel, and the stock comes back.</p>
+<p class="project-skills"><strong>You will practise:</strong> conditional updates, transactions, the outbox, and testing rules that depend on time.</p>
+<ol class="steps">
+<li>Add a <code>status</code> column (<code>placed</code>, <code>cancelled</code>) with a check constraint.</li>
+<li>In one transaction: set the status to <code>cancelled</code> only if it is <code>placed</code>, belongs to the user and is recent enough; then return each line’s quantity to the stock; then write an <code>order.cancelled</code> outbox row.</li>
+<li>Cancelling twice must be harmless: the second call changes nothing and says so.</li>
+<li>Teach the worker to send a different email for <code>order.cancelled</code>.</li>
+<li>Test the 30-minute rule by inserting an order with an older <code>created_at</code>, not by waiting.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> put the whole rule in the <code>WHERE</code> of the update and check how many rows changed; then two cancels at once cannot both return the stock.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 17.3 · Challenge</p>
+<h3>Survive a busy day</h3>
+<p class="project-goal">Show, with numbers, that the API keeps its promises under load and when parts of it fail.</p>
+<p class="project-skills"><strong>You will practise:</strong> load testing, concurrency, failure testing, and reading metrics.</p>
+<ol class="steps">
+<li>With autocannon (Chapter 14), send 2000 orders for a product with a stock of 100, from many connections, each with its own key. Check that exactly 100 orders exist and the stock is 0.</li>
+<li>Send 50 copies of one order with the <em>same</em> key at once, and check there is exactly one order.</li>
+<li>Run three workers (<code>docker compose up --scale worker=3</code>) and check that every outbox row was sent exactly once.</li>
+<li>Stop Redis while the app runs. What do <code>/ready</code>, <code>/health</code> and a login answer? Decide what they <em>should</em> answer, and make it so.</li>
+<li>Write what you measured: requests per second, the slowest 1%, and anything that surprised you.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> for step 4, a limit that cannot be counted must still fail safely. Decide whether a login without Redis is refused (safer) or allowed (friendlier), and write the reason in a decision record.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In the journey, the second order request answered <code>200</code> with the header <code>idempotent-replayed: true</code>, and the first answered <code>201</code>. Why give them different status codes, when the body is the same?</li>
+<li><span class="level">Easy</span> Why does the product cursor contain the id as well as the price? Give an example with two products where a cursor without the id goes wrong.</li>
+<li><span class="level medium">Medium</span> The worker marks a row as sent in the same transaction in which it sends the email. Describe what happens if the worker crashes (a) before sending, (b) after sending but before the commit. Which of the two can cause a duplicate, and how can the email provider help?</li>
+<li><span class="level medium">Medium</span> A customer sends an order with key <code>k1</code>; the product is out of stock and the answer is 409. Ten minutes later the stock is refilled, and the client retries with <code>k1</code>. What happens, and why is that the right behaviour?</li>
+<li><span class="level hard">Challenge</span> Idempotency keys stay in the <code>orders</code> table forever. Propose how to let them expire after 24 hours without breaking the guarantee for retries within that time, and write the change to the schema and the query.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You started this book able to build a small API, and you finish it able to design, secure, test, measure and ship a service that keeps its promises when the network fails, the traffic grows and the code changes. The next book in the series joins the two halves: a front end and a back end built, tested and shipped together as one full-stack product.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -7558,6 +8314,16 @@ The message published while nobody was subscribed went nowhere: pub/sub does not
 <li>(1) A smaller base image, such as an Alpine variant or a “distroless” one: often half the size, but Alpine uses a different C library that some native modules or extensions do not support, and distroless images have no shell for debugging. (2) Remove build tools in the same layer that used them (install native build tools only in the dependency stage): smaller and fewer packages to patch, but a slightly more complex Dockerfile. (3) Fewer dependencies: check what <code>node_modules</code> holds with <code>npm ls --omit=dev</code> and remove packages the app does not need; the trade-off is time spent, and sometimes features of the bigger option.</li>
 <li>Compose starts the containers in dependency order but, with a plain <code>depends_on</code>, it waits only until the database container has <em>started</em>, not until PostgreSQL accepts connections, which takes a few seconds; the app starts, fails to connect, and crashes (it works later after a restart or a retry). Give the database a health check (<code>pg_isready</code>) and make the app wait for it with <code>depends_on: db: condition: service_healthy</code>, as this chapter’s Compose file does; the app should also retry its connection at start-up, since databases restart in production too.</li>
 <li>Expand and contract (Chapter 5). Release 1: a migration adds the column as nullable (or with a default), and the code writes it for new rows while still working without it; CI builds, tests and scans the image; the migration runs as a one-off container (old code is unaffected by a new nullable column); the new containers replace the old ones gradually behind health checks. Then a backfill fills the column for existing rows, in batches. Release 2: a migration makes the column required (now safe, since every row has a value), and the code starts relying on it; deployed the same way. At every moment, the running code and the database schema are compatible, so no request fails.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 17</h2>
+<ol class="exercises">
+<li>Because they tell the client different things. <code>201 Created</code> says “this request made a new order”; <code>200 OK</code> with <code>idempotent-replayed: true</code> says “nothing new happened, this is the order your earlier request made”. A client normally treats both as success, but its logs, its metrics and any developer reading the traffic can see that a retry happened, and how often. Counting replays is also a good signal of network trouble between the app and the API.</li>
+<li>Because the price alone does not say where a page ended when several products share it. Say products 7 and 8 both cost 6000 and the page size is 1. Page 1 ends at product 7, and a cursor of only <code>6000</code> asks for <code>price &gt; 6000</code>, which skips product 8. Asking for <code>price &gt;= 6000</code> instead would show product 7 again. With <code>(6000, 7)</code> the next page asks for <code>(price, id) &gt; (6000, 7)</code>, which is exactly product 8. The id makes the sort key unique, so every row has one place in the order.</li>
+<li>(a) Before sending: the transaction rolls back when the connection closes, the row lock is released, and the row is still unsent, so the next worker (or the same one after a restart) sends it. Nothing is lost and nothing is doubled. (b) After sending, before the commit: the email has gone, but the update to <code>sent_at</code> rolls back, so the row is sent again: a duplicate. Only (b) duplicates. The provider helps when it accepts an idempotency key: send the outbox row’s id with each email, and the provider recognises the second send of row 42 and drops it. Without such a key, a rare duplicate is the price of never losing an email.</li>
+<li>The second request makes a new order, and that is right. The 409 rolled back the whole transaction, including the <code>INSERT</code> that claimed <code>k1</code>, so no order with that key exists and the retry runs as if it were the first. The promise of an idempotency key is “the same key never makes two orders”, not “the same key always gives the same answer”: a request that failed and changed nothing may be retried, and the customer gets the order they wanted once the stock is back.</li>
+<li>Move the keys to their own table, <code>CREATE TABLE idempotency_keys (user_id bigint NOT NULL, key text NOT NULL, request_hash text NOT NULL, order_id bigint NOT NULL REFERENCES orders (id), created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (user_id, key))</code>, and drop the key columns from <code>orders</code>. The order inserts its key row in the same transaction, with <code>ON CONFLICT DO NOTHING</code> as now. A scheduled job deletes old keys: <code>DELETE FROM idempotency_keys WHERE created_at &lt; now() - interval '24 hours'</code>, in batches with an index on <code>created_at</code>. The guarantee holds for any retry within 24 hours, because the row exists until then; tell clients (in the API documentation) that a key is only remembered for 24 hours, so they must not retry with an older one.</li>
 </ol>
 
 </section>

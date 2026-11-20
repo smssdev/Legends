@@ -56,7 +56,7 @@
 
 <p>يتكلم Reverb <dfn>بروتوكول Pusher</dfn>، مجموعة صغيرة من رسائل JSON فوق WebSocket، تفهمها مكتبات عملاء كثيرة. وفي المتصفح، يخفيه <dfn>Laravel Echo</dfn>:</p>
 
-<pre><code>Echo.channel("orders.1001").listen(".status", (e) =&gt; show(e.status));</code></pre>
+<pre dir="ltr"><code>Echo.channel("orders.1001").listen(".status", (e) =&gt; show(e.status));</code></pre>
 
 <p>ولنرى ما يفعله Echo، هذا عميل مكتوب باليد، بالصنف <code>WebSocket</code> المبني في Node والمتصفحات. يتصل بمفتاح التطبيق، وينتظر تحية الخادم، ويشترك في القناة:</p>
 

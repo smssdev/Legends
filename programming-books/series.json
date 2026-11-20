@@ -317,7 +317,23 @@
       "number": 2,
       "status": "approved",
       "track": "frontend",
-      "shared": "b2"
+      "shared": "b2",
+      "learn": {
+        "en": [
+          "Write modern JavaScript and TypeScript the way large teams do",
+          "Build React apps with components, state, routing, server data and forms",
+          "Make them accessible, tested, fast, secure and ready for two languages",
+          "Render on the server with Next.js, and keep big codebases easy to change",
+          "Review code, mentor others, and ship a complete production dashboard"
+        ],
+        "ar": [
+          "تكتب JavaScript وTypeScript الحديثتين كما تكتبهما الفرق الكبيرة",
+          "تبني تطبيقات React بالمكونات والحالة والتوجيه وبيانات الخادم والنماذج",
+          "تجعلها متاحة للجميع ومختبرة وسريعة وآمنة وجاهزة للغتين",
+          "تعرض على الخادم بـ Next.js، وتُبقي قواعد الكود الكبيرة سهلة التغيير",
+          "تراجع الكود وتوجّه غيرك، وتشحن لوحة تحكم كاملة للإنتاج"
+        ]
+      }
     },
     {
       "id": "b2-vue",
@@ -375,12 +391,12 @@
             },
             {
               "en": "Reactivity and the Composition API",
-              "ar": "التفاعلية وComposition API",
+              "ar": "التفاعلية وواجهة التركيب",
               "src": "b2-vue/reactivity-and-the-composition"
             },
             {
               "en": "Composables: Reusing Logic",
-              "ar": "Composables: إعادة استخدام المنطق",
+              "ar": "الـ composables: إعادة استخدام المنطق",
               "src": "b2-vue/composables-reusing-logic"
             },
             {
@@ -480,7 +496,23 @@
       "number": 2,
       "status": "approved",
       "track": "frontend",
-      "shared": "b2"
+      "shared": "b2",
+      "learn": {
+        "en": [
+          "Write modern JavaScript and TypeScript the way large teams do",
+          "Build Vue apps with components, reactivity, composables, routing and Pinia",
+          "Make them accessible, tested, fast, secure and ready for two languages",
+          "Render on the server with Nuxt, and keep big codebases easy to change",
+          "Review code, mentor others, and ship a complete production dashboard"
+        ],
+        "ar": [
+          "تكتب JavaScript وTypeScript الحديثتين كما تكتبهما الفرق الكبيرة",
+          "تبني تطبيقات Vue بالمكونات والتفاعلية والـ composables والتوجيه وPinia",
+          "تجعلها متاحة للجميع ومختبرة وسريعة وآمنة وجاهزة للغتين",
+          "تعرض على الخادم بـ Nuxt، وتُبقي قواعد الكود الكبيرة سهلة التغيير",
+          "تراجع الكود وتوجّه غيرك، وتشحن لوحة تحكم كاملة للإنتاج"
+        ]
+      }
     },
     {
       "id": "b3-node",
@@ -547,8 +579,8 @@
               "src": "b3/transactions"
             },
             {
-              "en": "Caching with Redis",
-              "ar": "التخزين المؤقت بـ Redis",
+              "en": "Redis: Caching, Rate Limits and Locks",
+              "ar": "Redis: التخزين المؤقت وحدود المعدل والأقفال",
               "src": "b3/redis"
             }
           ]
@@ -560,13 +592,13 @@
           },
           "chapters": [
             {
-              "en": "Authentication and Authorisation",
-              "ar": "التحقق من الهوية والصلاحيات",
+              "en": "Authentication and Authorization",
+              "ar": "المصادقة والتفويض",
               "src": "b3-node/auth"
             },
             {
-              "en": "Security: The OWASP Top 10",
-              "ar": "الأمان: أخطر عشر ثغرات (OWASP)",
+              "en": "Security: Attacks and Defences",
+              "ar": "الأمان: الهجمات والدفاعات",
               "src": "b3-node/security"
             },
             {
@@ -575,18 +607,18 @@
               "src": "b3-node/jobs-and-queues"
             },
             {
-              "en": "Real-Time with WebSockets",
-              "ar": "الزمن الحقيقي بـ WebSockets",
+              "en": "Real-time Features",
+              "ar": "الميزات الفورية",
               "src": "b3-node/real-time"
             },
             {
-              "en": "Testing the Backend",
-              "ar": "اختبار الخادم",
+              "en": "Testing",
+              "ar": "الاختبار",
               "src": "b3-node/testing"
             },
             {
-              "en": "Logging, Metrics and Tracing",
-              "ar": "السجلات والمقاييس والتتبع",
+              "en": "Observability: Logs, Metrics and Traces",
+              "ar": "قابلية الملاحظة: السجلات والمقاييس والتتبعات",
               "src": "b3/observability"
             }
           ]
@@ -598,18 +630,18 @@
           },
           "chapters": [
             {
-              "en": "Performance and Scaling",
-              "ar": "الأداء والتوسع",
+              "en": "Performance",
+              "ar": "الأداء",
               "src": "b3/performance"
             },
             {
-              "en": "Architecture: Monolith, Modules and Services",
-              "ar": "المعمارية: الكتلة الواحدة والوحدات والخدمات",
+              "en": "Architecture: Keeping Code Easy to Change",
+              "ar": "البنية: إبقاء الكود سهل التغيير",
               "src": "b3-node/architecture"
             },
             {
-              "en": "Docker and Deployment",
-              "ar": "Docker والنشر",
+              "en": "Docker: Shipping the Same Thing Everywhere",
+              "ar": "Docker: شحن الشيء نفسه إلى كل مكان",
               "src": "b3/docker"
             },
             {
@@ -633,7 +665,23 @@
       "number": 3,
       "status": "approved",
       "track": "backend",
-      "shared": "b3"
+      "shared": "b3",
+      "learn": {
+        "en": [
+          "Design REST APIs on a deep understanding of HTTP",
+          "Model data in PostgreSQL, and keep it correct with transactions and locks",
+          "Secure accounts and APIs, and run work in queues and in real time",
+          "Test, observe and measure a service, and make it fast where it matters",
+          "Ship it with Docker, and build a complete production API from an empty folder"
+        ],
+        "ar": [
+          "تصمم واجهات REST على فهم عميق لـ HTTP",
+          "تنمذج البيانات في PostgreSQL، وتحفظ صحتها بالمعاملات والأقفال",
+          "تؤمّن الحسابات والواجهات، وتشغّل العمل في الطوابير وفي الزمن الحقيقي",
+          "تختبر الخدمة وتراقبها وتقيسها، وتجعلها سريعة حيث يهم ذلك",
+          "تشحنها بـ Docker، وتبني واجهة برمجية كاملة للإنتاج من مجلد فارغ"
+        ]
+      }
     },
     {
       "id": "b3-laravel",
@@ -705,8 +753,8 @@
               "src": "b3/transactions"
             },
             {
-              "en": "Caching with Redis",
-              "ar": "التخزين المؤقت بـ Redis",
+              "en": "Redis: Caching, Rate Limits and Locks",
+              "ar": "Redis: التخزين المؤقت وحدود المعدل والأقفال",
               "src": "b3/redis"
             }
           ]
@@ -718,23 +766,23 @@
           },
           "chapters": [
             {
-              "en": "Authentication with Sanctum and Policies",
-              "ar": "الهوية بـ Sanctum والصلاحيات بـ Policies",
+              "en": "Authentication and Authorization with Sanctum",
+              "ar": "المصادقة والتفويض بـ Sanctum",
               "src": "b3-laravel/auth"
             },
             {
-              "en": "Security: The OWASP Top 10 in Laravel",
-              "ar": "الأمان: أخطر عشر ثغرات (OWASP) في Laravel",
+              "en": "Security: Attacks and Defences",
+              "ar": "الأمان: الهجمات والدفاعات",
               "src": "b3-laravel/security"
             },
             {
-              "en": "Queues, Jobs and the Scheduler",
-              "ar": "الطوابير والمهام والمجدول",
+              "en": "Queues and Jobs",
+              "ar": "الطوابير والمهام",
               "src": "b3-laravel/queues"
             },
             {
-              "en": "Real-Time with Laravel Reverb",
-              "ar": "الزمن الحقيقي بـ Laravel Reverb",
+              "en": "Real-time with Reverb",
+              "ar": "الميزات الفورية بـ Reverb",
               "src": "b3-laravel/real-time"
             },
             {
@@ -743,8 +791,8 @@
               "src": "b3-laravel/testing"
             },
             {
-              "en": "Logging, Metrics and Tracing",
-              "ar": "السجلات والمقاييس والتتبع",
+              "en": "Observability: Logs, Metrics and Traces",
+              "ar": "قابلية الملاحظة: السجلات والمقاييس والتتبعات",
               "src": "b3/observability"
             }
           ]
@@ -756,18 +804,18 @@
           },
           "chapters": [
             {
-              "en": "Performance and Scaling",
-              "ar": "الأداء والتوسع",
+              "en": "Performance",
+              "ar": "الأداء",
               "src": "b3/performance"
             },
             {
-              "en": "Architecture: Modules, Actions and Domains",
-              "ar": "المعمارية: الوحدات والأفعال والمجالات",
+              "en": "Architecture: Keeping Code Easy to Change",
+              "ar": "البنية: إبقاء الكود سهل التغيير",
               "src": "b3-laravel/architecture"
             },
             {
-              "en": "Docker and Deployment",
-              "ar": "Docker والنشر",
+              "en": "Docker: Shipping the Same Thing Everywhere",
+              "ar": "Docker: شحن الشيء نفسه إلى كل مكان",
               "src": "b3/docker"
             },
             {
@@ -791,7 +839,23 @@
       "number": 3,
       "status": "approved",
       "track": "backend",
-      "shared": "b3"
+      "shared": "b3",
+      "learn": {
+        "en": [
+          "Design REST APIs on a deep understanding of HTTP",
+          "Model data in PostgreSQL, and keep it correct with transactions and locks",
+          "Secure accounts and APIs, and run work in queues and in real time",
+          "Test, observe and measure a service, and make it fast where it matters",
+          "Ship it with Docker, and build a complete production API from an empty folder"
+        ],
+        "ar": [
+          "تصمم واجهات REST على فهم عميق لـ HTTP",
+          "تنمذج البيانات في PostgreSQL، وتحفظ صحتها بالمعاملات والأقفال",
+          "تؤمّن الحسابات والواجهات، وتشغّل العمل في الطوابير وفي الزمن الحقيقي",
+          "تختبر الخدمة وتراقبها وتقيسها، وتجعلها سريعة حيث يهم ذلك",
+          "تشحنها بـ Docker، وتبني واجهة برمجية كاملة للإنتاج من مجلد فارغ"
+        ]
+      }
     },
     {
       "id": "b4",

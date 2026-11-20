@@ -21,26 +21,30 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Transactions, Locks and Consistency"; } }
 @page ch07:first { @top-center { content: none; } }
-@page ch08 { @top-center { content: "Chapter 8: Caching with Redis"; } }
+@page ch08 { @top-center { content: "Chapter 8: Redis: Caching, Rate Limits and Locks"; } }
 @page ch08:first { @top-center { content: none; } }
-@page ch09 { @top-center { content: "Chapter 9: Authentication with Sanctum and Policies"; } }
+@page ch09 { @top-center { content: "Chapter 9: Authentication and Authorization with Sanctum"; } }
 @page ch09:first { @top-center { content: none; } }
-@page ch10 { @top-center { content: "Chapter 10: Security: The OWASP Top 10 in Laravel"; } }
+@page ch10 { @top-center { content: "Chapter 10: Security: Attacks and Defences"; } }
 @page ch10:first { @top-center { content: none; } }
-@page ch11 { @top-center { content: "Chapter 11: Queues, Jobs and the Scheduler"; } }
+@page ch11 { @top-center { content: "Chapter 11: Queues and Jobs"; } }
 @page ch11:first { @top-center { content: none; } }
-@page ch12 { @top-center { content: "Chapter 12: Real-Time with Laravel Reverb"; } }
+@page ch12 { @top-center { content: "Chapter 12: Real-time with Reverb"; } }
 @page ch12:first { @top-center { content: none; } }
 @page ch13 { @top-center { content: "Chapter 13: Testing with Pest"; } }
 @page ch13:first { @top-center { content: none; } }
-@page ch14 { @top-center { content: "Chapter 14: Logging, Metrics and Tracing"; } }
+@page ch14 { @top-center { content: "Chapter 14: Observability: Logs, Metrics and Traces"; } }
 @page ch14:first { @top-center { content: none; } }
-@page ch15 { @top-center { content: "Chapter 15: Performance and Scaling"; } }
+@page ch15 { @top-center { content: "Chapter 15: Performance"; } }
 @page ch15:first { @top-center { content: none; } }
-@page ch16 { @top-center { content: "Chapter 16: Architecture: Modules, Actions and Domains"; } }
+@page ch16 { @top-center { content: "Chapter 16: Architecture: Keeping Code Easy to Change"; } }
 @page ch16:first { @top-center { content: none; } }
-@page ch17 { @top-center { content: "Chapter 17: Docker and Deployment"; } }
+@page ch17 { @top-center { content: "Chapter 17: Docker: Shipping the Same Thing Everywhere"; } }
 @page ch17:first { @top-center { content: none; } }
+@page ch18 { @top-center { content: "Chapter 18: Capstone: A Production API"; } }
+@page ch18:first { @top-center { content: none; } }
+@page preface { @top-center { content: "How to Use This Book"; } }
+@page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -122,16 +126,14 @@ if (isMember && day === "Tuesday") {
   <p class="cv-series">From Zero to Senior · Book 3</p>
   <h1 class="cv-title">Senior Backend Engineering</h1>
   <p class="cv-sub">APIs, Databases, Security and Scale with Laravel and PostgreSQL</p><p class="cv-edition">Laravel Edition</p>
-  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
-<span class="k">let</span> price;
-
-<span class="k">if</span> (age &lt; <span class="n">13</span>) {
-  price = <span class="n">6</span>;
-} <span class="k">else</span> {
-  price = <span class="n">10</span>;
-}
-
-console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>PHP</span><span>Laravel</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="s"></span>Route::post(<span class="s">&#x27;orders&#x27;</span>, <span class="k">fn</span> () =&gt;
+    DB::transaction(<span class="k">fn</span> () =&gt;
+        Order::place(
+            request()-&gt;user(),
+            request(<span class="s">&#x27;items&#x27;</span>),
+        ),
+    ),
+)-&gt;middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>);</pre></div><div class="cv-tracks"><span>PHP</span><span>Laravel</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
 <rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
@@ -173,7 +175,77 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
           <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: Foundations</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Servers Work: HTTP in Depth</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Modern PHP for JavaScript Developers</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Laravel Essentials: Routes, Controllers and Requests</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Designing REST APIs with API Resources</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Data</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">SQL and PostgreSQL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Eloquent, Relationships and Migrations</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Transactions, Locks and Consistency</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Caching with Redis</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Authentication with Sanctum and Policies</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Security: The OWASP Top 10 in Laravel</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Queues, Jobs and the Scheduler</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Real-Time with Laravel Reverb</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Testing with Pest</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Logging, Metrics and Tracing</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Performance and Scaling</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Architecture: Modules, Actions and Domains</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Docker and Deployment</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Capstone: A Production API</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Foundations</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Servers Work: HTTP in Depth</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Modern PHP for JavaScript Developers</span><span class="toc-p">35</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Laravel Essentials: Routes, Controllers and Requests</span><span class="toc-p">58</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Designing REST APIs with API Resources</span><span class="toc-p">83</span></li><li class="toc-part">Part 2: Data</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">SQL and PostgreSQL</span><span class="toc-p">108</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Eloquent, Relationships and Migrations</span><span class="toc-p">127</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Transactions, Locks and Consistency</span><span class="toc-p">141</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Redis: Caching, Rate Limits and Locks</span><span class="toc-p">155</span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Authentication and Authorization with Sanctum</span><span class="toc-p">169</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Security: Attacks and Defences</span><span class="toc-p">190</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Queues and Jobs</span><span class="toc-p">205</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Real-time with Reverb</span><span class="toc-p">217</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Testing with Pest</span><span class="toc-p">227</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Observability: Logs, Metrics and Traces</span><span class="toc-p">241</span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Performance</span><span class="toc-p">254</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Architecture: Keeping Code Easy to Change</span><span class="toc-p">265</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Docker: Shipping the Same Thing Everywhere</span><span class="toc-p">279</span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Capstone: A Production API</span><span class="toc-p">289</span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">314</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b3/preface/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">This book is for developers who can already build a small API and want to build services the way senior backend engineers do: correct under concurrency, safe against attackers, observable in production, fast where it matters, and easy for a team to change. If you finished <em>Code from Zero</em>, the first book of this series, you are ready. If you learned elsewhere, you need to be comfortable with one programming language, the command line, JSON and Git; the book explains HTTP, SQL and everything after them from the beginning.</p>
+
+<h2 class="plain-h">Two editions, one book</h2>
+<p>The book exists in two editions, one for <strong>Node.js with TypeScript</strong> and one for <strong>PHP with Laravel</strong>, two of the most widely used ways to build web backends. The chapters that do not depend on the language, such as HTTP, SQL, transactions, Redis, observability, performance and Docker, are the same in both, and their examples are shown in both languages side by side where code is needed. The other chapters build the same shop API in the language of your edition, with the same tables, the same endpoints and the same tests.
+You are reading the <strong>Laravel edition</strong>.If your team uses the other one, the ideas still apply, word for word: only the syntax changes.</p>
+
+<h2 class="plain-h">How the book is organised</h2>
+<p>The eighteen chapters are grouped in four parts:</p><ul>
+<li><strong>Foundations</strong> explains HTTP in depth, modern PHP, the parts of Laravel every project uses, and how to design a REST API that clients can rely on.</li><li><strong>Data</strong> covers SQL with PostgreSQL, Eloquent and migrations, transactions and locks, and Redis for caching and counting.</li><li><strong>Production</strong> is what a service needs before real users arrive: authentication, security, background jobs, real-time messages, testing, and observability.</li>
+<li><strong>Senior Work</strong> measures and improves performance, keeps the code easy to change, ships it in containers, and ends with a complete production API built from an empty folder.</li>
+</ul>
+<p>Read the first two parts in order. After that, the chapters can be read in the order your work needs them, though each one assumes the parts before it, and the last chapter uses them all.</p>
+
+<h2 class="plain-h">Every chapter</h2>
+<p>Each chapter follows the same pattern, so you always know where you are: what you will learn; explanations built on real, running examples; a quick check in the middle; boxes with professional habits and common traps; a table of common mistakes; a summary; <strong>three practice projects</strong> (easy, medium and challenge) with steps and hints; and exercises at three levels. Answers to the quick checks follow each summary, and answers to the exercises are at the end of the book.</p>
+<p>The projects matter more than anything else in the book. Reading about a skill is not having it. Do at least one project per chapter, preferably the medium one, before moving on.</p>
+
+<h2 class="plain-h">Real code, real output</h2>
+<p>Every listing in this book is a real file, and every terminal output, test run and measurement was produced by running it, against a real PostgreSQL and a real Redis, while the book was being made. When the last chapter shows six wrong passwords answered <code>401 401 401 401 429 429</code>, or an order sent twice that makes one order, that is what the server printed. You will see the same results if you use the same versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<tr><td>PHP</td><td>8.5</td></tr>
+<tr><td>Laravel</td><td>13.43</td></tr>
+<tr><td>Sanctum</td><td>4.5</td></tr>
+<tr><td>Reverb</td><td>1.14</td></tr>
+<tr><td>Pest</td><td>5.3</td></tr>
+<tr><td>Predis</td><td>3.7</td></tr>
+<tr><td>Monolog</td><td>3.13</td></tr><tr><td>PostgreSQL</td><td>18.7</td></tr>
+<tr><td>Redis</td><td>8.10</td></tr>
+<tr><td>Docker (with Compose 5.6)</td><td>29.9</td></tr>
+</tbody>
+</table>
+<p>Tools change quickly. If a newer version prints something slightly different, read the difference: it usually teaches you what changed and why.</p>
+<ul>
+<li>A dark tab above a listing gives the file’s name and path in the project.</li>
+<li>A box with three coloured dots shows what appeared in the <strong>terminal</strong>. A line starting with <code>$</code> is a command; the lines below it are the answer, and lines starting with <code>#</code> are comments that say what the next command is for.</li>
+<li>Where an output was long, the book shows the lines that matter. Times that change on every run are written as <code>…</code>.</li>
+</ul>
+
+<h2 class="plain-h">What you need</h2>
+<ul>
+<li>A computer with Windows, macOS or Linux, with at least 8 GB of memory.</li>
+<li>PHP 8.5 with Composer (or Laravel Herd, which installs both), Git, <code>curl</code>, <code>jq</code>, and an editor such as Visual Studio Code or PhpStorm.</li><li><strong>Docker</strong>, which runs PostgreSQL and Redis for every chapter without installing them, and the whole system in the last chapters.</li>
+<li>Every library and tool in the book is free and open source.</li>
+</ul>
+
+<h2 class="plain-h">The code repository</h2>
+<p>Every example, every project and every exercise answer is in the book’s code repository, in a folder per chapter, together with the scripts that produced each output. Type the examples yourself first, then use the repository to compare, or to recover when you are stuck.</p>
+
+<h2 class="plain-h">A word from the author</h2>
+<p>Most of what goes wrong in a backend goes wrong quietly: an order saved twice, a lock held too long, a token that never expires, an error that nobody logged. None of it shows in a demo, and all of it shows on a busy day. This book is about building services that keep their promises when the network fails, the traffic grows and the code changes, and about the habits that make that normal rather than heroic. Like every book of the series, it is written for each of its two languages rather than translated word for word. I hope it helps you become the engineer that others trust with the systems that matter.</p>
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/en">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>How Servers Work: HTTP in Depth</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -8031,6 +8103,682 @@ Volume shop_db-data Removed </pre></div>
 <p>Everything is in place. The final project brings the whole book together: a complete, secure, tested and observable shop API, built from an empty folder to a running container.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch18" data-chapter="18" data-code="b3/laravel/capstone/en">
+<div class="opener"><span class="opener-num">18</span><p class="chapter-kicker">Chapter 18</p><h1>Capstone: A Production API</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>turn a short brief into the endpoints, tables and quality goals of a real API</li>
+<li>build accounts, products and orders in one Laravel project, each with the techniques of its chapter</li>
+<li>make an order happen exactly once, even when the client sends it twice</li>
+<li>send the order’s email through a job that commits with the order, never before it</li>
+<li>prove it with Pest against a real database, then run the whole system in containers</li>
+<li>check the result against a production checklist, and know what is still missing</li>
+</ul>
+</div>
+
+<p class="lead">Each chapter of this book solved one problem on a small example: a route, a transaction, a lock, a token, a job, a metric. A real service needs all of them at once, and the hard part is not any single technique but how they fit together. In this last chapter we build Bit’s shop API in a new Laravel project and run it as a system of four containers: about 500 lines of PHP of our own, each line run, each test passed, and each answer below printed by the real server.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every section says which chapter a decision comes from. When something feels new, that is your cue to go back and read that chapter again: you will understand it better now that you see where it fits.</p></div></div>
+
+<h2><span class="sec">18.1</span> <span>The brief</span></h2>
+
+<p>The shop owner writes: <em>“Customers should create an account, browse the products, and order. An order must never be charged twice, and they should get an email when it is placed. It has to stay up when we are busy.”</em> As in every real project, the first job is to turn that into something testable:</p>
+
+<table>
+<thead><tr><th>As a customer, I want to…</th><th>Done when…</th></tr></thead>
+<tbody>
+<tr><td>create an account and sign in</td><td><code>POST /api/auth/register</code> and <code>POST /api/auth/login</code> return a user and a token; a stolen database opens no account</td></tr>
+<tr><td>browse the products, cheapest first</td><td><code>GET /api/products</code> returns pages with a cursor; no product is skipped or repeated, however large the table</td></tr>
+<tr><td>place an order</td><td><code>POST /api/orders</code> takes the stock and saves the order together, or does neither; the same request sent twice makes one order</td></tr>
+<tr><td>get an email when I order</td><td>Exactly one email per order, even if the email service or the worker is down for a while</td></tr>
+</tbody>
+</table>
+
+<p>And the qualities that every endpoint must also meet:</p>
+<ul>
+<li><strong>Safe:</strong> passwords hashed, tokens stored only as hashes, login attempts limited (Chapters 9 and 10).</li>
+<li><strong>Consistent:</strong> stock never below zero, money in integers, no half-saved order (Chapters 5 and 7).</li>
+<li><strong>Clear:</strong> every error in the same Problem Details form, every input validated (Chapter 4).</li>
+<li><strong>Observable:</strong> structured logs, metrics and health checks from the first day (Chapter 14).</li>
+<li><strong>Tested and shippable:</strong> tests against a real database, and one command to run everything (Chapters 13 and 17).</li>
+</ul>
+
+<h2><span class="sec">18.2</span> <span>The plan</span></h2>
+
+<p>We start from <code>composer create-project laravel/laravel shop</code>, add Sanctum with <code>php artisan install:api</code>, Predis for Redis and Pest for the tests, as in the earlier chapters. These are the files we add or change:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The files this chapter adds to a new Laravel project</span>
+<span class="c">$ </span><span class="k">find app/Http app/Jobs app/Models bootstrap/app.php routes/api.php database/migrations/*shop* tests/Feature Dockerfile compose.yaml -type f | sort</span>
+Dockerfile
+app/Http/Controllers/AuthController.php
+app/Http/Controllers/Controller.php
+app/Http/Controllers/OrderController.php
+app/Http/Controllers/ProductController.php
+app/Http/Middleware/Measure.php
+app/Http/Problem.php
+app/Jobs/SendOrderEmail.php
+app/Models/Order.php
+app/Models/OrderItem.php
+app/Models/Product.php
+app/Models/User.php
+bootstrap/app.php
+compose.yaml
+database/migrations/2026_11_20_000001_create_shop_tables.php
+routes/api.php
+tests/Feature/ApiTest.php</pre></div>
+
+<table>
+<thead><tr><th>File</th><th>Holds</th><th>From chapter</th></tr></thead>
+<tbody>
+<tr><td>the migration, <code>Models/</code></td><td>Three tables, their constraints and one index; four models</td><td>5, 6, 15</td></tr>
+<tr><td><code>Problem.php</code>, <code>bootstrap/app.php</code></td><td>Every error the API can give, and where they are rendered</td><td>4</td></tr>
+<tr><td><code>AuthController</code>, <code>AppServiceProvider</code></td><td>Registration, Sanctum tokens, the login limit</td><td>9, 10, 8</td></tr>
+<tr><td><code>ProductController</code>, <code>OrderController</code></td><td>Cursor pages; the order transaction</td><td>4, 7</td></tr>
+<tr><td><code>SendOrderEmail</code></td><td>The job that sends the confirmation</td><td>11</td></tr>
+<tr><td><code>Measure</code>, <code>routes/api.php</code></td><td>Logs, metrics and readiness; the routes</td><td>14</td></tr>
+</tbody>
+</table>
+
+<p>The controllers stay thin enough to read whole, so there is no separate action layer as in Chapter 16: the structure fits the size of the problem. Laravel’s service container is the composition root; nothing here creates its own connections.</p>
+
+<h2><span class="sec">18.3</span> <span>Tables that guarantee the rules</span></h2>
+
+<p>The tables carry the rules that must hold whatever the code does. The unique pair <code>(user_id, idempotency_key)</code> is the heart of the order, and the index <code>(price, id)</code> serves the product pages:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_create_shop_tables.php</div><pre class="code">        Schema::create(<span class="s">&#x27;orders&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;foreignId(<span class="s">&#x27;user_id&#x27;</span>)-&gt;constrained();
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;idempotency_key&#x27;</span>, <span class="n">100</span>);
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;request_hash&#x27;</span>, <span class="n">64</span>);
+            $table-&gt;integer(<span class="s">&#x27;total&#x27;</span>)-&gt;<span class="k">default</span>(<span class="n">0</span>);
+            $table-&gt;timestamps();
+            <span class="c line-bidi">// one order per customer and key: the database refuses a second</span>
+            $table-&gt;unique([<span class="s">&#x27;user_id&#x27;</span>, <span class="s">&#x27;idempotency_key&#x27;</span>]);
+        });</pre></div>
+
+<p>Stock that never goes below zero and a positive price are <code>CHECK</code> constraints, which the schema builder has no method for, so the migration states them in SQL:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_create_shop_tables.php</div><pre class="code">        DB::statement(<span class="s">&#x27;ALTER TABLE products ADD CHECK (price &gt; 0), ADD CHECK (stock &gt;= 0)&#x27;</span>);
+        DB::statement(<span class="s">&#x27;ALTER TABLE order_items ADD CHECK (quantity &gt; 0)&#x27;</span>);</pre></div>
+
+<p><code>request_hash</code> remembers what was asked with each key, so a key sent again with a different body can be refused. There is no outbox table: section 18.6 shows why Laravel’s <code>jobs</code> table already is one.</p>
+
+<h2><span class="sec">18.4</span> <span>Errors, accounts and the login limit</span></h2>
+
+<p>Every error leaves the API in the Problem Details form of Chapter 4. Our own errors are <code>Problem</code>s with named constructors, such as <code>Problem::outOfStock($id, $stock)</code>, and one method turns Laravel’s own exceptions into problems:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Problem.php</div><pre class="code">    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="k">from</span>(Throwable $e): <span class="k">self</span>
+    {
+        <span class="k">return</span> <span class="k">match</span> (<span class="k">true</span>) {
+            $e <span class="k">instanceof</span> <span class="k">self</span> =&gt; $e,
+            $e <span class="k">instanceof</span> AuthenticationException =&gt; <span class="k">self</span>::unauthenticated(),
+            $e <span class="k">instanceof</span> ValidationException =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">422</span>, <span class="s">&#x27;Invalid request&#x27;</span>, <span class="k">null</span>, [
+                <span class="s">&#x27;errors&#x27;</span> =&gt; collect($e-&gt;errors())-&gt;map(<span class="k">fn</span> ($messages, $field) =&gt; [
+                    <span class="s">&#x27;field&#x27;</span> =&gt; $field, <span class="s">&#x27;message&#x27;</span> =&gt; $messages[<span class="n">0</span>],
+                ])-&gt;values()-&gt;all(),
+            ]),
+            $e <span class="k">instanceof</span> ThrottleRequestsException =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">429</span>, <span class="s">&#x27;Too many attempts&#x27;</span>,
+                __(<span class="s">&#x27;Try again in :seconds seconds.&#x27;</span>, [<span class="s">&#x27;seconds&#x27;</span> =&gt; $e-&gt;getHeaders()[<span class="s">&#x27;Retry-After&#x27;</span>]]), [], $e-&gt;getHeaders()),
+            $e <span class="k">instanceof</span> NotFoundHttpException =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">404</span>, <span class="s">&#x27;Not found&#x27;</span>),
+            <span class="k">default</span> =&gt; <span class="k">new</span> <span class="k">self</span>(<span class="n">500</span>, <span class="s">&#x27;Server error&#x27;</span>),
+        };
+    }</pre></div>
+
+<p>Anything unknown becomes a 500 whose title says nothing: the details go to the log, never to the client (Chapter 10). <code>bootstrap/app.php</code> renders every error under <code>/api</code> this way, keeps the rate-limit counts in Redis, and wraps every request in the <code>Measure</code> middleware of section 18.7:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bootstrap/app.php</div><pre class="code">    -&gt;withMiddleware(<span class="k">function</span> (Middleware $middleware): <span class="k">void</span> {
+        <span class="c line-bidi">// the rate limits are counted in Redis, shared by every copy of the app; Measure wraps every request, so it also sees the 401s and 429s of the middleware</span>
+        $middleware-&gt;throttleWithRedis();
+        $middleware-&gt;append(Measure::<span class="k">class</span>);
+    })
+    -&gt;withExceptions(<span class="k">function</span> (Exceptions $exceptions): <span class="k">void</span> {
+        <span class="c line-bidi">// every error under /api leaves as Problem Details</span>
+        $exceptions-&gt;render(<span class="k">function</span> (Throwable $e, Request $request) {
+            <span class="k">if</span> ($request-&gt;is(<span class="s">&#x27;api/*&#x27;</span>)) {
+                <span class="k">return</span> Problem::<span class="k">from</span>($e)-&gt;render($request);
+            }
+        });
+    })-&gt;create();</pre></div>
+
+<p>Login is that of Chapter 9: a dummy hash for unknown emails, so the response time reveals nothing, and a Sanctum token that expires, of which only the SHA-256 hash is stored:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/AuthController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> login(Request $request): JsonResponse
+    {
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:254&#x27;</span>],
+            <span class="s">&#x27;password&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:128&#x27;</span>],
+        ]);
+        $user = User::where(<span class="s">&#x27;email&#x27;</span>, Str::lower($data[<span class="s">&#x27;email&#x27;</span>]))-&gt;first();
+        <span class="c line-bidi">// an unknown email still costs one hash, so timing does not reveal which emails exist</span>
+        $ok = Hash::check($data[<span class="s">&#x27;password&#x27;</span>], $user-&gt;password ?? <span class="k">self</span>::dummy());
+        <span class="k">if</span> (! $user || ! $ok) {
+            <span class="k">throw</span> Problem::badLogin();
+        }
+        <span class="c line-bidi">// Sanctum stores only the token&#x27;s hash: a leaked table opens no account</span>
+        $token = $user-&gt;createToken(<span class="s">&#x27;api&#x27;</span>, [<span class="s">&#x27;*&#x27;</span>], now()-&gt;addDays(<span class="n">30</span>))-&gt;plainTextToken;
+
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;token&#x27;</span> =&gt; $token]);
+    }</pre></div>
+
+<p>The limit of Chapter 10 is five tries a minute per address and email. With <code>throttleWithRedis()</code> the counts live in Redis: with them in memory or in a per-server file, three copies of the app behind a load balancer would allow three times the attempts:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Providers/AppServiceProvider.php</div><pre class="code">        RateLimiter::<span class="k">for</span>(<span class="s">&#x27;login&#x27;</span>, <span class="k">fn</span> (Request $request) =&gt; Limit::perMinute(<span class="n">5</span>)
+            -&gt;by($request-&gt;ip().<span class="s">&#x27;|&#x27;</span>.Str::lower((<span class="k">string</span>) $request-&gt;input(<span class="s">&#x27;email&#x27;</span>))));</pre></div>
+
+<h2><span class="sec">18.5</span> <span>Products, page by page</span></h2>
+
+<p>Laravel’s <code>cursorPaginate</code> is the keyset pagination of Chapter 4: the cursor holds the last row’s <code>price</code> and <code>id</code>, and the next page asks for the rows after that pair. With the index <code>(price, id)</code> PostgreSQL jumps straight to the right place, so page 1000 costs what page 1 costs (Chapter 15):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/ProductController.php</div><pre class="code">        $limit = $request-&gt;validate([
+            <span class="s">&#x27;limit&#x27;</span> =&gt; [<span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:50&#x27;</span>],
+        ])[<span class="s">&#x27;limit&#x27;</span>] ?? <span class="n">20</span>;
+        <span class="c line-bidi">// Laravel&#x27;s cursor pages: the cursor holds the last row&#x27;s price and id</span>
+        $page = Product::query()
+            -&gt;select(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;stock&#x27;</span>)
+            -&gt;orderBy(<span class="s">&#x27;price&#x27;</span>)
+            -&gt;orderBy(<span class="s">&#x27;id&#x27;</span>)
+            -&gt;cursorPaginate($limit);
+
+        <span class="k">return</span> response()-&gt;json([
+            <span class="s">&#x27;data&#x27;</span> =&gt; $page-&gt;items(),
+            <span class="s">&#x27;next_cursor&#x27;</span> =&gt; $page-&gt;nextCursor()?-&gt;encode(),
+        ]);
+    }</pre></div>
+
+<p>The second <code>orderBy('id')</code> is not decoration: two products may share a price, and without a second, unique key a page boundary between them would skip one or show it twice. <code>cursorPaginate</code> needs the order to be unique for exactly that reason.</p>
+
+<h2><span class="sec">18.6</span> <span>Orders that happen once</span></h2>
+
+<p>The order is the heart of the shop, and the place where most of the book meets. Phones lose their connection mid-request; the app retries; the customer taps twice. If each request made an order, the customer would pay twice. The client therefore sends an <dfn>Idempotency-Key</dfn> header, a value it chooses once per order and repeats on every retry. The whole order is one transaction (Chapter 7), and its first statement claims the key:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">        $items = $request-&gt;validate([
+            <span class="s">&#x27;items&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;array&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:20&#x27;</span>],
+            <span class="s">&#x27;items.*.product_id&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;distinct&#x27;</span>],
+            <span class="s">&#x27;items.*.quantity&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:10&#x27;</span>],
+        ])[<span class="s">&#x27;items&#x27;</span>];
+        $key = Validator::validate(
+            [<span class="s">&#x27;idempotency_key&#x27;</span> =&gt; $request-&gt;header(<span class="s">&#x27;Idempotency-Key&#x27;</span>)],
+            [<span class="s">&#x27;idempotency_key&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;min:8&#x27;</span>, <span class="s">&#x27;max:100&#x27;</span>]],
+        )[<span class="s">&#x27;idempotency_key&#x27;</span>];
+        $user = $request-&gt;user();
+        $hash = hash(<span class="s">&#x27;sha256&#x27;</span>, json_encode($items));
+
+        <span class="c line-bidi">// all or nothing: the order, its lines, the stock and the job commit together</span>
+        [$order, $replayed] = DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($user, $key, $hash, $items) {
+            <span class="c line-bidi">// the key is claimed first; ON CONFLICT DO NOTHING inserts nothing if it was used</span>
+            $claimed = DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;insertOrIgnore([
+                <span class="s">&#x27;user_id&#x27;</span> =&gt; $user-&gt;id, <span class="s">&#x27;idempotency_key&#x27;</span> =&gt; $key, <span class="s">&#x27;request_hash&#x27;</span> =&gt; $hash,
+                <span class="s">&#x27;created_at&#x27;</span> =&gt; now(), <span class="s">&#x27;updated_at&#x27;</span> =&gt; now(),
+            ]);
+            $order = $user-&gt;orders()-&gt;where(<span class="s">&#x27;idempotency_key&#x27;</span>, $key)-&gt;firstOrFail();
+            <span class="k">if</span> ($claimed === <span class="n">0</span>) {
+                <span class="c line-bidi">// the key was used before: return that order, unless the body is different</span>
+                <span class="k">if</span> ($order-&gt;request_hash !== $hash) {
+                    <span class="k">throw</span> Problem::keyReused();
+                }
+
+                <span class="k">return</span> [$order, <span class="k">true</span>];</pre></div>
+
+<p><code>insertOrIgnore</code> becomes <code>INSERT … ON CONFLICT DO NOTHING</code> on PostgreSQL, and the unique constraint does the hard work. If two copies of the same request arrive together, the second insert waits for the first transaction, then inserts nothing, and the code returns that order. No lock in the code, no race: the database already guarantees it. If the key comes back with a <em>different</em> body, the client has a bug, and saying so is better than guessing. The <code>distinct</code> rule refuses the same product twice in one order, which the table’s primary key would refuse less politely.</p>
+
+<p>Then each line takes its stock with the conditional update of Chapter 7: <code>decrement</code> on a query with <code>where('stock', '&gt;=', $quantity)</code> returns how many rows changed. If any line is short, the <code>Problem</code> rolls the whole transaction back, the claimed key included, so the client may fix the order and retry with the same key:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">            $total = <span class="n">0</span>;
+            <span class="k">foreach</span> ($items <span class="k">as</span> [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity]) {
+                <span class="c line-bidi">// the stock is taken only if it is enough, in the same statement</span>
+                $taken = Product::whereKey($id)-&gt;where(<span class="s">&#x27;stock&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $quantity)
+                    -&gt;decrement(<span class="s">&#x27;stock&#x27;</span>, $quantity);
+                <span class="k">if</span> ($taken === <span class="n">0</span>) {
+                    $stock = Product::whereKey($id)-&gt;value(<span class="s">&#x27;stock&#x27;</span>);
+                    <span class="k">throw</span> $stock === <span class="k">null</span>
+                        ? Problem::unknownProduct($id)
+                        : Problem::outOfStock($id, $stock);
+                }
+                $price = Product::whereKey($id)-&gt;value(<span class="s">&#x27;price&#x27;</span>);
+                $order-&gt;items()-&gt;create([<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity, <span class="s">&#x27;price&#x27;</span> =&gt; $price]);
+                $total += $price * $quantity;
+            }
+            $order-&gt;update([<span class="s">&#x27;total&#x27;</span> =&gt; $total]);
+            <span class="c line-bidi">// the database queue writes the job in this same transaction: an outbox, with no extra table</span>
+            SendOrderEmail::dispatch($order-&gt;id);
+
+            <span class="k">return</span> [$order, <span class="k">false</span>];
+        });
+
+        <span class="k">return</span> response()-&gt;json(<span class="k">self</span>::present($order), $replayed ? <span class="n">200</span> : <span class="n">201</span>,
+            $replayed ? [<span class="s">&#x27;Idempotent-Replayed&#x27;</span> =&gt; <span class="s">&#x27;true&#x27;</span>] : []);</pre></div>
+
+<p>Look at where the job is dispatched: <em>inside</em> the transaction. In Chapter 11 that would have been a mistake, and we wrote <code>afterCommit()</code>: with the Redis queue, a job pushed before the commit may run before the order exists, or exist for an order that rolled back. Here the queue connection is <code>database</code>, and the database queue writes the job as a row in the <code>jobs</code> table <em>through the same connection, in the same transaction</em>. The job exists if and only if the order does. That is the <dfn>outbox</dfn> pattern, with no extra table and no extra code.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The same line of code, <code>SendOrderEmail::dispatch()</code>, is right with one queue driver and wrong with another. Knowing <em>why</em> is what lets you choose: the database queue commits with your data; Redis is faster, but needs <code>afterCommit()</code> and accepts a small gap between the commit and the push.</p></div></div>
+
+<p>The job itself carries only the order’s id and reads the rest when it runs, as in Chapter 11. Its <code>$tries</code> and <code>$backoff</code> give a slow email service a few chances before the job is marked as failed:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Jobs/SendOrderEmail.php</div><pre class="code"><span class="k">class</span> SendOrderEmail <span class="k">implements</span> ShouldQueue
+{
+    <span class="k">use</span> Queueable;
+
+    <span class="k">public</span> <span class="k">int</span> $tries = <span class="n">5</span>;
+
+    <span class="k">public</span> <span class="k">array</span> $backoff = [<span class="n">5</span>, <span class="n">30</span>, <span class="n">120</span>];
+
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">public</span> <span class="k">int</span> $orderId) {}
+
+    <span class="k">public</span> <span class="k">function</span> handle(): <span class="k">void</span>
+    {
+        $order = Order::with(<span class="s">&#x27;user:id,email&#x27;</span>)-&gt;findOrFail($<span class="k">this</span>-&gt;orderId);
+        Log::info(<span class="s">&#x27;email sent&#x27;</span>, [<span class="s">&#x27;to&#x27;</span> =&gt; $order-&gt;user-&gt;email, <span class="s">&#x27;order_id&#x27;</span> =&gt; $order-&gt;id]);
+    }
+}</pre></div>
+
+<p>The worker takes jobs with <code>FOR UPDATE SKIP LOCKED</code>, so several workers never run the same job. Delivery is <em>at least once</em>: a worker that crashes after sending but before deleting the job leaves it for the next one, and the email goes twice. A real email provider accepts an idempotency key too, and the order id is the natural one to give it.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is the key claimed with <code>insertOrIgnore</code> rather than by first checking whether an order with that key exists?</li><li>An order has two lines, and the second is out of stock. What is left in the database afterwards, including the <code>jobs</code> table?</li><li>Why may <code>SendOrderEmail::dispatch()</code> be called inside the transaction here, when Chapter 11 used <code>afterCommit()</code>?</li></ol></aside>
+
+<h2><span class="sec">18.7</span> <span>Logs, metrics and health</span></h2>
+
+<p>One middleware, appended to every request, writes one JSON log line and increments one counter in Redis, keyed by method, route and status. Because it wraps the whole router, it also sees the 401s of <code>auth:sanctum</code> and the 429s of the rate limit, which happen before any controller runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/Measure.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $start = hrtime(<span class="k">true</span>);
+        $response = $next($request);
+        $route = $request-&gt;route()?-&gt;uri() ?? <span class="s">&#x27;unknown&#x27;</span>;
+        <span class="k">if</span> (in_array($route, [<span class="s">&#x27;up&#x27;</span>, <span class="s">&#x27;api/ready&#x27;</span>, <span class="s">&#x27;api/metrics&#x27;</span>])) {
+            <span class="k">return</span> $response;
+        }
+        $status = $response-&gt;getStatusCode();
+        Redis::hincrby(<span class="s">&#x27;metrics:requests&#x27;</span>, <span class="s">&quot;{$request-&gt;method()}|$route|$status&quot;</span>, <span class="n">1</span>);
+        Log::info(<span class="s">&#x27;request&#x27;</span>, [
+            <span class="s">&#x27;method&#x27;</span> =&gt; $request-&gt;method(),
+            <span class="s">&#x27;url&#x27;</span> =&gt; $request-&gt;getRequestUri(),
+            <span class="s">&#x27;status&#x27;</span> =&gt; $status,
+            <span class="s">&#x27;ms&#x27;</span> =&gt; intdiv(hrtime(<span class="k">true</span>) - $start, 1_000_000),
+        ]);
+
+        <span class="k">return</span> $response;
+    }</pre></div>
+
+<p>The counters live in Redis rather than in PHP’s memory because PHP forgets everything between requests, and because every copy of the app must add to the same numbers (Chapter 14). <code>Measure::metrics()</code> prints them in Prometheus’s text format. The routes add the two health endpoints: Laravel’s own <code>/up</code> says the process is alive, which is what Docker’s health check asks; <code>/api/ready</code> says it can do its work, which is what a load balancer asks:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">Route::post(<span class="s">&#x27;auth/register&#x27;</span>, [AuthController::<span class="k">class</span>, <span class="s">&#x27;register&#x27;</span>]);
+Route::post(<span class="s">&#x27;auth/login&#x27;</span>, [AuthController::<span class="k">class</span>, <span class="s">&#x27;login&#x27;</span>])-&gt;middleware(<span class="s">&#x27;throttle:login&#x27;</span>);
+Route::get(<span class="s">&#x27;products&#x27;</span>, [ProductController::<span class="k">class</span>, <span class="s">&#x27;index&#x27;</span>]);
+
+Route::middleware(<span class="s">&#x27;auth:sanctum&#x27;</span>)-&gt;group(<span class="k">function</span> () {
+    Route::post(<span class="s">&#x27;orders&#x27;</span>, [OrderController::<span class="k">class</span>, <span class="s">&#x27;store&#x27;</span>]);
+    Route::get(<span class="s">&#x27;orders/{id}&#x27;</span>, [OrderController::<span class="k">class</span>, <span class="s">&#x27;show&#x27;</span>])-&gt;whereNumber(<span class="s">&#x27;id&#x27;</span>);
+});
+
+<span class="c line-bidi">// ready means the database and Redis both answer; /up only says the process is alive</span>
+Route::get(<span class="s">&#x27;ready&#x27;</span>, <span class="k">function</span> () {
+    <span class="k">try</span> {
+        DB::select(<span class="s">&#x27;SELECT 1&#x27;</span>);
+        Redis::ping();
+
+        <span class="k">return</span> [<span class="s">&#x27;ready&#x27;</span> =&gt; <span class="k">true</span>];
+    } <span class="k">catch</span> (Throwable) {
+        <span class="k">return</span> response()-&gt;json([<span class="s">&#x27;ready&#x27;</span> =&gt; <span class="k">false</span>], <span class="n">503</span>);
+    }
+});
+Route::get(<span class="s">&#x27;metrics&#x27;</span>, [Measure::<span class="k">class</span>, <span class="s">&#x27;metrics&#x27;</span>]);</pre></div>
+
+<h2><span class="sec">18.8</span> <span>Tests against a real database</span></h2>
+
+<p>The tests are Pest feature tests (Chapter 13): real requests through the real routes, middleware and database. <code>phpunit.xml</code> points them at PostgreSQL’s <code>shop_test</code> database and the <code>database</code> queue, so a test can count the job rows. <code>DatabaseTruncation</code> migrates once and empties every table before each test, so each one starts with the same five products, with the same ids:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/ApiTest.php</div><pre class="code">pest()-&gt;<span class="k">use</span>(DatabaseTruncation::<span class="k">class</span>);
+
+beforeEach(<span class="k">fn</span> () =&gt; $<span class="k">this</span>-&gt;seed());
+
+<span class="k">function</span> signIn(): <span class="k">array</span>
+{
+    $user = [<span class="s">&#x27;email&#x27;</span> =&gt; <span class="s">&#x27;sara@example.com&#x27;</span>, <span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;Sara&#x27;</span>, <span class="s">&#x27;password&#x27;</span> =&gt; <span class="s">&#x27;a long password&#x27;</span>];
+    test()-&gt;postJson(<span class="s">&#x27;/api/auth/register&#x27;</span>, $user);
+    $token = test()-&gt;postJson(<span class="s">&#x27;/api/auth/login&#x27;</span>, $user)-&gt;json(<span class="s">&#x27;token&#x27;</span>);
+
+    <span class="k">return</span> [<span class="s">&#x27;Authorization&#x27;</span> =&gt; <span class="s">&quot;Bearer $token&quot;</span>];
+}
+
+<span class="k">function</span> order(<span class="k">array</span> $headers, <span class="k">string</span> $key, <span class="k">array</span> $items)
+{
+    <span class="k">return</span> test()-&gt;postJson(<span class="s">&#x27;/api/orders&#x27;</span>, [<span class="s">&#x27;items&#x27;</span> =&gt; $items], [...$headers, <span class="s">&#x27;Idempotency-Key&#x27;</span> =&gt; $key]);
+}</pre></div>
+
+<p>Each test states one promise from the brief. The most important is the first, which sends the same order twice and checks that there is one order, one stock deduction and one job:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/ApiTest.php</div><pre class="code">test(<span class="s">&#x27;places an order once, however many times the same key is sent&#x27;</span>, <span class="k">function</span> () {
+    $auth = signIn();
+    $items = [[<span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">2</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">3</span>]];
+    $first = order($auth, <span class="s">&#x27;key-0001&#x27;</span>, $items)-&gt;assertCreated();
+    order($auth, <span class="s">&#x27;key-0001&#x27;</span>, $items)-&gt;assertOk()-&gt;assertJsonPath(<span class="s">&#x27;id&#x27;</span>, $first-&gt;json(<span class="s">&#x27;id&#x27;</span>));
+    expect(Product::find(<span class="n">2</span>)-&gt;stock)-&gt;toBe(<span class="n">47</span>)
+        -&gt;and(DB::table(<span class="s">&#x27;jobs&#x27;</span>)-&gt;count())-&gt;toBe(<span class="n">1</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The tests, against PostgreSQL and Redis</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest</span>
+
+   PASS  Tests\Feature\ApiTest
+  ✓ places an order once, however many times the same key is sent
+  ✓ refuses a key reused with another body
+  ✓ takes no stock when one line is short
+  ✓ refuses an order without a token
+  ✓ pages follow each other with no gaps and no repeats
+
+  Tests:    5 passed (14 assertions)
+  Duration: …</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: tests and real data</p><p>Our first version used <code>RefreshDatabase</code>, which wraps each test in a transaction and rolls it back. That is fast, but PostgreSQL sequences are not rolled back, so the products had new ids in every test and the tests that used ids 1 and 2 failed. Truncation resets them. Whatever you choose, the tests must use a database of their own, named in <code>phpunit.xml</code>: never let a test runner reach credentials for production, because emptying tables is exactly what tests do.</p></aside>
+
+<h2><span class="sec">18.9</span> <span>Shipping it</span></h2>
+
+<p>The <code>Dockerfile</code> has two stages. The first, from the official Composer image, installs the dependencies from the lock file, without the development ones, before copying the code, so that layer is rebuilt only when <code>composer.lock</code> changes (Chapter 17). The second is PHP with Apache and the PostgreSQL driver, and receives only the finished application:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Dockerfile</div><pre class="code">FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+COPY . .
+RUN composer dump-autoload --optimize --no-dev
+
+FROM php:8.5-apache
+RUN apt-get update \
+ &amp;&amp; apt-get install -y --no-install-recommends libpq-dev \
+ &amp;&amp; docker-php-ext-install pdo_pgsql pcntl \
+ &amp;&amp; rm -rf /var/lib/apt/lists/*
+RUN mv &quot;$PHP_INI_DIR/php.ini-production&quot; &quot;$PHP_INI_DIR/php.ini&quot;
+RUN echo &quot;FallbackResource /index.php&quot; &gt; /etc/apache2/conf-enabled/laravel.conf \
+ &amp;&amp; echo &#x27;SetEnvIf Authorization &quot;(.+)&quot; HTTP_AUTHORIZATION=$1&#x27; &gt;&gt; /etc/apache2/conf-enabled/laravel.conf \
+ &amp;&amp; sed -i &#x27;s#/var/www/html#/var/www/html/public#&#x27; /etc/apache2/sites-available/000-default.conf
+WORKDIR /var/www/html
+COPY --from=vendor --chown=www-data:www-data /app ./
+HEALTHCHECK --interval=5s --timeout=2s CMD curl -fs http://localhost/up || exit 1</pre></div>
+
+<p>One line deserves attention: <code>SetEnvIf Authorization …</code>. Apache does not hand the <code>Authorization</code> header to PHP by default. Laravel’s <code>public/.htaccess</code> contains the same fix, but our configuration does not read <code>.htaccess</code> files. Without this line every login works and every authenticated request answers 401: exactly what the first recording of this chapter printed, until we added it.</p>
+
+<p>Compose runs the four parts. The app and the worker are the <em>same image</em> with different commands, so they can never run different versions of the code. The settings come from the environment; <code>APP_KEY</code> is read from the <code>.env</code> file beside <code>compose.yaml</code>, which <code>.dockerignore</code> keeps out of the image:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">compose.yaml</div><pre class="code">  app:
+    build: .
+    image: shop-api
+    ports:
+      - &quot;8080:80&quot;
+    environment: &amp;env
+      APP_ENV: production
+      APP_DEBUG: &quot;false&quot;
+      # read from the .env file next to this one, which never goes into the image
+      APP_KEY: ${APP_KEY:?APP_KEY is not set}
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_DATABASE: shop
+      DB_USERNAME: shop
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_CLIENT: predis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: database
+      LOG_CHANNEL: stderr
+      LOG_STDERR_FORMATTER: Monolog\Formatter\JsonFormatter
+    depends_on: &amp;ready
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: shop-api
+    command: [&quot;php&quot;, &quot;artisan&quot;, &quot;queue:work&quot;, &quot;--sleep=1&quot;]
+    environment: *env
+    depends_on: *ready
+    # the worker serves no HTTP, so the image&#x27;s health check does not apply
+    healthcheck:
+      disable: true</pre></div>
+
+<p>The migrations run as their own step, with the database up and the new version not yet serving. An app that migrates when it starts would run the migration once per copy, all at the same moment:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The image</span>
+<span class="c">$ </span><span class="k">docker build -t shop-api .</span>
+<span class="c">$ </span><span class="k">docker image ls shop-api</span>
+shop-api:latest  841MB
+<span class="c line-bidi"># First the database and Redis, then the migrations, as their own step</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait db redis &gt; /dev/null 2&gt;&amp;1</span>
+<span class="c">$ </span><span class="k">docker compose run --rm app php artisan migrate --force --seed</span>
+Creating migration table … DONE
+0001_01_01_000000_create_users_table … DONE
+0001_01_01_000001_create_cache_table … DONE
+0001_01_01_000002_create_jobs_table … DONE
+2026_11_20_000001_create_shop_tables … DONE
+2026_11_20_153012_create_personal_access_tokens_table … DONE
+<span class="c line-bidi"># Then the API and the worker</span>
+<span class="c">$ </span><span class="k">docker compose up -d --wait</span>
+Container shop-db-1 Healthy
+Container shop-redis-1 Healthy
+Container shop-worker-1 Started
+Container shop-app-1 Started
+Container shop-worker-1 Healthy
+Container shop-app-1 Healthy
+<span class="c">$ </span><span class="k">docker compose ps --format &#x27;table {{.Service}}\t{{.Status}}&#x27;</span>
+SERVICE   STATUS
+app       Up 5 seconds (healthy)
+db        Up 10 seconds (healthy)
+redis     Up 11 seconds (healthy)
+worker    Up 5 seconds</pre></div>
+
+<h2><span class="sec">18.10</span> <span>Proving that it works</span></h2>
+
+<p>Now the customer’s journey, against the running containers. An account, a token, and the products, two per page:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An account</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/auth/register -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;name&quot;:&quot;Sara&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;email&quot;:&quot;sara@example.com&quot;,&quot;name&quot;:&quot;Sara&quot;}
+<span class="c line-bidi"># A token</span>
+<span class="c">$ </span><span class="k">TOKEN=$(curl -s localhost:8080/api/auth/login -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;a long password&quot;}&#x27; | jq -r .token)</span>
+<span class="c line-bidi"># The first page of products, cheapest first</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8080/api/products?limit=2&#x27; | jq -c</span>
+{&quot;data&quot;:[{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000,&quot;stock&quot;:50},{&quot;id&quot;:4,&quot;name&quot;:&quot;Battery pack&quot;,&quot;price&quot;:9000,&quot;stock&quot;:30}],&quot;next_cursor&quot;:&quot;eyJwcmljZSI6OTAwMCwiaWQiOjQsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0&quot;}
+<span class="c line-bidi"># The next page, from the cursor</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8080/api/products?limit=2&amp;cursor=eyJwcmljZSI6OTAwMCwiaWQiOjQsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0&#x27; | jq -c &#x27;.data[].name, .next_cursor&#x27;</span>
+&quot;Soldering iron&quot;
+&quot;Sensor set&quot;
+&quot;eyJwcmljZSI6MjUwMDAsImlkIjo1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9&quot;</pre></div>
+
+<p>An order, then the same order again, as a phone would send it after losing the first answer. The second answer is a <code>200</code>, not a <code>201</code>: the same order, marked as a replay. Then the failures, each a clear Problem:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An order, with a key the client chose</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 201 Created
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:30:37.000000Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># The network failed and the client sends it again, with the same key</span>
+<span class="c">$ </span><span class="k">curl -s -i localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0001&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2},{&quot;product_id&quot;:2,&quot;quantity&quot;:4}]}&#x27; | grep -iE &#x27;^HTTP|^idempotent|^\{&#x27; | sed &#x27;s/\r//&#x27;</span>
+HTTP/1.1 200 OK
+Idempotent-Replayed: true
+{&quot;id&quot;:1,&quot;total&quot;:114000,&quot;created_at&quot;:&quot;2026-11-20T15:30:37.000000Z&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:45000},{&quot;product_id&quot;:2,&quot;quantity&quot;:4,&quot;price&quot;:6000}]}
+<span class="c line-bidi"># More than the stock</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &quot;authorization: Bearer $TOKEN&quot; -H &#x27;idempotency-key: order-0002&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;Not enough stock&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;Product 1 has 3 left.&quot;,&quot;instance&quot;:&quot;/api/orders&quot;}
+<span class="c line-bidi"># No token</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/orders -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -H &#x27;idempotency-key: order-0003&#x27; -d &#x27;{&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;Not signed in&quot;,&quot;status&quot;:401,&quot;detail&quot;:&quot;Send a valid token: Authorization: Bearer &lt;token&gt;.&quot;,&quot;instance&quot;:&quot;/api/orders&quot;}
+<span class="c line-bidi"># Someone guesses a password</span>
+<span class="c">$ </span><span class="k">for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w &#x27;%{http_code} &#x27; localhost:8080/api/auth/login -H &#x27;content-type: application/json&#x27; -H &#x27;accept: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;password&quot;:&quot;guess&quot;}&#x27;; done; echo</span>
+401 401 401 401 429 429 </pre></div>
+
+<p>Four wrong passwords answer 401, then the fifth attempt in the minute (the successful login counted as the first) is refused before the password is even checked. Finally, what the operators see. The metrics count every answer by route and status, the worker ran exactly one job for the one order, and the API’s log has one JSON line per request:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># What Prometheus would collect</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8080/api/metrics | grep &#x27;^http_requests_total&#x27;</span>
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/register&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/login&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;GET&quot;,route=&quot;/api/products&quot;,status=&quot;200&quot;} 2
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;201&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;200&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;409&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/orders&quot;,status=&quot;401&quot;} 1
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/login&quot;,status=&quot;401&quot;} 4
+http_requests_total{method=&quot;POST&quot;,route=&quot;/api/auth/login&quot;,status=&quot;429&quot;} 2
+<span class="c line-bidi"># The worker sent the email, once</span>
+<span class="c">$ </span><span class="k">docker compose logs worker</span>
+  15:30:38 App\Jobs\SendOrderEmail … RUNNING
+{&quot;message&quot;:&quot;email sent&quot;,&quot;context&quot;:{&quot;to&quot;:&quot;sara@example.com&quot;,&quot;order_id&quot;:1},&quot;level&quot;:200,&quot;level_name&quot;:&quot;INFO&quot;,&quot;channel&quot;:&quot;production&quot;,&quot;extra&quot;:{}}
+  15:30:38 App\Jobs\SendOrderEmail … DONE
+<span class="c line-bidi"># One request in the API&#x27;s log</span>
+<span class="c">$ </span><span class="k">docker compose logs app</span>
+{&quot;level_name&quot;:&quot;INFO&quot;,&quot;message&quot;:&quot;request&quot;,&quot;context&quot;:{&quot;method&quot;:&quot;POST&quot;,&quot;url&quot;:&quot;/api/orders&quot;,&quot;status&quot;:201,&quot;ms&quot;:68}}
+<span class="c line-bidi"># Stop everything and delete the data</span>
+<span class="c">$ </span><span class="k">docker compose down -v</span>
+Container shop-app-1 Removed 
+Container shop-worker-1 Removed 
+Container shop-redis-1 Removed 
+Container shop-db-1 Removed 
+Network shop_default Removed 
+Volume shop_db-data Removed </pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a production checklist</p><p>Before a service takes real traffic, walk a short written list with the team: settings from the environment and secrets outside the image; migrations as a separate step; <code>php artisan optimize</code> when the container starts, so configuration and routes are cached; health and readiness probes wired to the platform; logs collected and an alert on the error rate and the latency; failed jobs watched; backups taken <em>and a restore tried</em>; rate limits on everything that costs money or guesses secrets; and a rollback that has been practised. The list is boring on purpose: incidents rarely come from clever bugs, mostly from a forgotten line on a list like this.</p></aside>
+
+<h2><span class="sec">18.11</span> <span>What you built</span></h2>
+
+<p>In about 500 lines of our own: accounts with hashed passwords and expiring tokens; product pages that stay fast at any size; orders that are atomic, idempotent and never oversell; emails whose jobs commit with the order; Problem Details for every error; logs, metrics and two kinds of health check; tests that prove each promise against a real database; and one image, run by Compose, with its database, Redis and worker.</p>
+
+<p>What a production version would add, each from a chapter you have read: secrets from the platform, not from files (Chapter 17); HTTPS and security headers in front (Chapter 10); tracing across the worker (Chapter 14); a smaller image with PHP-FPM or FrankenPHP if its size matters (Chapter 17); and a CI pipeline that runs the tests, builds the image and deploys it. None of them changes the code you wrote; each one sits around it. That is the sign of a structure that is ready to grow.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Retried orders without an idempotency key</td><td>Customers charged twice on a bad network</td><td>A client key, claimed by a unique constraint</td></tr>
+<tr><td>Check, then insert, for the key</td><td>Two requests both pass the check</td><td><code>insertOrIgnore</code> on a unique pair</td></tr>
+<tr><td>A Redis job dispatched inside the transaction</td><td>The job runs before the commit, or for an order that rolled back</td><td><code>afterCommit()</code>, or the database queue as an outbox</td></tr>
+<tr><td>Rate-limit counts per server</td><td>Each copy gives new attempts</td><td><code>throttleWithRedis()</code></td></tr>
+<tr><td>Offset pages on a growing table</td><td>Slow deep pages; rows skipped or repeated</td><td><code>cursorPaginate</code> on an indexed, unique order</td></tr>
+<tr><td>Apache without the Authorization fix</td><td>Every token request answers 401</td><td><code>SetEnvIf Authorization</code>, or Laravel’s <code>.htaccess</code></td></tr>
+<tr><td>Migrations run by every container on start</td><td>Several copies migrate at once</td><td>A separate <code>migrate --force</code> step</td></tr>
+<tr><td>Tests sharing the development database</td><td>Lost data, and tests that depend on each other</td><td>A separate test database in <code>phpunit.xml</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Turn a brief into <strong>user stories</strong> with a test for “done”, and write the <strong>quality goals</strong> before the code.</li>
+<li>Let the <strong>database guarantee</strong> what must always be true: unique keys, stock never below zero, one order per idempotency key.</li>
+<li>Make retries safe with an <strong>Idempotency-Key</strong>: claim it in the order’s transaction, replay the same answer, refuse a changed body.</li>
+<li>Know what your <strong>queue driver</strong> does with transactions: the database queue is an <strong>outbox</strong>; Redis needs <code>afterCommit()</code>.</li>
+<li>Keep shared state, such as <strong>rate-limit counts</strong> and <strong>metrics</strong>, in Redis, so any number of copies behaves as one.</li>
+<li>Give every error one <strong>Problem Details</strong> shape, and every service <strong>logs, metrics, health and readiness</strong>.</li>
+<li>Prove each promise with <strong>Pest against a real database</strong>, ship <strong>one image</strong> for the app and its worker, and migrate as a <strong>separate step</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because checking first leaves a gap: two copies of the same request can both find no order with that key, and both create one. <code>insertOrIgnore</code> claims the key and checks it in one statement, and the unique constraint makes the second insert wait for the first transaction, then insert nothing. 2. Nothing from this order: the <code>Problem</code> rolls back the transaction, so the order row, its first line, the stock taken for it and the claimed key are undone, and since the job is dispatched after the loop, no job row was ever written (and if it had been, it would have rolled back too). 3. Because the queue connection is <code>database</code>: the job is a row written through the same connection, so it belongs to the same transaction and disappears if the order rolls back. With the Redis queue the push happens immediately and outside the transaction, which is why Chapter 11 needed <code>afterCommit()</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects grow the API the way a real one grows. For each one, write the user story and its Pest test first, put the rule where the database can guarantee it when possible, and run the tests and the whole system in Compose before calling it done.</p>
+
+<div class="project">
+<p class="project-label">Project 18.1 · Easy</p>
+<h3>My orders</h3>
+<p class="project-goal">Add <code>GET /api/orders</code>: the signed-in customer’s orders, newest first, in cursor pages.</p>
+<p class="project-skills"><strong>You will practise:</strong> Sanctum on a route, <code>cursorPaginate</code>, and an index that matches the query.</p>
+<ol class="steps">
+<li>Write a test first: two customers each place orders; each sees only their own, newest first.</li>
+<li>Add <code>index</code> to <code>OrderController</code>, using <code>$request-&gt;user()-&gt;orders()</code> ordered by <code>created_at</code> and <code>id</code>, both descending.</li>
+<li>Add an index on <code>orders (user_id, created_at, id)</code> in a new migration, and check with <code>EXPLAIN</code> that it is used.</li>
+<li>Test that a cursor from one customer gives the other customer nothing of the first one’s.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> starting from <code>$request-&gt;user()-&gt;orders()</code> keeps the filter on <code>user_id</code> in every page; the cursor only says where to start, never whose orders to show.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 18.2 · Medium</p>
+<h3>Cancel an order</h3>
+<p class="project-goal">Add <code>POST /api/orders/{id}/cancel</code>: within 30 minutes of placing it, a customer may cancel, and the stock comes back.</p>
+<p class="project-skills"><strong>You will practise:</strong> conditional updates, transactions, jobs that commit with the data, and testing rules that depend on time.</p>
+<ol class="steps">
+<li>Add a <code>status</code> column (<code>placed</code>, <code>cancelled</code>) with a check constraint, in a new migration.</li>
+<li>In one transaction: update the order to <code>cancelled</code> only where it is <code>placed</code>, belongs to the user and is recent enough; then <code>increment</code> each product’s stock by its line; then dispatch a <code>SendCancellationEmail</code> job.</li>
+<li>Cancelling twice must be harmless: the second call changes nothing and says so.</li>
+<li>Test the 30-minute rule with <code>$this-&gt;travel(31)-&gt;minutes()</code>, not by waiting.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> put the whole rule in the <code>where</code> of one <code>update</code> and check the number it returns; then two cancels at once cannot both return the stock.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 18.3 · Challenge</p>
+<h3>Survive a busy day</h3>
+<p class="project-goal">Show, with numbers, that the API keeps its promises under load and when parts of it fail.</p>
+<p class="project-skills"><strong>You will practise:</strong> load testing, concurrency, failure testing, and reading metrics.</p>
+<ol class="steps">
+<li>With a load tool (Chapter 15), send 2000 orders for a product with a stock of 100, from many connections, each with its own key. Check that exactly 100 orders exist and the stock is 0.</li>
+<li>Send 50 copies of one order with the <em>same</em> key at once, and check there is exactly one order and one job.</li>
+<li>Run three workers (<code>docker compose up --scale worker=3</code>) and check that each order’s job ran exactly once.</li>
+<li>Stop Redis while the app runs. What do <code>/up</code>, <code>/api/ready</code> and a login answer? Decide what they <em>should</em> answer, and make it so.</li>
+<li>Write what you measured: requests per second, the slowest 1%, and anything that surprised you.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> for step 4, notice that <code>Measure</code> also needs Redis, on every request. Decide whether a metric that cannot be counted should fail the request (it should not), and what a login without its rate limit should do; write the reasons in a decision record.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In the journey, the second order request answered <code>200</code> with the header <code>Idempotent-Replayed: true</code>, and the first answered <code>201</code>. Why give them different status codes, when the body is the same?</li>
+<li><span class="level">Easy</span> Decode the first <code>next_cursor</code> of the journey (it is base64url JSON). What does it contain, and why would a cursor with only the price go wrong?</li>
+<li><span class="level medium">Medium</span> Someone changes <code>QUEUE_CONNECTION</code> to <code>redis</code> in <code>compose.yaml</code> “because it is faster”. Which promise of the brief can now break, how, and what is the smallest code change that restores it?</li>
+<li><span class="level medium">Medium</span> A customer sends an order with key <code>k1</code>; the product is out of stock and the answer is 409. Ten minutes later the stock is refilled, and the client retries with <code>k1</code>. What happens, and why is that the right behaviour?</li>
+<li><span class="level hard">Challenge</span> Idempotency keys stay in the <code>orders</code> table forever. Propose how to let them expire after 24 hours without breaking the guarantee for retries within that time, and write the migration and the scheduled command.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You started this book able to build a small API, and you finish it able to design, secure, test, measure and ship a service that keeps its promises when the network fails, the traffic grows and the code changes. The next book in the series joins the two halves: a front end and a back end built, tested and shipped together as one full-stack product.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -8297,6 +9045,16 @@ Without a signed-in user, <code>/broadcasting/auth</code> answers 403 before the
 <li>(1) A smaller base image, such as an Alpine variant or a “distroless” one: often half the size, but Alpine uses a different C library that some native modules or extensions do not support, and distroless images have no shell for debugging. (2) Remove build tools in the same layer that used them (purge <code>libpq-dev</code> and keep only the runtime <code>libpq5</code>, or build the extension in a separate stage): smaller and fewer packages to patch, but a slightly more complex Dockerfile. (3) Fewer dependencies: use a lighter web server image (for example FrankenPHP or PHP-FPM without Apache) and install only the extensions the app uses; the trade-off is time spent, and sometimes features of the bigger option.</li>
 <li>Compose starts the containers in dependency order but, with a plain <code>depends_on</code>, it waits only until the database container has <em>started</em>, not until PostgreSQL accepts connections, which takes a few seconds; the app starts, fails to connect, and crashes (it works later after a restart or a retry). Give the database a health check (<code>pg_isready</code>) and make the app wait for it with <code>depends_on: db: condition: service_healthy</code>, as this chapter’s Compose file does; the app should also retry its connection at start-up, since databases restart in production too.</li>
 <li>Expand and contract (Chapter 6). Release 1: a migration adds the column as nullable (or with a default), and the code writes it for new rows while still working without it; CI builds, tests and scans the image; the migration runs as a one-off container (old code is unaffected by a new nullable column); the new containers replace the old ones gradually behind health checks. Then a backfill fills the column for existing rows, in batches. Release 2: a migration makes the column required (now safe, since every row has a value), and the code starts relying on it; deployed the same way. At every moment, the running code and the database schema are compatible, so no request fails.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 18</h2>
+<ol class="exercises">
+<li>Because they tell the client different things. <code>201 Created</code> says “this request made a new order”; <code>200 OK</code> with <code>Idempotent-Replayed: true</code> says “nothing new happened, this is the order your earlier request made”. A client normally treats both as success, but its logs, its metrics and any developer reading the traffic can see that a retry happened, and how often. Counting replays is also a good signal of network trouble between the app and the API.</li>
+<li>It decodes to <code>{"price":9000,"id":4,"_pointsToNextItems":true}</code>: the sort values of the last row on the page, and the direction. With the price alone, products that share a price break the page boundary. Say products 7 and 8 both cost 6000 and the page size is 1: page 1 ends at product 7; asking for <code>price &gt; 6000</code> skips product 8, and <code>price &gt;= 6000</code> shows product 7 again. With <code>(6000, 7)</code> the next page asks for <code>(price, id) &gt; (6000, 7)</code>, exactly product 8. That is why the query orders by <code>id</code> as well: it makes the order unique.</li>
+<li>“Exactly one email per order, only for orders that exist” can break. With Redis, <code>dispatch()</code> pushes the job immediately, outside the transaction. If the order then rolls back (a later line out of stock), the job still runs for an order that does not exist; and a fast worker may even run it before the commit, when <code>Order::findOrFail</code> cannot see the order yet. The smallest fix is <code>SendOrderEmail::dispatch($order-&gt;id)-&gt;afterCommit();</code> (or <code>public $afterCommit = true;</code> on the job), as in Chapter 11. That still leaves a small gap: if the process dies between the commit and the push, the email is lost, which the database queue does not allow.</li>
+<li>The second request makes a new order, and that is right. The 409 rolled back the whole transaction, including the <code>insertOrIgnore</code> that claimed <code>k1</code>, so no order with that key exists and the retry runs as if it were the first. The promise of an idempotency key is “the same key never makes two orders”, not “the same key always gives the same answer”: a request that failed and changed nothing may be retried, and the customer gets the order they wanted once the stock is back.</li>
+<li>Move the keys to their own table in a new migration: <code>Schema::create('idempotency_keys', …)</code> with <code>user_id</code>, <code>key</code>, <code>request_hash</code>, <code>order_id</code> (a foreign key) and <code>created_at</code>, a primary key on <code>['user_id', 'key']</code> and an index on <code>created_at</code>; then drop the unique pair and the two columns from <code>orders</code> in a later migration, once the code uses the new table. The order inserts its key row with <code>insertOrIgnore</code> in the same transaction, as now. A scheduled command deletes old keys in batches: <code>Schedule::call(fn () =&gt; DB::table('idempotency_keys')-&gt;where('created_at', '&lt;', now()-&gt;subDay())-&gt;limit(1000)-&gt;delete())-&gt;everyFifteenMinutes();</code> in <code>routes/console.php</code>. The guarantee holds for any retry within 24 hours, because the row exists until then; and the API documentation must say that keys are remembered for 24 hours only.</li>
 </ol>
 
 </section>

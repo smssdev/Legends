@@ -128,16 +128,11 @@ if (isMember && day === "Tuesday") {
   <p class="cv-series">From Zero to Senior · Book 2</p>
   <h1 class="cv-title">Senior Frontend Engineering</h1>
   <p class="cv-sub">TypeScript, Vue, Architecture, Performance and Quality</p><p class="cv-edition">Vue Edition</p>
-  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
-<span class="k">let</span> price;
-
-<span class="k">if</span> (age &lt; <span class="n">13</span>) {
-  price = <span class="n">6</span>;
-} <span class="k">else</span> {
-  price = <span class="n">10</span>;
-}
-
-console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>TypeScript</span><span>Vue</span><span>Vite</span><span>Playwright</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre>&lt;script <span class="k">setup</span> lang=<span class="s">&quot;ts&quot;</span>&gt;
+<span class="k">const</span> items = ref&lt;Item[]&gt;([]);
+<span class="k">const</span> total = computed(
+  () =&gt; sum(items.value));
+&lt;/script&gt;</pre></div><div class="cv-tracks"><span>TypeScript</span><span>Vue</span><span>Vite</span><span>Playwright</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
 <rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>

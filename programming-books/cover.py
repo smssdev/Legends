@@ -92,19 +92,71 @@ STYLE = """
 """
 
 
-def _code_card():
-    lines = ['<span class="k">const</span> age = <span class="n">9</span>;',
-             '<span class="k">let</span> price;',
-             '',
-             '<span class="k">if</span> (age &lt; <span class="n">13</span>) {',
-             '  price = <span class="n">6</span>;',
-             '} <span class="k">else</span> {',
-             '  price = <span class="n">10</span>;',
-             '}',
-             '',
-             'console.log(<span class="s">"Hello, coder!"</span>);']
-    return ('<div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre>'
-            + "\n".join(lines) + '</pre></div>')
+# The code on each front cover: a few lines in the language of the book (Book 1's are its first example).
+CARDS = {
+    "b2-react": """function Cart({ items }: Props) {
+  const total = useMemo(
+    () => sum(items), [items]);
+  return <Total value={total} />;
+}""",
+    "b2-vue": """<script setup lang="ts">
+const items = ref<Item[]>([]);
+const total = computed(
+  () => sum(items.value));
+</script>""",
+    "b3-node": """app.post("/orders", (req) =>
+  db.transaction().execute(
+    async (trx) => {
+      await takeStock(trx, req);
+      return placeOrder(trx, req);
+    },
+  ),
+);""",
+    "b3-laravel": """Route::post('orders', fn () =>
+    DB::transaction(fn () =>
+        Order::place(
+            request()->user(),
+            request('items'),
+        ),
+    ),
+)->middleware('auth:sanctum');""",
+}
+KEYWORDS = ("const", "let", "if", "else", "function", "return", "async", "await", "fn", "new", "setup")
+
+
+def _highlight(code):
+    import html
+    import re
+    out = []
+    for token in re.split(r"(\"[^\"]*\"|'[^']*'|\b\d+\b|\b\w+\b)", code):
+        text = html.escape(token)
+        if token[:1] in "\"'":
+            out.append(f'<span class="s">{text}</span>')
+        elif token.isdigit():
+            out.append(f'<span class="n">{text}</span>')
+        elif token in KEYWORDS:
+            out.append(f'<span class="k">{text}</span>')
+        else:
+            out.append(text)
+    return "".join(out)
+
+
+def _code_card(book):
+    if book["id"] in CARDS:
+        body = _highlight(CARDS[book["id"]])
+    else:
+        body = "\n".join([
+            '<span class="k">const</span> age = <span class="n">9</span>;',
+            '<span class="k">let</span> price;',
+            '',
+            '<span class="k">if</span> (age &lt; <span class="n">13</span>) {',
+            '  price = <span class="n">6</span>;',
+            '} <span class="k">else</span> {',
+            '  price = <span class="n">10</span>;',
+            '}',
+            '',
+            'console.log(<span class="s">"Hello, coder!"</span>);'])
+    return '<div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre>' + body + '</pre></div>'
 
 
 def front_html(book, lang):
@@ -116,7 +168,7 @@ def front_html(book, lang):
   <p class="cv-series">{SERIES["series"][lang]} · {book_no}</p>
   <h1 class="cv-title">{book["title"][lang]}</h1>
   <p class="cv-sub">{book["subtitle"][lang]}</p>{f'<p class="cv-edition">{book["edition"][lang]}</p>' if book.get("edition") else ""}
-  <div class="cv-mid">{_code_card()}<div class="cv-tracks">{tracks}</div><div class="cv-bit">{bit("happy")}</div></div>
+  <div class="cv-mid">{_code_card(book)}<div class="cv-tracks">{tracks}</div><div class="cv-bit">{bit("happy")}</div></div>
   <div class="cv-foot"><span class="cv-level">{book["level"][lang]}</span><span class="cv-author">{SERIES["author"][lang]}</span></div>
 </div>"""
 
