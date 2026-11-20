@@ -1,0 +1,205 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/architecture/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Architecture: Keeping Code Easy to Change</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise the signs of code that is getting hard to change</li>
+<li>separate business rules from HTTP, databases and frameworks</li>
+<li>describe what a use case needs as ports, and plug adapters into them</li>
+<li>wire everything in one composition root, without a framework for dependency injection</li>
+<li>organise code by feature, and enforce the boundaries with a test</li>
+<li>know when a monolith is the right answer, and when to split</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter so far added something the shop needed: a route, a query, a lock, a job, a metric. Each was small. Together they make a codebase where one route handler validates input, reads three tables, applies pricing rules, sends an email and formats the response, and the pricing rule appears again, slightly different, in another route. Such code works; it is just harder to change every month. <dfn>Architecture</dfn> is the set of decisions about where each kind of code lives, so that the shop’s rules can be understood, tested and changed without touching everything else. This chapter rebuilds the order feature with clear layers, small enough to read whole.</p>
+
+<aside class="bit" data-mood="think"><p>The most expensive bug I have seen was a discount rule copied into four route handlers. Marketing changed the rule; we updated three of them. For two weeks, orders through the mobile app got a discount that the website refused. No single line was wrong. The rule simply had no home.</p></aside>
+
+<h2>{{n}}.1 Signs that structure is needed</h2>
+
+<ul>
+<li><strong>Fat route handlers.</strong> A handler that parses, decides, queries, sends and formats does five jobs; changing one risks the others.</li>
+<li><strong>Rules in several places.</strong> The same check (“at most 10 of one product”) written in two routes, or once in a route and once in a job.</li>
+<li><strong>Tests that need everything.</strong> To test a pricing rule you must start a server, fill a database and fake an email service.</li>
+<li><strong>Afraid to change the infrastructure.</strong> Replacing the mail provider, or moving one table, means editing business code everywhere.</li>
+</ul>
+
+<p>The cure is the same idea at several sizes: separate what the business decides from how it is delivered and stored. The decisions, the <dfn>domain</dfn>, change when the business changes; HTTP, PostgreSQL and the email provider change for technical reasons. Keeping them apart lets each change without the other.</p>
+
+<h2>{{n}}.2 Layers, from the inside out</h2>
+
+<p>The order feature now lives in one folder, with one file per role:</p>
+
+<pre data-code="tree.sh" data-title="Terminal"></pre>
+
+<p><strong>The domain</strong> holds the shop’s rules and words, in plain TypeScript. It imports nothing: no Fastify, no Kysely, not even <code>node:</code> modules:</p>
+
+<pre data-code="src/orders/order.ts" data-title="src/orders/order.ts"></pre>
+
+<p>Rules here are pure functions and values, testable in microseconds, and their errors use the business’s words: “too many”, “out of stock”, not “HTTP 422” or “constraint violation”.</p>
+
+<p><strong>The ports</strong> describe what the use case needs from the outside world, in the use case’s own terms. They are interfaces, written by the inside for the outside to implement:</p>
+
+<pre data-code="src/orders/ports.ts" data-from="^// " data-title="src/orders/ports.ts"></pre>
+
+<p><strong>The use case</strong> is one thing the shop does, from start to finish: place an order. It checks the rules, asks the store to save, then sends the email, through the ports only:</p>
+
+<pre data-code="src/orders/place-order.ts" data-from="type Deps" data-title="src/orders/place-order.ts"></pre>
+
+<p>Read it as a description of the business process; there is no SQL, no status code and no library in it. <code>makePlaceOrder</code> receives its dependencies and returns the function that does the work: <dfn>dependency injection</dfn> with nothing more than a function argument.</p>
+
+<h2>{{n}}.3 Adapters</h2>
+
+<p><dfn>Adapters</dfn> connect the ports to real technology. This design is often called <dfn>ports and adapters</dfn>, or <dfn>hexagonal architecture</dfn>. The store adapter implements <code>OrderStore</code> with Kysely and PostgreSQL, including the transaction and the atomic stock update of Chapter {{n-9}}:</p>
+
+<pre data-code="src/orders/kysely-store.ts" data-from="export function" data-title="src/orders/kysely-store.ts"></pre>
+
+<p>The transaction belongs here, in the adapter: “take the stock and save the order, all or nothing” is the port’s promise, and how a database keeps that promise is the adapter’s business. The HTTP adapter works the other way round, translating a request into a call of the use case, and the use case’s result or error into a response:</p>
+
+<pre data-code="src/orders/routes.ts" data-from="export const" data-title="src/orders/routes.ts"></pre>
+
+<p>Deciding that “out of stock” means 409 is an HTTP concern, so it lives in the HTTP adapter. A command-line tool or a queue worker could call the same use case and translate the same errors differently.</p>
+
+<h2>{{n}}.4 The composition root</h2>
+
+<p>Somewhere, real pieces must be chosen and connected. That place, the <dfn>composition root</dfn>, is the program’s entry point, and it is the only file that knows every concrete class:</p>
+
+<pre data-code="src/server.ts" data-from="const db" data-title="src/server.ts"></pre>
+
+<p>Here the “mailer” only prints, which is enough for a demonstration; swapping it for a real email provider is a change to this one file. Running it shows the layers working together:</p>
+
+<pre data-code="http.sh" data-title="Terminal"></pre>
+
+<p>The rule refused eleven wheels before the database was touched; the store refused four kits, rolled back, and left the stock as it was; and one email went out, for the one order that was saved.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does the domain file import nothing at all?</li><li>Who decides that an <code>OutOfStock</code> error becomes a 409, and why there?</li><li>What has to change to send real emails instead of printing them?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Testing by layer</h2>
+
+<p>The reward for this structure shows in the tests. The use case can be tested with in-memory fakes for its ports, without a database, a server or a mail provider:</p>
+
+<pre data-code="test/place-order.test.ts" data-from="function fakes" data-to="^});#2" data-title="test/place-order.test.ts"></pre>
+
+<p>Each test sets up exactly the situation it needs: a store that succeeds, one that reports too little stock, one that must not be called at all. The adapter is tested against a real database, as in Chapter {{n-3}}, and only for what it adds: SQL, transactions and the mapping of rows.</p>
+
+<p>Boundaries that only exist in people’s heads erode under deadlines. An <dfn>architecture test</dfn> makes them part of the build:</p>
+
+<pre data-code="test/architecture.test.ts" data-from="const rules" data-title="test/architecture.test.ts"></pre>
+
+<pre data-code="test.sh" data-title="Terminal"></pre>
+
+<p>When someone, in a hurry, imports the database into the domain, the build says so:</p>
+
+<pre data-code="break.sh" data-title="Terminal"></pre>
+
+<p>This handmade check covers one folder; tools such as dependency-cruiser and ESLint’s import rules do the same for a whole codebase.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: architecture is a cost too</p><p>Every port and adapter is a file to read and an indirection to follow. For a route that reads one row and returns it, a use case and a repository are ceremony; keep such routes simple. Introduce layers where they pay: where business rules live, where several entry points share behaviour, where tests are slow because everything is tangled. The goal is code that is easy to change, not code that looks like a diagram.</p></aside>
+
+<h2>{{n}}.6 Modules, monoliths and services</h2>
+
+<ul>
+<li><strong>Organise by feature, not by kind.</strong> <code>orders/</code>, <code>catalog/</code>, <code>accounts/</code>, each with its domain, use cases and adapters, rather than <code>controllers/</code>, <code>services/</code>, <code>repositories/</code> holding a bit of everything. A change to ordering then touches one folder.</li>
+<li><strong>Modules talk through their public functions.</strong> <code>orders</code> may call <code>catalog</code>’s exported use cases, but must not read <code>catalog</code>’s tables or import its internals. The same architecture test can enforce it.</li>
+<li><strong>A modular monolith first.</strong> One deployable application, well divided into modules, is the right shape for almost every team: one build, one database, transactions that span modules, and simple debugging.</li>
+<li><strong>Services when there is a reason.</strong> Splitting into separate services pays off when parts must scale very differently, be deployed by different teams independently, or be isolated for safety. The cost is real: network calls that fail, data spread across databases without shared transactions, and the tracing of Chapter {{n-2}} becoming a necessity. Clear modules make a later split easy; a tangle split into services is a distributed tangle.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit: write decisions down</p><p>When you make a structural decision (“orders do not read catalog tables”, “we use a modular monolith”), write a short <dfn>architecture decision record</dfn>: the context, the decision, the alternatives and the consequences, one page in <code>docs/decisions/</code>. A year later, the next developer, often yourself, will know why, and can change the decision on purpose instead of by accident.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Business rules in route handlers</td><td>Rules copied, tested only through HTTP</td><td>Domain functions and use cases</td></tr>
+<tr><td>Domain code importing the database or framework</td><td>Rules tied to technology; slow tests</td><td>Ports owned by the inside; adapters outside</td></tr>
+<tr><td>Status codes or SQL errors in the domain</td><td>Business code speaks technical language</td><td>Domain errors, translated by adapters</td></tr>
+<tr><td>Dependencies created inside functions</td><td>Nothing can be replaced in tests</td><td>Inject them; wire in the composition root</td></tr>
+<tr><td>Folders by kind for a large app</td><td>Every change touches every folder</td><td>Folders by feature</td></tr>
+<tr><td>Layers for every trivial route</td><td>Ceremony that hides simple code</td><td>Structure where rules and reuse live</td></tr>
+<tr><td>Microservices on day one</td><td>Network failures and distributed data for no gain</td><td>A modular monolith, split when needed</td></tr>
+<tr><td>Boundaries only in people’s heads</td><td>They erode under deadlines</td><td>Architecture tests in the build</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Architecture</strong> decides where each kind of code lives, so rules can change without touching delivery and storage.</li>
+<li>The <strong>domain</strong> holds rules and words in plain code, importing nothing technical; errors speak the business’s language.</li>
+<li><strong>Use cases</strong> orchestrate a business action through <strong>ports</strong>; <strong>adapters</strong> implement the ports with real technology.</li>
+<li>A single <strong>composition root</strong> chooses and wires the concrete pieces; dependency injection is a function argument.</li>
+<li>Use cases are tested with <strong>fakes</strong> in milliseconds; adapters against real infrastructure; boundaries with an <strong>architecture test</strong>.</li>
+<li>Organise <strong>by feature</strong>; prefer a <strong>modular monolith</strong>; split into services only for a concrete reason.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that the shop’s rules depend on nothing that changes for technical reasons: they can be read without knowing Fastify or Kysely, tested in microseconds without setup, and reused by any entry point (HTTP, a job, a script). 2. The HTTP adapter, <code>routes.ts</code>: a status code is part of HTTP, not of the business. Another adapter, such as a command-line tool, would translate the same error into its own form, a message and an exit code. 3. Only the composition root, <code>server.ts</code>: create an adapter that implements <code>Mailer</code> with the provider’s library, and pass it to <code>makePlaceOrder</code>. The domain, the use case and the tests do not change.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project restructures part of the shop. Keep the tests green at every step: refactoring changes structure, not behaviour.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Cancel an order</h3>
+<p class="project-goal">Add “cancel an order” in the same layered style.</p>
+<p class="project-skills"><strong>You will practise:</strong> domain rules, a use case with ports, and testing with fakes.</p>
+<ol class="steps">
+<li>Write the rule in the domain: only pending or paid orders can be cancelled, and only within 24 hours (using the <code>Clock</code> port).</li>
+<li>Add a <code>cancel</code> method to the store port that returns the stock, and implement it in the Kysely adapter.</li>
+<li>Write the use case, unit tests with fakes for every rule, and the route.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the 24-hour rule is a pure function of the order and the current time; give it both as arguments and it needs no fake at all.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Untangle the shop</h3>
+<p class="project-goal">Refactor the shop API of the earlier chapters into feature modules.</p>
+<p class="project-skills"><strong>You will practise:</strong> refactoring safely, feature folders, module boundaries, and architecture tests.</p>
+<ol class="steps">
+<li>Make sure the integration tests of Chapter {{n-3}} cover the main routes; they are your safety net.</li>
+<li>Move code into <code>catalog/</code>, <code>orders/</code> and <code>accounts/</code>, one module at a time, running the tests after each step.</li>
+<li>Give each module an <code>index.ts</code> that exports its public use cases, and make other modules import only from it.</li>
+<li>Extend the architecture test to enforce that rule for every module.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> move code first and improve it second; mixing the two makes a failing test hard to explain.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Same use case, three entry points</h3>
+<p class="project-goal">Prove the structure by calling the same use case from HTTP, a command line and a queue.</p>
+<p class="project-skills"><strong>You will practise:</strong> adapters for different deliveries, error translation, and shared composition.</p>
+<ol class="steps">
+<li>Write a command-line tool <code>place-order --email … --item 1:2</code> that uses the same composition as the server and prints errors with an exit code.</li>
+<li>Write a BullMQ worker (Chapter {{n-5}}) that places orders from imported files through the same use case.</li>
+<li>Replace the printing mailer with a queue-based mailer adapter, changing only the composition root.</li>
+<li>Show that none of these changes touched <code>order.ts</code> or <code>place-order.ts</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> move the wiring into a function <code>compose(config)</code> that both entry points call, so the composition root stays in one place.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each piece of code, say which layer it belongs to: a zod schema for the request body; “a customer may have at most 3 unpaid orders”; an SQL query that counts unpaid orders; sending a push notification.</li>
+<li><span class="level">Easy</span> Why does the email go after <code>store.place</code> in the use case, and not inside the store’s transaction?</li>
+<li><span class="level">Medium</span> The business adds a rule: customers in the loyalty programme get 5% off. Where does each part of the change go, and what tests do you write?</li>
+<li><span class="level">Medium</span> A colleague proposes splitting orders into a separate service now, “to be ready for scale”. List the costs, and the questions you would ask first.</li>
+<li><span class="level">Challenge</span> Make the architecture test also check that no file outside <code>src/orders/</code> imports <code>kysely-store.ts</code> except the composition root. Explain why that rule matters.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The code is ready; now it must run the same everywhere. Docker: images, containers, Compose for the whole stack, and shipping to production.</p>
+</div>
+</section>

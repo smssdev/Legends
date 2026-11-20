@@ -35,6 +35,8 @@
 @page ch13:first { @top-center { content: none; } }
 @page ch14 { @top-center { content: "Chapter 14: Performance and Scaling"; } }
 @page ch14:first { @top-center { content: none; } }
+@page ch15 { @top-center { content: "Chapter 15: Architecture: Monolith, Modules and Services"; } }
+@page ch15:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -6665,6 +6667,461 @@ app.get(<span class="s">&quot;/hash/async&quot;</span>, <span class="k">async</s
 <p>The code works, is secure, observable and fast; now it must stay easy to change as it grows. Architecture: layers, modules, and where business rules belong.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch15" data-chapter="15" data-code="b3/node/architecture/en">
+<div class="opener"><span class="opener-num">15</span><p class="chapter-kicker">Chapter 15</p><h1>Architecture: Keeping Code Easy to Change</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise the signs of code that is getting hard to change</li>
+<li>separate business rules from HTTP, databases and frameworks</li>
+<li>describe what a use case needs as ports, and plug adapters into them</li>
+<li>wire everything in one composition root, without a framework for dependency injection</li>
+<li>organise code by feature, and enforce the boundaries with a test</li>
+<li>know when a monolith is the right answer, and when to split</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter so far added something the shop needed: a route, a query, a lock, a job, a metric. Each was small. Together they make a codebase where one route handler validates input, reads three tables, applies pricing rules, sends an email and formats the response, and the pricing rule appears again, slightly different, in another route. Such code works; it is just harder to change every month. <dfn>Architecture</dfn> is the set of decisions about where each kind of code lives, so that the shop’s rules can be understood, tested and changed without touching everything else. This chapter rebuilds the order feature with clear layers, small enough to read whole.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The most expensive bug I have seen was a discount rule copied into four route handlers. Marketing changed the rule; we updated three of them. For two weeks, orders through the mobile app got a discount that the website refused. No single line was wrong. The rule simply had no home.</p></div></div>
+
+<h2><span class="sec">15.1</span> <span>Signs that structure is needed</span></h2>
+
+<ul>
+<li><strong>Fat route handlers.</strong> A handler that parses, decides, queries, sends and formats does five jobs; changing one risks the others.</li>
+<li><strong>Rules in several places.</strong> The same check (“at most 10 of one product”) written in two routes, or once in a route and once in a job.</li>
+<li><strong>Tests that need everything.</strong> To test a pricing rule you must start a server, fill a database and fake an email service.</li>
+<li><strong>Afraid to change the infrastructure.</strong> Replacing the mail provider, or moving one table, means editing business code everywhere.</li>
+</ul>
+
+<p>The cure is the same idea at several sizes: separate what the business decides from how it is delivered and stored. The decisions, the <dfn>domain</dfn>, change when the business changes; HTTP, PostgreSQL and the email provider change for technical reasons. Keeping them apart lets each change without the other.</p>
+
+<h2><span class="sec">15.2</span> <span>Layers, from the inside out</span></h2>
+
+<p>The order feature now lives in one folder, with one file per role:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The order module</span>
+<span class="c">$ </span><span class="k">ls src src/orders test</span>
+src:
+db.ts
+orders
+server.ts
+
+src/orders:
+kysely-store.ts
+order.ts
+place-order.ts
+ports.ts
+routes.ts
+
+test:
+architecture.test.ts
+place-order.test.ts</pre></div>
+
+<p><strong>The domain</strong> holds the shop’s rules and words, in plain TypeScript. It imports nothing: no Fastify, no Kysely, not even <code>node:</code> modules:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders/order.ts</div><pre class="code"><span class="c line-bidi">// the domain: the shop&#x27;s rules, in plain TypeScript; no database, no HTTP, no framework</span>
+<span class="k">export</span> <span class="k">type</span> Line = { productId: number; quantity: number; price: number };
+<span class="k">export</span> <span class="k">type</span> Order = {
+  id: number;
+  email: string;
+  lines: Line[];
+  total: number;
+  placedAt: Date;
+};
+
+<span class="c line-bidi">// errors that speak the business&#x27;s language; each adapter decides what they become</span>
+<span class="k">export</span> <span class="k">class</span> OrderError <span class="k">extends</span> Error {}
+<span class="k">export</span> <span class="k">class</span> TooMany <span class="k">extends</span> OrderError {}
+<span class="k">export</span> <span class="k">class</span> OutOfStock <span class="k">extends</span> OrderError {}
+<span class="k">export</span> <span class="k">class</span> UnknownProduct <span class="k">extends</span> OrderError {}
+
+<span class="c line-bidi">// a rule of the business, not of the database or the API</span>
+<span class="k">export</span> <span class="k">const</span> MAX_PER_PRODUCT = <span class="n">10</span>;
+
+<span class="k">export</span> <span class="k">function</span> checkQuantities(items: { productId: number; quantity: number }[]) {
+  <span class="k">for</span> (<span class="k">const</span> item <span class="k">of</span> items) {
+    <span class="k">if</span> (item.quantity &gt; MAX_PER_PRODUCT)
+      <span class="k">throw</span> <span class="k">new</span> TooMany(<span class="s">&quot;At most 10 of one product per order&quot;</span>);
+  }
+}
+
+<span class="k">export</span> <span class="k">const</span> totalOf = (lines: Line[]) =&gt;
+  lines.reduce((sum, l) =&gt; sum + l.price * l.quantity, <span class="n">0</span>);</pre></div>
+
+<p>Rules here are pure functions and values, testable in microseconds, and their errors use the business’s words: “too many”, “out of stock”, not “HTTP 422” or “constraint violation”.</p>
+
+<p><strong>The ports</strong> describe what the use case needs from the outside world, in the use case’s own terms. They are interfaces, written by the inside for the outside to implement:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders/ports.ts</div><pre class="code"><span class="c line-bidi">// ports: what the use case needs from the outside world, described by the use case</span>
+<span class="k">export</span> <span class="k">type</span> OrderStore = {
+  /** Takes the stock and saves the order, all or nothing; prices come <span class="k">from</span> the store. */
+  place(
+    email: string,
+    items: Omit&lt;Line, <span class="s">&quot;price&quot;</span>&gt;[],
+    placedAt: Date,
+  ): Promise&lt;Order&gt;;
+};
+<span class="k">export</span> <span class="k">type</span> Mailer = { send(to: string, subject: string): Promise&lt;void&gt; };
+<span class="k">export</span> <span class="k">type</span> Clock = { now(): Date };</pre></div>
+
+<p><strong>The use case</strong> is one thing the shop does, from start to finish: place an order. It checks the rules, asks the store to save, then sends the email, through the ports only:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders/place-order.ts</div><pre class="code"><span class="k">type</span> Deps = { store: OrderStore; mailer: Mailer; clock: Clock };
+<span class="k">type</span> Input = { email: string; items: { productId: number; quantity: number }[] };
+
+<span class="c line-bidi">// the use case: one thing the shop does, start to finish, through its ports</span>
+<span class="k">export</span> <span class="k">function</span> makePlaceOrder({ store, mailer, clock }: Deps) {
+  <span class="k">return</span> <span class="k">async</span> <span class="k">function</span> placeOrder({ email, items }: Input) {
+    checkQuantities(items);
+    <span class="k">const</span> order = <span class="k">await</span> store.place(email, items, clock.now());
+    <span class="c line-bidi">// the email after the order is saved, never inside its transaction</span>
+    <span class="k">await</span> mailer.send(email, <span class="s">`Order ${order.id}: ${order.total / 100} EGP`</span>);
+    <span class="k">return</span> order;
+  };
+}</pre></div>
+
+<p>Read it as a description of the business process; there is no SQL, no status code and no library in it. <code>makePlaceOrder</code> receives its dependencies and returns the function that does the work: <dfn>dependency injection</dfn> with nothing more than a function argument.</p>
+
+<h2><span class="sec">15.3</span> <span>Adapters</span></h2>
+
+<p><dfn>Adapters</dfn> connect the ports to real technology. This design is often called <dfn>ports and adapters</dfn>, or <dfn>hexagonal architecture</dfn>. The store adapter implements <code>OrderStore</code> with Kysely and PostgreSQL, including the transaction and the atomic stock update of Chapter 6:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders/kysely-store.ts</div><pre class="code"><span class="k">export</span> <span class="k">function</span> kyselyOrderStore(db: Kysely&lt;DB&gt;): OrderStore {
+  <span class="k">return</span> {
+    place: (email, items, placedAt) =&gt;
+      db.transaction().execute(<span class="k">async</span> (trx) =&gt; {
+        <span class="k">const</span> lines: Line[] = [];
+        <span class="k">for</span> (<span class="k">const</span> { productId, quantity } <span class="k">of</span> items) {
+          <span class="k">const</span> row = <span class="k">await</span> trx
+            .updateTable(<span class="s">&quot;products&quot;</span>)
+            .set((eb) =&gt; ({ stock: eb(<span class="s">&quot;stock&quot;</span>, <span class="s">&quot;-&quot;</span>, quantity) }))
+            .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, productId)
+            .where(<span class="s">&quot;stock&quot;</span>, <span class="s">&quot;&gt;=&quot;</span>, quantity)
+            .returning(<span class="s">&quot;price&quot;</span>)
+            .executeTakeFirst();
+          <span class="k">if</span> (!row) {
+            <span class="k">const</span> exists = <span class="k">await</span> trx
+              .selectFrom(<span class="s">&quot;products&quot;</span>)
+              .select(<span class="s">&quot;id&quot;</span>)
+              .where(<span class="s">&quot;id&quot;</span>, <span class="s">&quot;=&quot;</span>, productId)
+              .executeTakeFirst();
+            <span class="k">throw</span> exists
+              ? <span class="k">new</span> OutOfStock(<span class="s">&quot;Not enough stock&quot;</span>)
+              : <span class="k">new</span> UnknownProduct(<span class="s">&quot;Unknown product&quot;</span>);
+          }
+          lines.push({ productId, quantity, price: row.price });
+        }
+        <span class="k">const</span> total = totalOf(lines);
+        <span class="k">const</span> { id } = <span class="k">await</span> trx
+          .insertInto(<span class="s">&quot;orders&quot;</span>)
+          .values({ email, total, placed_at: placedAt })
+          .returning(<span class="s">&quot;id&quot;</span>)
+          .executeTakeFirstOrThrow();
+        <span class="k">await</span> trx
+          .insertInto(<span class="s">&quot;order_items&quot;</span>)
+          .values(
+            lines.map((l) =&gt; ({
+              order_id: id,
+              product_id: l.productId,
+              quantity: l.quantity,
+              price: l.price,
+            })),
+          )
+          .execute();
+        <span class="k">return</span> { id, email, lines, total, placedAt };
+      }),
+  };
+}</pre></div>
+
+<p>The transaction belongs here, in the adapter: “take the stock and save the order, all or nothing” is the port’s promise, and how a database keeps that promise is the adapter’s business. The HTTP adapter works the other way round, translating a request into a call of the use case, and the use case’s result or error into a response:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/orders/routes.ts</div><pre class="code"><span class="k">export</span> <span class="k">const</span> orderRoutes =
+  (placeOrder: PlaceOrder): FastifyPluginAsync =&gt;
+  <span class="k">async</span> (app) =&gt; {
+    app.post&lt;{
+      Body: { email: string; items: { productId: number; quantity: number }[] };
+    }&gt;(<span class="s">&quot;/orders&quot;</span>, <span class="k">async</span> (request, reply) =&gt; {
+      <span class="k">try</span> {
+        <span class="k">const</span> order = <span class="k">await</span> placeOrder(request.body);
+        <span class="k">return</span> reply.code(<span class="n">201</span>).send({ id: order.id, total: order.total });
+      } <span class="k">catch</span> (error) {
+        <span class="k">if</span> (!(error <span class="k">instanceof</span> OrderError)) <span class="k">throw</span> error;
+        <span class="k">const</span> status =
+          error <span class="k">instanceof</span> TooMany
+            ? <span class="n">422</span>
+            : error <span class="k">instanceof</span> OutOfStock
+              ? <span class="n">409</span>
+              : error <span class="k">instanceof</span> UnknownProduct
+                ? <span class="n">422</span>
+                : <span class="n">400</span>;
+        <span class="k">return</span> reply.code(status).send({ title: error.message, status });
+      }
+    });
+  };</pre></div>
+
+<p>Deciding that “out of stock” means 409 is an HTTP concern, so it lives in the HTTP adapter. A command-line tool or a queue worker could call the same use case and translate the same errors differently.</p>
+
+<h2><span class="sec">15.4</span> <span>The composition root</span></h2>
+
+<p>Somewhere, real pieces must be chosen and connected. That place, the <dfn>composition root</dfn>, is the program’s entry point, and it is the only file that knows every concrete class:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/server.ts</div><pre class="code"><span class="k">const</span> db = connect();
+<span class="k">const</span> placeOrder = makePlaceOrder({
+  store: kyselyOrderStore(db),
+  mailer: { send: <span class="k">async</span> (to, subject) =&gt; console.log(<span class="s">`mail to ${to}: ${subject}`</span>) },
+  clock: { now: () =&gt; <span class="k">new</span> Date() },
+});
+
+<span class="k">const</span> app = Fastify();
+<span class="k">await</span> app.register(orderRoutes(placeOrder));
+app.get(<span class="s">&quot;/ready&quot;</span>, <span class="k">async</span> () =&gt; ({ ready: <span class="k">true</span> }));
+<span class="k">await</span> app.listen({ port: <span class="n">3000</span> });</pre></div>
+
+<p>Here the “mailer” only prints, which is enough for a demonstration; swapping it for a real email provider is a change to this one file. Running it shows the layers working together:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An order</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;productId&quot;:1,&quot;quantity&quot;:2},{&quot;productId&quot;:2,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;id&quot;:1,&quot;total&quot;:114000}
+<span class="c line-bidi"># Eleven of one product</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;productId&quot;:2,&quot;quantity&quot;:11}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;At most 10 of one product per order&quot;,&quot;status&quot;:422}
+<span class="c line-bidi"># More than the stock</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/orders -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;email&quot;:&quot;sara@example.com&quot;,&quot;items&quot;:[{&quot;productId&quot;:1,&quot;quantity&quot;:4}]}&#x27; | jq -c</span>
+{&quot;title&quot;:&quot;Not enough stock&quot;,&quot;status&quot;:409}
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT id, stock FROM products ORDER BY id&#x27;</span>
+ id | stock 
+----+-------
+  1 |     3
+  2 |    46
+(2 rows)
+<span class="c">$ </span><span class="k">npm start</span>
+mail to sara@example.com: Order 1: 1140 EGP</pre></div>
+
+<p>The rule refused eleven wheels before the database was touched; the store refused four kits, rolled back, and left the stock as it was; and one email went out, for the one order that was saved.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does the domain file import nothing at all?</li><li>Who decides that an <code>OutOfStock</code> error becomes a 409, and why there?</li><li>What has to change to send real emails instead of printing them?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">15.5</span> <span>Testing by layer</span></h2>
+
+<p>The reward for this structure shows in the tests. The use case can be tested with in-memory fakes for its ports, without a database, a server or a mail provider:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/place-order.test.ts</div><pre class="code"><span class="k">function</span> fakes(store: OrderStore[<span class="s">&quot;place&quot;</span>]) {
+  <span class="k">const</span> sent: string[] = [];
+  <span class="k">const</span> placeOrder = makePlaceOrder({
+    store: { place: store },
+    mailer: { send: <span class="k">async</span> (to) =&gt; void sent.push(to) },
+    clock: { now: () =&gt; <span class="k">new</span> Date(<span class="s">&quot;2026-11-20T10:00:00Z&quot;</span>) },
+  });
+  <span class="k">return</span> { placeOrder, sent };
+}
+
+test(<span class="s">&quot;places an order, saves it and sends one email&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> saved: unknown[] = [];
+  <span class="k">const</span> { placeOrder, sent } = fakes(<span class="k">async</span> (email, items, placedAt) =&gt; {
+    <span class="k">const</span> lines = items.map((i) =&gt; ({ ...i, price: <span class="n">6000</span> }));
+    saved.push({ email, placedAt });
+    <span class="k">return</span> { id: <span class="n">7</span>, email, lines, total: <span class="n">12000</span>, placedAt };
+  });
+  <span class="k">const</span> order = <span class="k">await</span> placeOrder({
+    email: <span class="s">&quot;sara@example.com&quot;</span>,
+    items: [{ productId: <span class="n">2</span>, quantity: <span class="n">2</span> }],
+  });
+  assert.equal(order.total, <span class="n">12000</span>);
+  assert.deepEqual(saved, [
+    { email: <span class="s">&quot;sara@example.com&quot;</span>, placedAt: <span class="k">new</span> Date(<span class="s">&quot;2026-11-20T10:00:00Z&quot;</span>) },
+  ]);
+  assert.deepEqual(sent, [<span class="s">&quot;sara@example.com&quot;</span>]);
+});
+
+test(<span class="s">&quot;refuses more than 10 of one product, before touching the store&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> { placeOrder } = fakes(<span class="k">async</span> () =&gt;
+    assert.fail(<span class="s">&quot;the store must not be called&quot;</span>),
+  );
+  <span class="k">await</span> assert.rejects(
+    placeOrder({ email: <span class="s">&quot;a@b.c&quot;</span>, items: [{ productId: <span class="n">1</span>, quantity: <span class="n">11</span> }] }),
+    TooMany,
+  );
+});</pre></div>
+
+<p>Each test sets up exactly the situation it needs: a store that succeeds, one that reports too little stock, one that must not be called at all. The adapter is tested against a real database, as in Chapter 12, and only for what it adds: SQL, transactions and the mapping of rows.</p>
+
+<p>Boundaries that only exist in people’s heads erode under deadlines. An <dfn>architecture test</dfn> makes them part of the build:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/architecture.test.ts</div><pre class="code"><span class="k">const</span> rules: Record&lt;string, RegExp&gt; = {
+  <span class="s">&quot;order.ts&quot;</span>: /^$/,
+  <span class="s">&quot;ports.ts&quot;</span>: /^\.\/order\.ts$/,
+  <span class="s">&quot;place-order.ts&quot;</span>: /^\.\/(order|ports)\.ts$/,
+};
+
+test(<span class="s">&quot;each layer imports only what it may&quot;</span>, () =&gt; {
+  <span class="k">const</span> folder = <span class="s">&quot;src/orders&quot;</span>;
+  <span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> readdirSync(folder)) {
+    <span class="k">const</span> allowed = rules[file];
+    <span class="k">if</span> (!allowed) continue;
+    <span class="k">const</span> source = readFileSync(<span class="s">`${folder}/${file}`</span>, <span class="s">&quot;utf8&quot;</span>);
+    <span class="k">for</span> (<span class="k">const</span> [, <span class="k">from</span>] <span class="k">of</span> source.matchAll(/<span class="k">from</span> <span class="s">&quot;([^&quot;</span>]+)&quot;/g)) {
+      assert.match(<span class="k">from</span>!, allowed, <span class="s">`${file} must not import ${from}`</span>);
+    }
+  }
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The tests: a use case without a database, and the rules</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ each layer imports only what it may (…ms)
+✔ places an order, saves it and sends one email (…ms)
+✔ refuses more than 10 of one product, before touching the store (…ms)
+✔ sends no email when the store reports too little stock (…ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0</pre></div>
+
+<p>When someone, in a hurry, imports the database into the domain, the build says so:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Someone imports the database into the domain</span>
+<span class="c">$ </span><span class="k">npm test -- test/architecture.test.ts</span>
+✖ each layer imports only what it may
+AssertionError [ERR_ASSERTION]: order.ts must not import ../db.ts</pre></div>
+
+<p>This handmade check covers one folder; tools such as dependency-cruiser and ESLint’s import rules do the same for a whole codebase.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: architecture is a cost too</p><p>Every port and adapter is a file to read and an indirection to follow. For a route that reads one row and returns it, a use case and a repository are ceremony; keep such routes simple. Introduce layers where they pay: where business rules live, where several entry points share behaviour, where tests are slow because everything is tangled. The goal is code that is easy to change, not code that looks like a diagram.</p></aside>
+
+<h2><span class="sec">15.6</span> <span>Modules, monoliths and services</span></h2>
+
+<ul>
+<li><strong>Organise by feature, not by kind.</strong> <code>orders/</code>, <code>catalog/</code>, <code>accounts/</code>, each with its domain, use cases and adapters, rather than <code>controllers/</code>, <code>services/</code>, <code>repositories/</code> holding a bit of everything. A change to ordering then touches one folder.</li>
+<li><strong>Modules talk through their public functions.</strong> <code>orders</code> may call <code>catalog</code>’s exported use cases, but must not read <code>catalog</code>’s tables or import its internals. The same architecture test can enforce it.</li>
+<li><strong>A modular monolith first.</strong> One deployable application, well divided into modules, is the right shape for almost every team: one build, one database, transactions that span modules, and simple debugging.</li>
+<li><strong>Services when there is a reason.</strong> Splitting into separate services pays off when parts must scale very differently, be deployed by different teams independently, or be isolated for safety. The cost is real: network calls that fail, data spread across databases without shared transactions, and the tracing of Chapter 13 becoming a necessity. Clear modules make a later split easy; a tangle split into services is a distributed tangle.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: write decisions down</p><p>When you make a structural decision (“orders do not read catalog tables”, “we use a modular monolith”), write a short <dfn>architecture decision record</dfn>: the context, the decision, the alternatives and the consequences, one page in <code>docs/decisions/</code>. A year later, the next developer, often yourself, will know why, and can change the decision on purpose instead of by accident.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Business rules in route handlers</td><td>Rules copied, tested only through HTTP</td><td>Domain functions and use cases</td></tr>
+<tr><td>Domain code importing the database or framework</td><td>Rules tied to technology; slow tests</td><td>Ports owned by the inside; adapters outside</td></tr>
+<tr><td>Status codes or SQL errors in the domain</td><td>Business code speaks technical language</td><td>Domain errors, translated by adapters</td></tr>
+<tr><td>Dependencies created inside functions</td><td>Nothing can be replaced in tests</td><td>Inject them; wire in the composition root</td></tr>
+<tr><td>Folders by kind for a large app</td><td>Every change touches every folder</td><td>Folders by feature</td></tr>
+<tr><td>Layers for every trivial route</td><td>Ceremony that hides simple code</td><td>Structure where rules and reuse live</td></tr>
+<tr><td>Microservices on day one</td><td>Network failures and distributed data for no gain</td><td>A modular monolith, split when needed</td></tr>
+<tr><td>Boundaries only in people’s heads</td><td>They erode under deadlines</td><td>Architecture tests in the build</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Architecture</strong> decides where each kind of code lives, so rules can change without touching delivery and storage.</li>
+<li>The <strong>domain</strong> holds rules and words in plain code, importing nothing technical; errors speak the business’s language.</li>
+<li><strong>Use cases</strong> orchestrate a business action through <strong>ports</strong>; <strong>adapters</strong> implement the ports with real technology.</li>
+<li>A single <strong>composition root</strong> chooses and wires the concrete pieces; dependency injection is a function argument.</li>
+<li>Use cases are tested with <strong>fakes</strong> in milliseconds; adapters against real infrastructure; boundaries with an <strong>architecture test</strong>.</li>
+<li>Organise <strong>by feature</strong>; prefer a <strong>modular monolith</strong>; split into services only for a concrete reason.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that the shop’s rules depend on nothing that changes for technical reasons: they can be read without knowing Fastify or Kysely, tested in microseconds without setup, and reused by any entry point (HTTP, a job, a script). 2. The HTTP adapter, <code>routes.ts</code>: a status code is part of HTTP, not of the business. Another adapter, such as a command-line tool, would translate the same error into its own form, a message and an exit code. 3. Only the composition root, <code>server.ts</code>: create an adapter that implements <code>Mailer</code> with the provider’s library, and pass it to <code>makePlaceOrder</code>. The domain, the use case and the tests do not change.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project restructures part of the shop. Keep the tests green at every step: refactoring changes structure, not behaviour.</p>
+
+<div class="project">
+<p class="project-label">Project 15.1 · Easy</p>
+<h3>Cancel an order</h3>
+<p class="project-goal">Add “cancel an order” in the same layered style.</p>
+<p class="project-skills"><strong>You will practise:</strong> domain rules, a use case with ports, and testing with fakes.</p>
+<ol class="steps">
+<li>Write the rule in the domain: only pending or paid orders can be cancelled, and only within 24 hours (using the <code>Clock</code> port).</li>
+<li>Add a <code>cancel</code> method to the store port that returns the stock, and implement it in the Kysely adapter.</li>
+<li>Write the use case, unit tests with fakes for every rule, and the route.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the 24-hour rule is a pure function of the order and the current time; give it both as arguments and it needs no fake at all.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 15.2 · Medium</p>
+<h3>Untangle the shop</h3>
+<p class="project-goal">Refactor the shop API of the earlier chapters into feature modules.</p>
+<p class="project-skills"><strong>You will practise:</strong> refactoring safely, feature folders, module boundaries, and architecture tests.</p>
+<ol class="steps">
+<li>Make sure the integration tests of Chapter 12 cover the main routes; they are your safety net.</li>
+<li>Move code into <code>catalog/</code>, <code>orders/</code> and <code>accounts/</code>, one module at a time, running the tests after each step.</li>
+<li>Give each module an <code>index.ts</code> that exports its public use cases, and make other modules import only from it.</li>
+<li>Extend the architecture test to enforce that rule for every module.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> move code first and improve it second; mixing the two makes a failing test hard to explain.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 15.3 · Challenge</p>
+<h3>Same use case, three entry points</h3>
+<p class="project-goal">Prove the structure by calling the same use case from HTTP, a command line and a queue.</p>
+<p class="project-skills"><strong>You will practise:</strong> adapters for different deliveries, error translation, and shared composition.</p>
+<ol class="steps">
+<li>Write a command-line tool <code>place-order --email … --item 1:2</code> that uses the same composition as the server and prints errors with an exit code.</li>
+<li>Write a BullMQ worker (Chapter 10) that places orders from imported files through the same use case.</li>
+<li>Replace the printing mailer with a queue-based mailer adapter, changing only the composition root.</li>
+<li>Show that none of these changes touched <code>order.ts</code> or <code>place-order.ts</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> move the wiring into a function <code>compose(config)</code> that both entry points call, so the composition root stays in one place.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each piece of code, say which layer it belongs to: a zod schema for the request body; “a customer may have at most 3 unpaid orders”; an SQL query that counts unpaid orders; sending a push notification.</li>
+<li><span class="level">Easy</span> Why does the email go after <code>store.place</code> in the use case, and not inside the store’s transaction?</li>
+<li><span class="level medium">Medium</span> The business adds a rule: customers in the loyalty programme get 5% off. Where does each part of the change go, and what tests do you write?</li>
+<li><span class="level medium">Medium</span> A colleague proposes splitting orders into a separate service now, “to be ready for scale”. List the costs, and the questions you would ask first.</li>
+<li><span class="level hard">Challenge</span> Make the architecture test also check that no file outside <code>src/orders/</code> imports <code>kysely-store.ts</code> except the composition root. Explain why that rule matters.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 16</p>
+<p>The code is ready; now it must run the same everywhere. Docker: images, containers, Compose for the whole stack, and shipping to production.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6901,6 +7358,16 @@ The message published while nobody was subscribed went nowhere: pub/sub does not
 <li>Both <code>readFileSync</code> and <code>JSON.parse</code> run on the event loop: while each of the ten requests reads and parses 50 MB, which takes hundreds of milliseconds, no other request in the process can run, so every route becomes slow at once, and memory spikes as ten copies are held. Fixes: do not parse it per request (parse once at start-up, or keep the data in a database and query what is needed); or move the work off the loop, reading with the asynchronous <code>fs.promises.readFile</code> and parsing in a worker thread, or in a background job that stores the result.</li>
 <li>The bottleneck is the database, not the web servers: every web server sends the same expensive queries to the same database, so adding servers only sends it more work at the same time (and more connections). Find the expensive queries (the slow query log, <code>pg_stat_statements</code>, <code>EXPLAIN ANALYZE</code>), fix them with indexes and better queries, remove N+1 patterns, cache what is shared, and only then consider read replicas or a bigger database server.</li>
 <li>Measure first: a load test of the page with realistic data, p50/p95/p99, and a trace of one request showing the 12 queries and their times. (1) Do less: combine the queries with eager loading or joins, add indexes for the slow ones, select only the columns shown; measure again. (2) Do later: anything not needed to render the page (view counts, recommendations computed per visit) goes to a background job or is loaded separately. (3) Do once: cache the product data shared by all visitors in Redis with invalidation on change, and set <code>Cache-Control</code> so a CDN can serve the page or its API for a few seconds; measure the hit rate and the latency. (4) Only if the page is still too slow under the target load, add servers, checking the database stays healthy. Each step is kept only if the numbers improved.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 15</h2>
+<ol class="exercises">
+<li>The zod schema: the HTTP adapter, because it describes the shape of a request (another entry point would validate its own input differently). “At most 3 unpaid orders”: the domain, as a pure rule such as <code>checkUnpaidLimit(count)</code>. The SQL that counts unpaid orders: an adapter, behind a port method such as <code>store.countUnpaid(customerId)</code>, called by the use case. Sending a push notification: an adapter behind a port (<code>Notifier</code>), called by the use case after the order is saved.</li>
+<li>Because the transaction may still fail or roll back after the email is sent, and an email cannot be unsent: the customer would be told about an order that does not exist (Chapter 6). Sending after <code>store.place</code> returns means the order is committed. If the process dies between the two, no email is sent; when that matters, the use case writes to an outbox inside the store’s transaction instead.</li>
+<li>The rule (“members get 5% off the total”) is a pure function in the domain, next to <code>totalOf</code>, with unit tests for members and non-members and for rounding. Whether a customer is a member is data, so the use case asks a port (<code>Customers.isMember(email)</code>) implemented by an adapter that queries the database, and passes the answer to the rule; the store saves the discounted total. Tests: domain unit tests for the arithmetic; a use-case test with a fake <code>Customers</code> port returning true and false; an adapter test for the membership query; and one HTTP integration test that a member’s order total is discounted.</li>
+<li>Costs: network calls that fail or time out between orders and the rest; no shared transactions, so stock and orders can disagree and need sagas or outboxes; separate deployments, monitoring, tracing and on-call; data duplicated or fetched across the network; slower development while the boundary settles. Questions first: Which concrete problem would the split solve? Does orders need to scale differently from the rest, or be deployed by a separate team? Is the boundary already clean inside the monolith (could we split it tomorrow without rewriting)? If the answers are vague, keep a well-divided module and revisit when there is a measured need.</li>
+<li>Add a rule that walks every file under <code>src/</code> and fails when a file imports <code>kysely-store.ts</code> unless it is <code>src/server.ts</code>. It matters because the store adapter is a detail: if routes, jobs or other modules import it directly, they bypass the use case and its rules, couple themselves to Kysely, and make it impossible to replace the adapter or test them with fakes. Keeping the concrete adapter visible only to the composition root keeps every other file depending on the port.</li>
 </ol>
 
 </section>
