@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "Chapter 9: Six System Design Case Studies"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "Chapter 10: CI/CD Pipelines"; } }
+@page ch10:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3344,6 +3346,333 @@ Execution Time: 0.068 ms</pre></div>
 <p>The design is the plan; delivery is how it reaches customers safely, many times a day. Part 3 starts with CI/CD: the pipeline that tests, builds and ships every change.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b4/delivery/en">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>CI/CD Pipelines</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write the pipeline as a script that runs the same on a laptop and on a CI service</li>
+<li>stop a change that breaks clients before it is merged</li>
+<li>build an artifact once, tagged with its commit, and promote it from one environment to the next</li>
+<li>deploy a new version without a single failed request</li>
+<li>change the database while two versions of the code run at once</li>
+<li>separate deploying code from releasing a feature, and roll back in minutes</li>
+</ul>
+</div>
+
+<p class="lead">Part 3 is about delivery: getting changes from a developer’s branch to customers, safely, many times a day. The tool for it is the <dfn>pipeline</dfn>: <dfn>continuous integration</dfn> (CI) checks every change automatically as soon as it is pushed, and <dfn>continuous delivery</dfn> (CD) turns every change that passes into something that can be deployed with one decision, without heroics. Teams that deploy small changes often have fewer incidents, not more, because each change is small enough to understand and to undo. This chapter builds Bit Booking’s pipeline, and measures the difference between a deploy that drops requests and one that drops none.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The best pipelines are boring. They run in a few minutes, they fail for real reasons, and a deploy on Thursday afternoon is as calm as one on Monday morning. Boring is the goal.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>The pipeline is a script</span></h2>
+
+<p>The first rule: the pipeline is a script in the repository, not a configuration hidden in a CI service. Anyone can run it on their machine before pushing, and the CI service only runs the same script. Here is Bit Booking’s, on the contract project of Chapter 2:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ci.sh</div><pre class="code"><span class="c line-bidi">#!/bin/sh</span>
+<span class="c line-bidi"># stop at the first failing step, and say which</span>
+set -e
+step() {
+  printf &#x27;%s: &#x27; &quot;$1&quot;
+  shift
+  if out=$(&quot;$@&quot; 2&gt;&amp;1); then echo &quot;ok&quot;; else echo &quot;FAILED&quot;; echo &quot;$out&quot; | tail -4; echo &quot;pipeline failed at: $STEP&quot;; exit 1; fi
+}
+STEP=&quot;type check&quot;;    step &quot;$STEP&quot; npx tsc
+STEP=&quot;contract tests&quot;;    step &quot;$STEP&quot; node --test
+<span class="c line-bidi"># the contract on main: what clients use today</span>
+git show main:openapi.yaml &gt; /tmp/openapi.main.yaml
+STEP=&quot;breaking changes&quot;; step &quot;$STEP&quot; node breaking.ts /tmp/openapi.main.yaml openapi.yaml
+echo &quot;pipeline passed&quot;</pre></div>
+
+<p>Each step must pass for the next to run, and the first failure stops everything and says where. The order puts the fastest checks first: a type error is found in seconds, before the slower tests start. On a clean change, all three pass:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The pipeline on a clean change</span>
+<span class="c">$ </span><span class="k">sh ci.sh</span>
+type check: ok
+contract tests: ok
+breaking changes: ok
+pipeline passed</pre></div>
+
+<p>Now a developer removes <code>ends_at</code> from the booking, carefully: the contract, the server and the generated types all agree, so the type check and the contract tests pass. Only one step knows that mobile apps already in customers’ pockets read that field:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same pipeline, after someone removes ends_at</span>
+<span class="c">$ </span><span class="k">sh ci.sh; echo &quot;exit code: $?&quot;</span>
+type check: ok
+contract tests: ok
+breaking changes: FAILED
+1 breaking changes:
+- POST /bookings 201: response field removed &quot;ends_at&quot;
+pipeline failed at: breaking changes
+exit code: 1</pre></div>
+
+<p>This is exactly what a pipeline is for. The change was correct inside the repository and wrong for the world outside it, and the step that compares with <code>main</code> caught it before it was merged, with a message that says what to do: keep the field, or plan the expand-and-contract of Chapter 2.</p>
+
+<h2><span class="sec">10.2</span> <span>Running it on every change</span></h2>
+
+<p>A CI service runs the script on every push and every pull request. This is GitHub Actions’ version:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.github/workflows/ci.yml</div><pre class="code">name: ci
+
+# every push and pull request runs the same pipeline as a developer&#x27;s machine
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: sh ci.sh
+
+  image:
+    # only main builds the image, tagged with the commit it came from
+    if: github.ref == &#x27;refs/heads/main&#x27;
+    needs: check
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo &quot;${{ secrets.GITHUB_TOKEN }}&quot; | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+      - run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+  deploy:
+    needs: image
+    runs-on: ubuntu-24.04
+    # production waits for a person to approve, in the environment&#x27;s settings
+    environment: production
+    steps:
+      - run: ./deploy.sh ${{ github.sha }}</pre></div>
+
+<p>(The workflow is shown, not run, while making this book; the script it calls is the one recorded above.) Three jobs, each needing the previous one. <code>check</code> runs on every branch. <code>image</code> runs only on <code>main</code>, and builds the container image. <code>deploy</code> runs only after a person approves it, because the <code>production</code> environment is configured to require approval. Three settings complete the picture: make <code>check</code> a <em>required status check</em> in the branch protection of <code>main</code>, so nothing merges without it; keep secrets in the CI service’s secret store, never in the repository or in logs; and pin third-party actions to exact versions (or commit hashes), because a pipeline that runs someone else’s latest code with your secrets is a supply-chain risk.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: a slow or flaky pipeline gets ignored</p><p>If the pipeline takes forty minutes, developers batch their changes, and big changes are the risky ones. If it fails at random, people learn to press “re-run” and stop reading failures. Keep it under about ten minutes (cache dependencies, run independent jobs in parallel, run the slowest tests on <code>main</code> only), and treat a flaky test as a bug with an owner, fixed this week.</p></aside>
+
+<h2><span class="sec">10.3</span> <span>Build once, deploy many times</span></h2>
+
+<p>The <code>image</code> job builds one container image and tags it with the commit it came from: <code>ghcr.io/…:5592fa98…</code>. That image is the release. It goes to a staging environment first, is checked there, and then the <em>same image</em>, byte for byte, goes to production. Rebuilding for production would give a different artifact from the one that was tested: other dependency versions, another compiler run. Everything that differs between environments (database addresses, keys, feature settings) comes from the environment, never from the image (Book 3). And because every image is named by its commit, the answer to “what is running in production?” is a commit you can open.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why should the pipeline be a script in the repository rather than steps written only in the CI service?</li><li>The change removing <code>ends_at</code> passed the type check and the tests. Why is that not enough to merge it?</li><li>Why deploy to production the same image that was tested in staging, instead of building it again?</li></ol></aside>
+
+<h2><span class="sec">10.4</span> <span>Deploying without dropping requests</span></h2>
+
+<p>The last step is replacing the running version with the new one. To measure it, here is a server that behaves like a real one in the two ways that matter: it needs a moment to start (connections to open, caches to warm), and it reports through <code>/ready</code> whether it can serve:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { setTimeout as sleep } <span class="k">from</span> <span class="s">&quot;node:timers/promises&quot;</span>;
+
+<span class="k">const</span> version = process.env.VERSION ?? <span class="s">&quot;v1&quot;</span>;
+<span class="k">let</span> ready = <span class="k">false</span>;
+<span class="k">let</span> stopping = <span class="k">false</span>;
+
+<span class="k">const</span> server = createServer(<span class="k">async</span> (request, response) =&gt; {
+  <span class="c line-bidi">// ready only when it can serve; the balancer asks before sending traffic</span>
+  <span class="k">if</span> (request.url === <span class="s">&quot;/ready&quot;</span>) <span class="k">return</span> response.writeHead(ready ? <span class="n">200</span> : <span class="n">503</span>).end();
+  <span class="c line-bidi">// while stopping, tell clients not to reuse the connection, or they keep it alive forever</span>
+  <span class="k">if</span> (stopping) response.setHeader(<span class="s">&quot;connection&quot;</span>, <span class="s">&quot;close&quot;</span>);
+  <span class="k">await</span> sleep(<span class="n">20</span>);
+  response.end(version);
+});
+server.listen(Number(process.env.PORT));
+
+<span class="c line-bidi">// a real server needs time to start: connections, caches, compiled code</span>
+<span class="k">await</span> sleep(<span class="n">1000</span>);
+ready = <span class="k">true</span>;
+
+<span class="c line-bidi">// SIGTERM: stop accepting, finish what is in flight, then exit</span>
+process.on(<span class="s">&quot;SIGTERM&quot;</span>, () =&gt; {
+  ready = <span class="k">false</span>;
+  stopping = <span class="k">true</span>;
+  server.close(() =&gt; process.exit(<span class="n">0</span>));
+  server.closeIdleConnections();
+});</pre></div>
+
+<p>Eight clients send requests through a load balancer for eight seconds, and at the second second, version 2 is deployed. First, the obvious way: stop the old process, start the new one in its place:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Deploy v2 by restarting in place, under load</span>
+<span class="c">$ </span><span class="k">node load.ts 8 &amp;   # 8 clients for 8 seconds; at second 2:</span>
+<span class="c">$ </span><span class="k">kill -TERM $V1</span>
+<span class="c">$ </span><span class="k">VERSION=v2 PORT=3001 node server.ts &amp;</span>
+<span class="c">$ </span><span class="k">wait</span>
+second      ok  failed  versions
+1          328       0  v1
+2          339      91  v1
+3          348      83  v2
+4          364       0  v2
+5          370       0  v2
+6          370       0  v2
+7          371       0  v2
+8          362       0  v2</pre></div>
+
+<p>For about two seconds, hundreds of requests fail: the old process is gone, and the new one is still starting. Every deploy, several times a day, customers get errors. Now a <dfn>rolling update</dfn>: start the new version beside the old one, wait until it is ready, add it to the load balancer, remove the old one, and only then ask the old one to stop:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Deploy v2 as a rolling update, under load</span>
+<span class="c">$ </span><span class="k">node load.ts 8 &amp;   # 8 clients for 8 seconds; at second 2:</span>
+<span class="c">$ </span><span class="k">VERSION=v2 PORT=3002 node server.ts &amp;</span>
+<span class="c">$ </span><span class="k">until curl -sf localhost:3002/ready; do sleep 0.1; done</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/admin/pool?ports=3001,3002&#x27;</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/admin/pool?ports=3002&#x27;</span>
+<span class="c">$ </span><span class="k">kill -TERM $V1</span>
+<span class="c">$ </span><span class="k">wait</span>
+second      ok  failed  versions
+1          323       0  v1
+2          361       0  v1
+3          359       0  v1
+4          370       0  v1 v2
+5          365       0  v1 v2
+6          366       0  v2
+7          368       0  v2
+8          371       0  v2</pre></div>
+
+<p>Not one request failed. For two seconds both versions answered, then only v2. Three details made it work, and each is easy to miss. The load balancer only sends traffic to a copy that answers <code>/ready</code>. The old copy is removed from the pool <em>before</em> it is stopped, so no new requests reach it. And on <code>SIGTERM</code> it finishes the requests already in flight and tells clients to close their connections: without that last line, the load balancer’s kept-alive connections kept the old process answering for the whole test, as the first recording of this chapter showed before it was fixed. Platforms such as Kubernetes do exactly these steps for you, if the application provides the readiness check and the graceful shutdown.</p>
+
+<h2><span class="sec">10.5</span> <span>Two versions at once</span></h2>
+
+<p>Look again at seconds 4 and 5 of the rolling update: v1 and v2 served customers side by side. That has a consequence for every change: <strong>each version must work with the data and the clients of the other</strong>. A database migration that renames a column breaks the old version the moment it runs; an API change that removes a field breaks the old clients. The safe pattern is the expand-and-contract of Chapter 2, applied to the database:</p>
+<ol>
+<li><strong>Expand:</strong> add the new column (nullable, or with a default); deploy code that writes both the old and the new.</li>
+<li><strong>Migrate:</strong> copy the old data into the new column, in batches, while the system runs.</li>
+<li><strong>Switch:</strong> deploy code that reads the new column only.</li>
+<li><strong>Contract:</strong> once no running version uses the old column, drop it, in a later release.</li>
+</ol>
+<p>Migrations run as their own pipeline step, before the new version is deployed (Book 3), and each step is a separate, small, reversible release.</p>
+
+<h2><span class="sec">10.6</span> <span>Releasing, and rolling back</span></h2>
+
+<p>Deploying code and releasing a feature are different decisions. A <dfn>feature flag</dfn> deploys the deposit feature switched off, turns it on for one business, then for 10% of them, then for everyone, and turns it off in seconds if something goes wrong, without a deploy. A <dfn>canary</dfn> does the same with versions: the new version first receives a small share of the traffic, and the metrics of Chapter 12 decide whether it gets the rest. And rolling back is just deploying the previous image again, by its commit: the pipeline makes that a one-line, practised action, not an emergency rebuild.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: keep main always releasable</p><p>Merge small changes, behind flags when they are not finished, so that <code>main</code> can be deployed at any moment. When the pipeline on <code>main</code> fails, fixing it comes before any new work: a broken <code>main</code> blocks everyone, and every hour it stays broken, the next fix mixes with more changes.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Pipeline logic only in the CI service</td><td>Failures nobody can reproduce locally</td><td>A script in the repository, run by CI</td></tr>
+<tr><td>Checking only inside the repository</td><td>Changes break clients outside it</td><td>Compare contracts with <code>main</code></td></tr>
+<tr><td>Slow or flaky pipelines</td><td>Batched changes, ignored failures</td><td>Under ten minutes; fix flaky tests first</td></tr>
+<tr><td>Rebuilding for production</td><td>Deploying something that was never tested</td><td>One image, tagged by commit, promoted</td></tr>
+<tr><td>Stop the old, then start the new</td><td>Failed requests on every deploy</td><td>Rolling updates with readiness checks</td></tr>
+<tr><td>No graceful shutdown</td><td>Cut requests, or old processes that never stop</td><td>Drain, close connections, then exit</td></tr>
+<tr><td>Migrations that break the old version</td><td>Errors during every rolling deploy</td><td>Expand and contract, over several releases</td></tr>
+<tr><td>Rollback as a rebuild</td><td>Slow, stressful recoveries</td><td>Redeploy the previous image, practised</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>CI</strong> checks every change automatically; <strong>CD</strong> makes every passing change deployable with one decision.</li>
+<li>Write the pipeline as a <strong>script</strong> in the repository, fastest checks first, stopping at the first failure.</li>
+<li>Check what tests cannot see, such as <strong>breaking changes against main</strong>.</li>
+<li>Make the check <strong>required</strong>, keep secrets in the CI store, and <strong>pin</strong> third-party actions.</li>
+<li><strong>Build once</strong>, tag by commit, and promote the same image through every environment.</li>
+<li>Deploy with <strong>rolling updates</strong>: readiness first, remove from the pool, then <strong>drain</strong> and stop.</li>
+<li>Two versions run at once, so migrate with <strong>expand and contract</strong>; release with <strong>flags and canaries</strong>; roll back by redeploying the previous image.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that it can be run, read and debugged anywhere: a developer runs the exact pipeline before pushing and gets the same answer as CI, a failure in CI can be reproduced on a laptop, and the pipeline is reviewed and versioned with the code it checks. Moving to another CI service changes only the few lines that call the script. 2. Because the type check and the tests only see the repository, where the contract, the server and the types were changed together and agree. The clients already installed on customers’ phones still read <code>ends_at</code>, and they are not in the repository; only the comparison with the contract on <code>main</code>, which is what those clients were built against, shows that they would break. 3. Because a rebuild is a different artifact: dependencies may resolve to newer versions, a base image may have changed, a build step may behave differently. Production would run code that no test and no staging check ever saw. Promoting the tested image means that what passed is exactly what runs.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project improves Bit Booking’s delivery. Measure before and after, as the chapter did with the deploys.</p>
+
+<div class="project">
+<p class="project-label">Project 10.1 · Easy</p>
+<h3>A faster pipeline</h3>
+<p class="project-goal">Halve the time of the pipeline without removing any check.</p>
+<p class="project-skills"><strong>You will practise:</strong> measuring steps, caching, and parallel jobs.</p>
+<ol class="steps">
+<li>Print the duration of each step in <code>ci.sh</code>.</li>
+<li>In the workflow, cache npm’s download cache, and split checks that do not depend on each other into parallel jobs.</li>
+<li>Run only the tests affected by the changed files on pull requests, and all of them on <code>main</code>.</li>
+<li>Record the times before and after.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> measure first; the slowest step is rarely the one people complain about.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 10.2 · Medium</p>
+<h3>A canary that decides by itself</h3>
+<p class="project-goal">Send 10% of traffic to the new version, and promote or roll back from its error rate.</p>
+<p class="project-skills"><strong>You will practise:</strong> weighted load balancing, metrics, and automated decisions.</p>
+<ol class="steps">
+<li>Give the balancer weights: <code>/admin/pool?ports=3001:9,3002:1</code>.</li>
+<li>Make v2 fail 5% of its requests on purpose, and count errors per version.</li>
+<li>Write a deploy script that sends 10% to v2 for 30 seconds, then promotes it if its error rate is under 1%, or removes it otherwise.</li>
+<li>Run it with a good v2 and a bad one, and record both outcomes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> compare v2’s error rate with v1’s during the same 30 seconds, not with a fixed number; a bad minute for the whole system is not v2’s fault.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 10.3 · Challenge</p>
+<h3>Rename a column under load</h3>
+<p class="project-goal">Rename <code>bookings.email</code> to <code>customer_email</code> with rolling deploys and zero failed requests.</p>
+<p class="project-skills"><strong>You will practise:</strong> expand and contract, backfills, and versions that coexist.</p>
+<ol class="steps">
+<li>Write the four releases of section 10.5 as separate migrations and code versions.</li>
+<li>Run each rolling deploy under the load script, with bookings being made, and check zero failures.</li>
+<li>Backfill in batches of 1,000 rows, and show that bookings made during the backfill are correct.</li>
+<li>Write the order of the steps, and what you would do if step 3 had to be rolled back.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a trigger that copies writes from the old column to the new during the transition removes the need for the code to write both.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Put these steps in the best order for a pipeline, and explain: integration tests (3 minutes), lint (10 seconds), type check (20 seconds), unit tests (40 seconds), build the image (2 minutes).</li>
+<li><span class="level">Easy</span> In the naive deploy, failures lasted about two seconds. What decided that length, and how would a slower-starting application change it?</li>
+<li><span class="level medium">Medium</span> The workflow’s <code>deploy</code> job receives the commit hash. Write what <code>deploy.sh</code> must do for a rolling update on two servers, step by step, including how it knows each step succeeded.</li>
+<li><span class="level medium">Medium</span> A developer adds a required database column and the code that fills it, in one release, deployed by rolling update. What fails, for how long, and how should the change be split?</li>
+<li><span class="level hard">Challenge</span> Design the rollback of a release that included a database migration which already ran. When can you simply redeploy the previous image, and when can you not?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 11</p>
+<p>The pipeline needs somewhere to deploy to. The next chapter is about the cloud, and about describing servers, networks and databases as code that is reviewed like everything else.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3469,6 +3798,16 @@ export async function GET(request: Request) {
 <li>Do not remove the job when claiming it; move it instead: in the same atomic script, take the due job and re-add it with a new score of “now + 5 minutes” (a lease), then delete it only after the reminder is sent. If the worker crashes, the job becomes due again after the lease and another worker sends it. The new risk is a duplicate: a worker that sent the reminder but crashed before deleting the job causes a second reminder. Make sending idempotent (record the reminder as sent in the database, keyed by the booking, and skip it if already recorded), and the duplicate is avoided except in the narrowest window.</li>
 <li>Requirements: owners see a live count of visitors on their booking page; approximate is fine; nothing is stored long term. Numbers: at peak perhaps 5,000 pages open across the platform, each sending a heartbeat every 15 seconds (about 330 writes a second), read by a few hundred owners’ dashboards. Interface: the page sends <code>POST /presence/{business}</code> every 15 s; the dashboard reads <code>GET /presence/{business}</code> or listens on a WebSocket. Data: per business, a Redis sorted set of visitor ids scored by last heartbeat time. Design: heartbeats go to the API, which updates Redis; the count is the number of members with a score in the last 30 s. The hard part: expiring visitors who left without saying so, which the time-scored set does by itself (remove members older than 30 s before counting). Trade-offs: counts are approximate by up to 30 s; if Redis is down, the widget shows nothing rather than a wrong number; visitor ids are random per tab, never personal data.</li>
 <li>Store a search key normalised for Arabic: remove diacritics (tashkeel) and tatweel, unify the forms of alef (أ إ آ to ا), alef maqsura (ى to ي) and taa marbuta (ة to ه), lower-case any Latin letters, and keep it in a generated column with <code>C</code> collation and a B-tree index, as in section 9.7. Apply exactly the same normalisation to what the customer types before searching, so both sides meet. The index then finds the matches by prefix, in key order, and stops after a few. For display order, sort those few results with an Arabic collation (for example an ICU collation such as <code>"ar-x-icu"</code>), which costs nothing for five rows. For spelling mistakes, add a trigram index on the same normalised key.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 10</h2>
+<ol class="exercises">
+<li>Lint (10 s), type check (20 s), unit tests (40 s), integration tests (3 min), build the image (2 min). The fast, cheap checks come first, so most mistakes fail within a minute instead of after five; the image is built last because it is only worth building for a change that passed everything, and on a pull request it can be skipped entirely. Lint and type check can also run in parallel with the unit tests, since none depends on another.</li>
+<li>The gap between stopping the old process and the new one being able to answer: the new server’s start-up time (one second here, for opening connections and warming caches) plus the time to stop the old one and bind the port, while the load balancer kept sending requests to a port with nothing ready behind it. An application that needs 30 seconds to start (large frameworks, cache warming) would fail every request for 30 seconds on every deploy, which is exactly why the rolling update waits for readiness before sending any traffic.</li>
+<li>For each server in turn: (1) pull the image <code>…:$SHA</code>; (2) start a container from it on a free port; (3) poll its <code>/ready</code> until it answers 200, with a time limit, and abort the deploy (removing the new container) if it never does; (4) add it to the load balancer’s pool and check the load balancer reports it healthy; (5) remove the old container from the pool; (6) send the old container <code>SIGTERM</code> and wait for it to exit, with a time limit after which it is killed; (7) watch the error rate for a minute and stop the rollout if it rises. Each step checks its own result, so a failure stops the deploy with the old version still serving.</li>
+<li>During the rolling deploy the old version is still running and inserting rows without the new column: if the column is <code>NOT NULL</code> without a default, every insert from the old version fails, for as long as the deploy takes (and the migration itself may fail on existing rows). Split it: release 1 adds the column as nullable (or with a default) and deploys code that fills it; then backfill existing rows; release 2 adds the <code>NOT NULL</code> constraint once every running version fills it.</li>
+<li>You can simply redeploy the previous image when the migration was backward compatible, as in expand and contract: an added column, table or index that the old code ignores. The old code runs fine on the new schema, so rolling back the code is safe and the migration can stay. You cannot when the migration removed or changed something the old code needs: a dropped or renamed column, a changed type, a tightened constraint. Then you need a down-migration, which may lose data written since (rows in the new shape), or a forward fix. That is the strongest reason to make every migration additive, and to drop old columns only in a later release, once the code that used them is long gone.</li>
 </ol>
 
 </section>
