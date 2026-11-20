@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: Bit Booking API
+  version: 2.0.0
+paths:
+  /slots:
+    get:
+      operationId: listSlots
+      summary: أوقات البدء المتاحة لموظف واحد في يوم واحد
+      parameters:
+        - name: staff_id
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: المواعيد المتاحة، الأقرب أولاً
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Slot" }
+  /bookings:
+    post:
+      operationId: createBooking
+      summary: احجز موعداً
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BookingIn" }
+      responses:
+        "201":
+          description: الحجز
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+        "409":
+          description: الموعد محجوز من قبل
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/Problem" }
+        "422":
+          description: الطلب غير صالح
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/Problem" }
+components:
+  schemas:
+    Slot:
+      type: object
+      required: [starts_at, ends_at]
+      additionalProperties: false
+      properties:
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+    BookingIn:
+      type: object
+      required: [staff_id, starts_at, email, phone]
+      additionalProperties: false
+      properties:
+        staff_id: { type: integer, minimum: 1 }
+        starts_at: { type: string, format: date-time }
+        email: { type: string, format: email, maxLength: 254 }
+        phone: { type: string }
+        notes: { type: string }
+    Booking:
+      type: object
+      required: [id, staff_id, starts_at, email, status]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        staff_id: { type: integer }
+        starts_at: { type: string, format: date-time }
+        email: { type: string }
+        status: { type: string, enum: [confirmed, cancelled, no_show] }
+    Problem:
+      type: object
+      required: [title, status]
+      properties:
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
