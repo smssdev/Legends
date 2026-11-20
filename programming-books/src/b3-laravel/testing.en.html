@@ -1,0 +1,209 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/testing/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Testing with Pest</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide what to test with unit, feature and end-to-end tests</li>
+<li>write expressive tests with Pest, including datasets for many cases</li>
+<li>test routes against a real PostgreSQL test database</li>
+<li>replace queues, mail and other edges with Laravel’s fakes, and control time</li>
+<li>check rules about the code itself with architecture tests</li>
+<li>read a failing test, and keep a suite fast, reliable and worth trusting</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter so far ended with a few tests. This one is about the craft itself. A good test suite is what lets you change code on a Friday afternoon without fear: it tells you within a minute whether the shop still takes orders, still charges the right amount and still refuses what it must refuse. A bad one is slow, fails at random, and is ignored. Laravel comes with excellent testing tools; <dfn>Pest</dfn>, a test framework built on PHPUnit, makes them read almost like sentences.</p>
+
+<aside class="bit" data-mood="think"><p>I once worked on a project with two thousand tests that took forty minutes and failed at random about once a day. Nobody believed a red build any more, so real bugs went out with the noise. We deleted a third of the tests, made the rest use a real database properly, and got the suite under three minutes. It caught more bugs with fewer tests.</p></aside>
+
+<h2>{{n}}.1 What to test, and at which level</h2>
+
+<ul>
+<li><dfn>Unit tests</dfn> call one class or function directly, with no database, HTTP or clock. They are fast and point straight at the broken line. They suit logic with many cases: prices, discounts, rules, state changes.</li>
+<li><dfn>Feature tests</dfn> send a request through the whole Laravel stack (routing, middleware, validation, controller, database) and check the response and its effects. This is where most of a Laravel application’s tests belong, because most of its bugs live in queries, validation rules and authorization.</li>
+<li><dfn>End-to-end tests</dfn> drive the real application from the outside, often through a browser (Laravel Dusk, or Playwright from Book 2). Keep them for the few journeys that must never break.</li>
+</ul>
+
+<p>Test each behaviour at the lowest level where a bug in it would actually show. A unit test with a mocked database cannot catch a wrong <code>where</code>; a feature test can.</p>
+
+<h2>{{n}}.2 Pest</h2>
+
+<p>Laravel’s skeleton ships with PHPUnit test classes. Pest runs the same tests, written as functions:</p>
+
+<pre data-code="install.sh" data-title="Terminal"></pre>
+
+<p><code>tests/Pest.php</code> says which base class each folder uses; feature tests get Laravel’s <code>TestCase</code> and the <code>RefreshDatabase</code> trait. A test is <code>it('does something', function () { … })</code> (or <code>test(…)</code>), and checks are written with <code>expect($value)-&gt;toBe(…)</code>, in a chain that reads left to right. Everything from PHPUnit, including Laravel’s <code>assertStatus</code> and friends, keeps working.</p>
+
+<h2>{{n}}.3 Unit tests and datasets</h2>
+
+<p>The shop’s pricing is a pure function: it takes lines and a code and returns numbers, touching nothing else:</p>
+
+<pre data-code="shop/app/Support/Pricing.php" data-from="public static function total" data-to="^    }" data-title="app/Support/Pricing.php"></pre>
+
+<p>Several cases that differ only in their data are best written as a <dfn>dataset</dfn>: one row per case, named, and Pest runs the test once per row:</p>
+
+<pre data-code="shop/tests/Unit/PricingTest.php" data-from="$lines" data-title="tests/Unit/PricingTest.php"></pre>
+
+<ul>
+<li>Each name says the behaviour, not the method: “never lets a fixed discount go below zero” reads like a rule of the shop, and is what you see when it fails.</li>
+<li><code>toMatchArray</code> checks the keys that matter for the case and ignores the rest; <code>toBe</code> checks the whole array when the whole array is the point.</li>
+<li>Error cases are tests too: <code>-&gt;throws()</code> checks the exception’s class and that its message names the code.</li>
+</ul>
+
+<h2>{{n}}.4 Feature tests with a real database</h2>
+
+<p>The order route decrements stock and inserts the order in a transaction, then dispatches a confirmation job after the commit (Chapter {{n-2}}):</p>
+
+<pre data-code="shop/app/Http/Controllers/OrderController.php" data-from="public function store" data-to="^    }" data-title="app/Http/Controllers/OrderController.php"></pre>
+
+<p>Laravel’s skeleton runs tests on an in-memory SQLite database. It is fast, but it is not the database the shop runs on: PostgreSQL behaves differently in types, locking, case sensitivity and many functions. In <code>phpunit.xml</code>, the tests point at a separate PostgreSQL database, <code>shop_test</code>, so that they never touch development data. <code>RefreshDatabase</code> migrates it once and wraps every test in a transaction that is rolled back afterwards, so each test starts clean and fast:</p>
+
+<pre data-code="shop/tests/Feature/OrdersTest.php" data-from="beforeEach" data-title="tests/Feature/OrdersTest.php"></pre>
+
+<ul>
+<li><strong>Checking the effects, not just the response.</strong> The first test checks the status and body, the stock left in the database and the job queued; the second checks that a refused order left the stock and the orders untouched, which is the transaction of Chapter {{n-6}} doing its job.</li>
+<li><strong>Fakes at the edges.</strong> <code>Queue::fake()</code> records jobs instead of pushing them to Redis, and <code>Queue::assertPushed</code> checks them, with a closure for the details. Laravel has the same for <code>Mail</code>, <code>Notification</code>, <code>Event</code>, <code>Bus</code>, <code>Storage</code> and <code>Http</code> (which fakes calls to other services). Each fake replaces something slow or with effects outside the system.</li>
+<li><strong>Refusals are tested too.</strong> A 409, a 422 with the field named, and in a real suite the 401 and 403 of Chapter {{n-4}}.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: fake the edges, not the middle</p><p>Fake what is slow, outside your control or has effects in the world: email, queues, payment providers, other companies’ APIs, the clock. Do not mock your own models, the database or Eloquent itself: tests full of mocks pass while the real thing is broken, and break whenever the code is reorganised even when nothing is wrong. If a test needs ten mocks, the code under test probably does too much.</p></aside>
+
+<h2>{{n}}.5 Controlling time</h2>
+
+<p>A basket left alone for 30 minutes is released. Testing that by waiting is absurd, and testing it with the real clock is fragile. Laravel’s tests can move the application’s clock:</p>
+
+<pre data-code="shop/tests/Feature/BasketsTest.php" data-from="it(" data-title="tests/Feature/BasketsTest.php"></pre>
+
+<p><code>$this-&gt;travel(30)-&gt;minutes()</code> moves <code>now()</code> forward, and the clock returns to normal after each test; <code>$this-&gt;freezeTime()</code> stops it. The two tests check both sides of the boundary, 29 and 30 minutes, which is where off-by-one bugs live. This works because the code asks <code>now()</code> for the time instead of PHP’s <code>time()</code>.</p>
+
+<h2>{{n}}.6 Architecture tests</h2>
+
+<p>Some rules are about the code itself: no <code>dd()</code> left behind, controllers named <code>…Controller</code>, models extending <code>Model</code>, no <code>env()</code> outside configuration. Pest checks them like any other test:</p>
+
+<pre data-code="shop/tests/Unit/ArchTest.php" data-from="arch(" data-title="tests/Unit/ArchTest.php"></pre>
+
+<p>The <code>laravel</code> preset bundles Laravel’s conventions. These tests fail the build the day someone commits a debugging call or breaks a convention, instead of leaving it to a reviewer’s eyes.</p>
+
+<h2>{{n}}.7 Running and reading tests</h2>
+
+<pre data-code="run.sh" data-title="Terminal"></pre>
+
+<p>Twelve tests, from rules about the code to orders in PostgreSQL. While working on one part, run only the tests whose name matches:</p>
+
+<pre data-code="filter.sh" data-title="Terminal"></pre>
+
+<p>A test is only useful if its failure tells you what is wrong. Here a bug has been switched on, and the VAT rate is wrong:</p>
+
+<pre data-code="fail.sh" data-title="Terminal"></pre>
+
+<p>The output names the dataset row that broke, the key that differs (<code>vat</code>: 8550 instead of 7980), and the code around the failing line. That is enough to suspect the rate without opening a debugger. Good names and focused expectations are what make failures this readable.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why do the tests use a PostgreSQL test database instead of SQLite in memory?</li><li>What does <code>Queue::fake()</code> change, and why is it used here but not a fake database?</li><li>What does <code>RefreshDatabase</code> do between two tests?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.8 A suite worth trusting</h2>
+
+<ul>
+<li><strong>Fast.</strong> A suite that runs in seconds is run before every commit. <code>RefreshDatabase</code>’s transactions keep feature tests fast; <code>pest --parallel</code> runs files in several processes, each with its own copy of the test database.</li>
+<li><strong>Deterministic.</strong> The same code gives the same result every time. Flaky tests usually come from shared data, the real clock, random values, results without <code>orderBy</code>, or work left running. Fix them at once, or delete them: a flaky test teaches the team to ignore red.</li>
+<li><strong>Testing behaviour.</strong> Assert what the caller sees (responses, rows, jobs, emails), not how the code is arranged inside. Then the code can be improved without rewriting the tests.</li>
+<li><strong>Measured.</strong> <code>pest --coverage</code> (with the PCOV or Xdebug extension) shows untested code; use it as a flashlight to find gaps, never as a number to chase. A test with no expectations reaches 100% too.</li>
+<li><strong>Run on every change.</strong> In CI, on every pull request, against a real PostgreSQL started as a service, and the merge blocked while it is red.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit: a failing test first, for every bug</p><p>Before fixing a bug, reproduce it with a test and watch the test fail for the right reason. Only then fix the code and watch it pass. It takes a few minutes, it often reveals that the bug is not where you thought, and it adds to the suite exactly the case that real life proved you had missed.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Testing on SQLite, running on PostgreSQL</td><td>Queries pass in tests and fail in production</td><td>A PostgreSQL test database</td></tr>
+<tr><td>Tests against the development database</td><td>Your own data wiped by <code>RefreshDatabase</code></td><td>A separate <code>shop_test</code> in <code>phpunit.xml</code></td></tr>
+<tr><td>Mocking models and the database</td><td>Wrong queries pass the tests</td><td>Feature tests against the real database</td></tr>
+<tr><td>No fakes for queues, mail and HTTP</td><td>Slow tests, real emails, calls to real services</td><td><code>Queue::fake</code>, <code>Mail::fake</code>, <code>Http::fake</code></td></tr>
+<tr><td><code>time()</code> or <code>sleep()</code> in code and tests</td><td>Slow, flaky tests</td><td><code>now()</code> in code, <code>travel()</code> in tests</td></tr>
+<tr><td>Only the happy path</td><td>Refusals and errors break unnoticed</td><td>Tests for every “no” and every error</td></tr>
+<tr><td>Vague names and huge tests</td><td>Failures that say nothing</td><td>One behaviour per test, named as a rule</td></tr>
+<tr><td>Living with flaky tests</td><td>Nobody trusts a red build</td><td>Fix or delete them at once</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Unit tests</strong> for logic with many cases, <strong>feature tests</strong> for routes, validation and queries, a few <strong>end-to-end tests</strong> for the main journeys.</li>
+<li><strong>Pest</strong> writes tests as functions with <code>expect()</code> chains, and <strong>datasets</strong> run one test per case.</li>
+<li>Feature tests run on a <strong>real PostgreSQL test database</strong>; <strong><code>RefreshDatabase</code></strong> keeps every test independent.</li>
+<li><strong>Fakes</strong> replace the edges (queues, mail, HTTP, events); <strong><code>travel()</code></strong> controls time.</li>
+<li><strong>Architecture tests</strong> enforce rules about the code; failures name the behaviour and show the difference.</li>
+<li>A <strong>fast, deterministic</strong> suite, run on every change, is what makes the tests trustworthy.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The shop runs on PostgreSQL, which differs from SQLite in column types, case-sensitive comparisons, locking, JSON and date functions; a query or migration can pass on SQLite and fail in production. Testing on the same database removes that whole class of surprise. 2. Dispatched jobs are recorded in memory instead of being pushed to Redis and run, so the test can assert which jobs were dispatched without a queue or a worker. The queue is an edge with effects elsewhere; the database is where the bugs worth catching live, so it stays real. 3. It runs the migrations once for the whole run, then starts a transaction before each test and rolls it back afterwards, so every test sees the same empty, migrated database.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project improves the tests of an application from the earlier chapters. Run every suite at least ten times in a row to prove it is deterministic.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Cover the pricing rules</h3>
+<p class="project-goal">Extend the pricing class and its dataset together.</p>
+<p class="project-skills"><strong>You will practise:</strong> datasets, boundary values, and writing the test before the code.</p>
+<ol class="steps">
+<li>Add a rule: orders above 1,000 pounds before discount get free shipping, others pay 40 pounds. Write the dataset rows first, including exactly 1,000.</li>
+<li>Add codes that expire on a date, and test them with <code>travel</code> on both sides of the date.</li>
+<li>Add an architecture test that keeps <code>App\Support</code> free of the <code>DB</code> facade, so pricing stays pure.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>arch()-&gt;expect('App\Support')-&gt;not-&gt;toUse('Illuminate\Support\Facades\DB')</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Feature tests for the shop’s API</h3>
+<p class="project-goal">Give the API of Chapters {{n-9}} to {{n-4}} a complete feature suite on PostgreSQL.</p>
+<p class="project-skills"><strong>You will practise:</strong> factories, Sanctum in tests, testing refusals, and parallel runs.</p>
+<ol class="steps">
+<li>Use model factories with states (<code>Order::factory()-&gt;paid()</code>) for test data.</li>
+<li>For every route, test the success, the validation errors, the 401, the 403 or 404, and the 409 cases; use <code>Sanctum::actingAs</code> where the login itself is not the point.</li>
+<li>Run the suite with <code>pest --parallel</code>, and make it pass ten times in a row.</li>
+<li>Run it in CI against PostgreSQL started as a service.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> parallel runs create a database per process (<code>shop_test_test_1</code>…); the database user needs permission to create them.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Testing jobs and integrations</h3>
+<p class="project-goal">Test the queue jobs of Chapter {{n-2}} and a call to an outside service, without real Redis, mail or network.</p>
+<p class="project-skills"><strong>You will practise:</strong> running jobs directly, <code>Mail::fake</code>, <code>Http::fake</code>, and testing retries and failures.</p>
+<ol class="steps">
+<li>Call the job’s <code>handle</code> method directly in a test, with <code>Mail::fake()</code>, and assert the email sent.</li>
+<li>Test that running it twice for the same order sends one email.</li>
+<li>Add a call to a delivery company’s API with <code>Http::post</code>, and fake its answers: success, a 500 (the job must throw so it is retried), and a 422 (the job must fail for good).</li>
+<li>Assert with <code>Http::assertSent</code> that the request carried the right data and an idempotency key.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>Http::preventStrayRequests()</code> makes any request that was not faked fail the test, so nothing reaches the real internet by accident.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Run the unit tests with <code>BUG=1</code>. Which tests fail, which pass, and what does that tell you about where the bug is?</li>
+<li><span class="level">Easy</span> Why does <code>Pricing</code> read the bug switch with <code>getenv()</code> rather than <code>env()</code>, given Chapter {{n-3}}’s advice?</li>
+<li><span class="level">Medium</span> A colleague’s test fails about once in twenty runs with “expected 2 orders, got 3”. List three likely causes and how to find which it is.</li>
+<li><span class="level">Medium</span> The controller dispatches the job with <code>afterCommit()</code>. Write a test that proves no job is dispatched when the order is refused, and explain why <code>Queue::fake()</code> together with <code>RefreshDatabase</code>’s transaction needs care here.</li>
+<li><span class="level">Challenge</span> Design the tests for “an order is cancelled automatically if it is not paid within 15 minutes”: which levels, which fakes, and how to control time in each.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Tests prove the code works before it ships; production needs proof that it keeps working. Observability: structured logs, metrics, traces and alerts that tell you what is wrong before the customers do.</p>
+</div>
+</section>

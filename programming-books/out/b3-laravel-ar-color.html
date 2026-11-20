@@ -31,6 +31,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "الفصل 12: الزمن الحقيقي بـ Laravel Reverb"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "الفصل 13: الاختبار بـ Pest"; } }
+@page ch13:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -6327,6 +6329,399 @@ status orders.1001 {&quot;order&quot;:1001,&quot;status&quot;:&quot;shipped&quot
 <p>صار في المتجر أجزاء متحركة كثيرة. الاختبار بـ Pest: اختبارات الوحدة والميزات، وقاعدة بيانات حقيقية في الاختبارات، وبدائل وهمية للطوابير والبريد والبث، ومجموعة اختبارات سريعة بما يكفي لتعمل مع كل تغيير.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b3/laravel/testing/ar">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">الفصل 13</p><h1>الاختبار بـ Pest</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقرر ما تختبره باختبارات الوحدة والميزات والطرف إلى الطرف</li>
+<li>تكتب اختبارات معبّرة بـ Pest، ومنها مجموعات البيانات لحالات كثيرة</li>
+<li>تختبر المسارات مقابل قاعدة اختبار PostgreSQL حقيقية</li>
+<li>تستبدل الطوابير والبريد والأطراف الأخرى ببدائل Laravel الوهمية، وتتحكم في الوقت</li>
+<li>تفحص قواعد عن الكود نفسه باختبارات البنية</li>
+<li>تقرأ اختباراً فاشلاً، وتُبقي المجموعة سريعة وموثوقة وجديرة بالثقة</li>
+</ul>
+</div>
+
+<p class="lead">كل فصل حتى الآن انتهى ببضعة اختبارات. وهذا الفصل عن الصنعة نفسها. فمجموعة الاختبارات الجيدة هي ما يتيح لك تغيير الكود عصر الجمعة بلا خوف: تخبرك خلال دقيقة هل ما زال المتجر يقبل الطلبات، ويحسب المبلغ الصحيح، ويرفض ما يجب أن يرفضه. والسيئة بطيئة، وتفشل عشوائياً، ويتجاهلها الجميع. ويأتي Laravel بأدوات اختبار ممتازة؛ و<dfn>Pest</dfn>، إطار اختبار مبني على PHPUnit، يجعلها تُقرأ كأنها جمل.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>عملت مرة على مشروع فيه ألفا اختبار تستغرق أربعين دقيقة وتفشل عشوائياً نحو مرة في اليوم. لم يعد أحد يصدّق بناءً أحمر، فخرجت أخطاء حقيقية مع الضجيج. حذفنا ثلث الاختبارات، وجعلنا الباقي يستخدم قاعدة بيانات حقيقية كما يجب، فنزلت المجموعة تحت ثلاث دقائق. وصارت تلتقط أخطاء أكثر باختبارات أقل.</p></div></div>
+
+<h2><span class="sec">13.1</span> <span>ماذا تختبر، وفي أي مستوى</span></h2>
+
+<ul>
+<li><dfn>اختبارات الوحدة</dfn> (unit tests) تنادي صنفاً أو دالة واحدة مباشرة، بلا قاعدة بيانات ولا HTTP ولا ساعة. سريعة وتشير مباشرة إلى السطر المكسور. وتناسب المنطق ذا الحالات الكثيرة: الأسعار، والخصومات، والقواعد، وتغيّرات الحالة.</li>
+<li><dfn>اختبارات الميزات</dfn> (feature tests) ترسل طلباً عبر Laravel كله (التوجيه، والوسطاء، والتحقق، والمتحكم، وقاعدة البيانات) وتفحص الرد وآثاره. وهنا مكان أغلب اختبارات تطبيق Laravel، لأن أغلب أخطائه تعيش في الاستعلامات وقواعد التحقق والتفويض.</li>
+<li><dfn>اختبارات الطرف إلى الطرف</dfn> تقود التطبيق الحقيقي من الخارج، كثيراً عبر متصفح (Laravel Dusk، أو Playwright من الكتاب الثاني). أبقِها للرحلات القليلة التي يجب ألا تنكسر أبداً.</li>
+</ul>
+
+<p>اختبر كل سلوك في أدنى مستوى يظهر فيه خطأ فيه فعلاً. فاختبار وحدة بقاعدة بيانات وهمية لا يستطيع التقاط <code>where</code> خاطئة؛ واختبار الميزة يستطيع.</p>
+
+<h2><span class="sec">13.2</span> <span>Pest</span></h2>
+
+<p>يأتي هيكل Laravel بأصناف اختبار PHPUnit. وPest تنفذ الاختبارات نفسها، مكتوبة دوالَّ:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تثبيت Pest وتهيئته</span>
+<span class="c">$ </span><span class="k">composer require --dev -W pestphp/pest pestphp/pest-plugin-laravel</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest --init</span>
+   INFO  Preparing tests directory.
+  tests/Pest.php ............................................... File created.  </pre></div>
+
+<p>يقول <code>tests/Pest.php</code> أي صنف أساسي يستخدمه كل مجلد؛ فتأخذ اختبارات الميزات <code>TestCase</code> من Laravel والسمة <code>RefreshDatabase</code>. والاختبار <code>it('does something', function () { … })</code> (أو <code>test(…)</code>)، والفحوص تُكتب بـ <code>expect($value)-&gt;toBe(…)</code>، في سلسلة تُقرأ من اليسار إلى اليمين. وكل ما في PHPUnit، ومنه <code>assertStatus</code> وأخواتها في Laravel، يبقى يعمل.</p>
+
+<h2><span class="sec">13.3</span> <span>اختبارات الوحدة ومجموعات البيانات</span></h2>
+
+<p>تسعير المتجر دالة نقية: تأخذ أسطراً وكوداً وتعيد أرقاماً، ولا تلمس شيئاً آخر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Support/Pricing.php</div><pre class="code">    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> total(<span class="k">array</span> $lines, ?<span class="k">string</span> $code = <span class="k">null</span>): <span class="k">array</span>
+    {
+        $subtotal = array_sum(array_map(<span class="k">fn</span> ($l) =&gt; $l[<span class="s">&#x27;price&#x27;</span>] * $l[<span class="s">&#x27;quantity&#x27;</span>], $lines));
+        $discount = <span class="n">0</span>;
+        <span class="k">if</span> ($code !== <span class="k">null</span>) {
+            <span class="c line-bidi">// أكواد الخصم: نسبة مئوية، أو مبلغ ثابت (لا يتجاوز المجموع أبداً)</span>
+            $rule = <span class="k">self</span>::CODES[$code] ?? <span class="k">throw</span> <span class="k">new</span> InvalidArgumentException(<span class="s">&quot;كود خصم مجهول: $code&quot;</span>);
+            $discount = isset($rule[<span class="s">&#x27;percent&#x27;</span>])
+                ? (<span class="k">int</span>) round($subtotal * $rule[<span class="s">&#x27;percent&#x27;</span>] / <span class="n">100</span>)
+                : $rule[<span class="s">&#x27;amount&#x27;</span>];
+            $discount = min($discount, $subtotal);
+        }
+        <span class="c line-bidi">// ضريبة 14% على المجموع بعد الخصم، مقرَّبة إلى أقرب قرش</span>
+        <span class="c line-bidi">// التمرين 1: خطأ يُبحث عنه، يُشغَّل بـ BUG=1</span>
+        $rate = getenv(<span class="s">&#x27;BUG&#x27;</span>) ? <span class="n">15</span> : <span class="n">14</span>;
+        $vat = (<span class="k">int</span>) round(($subtotal - $discount) * $rate / <span class="n">100</span>);
+
+        <span class="k">return</span> compact(<span class="s">&#x27;subtotal&#x27;</span>, <span class="s">&#x27;discount&#x27;</span>, <span class="s">&#x27;vat&#x27;</span>) + [<span class="s">&#x27;total&#x27;</span> =&gt; $subtotal - $discount + $vat];
+    }</pre></div>
+
+<p>والحالات الكثيرة التي لا تختلف إلا في بياناتها أفضل ما تُكتب <dfn>مجموعة بيانات</dfn> (dataset): صف لكل حالة، مسمّى، وتنفذ Pest الاختبار مرة لكل صف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Unit/PricingTest.php</div><pre class="code">$lines = [[<span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">45000</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">1</span>], [<span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">6000</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">2</span>]];
+
+<span class="c line-bidi">// صف لكل حالة: إضافة حالة سطر واحد</span>
+it(<span class="s">&#x27;computes totals&#x27;</span>, <span class="k">function</span> (?<span class="k">string</span> $code, <span class="k">array</span> $expected) <span class="k">use</span> ($lines) {
+    expect(Pricing::total($lines, $code))-&gt;toMatchArray($expected);
+})-&gt;with([
+    <span class="s">&#x27;no code: subtotal plus VAT&#x27;</span> =&gt; [<span class="k">null</span>, [<span class="s">&#x27;discount&#x27;</span> =&gt; <span class="n">0</span>, <span class="s">&#x27;vat&#x27;</span> =&gt; <span class="n">7980</span>, <span class="s">&#x27;total&#x27;</span> =&gt; <span class="n">64980</span>]],
+    <span class="s">&#x27;SAVE10 takes 10% off&#x27;</span> =&gt; [<span class="s">&#x27;SAVE10&#x27;</span>, [<span class="s">&#x27;discount&#x27;</span> =&gt; <span class="n">5700</span>, <span class="s">&#x27;vat&#x27;</span> =&gt; <span class="n">7182</span>, <span class="s">&#x27;total&#x27;</span> =&gt; <span class="n">58482</span>]],
+    <span class="s">&#x27;FIXED50 takes 50 pounds off&#x27;</span> =&gt; [<span class="s">&#x27;FIXED50&#x27;</span>, [<span class="s">&#x27;discount&#x27;</span> =&gt; <span class="n">5000</span>, <span class="s">&#x27;vat&#x27;</span> =&gt; <span class="n">7280</span>, <span class="s">&#x27;total&#x27;</span> =&gt; <span class="n">59280</span>]],
+]);
+
+it(<span class="s">&#x27;never lets a fixed discount go below zero&#x27;</span>, <span class="k">function</span> () {
+    expect(Pricing::total([[<span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">3000</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">1</span>]], <span class="s">&#x27;FIXED50&#x27;</span>))
+        -&gt;toBe([<span class="s">&#x27;subtotal&#x27;</span> =&gt; <span class="n">3000</span>, <span class="s">&#x27;discount&#x27;</span> =&gt; <span class="n">3000</span>, <span class="s">&#x27;vat&#x27;</span> =&gt; <span class="n">0</span>, <span class="s">&#x27;total&#x27;</span> =&gt; <span class="n">0</span>]);
+});
+
+it(<span class="s">&#x27;refuses an unknown code&#x27;</span>, <span class="k">function</span> () {
+    Pricing::total([[<span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">3000</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; <span class="n">1</span>]], <span class="s">&#x27;FREE&#x27;</span>);
+})-&gt;throws(InvalidArgumentException::<span class="k">class</span>, <span class="s">&#x27;FREE&#x27;</span>);</pre></div>
+
+<ul>
+<li>كل اسم يقول السلوك، لا الدالة: «never lets a fixed discount go below zero» تُقرأ كقاعدة من قواعد المتجر، وهي ما تراه حين يفشل.</li>
+<li><code>toMatchArray</code> تفحص المفاتيح المهمة للحالة وتتجاهل الباقي؛ و<code>toBe</code> تفحص المصفوفة كلها حين تكون المصفوفة كلها هي المقصود.</li>
+<li>حالات الخطأ اختبارات أيضاً: <code>-&gt;throws()</code> تفحص صنف الاستثناء وأن رسالته تسمّي الكود.</li>
+</ul>
+
+<h2><span class="sec">13.4</span> <span>اختبارات الميزات بقاعدة بيانات حقيقية</span></h2>
+
+<p>مسار الطلب ينقص المخزون ويُدخل الطلب في معاملة، ثم يرسل مهمة تأكيد بعد التثبيت (الفصل 11):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> store(Request $request): JsonResponse
+    {
+        $data = $request-&gt;validate([
+            <span class="s">&#x27;email&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;email&#x27;</span>],
+            <span class="s">&#x27;product_id&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>],
+            <span class="s">&#x27;quantity&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:1&#x27;</span>, <span class="s">&#x27;max:99&#x27;</span>],
+            <span class="s">&#x27;code&#x27;</span> =&gt; [<span class="s">&#x27;nullable&#x27;</span>, <span class="s">&#x27;string&#x27;</span>],
+        ]);
+        $order = DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($data) {
+            $taken = DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $data[<span class="s">&#x27;product_id&#x27;</span>])
+                -&gt;where(<span class="s">&#x27;stock&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $data[<span class="s">&#x27;quantity&#x27;</span>])-&gt;decrement(<span class="s">&#x27;stock&#x27;</span>, $data[<span class="s">&#x27;quantity&#x27;</span>]);
+            <span class="k">if</span> ($taken === <span class="n">0</span>) {
+                <span class="k">return</span> <span class="k">null</span>;
+            }
+            $price = DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $data[<span class="s">&#x27;product_id&#x27;</span>])-&gt;value(<span class="s">&#x27;price&#x27;</span>);
+            $sum = Pricing::total([[<span class="s">&#x27;price&#x27;</span> =&gt; $price, <span class="s">&#x27;quantity&#x27;</span> =&gt; $data[<span class="s">&#x27;quantity&#x27;</span>]]], $data[<span class="s">&#x27;code&#x27;</span>] ?? <span class="k">null</span>);
+            $id = DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;insertGetId([<span class="s">&#x27;email&#x27;</span> =&gt; $data[<span class="s">&#x27;email&#x27;</span>], <span class="s">&#x27;total&#x27;</span> =&gt; $sum[<span class="s">&#x27;total&#x27;</span>]]);
+
+            <span class="k">return</span> [<span class="s">&#x27;id&#x27;</span> =&gt; $id, <span class="s">&#x27;total&#x27;</span> =&gt; $sum[<span class="s">&#x27;total&#x27;</span>]];
+        });
+        abort_if($order === <span class="k">null</span>, <span class="n">409</span>, <span class="s">&#x27;المخزون لا يكفي&#x27;</span>);
+        SendOrderConfirmation::dispatch($order[<span class="s">&#x27;id&#x27;</span>])-&gt;afterCommit();
+
+        <span class="k">return</span> response()-&gt;json($order, <span class="n">201</span>);
+    }</pre></div>
+
+<p>هيكل Laravel يشغّل الاختبارات على قاعدة SQLite في الذاكرة. وهي سريعة، لكنها ليست قاعدة البيانات التي يعمل عليها المتجر: PostgreSQL تتصرف بشكل مختلف في الأنواع، والأقفال، وحساسية الأحرف، ودوال كثيرة. وفي <code>phpunit.xml</code>، تشير الاختبارات إلى قاعدة PostgreSQL منفصلة، <code>shop_test</code>، فلا تمس بيانات التطوير أبداً. و<code>RefreshDatabase</code> تُرحّلها مرة وتلف كل اختبار في معاملة تُتراجع بعده، فيبدأ كل اختبار نظيفاً وسريعاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/OrdersTest.php</div><pre class="code">beforeEach(<span class="k">function</span> () {
+    DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;insert([<span class="s">&#x27;id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;Kit&#x27;</span>, <span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">45000</span>, <span class="s">&#x27;stock&#x27;</span> =&gt; <span class="n">3</span>]);
+    <span class="c line-bidi">// الطابور وهمي: تُسجَّل المهام بدل دفعها إلى Redis</span>
+    Queue::fake();
+});
+
+<span class="k">function</span> order(<span class="k">int</span> $quantity)
+{
+    <span class="k">return</span> test()-&gt;postJson(<span class="s">&#x27;/api/orders&#x27;</span>, [
+        <span class="s">&#x27;email&#x27;</span> =&gt; <span class="s">&#x27;sara@example.com&#x27;</span>, <span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity, <span class="s">&#x27;code&#x27;</span> =&gt; <span class="s">&#x27;SAVE10&#x27;</span>,
+    ]);
+}
+
+it(<span class="s">&#x27;creates an order and queues one confirmation&#x27;</span>, <span class="k">function</span> () {
+    order(<span class="n">2</span>)-&gt;assertCreated()-&gt;assertExactJson([<span class="s">&#x27;id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;total&#x27;</span> =&gt; <span class="n">92340</span>]);
+
+    expect(DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;value(<span class="s">&#x27;stock&#x27;</span>))-&gt;toBe(<span class="n">1</span>);
+    Queue::assertPushed(SendOrderConfirmation::<span class="k">class</span>, <span class="k">fn</span> ($job) =&gt; $job-&gt;orderId === <span class="n">1</span>);
+    Queue::assertPushed(SendOrderConfirmation::<span class="k">class</span>, <span class="n">1</span>);
+});
+
+it(<span class="s">&#x27;refuses an order larger than the stock, and changes nothing&#x27;</span>, <span class="k">function</span> () {
+    order(<span class="n">4</span>)-&gt;assertConflict();
+
+    expect(DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;count())-&gt;toBe(<span class="n">0</span>);
+    expect(DB::table(<span class="s">&#x27;products&#x27;</span>)-&gt;value(<span class="s">&#x27;stock&#x27;</span>))-&gt;toBe(<span class="n">3</span>);
+    Queue::assertNothingPushed();
+});
+
+it(<span class="s">&#x27;refuses a body without a quantity&#x27;</span>, <span class="k">function</span> () {
+    $<span class="k">this</span>-&gt;postJson(<span class="s">&#x27;/api/orders&#x27;</span>, [<span class="s">&#x27;email&#x27;</span> =&gt; <span class="s">&#x27;sara@example.com&#x27;</span>, <span class="s">&#x27;product_id&#x27;</span> =&gt; <span class="n">1</span>])
+        -&gt;assertUnprocessable()
+        -&gt;assertJsonValidationErrors(<span class="s">&#x27;quantity&#x27;</span>);
+});</pre></div>
+
+<ul>
+<li><strong>فحص الآثار، لا الرد وحده.</strong> الاختبار الأول يفحص الحالة والجسم، والمخزون الباقي في قاعدة البيانات، والمهمة الموضوعة في الطابور؛ والثاني يفحص أن الطلب المرفوض ترك المخزون والطلبات كما هي، وهذه معاملة الفصل 7 تؤدي عملها.</li>
+<li><strong>بدائل وهمية عند الأطراف.</strong> <code>Queue::fake()</code> تسجّل المهام بدل دفعها إلى Redis، و<code>Queue::assertPushed</code> تفحصها، بدالة للتفاصيل. ولـ Laravel مثلها لـ <code>Mail</code> و<code>Notification</code> و<code>Event</code> و<code>Bus</code> و<code>Storage</code> و<code>Http</code> (التي توهّم الاستدعاءات إلى خدمات أخرى). وكل بديل يستبدل شيئاً بطيئاً أو له آثار خارج النظام.</li>
+<li><strong>الرفض يُختبر أيضاً.</strong> 409، و422 مع تسمية الحقل، وفي مجموعة حقيقية 401 و403 من الفصل 9.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: وهّم الأطراف، لا الوسط</p><p>وهّم ما هو بطيء، أو خارج سيطرتك، أو له آثار في العالم: البريد، والطوابير، ومزوّدو الدفع، وAPIs شركات أخرى، والساعة. ولا تُوهّم نماذجك، ولا قاعدة البيانات، ولا Eloquent نفسه: فالاختبارات المليئة بالبدائل الوهمية تنجح والشيء الحقيقي مكسور، وتنكسر كلما أُعيد ترتيب الكود حتى لو لم يكن فيه خطأ. وإن احتاج اختبار عشرة بدائل وهمية، فالكود المختبَر غالباً يفعل أكثر من اللازم.</p></aside>
+
+<h2><span class="sec">13.5</span> <span>التحكم في الوقت</span></h2>
+
+<p>السلة المتروكة 30 دقيقة تُحرَّر. واختبار ذلك بالانتظار عبث، واختباره بالساعة الحقيقية هش. وتستطيع اختبارات Laravel تحريك ساعة التطبيق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/BasketsTest.php</div><pre class="code">it(<span class="s">&#x27;keeps a basket touched 29 minutes ago&#x27;</span>, <span class="k">function</span> () {
+    $touched = now();
+    <span class="c line-bidi">// حرّك ساعة التطبيق بدل انتظار 30 دقيقة</span>
+    $<span class="k">this</span>-&gt;travel(<span class="n">29</span>)-&gt;minutes();
+    expect(Baskets::isExpired($touched))-&gt;toBeFalse();
+});
+
+it(<span class="s">&#x27;releases a basket left for 30 minutes&#x27;</span>, <span class="k">function</span> () {
+    $touched = now();
+    $<span class="k">this</span>-&gt;travel(<span class="n">30</span>)-&gt;minutes();
+    expect(Baskets::isExpired($touched))-&gt;toBeTrue();
+});</pre></div>
+
+<p><code>$this-&gt;travel(30)-&gt;minutes()</code> تقدّم <code>now()</code>، وتعود الساعة طبيعية بعد كل اختبار؛ و<code>$this-&gt;freezeTime()</code> توقفها. والاختباران يفحصان جانبي الحد، 29 و30 دقيقة، حيث تعيش أخطاء الفرق بواحد. وهذا يعمل لأن الكود يسأل <code>now()</code> عن الوقت بدل <code>time()</code> في PHP.</p>
+
+<h2><span class="sec">13.6</span> <span>اختبارات البنية</span></h2>
+
+<p>بعض القواعد عن الكود نفسه: لا <code>dd()</code> منسية، والمتحكمات تُسمّى <code>…Controller</code>، والنماذج ترث <code>Model</code>، ولا <code>env()</code> خارج الإعدادات. وتفحصها Pest كأي اختبار آخر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Unit/ArchTest.php</div><pre class="code">arch(<span class="s">&#x27;leaves no debugging calls in the code&#x27;</span>)
+    -&gt;expect([<span class="s">&#x27;dd&#x27;</span>, <span class="s">&#x27;dump&#x27;</span>, <span class="s">&#x27;ray&#x27;</span>, <span class="s">&#x27;var_dump&#x27;</span>])
+    -&gt;not-&gt;toBeUsed();
+
+arch()-&gt;preset()-&gt;laravel();</pre></div>
+
+<p>والإعداد المسبق <code>laravel</code> يجمع أعراف Laravel. وهذه الاختبارات تُفشل البناء يوم يودع أحد استدعاء تصحيح أو يكسر عرفاً، بدل تركه لعين مراجع.</p>
+
+<h2><span class="sec">13.7</span> <span>تشغيل الاختبارات وقراءتها</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># كل الاختبارات</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest</span>
+
+   PASS  Tests\Unit\ArchTest
+  ✓ leaves no debugging calls in the code
+  ✓ preset → laravel
+
+   PASS  Tests\Unit\PricingTest
+  ✓ it computes totals with dataset &quot;no code: subtotal plus VAT&quot;
+  ✓ it computes totals with dataset &quot;SAVE10 takes 10% off&quot;
+  ✓ it computes totals with dataset &quot;FIXED50 takes 50 pounds off&quot;
+  ✓ it never lets a fixed discount go below zero
+  ✓ it refuses an unknown code
+
+   PASS  Tests\Feature\BasketsTest
+  ✓ it keeps a basket touched 29 minutes ago
+  ✓ it releases a basket left for 30 minutes
+
+   PASS  Tests\Feature\OrdersTest
+  ✓ it creates an order and queues one confirmation
+  ✓ it refuses an order larger than the stock, and changes nothing
+  ✓ it refuses a body without a quantity
+
+  Tests:    12 passed (78 assertions)
+  Duration: …</pre></div>
+
+<p>اثنا عشر اختباراً، من قواعد عن الكود إلى طلبات في PostgreSQL. وأثناء العمل على جزء، شغّل الاختبارات التي يطابقها الاسم وحدها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الاختبارات التي يطابقها الاسم وحدها</span>
+<span class="c">$ </span><span class="k">./vendor/bin/pest --filter=basket</span>
+
+   PASS  Tests\Feature\BasketsTest
+  ✓ it keeps a basket touched 29 minutes ago
+  ✓ it releases a basket left for 30 minutes
+
+  Tests:    2 passed (2 assertions)
+  Duration:</pre></div>
+
+<p>والاختبار لا يفيد إلا إن أخبرك فشله بما هو خطأ. وهنا شُغّل خطأ، فصارت نسبة الضريبة خاطئة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># اختبار يفشل</span>
+<span class="c">$ </span><span class="k">BUG=1 ./vendor/bin/pest tests/Unit</span>
+   FAILED  Tests\Unit\PricingTest &gt; it computes totals with dataset &quot;no code…   
+  Failed asserting that an array has a key &#x27;vat&#x27; with the value 8550.
+Failed asserting that 8550 matches expected 7980.
+
+  at tests/Unit/PricingTest.php:9
+      5▕ $lines = [[&#x27;price&#x27; =&gt; 45000, &#x27;quantity&#x27; =&gt; 1], [&#x27;price&#x27; =&gt; 6000, &#x27;quantity&#x27; =&gt; 2]];
+      6▕ 
+      7▕ // صف لكل حالة: إضافة حالة سطر واحد
+      8▕ it(&#x27;computes totals&#x27;, function (?string $code, array $expected) use ($lines) {
+  ➜   9▕     expect(Pricing::total($lines, $code))-&gt;toMatchArray($expected);
+     10▕ })-&gt;with([
+     11▕     &#x27;no code: subtotal plus VAT&#x27; =&gt; [null, [&#x27;discount&#x27; =&gt; 0, &#x27;vat&#x27; =&gt; 7980, &#x27;total&#x27; =&gt; 64980]],
+     12▕     &#x27;SAVE10 takes 10% off&#x27; =&gt; [&#x27;SAVE10&#x27;, [&#x27;discount&#x27; =&gt; 5700, &#x27;vat&#x27; =&gt; 7182, &#x27;total&#x27; =&gt; 58482]],
+     13▕     &#x27;FIXED50 takes 50 pounds off&#x27; =&gt; [&#x27;FIXED50&#x27;, [&#x27;discount&#x27; =&gt; 5000, &#x27;vat&#x27; =&gt; 7280, &#x27;total&#x27; =&gt; 59280]],</pre></div>
+
+<p>يسمّي المخرج صف مجموعة البيانات الذي انكسر، والمفتاح المختلف (<code>vat</code>: 8550 بدل 7980)، والكود حول السطر الفاشل. وهذا يكفي للشك في النسبة دون فتح مصحّح. والأسماء الجيدة والتوقعات المركّزة هي ما يجعل الإخفاقات مقروءة هكذا.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا تستخدم الاختبارات قاعدة اختبار PostgreSQL بدل SQLite في الذاكرة؟</li><li>ماذا تغيّر <code>Queue::fake()</code>، ولماذا تُستخدم هنا ولا تُستخدم قاعدة بيانات وهمية؟</li><li>ماذا تفعل <code>RefreshDatabase</code> بين اختبارين؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">13.8</span> <span>مجموعة جديرة بالثقة</span></h2>
+
+<ul>
+<li><strong>سريعة.</strong> المجموعة التي تعمل في ثوانٍ تُشغَّل قبل كل إيداع. ومعاملات <code>RefreshDatabase</code> تُبقي اختبارات الميزات سريعة؛ و<code>pest --parallel</code> تشغّل الملفات في عدة عمليات، لكل منها نسختها من قاعدة الاختبار.</li>
+<li><strong>حتمية.</strong> الكود نفسه يعطي النتيجة نفسها في كل مرة. والاختبارات المتقلبة تأتي عادة من بيانات مشتركة، أو الساعة الحقيقية، أو قيم عشوائية، أو نتائج بلا <code>orderBy</code>، أو عمل بقي يعمل. أصلحها في الحال، أو احذفها: فالاختبار المتقلب يعلّم الفريق تجاهل الأحمر.</li>
+<li><strong>تختبر السلوك.</strong> تحقق مما يراه المنادي (الردود، والصفوف، والمهام، والبريد)، لا كيف رُتّب الكود في داخله. فيمكن تحسين الكود دون إعادة كتابة الاختبارات.</li>
+<li><strong>مقيسة.</strong> <code>pest --coverage</code> (مع إضافة PCOV أو Xdebug) تبيّن الكود غير المختبر؛ استخدمها مصباحاً لتجد الثغرات، لا رقماً تطارده أبداً. فاختبار بلا توقعات يبلغ 100% أيضاً.</li>
+<li><strong>تعمل مع كل تغيير.</strong> في CI، مع كل طلب دمج، مقابل PostgreSQL حقيقية تُشغَّل خدمةً، والدمج ممنوع ما دامت حمراء.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اختبار فاشل أولاً، لكل خطأ</p><p>قبل إصلاح خطأ، أعد إنتاجه باختبار وراقب الاختبار يفشل للسبب الصحيح. ثم أصلح الكود وراقبه ينجح. يستغرق ذلك دقائق، وكثيراً ما يكشف أن الخطأ ليس حيث ظننت، ويضيف إلى المجموعة بالضبط الحالة التي أثبتت الحياة الحقيقية أنك فوّتها.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>الاختبار على SQLite والتشغيل على PostgreSQL</td><td>استعلامات تنجح في الاختبارات وتفشل في الإنتاج</td><td>قاعدة اختبار PostgreSQL</td></tr>
+<tr><td>الاختبارات على قاعدة التطوير</td><td><code>RefreshDatabase</code> تمسح بياناتك</td><td><code>shop_test</code> منفصلة في <code>phpunit.xml</code></td></tr>
+<tr><td>توهيم النماذج وقاعدة البيانات</td><td>استعلامات خاطئة تنجح في الاختبارات</td><td>اختبارات ميزات مقابل قاعدة البيانات الحقيقية</td></tr>
+<tr><td>بلا بدائل للطوابير والبريد وHTTP</td><td>اختبارات بطيئة، وبريد حقيقي، واستدعاءات لخدمات حقيقية</td><td><code>Queue::fake</code> و<code>Mail::fake</code> و<code>Http::fake</code></td></tr>
+<tr><td><code>time()</code> أو <code>sleep()</code> في الكود والاختبارات</td><td>اختبارات بطيئة ومتقلبة</td><td><code>now()</code> في الكود، و<code>travel()</code> في الاختبارات</td></tr>
+<tr><td>المسار السعيد وحده</td><td>الرفض والأخطاء تنكسر دون أن يلاحظ أحد</td><td>اختبارات لكل «لا» ولكل خطأ</td></tr>
+<tr><td>أسماء مبهمة واختبارات ضخمة</td><td>إخفاقات لا تقول شيئاً</td><td>سلوك واحد لكل اختبار، مسمّى كقاعدة</td></tr>
+<tr><td>التعايش مع الاختبارات المتقلبة</td><td>لا أحد يثق ببناء أحمر</td><td>أصلحها أو احذفها في الحال</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>اختبارات الوحدة</strong> للمنطق ذي الحالات الكثيرة، و<strong>اختبارات الميزات</strong> للمسارات والتحقق والاستعلامات، وقليل من <strong>اختبارات الطرف إلى الطرف</strong> للرحلات الرئيسية.</li>
+<li><strong>Pest</strong> تكتب الاختبارات دوالَّ بسلاسل <code>expect()</code>، و<strong>مجموعات البيانات</strong> تنفذ اختباراً لكل حالة.</li>
+<li>تعمل اختبارات الميزات على <strong>قاعدة اختبار PostgreSQL حقيقية</strong>؛ و<strong><code>RefreshDatabase</code></strong> تُبقي كل اختبار مستقلاً.</li>
+<li><strong>البدائل الوهمية</strong> تستبدل الأطراف (الطوابير، والبريد، وHTTP، والأحداث)؛ و<strong><code>travel()</code></strong> تتحكم في الوقت.</li>
+<li><strong>اختبارات البنية</strong> تفرض قواعد عن الكود؛ والإخفاقات تسمّي السلوك وتبيّن الفرق.</li>
+<li>المجموعة <strong>السريعة الحتمية</strong>، التي تعمل مع كل تغيير، هي ما يجعل الاختبارات جديرة بالثقة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. المتجر يعمل على PostgreSQL، التي تختلف عن SQLite في أنواع الأعمدة، والمقارنات الحساسة للأحرف، والأقفال، ودوال JSON والتواريخ؛ فقد ينجح استعلام أو ترحيل على SQLite ويفشل في الإنتاج. والاختبار على قاعدة البيانات نفسها يزيل هذه الفئة كلها من المفاجآت. 2. تُسجَّل المهام المرسلة في الذاكرة بدل دفعها إلى Redis وتنفيذها، فيستطيع الاختبار التحقق من المهام المرسلة بلا طابور ولا عامل. والطابور طرف له آثار في مكان آخر؛ أما قاعدة البيانات فهي حيث تعيش الأخطاء التي تستحق الالتقاط، فتبقى حقيقية. 3. تشغّل الترحيلات مرة للتشغيل كله، ثم تبدأ معاملة قبل كل اختبار وتتراجع عنها بعده، فيرى كل اختبار قاعدة البيانات نفسها فارغة ومُرحَّلة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يحسّن اختبارات تطبيق من الفصول السابقة. شغّل كل مجموعة عشر مرات متتالية على الأقل لتثبت أنها حتمية.</p>
+
+<div class="project">
+<p class="project-label">المشروع 13.1 · سهل</p>
+<h3>غطِّ قواعد التسعير</h3>
+<p class="project-goal">وسّع صنف التسعير ومجموعة بياناته معاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مجموعات البيانات، وقيم الحدود، وكتابة الاختبار قبل الكود.</p>
+<ol class="steps">
+<li>أضف قاعدة: الطلبات فوق 1000 جنيه قبل الخصم شحنها مجاني، والباقي يدفع 40 جنيهاً. اكتب صفوف مجموعة البيانات أولاً، ومنها 1000 بالضبط.</li>
+<li>أضف أكواداً تنتهي في تاريخ، واختبرها بـ <code>travel</code> على جانبي التاريخ.</li>
+<li>أضف اختبار بنية يُبقي <code>App\Support</code> خالية من واجهة <code>DB</code>، فيبقى التسعير نقياً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>arch()-&gt;expect('App\Support')-&gt;not-&gt;toUse('Illuminate\Support\Facades\DB')</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 13.2 · متوسط</p>
+<h3>اختبارات ميزات لـ API المتجر</h3>
+<p class="project-goal">أعطِ API الفصول 4 إلى 9 مجموعة ميزات كاملة على PostgreSQL.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المصانع، وSanctum في الاختبارات، واختبار الرفض، والتشغيل المتوازي.</p>
+<ol class="steps">
+<li>استخدم مصانع النماذج بحالات (<code>Order::factory()-&gt;paid()</code>) لبيانات الاختبار.</li>
+<li>لكل مسار، اختبر النجاح، وأخطاء التحقق، و401، و403 أو 404، وحالات 409؛ واستخدم <code>Sanctum::actingAs</code> حيث لا يكون الدخول نفسه هو المقصود.</li>
+<li>شغّل المجموعة بـ <code>pest --parallel</code>، واجعلها تنجح عشر مرات متتالية.</li>
+<li>شغّلها في CI مقابل PostgreSQL تُشغَّل خدمةً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التشغيل المتوازي ينشئ قاعدة بيانات لكل عملية (<code>shop_test_test_1</code>…)؛ ومستخدم قاعدة البيانات يحتاج صلاحية إنشائها.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 13.3 · تحدٍّ</p>
+<h3>اختبار المهام والتكاملات</h3>
+<p class="project-goal">اختبر مهام الطابور من الفصل 11 واستدعاءً لخدمة خارجية، بلا Redis ولا بريد ولا شبكة حقيقية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تنفيذ المهام مباشرة، و<code>Mail::fake</code>، و<code>Http::fake</code>، واختبار الإعادات والإخفاقات.</p>
+<ol class="steps">
+<li>نادِ دالة <code>handle</code> في المهمة مباشرة في اختبار، مع <code>Mail::fake()</code>، وتحقق من البريد المرسل.</li>
+<li>اختبر أن تنفيذها مرتين للطلب نفسه يرسل بريداً واحداً.</li>
+<li>أضف استدعاءً لـ API شركة توصيل بـ <code>Http::post</code>، ووهّم أجوبتها: نجاح، و500 (يجب أن ترمي المهمة خطأً فتُعاد)، و422 (يجب أن تفشل المهمة نهائياً).</li>
+<li>تحقق بـ <code>Http::assertSent</code> أن الطلب حمل البيانات الصحيحة ومفتاح عدم تكرار.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>Http::preventStrayRequests()</code> تجعل أي طلب لم يُوهَّم يُفشل الاختبار، فلا يصل شيء إلى الإنترنت الحقيقي بالخطأ.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> شغّل اختبارات الوحدة مع <code>BUG=1</code>. أي الاختبارات تفشل، وأيها ينجح، وماذا يخبرك ذلك عن مكان الخطأ؟</li>
+<li><span class="level">سهل</span> لماذا يقرأ <code>Pricing</code> مفتاح الخطأ بـ <code>getenv()</code> لا <code>env()</code>، بالنظر إلى نصيحة الفصل 10؟</li>
+<li><span class="level medium">متوسط</span> اختبار لزميل يفشل نحو مرة في عشرين تشغيلاً بـ «توقعت طلبين، وجاء 3». اسرد ثلاثة أسباب محتملة وكيف تعرف أيها هو.</li>
+<li><span class="level medium">متوسط</span> المتحكم يرسل المهمة بـ <code>afterCommit()</code>. اكتب اختباراً يثبت أن لا مهمة تُرسل حين يُرفض الطلب، واشرح لماذا يحتاج <code>Queue::fake()</code> مع معاملة <code>RefreshDatabase</code> حذراً هنا.</li>
+<li><span class="level hard">تحدٍّ</span> صمّم اختبارات «يُلغى الطلب تلقائياً إن لم يُدفع خلال 15 دقيقة»: أي المستويات، وأي البدائل، وكيف تتحكم في الوقت في كل منها.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 14</p>
+<p>الاختبارات تثبت أن الكود يعمل قبل أن يُشحن؛ والإنتاج يحتاج دليلاً على أنه يبقى يعمل. قابلية الملاحظة: سجلات منظمة، ومقاييس، وتتبعات، وتنبيهات تخبرك بما هو خطأ قبل أن يخبرك الزبائن.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6543,6 +6938,16 @@ Access-Control-Max-Age: 0</pre></div>
 });</pre></div>
 وبلا مستخدم داخل، تجيب <code>/broadcasting/auth</code> بـ 403 قبل أن تعمل القاعدة، كما يبيّن التشغيل في القسم 12.5، ويرفض Reverb اشتراكاً بلا توقيع صالح.</li>
 <li>العميل: أعد الاتصال بعد تأخير عشوائي يكبر مع كل محاولة فاشلة، لا في الحال (عميل Pusher في Echo يتراجع أصلاً؛ تأكد ألا يُلغى ذلك)، وبعد إعادة الاتصال حمّل الحالة الحالية بطلب واحد. والخادم: أعد تشغيل Reverb بالتدريج حين تعمل عدة عمليات (واحدة بعد واحدة، فلا يعيد الاتصال إلا جزء من العملاء معاً)، وارفع حد الملفات المفتوحة وطابور القبول، وحدّ الاتصالات الجديدة في الثانية عند موازن الحمل، واجعل مسار إعادة الاتصال رخيصاً: تفويض القنوات سريع (بلا استعلامات ثقيلة في القواعد)، والحالة الأولى تُقدَّم من ذاكرة مؤقتة.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 13</h2>
+<ol class="exercises">
+<li>تفشل صفوف مجموعة البيانات الثلاثة وينجح الاختباران الآخران (الفشل معروض في القسم 13.7). والصفوف هي بالضبط الحالات التي تُفرض فيها الضريبة على مبلغ موجب؛ وحالة الخصم الثابت لم يبقَ فيها ما يُضرب، والكود المجهول يرمي خطأً قبل حساب الضريبة. فالخطأ في خطوة الضريبة، لا في الخصومات ولا الأكواد، والفرق (8550 بدل 7980، أي 15% بدل 14% من 57000) يشير إلى النسبة. فالاختبارات الجيدة تضيّق مكان الخطأ بأيها يفشل.</li>
+<li>بعد <code>php artisan config:cache</code>، تعيد <code>env()</code> خارج <code>config/</code> القيمة <code>null</code>، فمفتاح يُقرأ بـ <code>env()</code> في كود التطبيق سيتوقف عن العمل بصمت في الإنتاج. و<code>getenv()</code> تقرأ بيئة العملية مباشرة. والدرس الحقيقي أن مثل هذا المفتاح لا مكان له في كود الإنتاج أصلاً؛ إنه موجود هنا للتمرين وحده. والمفتاح الحقيقي لميزة يكون قيمة إعداد، تُقرأ بـ <code>config()</code>.</li>
+<li>(1) بيانات مشتركة: الاختبار ليس في مجلد يستخدم <code>RefreshDatabase</code>، أو يستخدم اتصالاً خارج معاملة الاختبار، فتنجو صفوف من اختبارات أخرى؛ افحص <code>tests/Pest.php</code> والاتصالات المستخدمة. (2) تشغيل متوازٍ يتشارك قاعدة بيانات واحدة: مع <code>--parallel</code> تحتاج كل عملية قاعدة بياناتها؛ افحص أسماء قواعد الاختبار. (3) عمل خارج المعاملة: مهمة في طابور أو دالة <code>DB::afterCommit</code> تعمل حقاً (لأن بديلاً وهمياً ناقص) فتنشئ الطلب الثالث؛ ابحث عن مهام وأحداث غير موهَّمة. وتشغيل الاختبار وحده بـ <code>--filter</code> مرات كثيرة، ثم مع المجموعة كلها، ثم بـ <code>--parallel</code>، يبيّن أيها هو.</li>
+<li>الاختبار «refuses an order larger than the stock, and changes nothing» يثبت ذلك أصلاً: بعد 409 ينادي <code>Queue::assertNothingPushed()</code>. والحذر في التوقيت: <code>RefreshDatabase</code> تلف الاختبار كله في معاملة لا تُثبَّت أبداً، فتنفيذ ساذج لـ <code>afterCommit</code> لن يرسل شيئاً أبداً، وسيجتاز اختبار النجاح فحص «لا شيء أُرسل» خطأً أيضاً. ويعالج Laravel ذلك: في الاختبارات يعامل معاملة الاختبار نفسها المستوى الأساسي، فتُرسل مهمة <code>afterCommit</code> حين تُثبَّت معاملة المتحكم. ولهذا يتحقق اختبار النجاح أيضاً أن مهمة واحدة بالضبط أُرسلت؛ فالاختبار الذي يفحص الرفض وحده لن يلاحظ لو توقف الإرسال كلياً.</li>
+<li>مستوى الوحدة: دالة نقية <code>isUnpaidTooLong($order, $now)</code> تُختبر بمجموعة بيانات أوقات على جانبي 15 دقيقة. ومستوى الميزات: الأمر المجدول أو المهمة التي تلغي الطلبات، تُشغَّل بـ <code>$this-&gt;artisan()</code> مقابل قاعدة اختبار PostgreSQL، بطلبات تنشئها المصانع بـ <code>created_at</code> في الماضي، أو بـ <code>$this-&gt;travel(16)-&gt;minutes()</code> بعد إنشائها؛ وتحقق أن الطلبات القديمة غير المدفوعة وحدها تُلغى ويعود مخزونها، ووهّم الإشعارات المرسلة للزبائن بـ <code>Notification::fake()</code>. والمجدول نفسه لا يحتاج اختباراً لتوقيته أبعد من التحقق أن الأمر مجدول (<code>schedule:list</code> في اختبار، أو ثق بالإطار)؛ ولا ينتظر أي اختبار 15 دقيقة حقيقية أبداً.</li>
 </ol>
 
 </section>
