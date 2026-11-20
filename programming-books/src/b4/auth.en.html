@@ -1,0 +1,206 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/auth/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Authentication Across the Stack</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide who must sign in, and who should not have to</li>
+<li>keep sessions as random tokens stored only as hashes, revocable at any time</li>
+<li>carry the same session in a cookie for the web and a bearer token for the API</li>
+<li>write one permission check, and call it on every door: pages, actions and routes</li>
+<li>keep each business’s data its own, with queries in which the condition is the permission</li>
+<li>know why a redirect in the proxy is a convenience and never the lock</li>
+</ul>
+</div>
+
+<p class="lead">At the end of the last chapter anyone could call the action that cancels a booking. Book 3 built authentication for one API; a full-stack product has more doors: pages rendered on the server, Server Actions, route handlers for the mobile app, and a proxy in front of them all. Each door must ask the same two questions, <em>who is this?</em> and <em>may they do this?</em>, and get the same answer. And Bit Booking has a new kind of rule: it serves many businesses from one database, so the owner of a salon must never see a clinic’s customers. This chapter adds all of it.</p>
+
+<aside class="bit" data-mood="think"><p>The serious leaks I have seen were not broken passwords. They were a door that someone forgot to lock: an API route added for the mobile app, without the check the web page had. One shared check, called everywhere, makes forgetting much harder.</p></aside>
+
+<h2>{{n}}.1 Who needs to be known</h2>
+
+<p>Start from the spec, not from a login screen. Bit Booking has three roles, and only two of them sign in:</p>
+<ul>
+<li><strong>Customers</strong> book without an account, as the spec promised. They manage their booking through a link in the email, which carries an unguessable token (the exercise of the last chapter). Forcing an account on them would cost bookings and protect nothing.</li>
+<li><strong>Owners</strong> see and change everything in their own business.</li>
+<li><strong>Staff</strong> see their business’s day, but cannot cancel bookings.</li>
+</ul>
+<p>Each owner and staff member belongs to exactly one <dfn>tenant</dfn>, a business. Two questions now decide every request: the <em>role</em> (what kind of action is allowed) and the <em>tenant</em> (which data it may touch). Most real breaches in products like this one come from the second question, so it gets its own section.</p>
+
+<h2>{{n}}.2 Accounts and sessions</h2>
+
+<p>Users belong to a business and have a role; sessions belong to a user and expire:</p>
+
+<pre data-code="schema.sql" data-from="CREATE TABLE users" data-to="^);#2" data-title="schema.sql"></pre>
+
+<p>Signing in is Book 3’s method: a slow scrypt hash for the password, a dummy hash for unknown emails so the response time reveals nothing, and a session token of 32 random bytes of which only the SHA-256 hash is stored:</p>
+
+<pre data-code="lib/auth.ts" data-from="export async function signIn" data-to="^}" data-title="lib/auth.ts"></pre>
+
+<p>Why a token looked up in a table, and not a signed token such as a JWT that needs no lookup? Because a session must be revocable. When an owner fires a staff member, or a phone is stolen, deleting the row ends the session at once, on every device; a signed token stays valid until it expires. One indexed lookup per request is cheap at Bit Booking’s scale (under a hundred requests a second, Chapter {{n-3}} calculated), and stateless tokens can come later, if a real number ever asks for them.</p>
+
+<h2>{{n}}.3 One session, two carriers</h2>
+
+<p>The web app keeps the token in a cookie. Three attributes do the security work:</p>
+
+<pre data-code="lib/auth.ts" data-from="export async function startWebSession" data-to="^}" data-title="lib/auth.ts"></pre>
+<pre data-code="cookie.sh" data-title="Browser"></pre>
+
+<p><code>httpOnly</code> keeps the token away from JavaScript, so a script injected into the page cannot steal it. <code>sameSite: "lax"</code> stops other websites from sending it with forms and background requests, which removes most cross-site request forgery; Next.js also compares the <code>Origin</code> header of every Server Action with the host. <code>secure</code> sends it only over HTTPS in production. A token kept in <code>localStorage</code> would have none of these protections: any script on the page could read it.</p>
+
+<p>The mobile app cannot use the browser’s cookies, so it signs in through a route handler, receives the same kind of token, and sends it as <code>Authorization: Bearer</code>. One function reads either:</p>
+
+<pre data-code="lib/auth.ts" data-from="export async function currentUser" data-to="^}#2" data-title="lib/auth.ts"></pre>
+
+<p><code>requireUser</code> is the only check in the codebase. It answers 401 when nobody is signed in and 403 when the role is wrong, and returns the user, with their business, for the next step.</p>
+
+<h2>{{n}}.4 The same check on every door</h2>
+
+<p>The owner’s page calls it before reading anything, and sends visitors without a session to the login page:</p>
+
+<pre data-code="app/owner/page.tsx" data-from="async function signedIn" data-to="const bookings" data-title="app/owner/page.tsx"></pre>
+
+<p>The cancel button posts to a Server Action, which checks <em>again</em>. It must: as the last chapter warned, an action is a public endpoint, and a page that hides the button from staff does not stop staff, or anyone, from calling the action:</p>
+
+<pre data-code="app/owner/actions.ts" data-from="export async function cancelAction" data-title="app/owner/actions.ts"></pre>
+
+<p>And the mobile app’s route does the same, through the same function, translating the outcome into Problem Details:</p>
+
+<pre data-code="app/api/owner/bookings/[id]/cancel/route.ts" data-title="app/api/owner/bookings/[id]/cancel/route.ts"></pre>
+
+<figure data-img="shots/login.png" data-url="localhost:3000/login"><figcaption><b>Figure {{n}}.1:</b> A wrong password. The message does not say whether the email exists.</figcaption></figure>
+
+<figure data-img="shots/owner.png" data-url="localhost:3000/owner"><figcaption><b>Figure {{n}}.2:</b> The owner’s page after signing in: her business’s bookings only, one already cancelled.</figcaption></figure>
+
+<h2>{{n}}.5 Tenants: the condition is the permission</h2>
+
+<p>Checking the role is not enough. The owner of Bit Hair Studio <em>is</em> an owner, so <code>requireUser(["owner"])</code> lets her through; what stops her from cancelling Nour Clinic’s bookings? Not a separate check that someone might forget, but the query itself:</p>
+
+<pre data-code="lib/owner.ts" data-from="export async function bookingsFor" data-title="lib/owner.ts"></pre>
+
+<p>Every query that touches a business’s data takes the <code>user</code> and filters by <code>user.business_id</code>. A booking of another business simply matches no row. Notice the answer: the API says <em>not found</em>, not <em>forbidden</em>. Saying “forbidden” would confirm that booking 2 exists, which is already a leak in a product where ids are sequential.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>The owner page already redirects staff away from the cancel button. Why must <code>cancelAction</code> still call <code>requireUser(["owner"])</code>?</li><li>Why does cancelling another business’s booking answer 404 rather than 403?</li><li>Give one advantage of sessions stored in a table over signed tokens such as JWTs, and one cost.</li></ol></aside>
+
+<h2>{{n}}.6 The proxy is not the lock</h2>
+
+<p>Next.js can run code before every request, in <code>proxy.ts</code> (called middleware before Next.js 16). It is the natural place to send visitors without a session to the login page:</p>
+
+<pre data-code="proxy.ts" data-title="proxy.ts"></pre>
+
+<p>Notice what it checks: only that a cookie <em>named</em> <code>session</code> exists. It does not look the token up, because that would cost a database query on every request. Anyone can set a cookie with that name. The proxy is a convenience for honest visitors; the lock is <code>requireUser</code>, in the page, the action and the route. This is not a theoretical distinction. In 2025 a flaw in Next.js (CVE-2025-29927) let one request header skip middleware entirely, and applications that checked permissions <em>only</em> there were wide open, while those that checked in their pages and data layer lost nothing.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: layouts are not a lock either</p><p>A check in <code>app/owner/layout.tsx</code> looks like it protects every page below it, but layouts are not re-run on every navigation, and Server Actions and route handlers do not go through them at all. Put the check next to the data: in the function that reads or changes it, or in the first line of every page, action and route that uses it.</p></aside>
+
+<h2>{{n}}.7 Proving it</h2>
+
+<p>With the app running, each rule can be checked from the terminal. Without a session, the page redirects and the API answers 401:</p>
+
+<pre data-code="api.sh" data-from="^# #1" data-to="&quot;status&quot;:401}" data-title="Terminal"></pre>
+
+<p>The salon’s owner and a staff member sign in through the API. The owner sees only her business’s bookings; the clinic’s booking is “not found”; the staff member may not cancel; the owner may:</p>
+
+<pre data-code="api.sh" data-from="^# #2" data-to="&quot;cancelled&quot;:true}" data-title="Terminal"></pre>
+
+<p>And in the database, only the owner’s own booking changed, and the sessions table holds hashes, useless to anyone who steals it:</p>
+
+<pre data-code="api.sh" data-from="^# #7" data-title="Terminal"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit: test the matrix, not the happy path</p><p>For every protected operation, write the table: nobody, staff, owner of this business, owner of another business; and for each, the expected answer. Then turn the table into tests. Authorization bugs hide in the cells nobody tried, almost always “the right role, the wrong tenant”. The transcript above is that table, run by hand; the third practice project automates it.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Checks only in the proxy or a layout</td><td>Actions, routes and bypasses skip them</td><td>Check in every page, action and route, next to the data</td></tr>
+<tr><td>A check per door, written by hand</td><td>One door is forgotten</td><td>One <code>requireUser</code>, called everywhere</td></tr>
+<tr><td>Role checked, tenant not</td><td>One business reads another’s customers</td><td>Every query filtered by the user’s business</td></tr>
+<tr><td>403 for other tenants’ ids</td><td>Confirms what exists</td><td>404, as for anything not found</td></tr>
+<tr><td>Session tokens stored as they are</td><td>A leaked table opens every account</td><td>Store only a hash</td></tr>
+<tr><td>Tokens in <code>localStorage</code></td><td>Any injected script can steal them</td><td><code>httpOnly</code>, <code>sameSite</code>, <code>secure</code> cookies</td></tr>
+<tr><td>Hiding buttons instead of refusing actions</td><td>The action still works for anyone</td><td>Refuse in the action; hide only for comfort</td></tr>
+<tr><td>Accounts forced on customers</td><td>Fewer bookings, no security gained</td><td>Sign-in only for those who need it</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Decide from the spec <strong>who signs in</strong>; customers manage bookings with an unguessable link instead.</li>
+<li>Sessions are <strong>random tokens stored as hashes</strong>, in a table, so they can be <strong>revoked</strong> at once.</li>
+<li>The web carries the token in an <strong>httpOnly, sameSite, secure cookie</strong>; the API as a <strong>bearer</strong> token; one function reads either.</li>
+<li><strong>One check</strong>, <code>requireUser</code>, guards every <strong>page, Server Action and route</strong>: 401 for nobody, 403 for the wrong role.</li>
+<li><strong>Tenancy</strong> lives in the queries: filter by the user’s business, and answer <strong>404</strong> for anything outside it.</li>
+<li>The <strong>proxy</strong> only redirects; never rely on it, or on layouts, as the lock.</li>
+<li>Test <strong>every role against every tenant</strong>, not only the happy path.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because hiding the button only changes what the page shows. The action is an HTTP endpoint that anyone can call with any id, including a staff member who copies the request from the owner’s browser, or a script. The check must sit where the change happens. 2. Because 403 tells the caller “this exists, but not for you”, which confirms that booking 2 exists and lets someone map another business’s activity by trying ids. 404 is the same answer as for an id that never existed, so it reveals nothing. 3. Advantage: a session in a table can be ended immediately (sign-out everywhere, a fired employee, a stolen phone) by deleting its row; a signed token stays valid until it expires. Cost: one database lookup per request, and a shared session store when there are several servers.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project hardens Bit Booking’s identity layer. Every change must keep the transcript of section {{n}}.7 true, in the browser and through the API.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Sign out, here and everywhere</h3>
+<p class="project-goal">Add “sign out” and “sign out of every device” for owners and staff.</p>
+<p class="project-skills"><strong>You will practise:</strong> revoking sessions, cookies, and Server Actions with checks.</p>
+<ol class="steps">
+<li>Write <code>signOut()</code> in <code>lib/auth.ts</code>: delete the current session’s row and the cookie.</li>
+<li>Write <code>signOutEverywhere(user)</code>: delete all of the user’s sessions.</li>
+<li>Add both as buttons on the owner page, each through a Server Action.</li>
+<li>Check that a bearer token from the API stops working after “everywhere”.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> deleting the cookie alone signs out one browser; deleting the row is what makes the token worthless.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>The customer’s private link</h3>
+<p class="project-goal">Let customers view and cancel their own booking from the link in their email, without an account.</p>
+<p class="project-skills"><strong>You will practise:</strong> capability tokens, hashing, and rules that depend on time.</p>
+<ol class="steps">
+<li>When a booking is made, create 32 random bytes, store their SHA-256 hash in <code>bookings.manage_token_hash</code>, and build the link <code>/manage/&lt;token&gt;</code>.</li>
+<li>The manage page finds the booking by the token’s hash and shows only its time, staff member and status.</li>
+<li>Allow cancelling up to 2 hours before, in <code>lib/</code>, in one conditional update.</li>
+<li>Test that a wrong or old token shows a generic “link not valid” page.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the token is a password for one booking: never log it, never put it in analytics, and compare only hashes.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>The authorization matrix, automated</h3>
+<p class="project-goal">Generate tests for every protected operation against every kind of caller.</p>
+<p class="project-skills"><strong>You will practise:</strong> table-driven tests, tenancy, and a second line of defence in the database.</p>
+<ol class="steps">
+<li>Write the matrix as data: operations (list, cancel) × callers (nobody, staff, owner, other owner) → expected status.</li>
+<li>Generate one test per cell against the API, and run them in CI.</li>
+<li>Add PostgreSQL row-level security on <code>bookings</code>, keyed by a <code>SET app.business_id</code> per request, as a second line behind the queries.</li>
+<li>Prove that the policy holds even if a developer forgets the <code>WHERE</code> in a new query.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> row-level security does not apply to the table’s owner by default; connect as a separate role, or use <code>FORCE ROW LEVEL SECURITY</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, say who may do it in Bit Booking, and what the API answers to everyone else: see today’s bookings; cancel a booking; book a slot; change a staff member’s name.</li>
+<li><span class="level">Easy</span> A colleague proposes storing the session token in <code>localStorage</code> “so the mobile web app can read it”. What risk does that add, and what would you do instead?</li>
+<li><span class="level">Medium</span> The proxy checks only that a cookie named <code>session</code> exists. Write the request an attacker would send to reach <code>/owner</code> past the proxy, and explain why it still fails.</li>
+<li><span class="level">Medium</span> A new route lists customers’ emails for a marketing export. Write it with the same patterns as this chapter, and list the checks it needs.</li>
+<li><span class="level">Challenge</span> A business wants two owners, and staff who work for two businesses. Change the schema and <code>requireUser</code>, and explain how the queries learn which business the request is for.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Signed-in owners can now run their day. The next chapter connects Bit Booking to the outside world: payments for deposits, emails that arrive, and files that upload safely.</p>
+</div>
+</section>
