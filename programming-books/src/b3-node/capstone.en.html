@@ -98,7 +98,7 @@
 
 <pre data-code="src/orders.ts" data-from="const result" data-to="let total = 0;" data-title="src/orders.ts"></pre>
 
-<p>The unique constraint does the hard work. If two copies of the same request arrive together, the second <code>INSERT</code> waits for the first transaction, then finds the key taken and returns that order. No lock in the code, no race: the database already guarantees it. If the key comes back with a <em>different</em> body, the client has a bug, and saying so is better than guessing.</p>
+<p>The unique constraint does the hard work. If two copies of the same request arrive together, the second <code>INSERT</code> waits for the first transaction, then finds the key taken and returns that order. No lock in the code, no race: the database already guarantees it. If the key comes back with a <em>different</em> body, the client has a bug, and saying so is better than guessing. (The <code>refine</code> on the body refuses the same product twice in one order, which the table’s primary key would refuse less politely, with a 500.)</p>
 
 <p>Then each line takes its stock with the conditional update of Chapter {{n-11}}. If any line is short, the error rolls the whole transaction back: the order row, the lines already taken and the claimed key all disappear, so the client may fix the order and retry with the same key:</p>
 

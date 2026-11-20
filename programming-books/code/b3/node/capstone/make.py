@@ -47,7 +47,7 @@ T = {
         w_m_none="Not found", w_m_stock="Not enough stock", w_m_stock_d="Product {id} has {stock} left.",
         w_m_unknown="Unknown product", w_m_reused="Idempotency-Key reused",
         w_m_reused_d="This key was used with a different body.", w_m_server="Server error",
-        w_m_cursor="invalid cursor",
+        w_m_cursor="invalid cursor", w_m_twice="each product at most once",
         w_t_order="places an order once, however many times the same key is sent",
         w_t_reused="refuses a key reused with another body",
         w_t_stock="takes no stock when one line is short",
@@ -89,7 +89,7 @@ T = {
         w_m_none="غير موجود", w_m_stock="المخزون لا يكفي", w_m_stock_d="بقي من المنتج {id}: {stock}.",
         w_m_unknown="منتج مجهول", w_m_reused="مفتاح Idempotency-Key مستعمل",
         w_m_reused_d="استُعمل هذا المفتاح بجسم مختلف.", w_m_server="خطأ في الخادم",
-        w_m_cursor="مؤشر غير صالح",
+        w_m_cursor="مؤشر غير صالح", w_m_twice="كل منتج مرة واحدة على الأكثر",
         w_t_order="places an order once, however many times the same key is sent",
         w_t_reused="refuses a key reused with another body",
         w_t_stock="takes no stock when one line is short",
@@ -467,7 +467,10 @@ const Body = z.strictObject({
       }),
     )
     .min(1)
-    .max(20),
+    .max(20)
+    .refine((items) => new Set(items.map((i) => i.product_id)).size === items.length, {
+      error: "{w_m_twice}",
+    }),
 });
 
 export const orderRoutes =

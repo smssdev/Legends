@@ -19,7 +19,7 @@ $ docker compose logs app
 $ docker compose down -v
 Container shop-app-1 Removed 
 Container shop-worker-1 Removed 
-Container shop-redis-1 Removed 
 Container shop-db-1 Removed 
+Container shop-redis-1 Removed 
 Network shop_default Removed 
 Volume shop_db-data Removed 

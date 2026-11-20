@@ -14,7 +14,13 @@ const Body = z.strictObject({
       }),
     )
     .min(1)
-    .max(20),
+    .max(20)
+    .refine(
+      (items) => new Set(items.map((i) => i.product_id)).size === items.length,
+      {
+        error: "كل منتج مرة واحدة على الأكثر",
+      },
+    ),
 });
 
 export const orderRoutes =

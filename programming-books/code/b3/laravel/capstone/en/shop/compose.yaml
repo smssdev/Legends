@@ -1,0 +1,61 @@
+name: shop
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: shop
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "shop", "-d", "shop"]
+      interval: 2s
+      retries: 15
+
+  redis:
+    image: redis:8
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 15
+
+  app:
+    build: .
+    image: shop-api
+    ports:
+      - "8080:80"
+    environment: &env
+      APP_ENV: production
+      APP_DEBUG: "false"
+      # read from the .env file next to this one, which never goes into the image
+      APP_KEY: ${APP_KEY:?APP_KEY is not set}
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_DATABASE: shop
+      DB_USERNAME: shop
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_CLIENT: predis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: database
+      LOG_CHANNEL: stderr
+      LOG_STDERR_FORMATTER: Monolog\Formatter\JsonFormatter
+    depends_on: &ready
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: shop-api
+    command: ["php", "artisan", "queue:work", "--sleep=1"]
+    environment: *env
+    depends_on: *ready
+    # the worker serves no HTTP, so the image's health check does not apply
+    healthcheck:
+      disable: true
+
+volumes:
+  db-data:
