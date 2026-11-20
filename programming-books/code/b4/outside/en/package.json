@@ -1,0 +1,10 @@
+{
+  "name": "bit-booking-outside",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file=.env src/server.ts",
+    "provider": "node --env-file=.env provider.ts",
+    "mailer": "node --env-file=.env src/mailer.ts"
+  }
+}
