@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: الأمان: أخطر عشر ثغرات (OWASP) في Laravel"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "الفصل 11: الطوابير والمهام والمجدول"; } }
+@page ch11:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -5701,6 +5703,344 @@ No security vulnerability advisories found.</pre></div>
 <p>بعض العمل لا ينبغي أن يحدث والزبون ينتظر: البريد، والتقارير، وتصغير الصور. الطوابير والمهام: إنجاز العمل لاحقاً، وإعادته بأمان، وعدم فقدانه أبداً.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b3/laravel/queues/ar">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">الفصل 11</p><h1>الطوابير والمهام</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقرر أي عمل مكانه الطلب وأيه مكانه مهمة في طابور</li>
+<li>تكتب المهام، وترسلها إلى طابور Redis، وتنفذها بـ <code>queue:work</code></li>
+<li>تعيد المهام الفاشلة بوقفات متزايدة، وتتوقف عن الإعادة حين لا فائدة منها</li>
+<li>تجعل المهام آمنة إن نُفذت مرتين، وتمنع وضع المهمة نفسها في الطابور مرتين</li>
+<li>ترسل إلى الطابور بعد تثبيت قاعدة البيانات وحده، وتجدول عملاً لأوقات محددة</li>
+<li>تشغّل العمّال وتراقبهم في الإنتاج</li>
+</ul>
+</div>
+
+<p class="lead">حين يطلب زبون طلباً، على المتجر أكثر من حفظه: إرسال بريد تأكيد، وإخطار المستودع، وتحديث تقرير المبيعات، وربما تصغير صور مراجعة. فإن فعل الطلب ذلك كله، انتظر الزبون أبطأ خدمة في السلسلة، وحين تمر بمزوّد البريد دقيقة سيئة، يفشل الطلب مع أن الطلب نفسه كان سليماً. والجواب أن تنجز في الطلب الجزء الضروري وحده، وتكتب الباقي <dfn>مهامَّ</dfn> (jobs)، وتدع عمليات منفصلة تنجزها بعد لحظة. والطوابير مبنية في Laravel؛ وهذا الفصل يشغّلها على Redis من الفصل 8، فعلاً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كان متجرنا الأول يرسل بريده داخل طلب الشراء. وذات مساء جمعة تباطأ مزوّد البريد إلى عشر ثوانٍ لكل رسالة، فصار الدفع يستغرق عشر ثوانٍ أيضاً. فضغط الزبائن «ادفع» مرة أخرى، ودُفع على بعضهم مرتين. ونقل البريد إلى طابور استغرق عصراً واحداً؛ وكان سيوفر علينا ذلك الأسبوع كله.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>ما مكانه مهمة</span></h2>
+
+<p>ينبغي أن يفعل الطلب ما يعتمد عليه الرد، ولا شيء أكثر. وكل ما عدا ذلك مرشّح لأن يكون مهمة:</p>
+<ul>
+<li><strong>العمل البطيء</strong>: إرسال البريد والإشعارات، وتوليد ملفات PDF والتقارير، وتصغير الصور، واستدعاء APIs بطيئة لشركاء.</li>
+<li><strong>العمل غير الموثوق</strong>: كل ما يكلم خدمة أخرى، ستتعطل أحياناً وتحتاج إعادة.</li>
+<li><strong>العمل في وقت لاحق</strong>: «ذكّر الزبون بعد 24 ساعة إن بقيت السلة ممتلئة»، و«تقرير المبيعات اليومي في السادسة صباحاً».</li>
+<li><strong>العمل الثقيل</strong>: الاستيراد والتصدير لآلاف الصفوف، الذي سيعطل عامل PHP دقائق.</li>
+</ul>
+
+<p>و<dfn>الطابور</dfn> (queue) يصل بين الجانبين. فطلب الويب <dfn>يرسل</dfn> (dispatch) مهمة (صنفاً وبياناته) إلى الطابور ويجيب في الحال. و<dfn>العامل</dfn> (worker)، الأمر طويل العمر <code>php artisan queue:work</code>، يأخذ المهام من الطابور وينفذها. وRedis يحفظ الطابور، فتنجو المهام من إعادة تشغيل أي من الجانبين، وتستطيع تشغيل عمّال بقدر ما يحتاج العمل. وثلاثة إعدادات في <code>.env</code> تختار الخلفيات: <code>QUEUE_CONNECTION=redis</code> و<code>CACHE_STORE=redis</code> و<code>REDIS_CLIENT=predis</code> (بعد <code>composer require predis/predis</code>، أو ثبّت إضافة <code>phpredis</code> الأسرع بدلاً منها).</p>
+
+<h2><span class="sec">11.2</span> <span>مهمة وعامل</span></h2>
+
+<p>المهمة صنف فيه دالة <code>handle</code>؛ و<code>php artisan make:job SendOrderConfirmation</code> تنشئ واحدة. وتطبيق <code>ShouldQueue</code> هو ما يرسلها إلى الطابور بدل تنفيذها في الحال:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Jobs/SendOrderConfirmation.php</div><pre class="code"><span class="k">class</span> SendOrderConfirmation <span class="k">implements</span> ShouldBeUnique, ShouldQueue
+{
+    <span class="k">use</span> Queueable;
+
+    <span class="c line-bidi">// حتى 3 محاولات، بانتظار ثانية ثم ثانيتين بينها</span>
+    <span class="k">public</span> <span class="k">int</span> $tries = <span class="n">3</span>;
+
+    <span class="k">public</span> <span class="k">array</span> $backoff = [<span class="n">1</span>, <span class="n">2</span>];
+
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">public</span> <span class="k">int</span> $orderId) {}
+
+    <span class="c line-bidi">// مهمة واحدة لكل طلب: إرسال الطلب نفسه مرة أخرى وهو ينتظر لا يفعل شيئاً</span>
+    <span class="k">public</span> <span class="k">function</span> uniqueId(): <span class="k">string</span>
+    {
+        <span class="k">return</span> <span class="s">&quot;order-{$this-&gt;orderId}&quot;</span>;
+    }
+
+    <span class="c line-bidi">// العمل نفسه: يُستدعى مرة لكل محاولة</span>
+    <span class="k">public</span> <span class="k">function</span> handle(Mailer $mailer): <span class="k">void</span>
+    {
+        <span class="k">echo</span> <span class="s">&quot;  إرسال تأكيد الطلب {$this-&gt;orderId} (المحاولة {$this-&gt;attempts()})\n&quot;</span>;
+        <span class="c line-bidi">// المهمة تحمل رقم الطلب؛ والبيانات تُقرأ حين تعمل</span>
+        $email = DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $<span class="k">this</span>-&gt;orderId)-&gt;value(<span class="s">&#x27;email&#x27;</span>);
+        <span class="k">if</span> (! str_contains($email, <span class="s">&#x27;@&#x27;</span>)) {
+            <span class="c line-bidi">// عنوان لا يمكن أن ينجح أبداً: افشل الآن، بلا المحاولات الباقية</span>
+            $<span class="k">this</span>-&gt;fail(<span class="s">&quot;عنوان غير صالح: $email&quot;</span>);
+
+            <span class="k">return</span>;
+        }
+        $mailer-&gt;send($<span class="k">this</span>-&gt;orderId, $email);
+    }
+
+    <span class="c line-bidi">// يُستدعى مرة، بعد آخر محاولة: أخبر أحداً</span>
+    <span class="k">public</span> <span class="k">function</span> failed(?Throwable $error): <span class="k">void</span>
+    {
+        Log::error(<span class="s">&quot;توقفنا عن تأكيد الطلب {$this-&gt;orderId}&quot;</span>, [<span class="s">&#x27;reason&#x27;</span> =&gt; $error?-&gt;getMessage()]);
+    }
+}</pre></div>
+
+<ul>
+<li>خصائص الباني هي بيانات المهمة، تُسلسَل في الطابور. والمهمة لا تحمل إلا رقم الطلب، و<code>handle</code> تقرأ الطلب حين تعمل، فترى دائماً البيانات الحالية.</li>
+<li>تستطيع <code>handle</code> أن تطلب خدمات، كـ <code>Mailer</code>، فيمررها الحاوي، تماماً كما في المتحكم.</li>
+<li><code>$tries</code> و<code>$backoff</code> تقرران كيف تُعاد الإخفاقات؛ و<code>failed()</code> تعمل مرة، بعد آخر محاولة.</li>
+</ul>
+
+<p>و«خدمة البريد» بديل فيه أيام سيئة مبنية: الطلب 1003 يفشل مرتين قبل أن ينجح. وتعدّ المحاولات في الذاكرة المؤقتة، فترى كل عملية عاملة العدد نفسه. (وعنوان الطلب 1004 في قاعدة البيانات بلا <code>@</code>، وهذا ما تكتشفه المهمة نفسها.)</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Support/Mailer.php</div><pre class="code"><span class="k">class</span> Mailer
+{
+    <span class="k">public</span> <span class="k">function</span> send(<span class="k">int</span> $orderId, <span class="k">string</span> $email): <span class="k">void</span>
+    {
+        usleep(300_000);
+        <span class="c line-bidi">// يُعدّ في الذاكرة المؤقتة، فترى كل عملية عاملة الرقم نفسه</span>
+        $attempt = Cache::increment(<span class="s">&quot;mail-attempts:$orderId&quot;</span>);
+        <span class="c line-bidi">// خدمة بريد تفشل أول مرتين للطلب 1003</span>
+        <span class="k">if</span> ($orderId === <span class="n">1003</span> &amp;&amp; $attempt &lt;= <span class="n">2</span>) {
+            <span class="k">throw</span> <span class="k">new</span> RuntimeException(<span class="s">&#x27;خدمة البريد غير متاحة&#x27;</span>);
+        }
+    }
+}</pre></div>
+
+<p>وأمر Artisan يؤدي دور المتجر. يرسل إلى الطابور داخل معاملة، كما يفعل مسار طلب، ويضع الطلب 1001 مرتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:dispatch&#x27;</span>, <span class="k">function</span> () {
+    <span class="k">foreach</span> ([<span class="n">1001</span>, <span class="n">1002</span>, <span class="n">1003</span>, <span class="n">1004</span>, <span class="n">1001</span>] <span class="k">as</span> $orderId) {
+        $start = hrtime(<span class="k">true</span>);
+        DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($orderId) {
+            <span class="c line-bidi">// ... the order is saved here ...</span>
+            <span class="c line-bidi">// يُرسل إلى الطابور فقط إن ثُبّتت المعاملة</span>
+            SendOrderConfirmation::dispatch($orderId)-&gt;afterCommit();
+        });
+        $ms = number_format((hrtime(<span class="k">true</span>) - $start) / 1e6, <span class="n">1</span>);
+        $<span class="k">this</span>-&gt;line(<span class="s">&quot;order $orderId: في الطابور خلال $ms ms&quot;</span>);
+    }
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المتجر يرسل أربعة تأكيدات إلى الطابور (وواحداً مرتين)</span>
+<span class="c">$ </span><span class="k">php artisan shop:dispatch</span>
+order 1001: في الطابور خلال 20.3 ms
+order 1002: في الطابور خلال 1.2 ms
+order 1003: في الطابور خلال 0.9 ms
+order 1004: في الطابور خلال 0.9 ms
+order 1001: في الطابور خلال 0.6 ms
+<span class="c line-bidi"># لا أحد يعمل بعد: المهام تنتظر في Redis</span>
+<span class="c">$ </span><span class="k">php artisan queue:monitor redis:default --no-ansi</span>
+
+  Queue name ................................................... Size / Status  
+  [redis] default ..................................................... [4] OK  
+  Pending jobs ............................................................. 4  
+  Delayed jobs ............................................................. 0  
+  Reserved jobs ............................................................ 0  
+  Oldest pending job ........................................... 0 seconds ago  </pre></div>
+
+<p>استغرق الإرسال إلى الطابور نحو مللي ثانية (دفعت الأولى ثمن فتح الاتصال)، فيبقى طلب الشراء سريعاً أياً كان ما تفعله خدمة البريد. وأُرسل الطلب 1001 مرتين، لكن الطابور يحمل أربع مهام: <code>ShouldBeUnique</code> تأخذ قفلاً في الذاكرة المؤقتة اسمه من <code>uniqueId()</code>، وما دامت مهمة بهذا الرقم تنتظر، يُسقط الإرسال الثاني. ولا عامل يعمل بعد، فالمهام تنتظر ببساطة في Redis. والآن عامل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عامل يبدأ وينجزها (ويتوقف بعد 6 ثوانٍ، لهذا العرض)</span>
+<span class="c">$ </span><span class="k">php artisan queue:work --max-time=6</span>
+  13:32:39 App\Jobs\SendOrderConfirmation … RUNNING
+  إرسال تأكيد الطلب 1001 (المحاولة 1)
+  13:32:39 App\Jobs\SendOrderConfirmation … 318.20ms DONE
+  13:32:39 App\Jobs\SendOrderConfirmation … RUNNING
+  إرسال تأكيد الطلب 1002 (المحاولة 1)
+  13:32:40 App\Jobs\SendOrderConfirmation … 303.44ms DONE
+  13:32:40 App\Jobs\SendOrderConfirmation … RUNNING
+  إرسال تأكيد الطلب 1003 (المحاولة 1)
+  13:32:40 App\Jobs\SendOrderConfirmation … 304.26ms FAIL
+  13:32:40 App\Jobs\SendOrderConfirmation … RUNNING
+  إرسال تأكيد الطلب 1004 (المحاولة 1)
+  13:32:40 App\Jobs\SendOrderConfirmation … 2.34ms FAIL
+  13:32:41 App\Jobs\SendOrderConfirmation … RUNNING
+  إرسال تأكيد الطلب 1003 (المحاولة 2)
+  13:32:41 App\Jobs\SendOrderConfirmation … 302.74ms FAIL
+  13:32:43 App\Jobs\SendOrderConfirmation … RUNNING
+  إرسال تأكيد الطلب 1003 (المحاولة 3)
+  13:32:43 App\Jobs\SendOrderConfirmation … 302.81ms DONE
+  13:32:45 Worker STOPPED Maximum run time exceeded</pre></div>
+
+<p>اقرأ الأوقات. أُرسل الطلبان 1001 و1002 في 0.3 ثانية لكل منهما. وفشل الطلب 1003، وعاد بعد ثانية، وفشل مرة أخرى، وعاد بعد ثانيتين، وأُرسل في محاولته الثالثة، دون أن يفعل أحد شيئاً. وفشل الطلب 1004 في الحال ولم يُعَد. والعامل الواحد ينفذ مهمة واحدة في كل مرة؛ شغّل عدة عمليات <code>queue:work</code> لأكثر من ذلك معاً.</p>
+
+<h2><span class="sec">11.3</span> <span>الإعادة والفشل</span></h2>
+
+<p>الإعادة هي ما يجعل المهام موثوقة، وخصائص المهمة تقرر كيف:</p>
+<ul>
+<li><code>$tries = 3</code> تسمح بثلاث محاولات إجمالاً (أو <code>--tries</code> على العامل لكل المهام).</li>
+<li><code>$backoff = [1, 2]</code> تنتظر ثانية قبل المحاولة الثانية وثانيتين قبل الثالثة. والوقفات المتزايدة تعطي الخدمة المتعثرة وقتاً لتتعافى، بدل ضربها مرة أخرى في الحال بكل مهمة في الطابور. وفي الأنظمة الحقيقية تكون الانتظارات أطول، مثل <code>[10, 60, 300]</code>.</li>
+<li>بعض الأخطاء لن تزول أبداً: عنوان غير صالح، أو طلب لم يعد موجوداً. و<code>$this-&gt;fail()</code> تنهي المهمة في الحال، متخطية المحاولات الباقية، كما يبيّن الطلب 1004. وللأخطاء التي يمكن إعادتها، ارمِ استثناءً ببساطة.</li>
+</ul>
+
+<p>والمهمة التي تنفد محاولاتها لا تضيع. بل تُحفظ في جدول <code>failed_jobs</code> باستثنائها، وتعمل دالتها <code>failed()</code> (وهي هنا تكتب في السجل):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما بقي في جدول المهام الفاشلة</span>
+<span class="c">$ </span><span class="k">php artisan queue:failed</span>
+
+  2026-11-20 13:32:40 …  redis@default App\Jobs\SendOrderConfirmation  
+<span class="c">$ </span><span class="k">psql shop -c &quot;SELECT substring(exception from &#x27;: (.*?) in &#x27;) AS reason FROM failed_jobs&quot;</span>
+                reason                
+--------------------------------------
+ عنوان غير صالح: karim-at-example.com
+(1 row)</pre></div>
+
+<p>وفي الإنتاج، المهام الفاشلة إشارة: عُدّها ونبّه حين تكبر (الفصل 14). وبعد إصلاح السبب، تعيدها <code>php artisan queue:retry</code> إلى الطابور (التمرين 4)؛ وتحذفها <code>queue:forget</code> و<code>queue:flush</code>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: قد تُنفذ المهمة مرتين</p><p>تَعِد الطوابير أن تُنفذ المهمة مرة <em>على الأقل</em>، لا مرة واحدة بالضبط. فقد يُقتل العامل بعد إرسال البريد وقبل أن يخبر Redis بانتهاء المهمة؛ وبعد <code>retry_after</code> ثانية (في <code>config/queue.php</code>) تُعطى المهمة لعامل مرة أخرى. ويجب أن تكون كل مهمة <dfn>غير متأثرة بالتكرار</dfn> (idempotent): تنفيذها مرتين أثره كتنفيذها مرة. افحص قبل الفعل («هل عُلّم تأكيد الطلب 1001 مُرسلاً من قبل؟»)، وأعطِ مزوّد البريد مفتاح عدم تكرار، وغيّر قاعدة البيانات بشروط، كما في الفصل 7. ويجب أيضاً أن يكون <code>retry_after</code> أطول من أبطأ مهامك، وإلا بدأت مهمة ما زالت تعمل مرة ثانية.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>المهام وقاعدة البيانات</span></h2>
+
+<p>الطلب يُحفظ في PostgreSQL والمهمة في Redis، ولا يمكن أن تتشاركا معاملة. والإرسال داخل المعاملة فيه ثغرتان: إن تراجعت، فقد يرسل العامل تأكيداً لطلب غير موجود؛ وقد يعمل العامل قبل التثبيت فلا يجد الطلب. و<code>-&gt;afterCommit()</code> على الإرسال، أو <code>'after_commit' =&gt; true</code> للاتصال كله في <code>config/queue.php</code>، تحبس المهمة حتى تُثبَّت المعاملة، وتسقطها إن تراجعت.</p>
+
+<p>وتبقى ثغرة واحدة: إن ماتت العملية بين التثبيت والإرسال، فالطلب موجود ولا يُرسل تأكيده أبداً. وللبريد هذا مقبول عادة ويسهل إصلاحه بفحص مجدول («طلبات أقدم من عشر دقائق بلا تأكيد مُرسل»). وحين لا يكون مقبولاً، استخدم <dfn>صندوق الصادر</dfn> من الفصل 7: أدخل الرسالة في جدول <code>outbox</code> في معاملة الطلب نفسها، ودع أمراً مجدولاً ينقل صفوف الصندوق إلى الطابور. وعادتان أخريان تُبقيان المهام والبيانات متوافقة:</p>
+<ul>
+<li><strong>ضع الأرقام في المهام، لا البيانات.</strong> المهمة أعلاه تحمل <code>orderId</code> وتقرأ البريد حين تعمل. ومع نماذج Eloquent في الباني، يفعل سلوك <code>SerializesModels</code> في <code>Queueable</code> الشيء نفسه: يحفظ رقم النموذج ويحمّله من جديد في العامل.</li>
+<li><strong>اجعل بيانات المهمة صغيرة</strong> وخالية من الأسرار: إنها تُحفظ في Redis وفي <code>failed_jobs</code>. وطبّق <code>ShouldBeEncrypted</code> للمهام التي يجب أن تحمل بيانات شخصية.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا صار الطلب 1001 مهمة واحدة حين أُرسل إلى الطابور مرتين؟</li><li>ما الفرق بين رمي استثناء في <code>handle</code> ونداء <code>$this-&gt;fail()</code>؟</li><li>ماذا تغيّر <code>afterCommit()</code> حين تتراجع المعاملة المحيطة بالإرسال؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">11.5</span> <span>العمل المجدول</span></h2>
+
+<p>بعض المهام لا يسببها طلب بل الساعة. و<dfn>المجدول</dfn> (scheduler) في Laravel يعلن عنها في <code>routes/console.php</code>؛ وهنا تقرير المبيعات كل صباح في السادسة بتوقيت القاهرة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Schedule::job(<span class="k">new</span> SalesReport)-&gt;dailyAt(<span class="s">&#x27;06:00&#x27;</span>)-&gt;timezone(<span class="s">&#x27;Africa/Cairo&#x27;</span>);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما سينفذه المجدول</span>
+<span class="c">$ </span><span class="k">php artisan schedule:list --no-ansi</span>
+
+  0 4 * * *  App\Jobs\SalesReport ................ Next Due: 14 hours from now</pre></div>
+
+<p>تعرض القائمة تعبير cron بالمنطقة الزمنية للخادم، UTC: فـ <code>0 4 * * *</code> هي الرابعة صباحاً بتوقيت UTC، والسادسة في القاهرة. أعطِ دائماً منطقة زمنية، وإلا تحرّك التقرير ساعة مرتين في السنة. وعلى الخادم، مدخل cron واحد ينفذ <code>php artisan schedule:run</code> كل دقيقة (أو تنفذ عملية <code>php artisan schedule:work</code>)، ويقرر Laravel ما حان وقته. ومع عدة خوادم، أضف <code>-&gt;onOneServer()</code>، التي تأخذ قفلاً في الذاكرة المؤقتة المشتركة فتوضع المهمة في الطابور مرة، لا مرة لكل خادم.</p>
+
+<h2><span class="sec">11.6</span> <span>تشغيل العمّال في الإنتاج</span></h2>
+
+<p>العمّال عمليات طويلة العمر، وتحتاج العناية نفسها التي تحتاجها خوادم الويب:</p>
+<ul>
+<li><strong>مدير عمليات.</strong> Supervisor أو systemd (أو منصة الحاويات في الفصل 17) يشغّل <code>queue:work</code>، ويعيد تشغيله إن انهار، ويشغّل منه نسخاً بقدر ما تحتاج.</li>
+<li><strong>أعد التشغيل بعد كل نشر.</strong> العامل يحمّل الكود مرة ويحفظه في الذاكرة، فيبقى ينفذ الكود القديم حتى يُعاد تشغيله. و<code>php artisan queue:restart</code> تخبر كل عامل أن ينهي مهمته الحالية ويخرج، فيشغّل مدير العمليات الكود الجديد. ويحدث الشيء نفسه بلطف عند <code>SIGTERM</code>.</li>
+<li><strong>الحدود.</strong> <code>--max-jobs</code> و<code>--max-time</code> تجعلان العامل يخرج بعد مدة، فلا تكبر تسريبات الذاكرة إلى الأبد؛ و<code>$timeout</code> على المهمة تقتل مهمة عالقة.</li>
+<li><strong>طوابير مختلفة لأعمال مختلفة.</strong> <code>-&gt;onQueue('emails')</code> على الإرسال، و<code>queue:work --queue=emails,default</code>، تمنعان رسائل استعادة كلمات المرور من الانتظار خلف تصدير بطيء.</li>
+<li><strong>الرؤية.</strong> <code>php artisan queue:monitor redis:default --max=100</code> تطلق حدثاً حين يطول الطابور أكثر من اللازم؛ و<dfn>Horizon</dfn>، لوحة Laravel المجانية لطوابير Redis، تعرض الإنتاجية وأوقات الانتظار والإخفاقات، وتدير العمّال بنفسها.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: صمّم كل مهمة لتُعاد</p><p>حين تكتب مهمة، اسأل ثلاثة أسئلة قبل الكود: ماذا يحدث إن نُفذت مرتين؟ ماذا يحدث إن فشلت في منتصفها؟ ماذا يحدث إن نُفذت متأخرة ساعة؟ اكتب الأجوبة تعليقاً فوق <code>handle</code>، واجعل الكود يطابقها. فالمهام التي تصمد أمام هذه الأسئلة الثلاثة تصمد في الإنتاج.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>عمل بطيء أو غير موثوق داخل الطلب</td><td>دفع بطيء، وإخفاقات من خدمات أخرى</td><td>مهمة في طابور؛ وأجب في الحال</td></tr>
+<tr><td>مهام تتأثر بالتكرار</td><td>بريد مزدوج، ودفع مزدوج بعد إعادة</td><td>افحص أولاً، ومفاتيح عدم التكرار، وتحديثات شرطية</td></tr>
+<tr><td>بلا <code>$tries</code> ولا <code>$backoff</code></td><td>محاولة واحدة فقط، أو إعادات تضرب خدمة</td><td>محاولات محدودة بوقفات متزايدة</td></tr>
+<tr><td>إعادة أخطاء لا يمكن أن تنجح</td><td>عمل ضائع، وإخفاقات صاخبة</td><td><code>$this-&gt;fail()</code></td></tr>
+<tr><td>الإرسال داخل معاملة قد تتراجع</td><td>مهام لبيانات غير موجودة</td><td><code>afterCommit()</code>، أو صندوق صادر</td></tr>
+<tr><td>عدم إعادة تشغيل العمّال بعد النشر</td><td>الكود القديم يبقى يعمل أياماً</td><td><code>queue:restart</code> في كل نشر</td></tr>
+<tr><td><code>retry_after</code> أقصر من أبطأ مهمة</td><td>مهام تبدأ مرة ثانية وهي ما زالت تعمل</td><td><code>retry_after</code> أطول، و<code>$timeout</code></td></tr>
+<tr><td>مهام مجدولة على عدة خوادم</td><td>التقرير يُنفذ مرة لكل خادم</td><td><code>onOneServer()</code></td></tr>
+<tr><td>لا أحد ينظر في <code>failed_jobs</code></td><td>خسائر صامتة</td><td>عُدّها، ونبّه، وأعدها بعد الإصلاح</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الطلب يفعل ما يحتاجه رده؛ والعمل البطيء أو غير الموثوق أو اللاحق يصير <strong>مهمة</strong> في <strong>طابور</strong>.</li>
+<li>المهمة تطبّق <strong><code>ShouldQueue</code></strong>؛ والإرسال يستغرق مللي ثانية، و<strong><code>queue:work</code></strong> ينفذ المهام في عمليات منفصلة.</li>
+<li><strong><code>$tries</code></strong> و<strong><code>$backoff</code></strong> تجعلان المهام موثوقة؛ و<code>$this-&gt;fail()</code> توقف الإعادات بلا فائدة؛ والمهام الفاشلة تنتظر في <code>failed_jobs</code> حتى <code>queue:retry</code>.</li>
+<li>تُنفذ المهام <strong>مرة على الأقل</strong>: فاجعلها <strong>غير متأثرة بالتكرار</strong>؛ و<strong><code>ShouldBeUnique</code></strong> تُبقي مهمة واحدة لكل طلب.</li>
+<li>أرسل <strong>بعد التثبيت</strong> أو عبر <strong>صندوق صادر</strong>؛ وضع الأرقام في المهام، لا نسخ البيانات.</li>
+<li><strong>المجدول</strong> ينفذ المهام الموقوتة بمنطقة زمنية؛ والعمّال تحت إشراف، و<strong>يُعاد تشغيلهم بعد النشر</strong>، ويُراقبون.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. المهمة تطبّق <code>ShouldBeUnique</code> و<code>uniqueId()</code> تعيد <code>order-1001</code>؛ فأخذ الإرسال الأول قفلاً بهذا الاسم في الذاكرة المؤقتة، فسقط الثاني والأول ما زال ينتظر. 2. الاستثناء المرمي يُعدّ محاولة فاشلة، فتُعاد المهمة بعد التراجع حتى تنفد <code>$tries</code>؛ أما <code>fail()</code> فتعلّم المهمة فاشلة نهائياً في الحال، وتنفذ <code>failed()</code> وتحفظها في <code>failed_jobs</code>، بلا محاولات أخرى. 3. تُحبس المهمة حتى تُثبَّت المعاملة؛ فإن تراجعت، لا توضع المهمة في الطابور أبداً، فلا يخرج تأكيد لطلب لم يُحفظ قط.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع ينقل عملاً حقيقياً من المتجر إلى الخلفية. ولكل منها، بيّن ما يحدث حين يفشل العمل.</p>
+
+<div class="project">
+<p class="project-label">المشروع 11.1 · سهل</p>
+<h3>التأكيدات من متحكم الطلبات</h3>
+<p class="project-goal">أرسل تأكيداً إلى الطابور من متحكم الطلبات الحقيقي في الفصل 4، وأرسله بـ Mailable.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الإرسال بعد التثبيت، وصنف Mailable، ومشغّل البريد log، والمهام غير المتأثرة بالتكرار.</p>
+<ol class="steps">
+<li>أنشئ Mailable بـ <code>php artisan make:mail OrderConfirmed</code>، واضبط <code>MAIL_MAILER=log</code> فيذهب البريد إلى السجل.</li>
+<li>أرسل مهمة بالنموذج <code>Order</code> بعد تثبيت معاملة الطلب.</li>
+<li>أضف عمود <code>confirmation_sent_at</code>؛ وتتخطى المهمة الطلبات التي لها قيمة فيه وتضبطه بعد الإرسال.</li>
+<li>نفّذ المهمة مرتين للطلب نفسه في اختبار، وتحقق أن بريداً واحداً أُرسل (<code>Mail::fake()</code>).</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>Mail::to($order-&gt;customer)-&gt;queue(new OrderConfirmed($order))</code> تضع Mailable في الطابور بلا كتابة صنف مهمة، لكن عندها لا يبقى مكان لفحص عدم التكرار.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 11.2 · متوسط</p>
+<h3>تذكير بالسلال المتروكة</h3>
+<p class="project-goal">ذكّر الزبائن بسلة ممتلئة بعد 24 ساعة، إلا إن طلبوا في الأثناء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المهام المؤجلة، والمهام الفريدة، وفحص الحالة الحالية حين تعمل المهمة.</p>
+<ol class="steps">
+<li>حين تتغير السلة، أرسل مهمة بـ <code>-&gt;delay(now()-&gt;addDay())</code>.</li>
+<li>اجعلها فريدة لكل زبون بـ <code>ShouldBeUnique</code> و<code>uniqueFor</code> بيوم، فلا تتراكم التذكيرات مع التغييرات.</li>
+<li>في <code>handle</code>، تحقق مرة أخرى أن السلة ما زالت ممتلئة وأنه لم يُطلب شيء، قبل إرسال أي شيء.</li>
+<li>اختبرها بـ <code>Queue::fake()</code> للإرسال، وبتنفيذ المهمة مباشرة للفحص.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الفحص في <code>handle</code> هو ما يجعلها صحيحة؛ والتفرد يُبقي الطابور صغيراً فقط.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 11.3 · تحدٍّ</p>
+<h3>ناقل لصندوق الصادر</h3>
+<p class="project-goal">اضمن أن كل طلب مثبّت يأخذ مهمة تأكيده، حتى لو ماتت العملية بعد التثبيت مباشرة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نمط صندوق الصادر، و<code>lockForUpdate()-&gt;skipLocked()</code>، والمجدول، والتسليم مرة على الأقل.</p>
+<ol class="steps">
+<li>في معاملة الطلب، أدخل صفاً في <code>outbox</code> (النوع، والحمولة، ووقت الإنشاء) بدل الإرسال.</li>
+<li>اكتب أمراً، مجدولاً كل دقيقة بـ <code>withoutOverlapping()</code>، يأخذ حتى 100 صف غير مُرسل بـ <code>lockForUpdate()-&gt;skipLocked()</code>، ويرسل كلاً منها، ويعلّمها مُرسلة.</li>
+<li>اجعل المهمة فريدة برقم صف الصندوق، فيعطي الصف المرسل مرتين مهمة واحدة.</li>
+<li>اقتل الأمر بعد الإرسال وقبل تعليم الصفوف مُرسلة، وشغّله مرة أخرى، وبيّن بريداً واحداً لكل طلب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>skipLocked()</code> تتيح لناقلين أن يتقاسما الصندوق بلا انتظار؛ وعلى PostgreSQL تصير <code>FOR UPDATE SKIP LOCKED</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> لكل مما يلي، قل هل مكانه الطلب أم مهمة، ولماذا: فحص المخزون قبل قبول طلب؛ وإرسال تأكيد الطلب؛ والخصم من البطاقة؛ وتوليد ملف PDF للفاتورة الشهرية.</li>
+<li><span class="level">سهل</span> مع <code>$tries = 5</code> و<code>$backoff = [10, 60, 300]</code>، بعد كم من أول فشل تبدأ كل محاولة، في أقرب تقدير؟</li>
+<li><span class="level medium">متوسط</span> عامل يرسل البريد ثم يُقتل قبل تعليم المهمة منتهية. ماذا يحدث بعدها، وماذا يجب أن تفعل المهمة كي يأخذ الزبون بريداً واحداً؟</li>
+<li><span class="level medium">متوسط</span> صُحّح عنوان الطلب 1004 في قاعدة البيانات. أعد المهمة الفاشلة، وشغّل العامل مرة أخرى.</li>
+<li><span class="level hard">تحدٍّ</span> طابور تصدير PDF يحمل أحياناً 5000 مهمة، ورسائل استعادة كلمات المرور الموضوعة خلفها تنتظر ساعة. اقترح تصميمين يُبقيان الرسائل سريعة، وقارن بينهما.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 12</p>
+<p>المهام تعمل خلف الكواليس؛ وبعض التغييرات ينبغي أن تظهر أمام المستخدم في الحال. الميزات الفورية بـ Reverb: WebSockets، وبث الأحداث، ودفع حالة الطلب إلى الشاشة لحظة تغيّرها.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -5880,6 +6220,29 @@ Access-Control-Max-Age: 0</pre></div>
 <code>204</code>: بلا جسم، إذن فقط. و<code>Access-Control-Allow-Origin</code> تسمّي موقع المتجر، فيجوز لهذا الأصل قراءة الأجوبة. و<code>Access-Control-Allow-Methods</code> تسرد <code>GET</code> و<code>PATCH</code>، من <code>config/cors.php</code>. و<code>Access-Control-Allow-Headers</code> تسمح بـ <code>content-type</code>، التي يحتاجها جسم JSON. و<code>Access-Control-Max-Age: 0</code> تخبر المتصفح ألا يتذكر الجواب؛ ورفع <code>max_age</code> في الإعداد يتيح له تخطي الطلب التمهيدي مدةً.</li>
 <li><code>{!! !!}</code> تُدخل الاسم بصفة HTML، فينشئ المتصفح صورة بمصدر غير صالح، ويعمل معالج <code>onerror</code> فيها بجلسة المدير، وتذهب أي كوكي تقرؤها السكربتات إلى المهاجم؛ وقد يتصرف السكربت أيضاً باسم المدير مباشرة. وكل دفاع يوقف جزءاً منه: <code>{{ $product-&gt;name }}</code> تُظهر الاسم نصاً (الإصلاح الحقيقي)؛ وسياسة أمان المحتوى بلا <code>'unsafe-inline'</code> ترفض المعالجات المضمّنة، و<code>connect-src</code> ترفض الطلب إلى موقع آخر؛ وكوكي الجلسة في Laravel <code>HttpOnly</code>، فلا تقرؤها السكربتات؛ والتحقق قد يرفض <code>&lt;</code> و<code>&gt;</code> في أسماء المنتجات. طبقات، لأن أياً منها قد يغيب يوماً.</li>
 <li>(1) عنوان داخلي (<code>http://localhost:6379</code>، أو <code>http://10.0.0.5/admin</code>، أو عنوان بيانات السحابة <code>http://169.254.169.254/</code>) يجعل الخادم يصل إلى خدمات غير عامة، وقد يعيد أجوبتها أو أسرارها: اسمح بـ <code>https</code> وحده، وحلّل اسم المضيف بنفسك وارفض العناوين الخاصة وعناوين الحلقة المحلية وعناوين الربط المحلي، وأطفئ إعادات التوجيه (<code>Http::withoutRedirecting()</code>) أو افحص كل قفزة بالطريقة نفسها. (2) ملف ضخم أو لا ينتهي يشغل الخادم ويملأ القرص: <code>Http::timeout()</code>، وحجم أقصى، وفحص أن المحتوى صورة حقاً. (3) عنوان لخادم بطيء يُبقي العمّال مشغولين: مهل قصيرة، والتنزيل في مهمة في الطابور (الفصل 11) لا داخل الطلب. والأفضل أن يرفع المديرون الملف بدل إعطاء عنوان.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 11</h2>
+<ol class="exercises">
+<li>فحص المخزون: في الطلب، لأن الجواب (مقبول أو مرفوض) يعتمد عليه، ويجب أن يحدث في معاملة الطلب نفسها. وبريد التأكيد: مهمة؛ فالزبون لا ينتظره، ويحتاج إعادة. والخصم من البطاقة: في الطلب عادة، لأن الزبون يحتاج أن يعرف في الحال هل نجح الدفع؛ وإن كان المزوّد بطيئاً أو يعمل بلا تزامن، يُحفظ الطلب «بانتظار الدفع» وتكمله مهمة (أو استدعاء الويب من المزوّد). وملف PDF للفاتورة الشهرية: مهمة مجدولة؛ لا أحد ينتظر، وهي ثقيلة.</li>
+<li>تفشل المحاولة الأولى في الوقت 0. وتبدأ الثانية بعد 10 ثوانٍ، والثالثة بعد 60 ثانية من ذلك (70 ث)، والرابعة والخامسة بعد 300 ثانية من سابقة كل منهما (370 ث و670 ث): فحين تكون المصفوفة أقصر من عدد الإعادات، يستمر Laravel في استخدام آخر قيمة فيها. وأضف الوقت الذي تستغرقه المحاولات نفسها.</li>
+<li>لم يعلم Redis أبداً أن المهمة انتهت، فبعد <code>retry_after</code> ثانية يحجز عامل المهمة مرة أخرى فيُرسل البريد مرة ثانية. ويجب أن تكون المهمة غير متأثرة بالتكرار: قبل الإرسال، افحص هل عُلّم التأكيد مُرسلاً (عمود <code>confirmation_sent_at</code> يُضبط بتحديث شرطي، <code>Order::whereKey($id)-&gt;whereNull('confirmation_sent_at')-&gt;update(…)</code>)، ومرّر مفتاح عدم تكرار مثل <code>order-1001-confirmation</code> إلى مزوّد البريد فيتجاهل الطلب المكرر.</li>
+<li>لأن المهمة لا تحمل إلا رقم الطلب وتقرأ البريد حين تعمل، يكفي إصلاح قاعدة البيانات؛ ثم أعد المهمة الفاشلة إلى الطابور ودع عاملاً ينفذها:
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أُصلح العنوان؛ أعد المهمة الفاشلة</span>
+<span class="c">$ </span><span class="k">psql shop -q -c &quot;UPDATE orders SET email = &#x27;karim@example.com&#x27; WHERE id = 1004&quot;</span>
+<span class="c">$ </span><span class="k">php artisan queue:retry all</span>
+
+   INFO  Pushing failed queue jobs back onto the queue.  
+
+  … ........................... 7.90ms DONE
+<span class="c">$ </span><span class="k">php artisan queue:work --max-time=6</span>
+  13:32:48 App\Jobs\SendOrderConfirmation … RUNNING
+  إرسال تأكيد الطلب 1004 (المحاولة 1)
+  13:32:48 App\Jobs\SendOrderConfirmation … 326.72ms DONE
+  13:32:54 Worker STOPPED Maximum run time exceeded</pre></div>
+ويبدأ عدّاد المحاولات من 1 مرة أخرى بعد <code>queue:retry</code>. ولو حملت المهمة البريد نفسه، لفشلت الإعادة مرة أخرى بالعنوان القديم.</li>
+<li>التصميم الأول: طوابير منفصلة، بإرسال البريد بـ <code>-&gt;onQueue('emails')</code> والتصدير بـ <code>-&gt;onQueue('exports')</code>، لكل منهما عمّاله (<code>queue:work --queue=emails</code>)، فلا ينتظر البريد خلف التصدير أبداً؛ بسيط في التفكير، ويتوسع كل طابور وحده، بثمن عمليات أكثر. والتصميم الثاني: مجموعة عمّال واحدة بترتيب للطوابير، <code>queue:work --queue=emails,exports</code>، تأخذ من <code>emails</code> أولاً دائماً؛ عمليات أقل، لكن البريد ما زال ينتظر التصدير الذي يعمل أصلاً على كل عامل. والعمّال المنفصلون الجواب الأأمن حين يكون نوع من المهام بطيئاً وآخر عاجلاً؛ وHorizon يستطيع موازنة العمليات بين الطوابير تلقائياً.</li>
 </ol>
 
 </section>
