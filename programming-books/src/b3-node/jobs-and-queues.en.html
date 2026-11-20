@@ -1,0 +1,214 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/jobs/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Background Jobs and Queues</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide which work belongs in a request and which belongs in a background job</li>
+<li>queue jobs with BullMQ and Redis, and run them in a separate worker process</li>
+<li>retry failed jobs with growing pauses, and stop retrying when it is pointless</li>
+<li>make jobs safe to run twice, and stop the same job from being queued twice</li>
+<li>schedule work for fixed times, and shut workers down without losing jobs</li>
+<li>keep queues and the database consistent with each other</li>
+</ul>
+</div>
+
+<p class="lead">When a customer places an order, the shop has more to do than save it: send a confirmation email, notify the warehouse, update a sales report, maybe resize the photos of a review. If the request does all of that, the customer waits for the slowest service in the chain, and when the mail provider has a bad minute, the order fails even though the order itself was fine. The answer is to do only the essential part in the request, write down the rest as <dfn>jobs</dfn>, and let separate processes do them a moment later. This chapter builds that with BullMQ on the Redis from Chapter {{n-3}}, and runs every part of it for real.</p>
+
+<aside class="bit" data-mood="think"><p>Our first shop sent its emails inside the order request. One Friday evening the mail provider slowed to ten seconds per email, and our checkout took ten seconds too. Customers pressed “pay” again, and some were charged twice. Moving the emails into a queue took an afternoon; it would have saved us that whole weekend.</p></aside>
+
+<h2>{{n}}.1 What belongs in a job</h2>
+
+<p>A request should do what the response depends on, and nothing more. Everything else is a candidate for a job:</p>
+<ul>
+<li><strong>Slow work</strong>: sending email and push notifications, generating PDFs and reports, resizing images, calling slow partner APIs.</li>
+<li><strong>Unreliable work</strong>: anything that talks to another service, which will sometimes be down and needs retries.</li>
+<li><strong>Work at a later time</strong>: “remind the customer in 24 hours if the basket is still full”, “the daily sales report at 6 in the morning”.</li>
+<li><strong>Heavy work</strong>: imports and exports of thousands of rows, which would block a web process for minutes.</li>
+</ul>
+
+<p>A <dfn>queue</dfn> connects the two sides. The web process is the <dfn>producer</dfn>: it adds a job (a name and some data) to the queue and answers at once. A <dfn>worker</dfn> is a separate process that takes jobs from the queue and does them. Redis keeps the queue, so jobs survive a restart of either side, and you can run as many workers as the work needs.</p>
+
+<h2>{{n}}.2 A queue and a worker</h2>
+
+<p><dfn>BullMQ</dfn> is the most widely used job queue for Node. A <code>Queue</code> object adds jobs, a <code>Worker</code> processes them, and both talk to Redis through an <code>ioredis</code> connection. The queue for order confirmations, with the options every job gets:</p>
+
+<pre data-code="src/queue.ts" data-title="src/queue.ts"></pre>
+
+<p>The order route would call <code>queueConfirmation</code> after saving the order. Here a small script plays the shop, queuing four confirmations and one of them twice:</p>
+
+<pre data-code="demos/enqueue.ts" data-title="demos/enqueue.ts"></pre>
+
+<pre data-code="enqueue.sh" data-title="Terminal"></pre>
+
+<p>Queuing took about a millisecond (the first job paid for opening the connection), so the order request stays fast whatever the mail service is doing. Order 1001 was queued twice but there are four jobs, not five: the job id <code>order-1001</code> already existed, so BullMQ kept the first one. And no worker is running yet, so the four jobs simply wait in Redis.</p>
+
+<p>The worker is its own program, started with <code>npm run worker</code>, usually on more than one machine. For each job it calls the function you give it; when the function returns, the job is done, and when it throws, the job has failed:</p>
+
+<pre data-code="src/worker.ts" data-from="const worker" data-to="^});" data-title="src/worker.ts"></pre>
+
+<p>The “mail service” is a stand-in with bad days built in: order 1003 fails twice before it works, and order 1004 has an address that can never work:</p>
+
+<pre data-code="src/mailer.ts" data-from="export async function" data-title="src/mailer.ts"></pre>
+
+<pre data-code="worker.sh" data-title="Terminal"></pre>
+
+<p>Read the times on the left. Two jobs ran at once (<code>concurrency: 2</code>), and orders 1001 and 1002 were sent in 0.3 seconds. Order 1003 failed, waited about a second, failed again, waited about two seconds, and was sent on its third attempt, without anyone doing anything. Order 1004 failed once and was given up at once.</p>
+
+<h2>{{n}}.3 Retries and failures</h2>
+
+<p>Retrying is what makes jobs reliable, and BullMQ’s options decide how:</p>
+<ul>
+<li><code>attempts: 3</code> allows three tries in total.</li>
+<li><code>backoff: exponential</code> with <code>delay: 1000</code> waits 1, 2, 4… seconds between tries. Growing pauses give a struggling service time to recover, instead of hitting it again at once with every queued job. (In real systems, add <dfn>jitter</dfn>, a little randomness, so that a thousand jobs that failed together do not all retry in the same second.)</li>
+<li>Some errors will never go away: an invalid address, an order that no longer exists. Throwing BullMQ’s <code>UnrecoverableError</code> skips the remaining attempts, as order 1004 shows.</li>
+</ul>
+
+<p>A job that runs out of attempts is not lost. It moves to the <dfn>failed</dfn> list with its reason, and stays there (for a week, by <code>removeOnFail</code>) until someone looks:</p>
+
+<pre data-code="demos/failed.ts" data-from="for" data-title="demos/failed.ts"></pre>
+
+<pre data-code="failed.sh" data-title="Terminal"></pre>
+
+<p>In production, failed jobs are a signal: count them on a dashboard and alert when they grow (Chapter {{n+3}}). After the cause is fixed, they can be retried (exercise 4). Some teams call this list a <dfn>dead-letter queue</dfn>.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: a job can run twice</p><p>Queues promise that a job runs <em>at least</em> once, not exactly once. A worker can crash after sending the email but before telling Redis the job is done; the job then runs again on another worker. Every job must be <dfn>idempotent</dfn>: running it twice has the same effect as running it once. Check before acting (“is the confirmation for order 1001 already marked as sent?”), give the mail provider an idempotency key such as <code>order-1001-confirmation</code>, and make database changes with conditions, as in Chapter {{n-4}}.</p></aside>
+
+<h2>{{n}}.4 Jobs and the database</h2>
+
+<p>The order is saved in PostgreSQL and the job in Redis, and the two cannot share a transaction. Two orders of steps are possible, and both have a gap:</p>
+<ul>
+<li><strong>Queue, then commit</strong>: if the transaction then rolls back, the worker may already be sending a confirmation for an order that does not exist. Worse, the worker may run before the commit and not find the order.</li>
+<li><strong>Commit, then queue</strong>: if the process dies between the two, the order exists and its confirmation is never sent.</li>
+</ul>
+
+<p>The second is usually acceptable for emails and easy to repair with a periodic check (“orders older than ten minutes without a sent confirmation”). When it is not, use the <dfn>outbox</dfn> from Chapter {{n-4}}: insert the message into an <code>outbox</code> table in the same transaction as the order, and let a small relay process move outbox rows into the queue. Both the order and its job then exist, or neither does. Two more habits keep jobs and data in step:</p>
+<ul>
+<li><strong>Put ids in jobs, not data.</strong> The job carries <code>orderId</code>, and the worker reads the order from the database when it runs. Data copied into the job may be out of date by then.</li>
+<li><strong>Keep job data small</strong> and free of secrets: it is stored in Redis, visible in dashboards, and kept after the job finishes.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did order 1001 end up as one job when it was queued twice?</li><li>What is the difference between an ordinary error and <code>UnrecoverableError</code> in a job?</li><li>Why should a job carry the order id rather than a copy of the order?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Scheduled work</h2>
+
+<p>Some jobs are not caused by a request but by the clock. A <dfn>job scheduler</dfn> creates a job at every time that matches a cron pattern; here a sales report every morning at six, Cairo time:</p>
+
+<pre data-code="demos/schedule.ts" data-from="const reports" data-title="demos/schedule.ts"></pre>
+
+<pre data-code="schedule.sh" data-title="Terminal"></pre>
+
+<p>The pattern <code>0 6 * * *</code> reads “minute 0, hour 6, every day of every month, every weekday”. The next run, 04:00 UTC, is six in the morning in Cairo: always give a time zone, or the report moves by an hour twice a year. Because the scheduler lives in Redis, it fires once however many workers are running, which a <code>setInterval</code> in each server could never promise. <code>upsertJobScheduler</code> creates it or updates it, so it can run safely at every start.</p>
+
+<h2>{{n}}.6 Running workers in production</h2>
+
+<p>Workers are long-running processes, and they need the same care as web servers:</p>
+
+<pre data-code="src/worker.ts" data-from="for (const signal" data-title="src/worker.ts"></pre>
+
+<ul>
+<li><strong>Graceful shutdown.</strong> A deploy stops the old worker with <code>SIGTERM</code>. <code>worker.close()</code> stops taking new jobs and waits for the jobs in hand to finish, so nothing is cut in half. Give it enough time before the platform kills the process.</li>
+<li><strong>Separate processes, separate scaling.</strong> Web servers scale with traffic, workers with the amount of queued work. Chapter {{n+6}} runs them as separate containers from the same image.</li>
+<li><strong>Different queues for different work.</strong> A queue of slow PDF exports should not delay password-reset emails. Give urgent work its own queue and its own workers, or at least priorities.</li>
+<li><strong>Redis configured for queues.</strong> Unlike a cache, a queue must not lose data: persistence on, and <code>maxmemory-policy noeviction</code>, as Chapter {{n-3}} explained.</li>
+<li><strong>Visibility.</strong> Watch the number of waiting, delayed and failed jobs, and how long jobs wait before they start. A queue that grows all day means the workers cannot keep up.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit: design every job to be retried</p><p>When you write a job, ask three questions before the code: What happens if it runs twice? What happens if it fails halfway? What happens if it runs an hour late? Write the answers as a comment above the processor, and make the code match them. Jobs that survive these three questions survive production.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Slow or unreliable work inside the request</td><td>Slow checkouts, failures from other services</td><td>Queue it; answer at once</td></tr>
+<tr><td>Jobs that are not idempotent</td><td>Double emails, double charges after a retry</td><td>Check first, idempotency keys, conditional updates</td></tr>
+<tr><td>Retrying at once, forever</td><td>A struggling service is hammered; jobs never end</td><td>Limited attempts, exponential backoff with jitter</td></tr>
+<tr><td>Retrying errors that can never succeed</td><td>Wasted work, noisy failures</td><td><code>UnrecoverableError</code></td></tr>
+<tr><td>Queuing before the database commits</td><td>Jobs for data that does not exist</td><td>Queue after the commit, or an outbox</td></tr>
+<tr><td>Whole records copied into jobs</td><td>Workers act on stale data</td><td>Ids in jobs; read the data when running</td></tr>
+<tr><td>Killing workers without waiting</td><td>Jobs cut in half at every deploy</td><td><code>worker.close()</code> on <code>SIGTERM</code></td></tr>
+<tr><td><code>setInterval</code> on every server for scheduled work</td><td>The report runs once per server</td><td>A job scheduler in the queue</td></tr>
+<tr><td>Nobody looks at failed jobs</td><td>Silent losses</td><td>Count them, alert, retry after fixing</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A request does what its response needs; slow, unreliable or later work becomes a <strong>job</strong> in a <strong>queue</strong>.</li>
+<li><strong>BullMQ</strong> keeps queues in Redis; producers add jobs in a millisecond, <strong>workers</strong> in separate processes do them.</li>
+<li><strong>Attempts</strong> with <strong>exponential backoff</strong> make jobs reliable; <code>UnrecoverableError</code> stops pointless retries; failed jobs wait to be looked at.</li>
+<li>Jobs run <strong>at least once</strong>: make them <strong>idempotent</strong>, and use job ids so that the same work is queued once.</li>
+<li>Queue after the commit or through an <strong>outbox</strong>; put ids in jobs, not copies of data.</li>
+<li><strong>Job schedulers</strong> run timed work once across all workers; workers <strong>shut down gracefully</strong> and are watched like servers.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>queueConfirmation</code> gives every job the id <code>order-</code> plus the order number, and BullMQ does not add a job whose id already exists in the queue, so the second call returned the existing job. 2. After an ordinary error the job is retried, up to <code>attempts</code>, with the backoff between tries; after an <code>UnrecoverableError</code> it goes straight to the failed list, because retrying cannot help. 3. The job may run seconds or hours later, and more than once; reading the order when the job runs gives the current data (it may have been cancelled or changed), and keeps the job small and free of personal details.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project moves real work of the shop into the background. For each, show what happens when the work fails.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Confirmations from the order route</h3>
+<p class="project-goal">Queue a confirmation from the real order route of Chapter {{n-7}}, and send it from a worker.</p>
+<p class="project-skills"><strong>You will practise:</strong> producers in routes, workers reading from the database, and idempotent jobs.</p>
+<ol class="steps">
+<li>After the order is saved and committed, call <code>queueConfirmation(order.id)</code>, with only the id in the job.</li>
+<li>In the worker, read the order and its items from the database, and “send” the email by writing it to a file.</li>
+<li>Add a <code>confirmation_sent_at</code> column; the worker skips orders that already have one and sets it after sending.</li>
+<li>Kill the worker in the middle of a job, start it again, and show that no email is sent twice.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> set <code>confirmation_sent_at</code> with a conditional update (<code>WHERE confirmation_sent_at IS NULL</code>) and check the number of rows changed, as in Chapter {{n-4}}.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Abandoned basket reminders</h3>
+<p class="project-goal">Remind customers about a full basket 24 hours later, unless they have ordered in the meantime.</p>
+<p class="project-skills"><strong>You will practise:</strong> delayed jobs, cancelling jobs, and checking the current state when a job runs.</p>
+<ol class="steps">
+<li>When a basket changes, add a job with <code>delay: 24 * 3600 * 1000</code> and the job id <code>basket-{customerId}</code>, replacing any earlier one.</li>
+<li>When the customer orders, remove the job.</li>
+<li>In the worker, check again that the basket is still full and no order was placed, before sending anything.</li>
+<li>Test it with a delay of a few seconds instead of a day.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> removing the job is an optimisation; the check in the worker is what makes it correct, because the order and the removal can race.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>An outbox relay</h3>
+<p class="project-goal">Guarantee that every committed order gets its confirmation job, even if the process dies right after the commit.</p>
+<p class="project-skills"><strong>You will practise:</strong> the outbox pattern, <code>FOR UPDATE SKIP LOCKED</code>, and at-least-once delivery from end to end.</p>
+<ol class="steps">
+<li>In the order transaction, insert a row into <code>outbox</code> (type, payload, created) instead of queuing.</li>
+<li>Write a relay that, every second, takes up to 100 unsent rows with <code>FOR UPDATE SKIP LOCKED</code>, queues each with the job id taken from the outbox row, and marks them sent.</li>
+<li>Run two relays at once, and show that each row is queued once.</li>
+<li>Kill a relay after queuing but before marking rows sent, and show that the job ids stop the duplicates.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the outbox row id makes a perfect job id: if the relay queues the same row twice, BullMQ keeps one job.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, say whether it belongs in the request or in a job, and why: checking stock before accepting an order; sending the order confirmation; charging the card; generating the monthly invoice PDF.</li>
+<li><span class="level">Easy</span> With <code>attempts: 5</code> and exponential backoff from 1 second, how long after the first failure does the last attempt start, at the earliest?</li>
+<li><span class="level">Medium</span> A worker sends the email and then crashes before the job is marked done. What happens next, and what must the job do so that the customer gets one email?</li>
+<li><span class="level">Medium</span> The address of order 1004 has been corrected. Write a script that retries the failed jobs with the corrected data, and run the worker again.</li>
+<li><span class="level">Challenge</span> The PDF export queue sometimes holds 5,000 jobs, and password-reset emails queued behind them wait for an hour. Propose two designs that keep the emails fast, and compare them.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Jobs run behind the scenes; some changes should appear in front of the user at once. Real-time features: WebSockets, server-sent events, and pushing an order’s status to the screen the moment it changes.</p>
+</div>
+</section>

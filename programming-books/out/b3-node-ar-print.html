@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "الفصل 9: الأمان: أخطر عشر ثغرات (OWASP)"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "الفصل 10: المهام الخلفية والطوابير"; } }
+@page ch10:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -4848,6 +4850,378 @@ found 0 vulnerabilities</pre></div>
 <p>بعض العمل لا ينبغي أن يحدث والزبون ينتظر: البريد، والتقارير، وتصغير الصور. المهام الخلفية والطوابير: إنجاز العمل لاحقاً، وإعادته بأمان، وعدم فقدانه أبداً.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b3/node/jobs/ar">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">الفصل 10</p><h1>المهام الخلفية والطوابير</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقرر أي عمل مكانه الطلب وأيه مكانه مهمة خلفية</li>
+<li>تضع المهام في طابور بـ BullMQ وRedis، وتنفذها في عملية عامل منفصلة</li>
+<li>تعيد المهام الفاشلة بوقفات متزايدة، وتتوقف عن الإعادة حين لا فائدة منها</li>
+<li>تجعل المهام آمنة إن نُفذت مرتين، وتمنع وضع المهمة نفسها في الطابور مرتين</li>
+<li>تجدول عملاً لأوقات محددة، وتوقف العمّال دون فقدان مهام</li>
+<li>تُبقي الطوابير وقاعدة البيانات متسقة إحداهما مع الأخرى</li>
+</ul>
+</div>
+
+<p class="lead">حين يطلب زبون طلباً، على المتجر أكثر من حفظه: إرسال بريد تأكيد، وإخطار المستودع، وتحديث تقرير المبيعات، وربما تصغير صور مراجعة. فإن فعل الطلب ذلك كله، انتظر الزبون أبطأ خدمة في السلسلة، وحين تمر بمزوّد البريد دقيقة سيئة، يفشل الطلب مع أن الطلب نفسه كان سليماً. والجواب أن تنجز في الطلب الجزء الضروري وحده، وتكتب الباقي <dfn>مهامَّ</dfn> (jobs)، وتدع عمليات منفصلة تنجزها بعد لحظة. وهذا الفصل يبني ذلك بـ BullMQ على Redis من الفصل 7، وينفذ كل جزء منه فعلاً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كان متجرنا الأول يرسل بريده داخل طلب الشراء. وذات مساء جمعة تباطأ مزوّد البريد إلى عشر ثوانٍ لكل رسالة، فصار الدفع يستغرق عشر ثوانٍ أيضاً. فضغط الزبائن «ادفع» مرة أخرى، ودُفع على بعضهم مرتين. ونقل البريد إلى طابور استغرق عصراً واحداً؛ وكان سيوفر علينا ذلك الأسبوع كله.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>ما مكانه مهمة</span></h2>
+
+<p>ينبغي أن يفعل الطلب ما يعتمد عليه الرد، ولا شيء أكثر. وكل ما عدا ذلك مرشّح لأن يكون مهمة:</p>
+<ul>
+<li><strong>العمل البطيء</strong>: إرسال البريد والإشعارات، وتوليد ملفات PDF والتقارير، وتصغير الصور، واستدعاء APIs بطيئة لشركاء.</li>
+<li><strong>العمل غير الموثوق</strong>: كل ما يكلم خدمة أخرى، ستتعطل أحياناً وتحتاج إعادة.</li>
+<li><strong>العمل في وقت لاحق</strong>: «ذكّر الزبون بعد 24 ساعة إن بقيت السلة ممتلئة»، و«تقرير المبيعات اليومي في السادسة صباحاً».</li>
+<li><strong>العمل الثقيل</strong>: الاستيراد والتصدير لآلاف الصفوف، الذي سيعطل عملية ويب دقائق.</li>
+</ul>
+
+<p>و<dfn>الطابور</dfn> (queue) يصل بين الجانبين. فعملية الويب هي <dfn>المنتج</dfn> (producer): تضيف مهمة (اسماً وبعض البيانات) إلى الطابور وتجيب في الحال. و<dfn>العامل</dfn> (worker) عملية منفصلة تأخذ المهام من الطابور وتنجزها. وRedis يحفظ الطابور، فتنجو المهام من إعادة تشغيل أي من الجانبين، وتستطيع تشغيل عمّال بقدر ما يحتاج العمل.</p>
+
+<h2><span class="sec">10.2</span> <span>طابور وعامل</span></h2>
+
+<p><dfn>BullMQ</dfn> أوسع طوابير المهام استخداماً في Node. فكائن <code>Queue</code> يضيف المهام، و<code>Worker</code> ينجزها، وكلاهما يكلم Redis عبر اتصال <code>ioredis</code>. وهذا طابور تأكيدات الطلبات، بالخيارات التي تأخذها كل مهمة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/queue.ts</div><pre class="code"><span class="k">import</span> { Queue } <span class="k">from</span> <span class="s">&quot;bullmq&quot;</span>;
+<span class="k">import</span> { Redis } <span class="k">from</span> <span class="s">&quot;ioredis&quot;</span>;
+
+<span class="c line-bidi">// إعداد اتصال واحد للطابور والعامل</span>
+<span class="k">export</span> <span class="k">const</span> connection = <span class="k">new</span> Redis(<span class="s">&quot;redis://localhost:6379&quot;</span>, {
+  maxRetriesPerRequest: <span class="k">null</span>,
+});
+
+<span class="k">export</span> <span class="k">type</span> Confirmation = { orderId: number; email: string };
+
+<span class="k">export</span> <span class="k">const</span> mail = <span class="k">new</span> Queue&lt;Confirmation&gt;(<span class="s">&quot;mail&quot;</span>, {
+  connection,
+  <span class="c line-bidi">// ما تأخذه كل مهمة تأكيد ما لم تقل غير ذلك</span>
+  defaultJobOptions: {
+    <span class="c line-bidi">// حتى 3 محاولات، بانتظار ثانية ثم ثانيتين بينها</span>
+    attempts: <span class="n">3</span>,
+    backoff: { <span class="k">type</span>: <span class="s">&quot;exponential&quot;</span>, delay: <span class="n">1000</span> },
+    <span class="c line-bidi">// المهام المنتهية تُحفظ ساعة (للاطلاع عليها)، والفاشلة أسبوعاً</span>
+    removeOnComplete: { age: <span class="n">3600</span> },
+    removeOnFail: { age: <span class="n">7</span> * <span class="n">24</span> * <span class="n">3600</span> },
+  },
+});
+
+<span class="k">export</span> <span class="k">function</span> queueConfirmation(orderId: number, email: string) {
+  <span class="c line-bidi">// رقم المهمة هو رقم الطلب: وضع الطلب نفسه في الطابور مرتين يُبقي مهمة واحدة</span>
+  <span class="k">return</span> mail.add(
+    <span class="s">&quot;confirmation&quot;</span>,
+    { orderId, email },
+    { jobId: <span class="s">`order-${orderId}`</span> },
+  );
+}</pre></div>
+
+<p>مسار الطلب سينادي <code>queueConfirmation</code> بعد حفظ الطلب. وهنا يؤدي سكربت صغير دور المتجر، فيضع أربعة تأكيدات في الطابور وواحداً منها مرتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/enqueue.ts</div><pre class="code"><span class="k">import</span> { connection, mail, queueConfirmation } <span class="k">from</span> <span class="s">&quot;../src/queue.ts&quot;</span>;
+
+<span class="k">const</span> orders = [
+  [<span class="n">1001</span>, <span class="s">&quot;sara@example.com&quot;</span>],
+  [<span class="n">1002</span>, <span class="s">&quot;omar@example.com&quot;</span>],
+  [<span class="n">1003</span>, <span class="s">&quot;lina@example.com&quot;</span>],
+  [<span class="n">1004</span>, <span class="s">&quot;karim-at-example.com&quot;</span>],
+] as <span class="k">const</span>;
+
+<span class="k">for</span> (<span class="k">const</span> [orderId, email] <span class="k">of</span> orders) {
+  <span class="k">const</span> start = performance.now();
+  <span class="k">const</span> job = <span class="k">await</span> queueConfirmation(orderId, email);
+  <span class="k">const</span> ms = (performance.now() - start).toFixed(<span class="n">1</span>);
+  console.log(<span class="s">`المهمة ${job.id} في الطابور خلال ${ms} ms`</span>);
+}
+<span class="k">const</span> again = <span class="k">await</span> queueConfirmation(<span class="n">1001</span>, <span class="s">&quot;sara@example.com&quot;</span>);
+console.log(
+  <span class="s">`المهمة ${again.id} في الطابور مرة أخرى؛ المهام المنتظرة: ${await mail.count()}`</span>,
+);
+<span class="k">await</span> mail.close();
+<span class="k">await</span> connection.quit();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المتجر يضع أربعة تأكيدات في الطابور (وواحداً مرتين)</span>
+<span class="c">$ </span><span class="k">node demos/enqueue.ts</span>
+المهمة order-1001 في الطابور خلال 22.0 ms
+المهمة order-1002 في الطابور خلال 0.7 ms
+المهمة order-1003 في الطابور خلال 0.8 ms
+المهمة order-1004 في الطابور خلال 0.8 ms
+المهمة order-1001 في الطابور مرة أخرى؛ المهام المنتظرة: 4
+<span class="c line-bidi"># لا أحد يعمل بعد: المهام تنتظر في Redis</span>
+<span class="c">$ </span><span class="k">redis-cli LLEN bull:mail:wait</span>
+(integer) 4</pre></div>
+
+<p>استغرق الوضع في الطابور نحو مللي ثانية (دفعت المهمة الأولى ثمن فتح الاتصال)، فيبقى طلب الشراء سريعاً أياً كان ما تفعله خدمة البريد. ووُضع الطلب 1001 مرتين لكن المهام أربع لا خمس: فرقم المهمة <code>order-1001</code> كان موجوداً، فأبقى BullMQ الأولى. ولا عامل يعمل بعد، فالمهام الأربع تنتظر ببساطة في Redis.</p>
+
+<p>والعامل برنامج مستقل، يُشغَّل بـ <code>npm run worker</code>، وعادة على أكثر من جهاز. ولكل مهمة ينادي الدالة التي تعطيه إياها؛ فحين تعود الدالة تنتهي المهمة، وحين ترمي خطأً تفشل المهمة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/worker.ts</div><pre class="code"><span class="k">const</span> worker = <span class="k">new</span> Worker&lt;Confirmation&gt;(
+  <span class="s">&quot;mail&quot;</span>,
+  <span class="c line-bidi">// العمل نفسه: يُستدعى مرة لكل مهمة، وربما مرة أخرى إن فشل</span>
+  <span class="k">async</span> (job) =&gt; {
+    <span class="k">const</span> { orderId, email } = job.data;
+    console.log(
+      <span class="s">`${at()} إرسال تأكيد الطلب ${orderId} (المحاولة ${job.attemptsMade + 1})`</span>,
+    );
+    <span class="k">await</span> sendMail(orderId, email);
+  },
+  <span class="c line-bidi">// مهمتان على الأكثر في الوقت نفسه في هذه العملية</span>
+  { connection, concurrency: <span class="n">2</span> },
+);
+
+worker.on(<span class="s">&quot;completed&quot;</span>, (job) =&gt; console.log(<span class="s">`${at()} ${job.id} أُرسل`</span>));
+worker.on(<span class="s">&quot;failed&quot;</span>, (job, error) =&gt; {
+  <span class="k">const</span> final = job &amp;&amp; job.attemptsMade &gt;= (job.opts.attempts ?? <span class="n">1</span>);
+  console.log(<span class="s">`${at()} ${job?.id} فشلت: ${error.message}`</span>);
+  <span class="k">if</span> (final || error.name === <span class="s">&quot;UnrecoverableError&quot;</span>) {
+    console.log(<span class="s">`${at()} ${job?.id} توقف؛ المحاولات: ${job?.attemptsMade}`</span>);
+  }
+});</pre></div>
+
+<p>و«خدمة البريد» بديل فيه أيام سيئة مبنية: الطلب 1003 يفشل مرتين قبل أن ينجح، والطلب 1004 عنوانه لا يمكن أن ينجح أبداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/mailer.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> sendMail(orderId: number, email: string) {
+  <span class="k">await</span> <span class="k">new</span> Promise((resolve) =&gt; setTimeout(resolve, <span class="n">300</span>));
+  <span class="k">const</span> n = (attempts.get(orderId) ?? <span class="n">0</span>) + <span class="n">1</span>;
+  attempts.set(orderId, n);
+  <span class="c line-bidi">// خدمة بريد تفشل أول مرتين للطلب 1003</span>
+  <span class="k">if</span> (orderId === <span class="n">1003</span> &amp;&amp; n &lt;= <span class="n">2</span>) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;خدمة البريد غير متاحة&quot;</span>);
+  <span class="c line-bidi">// عنوان لا يمكن أن ينجح أبداً: لا فائدة من المحاولة إلى الأبد</span>
+  <span class="k">if</span> (!email.includes(<span class="s">&quot;@&quot;</span>))
+    <span class="k">throw</span> <span class="k">new</span> UnrecoverableError(<span class="s">`عنوان غير صالح: ${email}`</span>);
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عامل يبدأ وينجزها</span>
+<span class="c">$ </span><span class="k">node src/worker.ts --until-empty</span>
+ 0.0s إرسال تأكيد الطلب 1001 (المحاولة 1)
+ 0.0s إرسال تأكيد الطلب 1002 (المحاولة 1)
+ 0.3s order-1001 أُرسل
+ 0.3s order-1002 أُرسل
+ 0.3s إرسال تأكيد الطلب 1003 (المحاولة 1)
+ 0.3s إرسال تأكيد الطلب 1004 (المحاولة 1)
+ 0.6s order-1003 فشلت: خدمة البريد غير متاحة
+ 0.6s order-1004 فشلت: عنوان غير صالح: karim-at-example.com
+ 0.6s order-1004 توقف؛ المحاولات: 1
+ 1.7s إرسال تأكيد الطلب 1003 (المحاولة 2)
+ 2.0s order-1003 فشلت: خدمة البريد غير متاحة
+ 4.0s إرسال تأكيد الطلب 1003 (المحاولة 3)
+ 4.3s order-1003 أُرسل</pre></div>
+
+<p>اقرأ الأوقات على اليسار. عملت مهمتان معاً (<code>concurrency: 2</code>)، وأُرسل الطلبان 1001 و1002 في 0.3 ثانية. وفشل الطلب 1003، وانتظر نحو ثانية، وفشل مرة أخرى، وانتظر نحو ثانيتين، وأُرسل في محاولته الثالثة، دون أن يفعل أحد شيئاً. وفشل الطلب 1004 مرة وتُرك في الحال.</p>
+
+<h2><span class="sec">10.3</span> <span>الإعادة والفشل</span></h2>
+
+<p>الإعادة هي ما يجعل المهام موثوقة، وخيارات BullMQ تقرر كيف:</p>
+<ul>
+<li><code>attempts: 3</code> تسمح بثلاث محاولات إجمالاً.</li>
+<li><code>backoff: exponential</code> مع <code>delay: 1000</code> تنتظر 1، ثم 2، ثم 4… ثوانٍ بين المحاولات. والوقفات المتزايدة تعطي الخدمة المتعثرة وقتاً لتتعافى، بدل ضربها مرة أخرى في الحال بكل مهمة في الطابور. (وفي الأنظمة الحقيقية، أضف <dfn>ارتجاجاً</dfn> (jitter)، قليلاً من العشوائية، كي لا تعيد ألف مهمة فشلت معاً في الثانية نفسها.)</li>
+<li>بعض الأخطاء لن تزول أبداً: عنوان غير صالح، أو طلب لم يعد موجوداً. ورمي <code>UnrecoverableError</code> من BullMQ يتخطى المحاولات الباقية، كما يبيّن الطلب 1004.</li>
+</ul>
+
+<p>والمهمة التي تنفد محاولاتها لا تضيع. بل تنتقل إلى قائمة <dfn>الفاشلة</dfn> بسببها، وتبقى هناك (أسبوعاً، بـ <code>removeOnFail</code>) حتى ينظر فيها أحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/failed.ts</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> job <span class="k">of</span> <span class="k">await</span> mail.getFailed()) {
+  console.log(job.id, job.attemptsMade, job.failedReason);
+}
+<span class="k">await</span> mail.close();
+<span class="k">await</span> connection.quit();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما بقي في قائمة الفاشلة</span>
+<span class="c">$ </span><span class="k">node demos/failed.ts</span>
+order-1004 1 عنوان غير صالح: karim-at-example.com</pre></div>
+
+<p>وفي الإنتاج، المهام الفاشلة إشارة: عُدّها في لوحة متابعة ونبّه حين تكبر (الفصل 13). وبعد إصلاح السبب، يمكن إعادتها (التمرين 4). وبعض الفرق تسمّي هذه القائمة <dfn>طابور الرسائل الميتة</dfn> (dead-letter queue).</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: قد تُنفذ المهمة مرتين</p><p>تَعِد الطوابير أن تُنفذ المهمة مرة <em>على الأقل</em>، لا مرة واحدة بالضبط. فقد ينهار العامل بعد إرسال البريد وقبل أن يخبر Redis بانتهاء المهمة؛ فتُنفذ المهمة مرة أخرى على عامل آخر. ويجب أن تكون كل مهمة <dfn>غير متأثرة بالتكرار</dfn> (idempotent): تنفيذها مرتين أثره كتنفيذها مرة. افحص قبل الفعل («هل عُلّم تأكيد الطلب 1001 مُرسلاً من قبل؟»)، وأعطِ مزوّد البريد مفتاح عدم تكرار مثل <code>order-1001-confirmation</code>، وغيّر قاعدة البيانات بشروط، كما في الفصل 6.</p></aside>
+
+<h2><span class="sec">10.4</span> <span>المهام وقاعدة البيانات</span></h2>
+
+<p>الطلب يُحفظ في PostgreSQL والمهمة في Redis، ولا يمكن أن تتشاركا معاملة. وترتيبان للخطوات ممكنان، ولكل منهما ثغرة:</p>
+<ul>
+<li><strong>ضع في الطابور، ثم ثبّت</strong>: إن تراجعت المعاملة بعدها، فقد يكون العامل يرسل تأكيداً لطلب غير موجود. والأسوأ أن العامل قد يعمل قبل التثبيت فلا يجد الطلب.</li>
+<li><strong>ثبّت، ثم ضع في الطابور</strong>: إن ماتت العملية بين الخطوتين، فالطلب موجود ولا يُرسل تأكيده أبداً.</li>
+</ul>
+
+<p>والثاني مقبول عادة للبريد ويسهل إصلاحه بفحص دوري («طلبات أقدم من عشر دقائق بلا تأكيد مُرسل»). وحين لا يكون مقبولاً، استخدم <dfn>صندوق الصادر</dfn> من الفصل 6: أدخل الرسالة في جدول <code>outbox</code> في معاملة الطلب نفسها، ودع عملية ناقلة صغيرة تنقل صفوف الصندوق إلى الطابور. فيوجد الطلب ومهمته معاً، أو لا يوجد أي منهما. وعادتان أخريان تُبقيان المهام والبيانات متوافقة:</p>
+<ul>
+<li><strong>ضع الأرقام في المهام، لا البيانات.</strong> تحمل المهمة <code>orderId</code>، ويقرأ العامل الطلب من قاعدة البيانات حين يعمل. فالبيانات المنسوخة في المهمة قد تكون قديمة حينها.</li>
+<li><strong>اجعل بيانات المهمة صغيرة</strong> وخالية من الأسرار: إنها تُحفظ في Redis، وتظهر في لوحات المتابعة، وتبقى بعد انتهاء المهمة.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا صار الطلب 1001 مهمة واحدة حين وُضع في الطابور مرتين؟</li><li>ما الفرق بين خطأ عادي و<code>UnrecoverableError</code> في مهمة؟</li><li>لماذا ينبغي أن تحمل المهمة رقم الطلب لا نسخة منه؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">10.5</span> <span>العمل المجدول</span></h2>
+
+<p>بعض المهام لا يسببها طلب بل الساعة. و<dfn>مجدول المهام</dfn> (job scheduler) ينشئ مهمة في كل وقت يطابق نمط cron؛ وهنا تقرير مبيعات كل صباح في السادسة بتوقيت القاهرة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/schedule.ts</div><pre class="code"><span class="k">const</span> reports = <span class="k">new</span> Queue(<span class="s">&quot;reports&quot;</span>, { connection });
+<span class="c line-bidi">// مجدول مهام: ينشئ BullMQ المهمة في كل وقت مطابق</span>
+<span class="k">await</span> reports.upsertJobScheduler(
+  <span class="s">&quot;daily-sales&quot;</span>,
+  { pattern: <span class="s">&quot;0 6 * * *&quot;</span>, tz: <span class="s">&quot;Africa/Cairo&quot;</span> },
+  { name: <span class="s">&quot;sales-report&quot;</span>, data: { period: <span class="s">&quot;yesterday&quot;</span> } },
+);
+<span class="k">for</span> (<span class="k">const</span> s <span class="k">of</span> <span class="k">await</span> reports.getJobSchedulers()) {
+  console.log(
+    s.key,
+    s.pattern,
+    s.tz,
+    <span class="s">&quot;التشغيل التالي:&quot;</span>,
+    <span class="k">new</span> Date(s.next ?? <span class="n">0</span>).toISOString(),
+  );
+}
+<span class="k">await</span> reports.close();
+<span class="k">await</span> connection.quit();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تقرير كل صباح في السادسة بتوقيت القاهرة</span>
+<span class="c">$ </span><span class="k">node demos/schedule.ts</span>
+daily-sales 0 6 * * * Africa/Cairo التشغيل التالي: 2026-11-21T04:00:00.000Z</pre></div>
+
+<p>النمط <code>0 6 * * *</code> يُقرأ «الدقيقة 0، والساعة 6، كل يوم من كل شهر، وكل أيام الأسبوع». والتشغيل التالي، 04:00 بتوقيت UTC، هو السادسة صباحاً في القاهرة: أعطِ دائماً منطقة زمنية، وإلا تحرّك التقرير ساعة مرتين في السنة. ولأن المجدول يعيش في Redis، فإنه ينطلق مرة واحدة مهما كان عدد العمّال العاملين، وهذا ما لا يستطيع <code>setInterval</code> في كل خادم أن يعد به أبداً. و<code>upsertJobScheduler</code> تنشئه أو تحدّثه، فيمكن تشغيلها بأمان عند كل بدء.</p>
+
+<h2><span class="sec">10.6</span> <span>تشغيل العمّال في الإنتاج</span></h2>
+
+<p>العمّال عمليات طويلة العمر، وتحتاج العناية نفسها التي تحتاجها خوادم الويب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/worker.ts</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> signal <span class="k">of</span> [<span class="s">&quot;SIGINT&quot;</span>, <span class="s">&quot;SIGTERM&quot;</span>]) {
+  process.once(signal, <span class="k">async</span> () =&gt; {
+    <span class="k">await</span> Promise.all([worker.close(), mail.close()]);
+    <span class="k">await</span> connection.quit();
+  });
+}</pre></div>
+
+<ul>
+<li><strong>الإيقاف اللطيف.</strong> النشر يوقف العامل القديم بـ <code>SIGTERM</code>. و<code>worker.close()</code> تكف عن أخذ مهام جديدة وتنتظر انتهاء المهام التي في اليد، فلا يُقطع شيء نصفين. وأعطها وقتاً كافياً قبل أن تقتل المنصة العملية.</li>
+<li><strong>عمليات منفصلة، وتوسيع منفصل.</strong> خوادم الويب تتوسع مع الزيارات، والعمّال مع كمية العمل في الطابور. والفصل 16 يشغّلها حاويات منفصلة من الصورة نفسها.</li>
+<li><strong>طوابير مختلفة لأعمال مختلفة.</strong> لا ينبغي أن يؤخر طابور تصدير PDF بطيء رسائل استعادة كلمات المرور. أعطِ العمل العاجل طابوره وعمّاله، أو أولويات على الأقل.</li>
+<li><strong>Redis مضبوط للطوابير.</strong> بخلاف الذاكرة المؤقتة، لا يجوز للطابور أن يفقد بيانات: الحفظ الدائم مشغّل، و<code>maxmemory-policy noeviction</code>، كما شرح الفصل 7.</li>
+<li><strong>الرؤية.</strong> راقب عدد المهام المنتظرة والمؤجلة والفاشلة، وكم تنتظر المهام قبل أن تبدأ. فالطابور الذي يكبر طوال اليوم يعني أن العمّال لا يلحقون.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: صمّم كل مهمة لتُعاد</p><p>حين تكتب مهمة، اسأل ثلاثة أسئلة قبل الكود: ماذا يحدث إن نُفذت مرتين؟ ماذا يحدث إن فشلت في منتصفها؟ ماذا يحدث إن نُفذت متأخرة ساعة؟ اكتب الأجوبة تعليقاً فوق المعالج، واجعل الكود يطابقها. فالمهام التي تصمد أمام هذه الأسئلة الثلاثة تصمد في الإنتاج.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>عمل بطيء أو غير موثوق داخل الطلب</td><td>دفع بطيء، وإخفاقات من خدمات أخرى</td><td>ضعه في طابور؛ وأجب في الحال</td></tr>
+<tr><td>مهام تتأثر بالتكرار</td><td>بريد مزدوج، ودفع مزدوج بعد إعادة</td><td>افحص أولاً، ومفاتيح عدم التكرار، وتحديثات شرطية</td></tr>
+<tr><td>الإعادة في الحال، إلى الأبد</td><td>خدمة متعثرة تُضرب؛ ومهام لا تنتهي</td><td>محاولات محدودة، وتراجع أسّي مع ارتجاج</td></tr>
+<tr><td>إعادة أخطاء لا يمكن أن تنجح</td><td>عمل ضائع، وإخفاقات صاخبة</td><td><code>UnrecoverableError</code></td></tr>
+<tr><td>الوضع في الطابور قبل تثبيت قاعدة البيانات</td><td>مهام لبيانات غير موجودة</td><td>الطابور بعد التثبيت، أو صندوق صادر</td></tr>
+<tr><td>سجلات كاملة منسوخة في المهام</td><td>العمّال يعملون على بيانات قديمة</td><td>الأرقام في المهام؛ واقرأ البيانات عند التنفيذ</td></tr>
+<tr><td>قتل العمّال دون انتظار</td><td>مهام تُقطع نصفين مع كل نشر</td><td><code>worker.close()</code> عند <code>SIGTERM</code></td></tr>
+<tr><td><code>setInterval</code> في كل خادم للعمل المجدول</td><td>التقرير يُنفذ مرة لكل خادم</td><td>مجدول مهام في الطابور</td></tr>
+<tr><td>لا أحد ينظر في المهام الفاشلة</td><td>خسائر صامتة</td><td>عُدّها، ونبّه، وأعدها بعد الإصلاح</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الطلب يفعل ما يحتاجه رده؛ والعمل البطيء أو غير الموثوق أو اللاحق يصير <strong>مهمة</strong> في <strong>طابور</strong>.</li>
+<li><strong>BullMQ</strong> يحفظ الطوابير في Redis؛ والمنتجون يضيفون المهام في مللي ثانية، و<strong>العمّال</strong> في عمليات منفصلة ينجزونها.</li>
+<li><strong>المحاولات</strong> مع <strong>التراجع الأسّي</strong> تجعل المهام موثوقة؛ و<code>UnrecoverableError</code> توقف الإعادات بلا فائدة؛ والمهام الفاشلة تنتظر من ينظر فيها.</li>
+<li>تُنفذ المهام <strong>مرة على الأقل</strong>: فاجعلها <strong>غير متأثرة بالتكرار</strong>، واستخدم أرقام المهام كي يوضع العمل نفسه في الطابور مرة.</li>
+<li>ضع في الطابور بعد التثبيت أو عبر <strong>صندوق صادر</strong>؛ وضع الأرقام في المهام، لا نسخ البيانات.</li>
+<li><strong>مجدولات المهام</strong> تنفذ العمل الموقوت مرة عبر كل العمّال؛ والعمّال <strong>يتوقفون بلطف</strong> ويُراقبون كالخوادم.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. تعطي <code>queueConfirmation</code> كل مهمة الرقم <code>order-</code> مع رقم الطلب، ولا يضيف BullMQ مهمة رقمها موجود في الطابور، فأعاد الاستدعاء الثاني المهمة الموجودة. 2. بعد خطأ عادي تُعاد المهمة، حتى <code>attempts</code>، مع التراجع بين المحاولات؛ وبعد <code>UnrecoverableError</code> تذهب مباشرة إلى قائمة الفاشلة، لأن الإعادة لا تفيد. 3. قد تُنفذ المهمة بعد ثوانٍ أو ساعات، وأكثر من مرة؛ وقراءة الطلب حين تعمل المهمة تعطي البيانات الحالية (ربما أُلغي أو تغيّر)، وتُبقي المهمة صغيرة وخالية من البيانات الشخصية.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع ينقل عملاً حقيقياً من المتجر إلى الخلفية. ولكل منها، بيّن ما يحدث حين يفشل العمل.</p>
+
+<div class="project">
+<p class="project-label">المشروع 10.1 · سهل</p>
+<h3>التأكيدات من مسار الطلب</h3>
+<p class="project-goal">ضع تأكيداً في الطابور من مسار الطلب الحقيقي في الفصل 3، وأرسله من عامل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المنتجين في المسارات، والعمّال الذين يقرؤون من قاعدة البيانات، والمهام غير المتأثرة بالتكرار.</p>
+<ol class="steps">
+<li>بعد حفظ الطلب وتثبيته، نادِ <code>queueConfirmation(order.id)</code>، والرقم وحده في المهمة.</li>
+<li>في العامل، اقرأ الطلب وأصنافه من قاعدة البيانات، و«أرسل» البريد بكتابته في ملف.</li>
+<li>أضف عمود <code>confirmation_sent_at</code>؛ ويتخطى العامل الطلبات التي لها قيمة فيه ويضبطه بعد الإرسال.</li>
+<li>اقتل العامل في منتصف مهمة، وشغّله مرة أخرى، وبيّن أن لا بريد يُرسل مرتين.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اضبط <code>confirmation_sent_at</code> بتحديث شرطي (<code>WHERE confirmation_sent_at IS NULL</code>) وافحص عدد الصفوف المتغيرة، كما في الفصل 6.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 10.2 · متوسط</p>
+<h3>تذكير بالسلال المتروكة</h3>
+<p class="project-goal">ذكّر الزبائن بسلة ممتلئة بعد 24 ساعة، إلا إن طلبوا في الأثناء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المهام المؤجلة، وإلغاء المهام، وفحص الحالة الحالية حين تعمل المهمة.</p>
+<ol class="steps">
+<li>حين تتغير السلة، أضف مهمة بـ <code>delay: 24 * 3600 * 1000</code> ورقم المهمة <code>basket-{customerId}</code>، مستبدلاً أي مهمة سابقة.</li>
+<li>حين يطلب الزبون، احذف المهمة.</li>
+<li>في العامل، تحقق مرة أخرى أن السلة ما زالت ممتلئة وأنه لم يُطلب شيء، قبل إرسال أي شيء.</li>
+<li>اختبره بتأجيل بضع ثوانٍ بدل يوم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حذف المهمة تحسين؛ والفحص في العامل هو ما يجعله صحيحاً، لأن الطلب والحذف قد يتسابقان.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 10.3 · تحدٍّ</p>
+<h3>ناقل لصندوق الصادر</h3>
+<p class="project-goal">اضمن أن كل طلب مثبّت يأخذ مهمة تأكيده، حتى لو ماتت العملية بعد التثبيت مباشرة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نمط صندوق الصادر، و<code>FOR UPDATE SKIP LOCKED</code>، والتسليم مرة على الأقل من البداية إلى النهاية.</p>
+<ol class="steps">
+<li>في معاملة الطلب، أدخل صفاً في <code>outbox</code> (النوع، والحمولة، ووقت الإنشاء) بدل الوضع في الطابور.</li>
+<li>اكتب ناقلاً يأخذ كل ثانية حتى 100 صف غير مُرسل بـ <code>FOR UPDATE SKIP LOCKED</code>، ويضع كلاً منها في الطابور برقم مهمة مأخوذ من صف الصندوق، ويعلّمها مُرسلة.</li>
+<li>شغّل ناقلين معاً، وبيّن أن كل صف يوضع في الطابور مرة.</li>
+<li>اقتل ناقلاً بعد الوضع في الطابور وقبل تعليم الصفوف مُرسلة، وبيّن أن أرقام المهام توقف التكرار.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> رقم صف الصندوق رقم مهمة مثالي: إن وضع الناقل الصف نفسه في الطابور مرتين، أبقى BullMQ مهمة واحدة.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> لكل مما يلي، قل هل مكانه الطلب أم مهمة، ولماذا: فحص المخزون قبل قبول طلب؛ وإرسال تأكيد الطلب؛ والخصم من البطاقة؛ وتوليد ملف PDF للفاتورة الشهرية.</li>
+<li><span class="level">سهل</span> مع <code>attempts: 5</code> وتراجع أسّي يبدأ من ثانية، بعد كم من أول فشل تبدأ آخر محاولة، في أقرب تقدير؟</li>
+<li><span class="level medium">متوسط</span> عامل يرسل البريد ثم ينهار قبل تعليم المهمة منتهية. ماذا يحدث بعدها، وماذا يجب أن تفعل المهمة كي يأخذ الزبون بريداً واحداً؟</li>
+<li><span class="level medium">متوسط</span> صُحّح عنوان الطلب 1004. اكتب سكربتاً يعيد المهام الفاشلة بالبيانات المصححة، وشغّل العامل مرة أخرى.</li>
+<li><span class="level hard">تحدٍّ</span> طابور تصدير PDF يحمل أحياناً 5000 مهمة، ورسائل استعادة كلمات المرور الموضوعة خلفها تنتظر ساعة. اقترح تصميمين يُبقيان الرسائل سريعة، وقارن بينهما.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 11</p>
+<p>المهام تعمل خلف الكواليس؛ وبعض التغييرات ينبغي أن تظهر أمام المستخدم في الحال. الميزات الفورية: WebSockets، وأحداث الخادم المرسلة، ودفع حالة الطلب إلى الشاشة لحظة تغيّرها.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -5015,6 +5389,30 @@ access-control-allow-headers: content-type</pre></div>
 <code>204</code>: بلا جسم، إذن فقط. و<code>Access-Control-Allow-Origin</code> تسمّي موقع المتجر، فيجوز لهذا الأصل قراءة الأجوبة. و<code>Access-Control-Allow-Methods</code> تسرد <code>GET</code> و<code>PATCH</code>، الطريقتين المضبوطتين. و<code>Access-Control-Allow-Headers</code> تسمح بـ <code>content-type</code>، التي يحتاجها جسم JSON. وترويسة <code>Max-Age</code> قد تتيح للمتصفح تذكّر هذا الجواب وتخطي الطلب التمهيدي مدةً.</li>
 <li><code>v-html</code> تُدخل الاسم بصفة HTML، فينشئ المتصفح صورة بمصدر غير صالح، ويعمل معالج <code>onerror</code> فيها بجلسة المدير، وتذهب الكوكيز (إن استطاعت السكربتات قراءتها) إلى المهاجم؛ وقد يتصرف السكربت أيضاً باسم المدير مباشرة. وكل دفاع يوقف جزءاً منه: العرض بـ <code>{{ }}</code> بدل <code>v-html</code> يُظهر الاسم نصاً (الإصلاح الحقيقي)؛ وسياسة أمان المحتوى بلا <code>'unsafe-inline'</code> ترفض المعالجات المضمّنة، و<code>connect-src</code> ترفض الطلب إلى موقع آخر؛ والكوكي <code>HttpOnly</code> لا تقرؤها السكربتات؛ والتحقق على الخادم قد يرفض <code>&lt;</code> و<code>&gt;</code> في أسماء المنتجات. طبقات، لأن أياً منها قد يغيب يوماً.</li>
 <li>(1) عنوان داخلي (<code>http://localhost:6379</code>، أو <code>http://10.0.0.5/admin</code>، أو عنوان بيانات السحابة <code>http://169.254.169.254/</code>) يجعل الخادم يصل إلى خدمات غير عامة، وقد يعيد أجوبتها أو أسرارها: اسمح بـ <code>https</code> وحده، وحلّل اسم المضيف بنفسك وارفض العناوين الخاصة وعناوين الحلقة المحلية وعناوين الربط المحلي، ولا تتبع إعادات التوجيه (أو افحص كل قفزة بالطريقة نفسها). (2) ملف ضخم أو لا ينتهي يشغل الخادم ويملأ القرص: مهلة، وحجم أقصى يُعدّ أثناء التنزيل، وفحص أن المحتوى صورة حقاً. (3) عنوان لخادم بطيء يُبقي الاتصالات مفتوحة ليستنفد عمّالك: مهل قصيرة، والتنزيل في مهمة خلفية (الفصل 10) لا داخل الطلب. والأفضل أن يرفع المديرون الملف بدل إعطاء عنوان.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 10</h2>
+<ol class="exercises">
+<li>فحص المخزون: في الطلب، لأن الجواب (مقبول أو مرفوض) يعتمد عليه، ويجب أن يحدث في معاملة الطلب نفسها. وبريد التأكيد: مهمة؛ فالزبون لا ينتظره، ويحتاج إعادة. والخصم من البطاقة: في الطلب عادة، لأن الزبون يحتاج أن يعرف في الحال هل نجح الدفع؛ وإن كان المزوّد بطيئاً أو يعمل بلا تزامن، يُحفظ الطلب «بانتظار الدفع» وتكمله مهمة (أو استدعاء الويب من المزوّد). وملف PDF للفاتورة الشهرية: مهمة مجدولة؛ لا أحد ينتظر، وهي ثقيلة.</li>
+<li>بعد أول فشل تنتظر المهمة ثانية، ثم 2 و4 و8 ثوانٍ بين المحاولات التالية: فتبدأ المحاولة الخامسة بعد 1 + 2 + 4 + 8 = 15 ثانية من أول فشل، مضافاً إليها الوقت الذي استغرقته المحاولات نفسها.</li>
+<li>لم يعلم Redis أبداً أن المهمة انتهت، فبعد أن ينتهي قفل العامل عليها تُعدّ متعطلة وتُعطى لعامل مرة أخرى: فيُرسل البريد مرة ثانية. ويجب أن تكون المهمة غير متأثرة بالتكرار: قبل الإرسال، افحص هل عُلّم التأكيد مُرسلاً (عمود <code>confirmation_sent_at</code> يُضبط بتحديث شرطي)، ومرّر مفتاح عدم تكرار مثل <code>order-1001-confirmation</code> إلى مزوّد البريد فيتجاهل الطلب المكرر. وعلّمه مُرسلاً بعد الإرسال مباشرة؛ والثغرة الباقية (انهيار بين جواب المزوّد والتحديث) يغطيها مفتاح المزوّد.</li>
+<li>حدّث بيانات كل مهمة فاشلة، ثم أعدها؛ فيأخذها العامل مرة أخرى، ويستمر عدّاد محاولاتها:
+<div class="listing" dir="ltr"><div class="listing-title">demos/retry.ts</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> job <span class="k">of</span> <span class="k">await</span> mail.getFailed()) {
+  <span class="k">await</span> job.updateData({ ...job.data, email: <span class="s">&quot;karim@example.com&quot;</span> });
+  <span class="k">await</span> job.retry();
+  console.log(job.id, <span class="s">&quot;أُعيدت&quot;</span>);
+}
+<span class="k">await</span> mail.close();
+<span class="k">await</span> connection.quit();</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أُصلح العنوان؛ أعد المهمة الفاشلة</span>
+<span class="c">$ </span><span class="k">node demos/retry.ts</span>
+order-1004 أُعيدت
+<span class="c">$ </span><span class="k">node src/worker.ts --until-empty</span>
+ 0.0s إرسال تأكيد الطلب 1004 (المحاولة 2)
+ 0.3s order-1004 أُرسل</pre></div>
+وفي متجر حقيقي يُصحَّح العنوان في سجل الزبون، والمهمة التي لا تحمل إلا رقم الطلب تقرؤه من هناك، فتكفي <code>job.retry()</code> وحدها.</li>
+<li>التصميم الأول: طابوران منفصلان، <code>exports</code> و<code>emails</code>، لكل منهما عمّاله (أو عملياته العاملة على الأقل)، فلا ينتظر البريد خلف التصدير أبداً؛ بسيط في التفكير، ويتوسع كل طابور وحده، بثمن عمليات أكثر. والتصميم الثاني: طابور واحد بأولويات (خيار <code>priority</code> في BullMQ)، يعطي البريد أولوية أعلى؛ قطع متحركة أقل، لكن البريد ما زال ينتظر كل تصدير قيد التنفيذ، وفيضان التصدير ما زال يبطئ كل شيء. والطوابير المنفصلة الجواب الأفضل عادة لعمل يختلف كثيراً في إلحاحه؛ والأولويات تناسب الفروق الصغيرة داخل النوع نفسه من العمل.</li>
 </ol>
 
 </section>
