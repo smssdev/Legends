@@ -1,0 +1,41 @@
+name: ci
+
+# كل دفع وطلب سحب يشغّل الخط نفسه الذي على جهاز المطوّر
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: sh ci.sh
+
+  image:
+    # main وحده يبني الصورة، موسومة بالـ commit الذي جاءت منه
+    if: github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+      - run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+  deploy:
+    needs: image
+    runs-on: ubuntu-24.04
+    # الإنتاج ينتظر موافقة شخص، في إعدادات البيئة
+    environment: production
+    steps:
+      - run: ./deploy.sh ${{ github.sha }}

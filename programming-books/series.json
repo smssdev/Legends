@@ -946,7 +946,8 @@
           "chapters": [
             {
               "en": "CI/CD Pipelines",
-              "ar": "خطوط التكامل والنشر المستمر"
+              "ar": "خطوط التكامل والنشر المستمر",
+              "src": "b4/delivery"
             },
             {
               "en": "Cloud and Infrastructure as Code",

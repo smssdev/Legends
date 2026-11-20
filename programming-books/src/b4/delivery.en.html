@@ -1,0 +1,180 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/delivery/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>CI/CD Pipelines</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write the pipeline as a script that runs the same on a laptop and on a CI service</li>
+<li>stop a change that breaks clients before it is merged</li>
+<li>build an artifact once, tagged with its commit, and promote it from one environment to the next</li>
+<li>deploy a new version without a single failed request</li>
+<li>change the database while two versions of the code run at once</li>
+<li>separate deploying code from releasing a feature, and roll back in minutes</li>
+</ul>
+</div>
+
+<p class="lead">Part 3 is about delivery: getting changes from a developer’s branch to customers, safely, many times a day. The tool for it is the <dfn>pipeline</dfn>: <dfn>continuous integration</dfn> (CI) checks every change automatically as soon as it is pushed, and <dfn>continuous delivery</dfn> (CD) turns every change that passes into something that can be deployed with one decision, without heroics. Teams that deploy small changes often have fewer incidents, not more, because each change is small enough to understand and to undo. This chapter builds Bit Booking’s pipeline, and measures the difference between a deploy that drops requests and one that drops none.</p>
+
+<aside class="bit" data-mood="happy"><p>The best pipelines are boring. They run in a few minutes, they fail for real reasons, and a deploy on Thursday afternoon is as calm as one on Monday morning. Boring is the goal.</p></aside>
+
+<h2>{{n}}.1 The pipeline is a script</h2>
+
+<p>The first rule: the pipeline is a script in the repository, not a configuration hidden in a CI service. Anyone can run it on their machine before pushing, and the CI service only runs the same script. Here is Bit Booking’s, on the contract project of Chapter {{n-8}}:</p>
+
+<pre data-code="ci.sh" data-title="ci.sh"></pre>
+
+<p>Each step must pass for the next to run, and the first failure stops everything and says where. The order puts the fastest checks first: a type error is found in seconds, before the slower tests start. On a clean change, all three pass:</p>
+
+<pre data-code="green.sh" data-title="Terminal"></pre>
+
+<p>Now a developer removes <code>ends_at</code> from the booking, carefully: the contract, the server and the generated types all agree, so the type check and the contract tests pass. Only one step knows that mobile apps already in customers’ pockets read that field:</p>
+
+<pre data-code="red.sh" data-title="Terminal"></pre>
+
+<p>This is exactly what a pipeline is for. The change was correct inside the repository and wrong for the world outside it, and the step that compares with <code>main</code> caught it before it was merged, with a message that says what to do: keep the field, or plan the expand-and-contract of Chapter {{n-8}}.</p>
+
+<h2>{{n}}.2 Running it on every change</h2>
+
+<p>A CI service runs the script on every push and every pull request. This is GitHub Actions’ version:</p>
+
+<pre data-code=".github/workflows/ci.yml" data-title=".github/workflows/ci.yml"></pre>
+
+<p>(The workflow is shown, not run, while making this book; the script it calls is the one recorded above.) Three jobs, each needing the previous one. <code>check</code> runs on every branch. <code>image</code> runs only on <code>main</code>, and builds the container image. <code>deploy</code> runs only after a person approves it, because the <code>production</code> environment is configured to require approval. Three settings complete the picture: make <code>check</code> a <em>required status check</em> in the branch protection of <code>main</code>, so nothing merges without it; keep secrets in the CI service’s secret store, never in the repository or in logs; and pin third-party actions to exact versions (or commit hashes), because a pipeline that runs someone else’s latest code with your secrets is a supply-chain risk.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: a slow or flaky pipeline gets ignored</p><p>If the pipeline takes forty minutes, developers batch their changes, and big changes are the risky ones. If it fails at random, people learn to press “re-run” and stop reading failures. Keep it under about ten minutes (cache dependencies, run independent jobs in parallel, run the slowest tests on <code>main</code> only), and treat a flaky test as a bug with an owner, fixed this week.</p></aside>
+
+<h2>{{n}}.3 Build once, deploy many times</h2>
+
+<p>The <code>image</code> job builds one container image and tags it with the commit it came from: <code>ghcr.io/…:5592fa98…</code>. That image is the release. It goes to a staging environment first, is checked there, and then the <em>same image</em>, byte for byte, goes to production. Rebuilding for production would give a different artifact from the one that was tested: other dependency versions, another compiler run. Everything that differs between environments (database addresses, keys, feature settings) comes from the environment, never from the image (Book 3). And because every image is named by its commit, the answer to “what is running in production?” is a commit you can open.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why should the pipeline be a script in the repository rather than steps written only in the CI service?</li><li>The change removing <code>ends_at</code> passed the type check and the tests. Why is that not enough to merge it?</li><li>Why deploy to production the same image that was tested in staging, instead of building it again?</li></ol></aside>
+
+<h2>{{n}}.4 Deploying without dropping requests</h2>
+
+<p>The last step is replacing the running version with the new one. To measure it, here is a server that behaves like a real one in the two ways that matter: it needs a moment to start (connections to open, caches to warm), and it reports through <code>/ready</code> whether it can serve:</p>
+
+<pre data-code="server.ts" data-title="server.ts"></pre>
+
+<p>Eight clients send requests through a load balancer for eight seconds, and at the second second, version 2 is deployed. First, the obvious way: stop the old process, start the new one in its place:</p>
+
+<pre data-code="naive.sh" data-title="Terminal"></pre>
+
+<p>For about two seconds, hundreds of requests fail: the old process is gone, and the new one is still starting. Every deploy, several times a day, customers get errors. Now a <dfn>rolling update</dfn>: start the new version beside the old one, wait until it is ready, add it to the load balancer, remove the old one, and only then ask the old one to stop:</p>
+
+<pre data-code="rolling.sh" data-title="Terminal"></pre>
+
+<p>Not one request failed. For two seconds both versions answered, then only v2. Three details made it work, and each is easy to miss. The load balancer only sends traffic to a copy that answers <code>/ready</code>. The old copy is removed from the pool <em>before</em> it is stopped, so no new requests reach it. And on <code>SIGTERM</code> it finishes the requests already in flight and tells clients to close their connections: without that last line, the load balancer’s kept-alive connections kept the old process answering for the whole test, as the first recording of this chapter showed before it was fixed. Platforms such as Kubernetes do exactly these steps for you, if the application provides the readiness check and the graceful shutdown.</p>
+
+<h2>{{n}}.5 Two versions at once</h2>
+
+<p>Look again at seconds 4 and 5 of the rolling update: v1 and v2 served customers side by side. That has a consequence for every change: <strong>each version must work with the data and the clients of the other</strong>. A database migration that renames a column breaks the old version the moment it runs; an API change that removes a field breaks the old clients. The safe pattern is the expand-and-contract of Chapter {{n-8}}, applied to the database:</p>
+<ol>
+<li><strong>Expand:</strong> add the new column (nullable, or with a default); deploy code that writes both the old and the new.</li>
+<li><strong>Migrate:</strong> copy the old data into the new column, in batches, while the system runs.</li>
+<li><strong>Switch:</strong> deploy code that reads the new column only.</li>
+<li><strong>Contract:</strong> once no running version uses the old column, drop it, in a later release.</li>
+</ol>
+<p>Migrations run as their own pipeline step, before the new version is deployed (Book 3), and each step is a separate, small, reversible release.</p>
+
+<h2>{{n}}.6 Releasing, and rolling back</h2>
+
+<p>Deploying code and releasing a feature are different decisions. A <dfn>feature flag</dfn> deploys the deposit feature switched off, turns it on for one business, then for 10% of them, then for everyone, and turns it off in seconds if something goes wrong, without a deploy. A <dfn>canary</dfn> does the same with versions: the new version first receives a small share of the traffic, and the metrics of Chapter {{n+2}} decide whether it gets the rest. And rolling back is just deploying the previous image again, by its commit: the pipeline makes that a one-line, practised action, not an emergency rebuild.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: keep main always releasable</p><p>Merge small changes, behind flags when they are not finished, so that <code>main</code> can be deployed at any moment. When the pipeline on <code>main</code> fails, fixing it comes before any new work: a broken <code>main</code> blocks everyone, and every hour it stays broken, the next fix mixes with more changes.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Pipeline logic only in the CI service</td><td>Failures nobody can reproduce locally</td><td>A script in the repository, run by CI</td></tr>
+<tr><td>Checking only inside the repository</td><td>Changes break clients outside it</td><td>Compare contracts with <code>main</code></td></tr>
+<tr><td>Slow or flaky pipelines</td><td>Batched changes, ignored failures</td><td>Under ten minutes; fix flaky tests first</td></tr>
+<tr><td>Rebuilding for production</td><td>Deploying something that was never tested</td><td>One image, tagged by commit, promoted</td></tr>
+<tr><td>Stop the old, then start the new</td><td>Failed requests on every deploy</td><td>Rolling updates with readiness checks</td></tr>
+<tr><td>No graceful shutdown</td><td>Cut requests, or old processes that never stop</td><td>Drain, close connections, then exit</td></tr>
+<tr><td>Migrations that break the old version</td><td>Errors during every rolling deploy</td><td>Expand and contract, over several releases</td></tr>
+<tr><td>Rollback as a rebuild</td><td>Slow, stressful recoveries</td><td>Redeploy the previous image, practised</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>CI</strong> checks every change automatically; <strong>CD</strong> makes every passing change deployable with one decision.</li>
+<li>Write the pipeline as a <strong>script</strong> in the repository, fastest checks first, stopping at the first failure.</li>
+<li>Check what tests cannot see, such as <strong>breaking changes against main</strong>.</li>
+<li>Make the check <strong>required</strong>, keep secrets in the CI store, and <strong>pin</strong> third-party actions.</li>
+<li><strong>Build once</strong>, tag by commit, and promote the same image through every environment.</li>
+<li>Deploy with <strong>rolling updates</strong>: readiness first, remove from the pool, then <strong>drain</strong> and stop.</li>
+<li>Two versions run at once, so migrate with <strong>expand and contract</strong>; release with <strong>flags and canaries</strong>; roll back by redeploying the previous image.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that it can be run, read and debugged anywhere: a developer runs the exact pipeline before pushing and gets the same answer as CI, a failure in CI can be reproduced on a laptop, and the pipeline is reviewed and versioned with the code it checks. Moving to another CI service changes only the few lines that call the script. 2. Because the type check and the tests only see the repository, where the contract, the server and the types were changed together and agree. The clients already installed on customers’ phones still read <code>ends_at</code>, and they are not in the repository; only the comparison with the contract on <code>main</code>, which is what those clients were built against, shows that they would break. 3. Because a rebuild is a different artifact: dependencies may resolve to newer versions, a base image may have changed, a build step may behave differently. Production would run code that no test and no staging check ever saw. Promoting the tested image means that what passed is exactly what runs.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project improves Bit Booking’s delivery. Measure before and after, as the chapter did with the deploys.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A faster pipeline</h3>
+<p class="project-goal">Halve the time of the pipeline without removing any check.</p>
+<p class="project-skills"><strong>You will practise:</strong> measuring steps, caching, and parallel jobs.</p>
+<ol class="steps">
+<li>Print the duration of each step in <code>ci.sh</code>.</li>
+<li>In the workflow, cache npm’s download cache, and split checks that do not depend on each other into parallel jobs.</li>
+<li>Run only the tests affected by the changed files on pull requests, and all of them on <code>main</code>.</li>
+<li>Record the times before and after.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> measure first; the slowest step is rarely the one people complain about.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A canary that decides by itself</h3>
+<p class="project-goal">Send 10% of traffic to the new version, and promote or roll back from its error rate.</p>
+<p class="project-skills"><strong>You will practise:</strong> weighted load balancing, metrics, and automated decisions.</p>
+<ol class="steps">
+<li>Give the balancer weights: <code>/admin/pool?ports=3001:9,3002:1</code>.</li>
+<li>Make v2 fail 5% of its requests on purpose, and count errors per version.</li>
+<li>Write a deploy script that sends 10% to v2 for 30 seconds, then promotes it if its error rate is under 1%, or removes it otherwise.</li>
+<li>Run it with a good v2 and a bad one, and record both outcomes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> compare v2’s error rate with v1’s during the same 30 seconds, not with a fixed number; a bad minute for the whole system is not v2’s fault.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Rename a column under load</h3>
+<p class="project-goal">Rename <code>bookings.email</code> to <code>customer_email</code> with rolling deploys and zero failed requests.</p>
+<p class="project-skills"><strong>You will practise:</strong> expand and contract, backfills, and versions that coexist.</p>
+<ol class="steps">
+<li>Write the four releases of section {{n}}.5 as separate migrations and code versions.</li>
+<li>Run each rolling deploy under the load script, with bookings being made, and check zero failures.</li>
+<li>Backfill in batches of 1,000 rows, and show that bookings made during the backfill are correct.</li>
+<li>Write the order of the steps, and what you would do if step 3 had to be rolled back.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a trigger that copies writes from the old column to the new during the transition removes the need for the code to write both.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Put these steps in the best order for a pipeline, and explain: integration tests (3 minutes), lint (10 seconds), type check (20 seconds), unit tests (40 seconds), build the image (2 minutes).</li>
+<li><span class="level">Easy</span> In the naive deploy, failures lasted about two seconds. What decided that length, and how would a slower-starting application change it?</li>
+<li><span class="level">Medium</span> The workflow’s <code>deploy</code> job receives the commit hash. Write what <code>deploy.sh</code> must do for a rolling update on two servers, step by step, including how it knows each step succeeded.</li>
+<li><span class="level">Medium</span> A developer adds a required database column and the code that fills it, in one release, deployed by rolling update. What fails, for how long, and how should the change be split?</li>
+<li><span class="level">Challenge</span> Design the rollback of a release that included a database migration which already ran. When can you simply redeploy the previous image, and when can you not?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The pipeline needs somewhere to deploy to. The next chapter is about the cloud, and about describing servers, networks and databases as code that is reviewed like everything else.</p>
+</div>
+</section>

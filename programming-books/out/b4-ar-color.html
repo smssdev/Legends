@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "الفصل 9: ست حالات في تصميم الأنظمة"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "الفصل 10: خطوط التكامل والنشر المستمر"; } }
+@page ch10:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -3443,6 +3445,333 @@ Execution Time: 0.086 ms</pre></div>
 <p>التصميم هو الخطة؛ والتسليم هو كيف تصل إلى الزبائن بأمان، مرات كثيرة في اليوم. ويبدأ الجزء الثالث بـ CI/CD: الخط الذي يختبر كل تغيير ويبنيه ويشحنه.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b4/delivery/ar">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">الفصل 10</p><h1>خطوط التكامل والنشر المستمر</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تكتب الخط سكربتاً يعمل بالطريقة نفسها على حاسوب محمول وعلى خدمة CI</li>
+<li>توقف التغيير الذي يكسر العملاء قبل أن يُدمج</li>
+<li>تبني الحزمة مرة واحدة، موسومة بالـ commit الذي جاءت منه، وترقّيها من بيئة إلى التالية</li>
+<li>تنشر نسخة جديدة دون طلب فاشل واحد</li>
+<li>تغيّر قاعدة البيانات بينما تعمل نسختان من الكود معاً</li>
+<li>تفصل نشر الكود عن إطلاق الميزة، وتتراجع في دقائق</li>
+</ul>
+</div>
+
+<p class="lead">الجزء الثالث عن التسليم: إيصال التغييرات من فرع المطوّر إلى الزبائن، بأمان، مرات كثيرة في اليوم. وأداته <dfn>الخط</dfn> (pipeline): <dfn>التكامل المستمر</dfn> (CI) يفحص كل تغيير آلياً لحظة دفعه، و<dfn>التسليم المستمر</dfn> (CD) يحوّل كل تغيير ينجح إلى شيء يمكن نشره بقرار واحد، بلا بطولات. والفرق التي تنشر تغييرات صغيرة كثيراً تقع لها حوادث أقل لا أكثر، لأن كل تغيير صغير بما يكفي ليُفهم ويُتراجع عنه. وهذا الفصل يبني خط «بِت للحجوزات»، ويقيس الفرق بين نشر يُسقط طلبات ونشر لا يُسقط شيئاً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أفضل الخطوط مملة. تعمل في دقائق قليلة، وتفشل لأسباب حقيقية، والنشر عصر الخميس هادئ كالنشر صباح الاثنين. والملل هو الهدف.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>الخط سكربت</span></h2>
+
+<p>القاعدة الأولى: الخط سكربت في المستودع، لا إعدادات مخبأة في خدمة CI. يستطيع أي أحد تشغيله على جهازه قبل الدفع، ولا تفعل خدمة CI إلا تشغيل السكربت نفسه. وهذا خط «بِت للحجوزات»، على مشروع العقد في الفصل 2:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ci.sh</div><pre class="code"><span class="c line-bidi">#!/bin/sh</span>
+<span class="c line-bidi"># توقف عند أول خطوة تفشل، وقل أيها</span>
+set -e
+step() {
+  printf &#x27;%s: &#x27; &quot;$1&quot;
+  shift
+  if out=$(&quot;$@&quot; 2&gt;&amp;1); then echo &quot;ok&quot;; else echo &quot;FAILED&quot;; echo &quot;$out&quot; | tail -4; echo &quot;فشل الخط عند: $STEP&quot;; exit 1; fi
+}
+STEP=&quot;فحص الأنواع&quot;;    step &quot;$STEP&quot; npx tsc
+STEP=&quot;اختبارات العقد&quot;;    step &quot;$STEP&quot; node --test
+<span class="c line-bidi"># العقد على main: ما يستعمله العملاء اليوم</span>
+git show main:openapi.yaml &gt; /tmp/openapi.main.yaml
+STEP=&quot;التغييرات الكاسرة&quot;; step &quot;$STEP&quot; node breaking.ts /tmp/openapi.main.yaml openapi.yaml
+echo &quot;نجح الخط&quot;</pre></div>
+
+<p>يجب أن تنجح كل خطوة لتعمل التالية، وأول فشل يوقف كل شيء ويقول أين. والترتيب يضع أسرع الفحوص أولاً: خطأ الأنواع يُكتشف في ثوانٍ، قبل أن تبدأ الاختبارات الأبطأ. وعلى تغيير سليم، تنجح الثلاث:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الخط على تغيير سليم</span>
+<span class="c">$ </span><span class="k">sh ci.sh</span>
+فحص الأنواع: ok
+اختبارات العقد: ok
+التغييرات الكاسرة: ok
+نجح الخط</pre></div>
+
+<p>والآن يحذف مطوّر <code>ends_at</code> من الحجز، بعناية: العقد والخادم والأنواع المولَّدة كلها متفقة، فينجح فحص الأنواع واختبارات العقد. وخطوة واحدة فقط تعرف أن تطبيقات الجوال الموجودة في جيوب الزبائن تقرأ ذلك الحقل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الخط نفسه، بعد أن يحذف أحدهم ends_at</span>
+<span class="c">$ </span><span class="k">sh ci.sh; echo &quot;exit code: $?&quot;</span>
+فحص الأنواع: ok
+اختبارات العقد: ok
+التغييرات الكاسرة: FAILED
+1 تغييرات كاسرة:
+- POST /bookings 201: حُذف حقل من الإجابة &quot;ends_at&quot;
+فشل الخط عند: التغييرات الكاسرة
+exit code: 1</pre></div>
+
+<p>هذا بالضبط ما وُجد الخط من أجله. كان التغيير صحيحاً داخل المستودع وخاطئاً للعالم خارجه، والخطوة التي تقارن بـ <code>main</code> أمسكته قبل أن يُدمج، برسالة تقول ماذا تفعل: أبقِ الحقل، أو خطّط للتوسيع ثم التقليص في الفصل 2.</p>
+
+<h2><span class="sec">10.2</span> <span>تشغيله مع كل تغيير</span></h2>
+
+<p>تشغّل خدمة CI السكربت مع كل دفع وكل طلب سحب. وهذه نسخة GitHub Actions:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.github/workflows/ci.yml</div><pre class="code">name: ci
+
+# كل دفع وطلب سحب يشغّل الخط نفسه الذي على جهاز المطوّر
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: sh ci.sh
+
+  image:
+    # main وحده يبني الصورة، موسومة بالـ commit الذي جاءت منه
+    if: github.ref == &#x27;refs/heads/main&#x27;
+    needs: check
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo &quot;${{ secrets.GITHUB_TOKEN }}&quot; | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+      - run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+  deploy:
+    needs: image
+    runs-on: ubuntu-24.04
+    # الإنتاج ينتظر موافقة شخص، في إعدادات البيئة
+    environment: production
+    steps:
+      - run: ./deploy.sh ${{ github.sha }}</pre></div>
+
+<p>(سير العمل معروض لا مُشغَّل أثناء إعداد هذا الكتاب؛ والسكربت الذي يناديه هو المسجَّل أعلاه.) ثلاث مهام، كلٌّ منها تحتاج سابقتها. <code>check</code> تعمل على كل فرع. و<code>image</code> تعمل على <code>main</code> وحده، وتبني صورة الحاوية. و<code>deploy</code> لا تعمل إلا بعد موافقة شخص، لأن بيئة <code>production</code> مضبوطة لتطلب الموافقة. وثلاثة إعدادات تكمل الصورة: اجعل <code>check</code> <em>فحص حالة مطلوباً</em> في حماية فرع <code>main</code>، فلا يُدمج شيء بدونه؛ واحفظ الأسرار في مخزن أسرار خدمة CI، لا في المستودع ولا في السجلات أبداً؛ وثبّت إجراءات الأطراف الثالثة على إصدارات محددة (أو بصمات commits)، لأن خطاً يشغّل أحدث كود لغيرك بأسرارك خطر على سلسلة التوريد.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: الخط البطيء أو المتقلب يُتجاهل</p><p>إن استغرق الخط أربعين دقيقة، جمّع المطوّرون تغييراتهم، والتغييرات الكبيرة هي الخطرة. وإن فشل عشوائياً، تعلّم الناس ضغط «أعد التشغيل» وكفّوا عن قراءة الأعطال. أبقِه دون عشر دقائق تقريباً (خزّن الاعتماديات مؤقتاً، وشغّل المهام المستقلة متوازية، وشغّل أبطأ الاختبارات على <code>main</code> وحده)، وعامل الاختبار المتقلب خطأً له مالك، يُصلح هذا الأسبوع.</p></aside>
+
+<h2><span class="sec">10.3</span> <span>ابنِ مرة، وانشر مرات</span></h2>
+
+<p>تبني مهمة <code>image</code> صورة حاوية واحدة وتسمها بالـ commit الذي جاءت منه: <code>ghcr.io/…:5592fa98…</code>. وتلك الصورة هي الإصدار. تذهب أولاً إلى بيئة تجريبية (staging)، وتُفحص هناك، ثم تذهب <em>الصورة نفسها</em>، بايتاً ببايت، إلى الإنتاج. وإعادة البناء للإنتاج ستعطي حزمة غير التي اختُبرت: إصدارات اعتماديات أخرى، وتشغيل مترجم آخر. وكل ما يختلف بين البيئات (عناوين قواعد البيانات، والمفاتيح، وإعدادات الميزات) يأتي من البيئة، لا من الصورة أبداً (الكتاب الثالث). ولأن كل صورة مسماة بالـ commit الخاص بها، فإجابة «ما الذي يعمل في الإنتاج؟» commit تستطيع فتحه.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يجب أن يكون الخط سكربتاً في المستودع لا خطوات مكتوبة في خدمة CI وحدها؟</li><li>التغيير الذي حذف <code>ends_at</code> نجح في فحص الأنواع والاختبارات. لماذا لا يكفي ذلك لدمجه؟</li><li>لماذا تنشر في الإنتاج الصورة نفسها التي اختُبرت في البيئة التجريبية، بدل أن تبنيها من جديد؟</li></ol></aside>
+
+<h2><span class="sec">10.4</span> <span>النشر دون إسقاط طلبات</span></h2>
+
+<p>الخطوة الأخيرة استبدال النسخة العاملة بالجديدة. ولنقيسها، هذا خادم يتصرف كالخادم الحقيقي في الأمرين المهمين: يحتاج لحظة ليبدأ (اتصالات تُفتح، وذاكرات مؤقتة تُدفأ)، ويبلّغ عبر <code>/ready</code> هل يستطيع الخدمة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { setTimeout as sleep } <span class="k">from</span> <span class="s">&quot;node:timers/promises&quot;</span>;
+
+<span class="k">const</span> version = process.env.VERSION ?? <span class="s">&quot;v1&quot;</span>;
+<span class="k">let</span> ready = <span class="k">false</span>;
+<span class="k">let</span> stopping = <span class="k">false</span>;
+
+<span class="k">const</span> server = createServer(<span class="k">async</span> (request, response) =&gt; {
+  <span class="c line-bidi">// جاهز فقط حين يستطيع الخدمة؛ والموزّع يسأل قبل أن يرسل الحركة</span>
+  <span class="k">if</span> (request.url === <span class="s">&quot;/ready&quot;</span>) <span class="k">return</span> response.writeHead(ready ? <span class="n">200</span> : <span class="n">503</span>).end();
+  <span class="c line-bidi">// أثناء التوقف، قل للعملاء ألا يعيدوا استعمال الاتصال، وإلا أبقوه حياً إلى الأبد</span>
+  <span class="k">if</span> (stopping) response.setHeader(<span class="s">&quot;connection&quot;</span>, <span class="s">&quot;close&quot;</span>);
+  <span class="k">await</span> sleep(<span class="n">20</span>);
+  response.end(version);
+});
+server.listen(Number(process.env.PORT));
+
+<span class="c line-bidi">// الخادم الحقيقي يحتاج وقتاً ليبدأ: اتصالات، وذاكرات مؤقتة، وكود يُترجم</span>
+<span class="k">await</span> sleep(<span class="n">1000</span>);
+ready = <span class="k">true</span>;
+
+<span class="c line-bidi">// SIGTERM: توقف عن القبول، وأنهِ ما يجري، ثم اخرج</span>
+process.on(<span class="s">&quot;SIGTERM&quot;</span>, () =&gt; {
+  ready = <span class="k">false</span>;
+  stopping = <span class="k">true</span>;
+  server.close(() =&gt; process.exit(<span class="n">0</span>));
+  server.closeIdleConnections();
+});</pre></div>
+
+<p>ثمانية عملاء يرسلون طلبات عبر موزّع حمل ثماني ثوانٍ، وفي الثانية الثانية تُنشر النسخة 2. أولاً، الطريقة البديهية: أوقف العملية القديمة، وابدأ الجديدة مكانها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># انشر v2 بإعادة التشغيل في المكان، تحت الحمل</span>
+<span class="c">$ </span><span class="k">node load.ts 8 &amp;   # 8 clients for 8 seconds; at second 2:</span>
+<span class="c">$ </span><span class="k">kill -TERM $V1</span>
+<span class="c">$ </span><span class="k">VERSION=v2 PORT=3001 node server.ts &amp;</span>
+<span class="c">$ </span><span class="k">wait</span>
+الثانية    نجح     فشل  النسخ
+1          328       0  v1
+2          350      90  v1
+3          339     208  v2
+4          367       0  v2
+5          369       0  v2
+6          369       0  v2
+7          371       0  v2
+8          373       0  v2</pre></div>
+
+<p>نحو ثانيتين، تفشل مئات الطلبات: ذهبت العملية القديمة، والجديدة ما زالت تبدأ. ومع كل نشر، مرات في اليوم، يحصل الزبائن على أخطاء. والآن <dfn>تحديث متدرج</dfn> (rolling update): ابدأ النسخة الجديدة بجانب القديمة، وانتظر حتى تجهز، وأضفها إلى موزّع الحمل، واحذف القديمة، وبعدها فقط اطلب من القديمة أن تتوقف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># انشر v2 تحديثاً متدرجاً، تحت الحمل</span>
+<span class="c">$ </span><span class="k">node load.ts 8 &amp;   # 8 clients for 8 seconds; at second 2:</span>
+<span class="c">$ </span><span class="k">VERSION=v2 PORT=3002 node server.ts &amp;</span>
+<span class="c">$ </span><span class="k">until curl -sf localhost:3002/ready; do sleep 0.1; done</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/admin/pool?ports=3001,3002&#x27;</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/admin/pool?ports=3002&#x27;</span>
+<span class="c">$ </span><span class="k">kill -TERM $V1</span>
+<span class="c">$ </span><span class="k">wait</span>
+الثانية    نجح     فشل  النسخ
+1          324       0  v1
+2          365       0  v1
+3          369       0  v1
+4          366       0  v1 v2
+5          363       0  v1 v2
+6          368       0  v2
+7          368       0  v2
+8          370       0  v2</pre></div>
+
+<p>لم يفشل طلب واحد. ثانيتين أجابت النسختان معاً، ثم v2 وحدها. وثلاث تفاصيل جعلت ذلك يعمل، وكلٌّ منها يسهل أن يفوت. لا يرسل موزّع الحمل الحركة إلا لنسخة تجيب <code>/ready</code>. وتُحذف النسخة القديمة من المجمع <em>قبل</em> أن تُوقف، فلا تصلها طلبات جديدة. وعند <code>SIGTERM</code> تنهي الطلبات الجارية وتطلب من العملاء إغلاق اتصالاتهم: وبلا هذا السطر الأخير، أبقت الاتصالات المحفوظة لدى الموزّع العمليةَ القديمة تجيب طوال الاختبار، كما أظهر أول تسجيل لهذا الفصل قبل إصلاحه. والمنصات مثل Kubernetes تنفذ هذه الخطوات بالضبط نيابة عنك، إن وفّر التطبيق فحص الجاهزية والإيقاف اللطيف.</p>
+
+<h2><span class="sec">10.5</span> <span>نسختان معاً</span></h2>
+
+<p>انظر من جديد إلى الثانيتين 4 و5 من التحديث المتدرج: خدمت v1 وv2 الزبائن جنباً إلى جنب. ولهذا نتيجة لكل تغيير: <strong>يجب أن تعمل كل نسخة مع بيانات الأخرى وعملائها</strong>. ترحيل قاعدة بيانات يعيد تسمية عمود يكسر النسخة القديمة لحظة تشغيله؛ وتغيير في الواجهة البرمجية يحذف حقلاً يكسر العملاء القدامى. والنمط الآمن هو التوسيع ثم التقليص في الفصل 2، مطبقاً على قاعدة البيانات:</p>
+<ol>
+<li><strong>التوسيع:</strong> أضف العمود الجديد (يقبل الفراغ، أو بقيمة افتراضية)؛ وانشر كوداً يكتب القديم والجديد معاً.</li>
+<li><strong>الترحيل:</strong> انسخ البيانات القديمة إلى العمود الجديد، على دفعات، والنظام يعمل.</li>
+<li><strong>التحويل:</strong> انشر كوداً يقرأ العمود الجديد وحده.</li>
+<li><strong>التقليص:</strong> حين لا تستعمل أي نسخة عاملة العمود القديم، احذفه، في إصدار لاحق.</li>
+</ol>
+<p>وتعمل الترحيلات خطوةً خاصة في الخط، قبل نشر النسخة الجديدة (الكتاب الثالث)، وكل خطوة إصدار منفصل صغير يمكن التراجع عنه.</p>
+
+<h2><span class="sec">10.6</span> <span>الإطلاق، والتراجع</span></h2>
+
+<p>نشر الكود وإطلاق الميزة قراران مختلفان. <dfn>مفتاح الميزة</dfn> (feature flag) ينشر ميزة العربون مطفأة، ثم يشغّلها لعمل واحد، ثم لـ 10% من الأعمال، ثم للجميع، ويطفئها في ثوانٍ إن ساء شيء، بلا نشر. و<dfn>نشر الكناري</dfn> (canary) يفعل الشيء نفسه مع النسخ: تستقبل النسخة الجديدة حصة صغيرة من الحركة أولاً، وتقرر مقاييس الفصل 12 هل تأخذ الباقي. والتراجع ليس إلا نشر الصورة السابقة من جديد، بالـ commit الخاص بها: يجعل الخط ذلك فعلاً من سطر واحد، متدرَّباً عليه، لا إعادة بناء طارئة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: أبقِ main قابلاً للإطلاق دائماً</p><p>ادمج تغييرات صغيرة، خلف مفاتيح ميزات حين لا تكتمل، فيمكن نشر <code>main</code> في أي لحظة. وحين يفشل الخط على <code>main</code>، فإصلاحه يسبق أي عمل جديد: <code>main</code> المكسور يوقف الجميع، وكل ساعة يبقى فيها مكسوراً يختلط الإصلاح التالي بتغييرات أكثر.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>منطق الخط في خدمة CI وحدها</td><td>أعطال لا يستطيع أحد إعادة إنتاجها محلياً</td><td>سكربت في المستودع، تشغّله CI</td></tr>
+<tr><td>الفحص داخل المستودع وحده</td><td>تغييرات تكسر العملاء خارجه</td><td>قارن العقود بـ <code>main</code></td></tr>
+<tr><td>خطوط بطيئة أو متقلبة</td><td>تغييرات مجمّعة، وأعطال متجاهَلة</td><td>دون عشر دقائق؛ وأصلح الاختبارات المتقلبة أولاً</td></tr>
+<tr><td>إعادة البناء للإنتاج</td><td>نشر شيء لم يُختبر قط</td><td>صورة واحدة، موسومة بالـ commit، تُرقّى</td></tr>
+<tr><td>أوقف القديم، ثم ابدأ الجديد</td><td>طلبات فاشلة مع كل نشر</td><td>تحديثات متدرجة بفحوص جاهزية</td></tr>
+<tr><td>لا إيقاف لطيف</td><td>طلبات مقطوعة، أو عمليات قديمة لا تتوقف أبداً</td><td>أفرغ، وأغلق الاتصالات، ثم اخرج</td></tr>
+<tr><td>ترحيلات تكسر النسخة القديمة</td><td>أخطاء أثناء كل نشر متدرج</td><td>توسيع ثم تقليص، على عدة إصدارات</td></tr>
+<tr><td>التراجع بإعادة البناء</td><td>تعافٍ بطيء ومجهِد</td><td>أعد نشر الصورة السابقة، بتدريب</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>CI</strong> يفحص كل تغيير آلياً؛ و<strong>CD</strong> يجعل كل تغيير ناجح قابلاً للنشر بقرار واحد.</li>
+<li>اكتب الخط <strong>سكربتاً</strong> في المستودع، أسرع الفحوص أولاً، يتوقف عند أول فشل.</li>
+<li>افحص ما لا تراه الاختبارات، مثل <strong>التغييرات الكاسرة مقارنة بـ main</strong>.</li>
+<li>اجعل الفحص <strong>مطلوباً</strong>، واحفظ الأسرار في مخزن CI، و<strong>ثبّت</strong> إجراءات الأطراف الثالثة.</li>
+<li><strong>ابنِ مرة</strong>، وسِم بالـ commit، ورقِّ الصورة نفسها عبر كل البيئات.</li>
+<li>انشر <strong>بتحديثات متدرجة</strong>: الجاهزية أولاً، واحذف من المجمع، ثم <strong>أفرغ</strong> وأوقف.</li>
+<li>تعمل نسختان معاً، فرحّل <strong>بالتوسيع ثم التقليص</strong>؛ وأطلق <strong>بالمفاتيح والكناري</strong>؛ وتراجع بإعادة نشر الصورة السابقة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ليمكن تشغيله وقراءته وتصحيحه في أي مكان: يشغّل المطوّر الخط نفسه بالضبط قبل الدفع ويحصل على إجابة CI نفسها، ويمكن إعادة إنتاج فشل في CI على حاسوب محمول، ويُراجَع الخط ويُؤرشف مع الكود الذي يفحصه. والانتقال إلى خدمة CI أخرى لا يغيّر إلا الأسطر القليلة التي تنادي السكربت. 2. لأن فحص الأنواع والاختبارات لا ترى إلا المستودع، حيث تغيّر العقد والخادم والأنواع معاً فاتفقت. أما العملاء المثبَّتون على هواتف الزبائن فما زالوا يقرؤون <code>ends_at</code>، وليسوا في المستودع؛ ولا يُظهر أنهم سينكسرون إلا المقارنة بالعقد على <code>main</code>، الذي بُني عليه أولئك العملاء. 3. لأن إعادة البناء حزمة مختلفة: قد تُحلّ الاعتماديات إلى إصدارات أحدث، وقد تتغير صورة أساس، وقد تتصرف خطوة بناء بشكل مختلف. فيشغّل الإنتاج كوداً لم يره أي اختبار ولا أي فحص تجريبي قط. وترقية الصورة المختبرة تعني أن ما نجح هو بالضبط ما يعمل.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يحسّن تسليم «بِت للحجوزات». قِس قبل وبعد، كما فعل الفصل مع عمليات النشر.</p>
+
+<div class="project">
+<p class="project-label">المشروع 10.1 · سهل</p>
+<h3>خط أسرع</h3>
+<p class="project-goal">نصّف وقت الخط دون حذف أي فحص.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قياس الخطوات، والتخزين المؤقت، والمهام المتوازية.</p>
+<ol class="steps">
+<li>اطبع مدة كل خطوة في <code>ci.sh</code>.</li>
+<li>في سير العمل، خزّن ذاكرة تنزيلات npm مؤقتاً، وافصل الفحوص التي لا يعتمد بعضها على بعض إلى مهام متوازية.</li>
+<li>شغّل في طلبات السحب الاختبارات المتأثرة بالملفات المتغيرة وحدها، وكلها على <code>main</code>.</li>
+<li>سجّل الأزمنة قبل وبعد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قِس أولاً؛ أبطأ خطوة نادراً ما تكون التي يشتكي منها الناس.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 10.2 · متوسط</p>
+<h3>كناري يقرر وحده</h3>
+<p class="project-goal">أرسل 10% من الحركة إلى النسخة الجديدة، ورقّها أو تراجع عنها بحسب معدل أخطائها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> توزيع الحمل الموزون، والمقاييس، والقرارات الآلية.</p>
+<ol class="steps">
+<li>أعطِ الموزّع أوزاناً: <code>/admin/pool?ports=3001:9,3002:1</code>.</li>
+<li>اجعل v2 تفشل في 5% من طلباتها عمداً، وعدّ الأخطاء لكل نسخة.</li>
+<li>اكتب سكربت نشر يرسل 10% إلى v2 ثلاثين ثانية، ثم يرقّيها إن كان معدل أخطائها دون 1%، أو يحذفها غير ذلك.</li>
+<li>شغّله بنسخة v2 جيدة وأخرى سيئة، وسجّل النتيجتين.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قارن معدل أخطاء v2 بمعدل v1 في الثلاثين ثانية نفسها، لا برقم ثابت؛ فالدقيقة السيئة للنظام كله ليست ذنب v2.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 10.3 · تحدٍّ</p>
+<h3>أعد تسمية عمود تحت الحمل</h3>
+<p class="project-goal">أعد تسمية <code>bookings.email</code> إلى <code>customer_email</code> بنشر متدرج وبلا طلب فاشل واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التوسيع ثم التقليص، والملء اللاحق، ونسخ تتعايش.</p>
+<ol class="steps">
+<li>اكتب الإصدارات الأربعة في القسم 10.5 ترحيلاتٍ ونسخ كود منفصلة.</li>
+<li>شغّل كل نشر متدرج تحت سكربت الحمل، والحجوزات تُصنع، وتحقق من صفر أعطال.</li>
+<li>املأ لاحقاً على دفعات من 1,000 صف، وأظهر أن الحجوزات المصنوعة أثناء الملء صحيحة.</li>
+<li>اكتب ترتيب الخطوات، وما ستفعله لو وجب التراجع عن الخطوة 3.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مُطلِق (trigger) ينسخ الكتابات من العمود القديم إلى الجديد أثناء الانتقال يغني الكود عن الكتابة في الاثنين.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> رتّب هذه الخطوات أفضل ترتيب لخط، واشرح: اختبارات التكامل (3 دقائق)، والتدقيق (lint، 10 ثوانٍ)، وفحص الأنواع (20 ثانية)، واختبارات الوحدات (40 ثانية)، وبناء الصورة (دقيقتان).</li>
+<li><span class="level">سهل</span> في النشر البديهي، دامت الأعطال نحو ثانيتين. ما الذي حدد هذا الطول، وكيف سيغيّره تطبيق أبطأ في البدء؟</li>
+<li><span class="level medium">متوسط</span> تستقبل مهمة <code>deploy</code> في سير العمل بصمة الـ commit. اكتب ما يجب أن يفعله <code>deploy.sh</code> لتحديث متدرج على خادمين، خطوة بخطوة، ومنه كيف يعرف أن كل خطوة نجحت.</li>
+<li><span class="level medium">متوسط</span> يضيف مطوّر عموداً مطلوباً في قاعدة البيانات والكودَ الذي يملؤه، في إصدار واحد، يُنشر بتحديث متدرج. ما الذي يفشل، وكم يدوم، وكيف يجب أن يُقسم التغيير؟</li>
+<li><span class="level hard">تحدٍّ</span> صمّم التراجع عن إصدار تضمن ترحيلاً لقاعدة البيانات عمل أصلاً. متى تستطيع ببساطة إعادة نشر الصورة السابقة، ومتى لا تستطيع؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 11</p>
+<p>يحتاج الخط مكاناً ينشر إليه. والفصل التالي عن السحابة، وعن وصف الخوادم والشبكات وقواعد البيانات كوداً يُراجع كأي شيء آخر.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3558,6 +3887,16 @@ export async function GET(request: Request) {
 <li>لا تحذف المهمة حين تأخذها؛ انقلها بدلاً من ذلك: في السكربت الذري نفسه، خذ المهمة المستحقة وأعد إضافتها بدرجة جديدة «الآن + 5 دقائق» (إيجار)، ثم احذفها فقط بعد إرسال التذكير. فإن تعطل العامل، تستحق المهمة من جديد بعد الإيجار ويرسلها عامل آخر. والخطر الجديد التكرار: العامل الذي أرسل التذكير لكنه تعطل قبل حذف المهمة يسبب تذكيراً ثانياً. اجعل الإرسال بلا أثر عند التكرار (سجّل التذكير مُرسلاً في قاعدة البيانات، بمفتاح الحجز، وتخطه إن كان مسجلاً)، فيُتجنب التكرار إلا في أضيق نافذة.</li>
 <li>المتطلبات: يرى أصحاب العمل عدّاً حياً لزوار صفحة حجزهم؛ والتقريب مقبول؛ ولا شيء يُحفظ طويلاً. الأرقام: في الذروة ربما 5,000 صفحة مفتوحة عبر المنصة، كلٌّ ترسل نبضة كل 15 ثانية (نحو 330 كتابة في الثانية)، تقرؤها لوحات بضع مئات من أصحاب العمل. الواجهة: ترسل الصفحة <code>POST /presence/{business}</code> كل 15 ثانية؛ وتقرأ اللوحة <code>GET /presence/{business}</code> أو تستمع على WebSocket. البيانات: لكل عمل، مجموعة مرتبة في Redis لأرقام الزوار، درجتها وقت آخر نبضة. التصميم: تذهب النبضات إلى الواجهة البرمجية فتحدّث Redis؛ والعدد هو أعضاء المجموعة الذين درجتهم في آخر 30 ثانية. الجزء الصعب: إخراج الزوار الذين غادروا دون أن يقولوا، وهو ما تفعله المجموعة المرتبة بالوقت وحدها (احذف الأعضاء الأقدم من 30 ثانية قبل العدّ). المفاضلات: الأعداد تقريبية حتى 30 ثانية؛ وإن تعطل Redis لا تعرض الأداة شيئاً بدل رقم خاطئ؛ وأرقام الزوار عشوائية لكل تبويب، ليست بيانات شخصية أبداً.</li>
 <li>خزّن مفتاح بحث مطبَّعاً للعربية: احذف التشكيل والتطويل، ووحّد أشكال الألف (أ إ آ إلى ا)، والألف المقصورة (ى إلى ي)، والتاء المربوطة (ة إلى ه)، وصغّر أي أحرف لاتينية، واحفظه في عمود مولَّد بترتيب <code>C</code> وفهرس B-tree، كما في القسم 9.7. وطبّق التطبيع نفسه بالضبط على ما يكتبه الزبون قبل البحث، فيلتقي الطرفان. فيجد الفهرس النتائج بالبادئة، بترتيب المفتاح، ويتوقف بعد بضع. ولترتيب العرض، رتّب تلك النتائج القليلة بترتيب عربي (مثلاً ترتيب ICU مثل <code>"ar-x-icu"</code>)، وهذا لا يكلّف شيئاً لخمسة صفوف. وللأخطاء الإملائية، أضف فهرس ثلاثيات على المفتاح المطبَّع نفسه.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 10</h2>
+<ol class="exercises">
+<li>التدقيق (10 ثوانٍ)، ثم فحص الأنواع (20 ثانية)، ثم اختبارات الوحدات (40 ثانية)، ثم اختبارات التكامل (3 دقائق)، ثم بناء الصورة (دقيقتان). الفحوص السريعة الرخيصة أولاً، فتفشل معظم الأخطاء خلال دقيقة بدل خمس؛ والصورة تُبنى أخيراً لأنها لا تستحق البناء إلا لتغيير نجح في كل شيء، وفي طلب السحب يمكن تخطيها تماماً. ويمكن أيضاً تشغيل التدقيق وفحص الأنواع متوازيين مع اختبارات الوحدات، إذ لا يعتمد أي منها على الآخر.</li>
+<li>الفجوة بين إيقاف العملية القديمة وقدرة الجديدة على الإجابة: زمن بدء الخادم الجديد (ثانية هنا، لفتح الاتصالات وتدفئة الذاكرات) مع زمن إيقاف القديم وحجز المنفذ، بينما ظل موزّع الحمل يرسل الطلبات إلى منفذ لا شيء جاهز خلفه. والتطبيق الذي يحتاج 30 ثانية ليبدأ (أطر كبيرة، وتدفئة ذاكرات) سيُفشل كل طلب 30 ثانية مع كل نشر، ولهذا بالضبط ينتظر التحديث المتدرج الجاهزيةَ قبل أن يرسل أي حركة.</li>
+<li>لكل خادم بدوره: (1) اسحب الصورة <code>…:$SHA</code>؛ (2) ابدأ حاوية منها على منفذ حر؛ (3) استطلع <code>/ready</code> فيها حتى تجيب 200، بحد زمني، وأوقف النشر (حاذفاً الحاوية الجديدة) إن لم تجب أبداً؛ (4) أضفها إلى مجمع موزّع الحمل وتحقق أن الموزّع يبلّغ بصحتها؛ (5) احذف الحاوية القديمة من المجمع؛ (6) أرسل إلى الحاوية القديمة <code>SIGTERM</code> وانتظر خروجها، بحد زمني تُقتل بعده؛ (7) راقب معدل الأخطاء دقيقة وأوقف النشر إن ارتفع. وكل خطوة تفحص نتيجتها، فالفشل يوقف النشر والنسخة القديمة ما زالت تخدم.</li>
+<li>أثناء النشر المتدرج تظل النسخة القديمة تعمل وتدرج صفوفاً بلا العمود الجديد: فإن كان العمود <code>NOT NULL</code> بلا قيمة افتراضية، يفشل كل إدراج من النسخة القديمة، ما دام النشر (وقد يفشل الترحيل نفسه على الصفوف الموجودة). اقسمه: الإصدار 1 يضيف العمود قابلاً للفراغ (أو بقيمة افتراضية) وينشر الكود الذي يملؤه؛ ثم املأ الصفوف الموجودة؛ والإصدار 2 يضيف قيد <code>NOT NULL</code> حين تملؤه كل نسخة عاملة.</li>
+<li>تستطيع ببساطة إعادة نشر الصورة السابقة حين يكون الترحيل متوافقاً مع الماضي، كما في التوسيع ثم التقليص: عمود أو جدول أو فهرس مضاف يتجاهله الكود القديم. فيعمل الكود القديم بلا مشكلة على المخطط الجديد، فالتراجع عن الكود آمن ويبقى الترحيل. ولا تستطيع حين يحذف الترحيل أو يغيّر شيئاً يحتاجه الكود القديم: عمود محذوف أو معاد تسميته، أو نوع متغير، أو قيد مشدد. عندها تحتاج ترحيلاً عكسياً، قد يفقد بيانات كُتبت منذ ذلك الحين (صفوف بالشكل الجديد)، أو إصلاحاً إلى الأمام. وهذا أقوى سبب لجعل كل ترحيل إضافياً، ولحذف الأعمدة القديمة في إصدار لاحق فقط، بعد أن يذهب الكود الذي استعملها بزمن.</li>
 </ol>
 
 </section>

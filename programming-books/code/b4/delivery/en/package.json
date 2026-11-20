@@ -1,0 +1,11 @@
+{
+  "name": "bit-booking-contracts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "types": "openapi-typescript openapi.yaml -o src/api.d.ts",
+    "start": "node src/server.ts",
+    "test": "node --test --test-reporter=spec",
+    "check": "tsc"
+  }
+}
