@@ -895,7 +895,8 @@
             },
             {
               "en": "Full Stack with Next.js",
-              "ar": "البرمجة الشاملة بـ Next.js"
+              "ar": "البرمجة الشاملة بـ Next.js",
+              "src": "b4/next"
             },
             {
               "en": "Authentication Across the Stack",

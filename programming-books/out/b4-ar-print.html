@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "الفصل 2: عقود الواجهة البرمجية بين الواجهة والخادم"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "الفصل 3: البرمجة الشاملة بـ Next.js"; } }
+@page ch03:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -838,6 +840,420 @@ src/wrong.ts(6,35): Property &#x27;start_at&#x27; does not exist on type &#x27;{
 <p>العقد يصل تطبيقين منفصلين. والفصل التالي يضع الطرفين في مشروع واحد: البرمجة الشاملة بـ Next.js، حيث يعيش كود الخادم والعميل معاً، ويصير العقد نداء دالة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b4/next/ar">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">الفصل 3</p><h1>البرمجة الشاملة بـ Next.js</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقرر متى يكون مكان الواجهة والخادم مشروعاً واحداً</li>
+<li>تُبقي كود قاعدة البيانات والأسرار على الخادم، وتدع البناء يفرض ذلك</li>
+<li>تقرأ البيانات بمكونات الخادم وتكتبها بإجراءات الخادم</li>
+<li>تحوّل رفض قاعدة البيانات إلى إجابة واضحة ومحدّثة على الشاشة</li>
+<li>تقدّم دالة العمل نفسها لنموذج الويب ولبقية العملاء</li>
+<li>ترسم الحدود التي تُبقي قاعدة كود شاملة سهلة التغيير</li>
+</ul>
+</div>
+
+<p class="lead">في الفصل الماضي كانت الواجهة والخادم تطبيقين يصلهما عقد. وهذا هو الشكل الصحيح حين يتشارك عدة عملاء واجهة برمجية، أو حين تملك فرق منفصلة كل طرف. لكن لتطبيق الويب الخاص بالمنتج، الذي يبنيه فريق واحد، يتغير النصفان معاً طوال الوقت، وكل تغيير يعبر الشبكة والعقد ونشرين. و<dfn>الإطار الشامل</dfn> مثل Next.js يضع الطرفين في مشروع واحد: الصفحة والاستعلام الذي يغذيها على بُعد أسطر قليلة، ونداء الخادم نداء دالة. وفي هذا الفصل نبني صفحة الحجز في «بِت للحجوزات» بهذه الطريقة، على مخطط PostgreSQL من الفصل 1.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>عرض الكتاب الثاني Next.js طريقةً لرسم الصفحات على الخادم. وهنا نستعمله للمنتج كله: قاعدة البيانات والقواعد والنماذج والواجهة البرمجية. الأداة نفسها، والمهمة أكبر بكثير.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>مشروع واحد، والطرفان</span></h2>
+
+<p>جمع الطرفين يزيل كثيراً من الإجراءات. لا واجهة برمجية تُصمم لحاجات الصفحة نفسها، ولا عميل يُولَّد، ولا نشر ثانٍ يجب أن يمشي في الخطوة نفسها: تغيير نوع في استعلام خطأ ترجمة في المكوّن الذي يعرضه. وما <em>لا</em> يزول هو الشبكة. ما زال الكود يعمل في مكانين، الخادم والمتصفح، وكل ما يرسله المتصفح يمكن تزويره. والإطار الشامل يجعل عبور الحد أسهل، وهذا يجعل نسيانه أسهل أيضاً. ومعظم هذا الفصل عن إبقائه ظاهراً.</p>
+
+<p>المشروع تطبيق Next.js عادي بإصدارات ثابتة، لأن كل كود في الكتاب يجب أن يُبنى كما طُبع بالضبط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">package.json</div><pre class="code">{
+  <span class="s">&quot;name&quot;</span>: <span class="s">&quot;bit-booking&quot;</span>,
+  <span class="s">&quot;private&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;scripts&quot;</span>: {
+    <span class="s">&quot;dev&quot;</span>: <span class="s">&quot;next dev&quot;</span>,
+    <span class="s">&quot;build&quot;</span>: <span class="s">&quot;next build&quot;</span>,
+    <span class="s">&quot;start&quot;</span>: <span class="s">&quot;next start&quot;</span>
+  },
+  <span class="s">&quot;dependencies&quot;</span>: {
+    <span class="s">&quot;next&quot;</span>: <span class="s">&quot;16.4.5&quot;</span>,
+    <span class="s">&quot;pg&quot;</span>: <span class="s">&quot;8.23.1&quot;</span>,
+    <span class="s">&quot;react&quot;</span>: <span class="s">&quot;19.3.1&quot;</span>,
+    <span class="s">&quot;react-dom&quot;</span>: <span class="s">&quot;19.3.1&quot;</span>,
+    <span class="s">&quot;server-only&quot;</span>: <span class="s">&quot;0.0.1&quot;</span>,
+    <span class="s">&quot;zod&quot;</span>: <span class="s">&quot;4.6.7&quot;</span>
+  },
+  <span class="s">&quot;devDependencies&quot;</span>: {
+    <span class="s">&quot;@types/node&quot;</span>: <span class="s">&quot;22.20.5&quot;</span>,
+    <span class="s">&quot;@types/pg&quot;</span>: <span class="s">&quot;8.23.1&quot;</span>,
+    <span class="s">&quot;@types/react&quot;</span>: <span class="s">&quot;19.3.0&quot;</span>,
+    <span class="s">&quot;@types/react-dom&quot;</span>: <span class="s">&quot;19.3.0&quot;</span>,
+    <span class="s">&quot;typescript&quot;</span>: <span class="s">&quot;5.9.3&quot;</span>
+  }
+}</pre></div>
+
+<p><code>server-only</code> حزمة صغيرة بمهمة كبيرة، نراها في القسم التالي، و<code>output: "standalone"</code> في <code>next.config.ts</code> يجعل البناء يُنتج خادماً قائماً بذاته، جاهزاً لحاوية الفصل 10. وهذا ما يصنعه <code>next build</code> من التطبيق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ابنِ للإنتاج</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /api/slots
+├ ƒ /book/[staff]
+└ ƒ /booking/[id]
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand</pre></div>
+
+<p>كل مسار <code>ƒ</code>، يُرسم عند الطلب: الأوقات المتاحة تتغير مع كل حجز، فلا يجوز أن يُقدَّم شيء هنا من صفحة بُنيت مسبقاً.</p>
+
+<h2><span class="sec">3.2</span> <span>ما لا يلمسه إلا الخادم</span></h2>
+
+<p>اتصال قاعدة البيانات يحمل كلمة مرور، والاستعلامات تحمل قواعد العمل. ولا يجوز أن يصل أيٌّ منهما إلى المتصفح أبداً. وفي Next.js تنتهي الوحدة في حزمة المتصفح إذا استوردها أي مكوّن عميل، مباشرة أو عبر ملف آخر، ولا شيء في TypeScript يمنع ذلك. لذلك تقول وحدة قاعدة البيانات ذلك بنفسها، في أول سطر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/db.ts</div><pre class="code"><span class="c line-bidi">// server-only: استيراد هذا الملف من مكوّن عميل يُفشل البناء</span>
+<span class="k">import</span> <span class="s">&quot;server-only&quot;</span>;
+<span class="k">import</span> pg <span class="k">from</span> <span class="s">&quot;pg&quot;</span>;
+
+pg.types.setTypeParser(pg.types.builtins.INT8, (value) =&gt; Number(value));
+
+<span class="c line-bidi">// مجمع واحد لكل عملية، محفوظ على globalThis: Next يعيد تحميل الوحدات أثناء التطوير</span>
+<span class="k">const</span> saved = globalThis as unknown as { pool?: pg.Pool };
+<span class="k">export</span> <span class="k">const</span> pool = (saved.pool ??= <span class="k">new</span> pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+}));</pre></div>
+
+<p>استيراد <code>server-only</code> لا يفعل شيئاً على الخادم، ويُفشل البناء إن سُحب الملف يوماً إلى المتصفح. ولنراه يعمل، يستورد مكوّن عميل المجمعَ خطأً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># مكوّن عميل يستورد قاعدة البيانات</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+Error: You&#x27;re importing a module that depends on &quot;server-only&quot;. This API is only available in Server Components in the App Router, but you are using it in the Pages Router.
+1 | // server-only: استيراد هذا الملف من مكوّن عميل يُفشل البناء
+<span class="c">&gt; </span><span class="k">2 | import &quot;server-only&quot;;</span>
+Client Component Browser:
+./lib/db.ts [Client Component Browser]
+./app/leak/Leak.tsx [Client Component Browser]</pre></div>
+
+<p>يتوقف البناء ويطبع سلسلة الاستيرادات التي أوصلت إلى هناك. (تذكر الرسالة Pages Router لأن Next.js يعيد استعمال خطأ واحد لكل مكان لا يُسمح فيه بكود الخادم.) والقاعدة نفسها تنطبق على الإعدادات: لا يُقرأ <code>DATABASE_URL</code> إلا في هذا الملف، ولا يُنسخ إلى كود المتصفح إلا المتغيرات المسماة <code>NEXT_PUBLIC_…</code>. فلا تعطِ سراً هذه البادئة أبداً.</p>
+
+<h2><span class="sec">3.3</span> <span>القراءة بمكونات الخادم</span></h2>
+
+<p>الأوقات المتاحة تأتي من استعلام واحد. تولّد قاعدة البيانات مواعيد اليوم بالمنطقة الزمنية للعمل نفسه (تحذير الفصل 1)، وتُبقي ما لا يتداخل مع أي حجز مؤكد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/bookings.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> freeSlots(staffId: number, date: string): Promise&lt;Slot[]&gt; {
+  <span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;{ starts_at: Date; ends_at: Date }&gt;(
+    <span class="s">`SELECT lower(slot) AS starts_at, upper(slot) AS ends_at
+       FROM generate_series(($2::date + time &#x27;10:00&#x27;) AT TIME ZONE &#x27;Africa/Cairo&#x27;,
+                            ($2::date + time &#x27;13:30&#x27;) AT TIME ZONE &#x27;Africa/Cairo&#x27;,
+                            interval &#x27;30 minutes&#x27;) AS t (start),
+            tstzrange(start, start + interval &#x27;30 minutes&#x27;) AS slot
+      WHERE NOT EXISTS (SELECT 1 FROM bookings b
+                         WHERE b.staff_id = $1 AND b.status = &#x27;confirmed&#x27;
+                           AND b.during &amp;&amp; slot)
+      ORDER BY 1`</span>,
+    [staffId, date],
+  );
+  <span class="k">return</span> rows.map((r) =&gt; ({
+    starts_at: r.starts_at.toISOString(),
+    ends_at: r.ends_at.toISOString(),
+  }));
+}</pre></div>
+
+<p>ويناديها مكوّن الخادم كأي دالة أخرى. يعمل على الخادم، وينتظر الاستعلام، ويرسل إلى المتصفح HTML جاهزاً مع البيانات التي يحتاجها الجزء التفاعلي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/book/[staff]/page.tsx</div><pre class="code">import { freeSlots } from &quot;@/lib/bookings&quot;;
+import { BookForm } from &quot;./BookForm&quot;;
+
+type Props = {
+  params: Promise&lt;{ staff: string }&gt;;
+  searchParams: Promise&lt;{ date?: string }&gt;;
+};
+
+// مكوّن خادم: يعمل على الخادم ويقرأ قاعدة البيانات مباشرة
+export default async function BookPage({ params, searchParams }: Props) {
+  const staffId = Number((await params).staff);
+  const { date = &quot;2026-12-01&quot; } = await searchParams;
+  const slots = await freeSlots(staffId, date);
+  return (
+    &lt;main&gt;
+      &lt;h1&gt;اختر وقتاً&lt;/h1&gt;
+      {slots.length ? (
+        &lt;BookForm staffId={staffId} slots={slots} /&gt;
+      ) : (
+        &lt;p&gt;لا أوقات متاحة في هذا اليوم.&lt;/p&gt;
+      )}
+    &lt;/main&gt;
+  );
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/book/1</span><b>560px</b></div><img src="img/b4-next-ar-shots-book.png" alt=""><figcaption><b>الشكل 3.1:</b> صفحة الحجز. حسب PostgreSQL الأوقات بتوقيت القاهرة، ورُسمت الصفحة على الخادم.</figcaption></figure>
+
+<p>لاحظ ما يعبر إلى <code>BookForm</code>: رقم وقائمة كائنات عادية. خصائص مكوّن العميل تُسلسَل وتُرسل إلى المتصفح، فيجب أن تكون بيانات عادية (لا دوال، ولا صفوف قاعدة بيانات بحقول خفية)، وكل ما فيها مرئي لمن يفتح مصدر الصفحة. واختيار هذه الخصائص اختيار لما يُنشر.</p>
+
+<h2><span class="sec">3.4</span> <span>الكتابة بإجراء خادم</span></h2>
+
+<p>الحجز دالة واحدة أيضاً. تُدرج الصف، وتحوّل رفض قيد الاستبعاد إلى نتيجة عادية بدل استثناء، لأن «محجوز» نتيجة متوقعة، لا فشل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/bookings.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> book(input: {
+  staffId: number;
+  startsAt: string;
+  email: string;
+}): Promise&lt;BookResult&gt; {
+  <span class="k">try</span> {
+    <span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;{ id: number }&gt;(
+      <span class="s">`INSERT INTO bookings (staff_id, service_id, email, during)
+       VALUES ($1, 1, $3,
+               tstzrange($2::timestamptz, $2::timestamptz + interval &#x27;30 minutes&#x27;))
+       RETURNING id`</span>,
+      [input.staffId, input.startsAt, input.email],
+    );
+    <span class="k">return</span> { ok: <span class="k">true</span>, id: rows[<span class="n">0</span>]!.id };
+  } <span class="k">catch</span> (error) {
+    <span class="c line-bidi">// 23P01: خرق قيد استبعاد، قيد الفصل 1</span>
+    <span class="k">if</span> ((error as { code?: string }).code === <span class="s">&quot;23P01&quot;</span>)
+      <span class="k">return</span> { ok: <span class="k">false</span>, reason: <span class="s">&quot;taken&quot;</span> };
+    <span class="k">throw</span> error;
+  }
+}</pre></div>
+
+<p>ويناديها النموذج عبر <dfn>إجراء خادم</dfn> (Server Action): دالة معلَّمة <code>"use server"</code> يستطيع المتصفح أن يناديها، ويحوّلها Next.js إلى طلب POST من وراء الستار. ويسهل أن تقرأها نداءَ دالة داخلياً. وليست كذلك: أي أحد يستطيع إرسال هذا الطلب بأي بيانات. لذلك يفعل الإجراء بالضبط ما فعله معالج الواجهة البرمجية في الكتاب الثالث: يتحقق من كل حقل، ثم ينادي دالة العمل، ثم يقرر الإجابة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/book/actions.ts</div><pre class="code"><span class="k">const</span> Input = z.object({
+  staffId: z.coerce.number().int().positive(),
+  startsAt: z.iso.datetime(),
+  email: z.email().max(<span class="n">254</span>),
+});
+
+<span class="k">export</span> <span class="k">type</span> BookState = { error?: string; email?: string };
+
+<span class="c line-bidi">// إجراء خادم: يناديه النموذج، على الخادم، بفحوص أي واجهة برمجية</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> bookAction(
+  _previous: BookState,
+  form: FormData,
+): Promise&lt;BookState&gt; {
+  <span class="k">const</span> parsed = Input.safeParse(Object.fromEntries(form));
+  <span class="k">const</span> email = String(form.get(<span class="s">&quot;email&quot;</span>) ?? <span class="s">&quot;&quot;</span>);
+  <span class="k">if</span> (!parsed.success)
+    <span class="k">return</span> { error: <span class="s">&quot;اختر وقتاً واكتب بريداً صحيحاً من فضلك.&quot;</span>, email };
+  <span class="k">const</span> result = <span class="k">await</span> book(parsed.data);
+  <span class="c line-bidi">// تغيرت الأوقات المتاحة في الحالين: ارسم الصفحة من جديد مع الإجابة</span>
+  revalidatePath(<span class="s">`/book/${parsed.data.staffId}`</span>);
+  <span class="k">if</span> (!result.ok)
+    <span class="k">return</span> { error: <span class="s">&quot;عذراً، حُجز هذا الوقت للتو. اختر وقتاً آخر من فضلك.&quot;</span>, email };
+  redirect(<span class="s">`/booking/${result.id}`</span>);
+}</pre></div>
+
+<p>والنموذج مكوّن عميل لسبب واحد: أنه يعرض حالة الانتظار والخطأ. ينادي <code>useActionState</code> الإجراءَ ببيانات النموذج ويحتفظ بما يعيده:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/book/[staff]/BookForm.tsx</div><pre class="code">export function BookForm({ staffId, slots }: { staffId: number; slots: Slot[] }) {
+  const [state, action, pending] = useActionState(bookAction, {} as BookState);
+  return (
+    &lt;form action={action}&gt;
+      &lt;input type=&quot;hidden&quot; name=&quot;staffId&quot; value={staffId} /&gt;
+      &lt;fieldset&gt;
+        &lt;legend&gt;الأوقات المتاحة يوم 1 ديسمبر&lt;/legend&gt;
+        {slots.map((slot) =&gt; (
+          &lt;label key={slot.starts_at}&gt;
+            &lt;input type=&quot;radio&quot; name=&quot;startsAt&quot; value={slot.starts_at} required /&gt;
+            {time.format(new Date(slot.starts_at))}
+          &lt;/label&gt;
+        ))}
+      &lt;/fieldset&gt;
+      &lt;label&gt;
+        بريدك الإلكتروني
+        &lt;input name=&quot;email&quot; type=&quot;email&quot; required defaultValue={state.email} /&gt;
+      &lt;/label&gt;
+      {state.error &amp;&amp; &lt;p role=&quot;alert&quot;&gt;{state.error}&lt;/p&gt;}
+      &lt;button disabled={pending}&gt;{pending ? &quot;جارٍ الحجز…&quot; : &quot;احجز&quot;}&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre></div>
+
+<p>النموذج نموذج HTML حقيقي بإجراء حقيقي، فيعمل حتى قبل أن تُحمَّل JavaScript؛ وJavaScript تجعله ألطف فقط. وعند النجاح يحوّل الإجراء إلى صفحة التأكيد، وهي مكوّن خادم آخر يقرأ الحجز من قاعدة البيانات:</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/booking/1</span><b>560px</b></div><img src="img/b4-next-ar-shots-done.png" alt=""><figcaption><b>الشكل 3.2:</b> حجز سارة، مقروءاً من PostgreSQL بعد التحويل.</figcaption></figure>
+
+<h2><span class="sec">3.5</span> <span>حين يريد زبونان الوقت نفسه</span></h2>
+
+<p>فتح كريم الصفحة نفسها قبل أن تحجز سارة بدقيقة، وصفحته ما زالت تعرض 10:00. يختاره ويضغط «احجز». يصل طلبه إلى الخادم، ويجتاز التحقق، ويفشل الإدراج على القيد. فيعيد الإجراء الرسالة، ولأنه ينادي <code>revalidatePath</code> أياً كانت النتيجة، تُرسم الصفحة من جديد مع الإجابة:</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/book/1</span><b>560px</b></div><img src="img/b4-next-ar-shots-taken.png" alt=""><figcaption><b>الشكل 3.3:</b> صفحة كريم بعد محاولته: الرسالة، وبريده محفوظ، وقائمة محدّثة لم يعد فيها 10:00.</figcaption></figure>
+
+<p>هذا هو المعيار الذي كتبناه في الفصل 1، ظاهراً الآن على شاشة: حجز واحد بالضبط، ويُخبَر الزبون الآخر بلطف، مع ما يحتاجه ليختار من جديد. لم تحتج الصفحة إلى معرفة شيء عن التزامن؛ قاعدة البيانات قررت، وكل طبقة مررت إجابتها إلى أعلى بلغتها: رمز خطأ، ثم نتيجة، ثم رسالة.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يستورد <code>lib/db.ts</code> الحزمةَ <code>server-only</code>، ولا مكوّن عميل يستورده اليوم؟</li><li>يقول زميل إن إجراء الخادم لا يحتاج تحققاً «لأن نموذجنا وحده يناديه». ما الخطأ في ذلك؟</li><li>لماذا تعيد <code>book()</code> القيمة <code>{ ok: false }</code> لموعد محجوز بدل أن ترمي استثناء؟</li></ol></aside>
+
+<h2><span class="sec">3.6</span> <span>الباب الثاني</span></h2>
+
+<p>نموذج الويب ليس العميل الوحيد. تطبيق الجوال المخطط في المواصفات، وأي تكامل مع شريك، يحتاجان الأوقات المتاحة عبر الواجهة البرمجية العامة التي وصفها الفصل 2 في عقده. ويقدّمها <dfn>معالج مسار</dfn> (route handler) من المشروع نفسه، بنداء الدالة نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/api/slots/route.ts</div><pre class="code"><span class="k">import</span> { freeSlots } <span class="k">from</span> <span class="s">&quot;@/lib/bookings&quot;</span>;
+
+<span class="c line-bidi">// الدالة نفسها خلف باب ثانٍ: الواجهة البرمجية العامة من الفصل 2</span>
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> GET(request: Request) {
+  <span class="k">const</span> query = <span class="k">new</span> URL(request.url).searchParams;
+  <span class="k">const</span> staffId = Number(query.get(<span class="s">&quot;staff_id&quot;</span>));
+  <span class="k">const</span> date = query.get(<span class="s">&quot;date&quot;</span>) ?? <span class="s">&quot;&quot;</span>;
+  <span class="k">if</span> (
+    !Number.isInteger(staffId) ||
+    staffId &lt; <span class="n">1</span> ||
+    !/^\d{<span class="n">4</span>}-\d{<span class="n">2</span>}-\d{<span class="n">2</span>}$/.test(date)
+  ) {
+    <span class="k">const</span> problem = { title: <span class="s">&quot;طلب غير صالح&quot;</span>, status: <span class="n">422</span> };
+    <span class="k">return</span> Response.json(problem, {
+      status: <span class="n">422</span>,
+      headers: { <span class="s">&quot;content-type&quot;</span>: <span class="s">&quot;application/problem+json&quot;</span> },
+    });
+  }
+  <span class="k">return</span> Response.json({ data: <span class="k">await</span> freeSlots(staffId, date) });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الأوقات نفسها عبر الواجهة البرمجية</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/api/slots?staff_id=1&amp;date=2026-12-01&#x27; | jq -c &#x27;.data[:2]&#x27;</span>
+[{&quot;starts_at&quot;:&quot;2026-12-01T08:00:00.000Z&quot;,&quot;ends_at&quot;:&quot;2026-12-01T08:30:00.000Z&quot;},{&quot;starts_at&quot;:&quot;2026-12-01T08:30:00.000Z&quot;,&quot;ends_at&quot;:&quot;2026-12-01T09:00:00.000Z&quot;}]
+<span class="c line-bidi"># بعد الحجوزات في المتصفح</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/api/slots?staff_id=1&amp;date=2026-12-01&#x27; | jq -c &#x27;.data[:2]&#x27;</span>
+[{&quot;starts_at&quot;:&quot;2026-12-01T08:30:00.000Z&quot;,&quot;ends_at&quot;:&quot;2026-12-01T09:00:00.000Z&quot;},{&quot;starts_at&quot;:&quot;2026-12-01T09:00:00.000Z&quot;,&quot;ends_at&quot;:&quot;2026-12-01T09:30:00.000Z&quot;}]
+<span class="c line-bidi"># ما تحفظه قاعدة البيانات</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT id, staff_id, email, lower(during) AS starts_at FROM bookings&#x27;</span>
+ id | staff_id |      email       |       starts_at        
+----+----------+------------------+------------------------
+  1 |        1 | sara@example.com | 2026-12-01 08:00:00+00
+(1 row)</pre></div>
+
+<p>للإجابة الشكل الذي وعد به العقد، وبعد حجز سارة اختفى 10:00 هنا أيضاً، لأن البابين يفتحان على دالة واحدة وقاعدة بيانات واحدة. وهذا هو التصميم الذي يُقصد: <strong>دوال العمل في <code>lib/</code>، وأبواب رفيعة في <code>app/</code></strong> (صفحات وإجراءات ومعالجات مسارات) لا تفعل إلا الترجمة بين من يناديها وتلك الدوال. واختبار العقد من الفصل 2 يستطيع أن يعمل على <code>/api/slots</code> كما هو.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: كل إجراء خادم نقطة نهاية عامة</p><p>كل دالة مصدَّرة من ملف <code>"use server"</code> تصير نقطة نهاية HTTP يستطيع أي أحد مناداتها بأي معاملات، سواء استعملتها صفحة بعد أم لا. تحقق من كل معامل، وافحص من المنادي (الفصل التالي)، ولا تصدّر دالة مساعدة من ملف كهذا أبداً: الدالة التي «تحدّث حالة فقط» صارت الآن واجهة عامة لتحديث أي حالة.</p></aside>
+
+<h2><span class="sec">3.7</span> <span>الحدود في قاعدة كود شاملة</span></h2>
+
+<p>راحة المشروع الواحد تصير تشابكاً إن جاز لكل شيء أن يستورد كل شيء. وثلاث قواعد تُبقي كود «بِت للحجوزات» في شكله وهو يكبر:</p>
+<ul>
+<li><strong>مجلدات حسب الدور.</strong> <code>lib/</code> فيه دوال العمل والوصول إلى البيانات، معلَّمة <code>server-only</code>؛ و<code>app/</code> فيه الأبواب؛ والكود المشترك الذي يجب أن يعمل في المتصفح (مثل <code>lib/time.ts</code>) لا يستورد شيئاً من الخادم.</li>
+<li><strong>بيانات عادية عبر الحد.</strong> ما يمرره مكوّن الخادم إلى مكوّن العميل، وما يعيده الإجراء، كائنات صغيرة قابلة للتسلسل مختارة عمداً، لا صفوف قاعدة بيانات كاملة أبداً.</li>
+<li><strong>دالة واحدة لكل فعل عمل.</strong> الصفحة والإجراء ومعالج المسار ينادون <code>book()</code>؛ ولا يكتب أيٌّ منهم <code>INSERT</code> خاصاً به. وحين تتغير القاعدة، تتغير مرة واحدة.</li>
+</ul>
+<p>واعرف متى تفصل. إن كبرت الواجهة البرمجية لتصير منتجاً قائماً بذاته، بفريقها وتوسعها أو بمستهلكين أهم من تطبيق الويب، فانقل <code>lib/</code> إلى خدمة منفصلة خلف عقد الفصل 2. ولأن الأبواب كانت رفيعة، فهذا النقل معظمه قص ولصق.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: اقرأ تبويب الشبكة مرة في الأسبوع</p><p>افتح أدوات المطوّر في المتصفح على تطبيقك واقرأ ما يُرسل: كل طلب يصنعه إجراء، وكل خاصية تُسلسل في الصفحة، وكل سكربت في الحزمة. الأطر الشاملة تخفي الحد عمداً؛ والنظر إليه بانتظام هو كيف تلاحظ الحقل الإضافي في خاصية، أو المكتبة التي تسللت إلى حزمة المتصفح، قبل أن يلاحظها مهاجم أو جوال بطيء.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>وحدة قاعدة البيانات بلا <code>server-only</code></td><td>استيراد خاطئ واحد يشحن الأسرار والاستعلامات إلى المتصفح</td><td>علّمها؛ فيرفض البناء الاستيراد</td></tr>
+<tr><td>سر في متغير <code>NEXT_PUBLIC_</code></td><td>هو في JavaScript كل زائر</td><td>أسماء خادمية للأسرار</td></tr>
+<tr><td>إجراءات خادم بلا تحقق</td><td>أي أحد يرسل أي شيء</td><td>تحقق كما في أي معالج واجهة برمجية</td></tr>
+<tr><td>صفوف كاملة تُمرَّر خصائص</td><td>حقول خفية تُنشر في الصفحة</td><td>مرر كائنات صغيرة مختارة عمداً</td></tr>
+<tr><td>استعلامات مكتوبة في الصفحات والإجراءات</td><td>قواعد مكررة تبتعد</td><td>دوال العمل في <code>lib/</code></td></tr>
+<tr><td>نتائج متوقعة تُرمى أخطاءً</td><td>صفحات خطأ عامة بدل إجابات</td><td>أعد نتائج؛ وارمِ للمفاجئ فقط</td></tr>
+<tr><td>لا تحديث بعد الكتابة</td><td>تعرض الصفحة أوقاتاً ذهبت</td><td><code>revalidatePath</code> بعد كل تغيير</td></tr>
+<tr><td>بناء الصفحات مسبقاً ببيانات حية</td><td>يرى الزبائن جدولاً قديماً</td><td>ارسم عند الطلب حيث تتغير البيانات</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>الإطار الشامل</strong> يضع الطرفين في مشروع واحد؛ ويبقى حد الشبكة، ويجب أن يبقى ظاهراً.</li>
+<li>علّم الوصول إلى البيانات <strong><code>server-only</code></strong>، وأبعد الأسرار عن <code>NEXT_PUBLIC_</code>، ودع البناء يفرض الاثنين.</li>
+<li><strong>مكونات الخادم</strong> تقرأ البيانات مباشرة؛ وما تمرره إلى <strong>مكونات العميل</strong> بيانات عادية منشورة.</li>
+<li><strong>إجراء الخادم</strong> نقطة نهاية عامة: تحقق، ونادِ دالة العمل، وقرر الإجابة.</li>
+<li>حوّل رفض قاعدة البيانات إلى <strong>نتيجة</strong>، و<strong>أعد التحقق</strong> لتعرض الصفحة الحقيقة.</li>
+<li>قدّم الخدمة لبقية العملاء عبر <strong>معالج مسار</strong> ينادي <strong>الدالة نفسها</strong>، تحت العقد نفسه.</li>
+<li>أبقِ <strong>دوال العمل في <code>lib/</code></strong> و<strong>الأبواب الرفيعة في <code>app/</code></strong>، فيمكن فصل الخادم حين يحتاج إلى ذلك.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لتصير القاعدة دائمة لا مصادفة. اليوم لا يستورده شيء من المتصفح؛ وغداً يضيف أحد مكوّن عميل يستورد دالة مساعدة تستورد المجمع، وبلا العلامة يحزم البناء بسرور الوحدة وإعداد الاتصال للمتصفح. ومعها يفشل هذا التغيير في البناء، يوم يُصنع. 2. إجراء الخادم نقطة نهاية HTTP. يستطيع أي أحد أن يجد معرّفه في الصفحة ويرسل إليه بيانات نموذجه هو: تاريخاً بلا معنى، أو رقم موظف آخر، أو بريداً من عشرة ميغابايت. و«نموذجنا وحده يناديه» يصف المنادي المقصود، لا المنادين الممكنين. 3. لأن الموعد المحجوز نتيجة عادية متوقعة لمحاولة حجز، ويجب أن يعالجها المنادي: يعرض الإجراء رسالة، ويجيب معالج المسار بـ 409. والاستثناءات للمفاجئ، والاستثناء غير الممسوك يصير صفحة خطأ عامة. وإعادة نتيجة تجعل الاحتمال ظاهراً في نوع الدالة أيضاً، فلا ينساه أي منادٍ.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يوسّع تطبيق Next.js. أبقِ منطق العمل في <code>lib/</code>، وأبقِ الأبواب رفيعة، وجرّب كل تغيير في المتصفح وعبر الواجهة البرمجية معاً.</p>
+
+<div class="project">
+<p class="project-label">المشروع 3.1 · سهل</p>
+<h3>اختر اليوم</h3>
+<p class="project-goal">دع الزبون يتنقل بين الأيام في صفحة الحجز.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> معاملات البحث، ومكونات الخادم، وروابط تحفظ الحالة في العنوان.</p>
+<ol class="steps">
+<li>اعرض التاريخ في عنوان الصفحة، وأضف رابطي «اليوم السابق» و«اليوم التالي» اللذين يغيّران <code>?date=</code>.</li>
+<li>اجعل الافتراضي اليوم بتوقيت القاهرة، لا بالمنطقة الزمنية للخادم.</li>
+<li>ارفض التواريخ الماضية والأبعد من 60 يوماً، في <code>lib/</code>، فترفضها الواجهة البرمجية أيضاً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> احسب «اليوم في القاهرة» بـ <code>Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Cairo" })</code>، التي تكتب التواريخ <code>YYYY-MM-DD</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 3.2 · متوسط</p>
+<h3>يوم صاحب العمل</h3>
+<p class="project-goal">ابنِ US-5: صفحة تسرد حجوزات اليوم لكل موظف، مع زر إلغاء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة بيانات مجموعة من جداول، وإجراء خادم ثانٍ، وإعادة التحقق عبر الصفحات.</p>
+<ol class="steps">
+<li>أضف <code>bookingsForDay(date)</code> إلى <code>lib/bookings.ts</code>، مجمّعة حسب الموظف.</li>
+<li>اعرضها في <code>/owner</code> مكوّنَ خادم.</li>
+<li>أضف دالة <code>cancel(id)</code> وإجراء خادم يناديها، وأعد التحقق لـ <code>/owner</code> ولصفحة الحجز معاً.</li>
+<li>تحقق أن الوقت الملغى يعود للزبائن فوراً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أي أحد يستطيع مناداة إجراء الإلغاء؛ فاكتب ملاحظة في الكود أن الفصل التالي يجب أن يضيف فحص صاحب العمل قبل أن يُطلق هذا.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 3.3 · تحدٍّ</p>
+<h3>اختبر الطبقات كلها</h3>
+<p class="project-goal">أثبت مسار الحجز باختبارات آلية على ثلاثة مستويات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختبار دوال العمل على PostgreSQL، واختبارات العقد لمعالجات المسارات، واختبارات من الطرف إلى الطرف بـ Playwright.</p>
+<ol class="steps">
+<li>اختبر <code>freeSlots</code> و<code>book</code> على قاعدة اختبار، ومنها حالة المحجوز.</li>
+<li>شغّل اختبار العقد من الفصل 2 على <code>/api/slots</code> في التطبيق العامل.</li>
+<li>اكتب اختبار Playwright لقصة الزبونين في القسم 3.5، بسياقي متصفح.</li>
+<li>شغّل الثلاثة بأمر واحد، كما سيفعل CI.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> صُنعت لقطات هذا الفصل بسكربت كهذا بالضبط: افتح الصفحة مرتين قبل الحجز الأول، ثم أرسل الاثنين.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أيٌّ من هذه يجوز لمكوّن عميل أن يستورده: <code>lib/time.ts</code>، و<code>lib/db.ts</code>، و<code>lib/bookings.ts</code>، والنوع <code>Slot</code> من <code>lib/bookings.ts</code>؟ اشرح الأخير.</li>
+<li><span class="level">سهل</span> لماذا يولّد استعلام المواعيد الأوقاتَ بـ <code>AT TIME ZONE 'Africa/Cairo'</code> بدل أن يستعمل ساعة الخادم؟</li>
+<li><span class="level medium">متوسط</span> احذف <code>revalidatePath</code> من الإجراء. صِف بالضبط ما يراه كريم بعد محاولته الفاشلة، ولماذا هذا أسوأ.</li>
+<li><span class="level medium">متوسط</span> صفحة التأكيد على <code>/booking/1</code>. ما الخطأ في هذا العنوان لمنتج حقيقي، وكيف تصلحه؟</li>
+<li><span class="level hard">تحدٍّ</span> يكبر «بِت للحجوزات»: يرسل تطبيق الجوال عشرة أضعاف حركة الموقع، وسيملكه فريق منفصل. صِف ما ستنقله خارج مشروع Next.js، وما يبقى، وترتيب الخطوات.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 4</p>
+<p>ما زال أي أحد يستطيع إلغاء حجز أي أحد. والفصل التالي يضيف الهوية عبر الطبقات كلها: أصحاب عمل وموظفون يسجّلون الدخول، وزبائن لا يسجّلونه، والفحوص التي تعمل على كل باب.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -883,6 +1299,16 @@ src/wrong.ts(6,35): Property &#x27;start_at&#x27; does not exist on type &#x27;{
       return status; // shown as it came, never a crash
   }
 }</code></pre>نوع المعامل <code>string</code> (أو الاتحاد المولَّد مع <code>string</code>)، فالقيمة الجديدة متوقعة لا مستحيلة. وتبقى الصفحة تعمل وتعرض القيمة كما جاءت، ويُخبر متتبّع الأخطاء الفريقَ أن الخادم بدأ يرسل شيئاً لا يعرفه العميل، فيضيفون الحالة في الإصدار التالي. ومع عملاء مكتوبين كلهم بهذه الطريقة، تصير إضافة قيمة إلى تعداد تغييراً آمناً عملياً، وإن كان على فحص العقد أن يبلّغ عنها ليقرر أحد بوعي.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 3</h2>
+<ol class="exercises">
+<li><code>lib/time.ts</code>: نعم، لا يستورد شيئاً من الخادم وهو معدّ للطرفين. <code>lib/db.ts</code>: لا، معلَّم <code>server-only</code> ويرفضه البناء. <code>lib/bookings.ts</code>: لا، يستورد <code>./db</code> وهو نفسه <code>server-only</code>. النوع <code>Slot</code>: نعم، بـ <code>import type</code>. فاستيراد النوع وحده يُمحى حين يُترجم الكود، فلا تُحمَّل أي وحدة في المتصفح ولا يعمل <code>server-only</code> أبداً؛ ولا يصل المتصفحَ إلا الشكل، وهو بالضبط ما يحتاجه <code>BookForm</code>.</li>
+<li>لأن ساعات العمل حقيقة عن العمل، بتوقيته المحلي، والخادم قد يعمل في أي مكان (بتوقيت UTC غالباً). <code>'2026-12-01 10:00' AT TIME ZONE 'Africa/Cairo'</code> تعني «10:00 على ساعة حائط الصالون»، ويحوّلها PostgreSQL إلى اللحظة الصحيحة، ومنها تغييرات التوقيت الصيفي في تواريخها. واستعمال ساعة الخادم سيزيح كل موعد ساعتين أو ثلاثاً، وستتغير الإزاحة مرتين في السنة.</li>
+<li>يرى كريم الرسالة، لكن القائمة ما زالت تعرض 10:00، الوقت الذي قيل له للتو إنه محجوز، لأن الصفحة لا تُرسم من جديد. فإن اختاره ثانية رُفض ثانية؛ وإن اختار وقتاً آخر فقد يكون ذهب أيضاً دون أن يعلم. تناقض الصفحة رسالتها، ولا يعرف شيئاً عما هو متاح فعلاً. ومع <code>revalidatePath</code> تحمل الإجابة نفسها القائمة المحدّثة، فتتفق الرسالة والخيارات.</li>
+<li>الرقم متسلسل والصفحة لا تحتاج دليلاً على هوية السائل، فيستطيع أي أحد قراءة كل حجز بتجربة <code>/booking/1</code> و<code>/booking/2</code> و…، مع بُرُد الزبائن وأوقاتهم: إشارة مباشرة غير آمنة إلى كائن (الكتاب الثالث). وأصلحه بإعطاء كل حجز رمزاً لا يُخمَّن (مثلاً 32 بايتاً عشوائياً، يُخزَّن ببصمته كرموز الكتاب الثالث)، واستعماله في عنوان التأكيد وروابط البريد، وعرض الحد الأدنى فقط في تلك الصفحة. ويرى أصحاب العمل والموظفون الحجوزات عبر صفحاتهم بعد تسجيل الدخول، بفحوص صلاحيات.</li>
+<li>انقل لبّ العمل: يصير <code>lib/</code> خدمة واجهة برمجية منفصلة (بنشرها ووصولها إلى قاعدة البيانات وتوسعها)، تكشف عقد الفصل 2 الذي يبني عليه فريق الجوال. ويبقى في Next.js: صفحات الموقع وإجراءاته، التي تنادي الآن الواجهة البرمجية عبر العميل المولَّد ذي الأنواع بدل مناداة <code>lib/</code> مباشرة. والترتيب: أولاً تأكد أن كل باب لا ينادي إلا دوال <code>lib/</code> (لا استعلامات في الصفحات)؛ واكتب العقد واختباراته أو أكملها؛ وأقم الخدمة من <code>lib/</code> وشغّلها بجانب التطبيق؛ وحوّل معالجات المسارات ثم الإجراءات لمناداة الخدمة، واحداً واحداً، خلف مفتاح ميزة؛ وأخيراً احذف بيانات اعتماد قاعدة البيانات من تطبيق Next.js. وكل خطوة قابلة للإطلاق وحدها، واختبار العقد يحرس كلاً منها.</li>
 </ol>
 
 </section>
