@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Queues, Jobs and the Scheduler"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "Chapter 12: Real-Time with Laravel Reverb"; } }
+@page ch12:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -6037,6 +6039,290 @@ order 1001: queued in 0.4 ms
 <p>Jobs run behind the scenes; some changes should appear in front of the user at once. Real-time features with Reverb: WebSockets, broadcasting events, and pushing an order’s status to the screen the moment it changes.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b3/laravel/realtime/en">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">Chapter 12</p><h1>Real-time with Reverb</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>choose between polling, server-sent events and WebSockets</li>
+<li>broadcast Laravel events to the browser through Reverb, Laravel’s own WebSocket server</li>
+<li>see the protocol on the wire, with a client written in a few lines</li>
+<li>protect private channels with authorization rules</li>
+<li>run Reverb in production across several servers, and handle reconnecting and missed events</li>
+</ul>
+</div>
+
+<p class="lead">HTTP is a conversation the client always starts: it asks, the server answers, and the server has no way to speak first. Yet many screens should change by themselves: an order moving from “paid” to “shipped”, a chat message arriving, the last kits in stock disappearing. Laravel’s answer is <dfn>broadcasting</dfn>: an ordinary event, dispatched in PHP, is pushed over WebSockets to every browser that listens. This chapter installs it with Reverb, Laravel’s free WebSocket server, and watches the messages arrive.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first live feature I built was a counter of people viewing a product. It worked beautifully on my laptop. In production we ran three servers, and each one counted only its own visitors, so the number jumped between three different values every time the page reconnected. That week I learned why the WebSocket server should be a separate, shared service.</p></div></div>
+
+<h2><span class="sec">12.1</span> <span>Three ways to be up to date</span></h2>
+
+<ul>
+<li><dfn>Polling</dfn>: the client asks every few seconds, “anything new?”. Simple, works everywhere, and often good enough; but most answers are “no”, each one costs a request, and news arrives up to one interval late.</li>
+<li><dfn>Server-sent events</dfn> (SSE): the client makes one HTTP request, and the server keeps the response open, writing an event whenever something happens. One direction only. In PHP, each open response holds a whole worker process for as long as the page is open, which is why PHP applications rarely use it.</li>
+<li><dfn>WebSockets</dfn>: an HTTP request that is <em>upgraded</em> into a two-way connection, where either side can send a message at any time. A PHP request cannot hold thousands of these, so Laravel hands them to a separate, long-running server built for it: <dfn>Reverb</dfn>.</li>
+</ul>
+
+<p>The flow is always the same. The Laravel application dispatches an event; Laravel sends it over HTTP to Reverb; Reverb pushes it to every client subscribed to the event’s <dfn>channel</dfn>. Because every web server and worker sends its events to the same Reverb, it does not matter which server made the change: a problem that real-time code written by hand must solve with publish/subscribe.</p>
+
+<h2><span class="sec">12.2</span> <span>Installing Reverb</span></h2>
+
+<p>One command installs the package, publishes the configuration and the channels file, and writes the settings into <code>.env</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Broadcasting with Reverb, in one command</span>
+<span class="c">$ </span><span class="k">php artisan install:broadcasting --reverb</span>
+   INFO  Published &#x27;broadcasting&#x27; configuration file.  
+   INFO  Published &#x27;channels&#x27; route file.  
+   INFO  Discovering packages.  
+   INFO  No publishable resources for tag [laravel-assets].  
+   INFO  Reverb installed successfully.  
+<span class="c">$ </span><span class="k">grep -E &#x27;^(BROADCAST_CONNECTION|REVERB_)&#x27; .env</span>
+BROADCAST_CONNECTION=reverb
+REVERB_APP_ID=…
+REVERB_APP_KEY=…
+REVERB_APP_SECRET=…
+REVERB_HOST=&quot;localhost&quot;
+REVERB_PORT=8080
+REVERB_SCHEME=http</pre></div>
+
+<p>The app id, key and secret are generated for you. The key is public, sent by browsers when they connect; the secret signs the messages between Laravel and Reverb and channel authorizations, so it stays on the server. <code>php artisan reverb:start</code> runs the WebSocket server on port 8080.</p>
+
+<h2><span class="sec">12.3</span> <span>Broadcasting an event</span></h2>
+
+<p>An event that implements <code>ShouldBroadcast</code> (or <code>ShouldBroadcastNow</code>) is broadcast when it is dispatched. Three methods say where it goes and what it carries:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Events/OrderStatusChanged.php</div><pre class="code"><span class="k">class</span> OrderStatusChanged <span class="k">implements</span> ShouldBroadcastNow
+{
+    <span class="k">use</span> Dispatchable;
+
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">public</span> <span class="k">int</span> $orderId, <span class="k">public</span> <span class="k">string</span> $status) {}
+
+    <span class="c line-bidi">// the channel: everyone watching order 1001 listens here</span>
+    <span class="k">public</span> <span class="k">function</span> broadcastOn(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [<span class="k">new</span> Channel(<span class="s">&quot;orders.{$this-&gt;orderId}&quot;</span>)];
+    }
+
+    <span class="c line-bidi">// the event&#x27;s name, as clients see it</span>
+    <span class="k">public</span> <span class="k">function</span> broadcastAs(): <span class="k">string</span>
+    {
+        <span class="k">return</span> <span class="s">&#x27;status&#x27;</span>;
+    }
+
+    <span class="c line-bidi">// exactly what clients receive: nothing more than they need</span>
+    <span class="k">public</span> <span class="k">function</span> broadcastWith(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [<span class="s">&#x27;order&#x27;</span> =&gt; $<span class="k">this</span>-&gt;orderId, <span class="s">&#x27;status&#x27;</span> =&gt; $<span class="k">this</span>-&gt;status];
+    }
+}</pre></div>
+
+<ul>
+<li><code>broadcastOn</code> names the channel; here every watcher of order 1001 listens on <code>orders.1001</code>.</li>
+<li><code>broadcastAs</code> gives the event a short name for clients; without it, they see the full class name.</li>
+<li><code>broadcastWith</code> chooses the data. Without it, every public property is sent, and with models, every visible attribute: a common way to leak data to browsers. Send what the screen needs.</li>
+<li><code>ShouldBroadcastNow</code> sends at once, inside the dispatch. <code>ShouldBroadcast</code> puts the sending on the queue of Chapter 11, so a slow or unreachable Reverb never slows the request; that is the right choice in an application.</li>
+</ul>
+
+<p>The order code dispatches the event after saving the change; here an Artisan command plays that role:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:status {order} {status}&#x27;</span>, <span class="k">function</span> (<span class="k">int</span> $order, <span class="k">string</span> $status) {
+    <span class="c line-bidi">// ... the order&#x27;s status is saved in the database here ...</span>
+    OrderStatusChanged::dispatch($order, $status);
+    $<span class="k">this</span>-&gt;line(strtr(<span class="s">&#x27;order {order} is now {status}&#x27;</span>, [<span class="s">&#x27;{order}&#x27;</span> =&gt; $order, <span class="s">&#x27;{status}&#x27;</span> =&gt; $status]));
+});</pre></div>
+
+<h2><span class="sec">12.4</span> <span>On the wire</span></h2>
+
+<p>Reverb speaks the <dfn>Pusher protocol</dfn>, a small set of JSON messages over a WebSocket, which many client libraries understand. In a browser, <dfn>Laravel Echo</dfn> hides it:</p>
+
+<pre><code>Echo.channel("orders.1001").listen(".status", (e) =&gt; show(e.status));</code></pre>
+
+<p>To see what Echo does, here is a client written by hand, with the <code>WebSocket</code> class built into Node and browsers. It connects with the app key, waits for the server’s greeting, and subscribes to the channel:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">watch.ts</div><pre class="code"><span class="k">const</span> key = /^REVERB_APP_KEY=(.*)$/m.exec(readFileSync(<span class="s">&quot;shop/.env&quot;</span>, <span class="s">&quot;utf8&quot;</span>))?.[<span class="n">1</span>];
+<span class="k">const</span> socket = <span class="k">new</span> WebSocket(<span class="s">`ws://localhost:8080/app/${key}?protocol=7`</span>);
+
+socket.addEventListener(<span class="s">&quot;message&quot;</span>, (event) =&gt; {
+  <span class="k">const</span> message = JSON.parse(event.data);
+  <span class="k">if</span> (message.event === <span class="s">&quot;pusher:connection_established&quot;</span>) {
+    <span class="c line-bidi">// once connected, ask for the channel</span>
+    <span class="k">const</span> subscribe = { event: <span class="s">&quot;pusher:subscribe&quot;</span>, data: { channel: <span class="s">&quot;orders.1001&quot;</span> } };
+    socket.send(JSON.stringify(subscribe));
+  } <span class="k">else</span> {
+    console.log(message.event, message.channel ?? <span class="s">&quot;&quot;</span>, message.data ?? <span class="s">&quot;&quot;</span>);
+  }
+});
+setTimeout(() =&gt; socket.close(), Number(process.argv[<span class="n">2</span>] ?? <span class="n">3000</span>));</pre></div>
+
+<p>With Reverb running, the client watches in one terminal while the shop changes the status in another:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 1</div><pre class="code"><span class="c line-bidi"># A screen follows order 1001</span>
+<span class="c">$ </span><span class="k">node watch.ts</span>
+pusher_internal:subscription_succeeded orders.1001 {}
+status orders.1001 {&quot;order&quot;:1001,&quot;status&quot;:&quot;paid&quot;}
+status orders.1001 {&quot;order&quot;:1001,&quot;status&quot;:&quot;shipped&quot;}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Meanwhile, the shop changes its status</span>
+<span class="c">$ </span><span class="k">php artisan shop:status 1001 paid</span>
+order 1001 is now paid
+<span class="c">$ </span><span class="k">php artisan shop:status 1001 shipped</span>
+order 1001 is now shipped</pre></div>
+
+<p>Reverb confirmed the subscription, then delivered each change the moment the command dispatched it. The Artisan command ran in a separate process from the one holding the connection; a web request on another server would have worked the same way, because every process sends its events to Reverb.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does Laravel need a separate server such as Reverb for WebSockets, instead of handling them in its own requests?</li><li>What would clients receive if the event had no <code>broadcastWith</code> method?</li><li>Why is <code>ShouldBroadcast</code> usually better than <code>ShouldBroadcastNow</code> in an application?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">12.5</span> <span>Private channels</span></h2>
+
+<p>Anyone who knows the app key can subscribe to a public channel, so <code>orders.1001</code> would let any visitor watch any order. Real order updates belong on a <dfn>private channel</dfn>: <code>new PrivateChannel("orders.{$this-&gt;orderId}")</code> in <code>broadcastOn</code>. Before subscribing to a private channel, the client asks the Laravel application for permission at <code>/broadcasting/auth</code>, and Laravel runs the rule written for that channel in <code>routes/channels.php</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/channels.php</div><pre class="code">Broadcast::channel(<span class="s">&#x27;orders.{orderId}&#x27;</span>, <span class="k">function</span> (User $user, <span class="k">int</span> $orderId) {
+    <span class="k">return</span> DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $orderId)-&gt;where(<span class="s">&#x27;user_id&#x27;</span>, $user-&gt;id)-&gt;exists();
+});</pre></div>
+
+<p>The rule receives the signed-in user and the parts of the channel name, and returns whether that user may listen; here, only the order’s own customer. A request without a signed-in user is refused before any rule runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A private channel needs permission</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X POST localhost:8000/broadcasting/auth -d &#x27;socket_id=1234.5678&amp;channel_name=private-orders.1001&#x27;</span>
+403</pre></div>
+
+<p>When the rule says yes, Laravel signs the answer with the app secret, and Reverb accepts the subscription only with a valid signature, so a client cannot skip the check. Echo makes the request for you, with the session cookie on your own website or a Sanctum token from an app (Chapter 9). <dfn>Presence channels</dfn> go one step further: the rule returns information about the user, and every member of the channel learns who else is there, which is how “3 people are viewing this product” is built.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: broadcasting is not storage</p><p>A broadcast reaches only the clients connected at that moment; nothing is stored. A browser that connects a second later, or reconnects after a network blip, never sees it. Broadcasts are <em>hints</em> that something changed; the truth stays in the database. When a page opens, or Echo reconnects, load the current state with an ordinary request, then follow the live updates.</p></aside>
+
+<h2><span class="sec">12.6</span> <span>Reverb in production</span></h2>
+
+<ul>
+<li><strong>A long-running process.</strong> <code>reverb:start</code> runs under Supervisor, systemd or the container platform of Chapter 17, restarted after each deploy with <code>php artisan reverb:restart</code>. A web server in front (nginx, Caddy) handles TLS and forwards <code>wss://</code> connections to it.</li>
+<li><strong>More than one Reverb server.</strong> When one Reverb process is not enough, run several and set <code>REVERB_SCALING_ENABLED=true</code>: they share messages through Redis publish/subscribe (Chapter 8), so a client connected to any of them receives every broadcast.</li>
+<li><strong>Connections and limits.</strong> Each open connection holds memory and a file descriptor for as long as the page is open. Raise the open file limit (<code>ulimit -n</code>) for the Reverb process, and set proxy timeouts for long-lived connections. Reverb’s pings keep connections alive and detect clients that vanished.</li>
+<li><strong>Reconnecting.</strong> Networks drop, phones sleep, Reverb restarts at every deploy. Echo reconnects by itself with growing delays; when it does, the page should reload the current state.</li>
+<li><strong>Do you need it?</strong> A status that changes twice a day does not need a socket; polling every 30 seconds, or refreshing when the user returns to the tab, may be the better engineering.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: decide what each channel may reveal</p><p>Before adding a broadcast, write down who may listen to its channel and what its data may contain, and make the code match: public channels only for data anyone may see, a rule in <code>routes/channels.php</code> for every private channel, a test for the user who must be refused, and <code>broadcastWith</code> on every event. A broadcast is an API response pushed to a browser, and deserves the same review.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Personal data on public channels</td><td>Anyone with the app key can listen</td><td>Private channels with rules</td></tr>
+<tr><td>Events without <code>broadcastWith</code></td><td>Whole models leak to browsers</td><td>Send only what the screen needs</td></tr>
+<tr><td><code>ShouldBroadcastNow</code> in requests</td><td>Requests wait for Reverb, or fail with it</td><td><code>ShouldBroadcast</code> through the queue</td></tr>
+<tr><td>Treating broadcasts as storage</td><td>Updates lost during reconnects</td><td>Load the current state, then listen</td></tr>
+<tr><td>Rules that always return <code>true</code></td><td>Users watch other people’s orders</td><td>The same ownership checks as other routes</td></tr>
+<tr><td>Reverb not restarted after deploys</td><td>Old code and settings keep running</td><td><code>reverb:restart</code> in every deploy</td></tr>
+<tr><td>Several Reverb servers without scaling on</td><td>Clients miss events sent to another server</td><td><code>REVERB_SCALING_ENABLED</code> with Redis</td></tr>
+<tr><td>WebSockets for rare, one-way updates</td><td>More infrastructure than needed</td><td>Polling</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Polling</strong> asks repeatedly; <strong>SSE</strong> holds a response open; <strong>WebSockets</strong> carry messages both ways and, in Laravel, live in <strong>Reverb</strong>.</li>
+<li>An event with <strong><code>ShouldBroadcast</code></strong> goes from Laravel to Reverb to every client on its <strong>channel</strong>; <code>broadcastWith</code> decides what they receive.</li>
+<li>Reverb speaks the <strong>Pusher protocol</strong>; <strong>Laravel Echo</strong> is the browser client.</li>
+<li><strong>Private channels</strong> are authorized by rules in <code>routes/channels.php</code>, checked at <code>/broadcasting/auth</code> and signed with the app secret.</li>
+<li>Broadcasts are <strong>hints, not storage</strong>: pages load the current state and then listen.</li>
+<li>In production Reverb is supervised, restarted after deploys, and scaled across servers with <strong>Redis</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A PHP request lives for one response, and each worker handles one request at a time; holding thousands of connections open for hours would need thousands of workers. Reverb is a long-running, event-driven process built to keep many idle connections cheaply, and the application only sends it events. 2. Every public property of the event: here <code>orderId</code> and <code>status</code>, and with an Eloquent model as a property, all of the model’s visible attributes. 3. Sending to Reverb then happens in a queue worker: the request does not wait for it, a moment when Reverb is down does not fail the request, and the queue retries the broadcast.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project adds a live feature to the shop. Test each one with the client of this chapter or with Echo in a page.</p>
+
+<div class="project">
+<p class="project-label">Project 12.1 · Easy</p>
+<h3>A live order page</h3>
+<p class="project-goal">Show an order’s status on a web page that updates by itself.</p>
+<p class="project-skills"><strong>You will practise:</strong> Laravel Echo, loading the current state first, and reconnecting.</p>
+<ol class="steps">
+<li>Install Echo and <code>pusher-js</code> with npm, and configure Echo from the <code>VITE_REVERB_*</code> settings.</li>
+<li>Build a page that loads the order with a request, shows its status, then listens on its channel.</li>
+<li>Restart Reverb while the page is open, and make the page reload the order when Echo reconnects.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> loading the current state after every reconnect is what makes the page correct: whatever was missed is replaced by the present.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 12.2 · Medium</p>
+<h3>Only your own orders</h3>
+<p class="project-goal">Move the order updates to private channels, authorized with Sanctum.</p>
+<p class="project-skills"><strong>You will practise:</strong> private channels, channel rules, broadcasting authorization with tokens, and tests.</p>
+<ol class="steps">
+<li>Change the event to a <code>PrivateChannel</code>, and write the rule in <code>routes/channels.php</code> with the <code>Order</code> model.</li>
+<li>Register the broadcasting routes with <code>auth:sanctum</code>, so that a mobile app can authorize with its token.</li>
+<li>Test the rule: the owner gets a signature, another customer gets 403, a guest gets 403.</li>
+<li>Make the event queued with <code>ShouldBroadcast</code>, and run a worker.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>Broadcast::routes(['middleware' =&gt; ['auth:sanctum']])</code> changes how <code>/broadcasting/auth</code> authenticates.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 12.3 · Challenge</p>
+<h3>Who else is looking?</h3>
+<p class="project-goal">Show on each product page how many people are viewing it, and warn them when stock runs low.</p>
+<p class="project-skills"><strong>You will practise:</strong> presence channels, broadcasting from model events, and scaling Reverb.</p>
+<ol class="steps">
+<li>Join a presence channel <code>products.{id}</code> on the product page, and show the number of members.</li>
+<li>After each order, broadcast the new stock of each product bought, from the order code or a model event.</li>
+<li>Run two Reverb servers with scaling enabled and Redis, connect clients to both, and show that both see every event.</li>
+<li>Measure how many idle connections one Reverb process holds on your machine with a load-testing script.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> presence channels need a signed-in user; for guests, consider a counter kept in Redis and broadcast on a public channel instead.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Choose polling, SSE or WebSockets for each, and say why: a delivery tracking page; a support chat; a dashboard of today’s sales refreshed every minute; a multiplayer quiz.</li>
+<li><span class="level">Easy</span> Which of the generated settings may appear in the JavaScript sent to browsers, and which must not? Why?</li>
+<li><span class="level medium">Medium</span> A user opens an order page, loses the network for 30 seconds while the order is shipped, and reconnects. What does the page show, and what should it do?</li>
+<li><span class="level medium">Medium</span> Write the rule that lets only the order’s customer listen to <code>private-orders.{orderId}</code>, and show what a request without a signed-in user receives.</li>
+<li><span class="level hard">Challenge</span> After a deploy, 20,000 browsers reconnect at the same moment and Reverb falls over. Propose changes on the client and the server that prevent it.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 13</p>
+<p>The shop now has many moving parts. Testing with Pest: unit and feature tests, a real database in tests, fakes for queues, mail and broadcasts, and a suite fast enough to run on every change.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6239,6 +6525,20 @@ Access-Control-Max-Age: 0</pre></div>
   13:32:21 Worker STOPPED Maximum run time exceeded</pre></div>
 The attempt counter starts again at 1 after <code>queue:retry</code>. Had the job carried the email itself, the retry would have failed again with the old address.</li>
 <li>Design one: separate queues, dispatching emails with <code>-&gt;onQueue('emails')</code> and exports with <code>-&gt;onQueue('exports')</code>, each with its own workers (<code>queue:work --queue=emails</code>), so emails never wait behind exports; simple to reason about, and each queue scales on its own, at the cost of more processes. Design two: one set of workers with an order of queues, <code>queue:work --queue=emails,exports</code>, which always takes from <code>emails</code> first; fewer processes, but an email still waits for the exports already running on every worker. Separate workers are the safer answer when one kind of job is slow and another is urgent; Horizon can balance processes between queues automatically.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 12</h2>
+<ol class="exercises">
+<li>Delivery tracking: polling every 30 seconds, or a private channel if the app already runs Reverb; updates are rare and flow only from the server. Support chat: WebSockets; both sides send messages often, with typing indicators. Today’s sales refreshed every minute: polling; nobody needs it faster than the refresh, and a plain request can be cached. Multiplayer quiz: WebSockets; answers go up and questions, scores and timers come down, with low delay both ways.</li>
+<li><code>REVERB_APP_KEY</code>, the host, the port and the scheme may (and must) reach the browser, through the <code>VITE_REVERB_*</code> copies: the client needs them to connect, and the key only names the application. <code>REVERB_APP_SECRET</code> must never leave the server: it signs channel authorizations and the requests that publish events, so anyone with it could publish to any channel or authorize themselves into private ones. <code>REVERB_APP_ID</code> is not secret but has no use in the browser.</li>
+<li>The page still shows “paid”: the “shipped” broadcast was sent while it was offline, and nothing stored it. Echo reconnects by itself and resubscribes, but only future events arrive. The page should listen for the reconnection (Echo’s connector exposes the connection’s <code>connected</code> state) and reload the order with an ordinary request, then keep listening.</li>
+<li>The rule receives the signed-in user and the channel’s order id, and allows only the order’s customer:
+<div class="listing" dir="ltr"><div class="listing-title">routes/channels.php</div><pre class="code">Broadcast::channel(<span class="s">&#x27;orders.{orderId}&#x27;</span>, <span class="k">function</span> (User $user, <span class="k">int</span> $orderId) {
+    <span class="k">return</span> DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $orderId)-&gt;where(<span class="s">&#x27;user_id&#x27;</span>, $user-&gt;id)-&gt;exists();
+});</pre></div>
+Without a signed-in user, <code>/broadcasting/auth</code> answers 403 before the rule runs, as the transcript in section 12.5 shows, and Reverb refuses a subscription that has no valid signature.</li>
+<li>Client: reconnect after a random delay that grows with each failed attempt, instead of at once (Echo’s Pusher client already backs off; make sure it is not overridden), and after reconnecting load the current state with one request. Server: restart Reverb gradually when several run (one at a time, so only part of the clients reconnect at once), raise the open file limit and the accept backlog, limit new connections per second at the load balancer, and make the reconnect path cheap: channel authorization quick (no heavy queries in rules), and the initial state served from a cache.</li>
 </ol>
 
 </section>

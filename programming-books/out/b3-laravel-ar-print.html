@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الطوابير والمهام والمجدول"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "الفصل 12: الزمن الحقيقي بـ Laravel Reverb"; } }
+@page ch12:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -5939,6 +5941,290 @@ order 1001: في الطابور خلال 0.6 ms
 <p>المهام تعمل خلف الكواليس؛ وبعض التغييرات ينبغي أن تظهر أمام المستخدم في الحال. الميزات الفورية بـ Reverb: WebSockets، وبث الأحداث، ودفع حالة الطلب إلى الشاشة لحظة تغيّرها.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b3/laravel/realtime/ar">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">الفصل 12</p><h1>الميزات الفورية بـ Reverb</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تختار بين الاستطلاع، وأحداث الخادم المرسلة، وWebSockets</li>
+<li>تبث أحداث Laravel إلى المتصفح عبر Reverb، خادم WebSocket الخاص بـ Laravel</li>
+<li>ترى البروتوكول على السلك، بعميل مكتوب في أسطر قليلة</li>
+<li>تحمي القنوات الخاصة بقواعد التفويض</li>
+<li>تشغّل Reverb في الإنتاج عبر عدة خوادم، وتعالج إعادة الاتصال والأحداث الفائتة</li>
+</ul>
+</div>
+
+<p class="lead">HTTP محادثة يبدؤها العميل دائماً: يسأل، فيجيب الخادم، ولا طريقة للخادم أن يتكلم أولاً. ومع ذلك فشاشات كثيرة ينبغي أن تتغير وحدها: طلب ينتقل من «مدفوع» إلى «مشحون»، ورسالة دردشة تصل، وآخر العُدد في المخزون تختفي. وجواب Laravel هو <dfn>البث</dfn> (broadcasting): حدث عادي، يُطلق في PHP، يُدفع عبر WebSockets إلى كل متصفح يستمع. وهذا الفصل يثبّته بـ Reverb، خادم WebSocket المجاني من Laravel، ويراقب الرسائل وهي تصل.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول ميزة حية بنيتها كانت عدّاداً لمن يشاهدون منتجاً. عملت بجمال على حاسوبي. وفي الإنتاج كنا نشغّل ثلاثة خوادم، وكل منها يعدّ زوّاره وحده، فكان الرقم يقفز بين ثلاث قيم مختلفة كلما أعادت الصفحة الاتصال. في ذلك الأسبوع تعلمت لماذا ينبغي أن يكون خادم WebSocket خدمة منفصلة مشتركة.</p></div></div>
+
+<h2><span class="sec">12.1</span> <span>ثلاث طرق لتبقى محدَّثاً</span></h2>
+
+<ul>
+<li><dfn>الاستطلاع</dfn> (polling): يسأل العميل كل بضع ثوانٍ «هل من جديد؟». بسيط، ويعمل في كل مكان، وكثيراً ما يكفي؛ لكن أغلب الأجوبة «لا»، وكل منها يكلّف طلباً، ويصل الخبر متأخراً حتى فترة كاملة.</li>
+<li><dfn>أحداث الخادم المرسلة</dfn> (SSE): يرسل العميل طلب HTTP واحداً، ويُبقي الخادم الاستجابة مفتوحة، فيكتب حدثاً كلما حدث شيء. اتجاه واحد فقط. وفي PHP، كل استجابة مفتوحة تمسك عملية عامل كاملة ما دامت الصفحة مفتوحة، ولهذا نادراً ما تستخدمها تطبيقات PHP.</li>
+<li><dfn>WebSockets</dfn>: طلب HTTP <em>يُرقّى</em> إلى اتصال في الاتجاهين، يستطيع فيه أي طرف إرسال رسالة في أي وقت. وطلب PHP لا يستطيع إمساك آلاف منها، فيسلّمها Laravel إلى خادم منفصل طويل العمر مبني لذلك: <dfn>Reverb</dfn>.</li>
+</ul>
+
+<p>والمسار واحد دائماً. يطلق تطبيق Laravel حدثاً؛ فيرسله Laravel عبر HTTP إلى Reverb؛ فيدفعه Reverb إلى كل عميل مشترك في <dfn>قناة</dfn> الحدث. ولأن كل خادم ويب وكل عامل يرسل أحداثه إلى Reverb نفسه، فلا يهم أي خادم أجرى التغيير: وهي مشكلة يجب أن يحلها الكود الفوري المكتوب باليد بالنشر والاشتراك.</p>
+
+<h2><span class="sec">12.2</span> <span>تثبيت Reverb</span></h2>
+
+<p>أمر واحد يثبّت الحزمة، وينشر الإعداد وملف القنوات، ويكتب الإعدادات في <code>.env</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># البث بـ Reverb، بأمر واحد</span>
+<span class="c">$ </span><span class="k">php artisan install:broadcasting --reverb</span>
+   INFO  Published &#x27;broadcasting&#x27; configuration file.  
+   INFO  Published &#x27;channels&#x27; route file.  
+   INFO  Discovering packages.  
+   INFO  No publishable resources for tag [laravel-assets].  
+   INFO  Reverb installed successfully.  
+<span class="c">$ </span><span class="k">grep -E &#x27;^(BROADCAST_CONNECTION|REVERB_)&#x27; .env</span>
+BROADCAST_CONNECTION=reverb
+REVERB_APP_ID=…
+REVERB_APP_KEY=…
+REVERB_APP_SECRET=…
+REVERB_HOST=&quot;localhost&quot;
+REVERB_PORT=8080
+REVERB_SCHEME=http</pre></div>
+
+<p>رقم التطبيق ومفتاحه وسره تُولَّد عنك. والمفتاح عام، ترسله المتصفحات حين تتصل؛ أما السر فيوقّع الرسائل بين Laravel وReverb وتفويضات القنوات، فيبقى على الخادم. و<code>php artisan reverb:start</code> تشغّل خادم WebSocket على المنفذ 8080.</p>
+
+<h2><span class="sec">12.3</span> <span>بث حدث</span></h2>
+
+<p>الحدث الذي يطبّق <code>ShouldBroadcast</code> (أو <code>ShouldBroadcastNow</code>) يُبث حين يُطلق. وثلاث دوال تقول إلى أين يذهب وماذا يحمل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Events/OrderStatusChanged.php</div><pre class="code"><span class="k">class</span> OrderStatusChanged <span class="k">implements</span> ShouldBroadcastNow
+{
+    <span class="k">use</span> Dispatchable;
+
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">public</span> <span class="k">int</span> $orderId, <span class="k">public</span> <span class="k">string</span> $status) {}
+
+    <span class="c line-bidi">// القناة: كل من يتابع الطلب 1001 يستمع هنا</span>
+    <span class="k">public</span> <span class="k">function</span> broadcastOn(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [<span class="k">new</span> Channel(<span class="s">&quot;orders.{$this-&gt;orderId}&quot;</span>)];
+    }
+
+    <span class="c line-bidi">// اسم الحدث، كما يراه العملاء</span>
+    <span class="k">public</span> <span class="k">function</span> broadcastAs(): <span class="k">string</span>
+    {
+        <span class="k">return</span> <span class="s">&#x27;status&#x27;</span>;
+    }
+
+    <span class="c line-bidi">// بالضبط ما يستقبله العملاء: لا أكثر مما يحتاجون</span>
+    <span class="k">public</span> <span class="k">function</span> broadcastWith(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [<span class="s">&#x27;order&#x27;</span> =&gt; $<span class="k">this</span>-&gt;orderId, <span class="s">&#x27;status&#x27;</span> =&gt; $<span class="k">this</span>-&gt;status];
+    }
+}</pre></div>
+
+<ul>
+<li><code>broadcastOn</code> تسمّي القناة؛ وهنا يستمع كل من يتابع الطلب 1001 على <code>orders.1001</code>.</li>
+<li><code>broadcastAs</code> تعطي الحدث اسماً قصيراً للعملاء؛ وبدونها يرون اسم الصنف الكامل.</li>
+<li><code>broadcastWith</code> تختار البيانات. وبدونها تُرسل كل خاصية عامة، ومع النماذج كل سمة ظاهرة: طريقة شائعة لتسريب البيانات إلى المتصفحات. أرسل ما تحتاجه الشاشة.</li>
+<li><code>ShouldBroadcastNow</code> ترسل في الحال، داخل الإطلاق. و<code>ShouldBroadcast</code> تضع الإرسال في طابور الفصل 11، فلا يبطئ Reverb بطيء أو غير متاح الطلبَ أبداً؛ وهذا الخيار الصحيح في التطبيق.</li>
+</ul>
+
+<p>وكود الطلب يطلق الحدث بعد حفظ التغيير؛ وهنا يؤدي أمر Artisan ذلك الدور:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/console.php</div><pre class="code">Artisan::command(<span class="s">&#x27;shop:status {order} {status}&#x27;</span>, <span class="k">function</span> (<span class="k">int</span> $order, <span class="k">string</span> $status) {
+    <span class="c line-bidi">// ... the order&#x27;s status is saved in the database here ...</span>
+    OrderStatusChanged::dispatch($order, $status);
+    $<span class="k">this</span>-&gt;line(strtr(<span class="s">&#x27;الطلب {order} صار {status}&#x27;</span>, [<span class="s">&#x27;{order}&#x27;</span> =&gt; $order, <span class="s">&#x27;{status}&#x27;</span> =&gt; $status]));
+});</pre></div>
+
+<h2><span class="sec">12.4</span> <span>على السلك</span></h2>
+
+<p>يتكلم Reverb <dfn>بروتوكول Pusher</dfn>، مجموعة صغيرة من رسائل JSON فوق WebSocket، تفهمها مكتبات عملاء كثيرة. وفي المتصفح، يخفيه <dfn>Laravel Echo</dfn>:</p>
+
+<pre><code>Echo.channel("orders.1001").listen(".status", (e) =&gt; show(e.status));</code></pre>
+
+<p>ولنرى ما يفعله Echo، هذا عميل مكتوب باليد، بالصنف <code>WebSocket</code> المبني في Node والمتصفحات. يتصل بمفتاح التطبيق، وينتظر تحية الخادم، ويشترك في القناة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">watch.ts</div><pre class="code"><span class="k">const</span> key = /^REVERB_APP_KEY=(.*)$/m.exec(readFileSync(<span class="s">&quot;shop/.env&quot;</span>, <span class="s">&quot;utf8&quot;</span>))?.[<span class="n">1</span>];
+<span class="k">const</span> socket = <span class="k">new</span> WebSocket(<span class="s">`ws://localhost:8080/app/${key}?protocol=7`</span>);
+
+socket.addEventListener(<span class="s">&quot;message&quot;</span>, (event) =&gt; {
+  <span class="k">const</span> message = JSON.parse(event.data);
+  <span class="k">if</span> (message.event === <span class="s">&quot;pusher:connection_established&quot;</span>) {
+    <span class="c line-bidi">// بعد الاتصال، اطلب القناة</span>
+    <span class="k">const</span> subscribe = { event: <span class="s">&quot;pusher:subscribe&quot;</span>, data: { channel: <span class="s">&quot;orders.1001&quot;</span> } };
+    socket.send(JSON.stringify(subscribe));
+  } <span class="k">else</span> {
+    console.log(message.event, message.channel ?? <span class="s">&quot;&quot;</span>, message.data ?? <span class="s">&quot;&quot;</span>);
+  }
+});
+setTimeout(() =&gt; socket.close(), Number(process.argv[<span class="n">2</span>] ?? <span class="n">3000</span>));</pre></div>
+
+<p>وReverb يعمل، يراقب العميل في طرفية بينما يغيّر المتجر الحالة في أخرى:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية 1</div><pre class="code"><span class="c line-bidi"># شاشة تتابع الطلب 1001</span>
+<span class="c">$ </span><span class="k">node watch.ts</span>
+pusher_internal:subscription_succeeded orders.1001 {}
+status orders.1001 {&quot;order&quot;:1001,&quot;status&quot;:&quot;paid&quot;}
+status orders.1001 {&quot;order&quot;:1001,&quot;status&quot;:&quot;shipped&quot;}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية 2</div><pre class="code"><span class="c line-bidi"># في الأثناء، يغيّر المتجر حالته</span>
+<span class="c">$ </span><span class="k">php artisan shop:status 1001 paid</span>
+الطلب 1001 صار paid
+<span class="c">$ </span><span class="k">php artisan shop:status 1001 shipped</span>
+الطلب 1001 صار shipped</pre></div>
+
+<p>أكّد Reverb الاشتراك، ثم أوصل كل تغيير لحظة أن أطلقه الأمر. وعمل أمر Artisan في عملية منفصلة عن تلك التي تمسك الاتصال؛ وكان طلب ويب على خادم آخر سيعمل بالطريقة نفسها، لأن كل عملية ترسل أحداثها إلى Reverb.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يحتاج Laravel خادماً منفصلاً مثل Reverb لـ WebSockets، بدل معالجتها في طلباته؟</li><li>ماذا كان سيستقبل العملاء لو لم يكن للحدث دالة <code>broadcastWith</code>؟</li><li>لماذا تكون <code>ShouldBroadcast</code> عادة أفضل من <code>ShouldBroadcastNow</code> في التطبيق؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">12.5</span> <span>القنوات الخاصة</span></h2>
+
+<p>يستطيع أي من يعرف مفتاح التطبيق أن يشترك في قناة عامة، فـ <code>orders.1001</code> ستتيح لأي زائر متابعة أي طلب. وتحديثات الطلبات الحقيقية مكانها <dfn>قناة خاصة</dfn>: <code>new PrivateChannel("orders.{$this-&gt;orderId}")</code> في <code>broadcastOn</code>. وقبل الاشتراك في قناة خاصة، يطلب العميل إذناً من تطبيق Laravel عند <code>/broadcasting/auth</code>، فينفذ Laravel القاعدة المكتوبة لتلك القناة في <code>routes/channels.php</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/channels.php</div><pre class="code">Broadcast::channel(<span class="s">&#x27;orders.{orderId}&#x27;</span>, <span class="k">function</span> (User $user, <span class="k">int</span> $orderId) {
+    <span class="k">return</span> DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $orderId)-&gt;where(<span class="s">&#x27;user_id&#x27;</span>, $user-&gt;id)-&gt;exists();
+});</pre></div>
+
+<p>تتلقى القاعدة المستخدم الداخل وأجزاء اسم القناة، وتعيد هل يجوز لذلك المستخدم أن يستمع؛ وهنا زبون الطلب نفسه وحده. والطلب بلا مستخدم داخل يُرفض قبل أن تعمل أي قاعدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># القناة الخاصة تحتاج إذناً</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X POST localhost:8000/broadcasting/auth -d &#x27;socket_id=1234.5678&amp;channel_name=private-orders.1001&#x27;</span>
+403</pre></div>
+
+<p>وحين تقول القاعدة نعم، يوقّع Laravel الجواب بسر التطبيق، ولا يقبل Reverb الاشتراك إلا بتوقيع صالح، فلا يستطيع العميل تخطي الفحص. ويرسل Echo الطلب عنك، بكوكي الجلسة في موقعك أو برمز Sanctum من تطبيق (الفصل 9). و<dfn>قنوات الحضور</dfn> (presence channels) تذهب خطوة أبعد: تعيد القاعدة معلومات عن المستخدم، فيعرف كل عضو في القناة من غيره هناك، وبهذا يُبنى «3 أشخاص يشاهدون هذا المنتج».</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: البث ليس تخزيناً</p><p>البث لا يصل إلا إلى العملاء المتصلين في تلك اللحظة؛ ولا يُحفظ شيء. فالمتصفح الذي يتصل بعد ثانية، أو يعيد الاتصال بعد انقطاع قصير، لا يراه أبداً. البث <em>تلميحات</em> بأن شيئاً تغيّر؛ والحقيقة تبقى في قاعدة البيانات. فحين تُفتح صفحة، أو يعيد Echo الاتصال، حمّل الحالة الحالية بطلب عادي، ثم تابع التحديثات الحية.</p></aside>
+
+<h2><span class="sec">12.6</span> <span>Reverb في الإنتاج</span></h2>
+
+<ul>
+<li><strong>عملية طويلة العمر.</strong> تعمل <code>reverb:start</code> تحت Supervisor أو systemd أو منصة الحاويات في الفصل 17، ويُعاد تشغيلها بعد كل نشر بـ <code>php artisan reverb:restart</code>. وخادم ويب في الأمام (nginx أو Caddy) يتولى TLS ويمرر اتصالات <code>wss://</code> إليها.</li>
+<li><strong>أكثر من خادم Reverb.</strong> حين لا تكفي عملية Reverb واحدة، شغّل عدة عمليات واضبط <code>REVERB_SCALING_ENABLED=true</code>: فتتقاسم الرسائل عبر النشر والاشتراك في Redis (الفصل 8)، فيستقبل العميل المتصل بأي منها كل بث.</li>
+<li><strong>الاتصالات والحدود.</strong> كل اتصال مفتوح يمسك ذاكرة وواصف ملف ما دامت الصفحة مفتوحة. ارفع حد الملفات المفتوحة (<code>ulimit -n</code>) لعملية Reverb، واضبط مهل الوسطاء للاتصالات طويلة العمر. وإشارات ping في Reverb تُبقي الاتصالات حية وتكشف العملاء الذين اختفوا.</li>
+<li><strong>إعادة الاتصال.</strong> الشبكات تنقطع، والهواتف تنام، وReverb يُعاد مع كل نشر. ويعيد Echo الاتصال وحده بتأخيرات متزايدة؛ وحين يفعل، ينبغي أن تعيد الصفحة تحميل الحالة الحالية.</li>
+<li><strong>هل تحتاجها أصلاً؟</strong> حالة تتغير مرتين في اليوم لا تحتاج مقبساً؛ فالاستطلاع كل 30 ثانية، أو التحديث حين يعود المستخدم إلى التبويب، قد يكون الهندسة الأفضل.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: قرر ما يجوز لكل قناة أن تكشفه</p><p>قبل إضافة بث، اكتب من يجوز له الاستماع إلى قناته وما يجوز أن تحتويه بياناته، واجعل الكود يطابق ذلك: القنوات العامة لبيانات يجوز لأي أحد رؤيتها وحدها، وقاعدة في <code>routes/channels.php</code> لكل قناة خاصة، واختبار للمستخدم الذي يجب أن يُرفض، و<code>broadcastWith</code> في كل حدث. فالبث استجابة API تُدفع إلى متصفح، وتستحق المراجعة نفسها.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>بيانات شخصية على قنوات عامة</td><td>أي أحد معه مفتاح التطبيق يستمع</td><td>قنوات خاصة بقواعد</td></tr>
+<tr><td>أحداث بلا <code>broadcastWith</code></td><td>نماذج كاملة تتسرب إلى المتصفحات</td><td>أرسل ما تحتاجه الشاشة وحده</td></tr>
+<tr><td><code>ShouldBroadcastNow</code> في الطلبات</td><td>الطلبات تنتظر Reverb، أو تفشل معه</td><td><code>ShouldBroadcast</code> عبر الطابور</td></tr>
+<tr><td>معاملة البث تخزيناً</td><td>تحديثات تضيع أثناء إعادة الاتصال</td><td>حمّل الحالة الحالية، ثم استمع</td></tr>
+<tr><td>قواعد تعيد <code>true</code> دائماً</td><td>مستخدمون يتابعون طلبات غيرهم</td><td>فحوص الملكية نفسها في المسارات الأخرى</td></tr>
+<tr><td>عدم إعادة تشغيل Reverb بعد النشر</td><td>الكود والإعدادات القديمة تبقى تعمل</td><td><code>reverb:restart</code> في كل نشر</td></tr>
+<tr><td>عدة خوادم Reverb بلا توسيع مشغّل</td><td>عملاء تفوتهم أحداث أُرسلت إلى خادم آخر</td><td><code>REVERB_SCALING_ENABLED</code> مع Redis</td></tr>
+<tr><td>WebSockets لتحديثات نادرة في اتجاه واحد</td><td>بنية أكثر من اللازم</td><td>الاستطلاع</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>الاستطلاع</strong> يسأل مراراً؛ و<strong>SSE</strong> تُبقي استجابة مفتوحة؛ و<strong>WebSockets</strong> تحمل الرسائل في الاتجاهين، وفي Laravel تعيش في <strong>Reverb</strong>.</li>
+<li>الحدث بـ <strong><code>ShouldBroadcast</code></strong> يذهب من Laravel إلى Reverb إلى كل عميل على <strong>قناته</strong>؛ و<code>broadcastWith</code> تقرر ما يستقبلونه.</li>
+<li>يتكلم Reverb <strong>بروتوكول Pusher</strong>؛ و<strong>Laravel Echo</strong> عميل المتصفح.</li>
+<li><strong>القنوات الخاصة</strong> تُفوَّض بقواعد في <code>routes/channels.php</code>، تُفحص عند <code>/broadcasting/auth</code> وتُوقّع بسر التطبيق.</li>
+<li>البث <strong>تلميحات لا تخزين</strong>: الصفحات تحمّل الحالة الحالية ثم تستمع.</li>
+<li>في الإنتاج، Reverb تحت إشراف، ويُعاد بعد النشر، ويتوسع عبر الخوادم بـ <strong>Redis</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. طلب PHP يعيش لاستجابة واحدة، وكل عامل يعالج طلباً واحداً في كل مرة؛ وإمساك آلاف الاتصالات مفتوحة لساعات يحتاج آلاف العمّال. أما Reverb فعملية طويلة العمر تعتمد على الأحداث، مبنية لإبقاء اتصالات خاملة كثيرة برخص، والتطبيق يرسل إليها الأحداث فقط. 2. كل خاصية عامة في الحدث: هنا <code>orderId</code> و<code>status</code>، ومع نموذج Eloquent خاصيةً، كل سمات النموذج الظاهرة. 3. يحدث الإرسال إلى Reverb حينها في عامل الطابور: فلا ينتظره الطلب، ولحظة تعطل Reverb لا تُفشل الطلب، والطابور يعيد البث.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يضيف ميزة حية إلى المتجر. اختبر كلاً منها بعميل هذا الفصل أو بـ Echo في صفحة.</p>
+
+<div class="project">
+<p class="project-label">المشروع 12.1 · سهل</p>
+<h3>صفحة طلب حية</h3>
+<p class="project-goal">اعرض حالة طلب في صفحة ويب تتحدث وحدها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> Laravel Echo، وتحميل الحالة الحالية أولاً، وإعادة الاتصال.</p>
+<ol class="steps">
+<li>ثبّت Echo و<code>pusher-js</code> بـ npm، واضبط Echo من إعدادات <code>VITE_REVERB_*</code>.</li>
+<li>ابنِ صفحة تحمّل الطلب بطلب، وتعرض حالته، ثم تستمع على قناته.</li>
+<li>أعد تشغيل Reverb والصفحة مفتوحة، واجعل الصفحة تعيد تحميل الطلب حين يعيد Echo الاتصال.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> تحميل الحالة الحالية بعد كل إعادة اتصال هو ما يجعل الصفحة صحيحة: أياً كان ما فات، يحل محله الحاضر.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 12.2 · متوسط</p>
+<h3>طلباتك وحدها</h3>
+<p class="project-goal">انقل تحديثات الطلبات إلى قنوات خاصة، مفوَّضة بـ Sanctum.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القنوات الخاصة، وقواعد القنوات، وتفويض البث بالرموز، والاختبارات.</p>
+<ol class="steps">
+<li>غيّر الحدث إلى <code>PrivateChannel</code>، واكتب القاعدة في <code>routes/channels.php</code> بالنموذج <code>Order</code>.</li>
+<li>سجّل مسارات البث بـ <code>auth:sanctum</code>، فيستطيع تطبيق جوال التفويض برمزه.</li>
+<li>اختبر القاعدة: المالك يأخذ توقيعاً، وزبون آخر يأخذ 403، والزائر يأخذ 403.</li>
+<li>اجعل الحدث في الطابور بـ <code>ShouldBroadcast</code>، وشغّل عاملاً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>Broadcast::routes(['middleware' =&gt; ['auth:sanctum']])</code> تغيّر كيف تصادق <code>/broadcasting/auth</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 12.3 · تحدٍّ</p>
+<h3>من غيرك يشاهد؟</h3>
+<p class="project-goal">اعرض في صفحة كل منتج كم شخصاً يشاهده، ونبّههم حين يقل المخزون.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قنوات الحضور، والبث من أحداث النماذج، وتوسيع Reverb.</p>
+<ol class="steps">
+<li>انضم إلى قناة حضور <code>products.{id}</code> في صفحة المنتج، واعرض عدد الأعضاء.</li>
+<li>بعد كل طلب، ابث المخزون الجديد لكل منتج اشتُري، من كود الطلب أو حدث نموذج.</li>
+<li>شغّل خادمَي Reverb بالتوسيع مشغّلاً ومع Redis، واربط عملاء بكليهما، وبيّن أن الاثنين يريان كل حدث.</li>
+<li>قِس كم اتصالاً خاملاً تمسكه عملية Reverb واحدة على جهازك بسكربت لاختبار الحمل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قنوات الحضور تحتاج مستخدماً داخلاً؛ وللزوار، فكّر في عدّاد يُحفظ في Redis ويُبث على قناة عامة بدلاً منها.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اختر الاستطلاع أو SSE أو WebSockets لكل مما يلي، وقل لماذا: صفحة تتبع توصيل؛ ودردشة دعم؛ ولوحة مبيعات اليوم تتحدث كل دقيقة؛ ومسابقة لعدة لاعبين.</li>
+<li><span class="level">سهل</span> أي الإعدادات المولّدة يجوز أن يظهر في JavaScript المرسل إلى المتصفحات، وأيها لا يجوز؟ لماذا؟</li>
+<li><span class="level medium">متوسط</span> مستخدم يفتح صفحة طلب، فيفقد الشبكة 30 ثانية يُشحن فيها الطلب، ثم يعيد الاتصال. ماذا تعرض الصفحة، وماذا ينبغي أن تفعل؟</li>
+<li><span class="level medium">متوسط</span> اكتب القاعدة التي لا تسمح إلا لزبون الطلب بالاستماع إلى <code>private-orders.{orderId}</code>، وبيّن ما يستقبله طلب بلا مستخدم داخل.</li>
+<li><span class="level hard">تحدٍّ</span> بعد نشر، يعيد 20000 متصفح الاتصال في اللحظة نفسها فيسقط Reverb. اقترح تغييرات على العميل والخادم تمنع ذلك.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 13</p>
+<p>صار في المتجر أجزاء متحركة كثيرة. الاختبار بـ Pest: اختبارات الوحدة والميزات، وقاعدة بيانات حقيقية في الاختبارات، وبدائل وهمية للطوابير والبريد والبث، ومجموعة اختبارات سريعة بما يكفي لتعمل مع كل تغيير.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -6141,6 +6427,20 @@ Access-Control-Max-Age: 0</pre></div>
   13:32:54 Worker STOPPED Maximum run time exceeded</pre></div>
 ويبدأ عدّاد المحاولات من 1 مرة أخرى بعد <code>queue:retry</code>. ولو حملت المهمة البريد نفسه، لفشلت الإعادة مرة أخرى بالعنوان القديم.</li>
 <li>التصميم الأول: طوابير منفصلة، بإرسال البريد بـ <code>-&gt;onQueue('emails')</code> والتصدير بـ <code>-&gt;onQueue('exports')</code>، لكل منهما عمّاله (<code>queue:work --queue=emails</code>)، فلا ينتظر البريد خلف التصدير أبداً؛ بسيط في التفكير، ويتوسع كل طابور وحده، بثمن عمليات أكثر. والتصميم الثاني: مجموعة عمّال واحدة بترتيب للطوابير، <code>queue:work --queue=emails,exports</code>، تأخذ من <code>emails</code> أولاً دائماً؛ عمليات أقل، لكن البريد ما زال ينتظر التصدير الذي يعمل أصلاً على كل عامل. والعمّال المنفصلون الجواب الأأمن حين يكون نوع من المهام بطيئاً وآخر عاجلاً؛ وHorizon يستطيع موازنة العمليات بين الطوابير تلقائياً.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 12</h2>
+<ol class="exercises">
+<li>تتبع التوصيل: الاستطلاع كل 30 ثانية، أو قناة خاصة إن كان التطبيق يشغّل Reverb أصلاً؛ فالتحديثات نادرة وتتدفق من الخادم وحده. ودردشة الدعم: WebSockets؛ فالطرفان يرسلان رسائل كثيراً، مع مؤشرات الكتابة. ومبيعات اليوم المتحدثة كل دقيقة: الاستطلاع؛ لا أحد يحتاجها أسرع من التحديث، والطلب العادي قابل للتخزين المؤقت. والمسابقة لعدة لاعبين: WebSockets؛ فالأجوبة تصعد والأسئلة والنتائج والمؤقتات تنزل، بتأخير قليل في الاتجاهين.</li>
+<li><code>REVERB_APP_KEY</code> والمضيف والمنفذ والمخطط يجوز (بل يجب) أن تصل إلى المتصفح، عبر نسخ <code>VITE_REVERB_*</code>: يحتاجها العميل ليتصل، والمفتاح يسمّي التطبيق فقط. أما <code>REVERB_APP_SECRET</code> فلا يجوز أن يغادر الخادم أبداً: يوقّع تفويضات القنوات والطلبات التي تنشر الأحداث، فمن معه يستطيع النشر في أي قناة أو تفويض نفسه في القنوات الخاصة. و<code>REVERB_APP_ID</code> ليس سراً لكن لا فائدة منه في المتصفح.</li>
+<li>ما زالت الصفحة تعرض «مدفوع»: أُرسل بث «مشحون» وهي غير متصلة، ولم يحفظه شيء. ويعيد Echo الاتصال وحده ويعيد الاشتراك، لكن لا تصل إلا الأحداث المقبلة. وينبغي أن تستمع الصفحة لإعادة الاتصال (موصّل Echo يكشف حالة <code>connected</code> للاتصال) وتعيد تحميل الطلب بطلب عادي، ثم تواصل الاستماع.</li>
+<li>تتلقى القاعدة المستخدم الداخل ورقم طلب القناة، ولا تسمح إلا لزبون الطلب:
+<div class="listing" dir="ltr"><div class="listing-title">routes/channels.php</div><pre class="code">Broadcast::channel(<span class="s">&#x27;orders.{orderId}&#x27;</span>, <span class="k">function</span> (User $user, <span class="k">int</span> $orderId) {
+    <span class="k">return</span> DB::table(<span class="s">&#x27;orders&#x27;</span>)-&gt;where(<span class="s">&#x27;id&#x27;</span>, $orderId)-&gt;where(<span class="s">&#x27;user_id&#x27;</span>, $user-&gt;id)-&gt;exists();
+});</pre></div>
+وبلا مستخدم داخل، تجيب <code>/broadcasting/auth</code> بـ 403 قبل أن تعمل القاعدة، كما يبيّن التشغيل في القسم 12.5، ويرفض Reverb اشتراكاً بلا توقيع صالح.</li>
+<li>العميل: أعد الاتصال بعد تأخير عشوائي يكبر مع كل محاولة فاشلة، لا في الحال (عميل Pusher في Echo يتراجع أصلاً؛ تأكد ألا يُلغى ذلك)، وبعد إعادة الاتصال حمّل الحالة الحالية بطلب واحد. والخادم: أعد تشغيل Reverb بالتدريج حين تعمل عدة عمليات (واحدة بعد واحدة، فلا يعيد الاتصال إلا جزء من العملاء معاً)، وارفع حد الملفات المفتوحة وطابور القبول، وحدّ الاتصالات الجديدة في الثانية عند موازن الحمل، واجعل مسار إعادة الاتصال رخيصاً: تفويض القنوات سريع (بلا استعلامات ثقيلة في القواعد)، والحالة الأولى تُقدَّم من ذاكرة مؤقتة.</li>
 </ol>
 
 </section>
