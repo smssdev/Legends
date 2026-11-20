@@ -1,0 +1,186 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/infra/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Cloud and Infrastructure as Code</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>choose what to run yourself and what to rent from a cloud provider</li>
+<li>describe servers, networks, databases and their settings as code in the repository</li>
+<li>read a plan before changing anything, and apply exactly what was reviewed</li>
+<li>recognise changes that replace resources, and changes made by hand</li>
+<li>keep infrastructure state safe, shared and locked</li>
+<li>create a whole environment from nothing, and remove it again</li>
+</ul>
+</div>
+
+<p class="lead">The pipeline of the last chapter builds an image and deploys it, but deploys it <em>where</em>? Somebody has to create the servers, the network, the database, the load balancer, the storage, and keep their settings right for years. Done by clicking in a web console, that work leaves no history, no review and no way to rebuild it; the only description of production is production itself. <dfn>Infrastructure as code</dfn> (IaC) describes all of it in files, in the repository, changed through pull requests like everything else. This chapter describes Bit Booking’s infrastructure that way and runs every command for real.</p>
+
+<aside class="bit" data-mood="think"><p>The question that shows whether a team has infrastructure as code is simple: “if this region disappeared tonight, how long to rebuild production elsewhere?” With code, the answer is an hour and a data restore. Without it, the answer is a silence.</p></aside>
+
+<h2>{{n}}.1 What to rent</h2>
+
+<p>A cloud provider rents computing at several levels, and each level up means less to operate and less control:</p>
+<ul>
+<li><strong>Virtual machines:</strong> you install, patch and run everything on them.</li>
+<li><strong>Container platforms:</strong> you give an image and settings; the platform runs the copies, restarts them, and does the rolling updates of Chapter {{n-1}}.</li>
+<li><strong>Managed services:</strong> a database, a queue, object storage, email, offered as a service with backups, standby copies and upgrades handled by the provider.</li>
+</ul>
+
+<p>For a small team the rule is to rent the hard, generic parts and spend your own effort on what makes the product different. For Bit Booking that means a managed PostgreSQL with a standby and automated backups (Chapter {{n-4}} explained why a database standby is hard), a container platform for the stateless application, object storage for files, and an email service. What you rent you still must configure, secure and pay for: the provider runs the database, but who may connect to it, from where, and with which password is your responsibility. That split is called the <dfn>shared responsibility model</dfn>, and most cloud breaches are on the customer’s side of it: a storage bucket left public, a database open to the internet, a key committed to a repository.</p>
+
+<h2>{{n}}.2 Describing infrastructure</h2>
+
+<p>The common tool is Terraform, or its open-source fork <strong>OpenTofu</strong>, used here. You describe the <em>desired state</em>, and the tool works out the steps. It talks to each platform through a <dfn>provider</dfn>: one for each cloud, and one for Docker, which this chapter uses so that every command can run on the machine that built the book. In the cloud, the same files would use the cloud’s provider and describe virtual machines, a managed database and a load balancer; the workflow is identical.</p>
+
+<pre data-code="versions.tf" data-title="versions.tf"></pre>
+
+<p>Settings that change between environments, or must stay secret, are <dfn>variables</dfn>. The database password is marked <code>sensitive</code>, so it is never printed, and its value arrives from the pipeline’s secret store, never from a file in the repository:</p>
+
+<pre data-code="variables.tf" data-title="variables.tf"></pre>
+
+<p>Then the resources themselves: a private network, the database and its volume, and the application copies, which only the network connects to the database:</p>
+
+<pre data-code="main.tf" data-from="resource &quot;docker_container&quot; &quot;db&quot;" data-title="main.tf"></pre>
+
+<p>Read it as a description, not a script: “there is a database named <code>bit-db</code>, on the private network, with its data in this volume; there are <code>app_copies</code> application containers running <code>app_version</code>.” References such as <code>docker_container.db.name</code> tell the tool the order: the network before the database, the database before the copies.</p>
+
+<h2>{{n}}.3 Plan, then apply</h2>
+
+<p>Nothing changes until you ask, and you ask in two steps. <code>tofu plan</code> compares the description with what exists and prints what it would do:</p>
+
+<pre data-code="plan.sh" data-title="Terminal"></pre>
+
+<p><code>tofu apply</code> does it, and records what it created:</p>
+
+<pre data-code="apply.sh" data-title="Terminal"></pre>
+
+<p>The last command matters most. Planning again, right after applying, finds nothing to do: the description and the world agree. That is the normal state, and any other answer means something changed that you did not expect.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What is the difference between <code>tofu plan</code> and <code>tofu apply</code>, and why run the first one in pull requests?</li><li>Why is the database password a variable marked <code>sensitive</code>, rather than a value in <code>main.tf</code>?</li><li>What does it mean when <code>tofu plan</code> says “No changes” right after an apply?</li></ol></aside>
+
+<h2>{{n}}.4 Changes that replace</h2>
+
+<p>Releasing v2 is a change of one variable. The plan says exactly what will happen, before it happens:</p>
+
+<pre data-code="change.sh" data-title="Terminal"></pre>
+
+<p>Read the words carefully: <em>must be replaced</em>, and <em>forces replacement</em>. A container’s environment cannot be changed in place, so each copy will be destroyed and created again. Done naively, both at once, that is the outage of Chapter {{n-1}}. The plan is where you catch it: replace one copy at a time behind the load balancer, ask the tool to create each new resource before destroying the old one (<code>lifecycle { create_before_destroy = true }</code>), or, as most teams do, let infrastructure code create the platform and let the pipeline’s rolling deploy change the running version. Some replacements are far worse: a plan that replaces the <em>database</em> would destroy its data. Mark such resources <code>prevent_destroy</code>, and read every plan for the word “replaced” before approving it.</p>
+
+<h2>{{n}}.5 Drift</h2>
+
+<p>During an incident someone fixes production by hand, in the console. The fix works, and nobody writes it down. Now the description and the world disagree: that is <dfn>drift</dfn>. The next plan finds it:</p>
+
+<pre data-code="drift.sh" data-title="Terminal"></pre>
+
+<p>Here a container removed by hand is put back. If the manual change had been a setting, the next apply would silently undo the fix, which is why the rule is strict: changes go through the code, even in a hurry; and a scheduled job runs <code>tofu plan</code> every night and alerts when the answer is not “No changes”.</p>
+
+<h2>{{n}}.6 State</h2>
+
+<p>To know what it created, the tool keeps a <dfn>state</dfn> file: every resource, its id, and every attribute, <em>including sensitive values</em> such as that database password, in plain text. Three rules follow. Never commit the state to the repository; commit the provider lock file (<code>.terraform.lock.hcl</code>) instead, which pins the exact provider builds. Keep the state in a <em>remote backend</em> (object storage with versioning and encryption) so the whole team and the pipeline share one copy. And use <em>locking</em>, so two applies cannot run at once and corrupt it.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: the state file is a secret</p><p>Anyone who can read the state can read every password and key the infrastructure uses. Give the state bucket the same protection as your secrets store: access for the pipeline and a few people, encryption, versioning to recover from a bad apply, and an audit log of who read it.</p></aside>
+
+<h2>{{n}}.7 Environments, and starting from nothing</h2>
+
+<p>Staging and production should be the same description with different variables: smaller machines and one copy for staging, more for production. Group repeated pieces into <dfn>modules</dfn> (a module for “a Bit Booking environment”, called twice), so that a fix in one place reaches every environment. And because everything is described, an environment can be created from nothing and removed again: a fresh environment for each pull request, tested and then destroyed:</p>
+
+<pre data-code="destroy.sh" data-title="Terminal"></pre>
+
+<p>Being able to destroy and recreate an environment is also the best test of the code itself: if it cannot rebuild staging from scratch, it cannot rebuild production after a disaster either.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: plan in review, apply from the pipeline</p><p>Every infrastructure pull request shows its <code>tofu plan</code> output in the review, so reviewers approve the actual changes, not just the code. After merge, only the pipeline applies, with its own credentials; people do not apply production from their laptops. Then every change to production has an author, a reviewer, a plan and a time.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Infrastructure built by clicking</td><td>No history, no review, cannot be rebuilt</td><td>Everything in code, through pull requests</td></tr>
+<tr><td>Applying without reading the plan</td><td>Surprise replacements and deletions</td><td>Read every plan; look for “replaced”</td></tr>
+<tr><td>Secrets in <code>.tf</code> files</td><td>Passwords in the repository forever</td><td>Sensitive variables from the secret store</td></tr>
+<tr><td>State in the repository or on a laptop</td><td>Leaked secrets, lost or conflicting state</td><td>Remote, encrypted, locked state</td></tr>
+<tr><td>Fixes made by hand</td><td>Drift, then the next apply undoes them</td><td>Change the code, even in an incident</td></tr>
+<tr><td>Replaceable databases</td><td>A plan that destroys the data</td><td><code>prevent_destroy</code> and careful review</td></tr>
+<tr><td>Different code for each environment</td><td>Staging no longer tells you about production</td><td>One module, different variables</td></tr>
+<tr><td>Public storage and open databases</td><td>The most common cloud breaches</td><td>Private by default; open only what must be</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Rent the hard generic parts (managed database, storage, email, a container platform); you still own their <strong>configuration and access</strong>.</li>
+<li><strong>Infrastructure as code</strong> describes the desired state in the repository; a <strong>provider</strong> turns it into real resources.</li>
+<li><strong>Plan</strong> shows what would change; <strong>apply</strong> does exactly that; “No changes” is the normal state.</li>
+<li>Read plans for <strong>replacements</strong>; protect stateful resources with <code>prevent_destroy</code>.</li>
+<li><strong>Drift</strong> from manual changes is found by the next plan; make every change through the code.</li>
+<li>Keep <strong>state</strong> remote, encrypted and locked; it contains secrets.</li>
+<li>Use <strong>modules</strong> and variables for environments, and recreate them from nothing to prove the code works.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>plan</code> only compares the description with the real infrastructure and lists the changes it would make; <code>apply</code> makes them. Running the plan in pull requests lets reviewers approve the real effect of a change (two containers replaced, a database untouched), not just the lines of code, and stops surprises such as a replacement of a stateful resource before they happen. 2. Because anything in <code>main.tf</code> is in the repository, its history, every clone and every fork, forever. As a variable it arrives at apply time from the pipeline’s secret store, can differ per environment, can be rotated without a commit, and <code>sensitive</code> keeps it out of the printed output (though not out of the state). 3. That the real infrastructure matches the description exactly: everything that was declared exists with the declared settings, and nothing was changed by hand since. It is the expected answer, and a nightly plan that gives any other answer is an alert for drift.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project grows Bit Booking’s infrastructure code. Run every plan and apply, and keep the transcript.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Staging and production</h3>
+<p class="project-goal">Turn the description into a module, used for two environments.</p>
+<p class="project-skills"><strong>You will practise:</strong> modules, variables, and naming per environment.</p>
+<ol class="steps">
+<li>Move the resources into <code>modules/environment</code>, with a variable <code>name</code> used in every resource name.</li>
+<li>Call it twice: <code>staging</code> with one copy, <code>production</code> with two, on different ports.</li>
+<li>Show that a change in the module plans changes in both, and a variable change only in one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> keep each environment’s state separate (separate directories or workspaces), so a mistake in staging cannot touch production.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Nightly drift detection</h3>
+<p class="project-goal">Find manual changes automatically, every night.</p>
+<p class="project-skills"><strong>You will practise:</strong> exit codes, scheduled pipelines, and alerting.</p>
+<ol class="steps">
+<li>Use <code>tofu plan -detailed-exitcode</code>: it exits 0 for no changes, 2 for changes, 1 for errors.</li>
+<li>Write a scheduled workflow that runs it each night and opens an issue, with the plan, when the exit code is 2.</li>
+<li>Test it by changing something by hand, and by fixing the code.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the plan output may contain resource names but must never contain secrets; check that sensitive values print as <code>(sensitive value)</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>An environment per pull request</h3>
+<p class="project-goal">Create a complete, isolated Bit Booking environment for every pull request, and destroy it when the request closes.</p>
+<p class="project-skills"><strong>You will practise:</strong> ephemeral environments, pipelines, and cleaning up.</p>
+<ol class="steps">
+<li>Use the pull request’s number in every resource name and port, so environments do not collide.</li>
+<li>On opening or updating a pull request, apply, then run the contract tests against the new environment, and post its address as a comment.</li>
+<li>On closing it, destroy, and verify that nothing is left.</li>
+<li>Add a nightly job that destroys environments whose pull requests are closed, in case a destroy failed.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> seed each environment’s database from a small, anonymised fixture, never from a copy of production data.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, say whether it belongs in <code>.tf</code> files, in variables from the secret store, or in neither: the number of app copies; the database password; the region; a customer’s email address; the image tag of the release.</li>
+<li><span class="level">Easy</span> Why does the plan for v2 replace the containers instead of changing them, and what would happen if it replaced both at the same moment?</li>
+<li><span class="level">Medium</span> Two engineers run <code>tofu apply</code> against production at the same time without locking. Describe two things that can go wrong.</li>
+<li><span class="level">Medium</span> A plan shows <code>docker_container.db must be replaced</code> because someone changed the image tag of PostgreSQL. What do you do before approving, and what would you change in the code?</li>
+<li><span class="level">Challenge</span> Bit Booking must be rebuilt in another region after a disaster, within four hours. List what the infrastructure code covers, what it does not (data, secrets, DNS), and write the recovery steps in order.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The system is built, deployed and described. The next chapter is about seeing what it does in production, and about what the team does when, despite everything, something goes wrong.</p>
+</div>
+</section>
