@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "Chapter 1: From Idea to Specification"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: API Contracts Between Frontend and Backend"; } }
+@page ch02:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -467,6 +469,477 @@ Online payment (deposits come in version 2), mobile apps, several branches.
 <p>The spec says what to build; the next chapter decides how the front end and the back end talk about it. API contracts: one description of every endpoint, from which both sides are checked.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b4/contracts/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>API Contracts Between Frontend and Backend</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe an API once, in OpenAPI, so that both sides build against the same promise</li>
+<li>choose between writing the contract first and generating it from code</li>
+<li>generate TypeScript types from the contract for the server and the client</li>
+<li>make the server enforce the contract on every request, and prove it on every response</li>
+<li>call the API with a client whose every path, parameter and answer is typed</li>
+<li>change a contract without breaking the clients that already depend on it</li>
+</ul>
+</div>
+
+<p class="lead">In Book 2 the front end checked every answer from the server with a schema; in Book 3 the server validated every request. Both sides were careful, but each was careful on its own: nothing stopped the server from renaming a field that the front end read. When one team builds both sides, and even more when a mobile app joins later, the sides need one shared description of what they say to each other. That description is the <dfn>API contract</dfn>. This chapter writes it for Bit Booking’s first two endpoints, and makes the type checker, the server and the tests all hold it.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>I once watched a release fail because the server started sending <code>startsAt</code> instead of <code>starts_at</code>. Both teams had tests, and every test passed. Each side was testing its own idea of the API. A contract is the test they share.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>What goes wrong without one</span></h2>
+
+<p>Without a contract the API is defined by whatever the server happens to do today. The front end learns it by reading the server’s code or watching the network tab, and copies it into its own types by hand. Every copy is a place where the two can drift apart, and drift is silent: the field comes back <code>undefined</code>, the page shows an empty time, and nobody notices until a customer does.</p>
+
+<p>The typical bugs are always the same few: a field renamed or removed, a field that was optional becoming required, a new enum value the client does not know, an error with a different shape than the client expects, a number sent as a string. Every one of them can be caught before release, but only if both sides agree, in a form a machine can check, on what the API is.</p>
+
+<h2><span class="sec">2.2</span> <span>The contract</span></h2>
+
+<p>The common format for HTTP APIs is <dfn>OpenAPI</dfn>: a YAML (or JSON) document listing every path, its parameters, its request body and every possible response, with JSON Schema for the data. Here are Bit Booking’s two operations, listing the free slots and making a booking:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">openapi.yaml</div><pre class="code">  /bookings:
+    post:
+      operationId: createBooking
+      summary: Book a slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: &quot;#/components/schemas/BookingIn&quot; }
+      responses:
+        &quot;201&quot;:
+          description: The booking
+          content:
+            application/json:
+              schema: { $ref: &quot;#/components/schemas/Booking&quot; }
+        &quot;409&quot;:
+          description: The slot is already booked
+          content:
+            application/problem+json:
+              schema: { $ref: &quot;#/components/schemas/Problem&quot; }
+        &quot;422&quot;:
+          description: The request is invalid
+          content:
+            application/problem+json:
+              schema: { $ref: &quot;#/components/schemas/Problem&quot; }</pre></div>
+
+<p>Notice what the contract promises beyond the happy path: a taken slot is a <code>409</code>, invalid input a <code>422</code>, and both come as <code>application/problem+json</code>, the Problem Details of Book 3. Errors are part of the API, and clients need to handle them as much as successes. The data shapes live once, under <code>components</code>, and are referenced from every operation that uses them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">openapi.yaml</div><pre class="code">components:
+  schemas:
+    Slot:
+      type: object
+      required: [starts_at, ends_at]
+      additionalProperties: false
+      properties:
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+    BookingIn:
+      type: object
+      required: [staff_id, starts_at, email]
+      additionalProperties: false
+      properties:
+        staff_id: { type: integer, minimum: 1 }
+        starts_at: { type: string, format: date-time }
+        email: { type: string, format: email, maxLength: 254 }
+    Booking:
+      type: object
+      required: [id, staff_id, starts_at, ends_at, email, status]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        staff_id: { type: integer }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+        email: { type: string }
+        status: { type: string, enum: [confirmed, cancelled] }
+    Problem:
+      type: object
+      required: [title, status]
+      properties:
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }</pre></div>
+
+<p><code>additionalProperties: false</code> says the object has exactly these fields, no more; <code>required</code> says which ones are always there; <code>format</code> adds meaning to strings (a date-time, an email). Every word of this is a promise, and the next sections make sure it is kept.</p>
+
+<h2><span class="sec">2.3</span> <span>Contract first, or code first</span></h2>
+
+<p>There are two ways to get a contract. <strong>Code first</strong>: write the server with schemas, as in Book 3, and generate the OpenAPI document from it. <strong>Contract first</strong>: write the document, review it, and build both sides from it.</p>
+
+<p>Code first is less work for a small team that owns both sides, and the document can never fall behind the server. Contract first is better when several clients depend on the API, or when the front end should start before the server exists: the contract is agreed in a review, the front end works against it (even against a mock server generated from it), and the server is checked against it. Bit Booking will have a web app, an owner’s dashboard and later a mobile app, so we write the contract first. Either way, the rule is the same: <em>one</em> source of truth, and everything else generated or checked from it.</p>
+
+<h2><span class="sec">2.4</span> <span>Types for both sides</span></h2>
+
+<p>The contract already describes every shape, so nobody should type them again by hand. <code>openapi-typescript</code> reads the document and writes TypeScript types for every path, parameter, body and response:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Types from the contract</span>
+<span class="c">$ </span><span class="k">npm run types</span>
+✨ openapi-typescript 7.13.0
+🚀 openapi.yaml → src/api.d.ts
+<span class="c">$ </span><span class="k">grep -A9 &#x27;Booking: {&#x27; src/api.d.ts</span>
+        Booking: {
+            id: number;
+            staff_id: number;
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            email: string;
+            /** @enum {string} */
+            status: &quot;confirmed&quot; | &quot;cancelled&quot;;</pre></div>
+
+<p>The generated file is never edited: when the contract changes, run the script again, and the type checker shows every place in the code that the change affects. (One practical note: the generator uses TypeScript 5’s compiler interface, so this book’s projects use TypeScript 5.9 rather than the native TypeScript 7 of Books 2 and 3. Tools catch up; check the generator’s notes before upgrading.)</p>
+
+<h2><span class="sec">2.5</span> <span>The server keeps the promise</span></h2>
+
+<p>The server imports the generated types, and validates requests with the contract’s own schemas, read from the same file, so the rules about what a valid booking looks like exist in exactly one place:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="c line-bidi">// types generated from the same contract</span>
+<span class="k">type</span> Booking = components[<span class="s">&quot;schemas&quot;</span>][<span class="s">&quot;Booking&quot;</span>];
+<span class="k">type</span> BookingIn = components[<span class="s">&quot;schemas&quot;</span>][<span class="s">&quot;BookingIn&quot;</span>];
+<span class="k">type</span> Problem = components[<span class="s">&quot;schemas&quot;</span>][<span class="s">&quot;Problem&quot;</span>];
+
+<span class="c line-bidi">// the contract is the source: its schemas validate every request</span>
+<span class="k">const</span> contract = parse(readFileSync(<span class="s">&quot;openapi.yaml&quot;</span>, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> schemas = contract.components.schemas;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  app.post&lt;{ Body: BookingIn }&gt;(
+    <span class="s">&quot;/bookings&quot;</span>,
+    { schema: { body: schemas.BookingIn } },
+    <span class="k">async</span> (request, reply) =&gt; {
+      <span class="k">const</span> { staff_id, starts_at, email } = request.body;
+      <span class="k">const</span> start = Date.parse(starts_at);
+      <span class="k">const</span> end = start + MINUTES * 60_000;
+      <span class="k">if</span> (overlaps(staff_id, start, end)) {
+        <span class="k">const</span> body = problem(
+          <span class="n">409</span>,
+          <span class="s">&quot;Slot taken&quot;</span>,
+          <span class="s">&quot;Another booking starts or ends inside this time.&quot;</span>,
+        );
+        <span class="k">return</span> reply.code(<span class="n">409</span>).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>).send(body);
+      }
+      <span class="k">const</span> booking: Booking = {
+        id: nextId++,
+        staff_id,
+        starts_at: <span class="k">new</span> Date(start).toISOString(),
+        ends_at: <span class="k">new</span> Date(end).toISOString(),
+        email,
+        status: <span class="s">&quot;confirmed&quot;</span>,
+      };
+      bookings.push(booking);
+      <span class="k">return</span> reply.code(<span class="n">201</span>).send(booking);
+    },
+  );</pre></div>
+
+<p>Fastify validates the body with <code>schemas.BookingIn</code> before the handler runs, and the type <code>Booking</code> makes the compiler refuse an object that does not match the contract’s <code>Booking</code>: a missing <code>ends_at</code>, or a status of <code>"canceled"</code>, would not compile. What the type checker cannot see is how errors leave the server. The contract says every error is a Problem, so an error handler makes it so:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  <span class="k">if</span> (process.env.BUG !== <span class="s">&quot;errors&quot;</span>) {
+    app.setErrorHandler((error: FastifyError, _request, reply) =&gt; {
+      <span class="k">const</span> status = error.validation ? <span class="n">422</span> : <span class="n">500</span>;
+      <span class="k">const</span> body = problem(
+        status,
+        <span class="s">&quot;Invalid request&quot;</span>,
+        error.validation ? error.message : <span class="k">undefined</span>,
+      );
+      <span class="k">return</span> reply.code(status).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>).send(body);
+    });
+  }</pre></div>
+
+<h2><span class="sec">2.6</span> <span>Proving it: the contract test</span></h2>
+
+<p>Types check the code; only running it checks the answers. A <dfn>contract test</dfn> sends real requests to the server and checks each response against the document: the status must be one the contract lists for that operation, the content type must match, and the body must validate against the documented schema:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/contract.test.ts</div><pre class="code"><span class="k">function</span> check(method: string, path: string, res: LightMyRequestResponse) {
+  <span class="k">const</span> responses = contract.paths[path]?.[method]?.responses ?? {};
+  <span class="k">const</span> doc = responses[res.statusCode];
+  assert.ok(
+    doc,
+    <span class="s">`${method.toUpperCase()} ${path} ${res.statusCode} is not in the contract`</span>,
+  );
+  <span class="k">const</span> [<span class="k">type</span>] = Object.keys(doc.content);
+  assert.equal(String(res.headers[<span class="s">&quot;content-type&quot;</span>]).split(<span class="s">&quot;;&quot;</span>)[<span class="n">0</span>], <span class="k">type</span>);
+  <span class="c line-bidi">// the response&#x27;s schema, found in the contract by its JSON pointer</span>
+  <span class="k">const</span> ref = <span class="s">`/paths/${pointer(path)}/${method}/responses/${res.statusCode}/content/${pointer(type!)}/schema`</span>;
+  <span class="k">const</span> validate = ajv.getSchema(<span class="s">`api#${ref}`</span>)!;
+  assert.ok(validate(res.json()), ajv.errorsText(validate.errors));
+}</pre></div>
+
+<p>The function needs no knowledge of any particular endpoint: it looks up the response in the contract by method, path and status, and validates with Ajv, a JSON Schema validator. Each test is then one request and one call to <code>check</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/contract.test.ts</div><pre class="code">test(<span class="s">&quot;answers 409 with a Problem when the slot is taken&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> app = buildApp();
+  <span class="k">await</span> app.inject({ method: <span class="s">&quot;POST&quot;</span>, url: <span class="s">&quot;/bookings&quot;</span>, body: booking });
+  <span class="k">const</span> res = <span class="k">await</span> app.inject({ method: <span class="s">&quot;POST&quot;</span>, url: <span class="s">&quot;/bookings&quot;</span>, body: booking });
+  assert.equal(res.statusCode, <span class="n">409</span>);
+  check(<span class="s">&quot;post&quot;</span>, <span class="s">&quot;/bookings&quot;</span>, res);
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The contract test</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ lists free slots in the documented shape (…ms)
+✔ creates a booking in the documented shape (…ms)
+✔ answers 409 with a Problem when the slot is taken (…ms)
+✔ answers 422 with a Problem when the email is invalid (…ms)
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0</pre></div>
+
+<p>To see what the test is for, run it with the error handler switched off (<code>BUG=errors</code>), which is exactly the server a busy developer might ship: Fastify answers an invalid email with its own format and a 400.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same test, with Fastify&#x27;s own error format</span>
+<span class="c">$ </span><span class="k">BUG=errors npm test</span>
+✖ answers 422 with a Problem when the email is invalid (…ms)
+ℹ pass 3
+ℹ fail 1
+AssertionError [ERR_ASSERTION]: POST /bookings 400 is not in the contract</pre></div>
+
+<p>The message says exactly what is wrong: the server answered with a status the contract does not have. A client written from the contract would have looked for a 422 Problem and found neither. In a real project this test runs in CI, and the bug never reaches a client.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>The server’s handler returns a <code>Booking</code>, and TypeScript accepts it. Why do we still need the contract test?</li><li>Why does <code>check</code> fail when the server answers with a status that the contract does not list, even if the body looks fine?</li><li>When is generating the contract from the server’s code a better choice than writing it first?</li></ol></aside>
+
+<h2><span class="sec">2.7</span> <span>A typed client</span></h2>
+
+<p>On the front end, <code>openapi-fetch</code> turns the generated types into a client. It is a thin layer over <code>fetch</code>, but every call is checked against the contract: the path must exist, the parameters and body must have the documented shape, and the answer comes back typed as <code>data</code> on success or <code>error</code> on a documented error:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/demo.ts</div><pre class="code"><span class="k">const</span> api = createClient&lt;paths&gt;({ baseUrl: <span class="s">&quot;http://localhost:3000&quot;</span> });
+
+<span class="k">const</span> slots = <span class="k">await</span> api.GET(<span class="s">&quot;/slots&quot;</span>, {
+  params: { query: { staff_id: <span class="n">1</span>, date: <span class="s">&quot;2026-12-01&quot;</span> } },
+});
+<span class="k">const</span> free = slots.data?.data ?? [];
+console.log(
+  <span class="s">&quot;first free slots:&quot;</span>,
+  free.slice(<span class="n">0</span>, <span class="n">3</span>).map((s) =&gt; s.starts_at),
+);
+
+<span class="k">const</span> body = {
+  staff_id: <span class="n">1</span>,
+  starts_at: free[<span class="n">0</span>]!.starts_at,
+  email: <span class="s">&quot;sara@example.com&quot;</span>,
+};
+<span class="k">const</span> first = <span class="k">await</span> api.POST(<span class="s">&quot;/bookings&quot;</span>, { body });
+console.log(
+  <span class="s">&quot;first booking:&quot;</span>,
+  first.response.status,
+  first.data?.id,
+  first.data?.status,
+);
+
+<span class="k">const</span> again = <span class="k">await</span> api.POST(<span class="s">&quot;/bookings&quot;</span>, {
+  body: { ...body, email: <span class="s">&quot;karim@example.com&quot;</span> },
+});
+console.log(<span class="s">&quot;same slot again:&quot;</span>, again.response.status, again.error?.title);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The typed client against the running server</span>
+<span class="c">$ </span><span class="k">node src/demo.ts</span>
+first free slots: [
+  &#x27;2026-12-01T08:00:00.000Z&#x27;,
+  &#x27;2026-12-01T08:30:00.000Z&#x27;,
+  &#x27;2026-12-01T09:00:00.000Z&#x27;
+]
+first booking: 201 1 confirmed
+same slot again: 409 Slot taken</pre></div>
+
+<p>The second booking’s <code>error</code> is typed as a <code>Problem</code>, because the contract says a 409 is one; the client does not need its own copy of that knowledge. And when someone misreads the contract, the mistake is found before the code runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A misspelt field, caught before the code runs</span>
+<span class="c">$ </span><span class="k">npx tsc</span>
+src/wrong.ts(6,3): This comparison appears to be unintentional because the types &#x27;&quot;confirmed&quot; | &quot;cancelled&quot;&#x27; and &#x27;&quot;canceled&quot;&#x27; have no overlap.
+src/wrong.ts(6,35): Property &#x27;start_at&#x27; does not exist on type &#x27;{ id: number; staff_id: number; starts_at: string; ends_at: string; email: string; status: &quot;confirmed&quot; | &quot;cancelled&quot;; }&#x27;. Did you mean &#x27;starts_at&#x27;?</pre></div>
+
+<p>Two mistakes in one line: <code>start_at</code> for <code>starts_at</code>, and the American spelling <code>"canceled"</code> for the contract’s <code>"cancelled"</code>. The second would have compiled in plain JavaScript and silently never matched. The compiler even suggests the right field name, read from the contract.</p>
+
+<h2><span class="sec">2.8</span> <span>Changing a contract safely</span></h2>
+
+<p>Once a client depends on the API, the contract is a promise to that client. Some changes keep it, and some break it:</p>
+<ul>
+<li><strong>Safe:</strong> adding an operation; adding an optional request field; adding a response field (if clients ignore unknown fields, which they should).</li>
+<li><strong>Breaking:</strong> removing or renaming an operation or a field; making a request field required; changing a type; adding a value to a response enum, which a client with an exhaustive <code>switch</code> may not handle.</li>
+</ul>
+
+<p>Rules on a page are easy to forget under a deadline, so a short script compares two versions of the contract and lists what would break:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">breaking.ts</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [path, item] <span class="k">of</span> Object.entries&lt;any&gt;(before.paths)) {
+  <span class="k">for</span> (<span class="k">const</span> [method, op] <span class="k">of</span> Object.entries&lt;any&gt;(item)) {
+    <span class="k">const</span> name = <span class="s">`${method.toUpperCase()} ${path}`</span>;
+    <span class="k">const</span> next = after.paths[path]?.[method];
+    <span class="k">if</span> (!next) {
+      found.push(<span class="s">`removed: ${name}`</span>);
+      continue;
+    }
+    <span class="c line-bidi">// a field the old clients do not send, now required</span>
+    <span class="k">const</span> oldIn = resolve(
+      before,
+      op.requestBody?.content[<span class="s">&quot;application/json&quot;</span>]?.schema,
+    );
+    <span class="k">const</span> newIn = resolve(
+      after,
+      next.requestBody?.content[<span class="s">&quot;application/json&quot;</span>]?.schema,
+    );
+    <span class="k">for</span> (<span class="k">const</span> field <span class="k">of</span> newIn.required ?? []) {
+      <span class="k">if</span> (!oldIn.required?.includes(field))
+        found.push(<span class="s">`${name}: new required request field &quot;${field}&quot;`</span>);
+    }
+    <span class="k">for</span> (<span class="k">const</span> [status, res] <span class="k">of</span> Object.entries&lt;any&gt;(op.responses)) {
+      <span class="k">const</span> [<span class="k">type</span>] = Object.keys(res.content ?? {});
+      <span class="k">const</span> oldOut = resolve(before, res.content?.[<span class="k">type</span>!]?.schema);
+      <span class="k">const</span> newOut = resolve(
+        after,
+        next.responses[status]?.content?.[<span class="k">type</span>!]?.schema,
+      );
+      <span class="k">for</span> (<span class="k">const</span> [field, schema] <span class="k">of</span> Object.entries(oldOut.properties ?? {})) {
+        <span class="c line-bidi">// a field the old clients read, now gone</span>
+        <span class="k">if</span> (!newOut.properties?.[field])
+          found.push(<span class="s">`${name} ${status}: response field removed &quot;${field}&quot;`</span>);
+        <span class="c line-bidi">// a value the old clients have never seen</span>
+        <span class="k">const</span> added = (newOut.properties?.[field]?.enum ?? []).filter(
+          (v) =&gt; !schema.enum?.includes(v),
+        );
+        <span class="k">if</span> (schema.enum &amp;&amp; added.length)
+          found.push(
+            <span class="s">`${name} ${status}: &quot;${field}&quot; new value clients may not handle: ${added.join(&quot;, &quot;)}`</span>,
+          );
+      }
+    }
+  }
+}</pre></div>
+
+<p>Here is a next version that looks harmless in review (a phone number, a tidier booking, a new status), checked against the current one:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># What would break if we published the next version</span>
+<span class="c">$ </span><span class="k">node breaking.ts openapi.yaml openapi.next.yaml</span>
+3 breaking changes:
+- POST /bookings: new required request field &quot;phone&quot;
+- POST /bookings 201: response field removed &quot;ends_at&quot;
+- POST /bookings 201: &quot;status&quot; new value clients may not handle: no_show</pre></div>
+
+<p>The script exits with an error, so in CI it blocks the change until someone decides. The usual ways forward are, in order of preference: make the change compatible (<code>phone</code> optional at first); <dfn>expand and contract</dfn> (add the new field, move every client to it, and only then remove the old one); and as a last resort, a new version of the operation (<code>/v2/bookings</code>) that lives beside the old one until the last client has moved. Tools such as <code>oasdiff</code> do this comparison in far more depth; the point of writing a small one is to see that it is only a careful walk over two documents.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: mobile apps update late</p><p>A web front end is replaced the moment you deploy; a mobile app stays on people’s phones for months. Once an app depends on a field, removing it breaks every user who has not updated. Keep old fields until the oldest supported app version no longer reads them, and record in the contract which version introduced each field.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: the contract changes first, in its own review</p><p>Change <code>openapi.yaml</code> before any code, in a pull request that both the front-end and the back-end owners review. CI runs three checks on it: the generated types are up to date, the contract tests pass, and the breaking-change check is clean or explicitly accepted. The code that implements the change comes after, against a contract everyone has already agreed on.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Types copied by hand on each side</td><td>They drift; a renamed field becomes <code>undefined</code></td><td>Generate them from the contract</td></tr>
+<tr><td>Only the happy path in the contract</td><td>Clients cannot handle errors they were never told about</td><td>Document every error status, with its shape</td></tr>
+<tr><td>Validation rules repeated in code</td><td>The contract and the server disagree</td><td>Validate with the contract’s own schemas</td></tr>
+<tr><td>No test of the actual responses</td><td>The server breaks the contract while compiling fine</td><td>A contract test on every response</td></tr>
+<tr><td>Editing generated files</td><td>The next generation erases the change</td><td>Change the contract, then generate</td></tr>
+<tr><td>Removing or renaming a field in place</td><td>Old clients break, often silently</td><td>Expand and contract, or a new version</td></tr>
+<tr><td>Strict clients that reject unknown fields</td><td>Every safe addition becomes breaking</td><td>Ignore unknown fields on the client</td></tr>
+<tr><td>Contract changed in the same PR as the code</td><td>The promise is reviewed as a detail</td><td>Contract first, reviewed by both sides</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>An <strong>API contract</strong> is one shared, machine-checkable description of what the front end and the back end say to each other.</li>
+<li><strong>OpenAPI</strong> lists every path, parameter, body and response, errors included, with JSON Schema for the data.</li>
+<li>Write the contract <strong>first</strong> when several clients depend on it; generate it from code when one team owns both sides. Either way, keep <strong>one source</strong>.</li>
+<li><strong>Generate types</strong> for both sides; the server validates with the contract’s <strong>own schemas</strong>.</li>
+<li>A <strong>contract test</strong> checks every real response’s status, content type and body against the document.</li>
+<li>A <strong>typed client</strong> makes wrong paths, fields and values compile errors.</li>
+<li>Know which changes are <strong>breaking</strong>, check them automatically, and prefer <strong>expand and contract</strong> to removing in place.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because types only check what the compiler can see. The error handler, the content type, the status code, the validation the framework does, and values computed at run time (a date in the wrong format, an extra field added by a library) are invisible to TypeScript; the contract test runs the real server and checks what really leaves it. 2. Because a client written from the contract only knows the documented statuses: it has no code for a 400, and no type for its body. An undocumented status is a broken promise even if the body happens to look reasonable. 3. When one team owns both sides and there is one client: code first is less work, and the document can never fall behind the server. It also suits an existing API that has no contract yet: generate one, review it, and from then on keep it checked.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project grows Bit Booking’s contract. In every one, change <code>openapi.yaml</code> first, regenerate the types, and make the contract test and the breaking-change check pass.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>Cancel a booking</h3>
+<p class="project-goal">Add <code>POST /bookings/{id}/cancel</code> to the contract and the server.</p>
+<p class="project-skills"><strong>You will practise:</strong> path parameters, documenting every error, and contract tests.</p>
+<ol class="steps">
+<li>Describe the operation: a 200 with the cancelled <code>Booking</code>, a 404 Problem for an unknown id, and a 409 Problem when it is already cancelled.</li>
+<li>Regenerate the types and implement the route.</li>
+<li>Write a contract test for each of the three statuses.</li>
+<li>Run the breaking-change check against the old contract: it should report nothing.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the path in the contract is <code>/bookings/{id}/cancel</code>, and in <code>check</code> you pass the same template, not the concrete URL.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>A mock server for the front end</h3>
+<p class="project-goal">Let the front end work before the server exists, with answers taken from the contract.</p>
+<p class="project-skills"><strong>You will practise:</strong> examples in OpenAPI, mock servers, and keeping mocks honest.</p>
+<ol class="steps">
+<li>Add an <code>example</code> to every response in the contract.</li>
+<li>Write a small server that, for any request, finds the operation in the contract and answers with its documented example (or an error example chosen by a header such as <code>Prefer: code=409</code>).</li>
+<li>Point the typed client at the mock and run the demo.</li>
+<li>Run the contract test against the mock too: if the examples do not match their own schemas, it fails.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> tools such as Prism do this; writing a small one shows how little is needed, and the contract test keeps the examples truthful.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>Ship a breaking change safely</h3>
+<p class="project-goal">Make <code>phone</code> required for new bookings without breaking any client that exists today.</p>
+<p class="project-skills"><strong>You will practise:</strong> expand and contract, versioning, and planning a migration.</p>
+<ol class="steps">
+<li>Step 1 (expand): add <code>phone</code> as optional; the check reports nothing. Release.</li>
+<li>Step 2: update the client to always send it; add a metric counting bookings made without it.</li>
+<li>Step 3: decide, with numbers from the metric, when the old clients are gone.</li>
+<li>Step 4 (contract): make it required, and accept the check’s report explicitly in the pull request.</li>
+<li>Write the whole plan as a short decision record, with dates.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> for a mobile app, step 3 is measured in weeks or months; the metric turns “I think everyone updated” into a fact.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Classify each change as safe or breaking: adding <code>GET /staff</code>; renaming <code>email</code> to <code>customer_email</code> in the response; adding an optional <code>notes</code> to <code>BookingIn</code>; changing <code>id</code> from integer to string.</li>
+<li><span class="level">Easy</span> Why does the contract describe the 409 and 422 responses, when the client could simply show any error?</li>
+<li><span class="level medium">Medium</span> The contract test validates bodies with <code>additionalProperties: false</code> in <code>Booking</code>. What happens if a developer adds a field to the server’s response without changing the contract? Is that what you want?</li>
+<li><span class="level medium">Medium</span> Extend <code>breaking.ts</code> to report a response field whose type changed (for example from <code>integer</code> to <code>string</code>). Which other changes does it still miss?</li>
+<li><span class="level hard">Challenge</span> A client has a <code>switch</code> over <code>status</code> with cases for <code>confirmed</code> and <code>cancelled</code>. Write it so that a new value from the server neither crashes the page nor is silently ignored, and explain how this makes adding enum values safer.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>A contract joins two separate applications. The next chapter puts both sides in one project: full stack with Next.js, where server and client code live together, and the contract becomes a function call.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -492,6 +965,26 @@ Online payment (deposits come in version 2), mobile apps, several branches.
 <li>Requests a day become 36,000,000 (ten times more); the average about 417 a second; the peak with a factor of 10 about 4,170 a second; the table about 34 GB a year. What changes: the database still holds the data easily, but 4,000 requests a second needs several application servers behind a load balancer, caching for the public slot pages (which are read far more than written), connection pooling, and perhaps read replicas. What does not change: the stories, the invariants and the exclusion constraint. That is why the numbers belong in the spec: they decide the architecture, while the rules stay the same.</li>
 <li>All three. In the spec, as a criterion: “Given a haircut takes 30 minutes and is followed by a 10-minute gap, when Sara books Mona at 10:00, then the next slot offered for Mona is 10:40.” In the schema, so it cannot be bypassed: add <code>buffer_minutes</code> to <code>services</code> and store the booking’s <code>during</code> as the appointment plus the buffer (or add a second range column <code>blocked</code> used by the exclusion constraint, so emails still show 10:00–10:30). The application computes the offered slots from the same rule, but correctness stays with the constraint.</li>
 <li>Both clicks reach the server; both checks for free slots may pass; both inserts reach PostgreSQL. The constraint lets the first commit and makes the second fail with an exclusion violation (error code 23P01). The API turns that error into a 409 with a clear Problem (“This time was just taken”), and the page shows it in place, offers the nearest free slots for the same staff member and service, and keeps what the customer typed. Criterion: “Given Karim and Nour submit Mona at 10:30 at the same moment, when Karim’s booking is saved first, then Nour sees ‘10:30 was just taken’, with the next three free times for Mona, and her name and email still filled in; no email is sent to Nour.”</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 2</h2>
+<ol class="exercises">
+<li>Adding <code>GET /staff</code>: safe, nothing old changes. Renaming <code>email</code> to <code>customer_email</code> in the response: breaking, every client reading <code>email</code> gets <code>undefined</code>; add the new name beside the old one, move the clients, then remove the old one. Adding an optional <code>notes</code> to <code>BookingIn</code>: safe, old clients do not send it and the server copes. Changing <code>id</code> from integer to string: breaking, clients that store, compare or do arithmetic on ids as numbers fail, and typed clients stop compiling.</li>
+<li>Because each error asks for a different reaction, and the client can only react correctly to what it knows about. A 409 means “choose another time”: the page should keep the form, explain that the slot was just taken and offer others. A 422 means “fix this field”: the page should show the message next to the field. Documented errors also get types, so the client reads <code>error.title</code> safely, and the contract test checks that the server sends them in the promised shape.</li>
+<li>The validation fails, because the schema says the object has exactly the listed fields, so the contract test turns red and the developer must either remove the field or add it to the contract. That is usually what you want for responses during development: every field clients can see is documented and reviewed, and nothing internal (a password hash, a cost price) leaks by accident. Clients, on the other hand, should ignore unknown fields, so that a documented addition is safe for them.</li>
+<li>Inside the loop over <code>oldOut.properties</code>, compare <code>schema.type</code> with <code>newOut.properties?.[field]?.type</code> and report <code>"field" type changed: integer → string</code> when both exist and differ (do the same for request fields). It still misses: changes to parameters (a new required query parameter, a removed one); changed formats, ranges and lengths (a <code>maxLength</code> that shrank); nested objects and arrays, since it looks only at the top level; <code>$ref</code> chains deeper than one step; changed content types and response headers; and removed error statuses. That is why real projects use a full tool such as <code>oasdiff</code>, and keep the contract test as the final check.</li>
+<li><pre dir="ltr"><code>function statusLabel(status: string) {
+  switch (status) {
+    case "confirmed":
+      return t("status.confirmed");
+    case "cancelled":
+      return t("status.cancelled");
+    default:
+      reportUnknown("booking.status", status); // to the error tracker
+      return status; // shown as it came, never a crash
+  }
+}</code></pre>The parameter is typed as <code>string</code> (or the generated union plus <code>string</code>), so a new value is expected rather than impossible. The page keeps working and shows the raw value, and the error tracker tells the team that the server started sending something the client does not know, so they can add the case in the next release. With every client written this way, adding an enum value becomes a safe change in practice, though the contract check should still flag it so someone decides consciously.</li>
 </ol>
 
 </section>

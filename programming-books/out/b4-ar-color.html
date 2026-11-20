@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "الفصل 1: من الفكرة إلى المواصفات"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "الفصل 2: عقود الواجهة البرمجية بين الواجهة والخادم"; } }
+@page ch02:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -467,6 +469,477 @@ INSERT 0 1</pre></div>
 <p>المواصفات تقول ماذا نبني؛ والفصل التالي يقرر كيف تتحدث الواجهة والخادم عنه. عقود الواجهة البرمجية: وصف واحد لكل نقطة نهاية، يُفحص منه الطرفان كلاهما.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b4/contracts/ar">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">الفصل 2</p><h1>عقود الواجهة البرمجية بين الواجهة والخادم</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تصف الواجهة البرمجية مرة واحدة، بـ OpenAPI، فيبني الطرفان على الوعد نفسه</li>
+<li>تختار بين كتابة العقد أولاً وتوليده من الكود</li>
+<li>تولّد أنواع TypeScript من العقد للخادم والعميل</li>
+<li>تجعل الخادم يفرض العقد على كل طلب، وتثبت ذلك على كل إجابة</li>
+<li>تستدعي الواجهة بعميل كل مسار ومعامل وإجابة فيه ذات نوع</li>
+<li>تغيّر العقد دون أن تكسر العملاء الذين يعتمدون عليه</li>
+</ul>
+</div>
+
+<p class="lead">في الكتاب الثاني فحصت الواجهةُ كل إجابة من الخادم بمخطط؛ وفي الكتاب الثالث تحقق الخادم من كل طلب. كان الطرفان حريصين، لكن كلاً منهما كان حريصاً وحده: لا شيء منع الخادم من إعادة تسمية حقل تقرؤه الواجهة. وحين يبني فريق واحد الطرفين، وأكثر من ذلك حين ينضم تطبيق جوال لاحقاً، يحتاج الطرفان وصفاً مشتركاً واحداً لما يقوله كلٌّ منهما للآخر. وهذا الوصف هو <dfn>عقد الواجهة البرمجية</dfn>. وفي هذا الفصل نكتبه لأول نقطتي نهاية في «بِت للحجوزات»، ونجعل مدقق الأنواع والخادم والاختبارات كلها تلتزم به.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>شاهدت مرة إطلاقاً يفشل لأن الخادم بدأ يرسل <code>startsAt</code> بدل <code>starts_at</code>. كان للفريقين اختبارات، ونجح كل اختبار. فكل طرف كان يختبر فكرته هو عن الواجهة. والعقد هو الاختبار الذي يتشاركانه.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>ما الذي يخطئ بدونه</span></h2>
+
+<p>بلا عقد، تُعرَّف الواجهة البرمجية بما يصادف أن يفعله الخادم اليوم. وتتعلمها الواجهة بقراءة كود الخادم أو مراقبة تبويب الشبكة، وتنسخها إلى أنواعها باليد. وكل نسخة مكان قد يبتعد فيه الطرفان، والابتعاد صامت: يعود الحقل <code>undefined</code>، وتعرض الصفحة وقتاً فارغاً، ولا ينتبه أحد حتى ينتبه زبون.</p>
+
+<p>والأخطاء المعتادة هي القليلة نفسها دائماً: حقل أُعيدت تسميته أو حُذف، وحقل كان اختيارياً صار مطلوباً، وقيمة جديدة في تعداد لا يعرفها العميل، وخطأ بشكل غير الذي ينتظره العميل، ورقم أُرسل نصاً. ويمكن إمساك كلٍّ منها قبل الإطلاق، لكن فقط إذا اتفق الطرفان، بصيغة تفحصها آلة، على ماهية الواجهة.</p>
+
+<h2><span class="sec">2.2</span> <span>العقد</span></h2>
+
+<p>الصيغة الشائعة لواجهات HTTP هي <dfn>OpenAPI</dfn>: وثيقة YAML (أو JSON) تسرد كل مسار، ومعاملاته، وجسم طلبه، وكل إجابة ممكنة، مع JSON Schema للبيانات. وهاتان عمليتا «بِت للحجوزات»، سرد المواعيد المتاحة وصنع حجز:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">openapi.yaml</div><pre class="code">  /bookings:
+    post:
+      operationId: createBooking
+      summary: احجز موعداً
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: &quot;#/components/schemas/BookingIn&quot; }
+      responses:
+        &quot;201&quot;:
+          description: الحجز
+          content:
+            application/json:
+              schema: { $ref: &quot;#/components/schemas/Booking&quot; }
+        &quot;409&quot;:
+          description: الموعد محجوز من قبل
+          content:
+            application/problem+json:
+              schema: { $ref: &quot;#/components/schemas/Problem&quot; }
+        &quot;422&quot;:
+          description: الطلب غير صالح
+          content:
+            application/problem+json:
+              schema: { $ref: &quot;#/components/schemas/Problem&quot; }</pre></div>
+
+<p>لاحظ ما يعد به العقد بعد المسار السعيد: الموعد المحجوز <code>409</code>، والمدخل غير الصالح <code>422</code>، وكلاهما يأتي <code>application/problem+json</code>، أي Problem Details من الكتاب الثالث. الأخطاء جزء من الواجهة، والعملاء يحتاجون معالجتها كما يحتاجون معالجة النجاح. وأشكال البيانات تعيش مرة واحدة، تحت <code>components</code>، ويُشار إليها من كل عملية تستعملها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">openapi.yaml</div><pre class="code">components:
+  schemas:
+    Slot:
+      type: object
+      required: [starts_at, ends_at]
+      additionalProperties: false
+      properties:
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+    BookingIn:
+      type: object
+      required: [staff_id, starts_at, email]
+      additionalProperties: false
+      properties:
+        staff_id: { type: integer, minimum: 1 }
+        starts_at: { type: string, format: date-time }
+        email: { type: string, format: email, maxLength: 254 }
+    Booking:
+      type: object
+      required: [id, staff_id, starts_at, ends_at, email, status]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        staff_id: { type: integer }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+        email: { type: string }
+        status: { type: string, enum: [confirmed, cancelled] }
+    Problem:
+      type: object
+      required: [title, status]
+      properties:
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }</pre></div>
+
+<p>تقول <code>additionalProperties: false</code> إن للكائن هذه الحقول بالضبط، لا أكثر؛ وتقول <code>required</code> أيها موجود دائماً؛ وتضيف <code>format</code> معنى إلى النصوص (تاريخ ووقت، أو بريد). وكل كلمة هنا وعد، والأقسام التالية تتأكد أنه يُوفى.</p>
+
+<h2><span class="sec">2.3</span> <span>العقد أولاً، أم الكود أولاً</span></h2>
+
+<p>هناك طريقان للحصول على عقد. <strong>الكود أولاً</strong>: اكتب الخادم بمخططات، كما في الكتاب الثالث، وولّد وثيقة OpenAPI منه. <strong>العقد أولاً</strong>: اكتب الوثيقة، وراجعها، وابنِ الطرفين منها.</p>
+
+<p>الكود أولاً عمل أقل لفريق صغير يملك الطرفين، ولا يمكن للوثيقة أن تتأخر عن الخادم. والعقد أولاً أفضل حين يعتمد على الواجهة عدة عملاء، أو حين يجب أن تبدأ الواجهة قبل أن يوجد الخادم: يُتفق على العقد في مراجعة، وتعمل الواجهة عليه (حتى على خادم وهمي مولَّد منه)، ويُفحص الخادم عليه. وسيكون لـ «بِت للحجوزات» تطبيق ويب، ولوحة لأصحاب الأعمال، ثم تطبيق جوال، فنكتب العقد أولاً. وفي الحالين القاعدة واحدة: مصدر حقيقة <em>واحد</em>، وكل ما عداه مولَّد منه أو مفحوص عليه.</p>
+
+<h2><span class="sec">2.4</span> <span>أنواع للطرفين</span></h2>
+
+<p>العقد يصف كل شكل أصلاً، فلا ينبغي لأحد أن يكتبها مرة أخرى باليد. يقرأ <code>openapi-typescript</code> الوثيقة ويكتب أنواع TypeScript لكل مسار ومعامل وجسم وإجابة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الأنواع من العقد</span>
+<span class="c">$ </span><span class="k">npm run types</span>
+✨ openapi-typescript 7.13.0
+🚀 openapi.yaml → src/api.d.ts
+<span class="c">$ </span><span class="k">grep -A9 &#x27;Booking: {&#x27; src/api.d.ts</span>
+        Booking: {
+            id: number;
+            staff_id: number;
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            email: string;
+            /** @enum {string} */
+            status: &quot;confirmed&quot; | &quot;cancelled&quot;;</pre></div>
+
+<p>الملف المولَّد لا يُعدَّل أبداً: حين يتغير العقد، شغّل السكربت ثانية، فيُظهر مدقق الأنواع كل مكان في الكود يمسه التغيير. (ملاحظة عملية: يستعمل المولّد واجهة مترجم TypeScript 5، لذلك تستعمل مشاريع هذا الكتاب TypeScript 5.9 بدل TypeScript 7 الأصلية في الكتابين الثاني والثالث. الأدوات تلحق؛ فاقرأ ملاحظات المولّد قبل الترقية.)</p>
+
+<h2><span class="sec">2.5</span> <span>الخادم يفي بالوعد</span></h2>
+
+<p>يستورد الخادم الأنواع المولَّدة، ويتحقق من الطلبات بمخططات العقد نفسها، مقروءة من الملف نفسه، فقواعد شكل الحجز الصالح موجودة في مكان واحد بالضبط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="c line-bidi">// أنواع مولَّدة من العقد نفسه</span>
+<span class="k">type</span> Booking = components[<span class="s">&quot;schemas&quot;</span>][<span class="s">&quot;Booking&quot;</span>];
+<span class="k">type</span> BookingIn = components[<span class="s">&quot;schemas&quot;</span>][<span class="s">&quot;BookingIn&quot;</span>];
+<span class="k">type</span> Problem = components[<span class="s">&quot;schemas&quot;</span>][<span class="s">&quot;Problem&quot;</span>];
+
+<span class="c line-bidi">// العقد هو المصدر: مخططاته تتحقق من كل طلب</span>
+<span class="k">const</span> contract = parse(readFileSync(<span class="s">&quot;openapi.yaml&quot;</span>, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> schemas = contract.components.schemas;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  app.post&lt;{ Body: BookingIn }&gt;(
+    <span class="s">&quot;/bookings&quot;</span>,
+    { schema: { body: schemas.BookingIn } },
+    <span class="k">async</span> (request, reply) =&gt; {
+      <span class="k">const</span> { staff_id, starts_at, email } = request.body;
+      <span class="k">const</span> start = Date.parse(starts_at);
+      <span class="k">const</span> end = start + MINUTES * 60_000;
+      <span class="k">if</span> (overlaps(staff_id, start, end)) {
+        <span class="k">const</span> body = problem(
+          <span class="n">409</span>,
+          <span class="s">&quot;الموعد محجوز&quot;</span>,
+          <span class="s">&quot;حجز آخر يبدأ أو ينتهي داخل هذا الوقت.&quot;</span>,
+        );
+        <span class="k">return</span> reply.code(<span class="n">409</span>).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>).send(body);
+      }
+      <span class="k">const</span> booking: Booking = {
+        id: nextId++,
+        staff_id,
+        starts_at: <span class="k">new</span> Date(start).toISOString(),
+        ends_at: <span class="k">new</span> Date(end).toISOString(),
+        email,
+        status: <span class="s">&quot;confirmed&quot;</span>,
+      };
+      bookings.push(booking);
+      <span class="k">return</span> reply.code(<span class="n">201</span>).send(booking);
+    },
+  );</pre></div>
+
+<p>يتحقق Fastify من الجسم بـ <code>schemas.BookingIn</code> قبل أن يعمل المعالج، ويجعل النوع <code>Booking</code> المترجمَ يرفض كائناً لا يطابق <code>Booking</code> في العقد: لو غاب <code>ends_at</code>، أو كانت الحالة <code>"canceled"</code>، لما تُرجم الكود. أما ما لا يراه مدقق الأنواع فهو كيف تخرج الأخطاء من الخادم. العقد يقول إن كل خطأ Problem، فيجعل معالج أخطاء ذلك حقيقة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code">  <span class="k">if</span> (process.env.BUG !== <span class="s">&quot;errors&quot;</span>) {
+    app.setErrorHandler((error: FastifyError, _request, reply) =&gt; {
+      <span class="k">const</span> status = error.validation ? <span class="n">422</span> : <span class="n">500</span>;
+      <span class="k">const</span> body = problem(
+        status,
+        <span class="s">&quot;طلب غير صالح&quot;</span>,
+        error.validation ? error.message : <span class="k">undefined</span>,
+      );
+      <span class="k">return</span> reply.code(status).<span class="k">type</span>(<span class="s">&quot;application/problem+json&quot;</span>).send(body);
+    });
+  }</pre></div>
+
+<h2><span class="sec">2.6</span> <span>الإثبات: اختبار العقد</span></h2>
+
+<p>الأنواع تفحص الكود؛ ولا يفحص الإجابات إلا تشغيله. <dfn>اختبار العقد</dfn> يرسل طلبات حقيقية إلى الخادم ويفحص كل إجابة على الوثيقة: يجب أن تكون الحالة إحدى الحالات التي يسردها العقد لتلك العملية، ويجب أن يطابق نوع المحتوى، ويجب أن يمر الجسم على المخطط الموثَّق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/contract.test.ts</div><pre class="code"><span class="k">function</span> check(method: string, path: string, res: LightMyRequestResponse) {
+  <span class="k">const</span> responses = contract.paths[path]?.[method]?.responses ?? {};
+  <span class="k">const</span> doc = responses[res.statusCode];
+  assert.ok(
+    doc,
+    <span class="s">`${method.toUpperCase()} ${path} ${res.statusCode} is not in the contract`</span>,
+  );
+  <span class="k">const</span> [<span class="k">type</span>] = Object.keys(doc.content);
+  assert.equal(String(res.headers[<span class="s">&quot;content-type&quot;</span>]).split(<span class="s">&quot;;&quot;</span>)[<span class="n">0</span>], <span class="k">type</span>);
+  <span class="c line-bidi">// مخطط الإجابة، يُعثر عليه في العقد بمؤشر JSON</span>
+  <span class="k">const</span> ref = <span class="s">`/paths/${pointer(path)}/${method}/responses/${res.statusCode}/content/${pointer(type!)}/schema`</span>;
+  <span class="k">const</span> validate = ajv.getSchema(<span class="s">`api#${ref}`</span>)!;
+  assert.ok(validate(res.json()), ajv.errorsText(validate.errors));
+}</pre></div>
+
+<p>لا تحتاج الدالة إلى معرفة أي نقطة نهاية بعينها: تبحث عن الإجابة في العقد بالطريقة والمسار والحالة، وتتحقق بـ Ajv، أداة للتحقق من JSON Schema. ثم كل اختبار طلب واحد ونداء واحد لـ <code>check</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/contract.test.ts</div><pre class="code">test(<span class="s">&quot;answers 409 with a Problem when the slot is taken&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> app = buildApp();
+  <span class="k">await</span> app.inject({ method: <span class="s">&quot;POST&quot;</span>, url: <span class="s">&quot;/bookings&quot;</span>, body: booking });
+  <span class="k">const</span> res = <span class="k">await</span> app.inject({ method: <span class="s">&quot;POST&quot;</span>, url: <span class="s">&quot;/bookings&quot;</span>, body: booking });
+  assert.equal(res.statusCode, <span class="n">409</span>);
+  check(<span class="s">&quot;post&quot;</span>, <span class="s">&quot;/bookings&quot;</span>, res);
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># اختبار العقد</span>
+<span class="c">$ </span><span class="k">npm test</span>
+✔ lists free slots in the documented shape (…ms)
+✔ creates a booking in the documented shape (…ms)
+✔ answers 409 with a Problem when the slot is taken (…ms)
+✔ answers 422 with a Problem when the email is invalid (…ms)
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0</pre></div>
+
+<p>ولترى فائدة الاختبار، شغّله ومعالج الأخطاء مطفأ (<code>BUG=errors</code>)، وهذا بالضبط الخادم الذي قد يشحنه مطوّر مشغول: يجيب Fastify عن بريد غير صالح بصيغته هو و400.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الاختبار نفسه، بصيغة أخطاء Fastify نفسه</span>
+<span class="c">$ </span><span class="k">BUG=errors npm test</span>
+✖ answers 422 with a Problem when the email is invalid (…ms)
+ℹ pass 3
+ℹ fail 1
+AssertionError [ERR_ASSERTION]: POST /bookings 400 is not in the contract</pre></div>
+
+<p>تقول الرسالة بالضبط ما الخطأ: أجاب الخادم بحالة ليست في العقد. والعميل المكتوب من العقد كان سيبحث عن Problem بحالة 422 فلا يجد أياً منهما. وفي مشروع حقيقي يعمل هذا الاختبار في CI، فلا يصل الخطأ إلى عميل أبداً.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>يعيد معالج الخادم <code>Booking</code>، وتقبله TypeScript. فلماذا ما زلنا نحتاج اختبار العقد؟</li><li>لماذا تفشل <code>check</code> حين يجيب الخادم بحالة لا يسردها العقد، حتى لو بدا الجسم سليماً؟</li><li>متى يكون توليد العقد من كود الخادم خياراً أفضل من كتابته أولاً؟</li></ol></aside>
+
+<h2><span class="sec">2.7</span> <span>عميل بأنواع</span></h2>
+
+<p>في الواجهة، يحوّل <code>openapi-fetch</code> الأنواع المولَّدة إلى عميل. هو طبقة رقيقة فوق <code>fetch</code>، لكن كل نداء يُفحص على العقد: يجب أن يوجد المسار، وأن يكون للمعاملات والجسم الشكل الموثَّق، وتعود الإجابة بنوعها في <code>data</code> عند النجاح أو <code>error</code> عند خطأ موثَّق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/demo.ts</div><pre class="code"><span class="k">const</span> api = createClient&lt;paths&gt;({ baseUrl: <span class="s">&quot;http://localhost:3000&quot;</span> });
+
+<span class="k">const</span> slots = <span class="k">await</span> api.GET(<span class="s">&quot;/slots&quot;</span>, {
+  params: { query: { staff_id: <span class="n">1</span>, date: <span class="s">&quot;2026-12-01&quot;</span> } },
+});
+<span class="k">const</span> free = slots.data?.data ?? [];
+console.log(
+  <span class="s">&quot;أول المواعيد المتاحة:&quot;</span>,
+  free.slice(<span class="n">0</span>, <span class="n">3</span>).map((s) =&gt; s.starts_at),
+);
+
+<span class="k">const</span> body = {
+  staff_id: <span class="n">1</span>,
+  starts_at: free[<span class="n">0</span>]!.starts_at,
+  email: <span class="s">&quot;sara@example.com&quot;</span>,
+};
+<span class="k">const</span> first = <span class="k">await</span> api.POST(<span class="s">&quot;/bookings&quot;</span>, { body });
+console.log(
+  <span class="s">&quot;الحجز الأول:&quot;</span>,
+  first.response.status,
+  first.data?.id,
+  first.data?.status,
+);
+
+<span class="k">const</span> again = <span class="k">await</span> api.POST(<span class="s">&quot;/bookings&quot;</span>, {
+  body: { ...body, email: <span class="s">&quot;karim@example.com&quot;</span> },
+});
+console.log(<span class="s">&quot;الموعد نفسه ثانية:&quot;</span>, again.response.status, again.error?.title);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># العميل ذو الأنواع على الخادم العامل</span>
+<span class="c">$ </span><span class="k">node src/demo.ts</span>
+أول المواعيد المتاحة: [
+  &#x27;2026-12-01T08:00:00.000Z&#x27;,
+  &#x27;2026-12-01T08:30:00.000Z&#x27;,
+  &#x27;2026-12-01T09:00:00.000Z&#x27;
+]
+الحجز الأول: 201 1 confirmed
+الموعد نفسه ثانية: 409 الموعد محجوز</pre></div>
+
+<p>نوع <code>error</code> في الحجز الثاني <code>Problem</code>، لأن العقد يقول إن 409 كذلك؛ ولا يحتاج العميل نسخته الخاصة من هذه المعرفة. وحين يسيء أحد قراءة العقد، يُكتشف الخطأ قبل أن يعمل الكود:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># حقل مكتوب خطأ، يُمسك قبل أن يعمل الكود</span>
+<span class="c">$ </span><span class="k">npx tsc</span>
+src/wrong.ts(6,3): This comparison appears to be unintentional because the types &#x27;&quot;confirmed&quot; | &quot;cancelled&quot;&#x27; and &#x27;&quot;canceled&quot;&#x27; have no overlap.
+src/wrong.ts(6,35): Property &#x27;start_at&#x27; does not exist on type &#x27;{ id: number; staff_id: number; starts_at: string; ends_at: string; email: string; status: &quot;confirmed&quot; | &quot;cancelled&quot;; }&#x27;. Did you mean &#x27;starts_at&#x27;?</pre></div>
+
+<p>خطآن في سطر واحد: <code>start_at</code> بدل <code>starts_at</code>، والتهجئة الأمريكية <code>"canceled"</code> بدل <code>"cancelled"</code> في العقد. والثاني كان سيُترجم في JavaScript العادية ولا يطابق أبداً بصمت. ويقترح المترجم حتى اسم الحقل الصحيح، مقروءاً من العقد.</p>
+
+<h2><span class="sec">2.8</span> <span>تغيير العقد بأمان</span></h2>
+
+<p>حين يعتمد عميل على الواجهة، يصير العقد وعداً لذلك العميل. بعض التغييرات تحفظه، وبعضها يكسره:</p>
+<ul>
+<li><strong>آمن:</strong> إضافة عملية؛ وإضافة حقل اختياري إلى الطلب؛ وإضافة حقل إلى الإجابة (إن كان العملاء يتجاهلون الحقول المجهولة، وهذا ما ينبغي).</li>
+<li><strong>كاسر:</strong> حذف عملية أو حقل أو إعادة تسميتهما؛ وجعل حقل في الطلب مطلوباً؛ وتغيير نوع؛ وإضافة قيمة إلى تعداد في الإجابة، قد لا يعالجها عميل فيه <code>switch</code> يغطي كل الحالات.</li>
+</ul>
+
+<p>القواعد المكتوبة في صفحة تُنسى تحت ضغط موعد، لذلك يقارن سكربت قصير نسختين من العقد ويسرد ما سينكسر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">breaking.ts</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [path, item] <span class="k">of</span> Object.entries&lt;any&gt;(before.paths)) {
+  <span class="k">for</span> (<span class="k">const</span> [method, op] <span class="k">of</span> Object.entries&lt;any&gt;(item)) {
+    <span class="k">const</span> name = <span class="s">`${method.toUpperCase()} ${path}`</span>;
+    <span class="k">const</span> next = after.paths[path]?.[method];
+    <span class="k">if</span> (!next) {
+      found.push(<span class="s">`حُذف: ${name}`</span>);
+      continue;
+    }
+    <span class="c line-bidi">// حقل لا يرسله العملاء القدامى، صار مطلوباً</span>
+    <span class="k">const</span> oldIn = resolve(
+      before,
+      op.requestBody?.content[<span class="s">&quot;application/json&quot;</span>]?.schema,
+    );
+    <span class="k">const</span> newIn = resolve(
+      after,
+      next.requestBody?.content[<span class="s">&quot;application/json&quot;</span>]?.schema,
+    );
+    <span class="k">for</span> (<span class="k">const</span> field <span class="k">of</span> newIn.required ?? []) {
+      <span class="k">if</span> (!oldIn.required?.includes(field))
+        found.push(<span class="s">`${name}: حقل جديد مطلوب في الطلب &quot;${field}&quot;`</span>);
+    }
+    <span class="k">for</span> (<span class="k">const</span> [status, res] <span class="k">of</span> Object.entries&lt;any&gt;(op.responses)) {
+      <span class="k">const</span> [<span class="k">type</span>] = Object.keys(res.content ?? {});
+      <span class="k">const</span> oldOut = resolve(before, res.content?.[<span class="k">type</span>!]?.schema);
+      <span class="k">const</span> newOut = resolve(
+        after,
+        next.responses[status]?.content?.[<span class="k">type</span>!]?.schema,
+      );
+      <span class="k">for</span> (<span class="k">const</span> [field, schema] <span class="k">of</span> Object.entries(oldOut.properties ?? {})) {
+        <span class="c line-bidi">// حقل يقرؤه العملاء القدامى، اختفى</span>
+        <span class="k">if</span> (!newOut.properties?.[field])
+          found.push(<span class="s">`${name} ${status}: حُذف حقل من الإجابة &quot;${field}&quot;`</span>);
+        <span class="c line-bidi">// قيمة لم يرها العملاء القدامى قط</span>
+        <span class="k">const</span> added = (newOut.properties?.[field]?.enum ?? []).filter(
+          (v) =&gt; !schema.enum?.includes(v),
+        );
+        <span class="k">if</span> (schema.enum &amp;&amp; added.length)
+          found.push(
+            <span class="s">`${name} ${status}: &quot;${field}&quot; قيمة جديدة قد لا يعالجها العملاء: ${added.join(&quot;, &quot;)}`</span>,
+          );
+      }
+    }
+  }
+}</pre></div>
+
+<p>وهذه نسخة تالية تبدو بريئة في المراجعة (رقم هاتف، وحجز أكثر ترتيباً، وحالة جديدة)، مفحوصة على النسخة الحالية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ما الذي سينكسر لو نشرنا النسخة التالية</span>
+<span class="c">$ </span><span class="k">node breaking.ts openapi.yaml openapi.next.yaml</span>
+3 تغييرات كاسرة:
+- POST /bookings: حقل جديد مطلوب في الطلب &quot;phone&quot;
+- POST /bookings 201: حُذف حقل من الإجابة &quot;ends_at&quot;
+- POST /bookings 201: &quot;status&quot; قيمة جديدة قد لا يعالجها العملاء: no_show</pre></div>
+
+<p>يخرج السكربت بخطأ، فيوقف التغيير في CI حتى يقرر أحد. وطرق المضي المعتادة، بترتيب الأفضلية: اجعل التغيير متوافقاً (<code>phone</code> اختيارياً في البداية)؛ أو <dfn>وسّع ثم قلّص</dfn> (أضف الحقل الجديد، وانقل كل العملاء إليه، ثم احذف القديم)؛ وكملجأ أخير، نسخة جديدة من العملية (<code>/v2/bookings</code>) تعيش بجانب القديمة حتى ينتقل آخر عميل. وأدوات مثل <code>oasdiff</code> تقوم بهذه المقارنة بعمق أكبر بكثير؛ والغرض من كتابة واحدة صغيرة أن ترى أنها ليست سوى مشي حذر على وثيقتين.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: تطبيقات الجوال تتحدّث متأخرة</p><p>واجهة الويب تُستبدل لحظة النشر؛ أما تطبيق الجوال فيبقى على هواتف الناس أشهراً. وحين يعتمد تطبيق على حقل، يكسر حذفُه كل مستخدم لم يحدّث. أبقِ الحقول القديمة حتى لا تقرؤها أقدم نسخة مدعومة من التطبيق، وسجّل في العقد أي نسخة أدخلت كل حقل.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: العقد يتغير أولاً، في مراجعته الخاصة</p><p>غيّر <code>openapi.yaml</code> قبل أي كود، في طلب سحب يراجعه مالكو الواجهة والخادم معاً. ويشغّل CI عليه ثلاثة فحوص: الأنواع المولَّدة محدّثة، واختبارات العقد تنجح، وفحص التغييرات الكاسرة نظيف أو مقبول صراحة. والكود الذي ينفذ التغيير يأتي بعد ذلك، على عقد اتفق عليه الجميع.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>أنواع منسوخة باليد في كل طرف</td><td>تبتعد؛ والحقل المعاد تسميته يصير <code>undefined</code></td><td>ولّدها من العقد</td></tr>
+<tr><td>المسار السعيد وحده في العقد</td><td>العملاء لا يعالجون أخطاء لم يُخبَروا بها</td><td>وثّق كل حالة خطأ، بشكلها</td></tr>
+<tr><td>قواعد التحقق مكررة في الكود</td><td>العقد والخادم لا يتفقان</td><td>تحقق بمخططات العقد نفسها</td></tr>
+<tr><td>لا اختبار للإجابات الفعلية</td><td>الخادم يكسر العقد وهو يُترجم بسلام</td><td>اختبار عقد لكل إجابة</td></tr>
+<tr><td>تعديل الملفات المولَّدة</td><td>التوليد التالي يمحو التعديل</td><td>غيّر العقد، ثم ولّد</td></tr>
+<tr><td>حذف حقل أو إعادة تسميته في مكانه</td><td>العملاء القدامى ينكسرون، بصمت غالباً</td><td>وسّع ثم قلّص، أو نسخة جديدة</td></tr>
+<tr><td>عملاء صارمون يرفضون الحقول المجهولة</td><td>كل إضافة آمنة تصير كاسرة</td><td>تجاهل الحقول المجهولة في العميل</td></tr>
+<tr><td>العقد يتغير في طلب السحب نفسه مع الكود</td><td>يُراجع الوعد كأنه تفصيل</td><td>العقد أولاً، يراجعه الطرفان</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>عقد الواجهة البرمجية</strong> وصف واحد مشترك تفحصه آلة لما تقوله الواجهة والخادم كلٌّ للآخر.</li>
+<li><strong>OpenAPI</strong> يسرد كل مسار ومعامل وجسم وإجابة، والأخطاء منها، مع JSON Schema للبيانات.</li>
+<li>اكتب العقد <strong>أولاً</strong> حين يعتمد عليه عدة عملاء؛ وولّده من الكود حين يملك فريق واحد الطرفين. وفي الحالين، أبقِ <strong>مصدراً واحداً</strong>.</li>
+<li><strong>ولّد الأنواع</strong> للطرفين؛ ويتحقق الخادم <strong>بمخططات العقد نفسها</strong>.</li>
+<li><strong>اختبار العقد</strong> يفحص حالة كل إجابة حقيقية ونوع محتواها وجسمها على الوثيقة.</li>
+<li><strong>العميل ذو الأنواع</strong> يجعل المسارات والحقول والقيم الخاطئة أخطاءَ ترجمة.</li>
+<li>اعرف أي التغييرات <strong>كاسرة</strong>، وافحصها آلياً، وفضّل <strong>التوسيع ثم التقليص</strong> على الحذف في المكان.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن الأنواع لا تفحص إلا ما يراه المترجم. معالج الأخطاء، ونوع المحتوى، ورمز الحالة، والتحقق الذي يجريه الإطار، والقيم المحسوبة وقت التشغيل (تاريخ بصيغة خاطئة، أو حقل إضافي أضافته مكتبة) كلها خفية عن TypeScript؛ واختبار العقد يشغّل الخادم الحقيقي ويفحص ما يخرج منه فعلاً. 2. لأن العميل المكتوب من العقد لا يعرف إلا الحالات الموثَّقة: لا كود عنده لـ 400، ولا نوع لجسمها. والحالة غير الموثَّقة وعد مكسور حتى لو بدا الجسم معقولاً بالصدفة. 3. حين يملك فريق واحد الطرفين وهناك عميل واحد: الكود أولاً عمل أقل، ولا يمكن للوثيقة أن تتأخر عن الخادم. ويناسب أيضاً واجهة قائمة لا عقد لها بعد: ولّد عقداً، وراجعه، ومن ثم أبقِه مفحوصاً.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يُنمّي عقد «بِت للحجوزات». في كلٍّ منها، غيّر <code>openapi.yaml</code> أولاً، وأعد توليد الأنواع، واجعل اختبار العقد وفحص التغييرات الكاسرة ينجحان.</p>
+
+<div class="project">
+<p class="project-label">المشروع 2.1 · سهل</p>
+<h3>إلغاء حجز</h3>
+<p class="project-goal">أضف <code>POST /bookings/{id}/cancel</code> إلى العقد والخادم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> معاملات المسار، وتوثيق كل خطأ، واختبارات العقد.</p>
+<ol class="steps">
+<li>صِف العملية: 200 مع <code>Booking</code> الملغى، وProblem بحالة 404 لرقم مجهول، وProblem بحالة 409 حين يكون ملغى من قبل.</li>
+<li>أعد توليد الأنواع ونفّذ المسار.</li>
+<li>اكتب اختبار عقد لكل حالة من الحالات الثلاث.</li>
+<li>شغّل فحص التغييرات الكاسرة على العقد القديم: يجب ألا يبلّغ عن شيء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المسار في العقد <code>/bookings/{id}/cancel</code>، وفي <code>check</code> تمرّر القالب نفسه، لا العنوان الفعلي.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 2.2 · متوسط</p>
+<h3>خادم وهمي للواجهة</h3>
+<p class="project-goal">دع الواجهة تعمل قبل أن يوجد الخادم، بإجابات مأخوذة من العقد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأمثلة في OpenAPI، والخوادم الوهمية، وإبقاء الوهميات صادقة.</p>
+<ol class="steps">
+<li>أضف <code>example</code> لكل إجابة في العقد.</li>
+<li>اكتب خادماً صغيراً يجد العملية في العقد لأي طلب، ويجيب بمثالها الموثَّق (أو بمثال خطأ يختاره ترويس مثل <code>Prefer: code=409</code>).</li>
+<li>وجّه العميل ذا الأنواع إلى الخادم الوهمي وشغّل العرض.</li>
+<li>شغّل اختبار العقد على الخادم الوهمي أيضاً: إن لم تطابق الأمثلة مخططاتها، يفشل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أدوات مثل Prism تفعل هذا؛ وكتابة واحد صغير تُريك كم القليل المطلوب، واختبار العقد يُبقي الأمثلة صادقة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 2.3 · تحدٍّ</p>
+<h3>اشحن تغييراً كاسراً بأمان</h3>
+<p class="project-goal">اجعل <code>phone</code> مطلوباً للحجوزات الجديدة دون كسر أي عميل موجود اليوم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التوسيع ثم التقليص، والإصدارات، وتخطيط انتقال.</p>
+<ol class="steps">
+<li>الخطوة 1 (توسيع): أضف <code>phone</code> اختيارياً؛ فلا يبلّغ الفحص عن شيء. أطلق.</li>
+<li>الخطوة 2: حدّث العميل ليرسله دائماً؛ وأضف مقياساً يعدّ الحجوزات التي تُصنع بدونه.</li>
+<li>الخطوة 3: قرّر، بأرقام من المقياس، متى انتهى العملاء القدامى.</li>
+<li>الخطوة 4 (تقليص): اجعله مطلوباً، واقبل تقرير الفحص صراحة في طلب السحب.</li>
+<li>اكتب الخطة كلها سجلَّ قرار قصيراً، بتواريخ.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لتطبيق جوال، تُقاس الخطوة 3 بالأسابيع أو الأشهر؛ والمقياس يحوّل «أظن أن الجميع حدّثوا» إلى حقيقة.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> صنّف كل تغيير آمناً أو كاسراً: إضافة <code>GET /staff</code>؛ وإعادة تسمية <code>email</code> إلى <code>customer_email</code> في الإجابة؛ وإضافة <code>notes</code> اختيارياً إلى <code>BookingIn</code>؛ وتغيير <code>id</code> من عدد صحيح إلى نص.</li>
+<li><span class="level">سهل</span> لماذا يصف العقد إجابتي 409 و422، والعميل يستطيع ببساطة أن يعرض أي خطأ؟</li>
+<li><span class="level medium">متوسط</span> يتحقق اختبار العقد من الأجسام بـ <code>additionalProperties: false</code> في <code>Booking</code>. ماذا يحدث إن أضاف مطوّر حقلاً إلى إجابة الخادم دون تغيير العقد؟ وهل هذا ما تريده؟</li>
+<li><span class="level medium">متوسط</span> وسّع <code>breaking.ts</code> ليبلّغ عن حقل في الإجابة تغيّر نوعه (مثلاً من <code>integer</code> إلى <code>string</code>). وما التغييرات الأخرى التي ما زال يفوتها؟</li>
+<li><span class="level hard">تحدٍّ</span> في عميلٍ <code>switch</code> على <code>status</code> بحالتين لـ <code>confirmed</code> و<code>cancelled</code>. اكتبه بحيث لا تُسقط قيمةٌ جديدة من الخادم الصفحةَ ولا تُتجاهَل بصمت، واشرح كيف يجعل هذا إضافة قيم التعداد أكثر أماناً.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 3</p>
+<p>العقد يصل تطبيقين منفصلين. والفصل التالي يضع الطرفين في مشروع واحد: البرمجة الشاملة بـ Next.js، حيث يعيش كود الخادم والعميل معاً، ويصير العقد نداء دالة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -492,6 +965,26 @@ INSERT 0 1</pre></div>
 <li>تصير الطلبات في اليوم 36,000,000 (عشرة أضعاف)؛ والمتوسط نحو 417 في الثانية؛ والذروة بمعامل 10 نحو 4,170 في الثانية؛ والجدول نحو 34 GB في السنة. ما يتغير: قاعدة البيانات ما زالت تحفظ البيانات بسهولة، لكن 4000 طلب في الثانية تحتاج عدة خوادم تطبيق خلف موزّع حمل، وتخزيناً مؤقتاً لصفحات المواعيد العامة (التي تُقرأ أكثر بكثير مما تُكتب)، ومجمع اتصالات، وربما نسخاً للقراءة. وما لا يتغير: القصص، والثوابت، وقيد الاستبعاد. ولهذا مكان الأرقام في المواصفات: هي تقرر المعمارية، والقواعد تبقى كما هي.</li>
 <li>في الثلاثة. في المواصفات، معياراً: «إذا كان قص الشعر 30 دقيقة يليه فاصل 10 دقائق، وعندما تحجز سارة منى الساعة 10:00، فإن الموعد التالي المعروض لمنى 10:40.» وفي المخطط، فلا يمكن تجاوزه: أضف <code>buffer_minutes</code> إلى <code>services</code> وخزّن <code>during</code> للحجز مدةَ الموعد مع الفاصل (أو أضف عمود مدى ثانياً <code>blocked</code> يستعمله قيد الاستبعاد، فتظل رسائل البريد تعرض 10:00–10:30). ويحسب التطبيق المواعيد المعروضة من القاعدة نفسها، لكن الصحة تبقى مع القيد.</li>
 <li>تصل النقرتان إلى الخادم؛ وقد ينجح فحص المواعيد المتاحة في الاثنين؛ ويصل الإدراجان إلى PostgreSQL. فيترك القيد الأول يُعتمد ويُفشل الثاني بخرق استبعاد (رمز الخطأ 23P01). وتحوّل الواجهة البرمجية هذا الخطأ إلى 409 بمشكلة واضحة («حُجز هذا الموعد للتو»)، وتُظهرها الصفحة في مكانها، وتعرض أقرب المواعيد المتاحة للموظف والخدمة نفسيهما، وتحتفظ بما كتبه الزبون. والمعيار: «إذا أرسل كريم ونور منى الساعة 10:30 في اللحظة نفسها، وعندما يُحفظ حجز كريم أولاً، فإن نور ترى "حُجز 10:30 للتو"، مع أقرب ثلاثة مواعيد متاحة لمنى، ويبقى اسمها وبريدها مكتوبين؛ ولا يُرسل أي بريد إلى نور.»</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 2</h2>
+<ol class="exercises">
+<li>إضافة <code>GET /staff</code>: آمن، لا شيء قديم يتغير. وإعادة تسمية <code>email</code> إلى <code>customer_email</code> في الإجابة: كاسر، كل عميل يقرأ <code>email</code> يحصل على <code>undefined</code>؛ أضف الاسم الجديد بجانب القديم، وانقل العملاء، ثم احذف القديم. وإضافة <code>notes</code> اختيارياً إلى <code>BookingIn</code>: آمن، العملاء القدامى لا يرسلونه والخادم يتدبر أمره. وتغيير <code>id</code> من عدد صحيح إلى نص: كاسر، العملاء الذين يخزنون الأرقام أو يقارنونها أو يحسبون بها كأعداد يفشلون، والعملاء ذوو الأنواع لا يعودون يُترجمون.</li>
+<li>لأن كل خطأ يطلب رد فعل مختلفاً، والعميل لا يستطيع الرد الصحيح إلا على ما يعرفه. 409 تعني «اختر وقتاً آخر»: يجب أن تحتفظ الصفحة بالنموذج، وتشرح أن الموعد حُجز للتو، وتعرض غيره. و422 تعني «أصلح هذا الحقل»: يجب أن تعرض الصفحة الرسالة بجانب الحقل. والأخطاء الموثَّقة تأخذ أنواعاً أيضاً، فيقرأ العميل <code>error.title</code> بأمان، ويفحص اختبار العقد أن الخادم يرسلها بالشكل الموعود.</li>
+<li>يفشل التحقق، لأن المخطط يقول إن للكائن الحقول المسرودة بالضبط، فيصير اختبار العقد أحمر، وعلى المطوّر إما أن يحذف الحقل أو يضيفه إلى العقد. وهذا ما تريده عادة للإجابات أثناء التطوير: كل حقل يراه العملاء موثَّق ومراجَع، ولا يتسرب شيء داخلي (بصمة كلمة مرور، أو سعر التكلفة) بالصدفة. أما العملاء فيجب أن يتجاهلوا الحقول المجهولة، فتكون الإضافة الموثَّقة آمنة لهم.</li>
+<li>داخل الحلقة على <code>oldOut.properties</code>، قارن <code>schema.type</code> بـ <code>newOut.properties?.[field]?.type</code> وبلّغ عن <code>"field" type changed: integer → string</code> حين يوجد الاثنان ويختلفان (وافعل الشيء نفسه لحقول الطلب). وما زال يفوته: التغييرات في المعاملات (معامل استعلام جديد مطلوب، أو محذوف)؛ والصيغ والحدود والأطوال المتغيرة (<code>maxLength</code> تقلّص)؛ والكائنات والمصفوفات المتداخلة، لأنه لا ينظر إلا في المستوى الأعلى؛ وسلاسل <code>$ref</code> الأعمق من خطوة واحدة؛ وأنواع المحتوى وترويسات الإجابة المتغيرة؛ وحالات الخطأ المحذوفة. ولهذا تستعمل المشاريع الحقيقية أداة كاملة مثل <code>oasdiff</code>، وتُبقي اختبار العقد الفحصَ الأخير.</li>
+<li><pre dir="ltr"><code>function statusLabel(status: string) {
+  switch (status) {
+    case "confirmed":
+      return t("status.confirmed");
+    case "cancelled":
+      return t("status.cancelled");
+    default:
+      reportUnknown("booking.status", status); // to the error tracker
+      return status; // shown as it came, never a crash
+  }
+}</code></pre>نوع المعامل <code>string</code> (أو الاتحاد المولَّد مع <code>string</code>)، فالقيمة الجديدة متوقعة لا مستحيلة. وتبقى الصفحة تعمل وتعرض القيمة كما جاءت، ويُخبر متتبّع الأخطاء الفريقَ أن الخادم بدأ يرسل شيئاً لا يعرفه العميل، فيضيفون الحالة في الإصدار التالي. ومع عملاء مكتوبين كلهم بهذه الطريقة، تصير إضافة قيمة إلى تعداد تغييراً آمناً عملياً، وإن كان على فحص العقد أن يبلّغ عنها ليقرر أحد بوعي.</li>
 </ol>
 
 </section>

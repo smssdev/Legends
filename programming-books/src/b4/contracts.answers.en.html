@@ -1,0 +1,17 @@
+<ol class="exercises">
+<li>Adding <code>GET /staff</code>: safe, nothing old changes. Renaming <code>email</code> to <code>customer_email</code> in the response: breaking, every client reading <code>email</code> gets <code>undefined</code>; add the new name beside the old one, move the clients, then remove the old one. Adding an optional <code>notes</code> to <code>BookingIn</code>: safe, old clients do not send it and the server copes. Changing <code>id</code> from integer to string: breaking, clients that store, compare or do arithmetic on ids as numbers fail, and typed clients stop compiling.</li>
+<li>Because each error asks for a different reaction, and the client can only react correctly to what it knows about. A 409 means “choose another time”: the page should keep the form, explain that the slot was just taken and offer others. A 422 means “fix this field”: the page should show the message next to the field. Documented errors also get types, so the client reads <code>error.title</code> safely, and the contract test checks that the server sends them in the promised shape.</li>
+<li>The validation fails, because the schema says the object has exactly the listed fields, so the contract test turns red and the developer must either remove the field or add it to the contract. That is usually what you want for responses during development: every field clients can see is documented and reviewed, and nothing internal (a password hash, a cost price) leaks by accident. Clients, on the other hand, should ignore unknown fields, so that a documented addition is safe for them.</li>
+<li>Inside the loop over <code>oldOut.properties</code>, compare <code>schema.type</code> with <code>newOut.properties?.[field]?.type</code> and report <code>"field" type changed: integer → string</code> when both exist and differ (do the same for request fields). It still misses: changes to parameters (a new required query parameter, a removed one); changed formats, ranges and lengths (a <code>maxLength</code> that shrank); nested objects and arrays, since it looks only at the top level; <code>$ref</code> chains deeper than one step; changed content types and response headers; and removed error statuses. That is why real projects use a full tool such as <code>oasdiff</code>, and keep the contract test as the final check.</li>
+<li><pre dir="ltr"><code>function statusLabel(status: string) {
+  switch (status) {
+    case "confirmed":
+      return t("status.confirmed");
+    case "cancelled":
+      return t("status.cancelled");
+    default:
+      reportUnknown("booking.status", status); // to the error tracker
+      return status; // shown as it came, never a crash
+  }
+}</code></pre>The parameter is typed as <code>string</code> (or the generated union plus <code>string</code>), so a new value is expected rather than impossible. The page keeps working and shows the raw value, and the error tracker tells the team that the server started sending something the client does not know, so they can add the case in the next release. With every client written this way, adding an enum value becomes a safe change in practice, though the contract check should still flag it so someone decides consciously.</li>
+</ol>
