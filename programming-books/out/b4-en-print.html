@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "Chapter 4: Authentication Across the Stack"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "Chapter 5: Payments, Email and Files"; } }
+@page ch05:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -1650,6 +1652,454 @@ export default async function OwnerPage() {
 <p>Signed-in owners can now run their day. The next chapter connects Bit Booking to the outside world: payments for deposits, emails that arrive, and files that upload safely.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b4/outside/en">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">Chapter 5</p><h1>Payments, Email and Files</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>work with services you do not control: slow, failing, and repeating themselves</li>
+<li>take a payment through a hosted checkout, and confirm it only from a verified webhook</li>
+<li>verify a webhook’s signature on its exact bytes, and apply each event exactly once</li>
+<li>send email that is never lost and never sent for something that did not happen</li>
+<li>let browsers upload files straight to storage, and check what arrived before using it</li>
+<li>develop and test all of this locally, with stand-ins that speak the real protocols</li>
+</ul>
+</div>
+
+<p class="lead">Until now Bit Booking talked only to its own database. Real products also talk to other people’s systems: a payment provider, an email service, file storage. Each of them is outside your control: it can be slow, it can be down, it can send the same message twice, and anyone on the internet can pretend to be it. The code that talks to them is short; the patterns around it decide whether customers are charged twice, get emails for bookings that do not exist, or upload a virus as a salon’s logo. This chapter adds deposits, confirmation emails and logos, with one pattern for each.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every integration has the same three questions. What if it is down? What if it says the same thing twice? What if it is not really them? Answer the three before writing the first line, and most of the bugs never happen.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>Working with other people’s systems</span></h2>
+
+<p>Four rules apply to every integration in this chapter, and to the ones you will meet later:</p>
+<ul>
+<li><strong>Never inside a transaction.</strong> A database transaction that waits for a network call holds locks for as long as the other side takes, and cannot take back what the other side already did (Book 3).</li>
+<li><strong>Expect repeats.</strong> Providers retry until you answer 200, so every message may arrive twice, or ten times. Handling a message must be idempotent.</li>
+<li><strong>Verify, never trust.</strong> A request that claims to come from the payment provider, or a file that claims to be a PNG, is checked before it changes anything.</li>
+<li><strong>Keys from the environment.</strong> API keys and signing secrets are configuration, read once at start-up, never written in code or committed.</li>
+</ul>
+
+<p>For development you need the services themselves, without real money or real inboxes. This chapter uses stand-ins that speak the real protocols: <strong>Mailpit</strong>, a mail catcher that accepts SMTP and shows what it received; <strong>SeaweedFS</strong>, storage that speaks the S3 API; and a small payment provider written for this chapter, with the same shape as Stripe or Paymob: checkout sessions, and signed webhooks. Replacing a stand-in with the real service is a change of configuration, not of code.</p>
+
+<h2><span class="sec">5.2</span> <span>Taking a deposit</span></h2>
+
+<p>The spec put deposits in version 2; here they are. The customer pays 50 EGP to hold a booking, which falls to <code>confirmed</code> only when the money is in. Two tables record it: the payment, and every provider event we have processed:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> payments (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  booking_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> bookings (id),
+  amount integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (amount &gt; <span class="n">0</span>),
+  status text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s">&#x27;pending&#x27;</span> <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="s">&#x27;pending&#x27;</span>, <span class="s">&#x27;paid&#x27;</span>, <span class="s">&#x27;failed&#x27;</span>)),
+  checkout_id text <span class="k">UNIQUE</span>
+);
+<span class="k">CREATE</span> <span class="k">TABLE</span> webhook_events (
+  id text <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  received_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now()
+);</pre></div>
+
+<p>Card numbers never touch Bit Booking. The server creates a pending payment, asks the provider for a <dfn>hosted checkout</dfn> (a payment page on the provider’s site), and sends the customer there:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/payments.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> startDeposit(bookingId: number) {
+  <span class="c line-bidi">// the payment exists before the customer pays: the webhook only completes it</span>
+  <span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;{ id: number }&gt;(
+    <span class="s">`INSERT INTO payments (booking_id, amount)
+     SELECT id, $2 FROM bookings WHERE id = $1 AND status = &#x27;awaiting_deposit&#x27;
+     RETURNING id`</span>,
+    [bookingId, DEPOSIT],
+  );
+  <span class="k">const</span> payment = rows[<span class="n">0</span>];
+  <span class="k">if</span> (!payment) <span class="k">return</span> <span class="k">null</span>;
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">`${config.providerUrl}/checkouts`</span>, {
+    method: <span class="s">&quot;POST&quot;</span>,
+    headers: {
+      authorization: <span class="s">`Bearer ${config.providerKey}`</span>,
+      <span class="s">&quot;content-type&quot;</span>: <span class="s">&quot;application/json&quot;</span>,
+    },
+    body: JSON.stringify({
+      amount: DEPOSIT,
+      currency: <span class="s">&quot;EGP&quot;</span>,
+      reference: String(payment.id),
+    }),
+  });
+  <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">`provider answered ${res.status}`</span>);
+  <span class="k">const</span> checkout = (<span class="k">await</span> res.json()) as { id: string; url: string };
+  <span class="k">await</span> pool.query(<span class="s">&quot;UPDATE payments SET checkout_id = $1 WHERE id = $2&quot;</span>, [
+    checkout.id,
+    payment.id,
+  ]);
+  <span class="k">return</span> checkout.url;
+}</pre></div>
+
+<p>After paying, the customer is redirected back to the shop. It is tempting to mark the payment as paid when they arrive. Do not: the customer may close the tab before the redirect, and anyone can type the return address by hand. The only trustworthy news comes from the provider’s server to yours: a <dfn>webhook</dfn>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: keep card data out of your systems</p><p>If card numbers pass through your server, even for a moment, your whole system falls under the card industry’s security standard (PCI DSS), with audits and requirements that a small team cannot meet. A hosted checkout, or the provider’s embedded form, keeps the numbers on the provider’s side; your code only ever sees a checkout id and a status.</p></aside>
+
+<h2><span class="sec">5.3</span> <span>Webhooks you can trust</span></h2>
+
+<p>A webhook is an ordinary HTTP request to a public address, so anyone can send one. Providers therefore sign them. Here is how our stand-in does it, the same way Stripe does: an HMAC of the timestamp and the body, with a secret that only the provider and the shop know:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">provider.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span> deliver(body: string) {
+  <span class="k">const</span> t = Math.floor(Date.now() / <span class="n">1000</span>);
+  <span class="k">const</span> v1 = createHmac(<span class="s">&quot;sha256&quot;</span>, process.env.WEBHOOK_SECRET!)
+    .update(<span class="s">`${t}.${body}`</span>)
+    .digest(<span class="s">&quot;hex&quot;</span>);
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">&quot;http://localhost:3000/webhooks/payments&quot;</span>, {
+    method: <span class="s">&quot;POST&quot;</span>,
+    headers: {
+      <span class="s">&quot;content-type&quot;</span>: <span class="s">&quot;application/json&quot;</span>,
+      <span class="s">&quot;bit-signature&quot;</span>: <span class="s">`t=${t},v1=${v1}`</span>,
+    },
+    body,
+  });
+  <span class="k">return</span> { status: res.status, answer: <span class="k">await</span> res.json() };
+}</pre></div>
+
+<p>The shop recomputes the signature and compares. Two details matter. The signature covers the <em>exact bytes</em> sent, so the route must read the body as text; parsing JSON first and re-serialising it can change spaces or key order, and no signature would ever match. And the timestamp must be recent, so a recorded webhook cannot be replayed a week later:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/server.ts</div><pre class="code"><span class="k">await</span> app.register(<span class="k">async</span> (hooks) =&gt; {
+  <span class="c line-bidi">// the signature covers the exact bytes: read the body as text, parse after checking</span>
+  hooks.removeContentTypeParser(<span class="s">&quot;application/json&quot;</span>);
+  hooks.addContentTypeParser(
+    <span class="s">&quot;application/json&quot;</span>,
+    { parseAs: <span class="s">&quot;string&quot;</span> },
+    (_req, body, done) =&gt; done(<span class="k">null</span>, body),
+  );
+  hooks.post(<span class="s">&quot;/webhooks/payments&quot;</span>, <span class="k">async</span> (request, reply) =&gt; {
+    <span class="k">const</span> body = request.body as string;
+    <span class="k">const</span> signature = String(request.headers[<span class="s">&quot;bit-signature&quot;</span>] ?? <span class="s">&quot;&quot;</span>);
+    <span class="k">if</span> (!verifySignature(signature, body)) {
+      <span class="k">return</span> reply.code(<span class="n">400</span>).send(problem(<span class="n">400</span>, <span class="s">&quot;Invalid signature&quot;</span>));
+    }
+    <span class="k">return</span> { result: <span class="k">await</span> applyEvent(JSON.parse(body)) };
+  });
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/payments.ts</div><pre class="code"><span class="k">export</span> <span class="k">function</span> verifySignature(header: string, body: string, now = Date.now()) {
+  <span class="k">const</span> parts = Object.fromEntries(
+    header.split(<span class="s">&quot;,&quot;</span>).map((p) =&gt; p.split(<span class="s">&quot;=&quot;</span>) as [string, string]),
+  );
+  <span class="k">const</span> t = Number(parts.t);
+  <span class="c line-bidi">// an old timestamp is a replay of a recorded request</span>
+  <span class="k">if</span> (!Number.isInteger(t) || Math.abs(now / <span class="n">1000</span> - t) &gt; <span class="n">300</span>) <span class="k">return</span> <span class="k">false</span>;
+  <span class="k">const</span> expected = createHmac(<span class="s">&quot;sha256&quot;</span>, config.webhookSecret)
+    .update(<span class="s">`${t}.${body}`</span>)
+    .digest();
+  <span class="k">const</span> given = Buffer.<span class="k">from</span>(parts.v1 ?? <span class="s">&quot;&quot;</span>, <span class="s">&quot;hex&quot;</span>);
+  <span class="k">return</span> given.length === expected.length &amp;&amp; timingSafeEqual(given, expected);
+}</pre></div>
+
+<p>Then the event is applied, once. Its id goes into <code>webhook_events</code> in the same transaction that marks the payment paid, confirms the booking and queues the email. If the provider delivers the event again, the insert finds the id and nothing else happens:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/payments.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> applyEvent(
+  event: Event,
+): Promise&lt;<span class="s">&quot;applied&quot;</span> | <span class="s">&quot;duplicate&quot;</span> | <span class="s">&quot;ignored&quot;</span>&gt; {
+  <span class="k">const</span> client = <span class="k">await</span> pool.connect();
+  <span class="k">try</span> {
+    <span class="c line-bidi">// all or nothing: the payment, the booking and the email to send</span>
+    <span class="k">await</span> client.query(<span class="s">&quot;BEGIN&quot;</span>);
+    <span class="c line-bidi">// providers deliver at least once: the event id makes the second delivery a no-op</span>
+    <span class="k">const</span> fresh = <span class="k">await</span> client.query(
+      <span class="s">&quot;INSERT INTO webhook_events (id) VALUES ($1) ON CONFLICT DO NOTHING&quot;</span>,
+      [event.id],
+    );
+    <span class="k">if</span> (fresh.rowCount === <span class="n">0</span>) {
+      <span class="k">await</span> client.query(<span class="s">&quot;ROLLBACK&quot;</span>);
+      <span class="k">return</span> <span class="s">&quot;duplicate&quot;</span>;
+    }
+    <span class="k">if</span> (event.<span class="k">type</span> !== <span class="s">&quot;checkout.paid&quot;</span>) {
+      <span class="k">await</span> client.query(<span class="s">&quot;COMMIT&quot;</span>);
+      <span class="k">return</span> <span class="s">&quot;ignored&quot;</span>;
+    }
+    <span class="k">const</span> { rows } = <span class="k">await</span> client.query&lt;{
+      booking_id: number;
+      amount: number;
+      email: string;
+    }&gt;(
+      <span class="s">`UPDATE payments p SET status = &#x27;paid&#x27;
+         FROM bookings b
+        WHERE p.checkout_id = $1 AND p.status = &#x27;pending&#x27; AND b.id = p.booking_id
+        RETURNING p.booking_id, p.amount, b.email`</span>,
+      [event.data.checkout_id],
+    );
+    <span class="k">const</span> paid = rows[<span class="n">0</span>];
+    <span class="k">if</span> (paid) {
+      <span class="k">await</span> client.query(<span class="s">&quot;UPDATE bookings SET status = &#x27;confirmed&#x27; WHERE id = $1&quot;</span>, [
+        paid.booking_id,
+      ]);
+      <span class="c line-bidi">// the email: a row in this transaction, sent by the mailer after the commit</span>
+      <span class="k">await</span> client.query(
+        <span class="s">&quot;INSERT INTO outbox (recipient, subject, body) VALUES ($1, $2, $3)&quot;</span>,
+        [
+          paid.email,
+          <span class="s">&quot;Your deposit is received&quot;</span>,
+          <span class="s">`Booked: 1 December, 10:00. Deposit paid: {amount} EGP.`</span>.replace(
+            <span class="s">&quot;{amount}&quot;</span>,
+            String(paid.amount / <span class="n">100</span>),
+          ),
+        ],
+      );
+    }
+    <span class="k">await</span> client.query(<span class="s">&quot;COMMIT&quot;</span>);
+    <span class="k">return</span> <span class="s">&quot;applied&quot;</span>;
+  } <span class="k">catch</span> (error) {
+    <span class="k">await</span> client.query(<span class="s">&quot;ROLLBACK&quot;</span>);
+    <span class="k">throw</span> error;
+  } <span class="k">finally</span> {
+    client.release();
+  }
+}</pre></div>
+
+<p>Here is the whole flow, from the deposit request to a forged webhook:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The customer asks to pay a 50 EGP deposit</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/bookings/1/deposit | jq -c</span>
+{&quot;checkout_url&quot;:&quot;http://localhost:4000/pay/cs_5788321f1466&quot;}
+<span class="c line-bidi"># She pays on the provider&#x27;s page</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:4000/pay/cs_5788321f1466 | jq -c</span>
+{&quot;status&quot;:200,&quot;answer&quot;:{&quot;result&quot;:&quot;applied&quot;}}
+<span class="c line-bidi"># The payment and the booking</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT p.id, p.amount, p.status AS payment, b.status AS booking FROM payments p JOIN bookings b ON b.id = p.booking_id&#x27;</span>
+ id | amount | payment |  booking  
+----+--------+---------+-----------
+  1 |   5000 | paid    | confirmed
+(1 row)
+<span class="c line-bidi"># The provider delivers the same event again</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:4000/pay/cs_5788321f1466/redeliver | jq -c</span>
+{&quot;status&quot;:200,&quot;answer&quot;:{&quot;result&quot;:&quot;duplicate&quot;}}
+<span class="c line-bidi"># Someone forges a webhook</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/webhooks/payments -H &#x27;content-type: application/json&#x27; -H &#x27;bit-signature: t=1795190000,v1=00ff&#x27; -d &#x27;{&quot;id&quot;:&quot;evt_x&quot;,&quot;type&quot;:&quot;checkout.paid&quot;,&quot;data&quot;:{&quot;checkout_id&quot;:&quot;cs_x&quot;}}&#x27; | jq -c</span>
+{&quot;status&quot;:400,&quot;title&quot;:&quot;Invalid signature&quot;}</pre></div>
+
+<p>The second delivery answers 200 too, with <code>duplicate</code>. That matters: if it answered an error, the provider would keep retrying it for days. A forged request, without the secret, is refused before any JSON is even parsed.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why must the payment not be marked paid when the customer returns from the checkout page?</li><li>Why does the webhook route read the body as text instead of letting the framework parse JSON?</li><li>A duplicate event answers 200, not 409. Why?</li></ol></aside>
+
+<h2><span class="sec">5.4</span> <span>Email that arrives</span></h2>
+
+<p>The confirmation email was not sent inside the webhook: <code>applyEvent</code> wrote it into the <code>outbox</code> table, in the same transaction as the payment. If the transaction rolls back, there is no email; if it commits, the email is there, waiting. This is the outbox of Book 3, and it gives exactly what customers expect: an email for every confirmed booking, and none for anything that did not happen. A separate mailer sends what the outbox holds:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/mailer.ts</div><pre class="code"><span class="k">const</span> transport = nodemailer.createTransport(config.smtpUrl);
+
+<span class="c line-bidi">// the mailer: send what the outbox holds, mark it sent</span>
+<span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;{
+  id: number;
+  recipient: string;
+  subject: string;
+  body: string;
+}&gt;(
+  <span class="s">`SELECT id, recipient, subject, body FROM outbox
+    WHERE sent_at IS NULL ORDER BY id LIMIT 50`</span>,
+);
+<span class="k">for</span> (<span class="k">const</span> mail <span class="k">of</span> rows) {
+  <span class="k">await</span> transport.sendMail({
+    <span class="k">from</span>: <span class="s">&quot;Bit Booking &lt;bookings@bitbooking.example&gt;&quot;</span>,
+    to: mail.recipient,
+    subject: mail.subject,
+    text: mail.body,
+    headers: { <span class="s">&quot;X-Outbox-Id&quot;</span>: String(mail.id) },
+  });
+  <span class="k">await</span> pool.query(<span class="s">&quot;UPDATE outbox SET sent_at = now() WHERE id = $1&quot;</span>, [mail.id]);
+  console.log(<span class="s">`sent ${mail.id} to ${mail.recipient}`</span>);
+}
+<span class="k">await</span> pool.end();</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The mailer sends the outbox; the mail catcher received it</span>
+<span class="c">$ </span><span class="k">npm run --silent mailer</span>
+sent 1 to sara@example.com
+<span class="c">$ </span><span class="k">curl -s localhost:8025/api/v1/messages | jq -c &#x27;.messages[] | {To: .To[0].Address, Subject}&#x27;</span>
+{&quot;To&quot;:&quot;sara@example.com&quot;,&quot;Subject&quot;:&quot;Your deposit is received&quot;}</pre></div>
+
+<p>In development, SMTP goes to Mailpit; in production, to an email service, by changing <code>SMTP_URL</code>. Sending is the easy half. Arriving in the inbox, not in spam, depends on the sending domain: publish <strong>SPF</strong> (which servers may send for you), sign with <strong>DKIM</strong>, and set a <strong>DMARC</strong> policy, all as DNS records your email service gives you. Send transactional mail (confirmations, reminders) from a different address, or even a different service, than marketing, so a complaint about a newsletter cannot stop booking confirmations. And handle bounces: an address that bounces should be marked, and not retried forever.</p>
+
+<h2><span class="sec">5.5</span> <span>Files that never pass through your server</span></h2>
+
+<p>Owners upload their business’s logo. Sending the file through the application server would tie up a worker for every slow upload, and make the server’s memory the limit. Instead the server signs a short-lived URL, and the browser uploads straight to storage:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/files.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> logoUploadUrl(businessId: number, <span class="k">type</span>: Type, size: number) {
+  <span class="k">if</span> (size &gt; MAX) <span class="k">return</span> { error: <span class="s">&quot;too-big&quot;</span> as <span class="k">const</span> };
+  <span class="c line-bidi">// the key is chosen by the server: the client cannot write anywhere else</span>
+  <span class="k">const</span> key = <span class="s">`logos/${businessId}/${randomUUID()}.${TYPES[type]}`</span>;
+  <span class="k">const</span> command = <span class="k">new</span> PutObjectCommand({
+    Bucket: config.s3.bucket,
+    Key: key,
+    ContentType: <span class="k">type</span>,
+  });
+  <span class="k">const</span> url = <span class="k">await</span> getSignedUrl(s3, command, { expiresIn: <span class="n">300</span> });
+  <span class="k">return</span> { key, url };
+}</pre></div>
+
+<p>The server chooses the key, so the client can write only to that one place, and the URL expires in five minutes. But a URL signed for “a small PNG” does not make the upload a small PNG: depending on the storage service, the size and even the type may not be enforced. So the server checks what was really stored before using it, and deletes anything it would not have accepted:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/files.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> acceptLogo(businessId: number, key: string) {
+  <span class="k">if</span> (!key.startsWith(<span class="s">`logos/${businessId}/`</span>)) <span class="k">return</span> <span class="s">&quot;not-found&quot;</span>;
+  <span class="k">const</span> head = <span class="k">await</span> s3
+    .send(<span class="k">new</span> HeadObjectCommand({ Bucket: config.s3.bucket, Key: key }))
+    .<span class="k">catch</span>(() =&gt; <span class="k">null</span>);
+  <span class="k">if</span> (!head) <span class="k">return</span> <span class="s">&quot;not-found&quot;</span>;
+  <span class="k">if</span> ((head.ContentLength ?? <span class="n">0</span>) &gt; MAX || !isType(head.ContentType ?? <span class="s">&quot;&quot;</span>)) {
+    <span class="k">await</span> s3.send(<span class="k">new</span> DeleteObjectCommand({ Bucket: config.s3.bucket, Key: key }));
+    <span class="k">return</span> (head.ContentLength ?? <span class="n">0</span>) &gt; MAX ? <span class="s">&quot;too-big&quot;</span> : <span class="s">&quot;bad-type&quot;</span>;
+  }
+  <span class="k">await</span> pool.query(<span class="s">&quot;UPDATE businesses SET logo_key = $1 WHERE id = $2&quot;</span>, [
+    key,
+    businessId,
+  ]);
+  <span class="k">return</span> <span class="s">&quot;ok&quot;</span>;
+}</pre></div>
+
+<p>Here is a good upload, then two bad ones:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The owner uploads a logo</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;type&quot;:&quot;image/png&quot;,&quot;size&quot;:2048}&#x27; | tee .upload | jq -c &#x27;{key, url: (.url[:60] + &quot;…&quot;)}&#x27;</span>
+{&quot;key&quot;:&quot;logos/1/9befe137-daf8-4a61-8812-7f20c6c9949d.png&quot;,&quot;url&quot;:&quot;http://localhost:8333/bit-booking/logos/1/9befe137-daf8-4a61…&quot;}
+<span class="c line-bidi"># The browser sends the file straight to storage</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X PUT -H &#x27;content-type: image/png&#x27; --upload-file logo.png &quot;$URL&quot;</span>
+500
+<span class="c line-bidi"># The server checks what was stored</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo/confirm -H &#x27;content-type: application/json&#x27; -d &quot;{\&quot;key\&quot;:\&quot;$KEY\&quot;}&quot; | jq -c</span>
+{&quot;status&quot;:404,&quot;title&quot;:&quot;Not found&quot;}
+<span class="c line-bidi"># Someone uploads 3 MB with a URL signed for a logo</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;type&quot;:&quot;image/png&quot;,&quot;size&quot;:2048}&#x27; &gt; .upload</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X PUT -H &#x27;content-type: image/png&#x27; --upload-file big.png &quot;$URL&quot;</span>
+500
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo/confirm -H &#x27;content-type: application/json&#x27; -d &quot;{\&quot;key\&quot;:\&quot;$KEY\&quot;}&quot; | jq -c</span>
+{&quot;status&quot;:404,&quot;title&quot;:&quot;Not found&quot;}
+<span class="c line-bidi"># A different file type than the one signed</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X PUT -H &#x27;content-type: text/html&#x27; --upload-file logo.png &quot;$URL&quot;</span>
+500
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo/confirm -H &#x27;content-type: application/json&#x27; -d &quot;{\&quot;key\&quot;:\&quot;$KEY\&quot;}&quot; | jq -c</span>
+{&quot;status&quot;:404,&quot;title&quot;:&quot;Not found&quot;}
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT id, logo_key FROM businesses&#x27;</span>
+ id | logo_key 
+----+----------
+  1 | 
+(1 row)</pre></div>
+
+<p>The storage accepted both bad uploads; the check after the upload refused them, removed the objects, and the business kept its first logo. Two further steps belong in a real product: serve uploaded files from a separate domain (or a private bucket with signed read URLs), so an uploaded HTML file can never run as your site, and, for files that other people download, scan them, or re-encode images, before showing them.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a page per integration</p><p>For each outside service, keep one page in the repository: what we use it for, where its keys live and who can rotate them, its sandbox and test cards, its status page, what our product does when it is down (deposits off and bookings still possible? emails queued?), and how to replay a missed webhook. The first incident at 2 a.m. is when this page pays for itself.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Marking paid on the return redirect</td><td>Unpaid bookings confirmed by typing a URL</td><td>Confirm only from a verified webhook</td></tr>
+<tr><td>Webhooks without signature checks</td><td>Anyone can confirm any payment</td><td>HMAC on the raw body, recent timestamp</td></tr>
+<tr><td>Verifying a re-serialised body</td><td>Signatures never match, so checks get “temporarily” disabled</td><td>Read the body as text, parse after verifying</td></tr>
+<tr><td>Processing every delivery</td><td>Double confirmations, double emails</td><td>Record the event id, in the same transaction</td></tr>
+<tr><td>Calling the provider inside a transaction</td><td>Locks held during network calls</td><td>Database work and calls in separate steps</td></tr>
+<tr><td>Sending email from the request</td><td>Lost on failure, or sent for rolled-back work</td><td>An outbox row, sent after the commit</td></tr>
+<tr><td>Uploads through the app server</td><td>Workers and memory tied up by slow clients</td><td>Presigned URLs straight to storage</td></tr>
+<tr><td>Trusting what the presigned URL allowed</td><td>Huge or wrong files accepted</td><td>Check the stored object before using it</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Outside services are <strong>slow, fail and repeat</strong>: keep them out of transactions, make handlers <strong>idempotent</strong>, and <strong>verify</strong> everything they send.</li>
+<li>Take payments through a <strong>hosted checkout</strong>; card data never touches your systems.</li>
+<li>Confirm a payment only from a <strong>webhook</strong> whose <strong>HMAC signature</strong> you checked on the <strong>raw body</strong>, with a recent timestamp.</li>
+<li>Apply each event <strong>once</strong>: its id, the state change and the email in <strong>one transaction</strong>; answer 200 to duplicates.</li>
+<li>Send email through an <strong>outbox</strong>; make it arrive with <strong>SPF, DKIM and DMARC</strong>, and separate transactional from marketing mail.</li>
+<li>Upload files with <strong>presigned URLs</strong> chosen by the server, then <strong>check what was stored</strong> before using it.</li>
+<li>Develop against <strong>stand-ins that speak the real protocols</strong>, so moving to the real service is configuration.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the redirect proves nothing. The customer’s browser carries it, so it can be typed by hand or replayed, and it can also never happen: the customer closes the tab, loses their connection, or the provider confirms the payment minutes later (bank checks). Only the provider’s signed webhook, sent server to server, says the money is in. 2. Because the signature is computed over the exact bytes the provider sent. A framework that parses JSON and the code that serialises it again can produce different bytes (spacing, key order, number formats), so the computed signature would not match a genuine request. Verify the raw text first, then parse it. 3. Because the provider retries any delivery that does not get a success status. A duplicate is not an error on the provider’s side: it is the guarantee of at-least-once delivery working. Answering 409 would make it retry the same event again and again; answering 200 with “duplicate” ends the retries and records honestly that nothing changed.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project extends one of the three integrations. Use the stand-ins, and write down what would change for the real service.</p>
+
+<div class="project">
+<p class="project-label">Project 5.1 · Easy</p>
+<h3>Payments that fail</h3>
+<p class="project-goal">Handle a <code>checkout.failed</code> event and a checkout the customer abandons.</p>
+<p class="project-skills"><strong>You will practise:</strong> event types, state machines, and scheduled clean-up.</p>
+<ol class="steps">
+<li>Add a failure endpoint to the stand-in provider that delivers <code>checkout.failed</code>.</li>
+<li>In <code>applyEvent</code>, mark the payment <code>failed</code> and keep the booking <code>awaiting_deposit</code>.</li>
+<li>Write a job that cancels bookings still awaiting a deposit after 30 minutes, freeing the slot.</li>
+<li>Draw the payment’s states and the events that move between them.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> every update should name the state it expects (<code>WHERE status = 'pending'</code>), so a late or repeated event cannot move a payment backwards.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 5.2 · Medium</p>
+<h3>The reminder email</h3>
+<p class="project-goal">Send US-3’s reminder 24 hours before each booking, exactly once.</p>
+<p class="project-skills"><strong>You will practise:</strong> scheduled work, the outbox, and time zones.</p>
+<ol class="steps">
+<li>Add <code>reminded_at</code> to bookings.</li>
+<li>Every five minutes, in one statement, mark the confirmed bookings starting in the next 24 to 24 hours and 5 minutes that have no <code>reminded_at</code>, and insert their outbox rows.</li>
+<li>Write the email’s time in the business’s time zone, not the server’s.</li>
+<li>Show in Mailpit that running the job twice sends one email.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a <code>WITH … UPDATE … RETURNING</code> feeding an <code>INSERT</code> marks and queues in one atomic step.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 5.3 · Challenge</p>
+<h3>Images done properly</h3>
+<p class="project-goal">Turn accepted logos into safe, small images served from their own address.</p>
+<p class="project-skills"><strong>You will practise:</strong> background processing, content checks, and serving user files safely.</p>
+<ol class="steps">
+<li>After <code>acceptLogo</code>, queue a job that reads the image, checks its first bytes (not just its declared type), and re-encodes it as a 256-pixel WebP.</li>
+<li>Store the result under a new key in a public bucket, and keep the original private.</li>
+<li>Serve logos from a separate host name, with <code>Content-Type</code> and <code>Content-Disposition</code> set by you.</li>
+<li>Test with a file that is HTML renamed to <code>.png</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> PNG files start with the bytes <code>89 50 4E 47</code>; a library such as sharp both checks and re-encodes.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> List three things the payment flow does to protect against a webhook that someone forged or replayed.</li>
+<li><span class="level">Easy</span> Why does the server choose the storage key of an upload, instead of letting the browser send a file name?</li>
+<li><span class="level medium">Medium</span> The mailer crashes after <code>sendMail</code> succeeds and before <code>UPDATE outbox</code>. What happens next time it runs? How would you make the customer receive one email even then?</li>
+<li><span class="level medium">Medium</span> The provider is down for an hour. Describe what customers see at each step, and change <code>startDeposit</code> so the booking is not lost.</li>
+<li><span class="level hard">Challenge</span> Webhooks can arrive out of order: <code>checkout.paid</code> after <code>checkout.refunded</code> for the same checkout. Design how <code>applyEvent</code> stays correct.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 6</p>
+<p>Bit Booking now works end to end. The next part steps back to look at it as a system: how its pieces fit, where it will break first as it grows, and how to reason about the numbers before writing code.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1725,6 +2175,16 @@ export async function GET(request: Request) {
 // lib/owner.ts: SELECT DISTINCT b.email FROM bookings b
 //   JOIN staff st ON st.id = b.staff_id WHERE st.business_id = $1</code></pre>The checks: signed in (401), owner only, since it exports personal data (403 for staff); scoped to the user’s business in the query; and beyond permissions, personal-data rules: export only customers who agreed to marketing (a column the spec must add first), log every export with who and when, and rate-limit it. The privacy policy must mention the export before it ships.</li>
 <li>Replace <code>users.business_id</code> and <code>role</code> with a membership table: <code>memberships (user_id, business_id, role, PRIMARY KEY (user_id, business_id))</code>. A request must now say which business it is for: in the web app the business is part of the address (<code>/b/12/owner</code>), in the API a path segment or header. <code>requireUser(roles, businessId, request)</code> looks up the session and then the membership for that business, and returns <code>{ user, businessId, role }</code>; no membership means 404, a membership with the wrong role means 403. The queries keep filtering by a business id, now taken from that result rather than from the user row, so the rule “the condition is the permission” stays the same.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 5</h2>
+<ol class="exercises">
+<li>(1) It verifies the HMAC signature, computed with a secret only the provider and the shop know, over the exact bytes received: a forger without the secret cannot produce it. (2) It refuses timestamps more than five minutes away from now, so a genuine request recorded earlier cannot be replayed later. (3) It records each event id in <code>webhook_events</code> in the same transaction as the change, so even a genuine event replayed within the five minutes is applied only once. Beyond that, every update names the state it expects (<code>status = 'pending'</code>), so no event can move a payment backwards.</li>
+<li>Because a client-chosen name is a write to wherever the client says. It could overwrite another business’s logo (<code>logos/2/logo.png</code>), escape the folder with <code>../</code>, collide with an existing file, or carry a misleading extension (<code>logo.png.html</code>). A key chosen by the server, with the business id as prefix and a random UUID, is unique, unguessable and always inside the business’s own folder; the presigned URL is valid only for that key.</li>
+<li>The row still has <code>sent_at</code> empty, so the next run sends the email again: delivery is at least once, and the customer receives two. To make them receive one, give the email service an idempotency key, which many services accept (the outbox id is the natural one; our mailer already sends it as the <code>X-Outbox-Id</code> header), so the service drops the second send. Without such support, keep the window small: mark the row as <code>sending</code> with a time before sending, and only resend rows whose attempt is old. A rare duplicate remains possible, which is why at-least-once is the honest promise for email.</li>
+<li>At the deposit step, <code>fetch</code> fails or times out: today <code>startDeposit</code> throws, the customer sees an error, and the pending payment row stays behind with no checkout. Better: give the call a short timeout and a retry; if it still fails, keep the booking in <code>awaiting_deposit</code>, roll back or mark the payment <code>failed</code>, and show the customer “Payments are unavailable right now; your time is held for 30 minutes, try again from the link in your email”, with the outbox sending that link. Webhooks during the outage are not lost: the provider retries them when it is back, and the idempotent handler applies them once.</li>
+<li>Do not trust arrival order; decide by the state the event can apply to, and by the provider’s own time. Each update names the state it moves from: <code>paid</code> only from <code>pending</code>, <code>refunded</code> only from <code>paid</code>. If <code>checkout.refunded</code> arrives first, there is no paid payment to refund: store the event (it is already in <code>webhook_events</code> with its payload) as <em>deferred</em> rather than dropping it, and when <code>checkout.paid</code> is applied, look for deferred events for the same checkout and apply them in the order of the provider’s <code>created</code> time. The simpler alternative, which most providers recommend: on any event, fetch the checkout’s current state from the provider’s API and set the payment to match it, so the order of webhooks stops mattering.</li>
 </ol>
 
 </section>

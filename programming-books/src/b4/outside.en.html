@@ -1,0 +1,191 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/outside/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Payments, Email and Files</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>work with services you do not control: slow, failing, and repeating themselves</li>
+<li>take a payment through a hosted checkout, and confirm it only from a verified webhook</li>
+<li>verify a webhook’s signature on its exact bytes, and apply each event exactly once</li>
+<li>send email that is never lost and never sent for something that did not happen</li>
+<li>let browsers upload files straight to storage, and check what arrived before using it</li>
+<li>develop and test all of this locally, with stand-ins that speak the real protocols</li>
+</ul>
+</div>
+
+<p class="lead">Until now Bit Booking talked only to its own database. Real products also talk to other people’s systems: a payment provider, an email service, file storage. Each of them is outside your control: it can be slow, it can be down, it can send the same message twice, and anyone on the internet can pretend to be it. The code that talks to them is short; the patterns around it decide whether customers are charged twice, get emails for bookings that do not exist, or upload a virus as a salon’s logo. This chapter adds deposits, confirmation emails and logos, with one pattern for each.</p>
+
+<aside class="bit" data-mood="think"><p>Every integration has the same three questions. What if it is down? What if it says the same thing twice? What if it is not really them? Answer the three before writing the first line, and most of the bugs never happen.</p></aside>
+
+<h2>{{n}}.1 Working with other people’s systems</h2>
+
+<p>Four rules apply to every integration in this chapter, and to the ones you will meet later:</p>
+<ul>
+<li><strong>Never inside a transaction.</strong> A database transaction that waits for a network call holds locks for as long as the other side takes, and cannot take back what the other side already did (Book 3).</li>
+<li><strong>Expect repeats.</strong> Providers retry until you answer 200, so every message may arrive twice, or ten times. Handling a message must be idempotent.</li>
+<li><strong>Verify, never trust.</strong> A request that claims to come from the payment provider, or a file that claims to be a PNG, is checked before it changes anything.</li>
+<li><strong>Keys from the environment.</strong> API keys and signing secrets are configuration, read once at start-up, never written in code or committed.</li>
+</ul>
+
+<p>For development you need the services themselves, without real money or real inboxes. This chapter uses stand-ins that speak the real protocols: <strong>Mailpit</strong>, a mail catcher that accepts SMTP and shows what it received; <strong>SeaweedFS</strong>, storage that speaks the S3 API; and a small payment provider written for this chapter, with the same shape as Stripe or Paymob: checkout sessions, and signed webhooks. Replacing a stand-in with the real service is a change of configuration, not of code.</p>
+
+<h2>{{n}}.2 Taking a deposit</h2>
+
+<p>The spec put deposits in version 2; here they are. The customer pays 50 EGP to hold a booking, which falls to <code>confirmed</code> only when the money is in. Two tables record it: the payment, and every provider event we have processed:</p>
+
+<pre data-code="schema.sql" data-from="CREATE TABLE payments" data-to="^);#2" data-title="schema.sql"></pre>
+
+<p>Card numbers never touch Bit Booking. The server creates a pending payment, asks the provider for a <dfn>hosted checkout</dfn> (a payment page on the provider’s site), and sends the customer there:</p>
+
+<pre data-code="src/payments.ts" data-from="export async function startDeposit" data-to="^}" data-title="src/payments.ts"></pre>
+
+<p>After paying, the customer is redirected back to the shop. It is tempting to mark the payment as paid when they arrive. Do not: the customer may close the tab before the redirect, and anyone can type the return address by hand. The only trustworthy news comes from the provider’s server to yours: a <dfn>webhook</dfn>.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: keep card data out of your systems</p><p>If card numbers pass through your server, even for a moment, your whole system falls under the card industry’s security standard (PCI DSS), with audits and requirements that a small team cannot meet. A hosted checkout, or the provider’s embedded form, keeps the numbers on the provider’s side; your code only ever sees a checkout id and a status.</p></aside>
+
+<h2>{{n}}.3 Webhooks you can trust</h2>
+
+<p>A webhook is an ordinary HTTP request to a public address, so anyone can send one. Providers therefore sign them. Here is how our stand-in does it, the same way Stripe does: an HMAC of the timestamp and the body, with a secret that only the provider and the shop know:</p>
+
+<pre data-code="provider.ts" data-from="async function deliver" data-to="^}" data-title="provider.ts"></pre>
+
+<p>The shop recomputes the signature and compares. Two details matter. The signature covers the <em>exact bytes</em> sent, so the route must read the body as text; parsing JSON first and re-serialising it can change spaces or key order, and no signature would ever match. And the timestamp must be recent, so a recorded webhook cannot be replayed a week later:</p>
+
+<pre data-code="src/server.ts" data-from="await app.register" data-to="^});" data-title="src/server.ts"></pre>
+<pre data-code="src/payments.ts" data-from="export function verifySignature" data-to="^}" data-title="src/payments.ts"></pre>
+
+<p>Then the event is applied, once. Its id goes into <code>webhook_events</code> in the same transaction that marks the payment paid, confirms the booking and queues the email. If the provider delivers the event again, the insert finds the id and nothing else happens:</p>
+
+<pre data-code="src/payments.ts" data-from="export async function applyEvent" data-to="^}" data-title="src/payments.ts"></pre>
+
+<p>Here is the whole flow, from the deposit request to a forged webhook:</p>
+
+<pre data-code="payments.sh" data-title="Terminal"></pre>
+
+<p>The second delivery answers 200 too, with <code>duplicate</code>. That matters: if it answered an error, the provider would keep retrying it for days. A forged request, without the secret, is refused before any JSON is even parsed.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why must the payment not be marked paid when the customer returns from the checkout page?</li><li>Why does the webhook route read the body as text instead of letting the framework parse JSON?</li><li>A duplicate event answers 200, not 409. Why?</li></ol></aside>
+
+<h2>{{n}}.4 Email that arrives</h2>
+
+<p>The confirmation email was not sent inside the webhook: <code>applyEvent</code> wrote it into the <code>outbox</code> table, in the same transaction as the payment. If the transaction rolls back, there is no email; if it commits, the email is there, waiting. This is the outbox of Book 3, and it gives exactly what customers expect: an email for every confirmed booking, and none for anything that did not happen. A separate mailer sends what the outbox holds:</p>
+
+<pre data-code="src/mailer.ts" data-from="const transport" data-title="src/mailer.ts"></pre>
+<pre data-code="mail.sh" data-title="Terminal"></pre>
+
+<p>In development, SMTP goes to Mailpit; in production, to an email service, by changing <code>SMTP_URL</code>. Sending is the easy half. Arriving in the inbox, not in spam, depends on the sending domain: publish <strong>SPF</strong> (which servers may send for you), sign with <strong>DKIM</strong>, and set a <strong>DMARC</strong> policy, all as DNS records your email service gives you. Send transactional mail (confirmations, reminders) from a different address, or even a different service, than marketing, so a complaint about a newsletter cannot stop booking confirmations. And handle bounces: an address that bounces should be marked, and not retried forever.</p>
+
+<h2>{{n}}.5 Files that never pass through your server</h2>
+
+<p>Owners upload their business’s logo. Sending the file through the application server would tie up a worker for every slow upload, and make the server’s memory the limit. Instead the server signs a short-lived URL, and the browser uploads straight to storage:</p>
+
+<pre data-code="src/files.ts" data-from="export async function logoUploadUrl" data-to="^}" data-title="src/files.ts"></pre>
+
+<p>The server chooses the key, so the client can write only to that one place, and the URL expires in five minutes. But a URL signed for “a small PNG” does not make the upload a small PNG: depending on the storage service, the size and even the type may not be enforced. So the server checks what was really stored before using it, and deletes anything it would not have accepted:</p>
+
+<pre data-code="src/files.ts" data-from="export async function acceptLogo" data-to="^}" data-title="src/files.ts"></pre>
+
+<p>Here is a good upload, then two bad ones:</p>
+
+<pre data-code="files.sh" data-title="Terminal"></pre>
+
+<p>The storage accepted both bad uploads; the check after the upload refused them, removed the objects, and the business kept its first logo. Two further steps belong in a real product: serve uploaded files from a separate domain (or a private bucket with signed read URLs), so an uploaded HTML file can never run as your site, and, for files that other people download, scan them, or re-encode images, before showing them.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: a page per integration</p><p>For each outside service, keep one page in the repository: what we use it for, where its keys live and who can rotate them, its sandbox and test cards, its status page, what our product does when it is down (deposits off and bookings still possible? emails queued?), and how to replay a missed webhook. The first incident at 2 a.m. is when this page pays for itself.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Marking paid on the return redirect</td><td>Unpaid bookings confirmed by typing a URL</td><td>Confirm only from a verified webhook</td></tr>
+<tr><td>Webhooks without signature checks</td><td>Anyone can confirm any payment</td><td>HMAC on the raw body, recent timestamp</td></tr>
+<tr><td>Verifying a re-serialised body</td><td>Signatures never match, so checks get “temporarily” disabled</td><td>Read the body as text, parse after verifying</td></tr>
+<tr><td>Processing every delivery</td><td>Double confirmations, double emails</td><td>Record the event id, in the same transaction</td></tr>
+<tr><td>Calling the provider inside a transaction</td><td>Locks held during network calls</td><td>Database work and calls in separate steps</td></tr>
+<tr><td>Sending email from the request</td><td>Lost on failure, or sent for rolled-back work</td><td>An outbox row, sent after the commit</td></tr>
+<tr><td>Uploads through the app server</td><td>Workers and memory tied up by slow clients</td><td>Presigned URLs straight to storage</td></tr>
+<tr><td>Trusting what the presigned URL allowed</td><td>Huge or wrong files accepted</td><td>Check the stored object before using it</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Outside services are <strong>slow, fail and repeat</strong>: keep them out of transactions, make handlers <strong>idempotent</strong>, and <strong>verify</strong> everything they send.</li>
+<li>Take payments through a <strong>hosted checkout</strong>; card data never touches your systems.</li>
+<li>Confirm a payment only from a <strong>webhook</strong> whose <strong>HMAC signature</strong> you checked on the <strong>raw body</strong>, with a recent timestamp.</li>
+<li>Apply each event <strong>once</strong>: its id, the state change and the email in <strong>one transaction</strong>; answer 200 to duplicates.</li>
+<li>Send email through an <strong>outbox</strong>; make it arrive with <strong>SPF, DKIM and DMARC</strong>, and separate transactional from marketing mail.</li>
+<li>Upload files with <strong>presigned URLs</strong> chosen by the server, then <strong>check what was stored</strong> before using it.</li>
+<li>Develop against <strong>stand-ins that speak the real protocols</strong>, so moving to the real service is configuration.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the redirect proves nothing. The customer’s browser carries it, so it can be typed by hand or replayed, and it can also never happen: the customer closes the tab, loses their connection, or the provider confirms the payment minutes later (bank checks). Only the provider’s signed webhook, sent server to server, says the money is in. 2. Because the signature is computed over the exact bytes the provider sent. A framework that parses JSON and the code that serialises it again can produce different bytes (spacing, key order, number formats), so the computed signature would not match a genuine request. Verify the raw text first, then parse it. 3. Because the provider retries any delivery that does not get a success status. A duplicate is not an error on the provider’s side: it is the guarantee of at-least-once delivery working. Answering 409 would make it retry the same event again and again; answering 200 with “duplicate” ends the retries and records honestly that nothing changed.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project extends one of the three integrations. Use the stand-ins, and write down what would change for the real service.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Payments that fail</h3>
+<p class="project-goal">Handle a <code>checkout.failed</code> event and a checkout the customer abandons.</p>
+<p class="project-skills"><strong>You will practise:</strong> event types, state machines, and scheduled clean-up.</p>
+<ol class="steps">
+<li>Add a failure endpoint to the stand-in provider that delivers <code>checkout.failed</code>.</li>
+<li>In <code>applyEvent</code>, mark the payment <code>failed</code> and keep the booking <code>awaiting_deposit</code>.</li>
+<li>Write a job that cancels bookings still awaiting a deposit after 30 minutes, freeing the slot.</li>
+<li>Draw the payment’s states and the events that move between them.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> every update should name the state it expects (<code>WHERE status = 'pending'</code>), so a late or repeated event cannot move a payment backwards.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>The reminder email</h3>
+<p class="project-goal">Send US-3’s reminder 24 hours before each booking, exactly once.</p>
+<p class="project-skills"><strong>You will practise:</strong> scheduled work, the outbox, and time zones.</p>
+<ol class="steps">
+<li>Add <code>reminded_at</code> to bookings.</li>
+<li>Every five minutes, in one statement, mark the confirmed bookings starting in the next 24 to 24 hours and 5 minutes that have no <code>reminded_at</code>, and insert their outbox rows.</li>
+<li>Write the email’s time in the business’s time zone, not the server’s.</li>
+<li>Show in Mailpit that running the job twice sends one email.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a <code>WITH … UPDATE … RETURNING</code> feeding an <code>INSERT</code> marks and queues in one atomic step.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Images done properly</h3>
+<p class="project-goal">Turn accepted logos into safe, small images served from their own address.</p>
+<p class="project-skills"><strong>You will practise:</strong> background processing, content checks, and serving user files safely.</p>
+<ol class="steps">
+<li>After <code>acceptLogo</code>, queue a job that reads the image, checks its first bytes (not just its declared type), and re-encodes it as a 256-pixel WebP.</li>
+<li>Store the result under a new key in a public bucket, and keep the original private.</li>
+<li>Serve logos from a separate host name, with <code>Content-Type</code> and <code>Content-Disposition</code> set by you.</li>
+<li>Test with a file that is HTML renamed to <code>.png</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> PNG files start with the bytes <code>89 50 4E 47</code>; a library such as sharp both checks and re-encodes.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> List three things the payment flow does to protect against a webhook that someone forged or replayed.</li>
+<li><span class="level">Easy</span> Why does the server choose the storage key of an upload, instead of letting the browser send a file name?</li>
+<li><span class="level">Medium</span> The mailer crashes after <code>sendMail</code> succeeds and before <code>UPDATE outbox</code>. What happens next time it runs? How would you make the customer receive one email even then?</li>
+<li><span class="level">Medium</span> The provider is down for an hour. Describe what customers see at each step, and change <code>startDeposit</code> so the booking is not lost.</li>
+<li><span class="level">Challenge</span> Webhooks can arrive out of order: <code>checkout.paid</code> after <code>checkout.refunded</code> for the same checkout. Design how <code>applyEvent</code> stays correct.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Bit Booking now works end to end. The next part steps back to look at it as a system: how its pieces fit, where it will break first as it grows, and how to reason about the numbers before writing code.</p>
+</div>
+</section>
