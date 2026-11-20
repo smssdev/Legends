@@ -88,13 +88,13 @@ export async function applyEvent(
       await client.query("UPDATE bookings SET status = 'confirmed' WHERE id = $1", [
         paid.booking_id,
       ]);
-      // the email is a row in the same transaction; the mailer sends it after the commit
+      // the email: a row in this transaction, sent by the mailer after the commit
       await client.query(
         "INSERT INTO outbox (recipient, subject, body) VALUES ($1, $2, $3)",
         [
           paid.email,
           "Your deposit is received",
-          `Your booking on 1 December at 10:00 is confirmed. Deposit: {amount} EGP.`.replace(
+          `Booked: 1 December, 10:00. Deposit paid: {amount} EGP.`.replace(
             "{amount}",
             String(paid.amount / 100),
           ),

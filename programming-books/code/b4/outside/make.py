@@ -27,15 +27,15 @@ from rec import CLEAN, Server, Session, fill  # noqa: E402
 T = {
     "en": dict(
         w_salon="Bit Hair Studio", w_mona="Mona",
-        w_subject="Your deposit is received", w_body="Your booking on 1 December at 10:00 is confirmed. Deposit: {amount} EGP.",
+        w_subject="Your deposit is received", w_body="Booked: 1 December, 10:00. Deposit paid: {amount} EGP.",
         w_c_env="every key and secret comes from the environment; none is in the code",
         w_c_pending="the payment exists before the customer pays: the webhook only completes it",
-        w_c_raw="the signature covers the exact bytes sent: read the body as text, parse it after checking",
+        w_c_raw="the signature covers the exact bytes: read the body as text, parse after checking",
         w_c_sign="the signature: HMAC-SHA256 of the timestamp and the body, with the shared secret",
         w_c_old="an old timestamp is a replay of a recorded request",
         w_c_once="providers deliver at least once: the event id makes the second delivery a no-op",
         w_c_apply="all or nothing: the payment, the booking and the email to send",
-        w_c_outbox="the email is a row in the same transaction; the mailer sends it after the commit",
+        w_c_outbox="the email: a row in this transaction, sent by the mailer after the commit",
         w_c_mailer="the mailer: send what the outbox holds, mark it sent",
         w_c_presign="the browser uploads straight to storage; the server only signs a short-lived URL",
         w_c_key="the key is chosen by the server: the client cannot write anywhere else",
@@ -53,7 +53,7 @@ T = {
     ),
     "ar": dict(
         w_salon="صالون بِت", w_mona="منى",
-        w_subject="وصل عربونك", w_body="تأكد حجزك يوم 1 ديسمبر الساعة 10:00. العربون: {amount} جنيهاً.",
+        w_subject="وصل عربونك", w_body="تم الحجز: 1 ديسمبر، 10:00. العربون المدفوع: {amount} جنيهاً.",
         w_c_env="كل مفتاح وسر يأتي من البيئة؛ ولا شيء منها في الكود",
         w_c_pending="الدفعة موجودة قبل أن يدفع الزبون: الـ webhook يكملها فقط",
         w_c_raw="التوقيع يغطي البايتات المرسلة بالضبط: اقرأ الجسم نصاً، وحلّله بعد الفحص",
@@ -61,7 +61,7 @@ T = {
         w_c_old="الطابع الزمني القديم إعادة لطلب مسجَّل",
         w_c_once="المزوّدون يسلّمون مرة على الأقل: رقم الحدث يجعل التسليم الثاني بلا أثر",
         w_c_apply="الكل أو لا شيء: الدفعة والحجز والبريد المطلوب إرساله",
-        w_c_outbox="البريد صف في المعاملة نفسها؛ والمرسِل يرسله بعد الاعتماد",
+        w_c_outbox="البريد: صف في هذه المعاملة، يرسله المرسِل بعد الاعتماد",
         w_c_mailer="المرسِل: أرسل ما في الصندوق الصادر، وعلّمه مُرسلاً",
         w_c_presign="المتصفح يرفع مباشرة إلى المخزن؛ والخادم يوقّع رابطاً قصير العمر فقط",
         w_c_key="الخادم يختار المفتاح: لا يستطيع العميل أن يكتب في أي مكان آخر",
@@ -267,7 +267,8 @@ const transport = nodemailer.createTransport(config.smtpUrl);
 
 // {w_c_mailer}
 const { rows } = await pool.query<{ id: number; recipient: string; subject: string; body: string }>(
-  "SELECT id, recipient, subject, body FROM outbox WHERE sent_at IS NULL ORDER BY id LIMIT 50",
+  `SELECT id, recipient, subject, body FROM outbox
+    WHERE sent_at IS NULL ORDER BY id LIMIT 50`,
 );
 for (const mail of rows) {
   await transport.sendMail({
@@ -358,7 +359,8 @@ await app.register(async (hooks) => {
   });
 });
 
-// in Bit Booking these two need requireUser(["owner"]) from Chapter 4; left out to keep the example short
+// in Bit Booking these two need requireUser(["owner"]) from Chapter 4;
+// it is left out here to keep the example short
 app.post<{ Params: { id: string }; Body: { type: string; size: number } }>(
   "/businesses/:id/logo",
   async (request, reply) => {

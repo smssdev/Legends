@@ -11,7 +11,8 @@ const { rows } = await pool.query<{
   subject: string;
   body: string;
 }>(
-  "SELECT id, recipient, subject, body FROM outbox WHERE sent_at IS NULL ORDER BY id LIMIT 50",
+  `SELECT id, recipient, subject, body FROM outbox
+    WHERE sent_at IS NULL ORDER BY id LIMIT 50`,
 );
 for (const mail of rows) {
   await transport.sendMail({

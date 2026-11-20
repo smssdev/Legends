@@ -32,7 +32,8 @@ await app.register(async (hooks) => {
   });
 });
 
-// in Bit Booking these two need requireUser(["owner"]) from Chapter 4; left out to keep the example short
+// in Bit Booking these two need requireUser(["owner"]) from Chapter 4;
+// it is left out here to keep the example short
 app.post<{ Params: { id: string }; Body: { type: string; size: number } }>(
   "/businesses/:id/logo",
   async (request, reply) => {

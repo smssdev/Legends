@@ -15,7 +15,7 @@ app.post<{ Params: { id: string } }>(
 );
 
 await app.register(async (hooks) => {
-  // the signature covers the exact bytes sent: read the body as text, parse it after checking
+  // the signature covers the exact bytes: read the body as text, parse after checking
   hooks.removeContentTypeParser("application/json");
   hooks.addContentTypeParser(
     "application/json",
@@ -32,7 +32,8 @@ await app.register(async (hooks) => {
   });
 });
 
-// in Bit Booking these two need requireUser(["owner"]) from Chapter 4; left out to keep the example short
+// in Bit Booking these two need requireUser(["owner"]) from Chapter 4;
+// it is left out here to keep the example short
 app.post<{ Params: { id: string }; Body: { type: string; size: number } }>(
   "/businesses/:id/logo",
   async (request, reply) => {

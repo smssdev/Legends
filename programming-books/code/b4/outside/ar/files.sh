@@ -1,6 +1,6 @@
 # صاحبة العمل ترفع شعاراً
 $ curl -s localhost:3000/businesses/1/logo -H 'content-type: application/json' -d '{"type":"image/png","size":2048}' | tee .upload | jq -c '{key, url: (.url[:60] + "…")}'
-{"key":"logos/1/1f9150bf-0595-45db-a88f-42f9f81a1532.png","url":"http://localhost:8333/bit-booking/logos/1/1f9150bf-0595-45db…"}
+{"key":"logos/1/306d60df-566a-4719-8fed-040c1773ad48.png","url":"http://localhost:8333/bit-booking/logos/1/306d60df-566a-4719…"}
 # المتصفح يرسل الملف مباشرة إلى المخزن
 $ curl -s -o /dev/null -w '%{http_code}\n' -X PUT -H 'content-type: image/png' --upload-file logo.png "$URL"
 500

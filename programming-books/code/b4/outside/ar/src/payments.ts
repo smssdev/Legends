@@ -88,13 +88,13 @@ export async function applyEvent(
       await client.query("UPDATE bookings SET status = 'confirmed' WHERE id = $1", [
         paid.booking_id,
       ]);
-      // البريد صف في المعاملة نفسها؛ والمرسِل يرسله بعد الاعتماد
+      // البريد: صف في هذه المعاملة، يرسله المرسِل بعد الاعتماد
       await client.query(
         "INSERT INTO outbox (recipient, subject, body) VALUES ($1, $2, $3)",
         [
           paid.email,
           "وصل عربونك",
-          `تأكد حجزك يوم 1 ديسمبر الساعة 10:00. العربون: {amount} جنيهاً.`.replace(
+          `تم الحجز: 1 ديسمبر، 10:00. العربون المدفوع: {amount} جنيهاً.`.replace(
             "{amount}",
             String(paid.amount / 100),
           ),

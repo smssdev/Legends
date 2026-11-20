@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "الفصل 4: الهوية عبر الطبقات كلها"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "الفصل 5: المدفوعات والبريد والملفات"; } }
+@page ch05:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -1749,6 +1751,454 @@ export default async function OwnerPage() {
 <p>صار أصحاب العمل المسجّلون يديرون يومهم. والفصل التالي يصل «بِت للحجوزات» بالعالم الخارجي: مدفوعات للعربون، ورسائل بريد تصل، وملفات تُرفع بأمان.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b4/outside/ar">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">الفصل 5</p><h1>المدفوعات والبريد والملفات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تعمل مع خدمات لا تتحكم فيها: بطيئة، وتتعطل، وتكرر نفسها</li>
+<li>تأخذ دفعة عبر صفحة دفع مستضافة، ولا تؤكدها إلا من webhook موثَّق</li>
+<li>تتحقق من توقيع الـ webhook على بايتاته بالضبط، وتطبّق كل حدث مرة واحدة بالضبط</li>
+<li>ترسل بريداً لا يضيع أبداً ولا يُرسل لشيء لم يحدث</li>
+<li>تدع المتصفحات ترفع الملفات مباشرة إلى المخزن، وتفحص ما وصل قبل استعماله</li>
+<li>تطوّر هذا كله وتختبره محلياً، ببدائل تتكلم البروتوكولات الحقيقية</li>
+</ul>
+</div>
+
+<p class="lead">حتى الآن لم يتحدث «بِت للحجوزات» إلا مع قاعدة بياناته. والمنتجات الحقيقية تتحدث أيضاً مع أنظمة غيرها: مزوّد دفع، وخدمة بريد، ومخزن ملفات. وكلٌّ منها خارج سيطرتك: قد يبطؤ، وقد يتعطل، وقد يرسل الرسالة نفسها مرتين، ويستطيع أي أحد على الإنترنت أن ينتحل صفته. والكود الذي يتحدث معها قصير؛ أما الأنماط من حوله فتقرر هل يُحاسَب الزبائن مرتين، أو تصلهم رسائل عن حجوزات غير موجودة، أو يُرفع فيروس شعاراً لصالون. وهذا الفصل يضيف العربون ورسائل التأكيد والشعارات، بنمط لكلٍّ منها.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>لكل تكامل الأسئلة الثلاثة نفسها. ماذا لو تعطل؟ ماذا لو قال الشيء نفسه مرتين؟ ماذا لو لم يكن هو حقاً؟ أجب عن الثلاثة قبل أول سطر، ولن تحدث معظم الأخطاء أبداً.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>العمل مع أنظمة الآخرين</span></h2>
+
+<p>أربع قواعد تنطبق على كل تكامل في هذا الفصل، وعلى ما ستقابله لاحقاً:</p>
+<ul>
+<li><strong>لا داخل معاملة أبداً.</strong> معاملة قاعدة البيانات التي تنتظر نداء شبكة تمسك أقفالها ما دام الطرف الآخر يتأخر، ولا تستطيع استرجاع ما فعله الطرف الآخر أصلاً (الكتاب الثالث).</li>
+<li><strong>توقّع التكرار.</strong> يعيد المزوّدون المحاولة حتى تجيب 200، فكل رسالة قد تصل مرتين، أو عشر مرات. ويجب أن تكون معالجة الرسالة بلا أثر عند التكرار.</li>
+<li><strong>تحقق، ولا تثق.</strong> الطلب الذي يدّعي أنه من مزوّد الدفع، أو الملف الذي يدّعي أنه PNG، يُفحص قبل أن يغيّر أي شيء.</li>
+<li><strong>المفاتيح من البيئة.</strong> مفاتيح الواجهات البرمجية وأسرار التوقيع إعدادات، تُقرأ مرة عند البدء، ولا تُكتب في الكود ولا تُرسل إلى المستودع أبداً.</li>
+</ul>
+
+<p>وللتطوير تحتاج الخدمات نفسها، بلا مال حقيقي ولا صناديق بريد حقيقية. ويستعمل هذا الفصل بدائل تتكلم البروتوكولات الحقيقية: <strong>Mailpit</strong>، ملتقط بريد يقبل SMTP ويعرض ما استقبله؛ و<strong>SeaweedFS</strong>، مخزن يتكلم واجهة S3؛ ومزوّد دفع صغير كُتب لهذا الفصل، بشكل Stripe أو Paymob نفسه: جلسات دفع، وwebhooks موقَّعة. واستبدال البديل بالخدمة الحقيقية تغيير في الإعدادات، لا في الكود.</p>
+
+<h2><span class="sec">5.2</span> <span>أخذ العربون</span></h2>
+
+<p>وضعت المواصفات العربون في النسخة 2؛ وها هو. يدفع الزبون 50 جنيهاً ليحجز موعداً، فلا يصير الحجز <code>confirmed</code> إلا حين يصل المال. ويسجّله جدولان: الدفعة، وكل حدث من المزوّد عالجناه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> payments (
+  id bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  booking_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> bookings (id),
+  amount integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (amount &gt; <span class="n">0</span>),
+  status text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s">&#x27;pending&#x27;</span> <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="s">&#x27;pending&#x27;</span>, <span class="s">&#x27;paid&#x27;</span>, <span class="s">&#x27;failed&#x27;</span>)),
+  checkout_id text <span class="k">UNIQUE</span>
+);
+<span class="k">CREATE</span> <span class="k">TABLE</span> webhook_events (
+  id text <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  received_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now()
+);</pre></div>
+
+<p>أرقام البطاقات لا تلمس «بِت للحجوزات» أبداً. ينشئ الخادم دفعة معلّقة، ويطلب من المزوّد <dfn>صفحة دفع مستضافة</dfn> (صفحة دفع على موقع المزوّد)، ويرسل الزبون إليها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/payments.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> startDeposit(bookingId: number) {
+  <span class="c line-bidi">// الدفعة موجودة قبل أن يدفع الزبون: الـ webhook يكملها فقط</span>
+  <span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;{ id: number }&gt;(
+    <span class="s">`INSERT INTO payments (booking_id, amount)
+     SELECT id, $2 FROM bookings WHERE id = $1 AND status = &#x27;awaiting_deposit&#x27;
+     RETURNING id`</span>,
+    [bookingId, DEPOSIT],
+  );
+  <span class="k">const</span> payment = rows[<span class="n">0</span>];
+  <span class="k">if</span> (!payment) <span class="k">return</span> <span class="k">null</span>;
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">`${config.providerUrl}/checkouts`</span>, {
+    method: <span class="s">&quot;POST&quot;</span>,
+    headers: {
+      authorization: <span class="s">`Bearer ${config.providerKey}`</span>,
+      <span class="s">&quot;content-type&quot;</span>: <span class="s">&quot;application/json&quot;</span>,
+    },
+    body: JSON.stringify({
+      amount: DEPOSIT,
+      currency: <span class="s">&quot;EGP&quot;</span>,
+      reference: String(payment.id),
+    }),
+  });
+  <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">`provider answered ${res.status}`</span>);
+  <span class="k">const</span> checkout = (<span class="k">await</span> res.json()) as { id: string; url: string };
+  <span class="k">await</span> pool.query(<span class="s">&quot;UPDATE payments SET checkout_id = $1 WHERE id = $2&quot;</span>, [
+    checkout.id,
+    payment.id,
+  ]);
+  <span class="k">return</span> checkout.url;
+}</pre></div>
+
+<p>بعد الدفع، يُعاد الزبون إلى المتجر. ومن المغري أن تُعلَّم الدفعة مدفوعة حين يصل. لا تفعل: قد يغلق الزبون التبويب قبل الإعادة، وأي أحد يستطيع كتابة عنوان العودة باليد. والخبر الوحيد الموثوق يأتي من خادم المزوّد إلى خادمك: <dfn>webhook</dfn>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>احذر: أبقِ بيانات البطاقات خارج أنظمتك</p><p>إن مرت أرقام البطاقات عبر خادمك، ولو للحظة، صار نظامك كله تحت معيار أمان صناعة البطاقات (PCI DSS)، بتدقيقات ومتطلبات لا يستطيعها فريق صغير. صفحة الدفع المستضافة، أو النموذج المضمَّن من المزوّد، تُبقي الأرقام عند المزوّد؛ ولا يرى كودك إلا رقم جلسة الدفع وحالتها.</p></aside>
+
+<h2><span class="sec">5.3</span> <span>webhooks يمكن الوثوق بها</span></h2>
+
+<p>الـ webhook طلب HTTP عادي إلى عنوان عام، فيستطيع أي أحد إرساله. لذلك يوقّعه المزوّدون. وهكذا يفعل بديلنا، كما يفعل Stripe: HMAC للطابع الزمني والجسم، بسر لا يعرفه إلا المزوّد والمتجر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">provider.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span> deliver(body: string) {
+  <span class="k">const</span> t = Math.floor(Date.now() / <span class="n">1000</span>);
+  <span class="k">const</span> v1 = createHmac(<span class="s">&quot;sha256&quot;</span>, process.env.WEBHOOK_SECRET!)
+    .update(<span class="s">`${t}.${body}`</span>)
+    .digest(<span class="s">&quot;hex&quot;</span>);
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">&quot;http://localhost:3000/webhooks/payments&quot;</span>, {
+    method: <span class="s">&quot;POST&quot;</span>,
+    headers: {
+      <span class="s">&quot;content-type&quot;</span>: <span class="s">&quot;application/json&quot;</span>,
+      <span class="s">&quot;bit-signature&quot;</span>: <span class="s">`t=${t},v1=${v1}`</span>,
+    },
+    body,
+  });
+  <span class="k">return</span> { status: res.status, answer: <span class="k">await</span> res.json() };
+}</pre></div>
+
+<p>ويعيد المتجر حساب التوقيع ويقارن. وتفصيلتان مهمتان. التوقيع يغطي <em>البايتات المرسلة بالضبط</em>، فيجب أن يقرأ المسار الجسم نصاً؛ فتحليل JSON أولاً ثم إعادة تسلسله قد يغيّر المسافات أو ترتيب المفاتيح، فلا يطابق أي توقيع أبداً. ويجب أن يكون الطابع الزمني حديثاً، كي لا يُعاد webhook مسجَّل بعد أسبوع:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/server.ts</div><pre class="code"><span class="k">await</span> app.register(<span class="k">async</span> (hooks) =&gt; {
+  <span class="c line-bidi">// التوقيع يغطي البايتات المرسلة بالضبط: اقرأ الجسم نصاً، وحلّله بعد الفحص</span>
+  hooks.removeContentTypeParser(<span class="s">&quot;application/json&quot;</span>);
+  hooks.addContentTypeParser(
+    <span class="s">&quot;application/json&quot;</span>,
+    { parseAs: <span class="s">&quot;string&quot;</span> },
+    (_req, body, done) =&gt; done(<span class="k">null</span>, body),
+  );
+  hooks.post(<span class="s">&quot;/webhooks/payments&quot;</span>, <span class="k">async</span> (request, reply) =&gt; {
+    <span class="k">const</span> body = request.body as string;
+    <span class="k">const</span> signature = String(request.headers[<span class="s">&quot;bit-signature&quot;</span>] ?? <span class="s">&quot;&quot;</span>);
+    <span class="k">if</span> (!verifySignature(signature, body)) {
+      <span class="k">return</span> reply.code(<span class="n">400</span>).send(problem(<span class="n">400</span>, <span class="s">&quot;توقيع غير صالح&quot;</span>));
+    }
+    <span class="k">return</span> { result: <span class="k">await</span> applyEvent(JSON.parse(body)) };
+  });
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/payments.ts</div><pre class="code"><span class="k">export</span> <span class="k">function</span> verifySignature(header: string, body: string, now = Date.now()) {
+  <span class="k">const</span> parts = Object.fromEntries(
+    header.split(<span class="s">&quot;,&quot;</span>).map((p) =&gt; p.split(<span class="s">&quot;=&quot;</span>) as [string, string]),
+  );
+  <span class="k">const</span> t = Number(parts.t);
+  <span class="c line-bidi">// الطابع الزمني القديم إعادة لطلب مسجَّل</span>
+  <span class="k">if</span> (!Number.isInteger(t) || Math.abs(now / <span class="n">1000</span> - t) &gt; <span class="n">300</span>) <span class="k">return</span> <span class="k">false</span>;
+  <span class="k">const</span> expected = createHmac(<span class="s">&quot;sha256&quot;</span>, config.webhookSecret)
+    .update(<span class="s">`${t}.${body}`</span>)
+    .digest();
+  <span class="k">const</span> given = Buffer.<span class="k">from</span>(parts.v1 ?? <span class="s">&quot;&quot;</span>, <span class="s">&quot;hex&quot;</span>);
+  <span class="k">return</span> given.length === expected.length &amp;&amp; timingSafeEqual(given, expected);
+}</pre></div>
+
+<p>ثم يُطبَّق الحدث، مرة واحدة. يدخل رقمه في <code>webhook_events</code> في المعاملة نفسها التي تعلّم الدفعة مدفوعة، وتؤكد الحجز، وتضع البريد في الطابور. فإن سلّم المزوّد الحدث ثانية، وجد الإدراجُ الرقم ولم يحدث شيء آخر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/payments.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> applyEvent(
+  event: Event,
+): Promise&lt;<span class="s">&quot;applied&quot;</span> | <span class="s">&quot;duplicate&quot;</span> | <span class="s">&quot;ignored&quot;</span>&gt; {
+  <span class="k">const</span> client = <span class="k">await</span> pool.connect();
+  <span class="k">try</span> {
+    <span class="c line-bidi">// الكل أو لا شيء: الدفعة والحجز والبريد المطلوب إرساله</span>
+    <span class="k">await</span> client.query(<span class="s">&quot;BEGIN&quot;</span>);
+    <span class="c line-bidi">// المزوّدون يسلّمون مرة على الأقل: رقم الحدث يجعل التسليم الثاني بلا أثر</span>
+    <span class="k">const</span> fresh = <span class="k">await</span> client.query(
+      <span class="s">&quot;INSERT INTO webhook_events (id) VALUES ($1) ON CONFLICT DO NOTHING&quot;</span>,
+      [event.id],
+    );
+    <span class="k">if</span> (fresh.rowCount === <span class="n">0</span>) {
+      <span class="k">await</span> client.query(<span class="s">&quot;ROLLBACK&quot;</span>);
+      <span class="k">return</span> <span class="s">&quot;duplicate&quot;</span>;
+    }
+    <span class="k">if</span> (event.<span class="k">type</span> !== <span class="s">&quot;checkout.paid&quot;</span>) {
+      <span class="k">await</span> client.query(<span class="s">&quot;COMMIT&quot;</span>);
+      <span class="k">return</span> <span class="s">&quot;ignored&quot;</span>;
+    }
+    <span class="k">const</span> { rows } = <span class="k">await</span> client.query&lt;{
+      booking_id: number;
+      amount: number;
+      email: string;
+    }&gt;(
+      <span class="s">`UPDATE payments p SET status = &#x27;paid&#x27;
+         FROM bookings b
+        WHERE p.checkout_id = $1 AND p.status = &#x27;pending&#x27; AND b.id = p.booking_id
+        RETURNING p.booking_id, p.amount, b.email`</span>,
+      [event.data.checkout_id],
+    );
+    <span class="k">const</span> paid = rows[<span class="n">0</span>];
+    <span class="k">if</span> (paid) {
+      <span class="k">await</span> client.query(<span class="s">&quot;UPDATE bookings SET status = &#x27;confirmed&#x27; WHERE id = $1&quot;</span>, [
+        paid.booking_id,
+      ]);
+      <span class="c line-bidi">// البريد: صف في هذه المعاملة، يرسله المرسِل بعد الاعتماد</span>
+      <span class="k">await</span> client.query(
+        <span class="s">&quot;INSERT INTO outbox (recipient, subject, body) VALUES ($1, $2, $3)&quot;</span>,
+        [
+          paid.email,
+          <span class="s">&quot;وصل عربونك&quot;</span>,
+          <span class="s">`تم الحجز: 1 ديسمبر، 10:00. العربون المدفوع: {amount} جنيهاً.`</span>.replace(
+            <span class="s">&quot;{amount}&quot;</span>,
+            String(paid.amount / <span class="n">100</span>),
+          ),
+        ],
+      );
+    }
+    <span class="k">await</span> client.query(<span class="s">&quot;COMMIT&quot;</span>);
+    <span class="k">return</span> <span class="s">&quot;applied&quot;</span>;
+  } <span class="k">catch</span> (error) {
+    <span class="k">await</span> client.query(<span class="s">&quot;ROLLBACK&quot;</span>);
+    <span class="k">throw</span> error;
+  } <span class="k">finally</span> {
+    client.release();
+  }
+}</pre></div>
+
+<p>وهذا المسار كله، من طلب العربون إلى webhook مزوَّر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الزبونة تطلب دفع عربون 50 جنيهاً</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:3000/bookings/1/deposit | jq -c</span>
+{&quot;checkout_url&quot;:&quot;http://localhost:4000/pay/cs_04c58a112ff5&quot;}
+<span class="c line-bidi"># تدفع في صفحة المزوّد</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:4000/pay/cs_04c58a112ff5 | jq -c</span>
+{&quot;status&quot;:200,&quot;answer&quot;:{&quot;result&quot;:&quot;applied&quot;}}
+<span class="c line-bidi"># الدفعة والحجز</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT p.id, p.amount, p.status AS payment, b.status AS booking FROM payments p JOIN bookings b ON b.id = p.booking_id&#x27;</span>
+ id | amount | payment |  booking  
+----+--------+---------+-----------
+  1 |   5000 | paid    | confirmed
+(1 row)
+<span class="c line-bidi"># المزوّد يسلّم الحدث نفسه ثانية</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:4000/pay/cs_04c58a112ff5/redeliver | jq -c</span>
+{&quot;status&quot;:200,&quot;answer&quot;:{&quot;result&quot;:&quot;duplicate&quot;}}
+<span class="c line-bidi"># أحدهم يزوّر webhook</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/webhooks/payments -H &#x27;content-type: application/json&#x27; -H &#x27;bit-signature: t=1795190000,v1=00ff&#x27; -d &#x27;{&quot;id&quot;:&quot;evt_x&quot;,&quot;type&quot;:&quot;checkout.paid&quot;,&quot;data&quot;:{&quot;checkout_id&quot;:&quot;cs_x&quot;}}&#x27; | jq -c</span>
+{&quot;status&quot;:400,&quot;title&quot;:&quot;توقيع غير صالح&quot;}</pre></div>
+
+<p>التسليم الثاني يجيب 200 أيضاً، مع <code>duplicate</code>. وهذا مهم: لو أجاب بخطأ، لظل المزوّد يعيد المحاولة أياماً. والطلب المزوَّر، بلا السر، يُرفض قبل أن يُحلَّل أي JSON أصلاً.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يجب ألا تُعلَّم الدفعة مدفوعة حين يعود الزبون من صفحة الدفع؟</li><li>لماذا يقرأ مسار الـ webhook الجسم نصاً بدل أن يدع الإطار يحلّل JSON؟</li><li>الحدث المكرر يجيب 200 لا 409. لماذا؟</li></ol></aside>
+
+<h2><span class="sec">5.4</span> <span>بريد يصل</span></h2>
+
+<p>لم يُرسل بريد التأكيد داخل الـ webhook: كتبه <code>applyEvent</code> في جدول <code>outbox</code>، في المعاملة نفسها مع الدفعة. فإن تراجعت المعاملة، فلا بريد؛ وإن اعتُمدت، فالبريد هناك ينتظر. وهذا الصندوق الصادر من الكتاب الثالث، ويعطي بالضبط ما يتوقعه الزبائن: بريداً لكل حجز مؤكد، ولا شيء لما لم يحدث. ومرسِل منفصل يرسل ما في الصندوق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/mailer.ts</div><pre class="code"><span class="k">const</span> transport = nodemailer.createTransport(config.smtpUrl);
+
+<span class="c line-bidi">// المرسِل: أرسل ما في الصندوق الصادر، وعلّمه مُرسلاً</span>
+<span class="k">const</span> { rows } = <span class="k">await</span> pool.query&lt;{
+  id: number;
+  recipient: string;
+  subject: string;
+  body: string;
+}&gt;(
+  <span class="s">`SELECT id, recipient, subject, body FROM outbox
+    WHERE sent_at IS NULL ORDER BY id LIMIT 50`</span>,
+);
+<span class="k">for</span> (<span class="k">const</span> mail <span class="k">of</span> rows) {
+  <span class="k">await</span> transport.sendMail({
+    <span class="k">from</span>: <span class="s">&quot;Bit Booking &lt;bookings@bitbooking.example&gt;&quot;</span>,
+    to: mail.recipient,
+    subject: mail.subject,
+    text: mail.body,
+    headers: { <span class="s">&quot;X-Outbox-Id&quot;</span>: String(mail.id) },
+  });
+  <span class="k">await</span> pool.query(<span class="s">&quot;UPDATE outbox SET sent_at = now() WHERE id = $1&quot;</span>, [mail.id]);
+  console.log(<span class="s">`sent ${mail.id} to ${mail.recipient}`</span>);
+}
+<span class="k">await</span> pool.end();</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># المرسِل يرسل الصندوق الصادر؛ وصلت الرسالة إلى ملتقط البريد</span>
+<span class="c">$ </span><span class="k">npm run --silent mailer</span>
+sent 1 to sara@example.com
+<span class="c">$ </span><span class="k">curl -s localhost:8025/api/v1/messages | jq -c &#x27;.messages[] | {To: .To[0].Address, Subject}&#x27;</span>
+{&quot;To&quot;:&quot;sara@example.com&quot;,&quot;Subject&quot;:&quot;وصل عربونك&quot;}</pre></div>
+
+<p>في التطوير يذهب SMTP إلى Mailpit؛ وفي الإنتاج إلى خدمة بريد، بتغيير <code>SMTP_URL</code>. والإرسال النصف السهل. أما الوصول إلى صندوق الوارد لا إلى الرسائل المزعجة فيعتمد على النطاق المرسِل: انشر <strong>SPF</strong> (أي الخوادم يجوز لها الإرسال باسمك)، ووقّع بـ <strong>DKIM</strong>، واضبط سياسة <strong>DMARC</strong>، وكلها سجلات DNS تعطيك إياها خدمة البريد. وأرسل البريد المعاملاتي (التأكيدات والتذكيرات) من عنوان مختلف، بل من خدمة مختلفة، عن البريد التسويقي، كي لا توقف شكوى من نشرة إخبارية تأكيداتِ الحجز. وعالج الارتداد: العنوان الذي يرتد يُعلَّم، ولا يُعاد إليه إلى الأبد.</p>
+
+<h2><span class="sec">5.5</span> <span>ملفات لا تمر بخادمك أبداً</span></h2>
+
+<p>يرفع أصحاب العمل شعار عملهم. وإرسال الملف عبر خادم التطبيق سيشغل عاملاً مع كل رفع بطيء، ويجعل ذاكرة الخادم هي الحد. بدلاً من ذلك يوقّع الخادم رابطاً قصير العمر، ويرفع المتصفح مباشرة إلى المخزن:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/files.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> logoUploadUrl(businessId: number, <span class="k">type</span>: Type, size: number) {
+  <span class="k">if</span> (size &gt; MAX) <span class="k">return</span> { error: <span class="s">&quot;too-big&quot;</span> as <span class="k">const</span> };
+  <span class="c line-bidi">// الخادم يختار المفتاح: لا يستطيع العميل أن يكتب في أي مكان آخر</span>
+  <span class="k">const</span> key = <span class="s">`logos/${businessId}/${randomUUID()}.${TYPES[type]}`</span>;
+  <span class="k">const</span> command = <span class="k">new</span> PutObjectCommand({
+    Bucket: config.s3.bucket,
+    Key: key,
+    ContentType: <span class="k">type</span>,
+  });
+  <span class="k">const</span> url = <span class="k">await</span> getSignedUrl(s3, command, { expiresIn: <span class="n">300</span> });
+  <span class="k">return</span> { key, url };
+}</pre></div>
+
+<p>الخادم يختار المفتاح، فلا يستطيع العميل أن يكتب إلا في ذلك المكان الواحد، وينتهي الرابط بعد خمس دقائق. لكن الرابط الموقَّع لـ «PNG صغير» لا يجعل المرفوع PNG صغيراً: بحسب خدمة التخزين، قد لا يُفرض الحجم ولا حتى النوع. لذلك يفحص الخادم ما خُزّن فعلاً قبل أن يستعمله، ويحذف كل ما لم يكن ليقبله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/files.ts</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> acceptLogo(businessId: number, key: string) {
+  <span class="k">if</span> (!key.startsWith(<span class="s">`logos/${businessId}/`</span>)) <span class="k">return</span> <span class="s">&quot;not-found&quot;</span>;
+  <span class="k">const</span> head = <span class="k">await</span> s3
+    .send(<span class="k">new</span> HeadObjectCommand({ Bucket: config.s3.bucket, Key: key }))
+    .<span class="k">catch</span>(() =&gt; <span class="k">null</span>);
+  <span class="k">if</span> (!head) <span class="k">return</span> <span class="s">&quot;not-found&quot;</span>;
+  <span class="k">if</span> ((head.ContentLength ?? <span class="n">0</span>) &gt; MAX || !isType(head.ContentType ?? <span class="s">&quot;&quot;</span>)) {
+    <span class="k">await</span> s3.send(<span class="k">new</span> DeleteObjectCommand({ Bucket: config.s3.bucket, Key: key }));
+    <span class="k">return</span> (head.ContentLength ?? <span class="n">0</span>) &gt; MAX ? <span class="s">&quot;too-big&quot;</span> : <span class="s">&quot;bad-type&quot;</span>;
+  }
+  <span class="k">await</span> pool.query(<span class="s">&quot;UPDATE businesses SET logo_key = $1 WHERE id = $2&quot;</span>, [
+    key,
+    businessId,
+  ]);
+  <span class="k">return</span> <span class="s">&quot;ok&quot;</span>;
+}</pre></div>
+
+<p>وهذا رفع جيد، ثم رفعان سيئان:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># صاحبة العمل ترفع شعاراً</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;type&quot;:&quot;image/png&quot;,&quot;size&quot;:2048}&#x27; | tee .upload | jq -c &#x27;{key, url: (.url[:60] + &quot;…&quot;)}&#x27;</span>
+{&quot;key&quot;:&quot;logos/1/306d60df-566a-4719-8fed-040c1773ad48.png&quot;,&quot;url&quot;:&quot;http://localhost:8333/bit-booking/logos/1/306d60df-566a-4719…&quot;}
+<span class="c line-bidi"># المتصفح يرسل الملف مباشرة إلى المخزن</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X PUT -H &#x27;content-type: image/png&#x27; --upload-file logo.png &quot;$URL&quot;</span>
+500
+<span class="c line-bidi"># الخادم يفحص ما خُزّن</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo/confirm -H &#x27;content-type: application/json&#x27; -d &quot;{\&quot;key\&quot;:\&quot;$KEY\&quot;}&quot; | jq -c</span>
+{&quot;status&quot;:404,&quot;title&quot;:&quot;غير موجود&quot;}
+<span class="c line-bidi"># أحدهم يرفع 3 MB برابط موقَّع لشعار</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo -H &#x27;content-type: application/json&#x27; -d &#x27;{&quot;type&quot;:&quot;image/png&quot;,&quot;size&quot;:2048}&#x27; &gt; .upload</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X PUT -H &#x27;content-type: image/png&#x27; --upload-file big.png &quot;$URL&quot;</span>
+500
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo/confirm -H &#x27;content-type: application/json&#x27; -d &quot;{\&quot;key\&quot;:\&quot;$KEY\&quot;}&quot; | jq -c</span>
+{&quot;status&quot;:404,&quot;title&quot;:&quot;غير موجود&quot;}
+<span class="c line-bidi"># نوع ملف غير الذي وُقّع</span>
+<span class="c">$ </span><span class="k">curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -X PUT -H &#x27;content-type: text/html&#x27; --upload-file logo.png &quot;$URL&quot;</span>
+500
+<span class="c">$ </span><span class="k">curl -s localhost:3000/businesses/1/logo/confirm -H &#x27;content-type: application/json&#x27; -d &quot;{\&quot;key\&quot;:\&quot;$KEY\&quot;}&quot; | jq -c</span>
+{&quot;status&quot;:404,&quot;title&quot;:&quot;غير موجود&quot;}
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT id, logo_key FROM businesses&#x27;</span>
+ id | logo_key 
+----+----------
+  1 | 
+(1 row)</pre></div>
+
+<p>قبل المخزن الرفعين السيئين كليهما؛ ورفضهما الفحص بعد الرفع، وحذف الكائنين، وبقي للعمل شعاره الأول. وخطوتان أخريان مكانهما المنتج الحقيقي: قدّم الملفات المرفوعة من نطاق منفصل (أو من حاوية خاصة بروابط قراءة موقَّعة)، كي لا يعمل ملف HTML مرفوع أبداً كأنه موقعك، وللملفات التي يحمّلها آخرون، افحصها، أو أعد ترميز الصور، قبل عرضها.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة محترف: صفحة لكل تكامل</p><p>لكل خدمة خارجية، احفظ صفحة واحدة في المستودع: فيمَ نستعملها، وأين تعيش مفاتيحها ومن يستطيع تدويرها، وبيئتها التجريبية وبطاقات الاختبار، وصفحة حالتها، وماذا يفعل منتجنا حين تتعطل (العربون مطفأ والحجز ممكن؟ والبريد في الطابور؟)، وكيف يُعاد webhook فائت. وأول حادثة في الثانية فجراً هي حين تردّ هذه الصفحة ثمنها.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>التعليم مدفوعاً عند العودة</td><td>حجوزات غير مدفوعة تتأكد بكتابة عنوان</td><td>أكّد فقط من webhook موثَّق</td></tr>
+<tr><td>webhooks بلا فحص توقيع</td><td>أي أحد يؤكد أي دفعة</td><td>HMAC على الجسم الخام، وطابع زمني حديث</td></tr>
+<tr><td>التحقق من جسم أُعيد تسلسله</td><td>التوقيعات لا تطابق أبداً، فتُطفأ الفحوص «مؤقتاً»</td><td>اقرأ الجسم نصاً، وحلّل بعد التحقق</td></tr>
+<tr><td>معالجة كل تسليم</td><td>تأكيدات مزدوجة، ورسائل مزدوجة</td><td>سجّل رقم الحدث، في المعاملة نفسها</td></tr>
+<tr><td>نداء المزوّد داخل معاملة</td><td>أقفال ممسوكة أثناء نداءات الشبكة</td><td>عمل قاعدة البيانات والنداءات في خطوات منفصلة</td></tr>
+<tr><td>إرسال البريد من الطلب</td><td>يضيع عند الفشل، أو يُرسل لعمل تراجع</td><td>صف في الصندوق الصادر، يُرسل بعد الاعتماد</td></tr>
+<tr><td>الرفع عبر خادم التطبيق</td><td>عمال وذاكرة يشغلها عملاء بطيئون</td><td>روابط موقَّعة مباشرة إلى المخزن</td></tr>
+<tr><td>الثقة بما سمح به الرابط الموقَّع</td><td>ملفات ضخمة أو خاطئة تُقبل</td><td>افحص الكائن المخزَّن قبل استعماله</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الخدمات الخارجية <strong>تبطؤ وتتعطل وتكرر</strong>: أبقِها خارج المعاملات، واجعل المعالِجات <strong>بلا أثر عند التكرار</strong>، و<strong>تحقق</strong> من كل ما ترسله.</li>
+<li>خذ المدفوعات عبر <strong>صفحة دفع مستضافة</strong>؛ فلا تلمس بيانات البطاقات أنظمتك أبداً.</li>
+<li>لا تؤكد الدفعة إلا من <strong>webhook</strong> فحصت <strong>توقيع HMAC</strong> له على <strong>الجسم الخام</strong>، بطابع زمني حديث.</li>
+<li>طبّق كل حدث <strong>مرة واحدة</strong>: رقمه وتغيير الحالة والبريد في <strong>معاملة واحدة</strong>؛ وأجب 200 عن المكررات.</li>
+<li>أرسل البريد عبر <strong>صندوق صادر</strong>؛ واجعله يصل بـ <strong>SPF وDKIM وDMARC</strong>، وافصل البريد المعاملاتي عن التسويقي.</li>
+<li>ارفع الملفات <strong>بروابط موقَّعة</strong> يختار الخادم مفاتيحها، ثم <strong>افحص ما خُزّن</strong> قبل استعماله.</li>
+<li>طوّر على <strong>بدائل تتكلم البروتوكولات الحقيقية</strong>، فيكون الانتقال إلى الخدمة الحقيقية إعدادات.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن العودة لا تثبت شيئاً. يحملها متصفح الزبون، فيمكن كتابتها باليد أو إعادتها، ويمكن أيضاً ألا تحدث أبداً: يغلق الزبون التبويب، أو ينقطع اتصاله، أو يؤكد المزوّد الدفعة بعد دقائق (فحوص البنك). ووحده webhook المزوّد الموقَّع، المرسل من خادم إلى خادم، يقول إن المال وصل. 2. لأن التوقيع يُحسب على البايتات التي أرسلها المزوّد بالضبط. والإطار الذي يحلل JSON ثم الكود الذي يسلسله من جديد قد ينتجان بايتات مختلفة (المسافات، وترتيب المفاتيح، وصيغ الأرقام)، فلا يطابق التوقيع المحسوب طلباً حقيقياً. تحقق من النص الخام أولاً، ثم حلّله. 3. لأن المزوّد يعيد كل تسليم لا يحصل على حالة نجاح. والمكرر ليس خطأ من جهة المزوّد: هو ضمان التسليم مرة واحدة على الأقل وهو يعمل. والإجابة بـ 409 ستجعله يعيد الحدث نفسه مرة بعد مرة؛ أما الإجابة بـ 200 مع «duplicate» فتنهي الإعادات وتسجّل بصدق أن شيئاً لم يتغير.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يوسّع تكاملاً من الثلاثة. استعمل البدائل، واكتب ما الذي سيتغير مع الخدمة الحقيقية.</p>
+
+<div class="project">
+<p class="project-label">المشروع 5.1 · سهل</p>
+<h3>مدفوعات تفشل</h3>
+<p class="project-goal">عالج حدث <code>checkout.failed</code> وجلسة دفع يتركها الزبون.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أنواع الأحداث، وآلات الحالات، والتنظيف المجدول.</p>
+<ol class="steps">
+<li>أضف إلى المزوّد البديل نقطة فشل تسلّم <code>checkout.failed</code>.</li>
+<li>في <code>applyEvent</code>، علّم الدفعة <code>failed</code> وأبقِ الحجز <code>awaiting_deposit</code>.</li>
+<li>اكتب مهمة تلغي الحجوزات التي ما زالت تنتظر العربون بعد 30 دقيقة، فتحرر الموعد.</li>
+<li>ارسم حالات الدفعة والأحداث التي تنقلها بينها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يجب أن يسمّي كل تحديث الحالة التي يتوقعها (<code>WHERE status = 'pending'</code>)، فلا يستطيع حدث متأخر أو مكرر أن يرجع بالدفعة إلى الوراء.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 5.2 · متوسط</p>
+<h3>بريد التذكير</h3>
+<p class="project-goal">أرسل تذكير US-3 قبل كل حجز بـ 24 ساعة، مرة واحدة بالضبط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> العمل المجدول، والصندوق الصادر، والمناطق الزمنية.</p>
+<ol class="steps">
+<li>أضف <code>reminded_at</code> إلى الحجوزات.</li>
+<li>كل خمس دقائق، في جملة واحدة، علّم الحجوزات المؤكدة التي تبدأ بعد 24 ساعة إلى 24 ساعة و5 دقائق ولا <code>reminded_at</code> لها، وأدرج صفوفها في الصندوق الصادر.</li>
+<li>اكتب وقت البريد بالمنطقة الزمنية للعمل، لا للخادم.</li>
+<li>أظهر في Mailpit أن تشغيل المهمة مرتين يرسل بريداً واحداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>WITH … UPDATE … RETURNING</code> يغذي <code>INSERT</code> يعلّم ويضع في الطابور في خطوة ذرية واحدة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 5.3 · تحدٍّ</p>
+<h3>الصور كما ينبغي</h3>
+<p class="project-goal">حوّل الشعارات المقبولة إلى صور آمنة وصغيرة تُقدَّم من عنوانها الخاص.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المعالجة في الخلفية، وفحص المحتوى، وتقديم ملفات المستخدمين بأمان.</p>
+<ol class="steps">
+<li>بعد <code>acceptLogo</code>، ضع في الطابور مهمة تقرأ الصورة، وتفحص أول بايتاتها (لا نوعها المعلن فقط)، وتعيد ترميزها WebP بعرض 256 بكسلاً.</li>
+<li>خزّن الناتج بمفتاح جديد في حاوية عامة، وأبقِ الأصل خاصاً.</li>
+<li>قدّم الشعارات من اسم مضيف منفصل، مع <code>Content-Type</code> و<code>Content-Disposition</code> تضبطهما أنت.</li>
+<li>اختبر بملف HTML أُعيدت تسميته إلى <code>.png</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ملفات PNG تبدأ بالبايتات <code>89 50 4E 47</code>؛ ومكتبة مثل sharp تفحص وتعيد الترميز معاً.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اسرد ثلاثة أشياء يفعلها مسار الدفع ليحمي نفسه من webhook زوّره أحد أو أعاده.</li>
+<li><span class="level">سهل</span> لماذا يختار الخادم مفتاح التخزين للرفع، بدل أن يرسل المتصفح اسم الملف؟</li>
+<li><span class="level medium">متوسط</span> يتعطل المرسِل بعد نجاح <code>sendMail</code> وقبل <code>UPDATE outbox</code>. ماذا يحدث في تشغيله التالي؟ وكيف تجعل الزبون يتلقى بريداً واحداً حتى في هذه الحالة؟</li>
+<li><span class="level medium">متوسط</span> المزوّد معطل ساعة. صِف ما يراه الزبائن في كل خطوة، وغيّر <code>startDeposit</code> كي لا يضيع الحجز.</li>
+<li><span class="level hard">تحدٍّ</span> قد تصل الـ webhooks بغير ترتيبها: <code>checkout.paid</code> بعد <code>checkout.refunded</code> لجلسة الدفع نفسها. صمّم كيف يبقى <code>applyEvent</code> صحيحاً.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>صار «بِت للحجوزات» يعمل من طرفه إلى طرفه. والجزء التالي يرجع خطوة لينظر إليه نظاماً: كيف تتلاءم قطعه، وأين سينكسر أولاً حين يكبر، وكيف تفكر في الأرقام قبل كتابة الكود.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1824,6 +2274,16 @@ export async function GET(request: Request) {
 // lib/owner.ts: SELECT DISTINCT b.email FROM bookings b
 //   JOIN staff st ON st.id = b.staff_id WHERE st.business_id = $1</code></pre>الفحوص: مسجّل الدخول (401)، وصاحب العمل فقط، لأنه يصدّر بيانات شخصية (403 للموظفين)؛ ومحصور في عمل المستخدم داخل الاستعلام؛ وأبعد من الصلاحيات، قواعد البيانات الشخصية: صدّر فقط الزبائن الذين وافقوا على التسويق (عمود يجب أن تضيفه المواصفات أولاً)، وسجّل كل تصدير بمن ومتى، وحدّد معدله. ويجب أن تذكر سياسة الخصوصية التصدير قبل أن يُطلق.</li>
 <li>استبدل <code>users.business_id</code> و<code>role</code> بجدول عضوية: <code>memberships (user_id, business_id, role, PRIMARY KEY (user_id, business_id))</code>. ويجب أن يقول الطلب الآن لأي عمل هو: في تطبيق الويب العمل جزء من العنوان (<code>/b/12/owner</code>)، وفي الواجهة البرمجية جزء من المسار أو ترويسة. ويبحث <code>requireUser(roles, businessId, request)</code> عن الجلسة ثم عن العضوية في ذلك العمل، ويعيد <code>{ user, businessId, role }</code>؛ ولا عضوية تعني 404، والعضوية بالدور الخطأ تعني 403. وتبقى الاستعلامات ترشّح برقم عمل، مأخوذاً الآن من تلك النتيجة لا من صف المستخدم، فتبقى قاعدة «الشرط هو الصلاحية» كما هي.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 5</h2>
+<ol class="exercises">
+<li>(1) يتحقق من توقيع HMAC، المحسوب بسر لا يعرفه إلا المزوّد والمتجر، على البايتات المستلمة بالضبط: فلا يستطيع مزوِّر بلا السر أن ينتجه. (2) يرفض الطوابع الزمنية الأبعد من خمس دقائق عن الآن، فلا يُعاد طلب حقيقي سُجّل سابقاً. (3) يسجّل رقم كل حدث في <code>webhook_events</code> في المعاملة نفسها مع التغيير، فحتى الحدث الحقيقي المعاد خلال الدقائق الخمس لا يُطبَّق إلا مرة. وفوق ذلك، يسمّي كل تحديث الحالة التي يتوقعها (<code>status = 'pending'</code>)، فلا يستطيع أي حدث أن يرجع بالدفعة إلى الوراء.</li>
+<li>لأن الاسم الذي يختاره العميل كتابةٌ حيث يقول العميل. قد يكتب فوق شعار عمل آخر (<code>logos/2/logo.png</code>)، أو يهرب من المجلد بـ <code>../</code>، أو يصطدم بملف موجود، أو يحمل امتداداً مضللاً (<code>logo.png.html</code>). أما المفتاح الذي يختاره الخادم، ببادئة رقم العمل وUUID عشوائي، ففريد ولا يُخمَّن ودائماً داخل مجلد العمل نفسه؛ والرابط الموقَّع صالح لذلك المفتاح وحده.</li>
+<li>يبقى <code>sent_at</code> فارغاً في الصف، فيرسل التشغيل التالي البريد ثانية: التسليم مرة على الأقل، ويتلقى الزبون رسالتين. ولتجعله يتلقى واحدة، أعطِ خدمة البريد مفتاح منع تكرار، وكثير منها يقبله (ورقم الصندوق الصادر هو المفتاح الطبيعي؛ ومرسِلنا يرسله أصلاً في ترويسة <code>X-Outbox-Id</code>)، فتُسقط الخدمة الإرسال الثاني. وبلا هذا الدعم، صغّر النافذة: علّم الصف <code>sending</code> مع وقت قبل الإرسال، ولا تعد إرسال إلا الصفوف التي قدمت محاولتها. ويبقى تكرار نادر ممكناً، ولهذا فـ «مرة على الأقل» هو الوعد الصادق للبريد.</li>
+<li>في خطوة العربون يفشل <code>fetch</code> أو تنتهي مهلته: اليوم يرمي <code>startDeposit</code> استثناء، ويرى الزبون خطأ، ويبقى صف الدفعة المعلّقة بلا جلسة دفع. والأفضل: أعطِ النداء مهلة قصيرة وإعادة محاولة؛ فإن ظل يفشل، أبقِ الحجز <code>awaiting_deposit</code>، وتراجع عن الدفعة أو علّمها <code>failed</code>، واعرض على الزبون «الدفع غير متاح الآن؛ موعدك محجوز 30 دقيقة، أعد المحاولة من الرابط في بريدك»، ويرسل الصندوق الصادر ذلك الرابط. ولا تضيع الـ webhooks أثناء العطل: يعيدها المزوّد حين يعود، والمعالج الذي لا يتأثر بالتكرار يطبّقها مرة.</li>
+<li>لا تثق بترتيب الوصول؛ قرّر بالحالة التي يستطيع الحدث أن ينطبق عليها، وبوقت المزوّد نفسه. يسمّي كل تحديث الحالة التي ينقل منها: <code>paid</code> من <code>pending</code> فقط، و<code>refunded</code> من <code>paid</code> فقط. فإن وصل <code>checkout.refunded</code> أولاً، فلا دفعة مدفوعة لتُسترد: احفظ الحدث (هو في <code>webhook_events</code> أصلاً بحمولته) <em>مؤجَّلاً</em> بدل إسقاطه، وحين يُطبَّق <code>checkout.paid</code>، ابحث عن الأحداث المؤجلة لجلسة الدفع نفسها وطبّقها بترتيب وقت <code>created</code> عند المزوّد. والبديل الأبسط، الذي يوصي به معظم المزوّدين: مع أي حدث، اجلب الحالة الحالية لجلسة الدفع من واجهة المزوّد واضبط الدفعة لتطابقها، فلا يعود ترتيب الـ webhooks مهماً.</li>
 </ol>
 
 </section>
