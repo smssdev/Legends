@@ -1,0 +1,171 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/data/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Data at Scale</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>spread reads over replicas, and handle the lag that comes with them</li>
+<li>route a user’s reads so that they always see their own writes</li>
+<li>put a cache in front of expensive reads, and keep it honest when the data changes</li>
+<li>split a large table into partitions, and let the planner read only what it needs</li>
+<li>remove old data in milliseconds instead of minutes</li>
+<li>know when sharding is worth its cost, and how to choose the key</li>
+</ul>
+</div>
+
+<p class="lead">Chapter {{n-2}} found that Bit Booking’s first real limit is its one database, and listed the ways to push it back. This chapter tries three of them for real. Each one takes load off the primary database, and each one costs some consistency: data that is a little old, in a place you have to keep in step. The skill is not in setting them up, which takes an afternoon, but in knowing exactly what each one may get wrong, and making sure customers never notice.</p>
+
+<aside class="bit" data-mood="think"><p>Every technique in this chapter answers the same question differently: “how old may this data be?” For a list of free slots, a few seconds is fine. For a payment, it is never fine. Ask that question first, for every piece of data, and the right technique usually picks itself.</p></aside>
+
+<h2>{{n}}.1 Read replicas</h2>
+
+<p>A booking site reads far more than it writes: every booking follows dozens of views of free slots. A <dfn>read replica</dfn> is a second PostgreSQL server that receives every change from the primary and applies it, so it can answer reads. Writes still go to the primary, and there can be several replicas for the reads.</p>
+
+<p>The application needs two connection pools, and a rule for which to use:</p>
+
+<pre data-code="db.ts" data-from="export const primary" data-title="db.ts"></pre>
+
+<p>The rule exists because of <dfn>replication lag</dfn>: changes reach the replica a little after they commit on the primary. On a healthy network the lag is milliseconds, but under load, during a large migration, or when a replica is far away, it can be seconds or more. To make the lag visible, the replica in this example is set to apply changes three seconds late. A booking is written, and then read three ways:</p>
+
+<pre data-code="replica.sh" data-title="Terminal"></pre>
+
+<p>The owner, who just made the booking, reads from the primary and finds it. Anyone else reads from the replica, which does not have it yet, and gets it three seconds later. Without the rule, the owner would book, be sent to the list of the day’s bookings, and not see the booking they just made: the most confusing bug a replica can cause. The rule is called <dfn>read your own writes</dfn>: for a short time after a user writes, their own reads go to the primary. This example keeps the time of the last write in memory; across several application copies it goes in a cookie or the session.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: never decide from a replica</p><p>A replica may be stale, so it must never be the source for a decision that writes: “is this slot free?” before inserting a booking, “has this payment been applied?” before applying it. Those checks belong in the primary, inside the transaction that writes, and for bookings the exclusion constraint makes the final decision anyway. Replicas are for showing data, not for deciding with it.</p></aside>
+
+<h2>{{n}}.2 Caches</h2>
+
+<p>A replica copies the whole database; a <dfn>cache</dfn> remembers individual answers. The free slots of one staff member on one day are a good candidate: computed by a query, read many times, changed only by a booking or a cancellation. The usual pattern is <dfn>cache-aside</dfn>: look in the cache, and on a miss ask the database and store the answer with a time limit:</p>
+
+<pre data-code="cache.ts" data-from="export async function freeSlots" data-to="^}" data-title="cache.ts"></pre>
+
+<p>The hard part of caching is not storing answers but knowing when they are wrong. A booking changes the free slots, so the function that makes a booking deletes the cached answer right after the insert. The time limit is a safety net for anything that changes the data without going through this code:</p>
+
+<pre data-code="cache.ts" data-from="export async function book" data-to="^}" data-title="cache.ts"></pre>
+<pre data-code="cache.sh" data-title="Terminal"></pre>
+
+<p>The first read misses and asks PostgreSQL; the next two are answered by Redis in a fraction of a millisecond. After the booking, the cache was cleared, so the next read asks the database again and sees one slot fewer, instead of offering for 30 seconds a time that is gone. The difference per read looks small, a millisecond or two, but it is a query that the database does not run, multiplied by every visitor of every business.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does the owner read from the primary right after making a booking?</li><li>The booking is written, and then the cached slots are deleted. What happens if a reader fills the cache between those two steps?</li><li>Why may the free-slot list come from a cache, while the decision to accept a booking may not?</li></ol></aside>
+
+<p>That second question has an uncomfortable answer: for a moment, an old answer can slip back into the cache, and stay until its time limit. This is why every cached value needs a time limit even when it is deleted on change, and why caches are used only for data whose staleness is harmless. Here the worst case is the “just taken” message of Chapter {{n-5}}, never a double booking, because the booking itself is decided by the database.</p>
+
+<h2>{{n}}.3 Partitions</h2>
+
+<p>Replicas and caches reduce how often the database works; <dfn>partitioning</dfn> reduces how much it must look at. One table of bookings grows forever, and every year makes its indexes deeper and its maintenance slower. PostgreSQL can split one table into many, by a key such as the booking’s month, while the application keeps using one name:</p>
+
+<pre data-code="partitions.sql" data-from="CREATE TABLE" data-to="^END $$;" data-title="partitions.sql"></pre>
+
+<p>With two million bookings spread over 24 monthly partitions, a query for one month reads one partition. The planner sees the date range and skips the other 23, which is called <dfn>partition pruning</dfn>:</p>
+
+<pre data-code="partitions.sh" data-from="^# #1" data-to="Seq Scan" data-title="Terminal"></pre>
+
+<p>The bigger gain is in removing data. The spec says personal data is deleted two years after the last visit. With one table, that is a <code>DELETE</code> of hundreds of thousands of rows, which writes every one of them to the log, leaves dead rows for <code>VACUUM</code> to clean, and competes with the day’s bookings. With partitions, a month of old bookings is one table, and dropping it is almost free:</p>
+
+<pre data-code="partitions.sh" data-from="^# #2" data-title="Terminal"></pre>
+
+<p>Six months of rows took about 200 ms to delete, and the same six months, as partitions, under 10 ms to drop, with nothing left behind to vacuum. On a production table with years of history, the difference is minutes of heavy load against an instant.</p>
+
+<aside class="box tip"><p class="box-title">Tip: choose the partition key from the queries</p><p>Partition by the column that almost every query filters on, and that old data is removed by: time, for bookings and logs. Partitioning by a column that queries rarely use makes every query read every partition, which is slower than one table.</p></aside>
+
+<h2>{{n}}.4 Sharding, and why to wait</h2>
+
+<p>Partitions live in one database server. When one server can no longer take the writes, the data must be split across several servers: <dfn>sharding</dfn>. For Bit Booking the natural key is the business: all of one business’s staff, bookings and customers live on one shard, chosen by its id, and almost every query stays inside one shard.</p>
+
+<p>Sharding is the most powerful of these techniques and the most expensive. Queries across businesses (a report for the whole platform) must visit every shard. Transactions cannot span shards. Moving a large business to another shard is a project. Every tool, migration and backup multiplies by the number of shards. Do it only when the measurements of Chapter {{n-2}} say that one server, made as large as money allows, with replicas and caches, is not enough; for most products that day never comes. If it might, prepare cheaply now: keep the business id on every table, and every query filtered by it, as Chapter {{n-4}} already does for security.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: write down how stale each piece of data may be</p><p>Keep a short table in the design document: each kind of data, where it is read from, and how old it may be. “Free slots: cache, up to 30 seconds. Owner’s bookings: primary for 5 seconds after a write, else replica. Payments: primary, always fresh.” Every new cache or replica read is checked against the table in review, and nobody adds staleness by accident.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Every read from the replica</td><td>Users do not see what they just wrote</td><td>Read your own writes, for a short time</td></tr>
+<tr><td>Decisions made from a replica</td><td>Writes based on stale data</td><td>Decide in the primary, in the writing transaction</td></tr>
+<tr><td>Caching without invalidation</td><td>Old answers until they expire</td><td>Delete on change, and a time limit as well</td></tr>
+<tr><td>Caching without a time limit</td><td>A missed invalidation is stale forever</td><td>Every entry expires</td></tr>
+<tr><td>Caching data that must be exact</td><td>Wrong balances, wrong permissions</td><td>Cache only where staleness is harmless</td></tr>
+<tr><td>Partitioning by a rarely filtered column</td><td>Every query reads every partition</td><td>Partition by the filter and the retention key</td></tr>
+<tr><td>Huge DELETEs for retention</td><td>Hours of load and bloat</td><td>Drop old partitions</td></tr>
+<tr><td>Sharding early</td><td>Every operation becomes harder for years</td><td>Bigger server, replicas and caches first</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Every technique here trades <strong>freshness for capacity</strong>; decide for each piece of data how old it may be.</li>
+<li><strong>Read replicas</strong> take reads off the primary; their <strong>lag</strong> is real, so route a user’s reads to the primary just after they write.</li>
+<li>Never make a <strong>decision</strong> from a replica or a cache; decide in the primary, in the transaction that writes.</li>
+<li><strong>Cache-aside</strong> stores answers with a time limit; <strong>delete on change</strong>, and keep the limit as a safety net.</li>
+<li><strong>Partitions</strong> by time let the planner skip old data and make retention a <strong>DROP</strong> instead of a DELETE.</li>
+<li><strong>Sharding</strong> by business is the last resort; prepare for it cheaply by keeping the business id everywhere.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the replica may not have the booking yet: replication lag is usually milliseconds but can be seconds. The owner would book, look at the day, and not find what they just made. Reading from the primary for a few seconds after their own write guarantees they see it, while everyone else can still use the replica, for whom a few seconds’ delay is invisible. 2. A race: reader A misses the cache, reads the slots from the database just before the booking commits, the booking commits and deletes the cache entry, and then reader A stores its old answer. The cache now offers the taken slot until the entry’s time limit expires. That is why entries always have a time limit, and why only data whose staleness is harmless is cached. 3. Because showing a slot that was just taken costs, at worst, a polite “just taken” message, while accepting a booking on stale data would create a double booking. The list is advice; the booking is a decision, and decisions are made by the exclusion constraint in the primary database, which never reads the cache.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project applies one technique to Bit Booking, measured. Keep a note of how stale each change allows the data to be.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Lag you can see</h3>
+<p class="project-goal">Show replication lag on the owner’s dashboard, and alert when it is too high.</p>
+<p class="project-skills"><strong>You will practise:</strong> replica monitoring, metrics, and thresholds.</p>
+<ol class="steps">
+<li>On the replica, query <code>now() - pg_last_xact_replay_timestamp()</code> every 10 seconds.</li>
+<li>Export it as a metric, and draw it.</li>
+<li>When lag passes 30 seconds, send every read to the primary until it recovers.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> on an idle primary the replay timestamp stops moving and the “lag” grows although nothing is behind; compare <code>pg_last_wal_receive_lsn()</code> and <code>pg_last_wal_replay_lsn()</code> as well.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A cache that survives a stampede</h3>
+<p class="project-goal">Stop a popular cache entry from sending hundreds of identical queries when it expires.</p>
+<p class="project-skills"><strong>You will practise:</strong> cache stampedes, locks in Redis, and load testing.</p>
+<ol class="steps">
+<li>With the load script of Chapter {{n-2}}, send 50 concurrent reads of the same slots just as the entry expires, and count the database queries.</li>
+<li>Add a short lock (<code>SET key NX PX 2000</code>): only the reader that takes it queries the database; the others wait briefly and read the new entry.</li>
+<li>Measure again, and compare.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> an alternative is to refresh the entry a little before it expires, from one background job; compare the two in a short note.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Retention that runs itself</h3>
+<p class="project-goal">Partition Bit Booking’s bookings by month, and automate both new partitions and the two-year retention.</p>
+<p class="project-skills"><strong>You will practise:</strong> partition maintenance, scheduled jobs, and safe migrations.</p>
+<ol class="steps">
+<li>Write a migration that moves an existing <code>bookings</code> table to a partitioned one without losing rows (create, copy in batches, swap names in a transaction).</li>
+<li>Write a daily job that creates next month’s partition in advance.</li>
+<li>Write a monthly job that drops partitions older than two years, but only after exporting anonymised statistics.</li>
+<li>Explain what happens to the exclusion constraint, and how you keep it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> constraints on partitioned tables must include the partition key, so the no-double-booking rule must be checked per partition; a booking never crosses months, so that is enough.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, choose primary, replica or cache, and say how stale it may be: the public free slots; the owner’s list right after a cancellation; a payment’s status before refunding it; the count of bookings this month on the owner’s dashboard.</li>
+<li><span class="level">Easy</span> Why did deleting six months of rows take much longer than dropping six partitions holding the same rows?</li>
+<li><span class="level">Medium</span> The cache is in Redis, and Redis restarts. What happens to Bit Booking for the next minute? Is that acceptable, and what would make it worse?</li>
+<li><span class="level">Medium</span> A query for “all bookings of staff member 7” runs on the partitioned table. Why is it slower than on one table, and what would you do?</li>
+<li><span class="level">Challenge</span> Bit Booking is sharded by business across four servers. Design how the platform-wide report “bookings per day, last 30 days” is produced, and how a business is moved from one shard to another without downtime.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Three chapters of principles. The next applies them to six systems you know, from a short-link service to a chat app, one design at a time.</p>
+</div>
+</section>
