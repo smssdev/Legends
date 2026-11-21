@@ -1,0 +1,246 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/state/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>الحالة بـ setState وProvider</h1>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تميّز الحالة التي تخص Widget واحداً من الحالة التي يتشاركها التطبيق كله</li>
+<li>ترفع الحالة إلى الأب، وتعيد التغييرات بالدوال المستدعاة</li>
+<li>تنقل الحالة المشتركة إلى صنف نموذج بـ <code>ChangeNotifier</code>، وتختبره دون أي شاشة</li>
+<li>تعيد بناء ما يعتمد على النموذج وحده، بـ <code>ListenableBuilder</code></li>
+<li>تشارك نموذجاً بين كل الشاشات بحزمة <code>provider</code>: <code>watch</code> و<code>read</code> و<code>select</code></li>
+</ul>
+</div>
+
+<p class="lead">يبني الجزء الثالث تطبيقات حقيقية، والتطبيقات الحقيقية تتشارك البيانات بين الشاشات. فالسلة تُملأ في القائمة، وتُعدّ في الشريط، وتُعرض في صفحتها، وتُفرغ عند إتمام الطلب. وحتى الآن حفظ كل Widget حالته الخاصة، وهذا مثالي لمفتاح أو مربع نص، وميؤوس منه لسلة. هذا الفصل ينمّي المقهى خطوة بخطوة، من <code>setState</code> في Widget واحد إلى سلة واحدة تتشاركها كل الشاشات، ويعرض طريقة التفكير خلف كل خطوة، لتستطيع أن تختار بنفسك.</p>
+
+<aside class="bit" data-mood="think"><p>سؤال هذا الفصل ليس «أي مكتبة هي الأفضل؟». إنه «من يحتاج أن يعرف هذه القيمة؟». أجب عنه، فيتبعه المكان الصحيح للحالة.</p></aside>
+
+<h2>{{n}}.1 نوعان من الحالة</h2>
+
+<p><dfn>الحالة</dfn> أي بيانات قد تتغير أثناء عمل التطبيق وتعتمد عليها الشاشة. وهي نوعان:</p>
+
+<table>
+<thead><tr><th></th><th>حالة محلية</th><th>حالة التطبيق</th></tr></thead>
+<tbody>
+<tr><td>من يحتاجها</td><td>Widget واحد</td><td>عدة Widgets، كثيراً ما تكون في شاشات مختلفة</td></tr>
+<tr><td>أمثلة</td><td>التبويب الحالي، وهل كلمة المرور ظاهرة، والنص الذي يُكتب</td><td>السلة، والمستخدم المسجّل، والمفضلة، والإعدادات</td></tr>
+<tr><td>أين تعيش</td><td>في الـ <code>State</code> الخاص بالـ Widget، وتتغير بـ <code>setState</code></td><td>في صنف نموذج فوق الـ Widgets التي تستخدمها</td></tr>
+</tbody>
+</table>
+
+<p>كل ما بنيته في الجزء الثاني استخدم الحالة المحلية، وبحق. فلا تحوّل الحالة المحلية إلى حالة تطبيق «احتياطاً»: القيمة التي لا يحتاجها إلا Widget واحد أبسط وأأمن داخل ذلك الـ Widget.</p>
+
+<h2>{{n}}.2 رفع الحالة</h2>
+
+<p>الخطوة الأولى لا تحتاج أداة جديدة. حين يحتاج Widgetان القيمة نفسها، انقلها إلى أقرب أب مشترك لهما، فيمرّر القيمة إلى أحدهما وطريقة تغييرها إلى الآخر:</p>
+
+<pre data-code="lib/lift.dart" data-from="^class _CafePageState" data-title="lib/lift.dart (جزء)"></pre>
+
+<figure data-img="shots/lift.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: بعد إضافة كوبي لاتيه وقطعة كيك. القائمة والشريط Widgetان منفصلان يتشاركان سلة واحدة.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 520 160" role="img" aria-label="CafePage يحمل السلة؛ ويمرر onAdd إلى DrinkList والسلة إلى BasketBar؛ وDrinkList تستدعي onAdd صعوداً">
+<g font-family="JetBrains Mono" font-size="13" text-anchor="middle">
+<rect x="185" y="15" width="150" height="40" rx="8" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/><text x="260" y="33" fill="#312e81">CafePage</text><text x="260" y="48" fill="#312e81" font-size="11">basket</text>
+<rect x="330" y="110" width="150" height="36" rx="8" fill="#fff" stroke="#4338ca" stroke-width="2"/><text x="405" y="133" fill="#111">DrinkList</text>
+<rect x="40" y="110" width="150" height="36" rx="8" fill="#fff" stroke="#4338ca" stroke-width="2"/><text x="115" y="133" fill="#111">BasketBar</text>
+<g stroke="#111" stroke-width="1.8" fill="none"><path d="M305,55 L390,108"/><path d="M215,55 L130,108"/></g>
+<path d="M420,108 Q400,70 330,50" stroke="#0f766e" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+<g font-size="11" font-family="Cairo"><text x="320" y="90" fill="#111">onAdd ↓</text><text x="450" y="78" fill="#0f766e">تستدعي onAdd ↑</text><text x="135" y="82" fill="#111">basket ↓</text></g>
+</g>
+</svg>
+<figcaption>الشكل {{n}}.2: البيانات تنزل، والأحداث تصعد. ولا يغيّر السلة إلا الأب.</figcaption>
+</figure>
+
+<p><code>DrinkList</code> لا تعرف ما السلة: إنها تتلقى <code>onAdd</code>، دالة، وتستدعيها. و<code>BasketBar</code> يتلقى القائمة ويعرضها. ولا يملك السلة إلا <code>CafePage</code>، ولا يستدعي <code>setState</code> غيره، فهناك مكان واحد بالضبط يمكن أن تتغير فيه السلة. وهذا النمط، <em>البيانات تنزل والأحداث تصعد</em>، أساس كل ما في هذا الفصل.</p>
+
+<h2>{{n}}.3 نموذج للسلة</h2>
+
+<p>الرفع يعمل جيداً بين الجيران. لكنه يصير مؤلماً حين يجب أن تمر القيمة المشتركة عبر طبقات كثيرة لا تستخدمها، أو عبر الشاشات. والخطوة التالية تُخرج السلة من الـ Widgets كلها، إلى صنف خاص بها: <dfn>نموذج</dfn> (model).</p>
+
+<pre data-code="lib/basket.dart" data-title="lib/basket.dart"></pre>
+
+<p><code>Basket</code> ترث <code>ChangeNotifier</code>، صنفاً صغيراً من أساسيات Flutter يحفظ قائمة <dfn>مستمعين</dfn> (listeners)، أي دوال تُستدعى حين يتغير شيء، ويستدعيها كلها حين تستدعي <code>notifyListeners()</code>. والنموذج يحفظ البيانات خاصة، ويقدّم نوافذ للقراءة فقط (<code>counts</code> تُرجع نسخة لا تُعدَّل، فلا تستطيع أي شاشة أن تغيّر السلة من خلفها)، وله دالة لكل تغيير، تنتهي كل منها بـ <code>notifyListeners()</code>. فقواعد السلة تعيش الآن في صنف واحد، لا Widget فيه، أي أنه يُختبر في أجزاء من الثانية:</p>
+
+<pre data-code="test/basket_test.dart" data-title="test/basket_test.dart"></pre>
+<pre data-term="basket-test.sh"></pre>
+
+<p><code>test</code> عادية، لا <code>testWidgets</code>: لا تُبنى أي شاشة على الإطلاق. والاختبار يعدّ الإبلاغات أيضاً، أربعة لأربعة تغييرات، لأن التغيير الذي ينسى الإبلاغ أشهر خطأ في النماذج.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>احفظ قواعدك في النماذج، واجعل نماذجك خالية من الـ Widgets: لا <code>BuildContext</code>، ولا ألوان، ولا تنقل. فنموذج كهذا يُختبر بشمول وسرعة، ويُعاد استخدامه في شاشة أخرى، ويبقى حين يتغير تصميم الشاشات تماماً.</p></aside>
+
+<h2>{{n}}.4 الاستماع بلا حزم: ListenableBuilder</h2>
+
+<p>يستطيع Flutter وحده أن يستمع إلى نموذج. و<code>ListenableBuilder</code> يستدعي دالته <code>builder</code> من جديد كلما أبلغ النموذج:</p>
+
+<pre data-code="lib/listenable.dart" data-from="bottomNavigationBar" data-to="^      )," data-title="lib/listenable.dart (جزء)"></pre>
+
+<figure data-img="shots/listenable.png" data-frame="phone">
+<figcaption>الشكل {{n}}.3: بعد إضافة شاي بالنعناع وعصير برتقال. ولم يُعد بناء إلا الشريط.</figcaption>
+</figure>
+
+<p>لا يوجد <code>setState</code> في أي مكان من هذا التطبيق، والصفحة <code>StatelessWidget</code>. فالأزرار تستدعي <code>basket.add</code>؛ والسلة تُبلغ؛ ولا يُعاد بناء إلا الـ <code>ListenableBuilder</code> حول الشريط. وهذا تحسّن كبير: فالحالة خارج الـ Widgets، ولا يُعاد بناء إلا ما يعتمد عليها. أما ما يبقى ثقيلاً فهو إيصال السلة إلى كل Widget يحتاجها: هنا تُمرَّر عبر المُنشئ، وهذا يعني تمريرها عبر كل صفحة في تطبيق كبير.</p>
+
+<h2>{{n}}.5 Provider</h2>
+
+<p>حزمة <code>provider</code> تحل هذه المشكلة الأخيرة: ضع النموذج مرة واحدة فوق التطبيق كله، ودع أي Widget تحته يطلبه بنوعه. وهي الطريقة التي تعلّمها وثائق Flutter نفسها أولاً. أضفها:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<pre data-code="lib/provided.dart" data-from="^void main" data-to="^}#1" data-title="lib/provided.dart (تقديم السلة)"></pre>
+<pre data-code="lib/provided.dart" data-from="^class BasketButton" data-to="^}#1" data-title="lib/provided.dart (الزر في الشريط)"></pre>
+<pre data-code="lib/provided.dart" data-from="^class BasketPage" data-to="^}#1" data-title="lib/provided.dart (صفحة السلة)"></pre>
+
+<div class="phones">
+<figure data-img="shots/provided-menu.png" data-frame="phone">
+<figcaption>القائمة، بعد ثلاث ضغطات</figcaption>
+</figure>
+<figure data-img="shots/provided-basket.png" data-frame="phone">
+<figcaption>صفحة السلة، شاشة أخرى</figcaption>
+</figure>
+</div>
+
+<p>ثلاث طرق للحصول على النموذج، لثلاث حاجات مختلفة:</p>
+<table>
+<thead><tr><th>الاستدعاء</th><th>ما يفعله</th><th>استخدمه</th></tr></thead>
+<tbody>
+<tr><td><code>context.watch&lt;Basket&gt;()</code></td><td>يحصل على السلة، ويعيد بناء هذا الـ Widget كلما أبلغت</td><td>في <code>build</code>، حين تعرض الشاشة النموذج</td></tr>
+<tr><td><code>context.read&lt;Basket&gt;()</code></td><td>يحصل على السلة، دون استماع</td><td>في الدوال المستدعاة مثل <code>onPressed</code>، لاستدعاء دالة</td></tr>
+<tr><td><code>context.select&lt;Basket, int&gt;((b) =&gt; b.count)</code></td><td>يحصل على قيمة واحدة، ويعيد البناء فقط حين تتغير تلك القيمة</td><td>في <code>build</code>، حين يحتاج Widget جزءاً صغيراً واحداً</td></tr>
+</tbody>
+</table>
+
+<p>أزرار الإضافة في القائمة تستخدم <code>read</code>: فهي تغيّر السلة لكنها لا تعرضها، فلا سبب لإعادة بنائها. والشارة تستخدم <code>select</code>: يُعاد بناؤها حين يتغير العدد، لا حين يتغير أي شيء آخر في السلة. وصفحة السلة تستخدم <code>watch</code>: فهي تعرض كل شيء. والـ Widget <code>Badge</code> يرسم العدد على أيقونة الحقيبة، ويختفي حين يكون صفراً.</p>
+
+<p>واختبار الـ Widget يقدّم سلة تماماً كما تفعل <code>main</code>، ويمشي عبر الشاشتين:</p>
+
+<pre data-code="test/provided_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/provided_test.dart (جزء)"></pre>
+<pre data-term="provided-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>استدعاء <code>context.watch</code> داخل <code>onPressed</code> خطأ: فالدالة المستدعاة تعمل مرة واحدة، ولا يمكن أن «يُعاد بناؤها حين يتغير النموذج». واستدعاء <code>context.read</code> في <code>build</code> خطأ صامت: يعرض الـ Widget النموذج مرة ولا يتحدث أبداً. والقاعدة قصيرة: <code>watch</code> و<code>select</code> في <code>build</code>، و<code>read</code> في الدوال المستدعاة.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>النص الذي يُكتب في مربع بحث: حالة محلية أم حالة تطبيق؟</li><li>ماذا يجب أن تفعل كل دالة تغيّر <code>ChangeNotifier</code> في آخرها؟</li><li>أي استدعاء تستخدم في <code>onPressed</code> لتضيف إلى السلة؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.6 اختيار مكان الحالة</h2>
+
+<p>كل طريقة في هذا الفصل صحيحة في مكان ما:</p>
+<ol>
+<li>ابدأ بـ <code>setState</code> في الـ Widget الذي يستخدم القيمة.</li>
+<li>حين يحتاجها جار أيضاً، ارفعها إلى أبيهما، مع دوال مستدعاة.</li>
+<li>حين تحمل قواعد تستحق الاختبار، أو تحتاجها Widgets كثيرة، انقلها إلى نموذج <code>ChangeNotifier</code>.</li>
+<li>حين تحتاجها Widgets في شاشات كثيرة، قدّم النموذج فوق التطبيق.</li>
+</ol>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>لعالم Flutter حزم كثيرة لإدارة الحالة: Provider، وRiverpod (من مؤلف Provider نفسه)، وBLoC، وغيرها. تختلف في أسلوبها، لكن كلاً منها مبني على أفكار هذا الفصل: الحالة خارج الـ Widgets، والتغييرات في مكان واحد، وWidgets يُعاد بناؤها حين يتغير ما تعرضه. تعلّم هذه الأفكار جيداً، فيأخذ منك أي منها عصراً واحداً.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>notifyListeners()</code></td><td>يتغير النموذج، ولا تتغير الشاشة</td><td>أنهِ كل دالة مغيّرة به؛ واختبر عدد الإبلاغات</td></tr>
+<tr><td>كشف قائمة النموذج نفسها</td><td>تغيّرها الشاشات دون إبلاغ</td><td>حقول خاصة، ونوافذ للقراءة، ودوال للتغيير</td></tr>
+<tr><td><code>watch</code> في دالة مستدعاة</td><td>خطأ من Provider</td><td><code>read</code> في الدوال المستدعاة</td></tr>
+<tr><td><code>read</code> في <code>build</code></td><td>لا تتحدث الشاشة أبداً</td><td><code>watch</code> أو <code>select</code> في <code>build</code></td></tr>
+<tr><td>طلب نموذج غير مقدَّم فوق الـ Widget</td><td>«Could not find the correct Provider»</td><td>ضع المقدِّم فوق كل Widget يطلبه، فوق <code>MaterialApp</code> عادة</td></tr>
+<tr><td>جعل كل شيء حالة تطبيق</td><td>كل تغيير يعيد بناء Widgets لا يعنيها</td><td>أبقِ الحالة المحلية محلية</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li><strong>الحالة المحلية</strong> مكانها في الـ <code>State</code> الخاص بالـ Widget؛ و<strong>حالة التطبيق</strong> تعيش في نموذج فوق الـ Widgets التي تتشاركها.</li>
+<li><strong>ارفع الحالة</strong> إلى أقرب أب مشترك: البيانات تنزل، والأحداث تصعد عبر الدوال المستدعاة.</li>
+<li>نموذج <code>ChangeNotifier</code> يحفظ البيانات خاصة، ويقدّم نوافذ للقراءة، ويستدعي <code>notifyListeners()</code> بعد كل تغيير؛ واختبره بـ <code>test</code> عادية.</li>
+<li><code>ListenableBuilder</code> لا يعيد بناء إلا ما يستمع إلى النموذج.</li>
+<li>Provider يضع النموذج فوق التطبيق بـ <code>ChangeNotifierProvider</code>؛ وتستخدم الـ Widgets <code>watch</code> و<code>select</code> في <code>build</code>، و<code>read</code> في الدوال المستدعاة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. حالة محلية: لا يحتاجها إلا مربع البحث ونتائجه، أثناء الكتابة. 2. تستدعي <code>notifyListeners()</code>. 3. <code>context.read&lt;Basket&gt;().add(...)</code>.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">لكل مشروع، اكتب النموذج أولاً، مع اختبار عادي، قبل أي شاشة. فإن صح النموذج، سهلت الشاشات.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>نموذج عدّاد</h3>
+<p class="project-goal">عُدّ الأكواب المقدَّمة اليوم بـ <code>ChangeNotifier</code>، معروضة في صفحة بلا حالة فيها زر يضيف واحداً وآخر يصفّر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نموذج بحقل خاص وgetter، ودوال تُبلغ، و<code>ListenableBuilder</code>.</p>
+<ol class="steps">
+<li>اكتب <code>Counter extends ChangeNotifier</code> بحقل خاص <code>_value</code>، وgetter اسمه <code>value</code>، ودالتي <code>increment</code> و<code>reset</code>، تنتهي كل منهما بـ <code>notifyListeners()</code>.</li>
+<li>اكتب صفحة <em>بلا حالة</em> تتلقى العدّاد عبر مُنشئها.</li>
+<li>لُفّ الرقم وحده بـ <code>ListenableBuilder</code>.</li>
+<li>مرّر الدوال نفسها: <code>onPressed: counter.increment</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>counter.increment</code> بلا أقواس هي الدالة قيمةً (الفصل 2): وهذا بالضبط ما تريده <code>onPressed</code>.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد ثلاث ضغطات):</p>
+<figure data-img="shots/counter.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: ثلاثة أكواب.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>المفضلة في تبويبين</h3>
+<p class="project-goal">اعرض كل المشروبات في تبويب والمفضلة وحدها في آخر، مع قلب على كل مشروب وشارة بعدد المفضلة، وكلها تتشارك نموذجاً واحداً عبر Provider.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نموذج يحمل <code>Set</code>، و<code>ChangeNotifierProvider</code>، و<code>watch</code> و<code>read</code>، وحالة فارغة، واختبار عبر التبويبات.</p>
+<ol class="steps">
+<li>اكتب <code>Favourites</code> بـ <code>Set&lt;String&gt;</code> خاصة، و<code>contains</code>، و<code>names</code> للقراءة فقط، و<code>toggle</code>.</li>
+<li>قدّمه فوق <code>MaterialApp</code>.</li>
+<li>الإطار يحفظ التبويب الحالي بـ <code>setState</code> (حالة محلية)، ويشاهد المفضلة (حالة تطبيق). النوعان جنباً إلى جنب، كل منهما في مكانه.</li>
+<li>القائمة تعرض كل المشروبات، أو المفضلة وحدها، من الكود نفسه؛ وضغط القلب يستدعي <code>context.read&lt;Favourites&gt;().toggle(name)</code>.</li>
+<li>اختبر: أعجب بالشاي بالنعناع، وانتقل إلى التبويب الآخر، وجده هناك، ولا تجد اللاتيه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أعطِ كل قلب تلميحاً باسم المشروب، «أعجبني شاي بالنعناع»: فتجد <code>find.byTooltip</code> الزر بالضبط، ويقول قارئ الشاشة شيئاً مفيداً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد الإعجاب بمشروبين وفتح التبويب الثاني):</p>
+<figure data-img="shots/favourites.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: مشروبان في المفضلة، وشارتهما.</figcaption>
+</figure>
+<pre data-term="projects/favourites-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>إعدادات للتطبيق كله</h3>
+<p class="project-goal">اصنع نموذج إعدادات مقدَّماً فوق <code>MaterialApp</code>، تغيّر مفاتيحه التطبيق كله دفعة واحدة: الوضع الداكن، والنص الأكبر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نموذج بـ setters تُبلغ، و<code>MaterialApp</code> نفسها تشاهد نموذجاً، و<code>MediaQuery.withClampedTextScaling</code>، واختبار خصائص Widget.</p>
+<ol class="steps">
+<li>اكتب <code>Settings</code> بحقلين خاصين <code>_dark</code> و<code>_big</code>، وgetters، و<dfn>setters</dfn> (<code>set dark(bool value)</code>) تحفظ القيمة وتُبلغ: فتُقرأ <code>settings.dark = true</code> كأنها حقل.</li>
+<li>قدّمه، ثم اجعل الـ Widget الذي يبني <code>MaterialApp</code> يشاهده، ويختار <code>themeMode</code> من <code>dark</code>.</li>
+<li>للنص الأكبر، لُفّ الصفحة الرئيسية بـ <code>MediaQuery.withClampedTextScaling</code> بمقياس 1.3 حين يكون <code>big</code> مفعّلاً.</li>
+<li>صفحة الإعدادات تستخدم <code>SwitchListTile</code>ين، بـ <code>watch</code> لقيمتيهما و<code>read</code> في <code>onChanged</code>.</li>
+<li>اختبر: جد <code>MaterialApp</code>، وافحص <code>themeMode</code> فيها، واضغط المفتاح، وانتظر الاستقرار، وافحص من جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>tester.widget&lt;MaterialApp&gt;(finder)</code> تعطيك الـ Widget نفسه، فتفحص أي خاصية فيه، لا ما يُرسم فقط.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد تفعيل المفتاحين):</p>
+<figure data-img="shots/settings.png" data-frame="phone">
+<figcaption>المشروع {{n}}.3: الوضع الداكن والنص الكبير، للتطبيق كله.</figcaption>
+</figure>
+<pre data-term="projects/settings-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> محلية أم حالة تطبيق؟ (أ) هل القائمة المنسدلة مفتوحة. (ب) لغة التطبيق. (ج) موضع عارض الصفحات. (د) الطلبات التي قدّمها الزبون اليوم.</li>
+<li><span class="level">سهل</span> أضف دالة <code>clear()</code> إلى <code>Basket</code>، واختباراً يثبت أنها تفرغ السلة وتُبلغ مرة واحدة.</li>
+<li><span class="level">متوسط</span> في صفحة السلة، تستدعي أزرار الحذف <code>basket.remove</code> على السلة القادمة من <code>watch</code>. هذا يعمل؛ فلماذا تبقى <code>context.read</code> العادة الأفضل هناك؟</li>
+<li><span class="level">متوسط</span> أضف إلى صفحة السلة زر «إفراغ» يطلب التأكيد بنافذة حوار (الفصل 8) قبل استدعاء <code>clear()</code>.</li>
+<li><span class="level">تحدٍّ</span> عُدّ كم مرة يُعاد بناء <code>BasketButton</code> بالطباعة في <code>build</code> الخاصة به، ثم استبدل <code>select</code> بـ <code>watch</code> وقارن، وأنت تضيف المشروب نفسه وتحذفه. اشرح الفرق.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>قائمة المقهى ما زالت مكتوبة في الكود. وفي الفصل القادم تأتي من خادم على الإنترنت: طلبات HTTP بحزمة <code>http</code>، وتحويل JSON إلى كائنات Dart، وشاشات التحميل والخطأ، ونموذج يجلب بياناته بنفسه.</p>
+</div>
+</section>

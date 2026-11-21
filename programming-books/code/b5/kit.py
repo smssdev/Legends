@@ -187,7 +187,8 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
             target = name if name.startswith(("lib/", "test/")) else "lib/" + name.replace("/", "_")
             placed[name] = target
             write(project, {target: src})
-        apps = [t for n, t in placed.items() if t.startswith("lib/")]
+        # Apps are the files with a main(); other files in lib/ are code they share (a model, say).
+        apps = [t for n, t in placed.items() if t.startswith("lib/") and "void main(" in (project / t).read_text()]
         imports = "\n".join(f"import '{Path(t).name}' as {Path(t).stem};" for t in apps)
         cases = "\n".join(f"    '{Path(t).stem}' => {Path(t).stem}.main," for t in apps)
         write(project, {"lib/gallery.dart": f"""// Generated for the book's screenshots: runs the app named in ?app=.

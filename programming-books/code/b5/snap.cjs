@@ -70,8 +70,11 @@ async function serve() {
         await sleep(500);
         continue;
       }
-      // A label starts with the name: a list tile's label is its title, a line break, then its subtitle.
-      const starts = new RegExp('^' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      // A line of the label starts with the name: a list tile's label is its title, a line break, then its
+      // subtitle; a tab with a badge starts with the badge's number.
+      const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // A tab's label may carry its badge's number before or after the name.
+      const starts = new RegExp((kind === 'tab' ? '' : '(^|\\n)') + escaped);
       const target = page.getByRole(kind === 'text' ? 'button' : kind, { name: starts });
       await target.first().click();
     }
