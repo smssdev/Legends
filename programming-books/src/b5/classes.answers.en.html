@@ -1,0 +1,16 @@
+<ol class="exercises">
+<li><code>a ?? b</code> gives <code>Dart</code>, because <code>a</code> is <code>null</code>. <code>b?.length</code> is <code>4</code>. <code>a?.length</code> is <code>null</code>, so <code>?? -1</code> gives <code>-1</code>. The first <code>??=</code> sets <code>a</code> to <code>Flutter</code>; the second does nothing, because <code>a</code> is no longer <code>null</code>:
+<pre data-code="answers/null_predict.dart" data-title="answers/null_predict.dart"></pre>
+<pre data-term="answers/null_predict.sh"></pre></li>
+<li>(a) A list: order matters, and a song may appear twice. (b) A set: each id once, and the question is always “has this one been read?”. (c) A map from code to price. (d) A list: scores repeat, and a set would lose them.</li>
+<li>Each parameter of <code>copyWith</code> is nullable and named; <code>??</code> keeps the old value of every field that was not given. The original item never changes:
+<pre data-code="answers/copy_with.dart" data-title="answers/copy_with.dart"></pre>
+<pre data-term="answers/copy_with.sh"></pre></li>
+<li><code>putIfAbsent</code> returns the list for the key, creating an empty one the first time, so one line both creates and adds:
+<pre data-code="answers/group.dart" data-title="answers/group.dart"></pre>
+<pre data-term="answers/group.sh"></pre></li>
+<li>The label is a field given to each value, and <code>isWeekend</code> a getter that compares <code>this</code>, the value itself:
+<pre data-code="answers/weekday.dart" data-title="answers/weekday.dart"></pre>
+<pre data-term="answers/weekday.sh"></pre>
+Add <code>monday('Monday')</code>, and everything still compiles and runs: the loop over <code>Day.values</code> picks the new day up, and <code>isWeekend</code> correctly says it is a workday. Had <code>isWeekend</code> been a switch listing every day, the compiler would have pointed to it: either way, nothing is forgotten silently.</li>
+</ol>

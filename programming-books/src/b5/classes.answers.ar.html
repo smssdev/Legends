@@ -1,0 +1,16 @@
+<ol class="exercises">
+<li><code>a ?? b</code> تعطي <code>Dart</code>، لأن <code>a</code> هو <code>null</code>. و<code>b?.length</code> تساوي <code>4</code>. و<code>a?.length</code> تساوي <code>null</code>، فتعطي <code>?? -1</code> القيمة <code>-1</code>. وأول <code>??=</code> تضع في <code>a</code> القيمة <code>Flutter</code>؛ والثانية لا تفعل شيئاً، لأن <code>a</code> لم يعد <code>null</code>:
+<pre data-code="answers/null_predict.dart" data-title="answers/null_predict.dart"></pre>
+<pre data-term="answers/null_predict.sh"></pre></li>
+<li>(أ) قائمة: الترتيب مهم، وقد تتكرر الأغنية. (ب) مجموعة: كل رقم مرة واحدة، والسؤال دائماً «هل قُرئت هذه؟». (ج) خريطة من الرمز إلى السعر. (د) قائمة: النتائج تتكرر، والمجموعة ستضيّعها.</li>
+<li>كل معامل في <code>copyWith</code> مسمى ويقبل <code>null</code>؛ و<code>??</code> تحتفظ بالقيمة القديمة لكل حقل لم يُعطَ. والصنف الأصلي لا يتغير أبداً:
+<pre data-code="answers/copy_with.dart" data-title="answers/copy_with.dart"></pre>
+<pre data-term="answers/copy_with.sh"></pre></li>
+<li><code>putIfAbsent</code> تُرجع قائمة المفتاح، وتنشئ قائمة فارغة أول مرة، فسطر واحد ينشئ ويضيف معاً. والحرف الأول في النص العربي يُقرأ كما في الإنجليزي، بـ <code>w[0]</code>:
+<pre data-code="answers/group.dart" data-title="answers/group.dart"></pre>
+<pre data-term="answers/group.sh"></pre></li>
+<li>اسم اليوم حقل يُعطى لكل قيمة، و<code>isWeekend</code> getter يقارن <code>this</code>، أي القيمة نفسها:
+<pre data-code="answers/weekday.dart" data-title="answers/weekday.dart"></pre>
+<pre data-term="answers/weekday.sh"></pre>
+أضف <code>monday('الاثنين')</code>، فيبقى كل شيء يُترجم ويعمل: الحلقة على <code>Day.values</code> تلتقط اليوم الجديد، و<code>isWeekend</code> تقول بحق إنه يوم عمل. ولو كانت <code>isWeekend</code> switch يذكر كل الأيام، لأشار المترجم إليها: وفي الحالتين لا يُنسى شيء بصمت.</li>
+</ol>

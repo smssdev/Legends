@@ -1038,7 +1038,8 @@
             },
             {
               "en": "Classes, Null Safety and Collections",
-              "ar": "الأصناف والأمان من القيم الفارغة والمجموعات"
+              "ar": "الأصناف والأمان من القيم الفارغة والمجموعات",
+              "src": "b5/classes"
             },
             {
               "en": "Async Dart: Futures and Streams",

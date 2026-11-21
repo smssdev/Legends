@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: Dart Basics"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: Classes, Null Safety and Collections"; } }
+@page ch03:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -43,7 +45,7 @@
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">34</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">58</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">34</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p">58</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">80</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -1473,6 +1475,668 @@ Change: Not enough: 20 more needed.</pre></div>
 <p>The café’s prices are loose constants, and an order is a handful of parameters. In the next chapter you will give them shape with classes, meet <code>null</code> and Dart’s null safety, and store whole menus in lists, maps and sets.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b5/classes/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>Classes, Null Safety and Collections</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe your own kinds of value with classes: fields, constructors, methods and getters</li>
+<li>work safely with values that may be missing, using Dart’s null safety</li>
+<li>give a fixed set of choices a name with enums</li>
+<li>keep many values in lists, maps and sets, and choose the right one</li>
+<li>return several values at once with records, and take them apart with patterns</li>
+</ul>
+</div>
+
+<p class="lead">At the end of Chapter 2, the café’s prices were loose constants and an order was a handful of parameters. Real programs need better shapes for their data: a menu item that knows its name and its price, an order that knows its lines and its total. This chapter gives you those shapes. It also introduces the feature that makes Dart stand out among languages: <em>null safety</em>, which turns the most common crash in the world into a message from the compiler.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every Flutter widget you will ever write is a class, and every screen shows a list of something. This chapter is where Dart stops being a calculator and starts being the language of apps.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>Classes</span></h2>
+
+<p>A <dfn>class</dfn> describes a kind of value: what each value knows, and what it can do. Each value made from it is an <dfn>object</dfn>, or an <dfn>instance</dfn> of the class. Here is a menu item:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">menu_item.dart</div><pre class="code"><span class="k">class</span> MenuItem {
+  <span class="c line-bidi">// Fields: what every menu item knows. final, because an item never changes.</span>
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> price;
+
+  <span class="c line-bidi">// The constructor: this.name puts the first argument straight into the field.</span>
+  <span class="k">const</span> MenuItem(<span class="k">this</span>.name, <span class="k">this</span>.price);
+
+  <span class="c line-bidi">// A method: a function that belongs to the item and can use its fields.</span>
+  <span class="k">int</span> priceFor(<span class="k">int</span> count) =&gt; price * count;
+
+  <span class="c line-bidi">// What print shows for an item.</span>
+  @override
+  <span class="k">String</span> toString() =&gt; <span class="s">&#x27;$name ($price EGP)&#x27;</span>;
+}
+
+<span class="k">void</span> main() {
+  <span class="k">var</span> latte = <span class="k">const</span> MenuItem(<span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>);
+  <span class="k">var</span> cookie = <span class="k">const</span> MenuItem(<span class="s">&#x27;Cookie&#x27;</span>, <span class="n">20</span>);
+  print(latte);
+  print(latte.name);
+  print(cookie.priceFor(<span class="n">3</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run menu_item.dart</span>
+Latte (45 EGP)
+Latte
+60</pre></div>
+
+<ul>
+<li><dfn>Fields</dfn> are the variables inside each object: every menu item has its own <code>name</code> and <code>price</code>. They are <code>final</code>, because a menu item never changes after it is made.</li>
+<li>The <dfn>constructor</dfn> makes objects. It has the class’s name, and <code>this.name</code> is Dart’s shortcut for “put this argument straight into the field <code>name</code>”. Because every field is <code>final</code>, the constructor can be <code>const</code>, and so can the items made with it.</li>
+<li><code>priceFor</code> is a <dfn>method</dfn>: a function that belongs to the object and can use its fields.</li>
+<li><code>toString</code> decides what <code>print</code> shows. Every class has one; <code>@override</code> says that we replace the default, which would only print <code>Instance of 'MenuItem'</code>.</li>
+</ul>
+
+<p>You reach a field or a method with a dot: <code>latte.name</code>, <code>cookie.priceFor(3)</code>. Notice that there is no <code>new</code>: in Dart you make an object by calling the constructor like a function.</p>
+
+<h3>Named parameters, getters and private fields</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">order.dart</div><pre class="code"><span class="k">class</span> MenuItem {
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> price;
+  <span class="c line-bidi">// Named parameters, as in Chapter 2: the call says which value is which.</span>
+  <span class="k">const</span> MenuItem({<span class="k">required</span> <span class="k">this</span>.name, <span class="k">required</span> <span class="k">this</span>.price});
+
+  <span class="c line-bidi">// A getter: looks like a field, but is calculated each time.</span>
+  <span class="k">bool</span> <span class="k">get</span> isExpensive =&gt; price &gt;= <span class="n">50</span>;
+}
+
+<span class="k">class</span> Order {
+  <span class="c line-bidi">// _lines starts with _: private, only this file can touch it.</span>
+  <span class="k">final</span> <span class="k">List</span>&lt;MenuItem&gt; _lines = [];
+
+  <span class="c line-bidi">// Add one line to the order; the quantity starts at 1.</span>
+  <span class="k">void</span> add(MenuItem item, [<span class="k">int</span> count = <span class="n">1</span>]) {
+    <span class="k">for</span> (<span class="k">var</span> i = <span class="n">0</span>; i &lt; count; i++) {
+      _lines.add(item);
+    }
+  }
+
+  <span class="k">int</span> <span class="k">get</span> count =&gt; _lines.length;
+  <span class="k">int</span> <span class="k">get</span> total =&gt; _lines.fold(<span class="n">0</span>, (sum, item) =&gt; sum + item.price);
+}
+
+<span class="k">void</span> main() {
+  <span class="k">const</span> latte = MenuItem(name: <span class="s">&#x27;Latte&#x27;</span>, price: <span class="n">45</span>);
+  <span class="k">const</span> cake = MenuItem(name: <span class="s">&#x27;Cake&#x27;</span>, price: <span class="n">60</span>);
+  print(cake.isExpensive);
+
+  <span class="k">var</span> order = Order();
+  order.add(latte, <span class="n">2</span>);
+  order.add(cake);
+  print(<span class="s">&#x27;${order.count} items, Total: ${order.total} EGP&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run order.dart</span>
+true
+3 items, Total: 150 EGP</pre></div>
+
+<p>Three more tools appear in this program, and you will see all three in every Flutter app:</p>
+<ul>
+<li>The constructor of <code>MenuItem</code> takes <strong>named parameters</strong>, <code>{required this.name, required this.price}</code>. Calls become self-explaining: <code>MenuItem(name: 'Latte', price: 45)</code>. This is exactly how Flutter’s widgets are built: <code>Text('Hi', style: ...)</code> calls a constructor with named parameters.</li>
+<li>A <dfn>getter</dfn>, written with <code>get</code>, looks like a field from outside (<code>cake.isExpensive</code>, without brackets) but runs code every time it is read. <code>Order</code> uses two, <code>count</code> and <code>total</code>, so they are always up to date.</li>
+<li>A name that starts with an underscore, like <code>_lines</code>, is <dfn>private</dfn>: only code in the same file can use it. Other code can add to an order only through <code>add</code>, so nobody can break it from outside. This is called <dfn>encapsulation</dfn>.</li>
+</ul>
+
+<p>The total uses <code>fold</code>, which walks the list carrying a value from one item to the next: it starts at <code>0</code>, and for each item returns the sum so far plus the item’s price. Section 3.4 shows it again.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>In VS Code, put the cursor on a class name and press <strong>Ctrl+.</strong> (<strong>Cmd+.</strong> on a Mac): the Dart extension offers quick fixes, such as creating a constructor for the final fields you just wrote. Write the fields; let the editor write the repetitive part.</p></aside>
+
+<h2><span class="sec">3.2</span> <span>Null safety</span></h2>
+
+<p>Sometimes a value is simply not there: a customer without a nickname, a contact without a phone, a search with no result. Dart has a special value for “nothing”: <code>null</code>. In many languages any variable can be <code>null</code> at any time, and using one by accident crashes the program. Tony Hoare, who invented the null reference in 1965, later called it his “billion-dollar mistake”.</p>
+
+<p>Dart solves it with <dfn>null safety</dfn>: a variable can hold <code>null</code> only if its type says so, with a question mark. <code>String</code> is always a string. <code>String?</code> is a string <em>or</em> <code>null</code>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">null-error.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">String</span>? nickname;
+  print(nickname.length);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run null-error.dart</span>
+null-error.dart:3:18: Error: Property &#x27;length&#x27; cannot be accessed on &#x27;String?&#x27; because it is potentially null.
+Try accessing using ?. instead.
+  print(nickname.length);
+                 ^^^^^^</pre></div>
+
+<p>The compiler refuses to ask for the length of something that may not exist, and even suggests a fix. Dart gives you four tools to work with nullable values:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">nullable.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// String? may hold a String, or null: nothing at all.</span>
+  <span class="k">String</span>? nickname;
+  print(nickname);
+
+  <span class="c line-bidi">// ?? gives the value on its right when the left is null.</span>
+  print(nickname ?? <span class="s">&#x27;Guest&#x27;</span>);
+
+  <span class="c line-bidi">// ?. asks only when there is something to ask: null stays null.</span>
+  print(nickname?.length);
+
+  <span class="c line-bidi">// ??= sets a value only if there is none yet.</span>
+  nickname ??= <span class="s">&#x27;Bito&#x27;</span>;
+  print(nickname);
+
+  <span class="k">String</span>? other;
+  <span class="c line-bidi">// Inside this if, Dart knows nickname is not null.</span>
+  <span class="k">if</span> (other != <span class="k">null</span>) {
+    print(other.length);
+  } <span class="k">else</span> {
+    print(<span class="s">&#x27;no nickname&#x27;</span>);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run nullable.dart</span>
+null
+Guest
+null
+Bito
+no nickname</pre></div>
+
+<table>
+<thead><tr><th>Tool</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>??</code></td><td>The value on the left, or the one on the right if the left is <code>null</code></td><td><code>nickname ?? 'Guest'</code></td></tr>
+<tr><td><code>?.</code></td><td>Use the member only if the value is not <code>null</code>; otherwise the result is <code>null</code></td><td><code>nickname?.length</code></td></tr>
+<tr><td><code>??=</code></td><td>Give the variable a value only if it is <code>null</code></td><td><code>nickname ??= 'Bito'</code></td></tr>
+<tr><td><code>if (x != null)</code></td><td>Inside the <code>if</code>, Dart knows <code>x</code> is not <code>null</code></td><td><code>other.length</code></td></tr>
+</tbody>
+</table>
+
+<p>The last one is called <dfn>type promotion</dfn>: after you check, Dart promotes <code>other</code> from <code>String?</code> to <code>String</code> for the rest of the block, so you can use it freely. It is the cleanest of the four, and the one to reach for first.</p>
+
+<h3>The ! operator, and why to avoid it</h3>
+
+<p>There is a fifth tool: <code>!</code> after a value tells Dart “trust me, this is not <code>null</code>”. The compiler believes you, and checks only when the program runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bang-error.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">String</span>? nickname;
+  <span class="c line-bidi">// ! says: trust me, this is not null. Here it is.</span>
+  print(nickname!.length);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run bang-error.dart</span>
+Unhandled exception:
+Null check operator used on a null value
+<span class="c line-bidi">#0      main (bang-error.dart:4:17)</span></pre></div>
+
+<p>This time the program compiled, ran, and crashed: an <dfn>unhandled exception</dfn>. The line starting with <code>#0</code> says where: in <code>main</code>, line 4. On a phone, this is an app that closes in the user’s hand.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Treat every <code>!</code> as a small promise you might break. Prefer an <code>if</code> check, <code>??</code> with a sensible default, or a type that is not nullable in the first place. When you do use <code>!</code>, be able to say in one sentence why the value can never be <code>null</code> there.</p></aside>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>Dart added null safety in version 2.12, in 2021, and made it compulsory in Dart 3. Every package on <code>pub.dev</code> had to be updated; it was one of the largest migrations any language has done, and it is why Flutter apps rarely crash on a missing value.</p></aside>
+
+<h2><span class="sec">3.3</span> <span>Enums</span></h2>
+
+<p>When a value can only be one of a few fixed choices, such as the sizes of a cup, give the choices names with an <dfn>enum</dfn> (short for <em>enumeration</em>):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">sizes.dart</div><pre class="code"><span class="c line-bidi">// Each size knows how much it adds to the price.</span>
+<span class="k">enum</span> CupSize {
+  small(<span class="n">0</span>),
+  medium(<span class="n">5</span>),
+  large(<span class="n">10</span>);
+
+  <span class="k">final</span> <span class="k">int</span> extra;
+  <span class="k">const</span> CupSize(<span class="k">this</span>.extra);
+}
+
+<span class="k">String</span> label(CupSize size) {
+  <span class="c line-bidi">// The switch covers every size: the compiler checks it.</span>
+  <span class="k">return</span> <span class="k">switch</span> (size) {
+    CupSize.small =&gt; <span class="s">&#x27;small cup&#x27;</span>,
+    CupSize.medium =&gt; <span class="s">&#x27;medium cup&#x27;</span>,
+    CupSize.large =&gt; <span class="s">&#x27;large cup&#x27;</span>,
+  };
+}
+
+<span class="k">void</span> main() {
+  <span class="k">for</span> (<span class="k">var</span> size <span class="k">in</span> CupSize.values) {
+    print(<span class="s">&#x27;${size.name}: ${label(size)}, +${size.extra} EGP&#x27;</span>);
+  }
+  print(<span class="n">45</span> + CupSize.large.extra);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run sizes.dart</span>
+small: small cup, +0 EGP
+medium: medium cup, +5 EGP
+large: large cup, +10 EGP
+55</pre></div>
+
+<p><code>CupSize</code> has exactly three values: <code>CupSize.small</code>, <code>CupSize.medium</code> and <code>CupSize.large</code>. A Dart enum can carry fields, like a class: here each size knows how much it adds to the price, given in brackets after its name. <code>CupSize.values</code> is the list of all of them, and every value has a <code>name</code>.</p>
+
+<p>Why not just use the strings <code>'small'</code>, <code>'medium'</code> and <code>'large'</code>? Because a typo such as <code>'lagre'</code> is a perfectly good string, and the bug appears much later. A typo in <code>CupSize.lagre</code> does not compile. And because the compiler knows every value of an enum, it checks that a switch covers them all:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">enum-missing.dart</div><pre class="code"><span class="k">enum</span> CupSize { small, medium, large }
+
+<span class="k">String</span> label(CupSize size) {
+  <span class="k">return</span> <span class="k">switch</span> (size) {
+    CupSize.small =&gt; <span class="s">&#x27;small cup&#x27;</span>,
+    CupSize.medium =&gt; <span class="s">&#x27;medium cup&#x27;</span>,
+  };
+}
+
+<span class="k">void</span> main() {
+  print(label(CupSize.large));
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run enum-missing.dart</span>
+enum-missing.dart:4:18: Error: The type &#x27;CupSize&#x27; is not exhaustively matched by the switch cases since it doesn&#x27;t match &#x27;CupSize.large&#x27;.
+ - &#x27;CupSize&#x27; is from &#x27;enum-missing.dart&#x27;.
+Try adding a wildcard pattern or cases that match &#x27;CupSize.large&#x27;.
+  return switch (size) {
+                 ^</pre></div>
+
+<p>This is the exhaustiveness checking promised in Chapter 2. Imagine the café adds an extra-large cup next year: every switch that forgot it stops compiling, and points you straight to it. Notice also that the message does not say “add a default”: a wildcard <code>_</code> would silence it, but then the new size would silently get the wrong label. Add the case instead.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What is the difference between <code>int</code> and <code>int?</code>?</li><li>What does <code>name?.length ?? 0</code> give when <code>name</code> is <code>null</code>?</li><li>Why is an enum safer than a string for the size of a cup?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">3.4</span> <span>Lists</span></h2>
+
+<p>Dart has three main <dfn>collections</dfn>, values that hold other values: lists, maps and sets. You met lists in Chapter 2; here they are in full.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lists.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// A List&lt;int&gt;: only ints may go in.</span>
+  <span class="k">var</span> prices = &lt;<span class="k">int</span>&gt;[<span class="n">45</span>, <span class="n">20</span>, <span class="n">60</span>];
+  prices.add(<span class="n">15</span>);
+  print(prices);
+  print(prices[<span class="n">0</span>]);
+  print(prices.length);
+  print(prices.contains(<span class="n">60</span>));
+
+  prices.remove(<span class="n">20</span>);
+  prices.sort();
+  print(prices);
+
+  <span class="c line-bidi">// ... spreads one list inside another; if and for work inside a list too.</span>
+  <span class="k">var</span> isFriday = <span class="k">true</span>;
+  <span class="k">var</span> extras = [<span class="n">5</span>, <span class="n">10</span>];
+  <span class="k">var</span> all = [
+    ...prices,
+    ...extras,
+    <span class="k">if</span> (isFriday) <span class="n">0</span>,
+    <span class="k">for</span> (<span class="k">var</span> p <span class="k">in</span> prices) p * <span class="n">2</span>,
+  ];
+  print(all);
+
+  <span class="c line-bidi">// fold carries a running total through the list.</span>
+  <span class="k">var</span> total = prices.fold(<span class="n">0</span>, (sum, p) =&gt; sum + p);
+  print(total);
+  print(prices.where((p) =&gt; p &gt; <span class="n">20</span>).map((p) =&gt; <span class="s">&#x27;$p EGP&#x27;</span>).toList());
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run lists.dart</span>
+[45, 20, 60, 15]
+45
+4
+true
+[15, 45, 60]
+[15, 45, 60, 5, 10, 0, 30, 90, 120]
+120
+[45 EGP, 60 EGP]</pre></div>
+
+<p>A list keeps its items in order, and you reach each one by its <dfn>index</dfn>, counting from 0. <code>&lt;int&gt;[...]</code> makes a list that can hold only <code>int</code>s: its type is <code>List&lt;int&gt;</code>, read “list of int”. The type in angle brackets is called a <dfn>type argument</dfn>, and it is what makes collections safe: Dart will not let a string into a list of numbers.</p>
+
+<p>The middle of the program shows three features that you will use in every Flutter screen:</p>
+<ul>
+<li>The <dfn>spread operator</dfn> <code>...</code> puts all the items of one list inside another.</li>
+<li><dfn>Collection if</dfn>: <code>if (isFriday) 0</code> adds the item only when the condition is true.</li>
+<li><dfn>Collection for</dfn>: <code>for (var p in prices) p * 2</code> adds one item for each round of the loop.</li>
+</ul>
+<p>In Flutter, a screen is a list of widgets, so you will write things like <code>children: [Title(), if (loggedIn) Profile(), for (var n in notes) NoteCard(n)]</code>. That one line replaces a dozen lines of <code>add</code> calls.</p>
+
+<p>Finally, <code>fold</code> carries a running total through the list, and <code>where</code> and <code>map</code> filter and transform, as in Chapter 2. Both return a lazy <code>Iterable</code>, which only does the work when you need the items; <code>toList()</code> turns it into a real list.</p>
+
+<h2><span class="sec">3.5</span> <span>Maps</span></h2>
+
+<p>A <dfn>map</dfn> connects <dfn>keys</dfn> to <dfn>values</dfn>, like a dictionary connects words to meanings. The café’s stock is a map from the name of each thing to how many are left:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">maps.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// A Map: each key (a name) leads to one value (a quantity).</span>
+  <span class="k">var</span> stock = &lt;<span class="k">String</span>, <span class="k">int</span>&gt;{<span class="s">&#x27;sugar&#x27;</span>: <span class="n">40</span>, <span class="s">&#x27;milk&#x27;</span>: <span class="n">12</span>, <span class="s">&#x27;cups&#x27;</span>: <span class="n">200</span>};
+  print(stock[<span class="s">&#x27;milk&#x27;</span>]);
+  print(stock[<span class="s">&#x27;beans&#x27;</span>]);
+
+  <span class="c line-bidi">// Looking up a key gives int?: the key may not be there.</span>
+  <span class="k">int</span> beans = stock[<span class="s">&#x27;beans&#x27;</span>] ?? <span class="n">0</span>;
+  print(beans);
+
+  stock[<span class="s">&#x27;beans&#x27;</span>] = <span class="n">5</span>;
+  <span class="c line-bidi">// update changes a value; ifAbsent says what to do when the key is missing.</span>
+  stock.update(<span class="s">&#x27;milk&#x27;</span>, (n) =&gt; n - <span class="n">2</span>);
+  stock.update(<span class="s">&#x27;water&#x27;</span>, (n) =&gt; n + <span class="n">6</span>, ifAbsent: () =&gt; <span class="n">6</span>);
+  print(stock.length);
+  print(stock.containsKey(<span class="s">&#x27;sugar&#x27;</span>));
+
+  <span class="k">for</span> (<span class="k">var</span> entry <span class="k">in</span> stock.entries) {
+    print(<span class="s">&#x27;${entry.key}: ${entry.value}&#x27;</span>);
+  }
+  stock.remove(<span class="s">&#x27;cups&#x27;</span>);
+  print(stock.keys.toList());
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run maps.dart</span>
+12
+null
+0
+5
+true
+sugar: 40
+milk: 10
+cups: 200
+beans: 5
+water: 6
+[sugar, milk, beans, water]</pre></div>
+
+<p>The type <code>Map&lt;String, int&gt;</code> says the keys are strings and the values are ints. Each key appears once. <code>stock['milk']</code> looks a value up; <code>stock['beans'] = 5</code> adds or replaces one.</p>
+
+<p>Look at the second line of the output: asking for a key that is not there gives <code>null</code>. That is why the type of <code>stock['milk']</code> is <code>int?</code>, not <code>int</code>, and why Dart refuses to put it straight into an <code>int</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">map-error.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> stock = &lt;<span class="k">String</span>, <span class="k">int</span>&gt;{<span class="s">&#x27;milk&#x27;</span>: <span class="n">12</span>};
+  <span class="k">int</span> milk = stock[<span class="s">&#x27;milk&#x27;</span>];
+  print(milk);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run map-error.dart</span>
+map-error.dart:3:19: Error: A value of type &#x27;int?&#x27; can&#x27;t be assigned to a variable of type &#x27;int&#x27;.
+  int milk = stock[&#x27;milk&#x27;];
+                  ^</pre></div>
+
+<p>Null safety reaches everywhere. The fix is the one used in <code>maps.dart</code>: decide what a missing key means, here <code>?? 0</code>, and say it in the code. To change a value, <code>update</code> takes the key and a function from the old value to the new one, and <code>ifAbsent</code> says what to do when the key is missing. To visit every pair, loop over <code>stock.entries</code>; each entry has a <code>key</code> and a <code>value</code>.</p>
+
+<h2><span class="sec">3.6</span> <span>Sets</span></h2>
+
+<p>A <dfn>set</dfn> is a collection in which each value appears at most once. Adding something that is already there does nothing:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">sets.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// A Set keeps each value once, whatever happens.</span>
+  <span class="k">var</span> tags = &lt;<span class="k">String</span>&gt;{<span class="s">&#x27;sweet&#x27;</span>, <span class="s">&#x27;hot&#x27;</span>};
+  tags.add(<span class="s">&#x27;sweet&#x27;</span>);
+  tags.add(<span class="s">&#x27;vegan&#x27;</span>);
+  print(tags);
+  print(tags.length);
+
+  <span class="k">var</span> cakeTags = {<span class="s">&#x27;sweet&#x27;</span>, <span class="s">&#x27;cold&#x27;</span>};
+  print(tags.intersection(cakeTags));
+  print(tags.union(cakeTags));
+  print(tags.difference(cakeTags));
+
+  <span class="k">var</span> orders = [<span class="s">&#x27;Latte&#x27;</span>, <span class="s">&#x27;Tea&#x27;</span>, <span class="s">&#x27;Latte&#x27;</span>, <span class="s">&#x27;Cake&#x27;</span>, <span class="s">&#x27;Tea&#x27;</span>];
+  print(orders.toSet());
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run sets.dart</span>
+{sweet, hot, vegan}
+3
+{sweet}
+{sweet, hot, vegan, cold}
+{hot, vegan}
+{Latte, Tea, Cake}</pre></div>
+
+<p>Sets answer questions about groups: which tags do the latte and the cake share (<code>intersection</code>), which tags appear on either (<code>union</code>), which belong to one but not the other (<code>difference</code>). And <code>toSet()</code> is the shortest way to remove repeats from a list. Checking <code>contains</code> on a set is fast even for millions of items, because a set does not have to look through its values one by one.</p>
+
+<table>
+<thead><tr><th>Collection</th><th>Written</th><th>Choose it when</th></tr></thead>
+<tbody>
+<tr><td><code>List</code></td><td><code>[1, 2, 2]</code></td><td>Order matters, or the same value may appear twice: a queue, the lines of a receipt</td></tr>
+<tr><td><code>Set</code></td><td><code>{1, 2}</code></td><td>Each value once, and you ask “is it in?”: tags, selected items</td></tr>
+<tr><td><code>Map</code></td><td><code>{'a': 1}</code></td><td>You look things up by a key: stock by name, users by id</td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p><code>{}</code> on its own is an empty <em>map</em>, not an empty set, because maps came first. Write <code>&lt;String&gt;{}</code> for an empty set of strings, and <code>&lt;String, int&gt;{}</code> for an empty map, so that both you and Dart know which you mean.</p></aside>
+
+<h2><span class="sec">3.7</span> <span>Records and patterns</span></h2>
+
+<p>Sometimes a function needs to return two values. Before Dart 3 you would write a small class just for that. Now there are <dfn>records</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">records.dart</div><pre class="code"><span class="c line-bidi">// A record: two values travel together, no class needed.</span>
+(<span class="k">int</span>, <span class="k">int</span>) cheapestAndDearest(<span class="k">List</span>&lt;<span class="k">int</span>&gt; prices) {
+  <span class="k">var</span> sorted = [...prices]..sort();
+  <span class="k">return</span> (sorted.first, sorted.last);
+}
+
+({<span class="k">String</span> name, <span class="k">int</span> price}) special() =&gt; (name: <span class="s">&#x27;Cake&#x27;</span>, price: <span class="n">50</span>);
+
+<span class="k">void</span> main() {
+  <span class="k">var</span> prices = [<span class="n">45</span>, <span class="n">20</span>, <span class="n">60</span>, <span class="n">15</span>];
+  <span class="k">var</span> result = cheapestAndDearest(prices);
+  print(result);
+  print(result.$<span class="n">1</span>);
+
+  <span class="c line-bidi">// A pattern takes the record apart into two variables.</span>
+  <span class="k">var</span> (low, high) = cheapestAndDearest(prices);
+  print(<span class="s">&#x27;cheapest: $low, most expensive: $high&#x27;</span>);
+
+  <span class="k">var</span> today = special();
+  print(<span class="s">&#x27;${today.name}: ${today.price}&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run records.dart</span>
+(15, 60)
+15
+cheapest: 15, most expensive: 60
+Cake: 50</pre></div>
+
+<p><code>(int, int)</code> is the type of a record with two ints, and <code>(sorted.first, sorted.last)</code> makes one. Its fields are called <code>$1</code>, <code>$2</code> and so on, but the nicer way is a <dfn>pattern</dfn>: <code>var (low, high) = ...</code> takes the record apart into two variables in one line. This is called <dfn>destructuring</dfn>. A record can also have named fields, like <code>({String name, int price})</code>, read with a dot.</p>
+
+<p>The function also shows a <dfn>cascade</dfn>, <code>..</code>: <code>[...prices]..sort()</code> makes a copy of the list, sorts it, and gives back the copy rather than the result of <code>sort</code> (which returns nothing). Cascades let you call several methods on the same object in a row.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Use a record for a quick pair of values that travel together for a moment, such as the result of a function. When the values have a meaning of their own and methods to go with them, such as a menu item, write a class.</p></aside>
+
+<h2><span class="sec">3.8</span> <span>Project: the café order book</span></h2>
+
+<p>Let us put the chapter together. The café’s menu becomes a list of objects, each with a category, and an order becomes a class that counts how many of each item a table ordered:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cafe.dart</div><pre class="code"><span class="k">enum</span> Category { drink, food }
+
+<span class="k">class</span> MenuItem {
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> price;
+  <span class="k">final</span> Category category;
+  <span class="k">const</span> MenuItem(<span class="k">this</span>.name, <span class="k">this</span>.price, <span class="k">this</span>.category);
+}
+
+<span class="c line-bidi">// The menu: a const list of const items, built once.</span>
+<span class="k">const</span> menu = [
+  MenuItem(<span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>, Category.drink),
+  MenuItem(<span class="s">&#x27;Tea&#x27;</span>, <span class="n">15</span>, Category.drink),
+  MenuItem(<span class="s">&#x27;Cookie&#x27;</span>, <span class="n">20</span>, Category.food),
+  MenuItem(<span class="s">&#x27;Cake&#x27;</span>, <span class="n">60</span>, Category.food),
+];
+
+<span class="k">class</span> Order {
+  <span class="k">final</span> <span class="k">int</span> table;
+  <span class="c line-bidi">// An order: how many of each item. A Map, because each item appears once.</span>
+  <span class="k">final</span> <span class="k">Map</span>&lt;MenuItem, <span class="k">int</span>&gt; _counts = {};
+
+  Order(<span class="k">this</span>.table);
+
+  <span class="k">void</span> add(MenuItem item, {<span class="k">int</span> count = <span class="n">1</span>}) {
+    _counts.update(item, (n) =&gt; n + count, ifAbsent: () =&gt; count);
+  }
+
+  <span class="k">int</span> <span class="k">get</span> total {
+    <span class="k">var</span> sum = <span class="n">0</span>;
+    _counts.forEach((item, n) =&gt; sum += item.price * n);
+    <span class="k">return</span> sum;
+  }
+
+  <span class="k">Set</span>&lt;Category&gt; <span class="k">get</span> categories =&gt; {
+    <span class="k">for</span> (<span class="k">var</span> item <span class="k">in</span> _counts.keys) item.category,
+  };
+
+  <span class="c line-bidi">// One line per item, sorted by name, built with a for inside the list.</span>
+  <span class="k">List</span>&lt;<span class="k">String</span>&gt; <span class="k">get</span> lines {
+    <span class="k">var</span> items = _counts.keys.toList()..sort((a, b) =&gt; a.name.compareTo(b.name));
+    <span class="k">return</span> [<span class="k">for</span> (<span class="k">var</span> item <span class="k">in</span> items) <span class="s">&#x27;${_counts[item]} × ${item.name}&#x27;</span>];
+  }
+}
+
+<span class="k">void</span> main() {
+  <span class="k">var</span> order = Order(<span class="n">4</span>);
+  order.add(menu[<span class="n">0</span>], count: <span class="n">2</span>);
+  order.add(menu[<span class="n">3</span>]);
+  order.add(menu[<span class="n">0</span>]);
+  order.add(menu[<span class="n">2</span>], count: <span class="n">3</span>);
+
+  print(<span class="s">&#x27;Order, table ${order.table}&#x27;</span>);
+  <span class="k">for</span> (<span class="k">var</span> line <span class="k">in</span> order.lines) {
+    print(<span class="s">&#x27;  $line&#x27;</span>);
+  }
+  print(<span class="s">&#x27;Total: ${order.total} EGP&#x27;</span>);
+  print(order.categories.map((c) =&gt; c.name).toList());
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run cafe.dart</span>
+Order, table 4
+  1 × Cake
+  3 × Cookie
+  3 × Latte
+Total: 255 EGP
+[drink, food]</pre></div>
+
+<p>Follow the order for table 4: two lattes, a cake, another latte, and three cookies. <code>add</code> uses <code>update</code> with <code>ifAbsent</code>, so the second latte adds to the first instead of making a new line: there are three lattes. The lines are sorted by name, with a cascade and a collection <code>for</code>. The total is 3 × 45 + 60 + 3 × 20 = 255. And <code>categories</code> is a set built with a collection <code>for</code>, so each category appears once however many items share it.</p>
+
+<p>Notice how much the class hides. Code outside <code>Order</code> cannot touch <code>_counts</code>: it can only add items and read the total and the lines. If tomorrow the café wants to store orders differently, only <code>Order</code> changes, and every screen that uses it keeps working.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Add a method <code>remove(MenuItem item)</code> that takes one away, and deletes the line when it reaches zero. Then add a getter <code>drinksOnly</code> that returns the lines for drinks only. Which collection tools did you use?</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Using a <code>String?</code> as if it were a <code>String</code></td><td>Compile error: the property “cannot be accessed … because it is potentially null”</td><td>Check with <code>if</code>, or use <code>?.</code> and <code>??</code></td></tr>
+<tr><td>Adding <code>!</code> to silence the compiler</td><td>A crash when the value is <code>null</code>: “Null check operator used on a null value”</td><td>Handle the <code>null</code> case for real</td></tr>
+<tr><td><code>int x = map[key];</code></td><td>Compile error: <code>int?</code> can’t be assigned to <code>int</code></td><td><code>map[key] ?? 0</code>, or check <code>containsKey</code></td></tr>
+<tr><td>A switch on an enum that forgets a value</td><td>Compile error: not exhaustively matched</td><td>Add the missing case, not a <code>_</code></td></tr>
+<tr><td><code>var tags = {};</code> for a set</td><td>It is an empty map</td><td><code>var tags = &lt;String&gt;{};</code></td></tr>
+<tr><td><code>list[list.length]</code></td><td>A <code>RangeError</code> when the program runs: indexes go up to <code>length - 1</code></td><td>Use <code>list.last</code>, or check the index</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>class</strong> describes a kind of object: <strong>fields</strong>, a <strong>constructor</strong> (with <code>this.field</code> and named parameters), <strong>methods</strong>, <strong>getters</strong>, and <code>toString</code>. Names starting with <code>_</code> are private to the file.</li>
+<li><strong>Null safety</strong>: a type can hold <code>null</code> only if it ends in <code>?</code>. Use <code>if (x != null)</code>, <code>??</code>, <code>?.</code> and <code>??=</code>; avoid <code>!</code>.</li>
+<li>An <strong>enum</strong> names a fixed set of values, can carry fields, and lets the compiler check that a switch covers them all.</li>
+<li><strong>Lists</strong> keep order; <strong>sets</strong> keep each value once; <strong>maps</strong> connect keys to values, and looking a key up gives a nullable value.</li>
+<li>Inside a collection, <code>...</code>, <code>if</code> and <code>for</code> build items; Flutter uses them to build lists of widgets.</li>
+<li>A <strong>record</strong>, like <code>(int, int)</code>, returns several values at once, and a <strong>pattern</strong> takes it apart: <code>var (a, b) = ...</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. An <code>int</code> always holds a number; an <code>int?</code> holds a number or <code>null</code>, and must be checked before it is used as a number. 2. <code>0</code>: <code>name?.length</code> is <code>null</code>, and <code>?? 0</code> replaces it. 3. A misspelt enum value does not compile, and a switch on the enum is checked for every value; a misspelt string is still a valid string, and nothing checks the switch.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project models something with classes and collections, the way you will model the data behind a Flutter screen. Run each one often, and try values that are missing as well as values that are there.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>A contact book</h3>
+<p class="project-goal">Keep a list of contacts, some with a phone number and some without, and print them safely.</p>
+<p class="project-skills"><strong>You will practise:</strong> a class with a nullable field, an optional named parameter, <code>??</code> and <code>?.</code>, and <code>where</code>.</p>
+<ol class="steps">
+<li>Write a class <code>Contact</code> with a <code>final String name</code> and a <code>final String? phone</code>.</li>
+<li>Give it a <code>const</code> constructor where the name is positional and the phone is an optional named parameter: <code>const Contact(this.name, {this.phone});</code>. An optional nullable parameter needs no default: it is <code>null</code> when it is not given.</li>
+<li>Add a method <code>describe()</code> that shows the phone, or “no phone” when there is none, with <code>??</code>.</li>
+<li>Make a list of three contacts, one without a phone, and print them. Count the contacts that have a phone with <code>where</code>.</li>
+<li>Print every phone without spaces using <code>?.replaceAll(' ', '')</code>. What does the contact without a phone give?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> inside a string, <code>${phone ?? 'no phone'}</code> needs the braces, because it is an expression and not a plain name.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run contacts.dart</span>
+Sara: 0100 123 4567
+Omar: no phone
+Mona: 0122 765 4321
+2 / 3
+[01001234567, null, 01227654321]</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.2 · Medium</p>
+<h3>Which words are used most?</h3>
+<p class="project-goal">Count how many times each word appears in a text, and print the three most used.</p>
+<p class="project-skills"><strong>You will practise:</strong> a <code>Map&lt;String, int&gt;</code> as a counter, missing keys, sorting map entries, <code>take</code>, and sets.</p>
+<ol class="steps">
+<li>Split the text into words with <code>split(' ')</code>.</li>
+<li>Count with a map: for each word, <code>counts[w] = (counts[w] ?? 0) + 1</code>. Explain why the <code>?? 0</code> is needed the first time a word is seen.</li>
+<li>Print how many words there are, and how many are different (the length of the map).</li>
+<li>Turn <code>counts.entries</code> into a list, and sort it from the largest value down: <code>sort((a, b) =&gt; b.value.compareTo(a.value))</code>. Print the first three with <code>take(3)</code>.</li>
+<li>Check your count of different words another way, with <code>words.toSet().length</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>compareTo</code> returns a negative number, zero or a positive number. Swapping <code>a</code> and <code>b</code> reverses the order, which is how you sort from the largest down.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run words.dart</span>
+20 words, 10 different
+most used:
+  the: 6
+  on: 3
+  cat: 2
+true</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 3.3 · Challenge</p>
+<h3>Shapes and their areas</h3>
+<p class="project-goal">Model circles, rectangles and squares as different classes, calculate their areas with one switch that the compiler checks, and sort them by area.</p>
+<p class="project-skills"><strong>You will practise:</strong> class inheritance with <code>extends</code>, <code>sealed</code> classes, switching on an object’s type with patterns, <code>import</code>, and <code>fold</code> with a <code>double</code>.</p>
+<ol class="steps">
+<li>Write <code>sealed class Shape</code>, and three classes that <dfn>extend</dfn> it: <code>Circle</code> with a radius, <code>Rect</code> with a width and a height, <code>Square</code> with a side. A <code>Circle</code> <em>is a</em> <code>Shape</code>, so it can go in a <code>List&lt;Shape&gt;</code>.</li>
+<li><code>sealed</code> means that no other file may add another kind of <code>Shape</code>. The compiler therefore knows all the kinds, exactly as it knows the values of an enum.</li>
+<li>Write <code>double area(Shape s)</code> as a switch expression with <dfn>object patterns</dfn>: <code>Circle(radius: var r) =&gt; math.pi * r * r</code> matches circles and takes their radius out in one step. Write <code>import 'dart:math' as math;</code> at the top for <code>math.pi</code>.</li>
+<li>Remove one case and read the error. Put it back.</li>
+<li>Sort a list of shapes by area, print each with two digits after the point, and the total with <code>fold(0.0, ...)</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> start <code>fold</code> with <code>0.0</code>, not <code>0</code>: the starting value decides the type of the running total, and areas are <code>double</code>s.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run shapes.dart</span>
+square     area 6.25
+rectangle  area 7.00
+circle     area 7.07
+Total: 20.32
+largest: circle</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Predict what each line prints, then check: with <code>String? a;</code> and <code>String? b = 'Dart';</code>, print <code>a ?? b</code>, <code>b?.length</code> and <code>a?.length ?? -1</code>; then run <code>a ??= 'Flutter'; a ??= 'Kotlin';</code> and print <code>a</code>.</li>
+<li><span class="level">Easy</span> List, set or map? (a) The songs in a playlist, in order. (b) The ids of the messages a user has read. (c) The price of each product, by its code. (d) The scores of a game, which may repeat.</li>
+<li><span class="level medium">Medium</span> Add a method <code>copyWith</code> to the <code>MenuItem</code> of <code>order.dart</code>, which returns a new item with some fields changed: <code>latte.copyWith(price: 36)</code>. (Hint: its parameters are nullable, and <code>??</code> keeps the old value.) Flutter’s own classes use this pattern everywhere.</li>
+<li><span class="level medium">Medium</span> Group a list of words by their first letter into a <code>Map&lt;String, List&lt;String&gt;&gt;</code>, using <code>putIfAbsent</code>. Look it up on <code>api.dart.dev</code>.</li>
+<li><span class="level hard">Challenge</span> Write an enum <code>Day</code> with a field for its label and a getter <code>isWeekend</code>, and print every day with “weekend” or “workday”. Then add a new day to the enum and see which code still works without any change.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>So far every line of your programs runs immediately. But apps wait all the time: for the network, for a file, for the user. The next chapter teaches Dart to wait without freezing, with <code>Future</code>, <code>async</code> and <code>await</code>, and to handle values that keep arriving, with <code>Stream</code>.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1570,6 +2234,86 @@ Age 9 pays 3</pre></div></li>
    7  14  21  28  35  42  49  56  63
    8  16  24  32  40  48  56  64  72
    9  18  27  36  45  54  63  72  81</pre></div></li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 3</h2>
+<ol class="exercises">
+<li><code>a ?? b</code> gives <code>Dart</code>, because <code>a</code> is <code>null</code>. <code>b?.length</code> is <code>4</code>. <code>a?.length</code> is <code>null</code>, so <code>?? -1</code> gives <code>-1</code>. The first <code>??=</code> sets <code>a</code> to <code>Flutter</code>; the second does nothing, because <code>a</code> is no longer <code>null</code>:
+<div class="listing" dir="ltr"><div class="listing-title">answers/null_predict.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">String</span>? a;
+  <span class="k">String</span>? b = <span class="s">&#x27;Dart&#x27;</span>;
+  print(a ?? b);
+  print(b?.length);
+  print(a?.length ?? -<span class="n">1</span>);
+  a ??= <span class="s">&#x27;Flutter&#x27;</span>;
+  a ??= <span class="s">&#x27;Kotlin&#x27;</span>;
+  print(a);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run null_predict.dart</span>
+Dart
+4
+-1
+Flutter</pre></div></li>
+<li>(a) A list: order matters, and a song may appear twice. (b) A set: each id once, and the question is always “has this one been read?”. (c) A map from code to price. (d) A list: scores repeat, and a set would lose them.</li>
+<li>Each parameter of <code>copyWith</code> is nullable and named; <code>??</code> keeps the old value of every field that was not given. The original item never changes:
+<div class="listing" dir="ltr"><div class="listing-title">answers/copy_with.dart</div><pre class="code"><span class="k">class</span> MenuItem {
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> price;
+  <span class="k">const</span> MenuItem({<span class="k">required</span> <span class="k">this</span>.name, <span class="k">required</span> <span class="k">this</span>.price});
+
+  <span class="c line-bidi">// copyWith: a new item like this one, with some fields changed.</span>
+  MenuItem copyWith({<span class="k">String</span>? name, <span class="k">int</span>? price}) =&gt;
+      MenuItem(name: name ?? <span class="k">this</span>.name, price: price ?? <span class="k">this</span>.price);
+
+  @override
+  <span class="k">String</span> toString() =&gt; <span class="s">&#x27;$name ($price)&#x27;</span>;
+}
+
+<span class="k">void</span> main() {
+  <span class="k">const</span> latte = MenuItem(name: <span class="s">&#x27;Latte&#x27;</span>, price: <span class="n">45</span>);
+  <span class="k">var</span> friday = latte.copyWith(price: <span class="n">36</span>);
+  print(latte);
+  print(friday);
+  print(latte.copyWith(name: <span class="s">&#x27;Tea&#x27;</span>, price: <span class="n">15</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run copy_with.dart</span>
+Latte (45)
+Latte (36)
+Tea (15)</pre></div></li>
+<li><code>putIfAbsent</code> returns the list for the key, creating an empty one the first time, so one line both creates and adds:
+<div class="listing" dir="ltr"><div class="listing-title">answers/group.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> words = [<span class="s">&#x27;apple&#x27;</span>, <span class="s">&#x27;avocado&#x27;</span>, <span class="s">&#x27;banana&#x27;</span>, <span class="s">&#x27;cherry&#x27;</span>, <span class="s">&#x27;blueberry&#x27;</span>];
+  <span class="k">var</span> groups = &lt;<span class="k">String</span>, <span class="k">List</span>&lt;<span class="k">String</span>&gt;&gt;{};
+  <span class="k">for</span> (<span class="k">var</span> w <span class="k">in</span> words) {
+    groups.putIfAbsent(w[<span class="n">0</span>], () =&gt; []).add(w);
+  }
+  print(groups);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run group.dart</span>
+{a: [apple, avocado], b: [banana, blueberry], c: [cherry]}</pre></div></li>
+<li>The label is a field given to each value, and <code>isWeekend</code> a getter that compares <code>this</code>, the value itself:
+<div class="listing" dir="ltr"><div class="listing-title">answers/weekday.dart</div><pre class="code"><span class="k">enum</span> Day {
+  saturday(<span class="s">&#x27;Saturday&#x27;</span>),
+  sunday(<span class="s">&#x27;Sunday&#x27;</span>),
+  friday(<span class="s">&#x27;Friday&#x27;</span>);
+
+  <span class="k">final</span> <span class="k">String</span> label;
+  <span class="k">const</span> Day(<span class="k">this</span>.label);
+
+  <span class="k">bool</span> <span class="k">get</span> isWeekend =&gt; <span class="k">this</span> == Day.friday || <span class="k">this</span> == Day.saturday;
+}
+
+<span class="k">void</span> main() {
+  <span class="k">for</span> (<span class="k">var</span> d <span class="k">in</span> Day.values) {
+    print(<span class="s">&#x27;${d.label}: ${d.isWeekend ? &#x27;</span>weekend<span class="s">&#x27; : &#x27;</span>workday<span class="s">&#x27;}&#x27;</span>);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run weekday.dart</span>
+Saturday: weekend
+Sunday: workday
+Friday: weekend</pre></div>
+Add <code>monday('Monday')</code>, and everything still compiles and runs: the loop over <code>Day.values</code> picks the new day up, and <code>isWeekend</code> correctly says it is a workday. Had <code>isWeekend</code> been a switch listing every day, the compiler would have pointed to it: either way, nothing is forgotten silently.</li>
 </ol>
 
 </section>
