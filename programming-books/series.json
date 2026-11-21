@@ -1071,7 +1071,8 @@
             },
             {
               "en": "Navigation",
-              "ar": "التنقل بين الشاشات"
+              "ar": "التنقل بين الشاشات",
+              "src": "b5/navigation"
             },
             {
               "en": "Forms and Input",
