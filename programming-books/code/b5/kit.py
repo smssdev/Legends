@@ -103,10 +103,10 @@ def write(folder, files):
         p.write_text(text)
 
 
-def shot(web_dir, png, taps="", wait=5000, query=""):
+def shot(web_dir, png, taps="", wait=5000, query="", size="390x780"):
     """A screenshot of a Flutter web build at phone size (390 x 780, twice the pixels). taps is a list of
     "x,y" points (in the 390 x 780 page) to click first, separated by spaces."""
-    subprocess.run(["node", str(B5 / "snap.cjs"), str(web_dir), str(png), taps, str(wait), query], check=True)
+    subprocess.run(["node", str(B5 / "snap.cjs"), str(web_dir), str(png), taps, str(wait), query, size], check=True)
 
 
 def dart_examples(here, words_by_lang, sources, errors=(), keep=None):
@@ -144,8 +144,10 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
     """A chapter of small Flutter apps (Chapter 5 on), in each language:
       files   {path: text or {lang: text}}: lib/*.dart are apps (each with its own main), test/*.dart tests,
               projects/<name>.dart and answers/<name>.dart are apps too, kept in those folders here
-      shots   [(png name, app path, "x,y taps")]: screenshots of release builds at phone size
-      tests   [(transcript name, test path)]: `flutter test <path>`, recorded
+      shots   [(png name, app path, "x,y taps"[, "WxH"])]: screenshots of release builds, at phone size
+              (390x780) unless a size is given
+      tests   [(transcript name, test path[, keep])]: `flutter test <path>`, recorded; with keep, the test
+              is expected to fail and keep(lines) shortens what is printed
     One project per language; the apps are built for the web once, through a generated
     lib/gallery.dart that runs the app named in the address (?app=name). The reader never sees it."""
     folder = here.name
@@ -192,11 +194,15 @@ void main() {{
         text, code = sh("flutter build web -t lib/gallery.dart --no-web-resources-cdn", project)
         if code:
             raise RuntimeError(text)
-        for png, app, taps in shots:
+        for png, app, taps, *size in shots:
             stem = Path(placed[app]).stem
-            shot(project / "build" / "web", out / "shots" / png, taps, 6000, f"?app={stem}")
-        for transcript, test in tests:
+            shot(project / "build" / "web", out / "shots" / png, taps, 6000, f"?app={stem}", *size)
+        for transcript, test, *fails in tests:
+            # (transcript, test) must pass; (transcript, test, keep) is expected to fail, and keep(lines)
+            # chooses the lines the book prints.
             s = Session(project)
-            s.run(f"flutter test {test}")
+            s.run(f"flutter test {test}", check=not fails)
+            if fails:
+                s.lines = fails[0](s.lines)
             s.save(out / transcript)
         print("wrote", out)
