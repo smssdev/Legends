@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Cloud and Infrastructure as Code"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "Chapter 12: Observability and Incidents"; } }
+@page ch12:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -59,7 +61,7 @@
           <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
           <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: End to End</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">From Idea to Specification</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">API Contracts Between Frontend and Backend</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Full Stack with Next.js</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Authentication Across the Stack</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Payments, Email and Files</span><span class="toc-p"></span></li><li class="toc-part">Part 2: System Design</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">System Design Fundamentals</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Designing for Failure</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Data at Scale</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Six System Design Case Studies</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Delivery</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">CI/CD Pipelines</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Cloud and Infrastructure as Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Observability and Incidents</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Leadership</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Technical Leadership and Architecture Decisions</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Estimation, Planning and Working with Product</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Interviews and Growing Your Career</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Capstone: Ship a SaaS Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b4/spec/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: End to End</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">From Idea to Specification</span><span class="toc-p">5</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">API Contracts Between Frontend and Backend</span><span class="toc-p">18</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Full Stack with Next.js</span><span class="toc-p">35</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Authentication Across the Stack</span><span class="toc-p">53</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Payments, Email and Files</span><span class="toc-p">68</span></li><li class="toc-part">Part 2: System Design</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">System Design Fundamentals</span><span class="toc-p">84</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Designing for Failure</span><span class="toc-p">96</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Data at Scale</span><span class="toc-p">109</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Six System Design Case Studies</span><span class="toc-p">120</span></li><li class="toc-part">Part 3: Delivery</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">CI/CD Pipelines</span><span class="toc-p">132</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Cloud and Infrastructure as Code</span><span class="toc-p">144</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Observability and Incidents</span><span class="toc-p">155</span></li><li class="toc-part">Part 4: Leadership</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Technical Leadership and Architecture Decisions</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Estimation, Planning and Working with Product</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Interviews and Growing Your Career</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Capstone: Ship a SaaS Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">172</span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b4/spec/en">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>From Idea to Specification</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -3987,6 +3989,470 @@ Destroy complete! Resources: 6 destroyed.</pre></div>
 <p>The system is built, deployed and described. The next chapter is about seeing what it does in production, and about what the team does when, despite everything, something goes wrong.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b4/incidents/en">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">Chapter 12</p><h1>Observability and Incidents</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>measure reliability as customers feel it, with service level indicators and objectives</li>
+<li>use an error budget to decide between shipping features and fixing reliability</li>
+<li>alert on how fast the budget burns, instead of on every spike</li>
+<li>follow one click from the browser to the database, and see where its time went</li>
+<li>run an incident with clear roles: mitigate first, communicate, then resolve</li>
+<li>write a blameless postmortem whose actions really get done</li>
+</ul>
+</div>
+
+<p class="lead">Book 3 gave one service its logs, metrics, traces and health checks. A full-stack product needs more than signals: it needs to know <em>how reliable is reliable enough</em>, who to wake up and when, and what the team does at 20:15 on a busy evening when bookings start to fail. This chapter answers those three questions for Bit Booking, with one month of its traffic and one of its bookings traced from the click to the database, and ends with the write-up of a real-looking outage.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Here is a test of a team’s observability: a customer writes “booking was slow yesterday evening”. Can you find their request, see which part was slow, and say whether it affected one person or a thousand? If yes, in minutes, the rest of this chapter is about using that well.</p></div></div>
+
+<h2><span class="sec">12.1</span> <span>Reliability as the customer sees it</span></h2>
+
+<p>“Is the service up?” is the wrong question. A service can answer its health check and still fail one booking in four, or answer every request in eight seconds. Reliability is measured from the customer’s side, in three steps:</p>
+<ul>
+<li>A <dfn>service level indicator</dfn> (SLI) is a measurement of good experience, written as a ratio: <em>good events divided by all events</em>. For Bit Booking: the share of booking requests answered without a server error (availability), and the share answered within 400 ms (latency).</li>
+<li>A <dfn>service level objective</dfn> (SLO) is the target for an SLI over a period: “99.9% of booking requests succeed, over 30 days.”</li>
+<li>A <dfn>service level agreement</dfn> (SLA) is a promise to customers with consequences, such as refunds. It is a business document, and its numbers should be looser than the SLO, so that the team notices trouble long before the contract does.</li>
+</ul>
+
+<p>Choose SLIs for what customers actually do, the few journeys that matter (search, book, pay), and measure them as close to the customer as you can: at the load balancer, or better, in the browser. Count a 4xx answer as good (the customer made a mistake, the service did not), a 5xx or a timeout as bad. And never aim for 100%: the customer’s phone, network and browser fail more often than that, so they cannot tell the difference, and each extra nine costs far more than the last.</p>
+
+<h2><span class="sec">12.2</span> <span>The error budget</span></h2>
+
+<p>An objective of 99.9% has a useful other side: 0.1% of requests <em>may</em> fail. That allowance is the <dfn>error budget</dfn>. The example makes one month of Bit Booking’s traffic, minute by minute, always the same, with the three problems that month really had:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">traffic.ts</div><pre class="code"><span class="c line-bidi">// the same month every time: a fixed seed, not Math.random()</span>
+<span class="k">function</span> random(seed: number) {
+  <span class="k">return</span> () =&gt; {
+    seed = (seed * <span class="n">1664525</span> + <span class="n">1013904223</span>) % <span class="n">4294967296</span>;
+    <span class="k">return</span> seed / <span class="n">4294967296</span>;
+  };
+}
+
+<span class="c line-bidi">// what went wrong this month (day, hour, minute, how long, failure rate)</span>
+<span class="k">export</span> <span class="k">const</span> events = [
+  <span class="c line-bidi">// a deploy fails for 4 minutes and is rolled back</span>
+  { day: <span class="n">9</span>, at: <span class="n">14</span> * <span class="n">60</span> + <span class="n">2</span>, minutes: <span class="n">4</span>, rate: <span class="n">0.04</span> },
+  <span class="c line-bidi">// the database runs out of connections</span>
+  { day: <span class="n">17</span>, at: <span class="n">20</span> * <span class="n">60</span> + <span class="n">15</span>, minutes: <span class="n">35</span>, rate: <span class="n">0.25</span> },
+  <span class="c line-bidi">// a new release fails one payment page in 250, for two days</span>
+  { day: <span class="n">24</span>, at: <span class="n">0</span>, minutes: <span class="n">2</span> * <span class="n">1440</span>, rate: <span class="n">0.004</span> },
+];</pre></div>
+
+<p>Then it measures the month against the objective, and follows the budget day by day:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">slo.ts</div><pre class="code"><span class="k">const</span> requests = minutes.reduce((n, m) =&gt; n + m.requests, <span class="n">0</span>);
+<span class="k">const</span> failed = minutes.reduce((n, m) =&gt; n + m.failed, <span class="n">0</span>);
+<span class="c line-bidi">// a good request: answered, without a server error</span>
+<span class="k">const</span> availability = (requests - failed) / requests;
+<span class="c line-bidi">// the error budget: how many requests may fail this month</span>
+<span class="k">const</span> budget = Math.floor(requests * (<span class="n">1</span> - objective));</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># One month against a 99.9% objective</span>
+<span class="c">$ </span><span class="k">node slo.ts</span>
+requests          8,208,000
+failed                5,641
+availability        99.931%  objective 99.9%
+error budget          8,208  failed requests
+used                    69%
+objective kept
+
+day   left
+5      96% ███████████████████████████████████████
+10     93% █████████████████████████████████████
+15     89% ████████████████████████████████████
+17     66% ██████████████████████████
+20     64% █████████████████████████
+24     49% ████████████████████
+25     34% ██████████████
+30     31% █████████████</pre></div>
+
+<p>Read the bars. The objective was kept: 69% of the budget was used. The outage on day 17, the one that woke people up, used about a fifth of it in 35 minutes. But the biggest cost was quieter: from day 24, a release that broke one payment page in 250 for two days used more than a quarter of the month’s budget, and no customer phoned about it.</p>
+
+<p>The budget turns a vague argument (“should we slow down and fix things?”) into a rule the whole team, product included, agrees on in advance:</p>
+<ul>
+<li>Budget left: ship features, run experiments, take reasonable risks with releases.</li>
+<li>Budget nearly spent: releases slow down, and reliability work goes first.</li>
+<li>Budget spent: only fixes and reliability work ship until the period resets, and the biggest consumers get a postmortem.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: latency objectives</p><p>Latency is measured the same way, as a ratio: “99% of booking requests answered within 400 ms”. Do not set objectives on averages: an average of 120 ms can hide a thousand customers waiting eight seconds. Count each request as good or bad against the threshold, and the budget works exactly as for errors.</p></aside>
+
+<h2><span class="sec">12.3</span> <span>Alerting on the burn rate</span></h2>
+
+<p>An alert that wakes a person must mean: <em>something is hurting customers now, and needs a human now</em>. The alert many teams start with, “more than 1% of requests failed in the last minute”, fails that test in both directions. The <dfn>burn rate</dfn> is a better measure: how fast the budget is being spent, compared with the speed that would spend exactly all of it in 30 days. At a burn rate of 1, the budget lasts the month; at 14.4, it is gone in two days, and every hour of that uses 2% of it.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">alerts.ts</div><pre class="code"><span class="c line-bidi">// page a person only when the budget burns fast; open a ticket when it burns slowly</span>
+<span class="k">const</span> rules = [
+  <span class="c line-bidi">// the alert many teams start with: more than 1% failed in the last minute</span>
+  { name: <span class="s">&quot;naive: &gt;1% in 1 min&quot;</span>, check: (i: number) =&gt; rate(i, <span class="n">1</span>) &gt; <span class="n">0.01</span> },
+  <span class="c line-bidi">// a long window proves it matters, a short one proves it is still happening</span>
+  {
+    name: <span class="s">&quot;page: 14.4x for 1 h and 5 min&quot;</span>,
+    check: (i: number) =&gt; burns(i, <span class="n">14.4</span>, <span class="n">60</span>, <span class="n">5</span>),
+  },
+  {
+    name: <span class="s">&quot;page: 6x for 6 h and 30 min&quot;</span>,
+    check: (i: number) =&gt; burns(i, <span class="n">6</span>, <span class="n">360</span>, <span class="n">30</span>),
+  },
+  {
+    name: <span class="s">&quot;ticket: 3x for 1 d and 2 h&quot;</span>,
+    check: (i: number) =&gt; burns(i, <span class="n">3</span>, <span class="n">1440</span>, <span class="n">120</span>),
+  },
+];
+<span class="k">function</span> burns(i: number, factor: number, long: number, short: number) {
+  <span class="k">return</span> (
+    rate(i, long) &gt; factor * budgetRate &amp;&amp; rate(i, short) &gt; factor * budgetRate
+  );
+}</pre></div>
+
+<p>Each rule looks at two windows. The long one proves that enough budget is being spent to matter; the short one proves that it is still happening, so the alert stops soon after the problem does. Here are both approaches on the same month:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same month, two ways to alert</span>
+<span class="c">$ </span><span class="k">node alerts.ts</span>
+rule                             fired   real   false
+naive: &gt;1% in 1 min                456    291     165
+page: 14.4x for 1 h and 5 min        1      1       0 day 17 20:18
+page: 6x for 6 h and 30 min          1      1       0 day 17 20:26
+ticket: 3x for 1 d and 2 h           2      2       0 day 17 20:28, day 24 18:06</pre></div>
+
+<p>The naive alert fired 456 times in a month. 165 of those were for nothing, almost all between 23:00 and 07:00: with 40 requests a minute, one unlucky failure is already more than 1%. The other 291 were real, but almost all of them were the same slow burn, paging and stopping and paging again all night. Nobody answers the 456th page, so the outage on day 17 would have been one more ignored alert.</p>
+
+<p>The burn-rate rules fired four times. The fast page reached the on-call engineer three minutes into the outage; the slower rules confirmed it (an alert manager groups them into one incident). The four-minute blip on day 9 paged no one: rolled back in four minutes, it used about half a percent of the budget, and was worth a look in the morning, not a phone call. And the slow burn, which the naive alert could not tell from noise, opened a <em>ticket</em> on day 24 at 18:06: a task for working hours, before it could do real damage.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is “the health check answers” a poor SLI for a booking service?</li><li>The objective is 99.9% and the month had 8,208,000 requests. How many may fail, and what does the team do when most of that is spent by day 20?</li><li>Why does each burn-rate rule need a short window as well as a long one?</li></ol></aside>
+
+<h2><span class="sec">12.4</span> <span>One click, end to end</span></h2>
+
+<p>Book 3 passed a trace id from service to service in the <code>traceparent</code> header. The full picture uses <dfn>spans</dfn>: one span for each piece of work, with its trace id, its own id, its parent’s id, a start time and a duration. A small tracer shows everything that a real one, such as OpenTelemetry, records:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tracer.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Span = {
+  traceId: string;
+  spanId: string;
+  parentId?: string;
+  name: string;
+  service: string;
+  start: number;
+  ms?: number;
+};</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">tracer.ts</div><pre class="code"><span class="k">export</span> <span class="k">function</span> tracer(service: string) {
+  <span class="k">function</span> start(name: string, parent?: { traceId: string; spanId: string }): Span {
+    <span class="c line-bidi">// a child span keeps the trace id and records who called it</span>
+    <span class="k">return</span> {
+      traceId: parent?.traceId ?? id(<span class="n">16</span>),
+      spanId: id(<span class="n">8</span>),
+      parentId: parent?.spanId,
+      name,
+      service,
+      start: performance.timeOrigin + performance.now(),
+    };
+  }
+  <span class="k">async</span> <span class="k">function</span> span&lt;T&gt;(
+    name: string,
+    parent: Span,
+    work: (span: Span) =&gt; Promise&lt;T&gt;,
+  ) {
+    <span class="k">const</span> s = start(name, parent);
+    <span class="k">try</span> {
+      <span class="k">return</span> <span class="k">await</span> work(s);
+    } <span class="k">finally</span> {
+      end(s);
+    }
+  }</pre></div>
+
+<p>The trace does not start at the API. It starts where the customer is, in the browser, when they click Book; the page’s fetch carries the header, exactly as the services did:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">browser.ts</div><pre class="code"><span class="k">import</span> { flush, inject, tracer } <span class="k">from</span> <span class="s">&quot;./tracer.ts&quot;</span>;
+
+<span class="k">const</span> { start, span, end } = tracer(<span class="s">&quot;web&quot;</span>);
+<span class="c line-bidi">// the trace starts in the browser, when the customer clicks</span>
+<span class="k">const</span> click = start(<span class="s">&quot;click Book&quot;</span>);
+<span class="k">await</span> span(<span class="s">&quot;fetch POST /bookings&quot;</span>, click, <span class="k">async</span> (s) =&gt; {
+  <span class="c line-bidi">// the same header that Book 3 passed between services, now from the browser</span>
+  <span class="k">const</span> answer = <span class="k">await</span> fetch(<span class="s">&quot;http://localhost:4000/bookings&quot;</span>, {
+    method: <span class="s">&quot;POST&quot;</span>,
+    headers: inject(s),
+  });
+  <span class="k">return</span> answer.json();
+});
+end(click);
+<span class="k">await</span> flush();
+console.log(click.traceId);</pre></div>
+
+<p>The API and the payment service each continue the trace from the incoming header, wrap their work in child spans, and send their spans in a batch to a <dfn>collector</dfn> once the response is on its way:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">api.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { setTimeout as sleep } <span class="k">from</span> <span class="s">&quot;node:timers/promises&quot;</span>;
+<span class="k">import</span> { extract, flush, inject, tracer } <span class="k">from</span> <span class="s">&quot;./tracer.ts&quot;</span>;
+
+<span class="k">const</span> { start, span, end } = tracer(<span class="s">&quot;api&quot;</span>);
+
+createServer(<span class="k">async</span> (request, response) =&gt; {
+  <span class="k">const</span> root = start(
+    <span class="s">`${request.method} ${request.url}`</span>,
+    extract(request.headers.traceparent),
+  );
+  <span class="k">await</span> span(<span class="s">&quot;db SELECT slot&quot;</span>, root, () =&gt; sleep(<span class="n">6</span>));
+  <span class="k">const</span> charge = <span class="k">await</span> span(<span class="s">&quot;call payments&quot;</span>, root, <span class="k">async</span> (s) =&gt; {
+    <span class="k">const</span> answer = <span class="k">await</span> fetch(<span class="s">&quot;http://localhost:4001/charges&quot;</span>, {
+      method: <span class="s">&quot;POST&quot;</span>,
+      headers: inject(s),
+    });
+    <span class="k">return</span> answer.json();
+  });
+  <span class="k">await</span> span(<span class="s">&quot;db INSERT booking&quot;</span>, root, () =&gt; sleep(<span class="n">4</span>));
+  <span class="k">await</span> span(<span class="s">&quot;queue booking.created&quot;</span>, root, () =&gt; sleep(<span class="n">1</span>));
+  end(root);
+  response.end(JSON.stringify({ booking: <span class="n">812</span>, ...charge }));
+  <span class="k">await</span> flush();
+}).listen(<span class="n">4000</span>);</pre></div>
+
+<p>Three processes, three sets of spans, one trace id. The collector puts them back together, and a waterfall draws them on one time line:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Book a slot, and draw its trace</span>
+<span class="c">$ </span><span class="k">TRACE=$(node browser.ts)</span>
+<span class="c">$ </span><span class="k">node waterfall.ts $TRACE</span>
+trace e257ee16…  total 105 ms
+click Book                  web      |████████████████████████|  105 ms
+  fetch POST /bookings      web      |████████████████████████|  105 ms
+    POST /bookings          api      |        ███████████████ |   66 ms
+      db SELECT slot        api      |        █               |    6 ms
+      call payments         api      |         ████████████   |   54 ms
+        POST /charges       payments |         ████████████   |   51 ms
+          fraud check       payments |         ██             |   10 ms
+          provider checkout payments |            █████████   |   40 ms
+      db INSERT booking     api      |                     █  |    4 ms
+      queue booking.created api      |                      █ |    1 ms</pre></div>
+
+<p>The tree shows who called whom; the bars show when. Two things in it no single service could tell you. The database and the queue are a few milliseconds; most of the server’s time is the payment service, and inside it, the payment provider. And the customer waited longer than the API worked: the gap before <code>POST /bookings</code> starts is the time between the click and the server, which in a real browser is connection set-up, DNS, TLS and the network. Only a trace that starts in the browser shows it.</p>
+
+<h2><span class="sec">12.5</span> <span>Finding the slow part</span></h2>
+
+<p>Now the payment provider has a bad evening, and a customer writes that booking is slow. With their trace id (printed in an error report or found by their account and time), the question “why?” takes one command:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The payment provider is slow: where did the time go?</span>
+<span class="c">$ </span><span class="k">TRACE=$(node browser.ts)</span>
+<span class="c">$ </span><span class="k">node waterfall.ts $TRACE</span>
+trace d5a78003…  total 1057 ms
+click Book                  web      |████████████████████████| 1057 ms
+  fetch POST /bookings      web      |████████████████████████| 1057 ms
+    POST /bookings          api      | ███████████████████████| 1025 ms
+      db SELECT slot        api      | █                      |    6 ms
+      call payments         api      | ███████████████████████| 1013 ms
+        POST /charges       payments | ███████████████████████| 1010 ms
+          fraud check       payments | █                      |   10 ms
+          provider checkout payments | ███████████████████████| 1000 ms
+      db INSERT booking     api      |                       █|    4 ms
+      queue booking.created api      |                       █|    1 ms</pre></div>
+
+<p>The answer is in the shape: every bar on the payment path is long, and the deepest long bar is <code>provider checkout</code>, almost all of the customer’s wait. It is not the database, not the API, not the network. Looking at the deepest long span is the habit; the next step is the metric for that span over all requests, to see whether it is one customer or everyone, and then the fixes of Chapter 7: a timeout, a circuit breaker, and a fallback.</p>
+
+<p>Three things make tracing work in production. <dfn>Sampling</dfn>: keeping every trace is expensive, so keep a share of ordinary ones and all the slow and failed ones (deciding after the trace is complete is called tail sampling). <em>Automatic instrumentation</em>: OpenTelemetry’s libraries create the spans for HTTP, database and queue calls, so the code above is mostly written for you. And <em>privacy</em>: span names and attributes must not contain personal data, card numbers or tokens, for the same reasons as logs.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: traces from the browser</p><p>The browser sends its spans to your collector over the internet, so the collector’s address is public. Accept only spans (not arbitrary data), limit their size and rate, allow your own origin in CORS, and send <code>traceparent</code> only to your own APIs: a third-party server has no business receiving your trace ids.</p></aside>
+
+<h2><span class="sec">12.6</span> <span>When something goes wrong</span></h2>
+
+<p>An <dfn>incident</dfn> is an unplanned event that hurts customers, or will soon, and needs a coordinated response. Most teams use a few <dfn>severity</dfn> levels, decided by impact, not by how interesting the cause is:</p>
+
+<table>
+<thead><tr><th>Level</th><th>Meaning</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>SEV-1</td><td>Many customers cannot book or pay</td><td>Page now, incident commander, status page, updates every 30 minutes</td></tr>
+<tr><td>SEV-2</td><td>A feature is broken or slow for some customers</td><td>Page in working hours, a named owner, status page if visible</td></tr>
+<tr><td>SEV-3</td><td>Minor, with a workaround</td><td>A ticket, fixed in normal work</td></tr>
+</tbody>
+</table>
+
+<p>A SEV-1 is too much for one person, so the work is split into roles, each held by one named person:</p>
+<ul>
+<li>The <dfn>incident commander</dfn> coordinates: decides, assigns, keeps the timeline. They do not debug; someone has to see the whole.</li>
+<li>The people <em>working the problem</em> investigate and make changes, and say aloud what they are about to change.</li>
+<li>The <em>communications lead</em> updates the status page, support and the business, on a schedule, in plain words.</li>
+</ul>
+
+<p>The order of work matters more than anything else: <strong>mitigate first, understand later</strong>. Stop the harm with the fastest safe action, even before you know the cause: roll back the release, switch off a feature flag, move traffic away, add capacity. The root cause can wait for daylight; the customers cannot. Chapter 10 made each of those actions one practised step, and this is why.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: declare early</p><p>Declaring an incident costs a message in a channel; not declaring one costs the minutes in which everyone thought someone else was on it. If you are not sure, declare it, at a lower severity, and close it if it was nothing. Teams that declare often get good at it; teams that wait for certainty start late.</p></aside>
+
+<p>Every alert that pages someone links to a <dfn>runbook</dfn>: what the alert means, how to check what customers see, the safe first actions, and who to call. It is written for a tired person at three in the morning, who has never seen this failure before.</p>
+
+<h2><span class="sec">12.7</span> <span>After the incident</span></h2>
+
+<p>The incident is over when customers are fine. The learning starts after, with a <dfn>postmortem</dfn>: a written account of what happened, why, and what will change. It is <dfn>blameless</dfn>: it assumes people acted reasonably with what they knew at the time, and asks why the system let a reasonable action cause harm. “Karim deployed a bad release” teaches nothing; “a release could exhaust the database connections without any test or limit noticing” leads to three fixes. Here is the one for day 17:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">postmortem.md</div><pre class="code md"><b># Postmortem: bookings failed for 35 minutes (day 17)</b>
+
+Status: final · Severity: SEV-1 · Incident commander: Mona · Written by: Karim
+
+<b>## Summary</b>
+From 20:15 to 20:50, one booking request in four failed with &quot;Server error&quot;.
+1,822 of 7,289 requests failed: 22% of the month&#x27;s error budget in 35 minutes.
+
+<b>## Impact</b>
+- Customers: 1,822 failed requests; an estimated 270 people could not book.
+- Business: about 90 bookings lost, on a busy evening.
+- Budget left this month: 66%; releases go on, after the actions below.
+
+<b>## Timeline (Cairo time)</b>
+- 20:00  Release 4.12 deployed; it opens a new database connection for each report.
+- 20:15  The connection pool is exhausted; requests start to fail.
+- 20:18  The fast burn-rate alert pages the on-call engineer (Karim).
+- 20:21  Karim declares a SEV-1; Mona takes incident command; status page updated.
+- 20:34  Rolling back 4.12 does not help: the open connections remain.
+- 20:46  Reports are switched off with their feature flag; failures stop.
+- 20:50  Error rate back to normal; monitoring for 30 minutes.
+- 21:20  Incident closed; status page resolved.
+
+<b>## Root cause and why it was possible</b>
+- Reports opened a connection per request instead of using the pool.
+- The load test used 10 reports a minute; real evenings have 400.
+- The database had no limit per application user, so reports used every connection.
+
+<b>## What went well</b>
+- The alert paged three minutes after the start.
+- Roles were clear; the status page was updated within 6 minutes.
+
+<b>## What went badly</b>
+- 13 minutes were spent on a rollback that could not work.
+- The runbook did not mention the reports feature flag.
+
+<b>## Actions</b>
+| Action                                             | Owner  | Due    |
+|----------------------------------------------------|--------|--------|
+| Use the shared pool for reports                    | Karim  | day 19 |
+| Connection limit per database user                 | Sara   | day 21 |
+| Load test with production-like report volume       | Omar   | day 24 |
+| Runbook: &quot;database connections exhausted&quot;          | Mona   | day 20 |
+| Alert when the pool is 80% used                    | Sara   | day 21 |</pre></div>
+
+<p>Notice what makes it useful. The impact is in customers and money, from the SLI and the traces, not in adjectives. The timeline has times, so the slow parts (13 minutes on a rollback that could not work) are visible. “Why was it possible” goes past the bug to the missing guards. And every action has an owner and a date, and is a ticket in the same tracker as feature work, reviewed until it is done. A postmortem whose actions are not done is just a story.</p>
+
+<p>Finally, step back from single incidents. Once a quarter, look at all of them together, and at where the error budget went: here, more went on a quiet two-day bug than on the outage everyone remembers. The pattern across incidents, not any single one, is what tells the team where to invest.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Alerting on causes (CPU, memory)</td><td>Pages that do not hurt customers, and misses that do</td><td>Alert on SLIs and burn rate; show causes on dashboards</td></tr>
+<tr><td>Thresholds on one minute</td><td>Hundreds of pages, nobody listens</td><td>Multi-window burn-rate alerts</td></tr>
+<tr><td>An objective of 100%</td><td>No room for any change, and it is missed anyway</td><td>An objective customers notice, and a budget</td></tr>
+<tr><td>Objectives on averages</td><td>Slow customers hidden by fast ones</td><td>Ratios against a threshold</td></tr>
+<tr><td>Traces that start at the server</td><td>The customer’s wait is never seen</td><td>Start the trace in the browser</td></tr>
+<tr><td>Debugging before mitigating</td><td>Customers wait for the root cause</td><td>Roll back or switch off first</td></tr>
+<tr><td>Everyone debugging, nobody coordinating</td><td>Two fixes at once, no updates</td><td>An incident commander and roles</td></tr>
+<tr><td>Postmortems that name a culprit</td><td>People hide mistakes next time</td><td>Blameless: ask why the system allowed it</td></tr>
+<tr><td>Actions without owners</td><td>The same incident again</td><td>An owner, a date, a ticket for each action</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>An <strong>SLI</strong> is good events over all events, measured near the customer; an <strong>SLO</strong> is its target over a period; an <strong>SLA</strong> is a looser promise with consequences.</li>
+<li>The <strong>error budget</strong> is what the SLO allows to fail; it decides, in advance, between features and reliability.</li>
+<li>Alert on the <strong>burn rate</strong> with a long and a short window: page for fast burns, open tickets for slow ones.</li>
+<li><strong>Spans</strong> with parents and times, started in the <strong>browser</strong>, show where one request’s time went; look at the deepest long span.</li>
+<li>Sample traces, keep personal data out of them, and protect a public collector.</li>
+<li>In an incident: <strong>declare early</strong>, give roles, <strong>mitigate first</strong>, communicate on a schedule.</li>
+<li>Write <strong>blameless postmortems</strong> with a timeline, impact in numbers, and actions with owners and dates.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because it measures whether one endpoint answers, not whether customers can book. The service can pass its health check while one booking in four fails, or every booking takes eight seconds. A good SLI counts the customer’s real requests: the share of booking requests answered without a server error, and the share answered fast enough. 2. 0.1% of them: 8,208 requests. If most of that is spent by day 20, the team follows the rule agreed in advance: releases slow down and become more careful, reliability work (the fixes from the postmortems) goes before new features, and if the budget runs out, only fixes ship until the 30-day window moves on. 3. The long window alone would keep the alert firing for an hour or more after the problem stopped, because the bad minutes are still inside it; the short window alone would fire on brief spikes that cost little budget. Requiring both means the alert fires only when a meaningful amount of budget is spent <em>and</em> the problem is still happening, and it resolves within minutes of the fix.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project works on the same month of traffic and the same traced booking. Keep the output of each run.</p>
+
+<div class="project">
+<p class="project-label">Project 12.1 · Easy</p>
+<h3>A latency objective</h3>
+<p class="project-goal">Add a latency SLI to the month, and its budget.</p>
+<p class="project-skills"><strong>You will practise:</strong> ratio SLIs, thresholds and budgets.</p>
+<ol class="steps">
+<li>In <code>traffic.ts</code>, give each minute a count of <code>slow</code> requests (over 400 ms), with a small background and a slow evening on day 12.</li>
+<li>In <code>slo.ts</code>, measure “99% of requests within 400 ms” and print its budget beside the availability one.</li>
+<li>Add a burn-rate page for latency, and show that it fires on day 12 and nowhere else.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a request that failed is neither fast nor slow for latency; count latency only over successful requests, or the two SLIs will report the same outage twice.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 12.2 · Medium</p>
+<h3>Errors in the trace</h3>
+<p class="project-goal">Mark failed spans, and keep every failed trace.</p>
+<p class="project-skills"><strong>You will practise:</strong> span status, error propagation, and tail sampling.</p>
+<ol class="steps">
+<li>Add <code>status: "ok" | "error"</code> and an <code>error</code> message to spans, set in the <code>finally</code> of <code>span()</code>.</li>
+<li>Make the payment service fail one request in five, and show the failed span in red (or with a mark) in the waterfall.</li>
+<li>In the collector, keep 10% of successful traces and all failed or slow ones, deciding only when the root span arrives.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> spans from different services arrive at different times; wait a few seconds after the root span before deciding, and drop the rest of a trace you did not keep.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 12.3 · Challenge</p>
+<h3>A canary judged by its objective</h3>
+<p class="project-goal">Combine this part of the book: the pipeline releases a canary, the SLI decides whether it continues, and an incident is declared if it does not.</p>
+<p class="project-skills"><strong>You will practise:</strong> canary analysis, automated rollback, and incident records.</p>
+<ol class="steps">
+<li>Run two versions of the API behind a small proxy that sends 10% of the traffic to the new one, and label every span with its version.</li>
+<li>Every minute, compute the availability and latency SLIs for each version from the collector.</li>
+<li>If the canary burns budget more than twice as fast as the old version for five minutes, send all traffic back and record an incident with its start, its detection and its rollback times.</li>
+<li>Release a good version and a bad one, and show both outcomes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> compare the canary with the old version at the same time, not with yesterday: a busy evening raises errors for both, and only the difference is the canary’s fault.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> For each, say whether it is an SLI, an SLO or an SLA: “refunds of 10% if availability falls below 99.5% in a month”; “the share of searches answered within 300 ms”; “99.9% of payments succeed over 28 days”.</li>
+<li><span class="level">Easy</span> In the waterfall of section 12.4, the customer waited noticeably longer than the API worked. Where did the rest go, and why can no server log show it?</li>
+<li><span class="level medium">Medium</span> At what failure rate does the 14.4x rule fire for an SLO of 99.9%? And for 99.5%? What does that say about choosing an objective that is too strict?</li>
+<li><span class="level medium">Medium</span> In the middle of a SEV-1, the engineer who wrote the change says “give me ten minutes, I think I see the bug”. What does the incident commander decide, and why?</li>
+<li><span class="level hard">Challenge</span> Rewrite these postmortem lines in a blameless way, and add one action to each: “Sara forgot to add an index”; “Omar ran the migration on production by mistake”; “nobody noticed the disk was full”.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 13</p>
+<p>The product is designed, delivered and watched. The last part of the book is about the people around it: how a senior engineer leads technical decisions, writes them down, and helps a team choose well.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -4132,6 +4598,16 @@ export async function GET(request: Request) {
 <li>Both read the same state, compute plans from it, and start changing resources: they may both create the same resource (two databases, or a name conflict that fails half way), or one may delete what the other just created. Then both write the state back, and the second write overwrites the first, so the state no longer records resources that exist: the next plan wants to create them again, or loses track of them until someone imports them by hand. Locking makes the second apply wait (or fail) until the first finishes.</li>
 <li>Stop: replacing the database container means destroying it and creating a new one, and if the data were not on a separate volume it would be gone. Before approving, confirm where the data lives (here, the named volume, which survives), take a backup and test that it restores, plan the downtime, and consider whether the upgrade should rather happen through the managed service’s own upgrade process. In the code, add <code>lifecycle { prevent_destroy = true }</code> to the database, so that any plan that would destroy it fails until someone removes that line on purpose, in a reviewed change.</li>
 <li>The infrastructure code covers the network, the platform for the application, the database server and its settings, storage buckets, the load balancer and the permissions between them. It does not cover the data (the database’s contents and the uploaded files), the secrets’ values, DNS records if they are managed elsewhere, or anything changed by hand. Recovery in order: (1) apply the code with the new region’s variables, creating an empty environment; (2) restore the database from the latest backup copied to another region, and the files from replicated storage; (3) load the secrets into the new environment’s secret store from their backup; (4) deploy the last released image; (5) run the smoke tests and the contract tests; (6) switch DNS to the new load balancer; (7) watch the metrics. Practise it, on a schedule, with a timer.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 12</h2>
+<ol class="exercises">
+<li>“Refunds of 10% if availability falls below 99.5% in a month” is an SLA: a promise to customers with a consequence, and looser than the internal objective. “The share of searches answered within 300 ms” is an SLI: a measurement, good events over all events, with no target. “99.9% of payments succeed over 28 days” is an SLO: a target for an SLI over a period.</li>
+<li>Into the time between the click and the moment the API received the request, and the time for the answer to travel back: opening the connection, and in a real browser also DNS, TLS, the network, and the browser’s own queue of requests. No server log can show it because the server only knows about a request once it has arrived; from its side, that time does not exist. A trace that starts in the browser measures it as the gap before the server’s span begins.</li>
+<li>It fires when the failure rate is above 14.4 times the budget rate, in both windows. For 99.9% the budget rate is 0.1%, so the page fires above 1.44% failures. For 99.5% the budget rate is 0.5%, so it fires above 7.2%. A stricter objective makes every rule more sensitive: with an objective stricter than customers need, small, harmless problems page people, the budget is always spent, and the team either ignores the alerts or stops releasing. Choose the objective customers actually notice, not the highest number that sounds good.</li>
+<li>The commander keeps the priority on mitigation: if a safe action exists that stops the harm now (roll back, switch off the feature flag), it happens now, while that engineer keeps investigating in parallel. Ten minutes of a SEV-1 is a lot of failed customers, “I think I see the bug” is a guess, and a fix written under pressure and deployed without review is a common way to make an incident worse. Once customers are fine, the fix goes through the normal pipeline. If no mitigation exists, the commander gives the ten minutes, with a clear time to check in and a second person watching.</li>
+<li>“A query on <code>bookings</code> without an index reached production; review and tests did not show its cost, because test tables are small.” Action: run the slow-query check of Book 3’s performance chapter against a copy of production-sized data in the pipeline, and alert on queries over 100 ms. “A migration ran against production from a laptop, because production credentials were available there and the command looked the same for every environment.” Action: only the pipeline can reach the production database; remove production credentials from laptops, and make the target environment visible in the prompt. “The disk filled up without warning, because there was no alert on disk usage and the log volume had grown with traffic.” Action: alert when a disk is 80% full and on the rate it fills, and rotate and limit the logs.</li>
 </ol>
 
 </section>
