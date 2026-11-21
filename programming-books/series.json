@@ -1056,7 +1056,8 @@
           "chapters": [
             {
               "en": "Everything Is a Widget",
-              "ar": "كل شيء Widget"
+              "ar": "كل شيء Widget",
+              "src": "b5/widgets"
             },
             {
               "en": "Layouts That Fit Every Screen",

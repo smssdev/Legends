@@ -1,10 +1,10 @@
 // Screenshots of a Flutter app running in a browser, at phone size (390 x 780 CSS pixels, scale 2).
-//   node snap.cjs <build/web folder> <out.png> ["x,y x,y"] [wait ms]   serves a release build, taps, shoots
+//   node snap.cjs <build/web folder> <out.png> ["x,y x,y"] [wait ms] [?query]   serves a release build, taps, shoots
 //   node snap.cjs <http://url> <first.png> --live <signal folder>      for hot reload: shoots first.png, writes
 //        <signal>/ready, waits for <signal>/go, then shoots <signal>/after.png into the path in <signal>/go
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
-const [src, out, a3 = '', a4 = '5000'] = process.argv.slice(2);
+const [src, out, a3 = '', a4 = '5000', query = ''] = process.argv.slice(2);
 const types = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.html': 'text/html', '.wasm': 'application/wasm',
   '.json': 'application/json', '.png': 'image/png', '.otf': 'font/otf', '.ttf': 'font/ttf' };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -39,7 +39,7 @@ async function serve() {
   });
   await new Promise(r => srv.listen(0, r));
   const [b, page] = await browser();
-  await page.goto(`http://localhost:${srv.address().port}/`);
+  await page.goto(`http://localhost:${srv.address().port}/${query}`);
   await sleep(+a4);
   for (const t of a3.split(' ').filter(Boolean)) {
     const [x, y] = t.split(',').map(Number);

@@ -197,7 +197,7 @@ pre.code.md { unicode-bidi: plaintext; }
 .output pre .k { color: #ffffff; font-weight: 600; }
 .output pre .c { color: #a5a3c9; }
 figure.phone-shot { background: none; padding: 0; }
-.phone { width: 2.15in; margin: 0 auto; border: 5pt solid #1e1b4b; border-radius: 18pt; overflow: hidden; background: #fff; box-shadow: 0 2pt 6pt rgba(30, 27, 75, 0.25); }
+.phone { width: 1.9in; margin: 0 auto; border: 5pt solid #1e1b4b; border-radius: 18pt; overflow: hidden; background: #fff; box-shadow: 0 2pt 6pt rgba(30, 27, 75, 0.25); }
 .phone img { display: block; width: 100%; height: auto; }
 .phones { display: flex; justify-content: center; gap: 0.3in; break-inside: avoid; }
 .phones figure.phone-shot { margin: 0.6em 0; }

@@ -1,0 +1,313 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/widgets/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Everything Is a Widget</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>see a screen as a tree of widgets, and read the code that builds it</li>
+<li>show and style text, boxes, icons and buttons</li>
+<li>write your own widgets, and reuse them</li>
+<li>make a screen that changes when the user taps, with a <code>StatefulWidget</code> and <code>setState</code></li>
+<li>take colours and text sizes from the theme</li>
+<li>test a widget by tapping it in a test</li>
+</ul>
+</div>
+
+<p class="lead">Part I taught you Dart. Part II uses it to build screens. In Flutter, every piece of a screen is a widget: the text, the icon, the button, the space between them, even the centring. You will spend the rest of the book combining widgets, so this chapter takes the most important ones one at a time, each in a small app you can run, and ends with a real piece of an app: a drink card for Bit’s café.</p>
+
+<aside class="bit" data-mood="wow"><p>Every screenshot in this chapter is the real app, built from the code beside it. Type each one, run it, and change it with hot reload until the picture on your screen and the code in your head match.</p></aside>
+
+<h2>{{n}}.1 A screen is a tree</h2>
+
+<p>Each example in this chapter is a complete app. Create a project for the chapter with <code>flutter create</code>, and put each example in <code>lib/main.dart</code> in turn (or keep them as separate files and run one with <code>flutter run -t lib/tree.dart</code>). Here is the first:</p>
+
+<pre data-code="lib/tree.dart" data-title="lib/tree.dart"></pre>
+
+<figure data-img="shots/tree.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: Five widgets you can see, and four you cannot.</figcaption>
+</figure>
+
+<p>A widget is a description of part of the screen. Widgets contain other widgets, so the whole screen is a <dfn>widget tree</dfn>: <code>MaterialApp</code> holds a <code>Scaffold</code>, which holds an <code>AppBar</code> and a <code>Center</code>, which holds a <code>Column</code>, which holds an icon and two texts.</p>
+
+<figure>
+<svg viewBox="0 0 520 220" role="img" aria-label="The widget tree: MaterialApp, Scaffold, AppBar with Text, Center with Column, Column with Icon, Text and Text">
+<g font-family="JetBrains Mono" font-size="12" text-anchor="middle">
+<g stroke="#4338ca" stroke-width="1.8" fill="none">
+<path d="M260,34 L260,52"/><path d="M260,74 L140,92"/><path d="M260,74 L370,92"/>
+<path d="M140,114 L140,132"/><path d="M370,114 L370,132"/>
+<path d="M370,154 L270,172"/><path d="M370,154 L370,172"/><path d="M370,154 L470,172"/>
+</g>
+<g fill="#e0e7ff" stroke="#4338ca" stroke-width="1.8">
+<rect x="200" y="12" width="120" height="22" rx="6"/><rect x="210" y="52" width="100" height="22" rx="6"/>
+<rect x="95" y="92" width="90" height="22" rx="6"/><rect x="325" y="92" width="90" height="22" rx="6"/>
+<rect x="105" y="132" width="70" height="22" rx="6"/><rect x="325" y="132" width="90" height="22" rx="6"/>
+</g>
+<g fill="#e6f7f4" stroke="#0f766e" stroke-width="1.8">
+<rect x="235" y="172" width="70" height="22" rx="6"/><rect x="335" y="172" width="70" height="22" rx="6"/><rect x="435" y="172" width="70" height="22" rx="6"/>
+</g>
+<g fill="#111"><text x="260" y="27">MaterialApp</text><text x="260" y="67">Scaffold</text><text x="140" y="107">AppBar</text>
+<text x="370" y="107">Center</text><text x="140" y="147">Text</text><text x="370" y="147">Column</text>
+<text x="270" y="187">Icon</text><text x="370" y="187">Text</text><text x="470" y="187">Text</text></g>
+</g>
+</svg>
+<figcaption>Figure {{n}}.2: The tree of the app above. Each box is a widget; the green ones are the content of the column.</figcaption>
+</figure>
+
+<p>Some widgets draw something you can see: <code>Text</code>, <code>Icon</code>, the coloured bar of <code>AppBar</code>. Others only arrange their children: <code>Center</code> puts its one <code>child</code> in the middle of the space it has; <code>Column</code> puts its <code>children</code> one under the other; <code>mainAxisSize: MainAxisSize.min</code> makes the column only as tall as its content, so that <code>Center</code> can centre it. Arranging is the subject of Chapter {{n+1}}; this chapter is about the pieces themselves.</p>
+
+<p>Look at <code>const</code> in front of <code>Center</code>. Everything under it is known before the app runs, so Dart builds it once and reuses it every time the screen is drawn. In Flutter, a screen is rebuilt very often, and <code>const</code> is a free way to make that cheap. The analyzer reminds you where you could add it.</p>
+
+<h2>{{n}}.2 Text</h2>
+
+<pre data-code="lib/text.dart" data-from="home:" data-to="^    );" data-title="lib/text.dart (part)"></pre>
+
+<figure data-img="shots/text.png" data-frame="phone">
+<figcaption>Figure {{n}}.3: Three texts, three styles. The description stops after two lines.</figcaption>
+</figure>
+
+<p>A <code>Text</code> shows a string. How it looks is all in its <code>TextStyle</code>: <code>fontSize</code> in logical pixels, <code>fontWeight</code>, <code>color</code>, <code>height</code> (the space between lines, as a multiple of the font size) and <code>letterSpacing</code>. <code>maxLines</code> and <code>overflow: TextOverflow.ellipsis</code> stop a long text after two lines with three dots: always think about what happens when a text is longer than you expected, because one day it will be.</p>
+
+<p>A <dfn>logical pixel</dfn> is Flutter’s unit of size. A phone with a sharp screen packs two or three real pixels into each logical one, so a text of size 18 is the same physical size on every phone. The screenshots in this book are 390 logical pixels wide, the width of a typical phone.</p>
+
+<h2>{{n}}.3 Boxes and space</h2>
+
+<pre data-code="lib/box.dart" data-from="home:" data-to="^    );" data-title="lib/box.dart (part)"></pre>
+
+<figure data-img="shots/box.png" data-frame="phone">
+<figcaption>Figure {{n}}.4: A Container with a width, padding, a margin and a decoration.</figcaption>
+</figure>
+
+<p><code>Container</code> is the Swiss army knife of widgets. It can give its child:</p>
+<ul>
+<li>a size: <code>width</code> and <code>height</code>;</li>
+<li><dfn>padding</dfn>: space <em>inside</em> the box, between its edge and its child;</li>
+<li>a <dfn>margin</dfn>: space <em>outside</em> the box, between it and its neighbours;</li>
+<li>a <code>decoration</code>: a <code>BoxDecoration</code> with a colour, rounded corners (<code>borderRadius</code>), a <code>border</code> and shadows.</li>
+</ul>
+<p><code>EdgeInsets.all(24)</code> gives the same space on all four sides; <code>EdgeInsets.symmetric(vertical: 8)</code> only above and below. When you only need one of these, use the smaller widget made for it: <code>Padding</code> for padding alone, <code>SizedBox</code> for a fixed size or a gap (<code>SizedBox(height: 8)</code> is the most common widget in Flutter), <code>DecoratedBox</code> for a decoration. They say exactly what they do.</p>
+
+<h2>{{n}}.4 Buttons and icons</h2>
+
+<pre data-code="lib/buttons.dart" data-from="home:" data-to="^    );" data-title="lib/buttons.dart (part)"></pre>
+
+<figure data-img="shots/buttons.png" data-frame="phone">
+<figcaption>Figure {{n}}.5: Material’s buttons, from the most important to the least. “Coming soon” is turned off.</figcaption>
+</figure>
+
+<p>Material gives buttons different weights, so that the most important action on a screen stands out:</p>
+<table>
+<thead><tr><th>Button</th><th>Use it for</th></tr></thead>
+<tbody>
+<tr><td><code>FilledButton</code></td><td>The main action of the screen: usually one per screen</td></tr>
+<tr><td><code>OutlinedButton</code></td><td>An important action that is not the main one</td></tr>
+<tr><td><code>TextButton</code></td><td>A minor action: “cancel”, “maybe later”</td></tr>
+<tr><td><code>IconButton</code></td><td>An action shown as an icon: like, share, delete</td></tr>
+</tbody>
+</table>
+<p>Every button has <code>onPressed</code>: the function to run when it is pressed, often written as an anonymous function <code>() {}</code> (which here does nothing). When <code>onPressed</code> is <code>null</code>, the button is <dfn>disabled</dfn>: Flutter draws it greyed out and ignores taps. You will use that to switch buttons off when their action makes no sense, as the café card does at the end of the chapter.</p>
+<p>Icons come from <code>Icons</code>, which holds more than two thousand Material icons, each with a name: <code>Icons.favorite_border</code>, <code>Icons.share</code>, <code>Icons.add</code>. The <code>spacing: 12</code> on the column puts 12 pixels between its children, and the <code>Row</code> puts the three icon buttons side by side.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>To find an icon, search <code>fonts.google.com/icons</code> for what you mean (“coffee”, “cart”), then write the name in snake_case after <code>Icons.</code>. In VS Code, the editor shows a small picture of each icon next to its name as you type.</p></aside>
+
+<h2>{{n}}.5 Your own widgets</h2>
+
+<p>When the same arrangement appears several times, make it a widget of its own. A contact page shows three rows, each with an icon and a text:</p>
+
+<pre data-code="lib/contact.dart" data-from="^class InfoRow" data-to="^}#1" data-title="lib/contact.dart (part)"></pre>
+<pre data-code="lib/contact.dart" data-from="body: const Padding" data-to="^        )," data-title="lib/contact.dart (the page)"></pre>
+
+<figure data-img="shots/contact.png" data-frame="phone">
+<figcaption>Figure {{n}}.6: One widget, InfoRow, used three times.</figcaption>
+</figure>
+
+<p><code>InfoRow</code> is a <code>StatelessWidget</code>: a class with <code>final</code> fields, a <code>const</code> constructor with named parameters, and a <code>build</code> method that returns its tree. You already know every part of it from Chapter 3. Using it looks exactly like using Flutter’s own widgets: <code>InfoRow(icon: Icons.phone, text: '...')</code>. Change the padding or the icon colour in one place, and all three rows change.</p>
+
+<p>Two details appear in every widget you will write. The constructor takes <code>super.key</code>: a <dfn>key</dfn> is an optional identity that helps Flutter tell widgets apart in lists, which Chapter 7 explains; pass it on and forget it for now. And <code>build</code> receives a <code>BuildContext</code>: the widget’s place in the tree, which Section {{n}}.7 uses.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Make widgets small. When a <code>build</code> method grows past one screen of code, or the same few widgets appear twice, cut a piece out into a widget with a clear name. Small widgets are easier to read, to test, and to rebuild quickly, because Flutter rebuilds only the widgets that changed.</p></aside>
+
+<h2>{{n}}.6 Widgets that change: StatefulWidget</h2>
+
+<p>Every widget so far looks the same for ever. A like button must change when it is tapped: it has to remember something. That memory is called <dfn>state</dfn>, and a widget with state is a <code>StatefulWidget</code>:</p>
+
+<pre data-code="lib/like.dart" data-from="^// " data-title="lib/like.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/like-0.png" data-frame="phone">
+<figcaption>When the app opens</figcaption>
+</figure>
+<figure data-img="shots/like-3.png" data-frame="phone">
+<figcaption>After three taps on the heart</figcaption>
+</figure>
+</div>
+
+<p>A stateful widget comes in two classes:</p>
+<ul>
+<li><code>LikePage</code>, the widget itself, is still immutable: Flutter may throw it away and make a new one at any time. Its only job is <code>createState</code>.</li>
+<li><code>_LikePageState</code> is the <dfn>State</dfn> object. Flutter creates it once and keeps it while the widget is on the screen, so its fields, here <code>likes</code>, survive every rebuild. It is private (the underscore), because nobody outside needs it.</li>
+</ul>
+
+<p>The key line is <code>setState</code>. It does two things: it runs the function you give it, which changes the state, and it tells Flutter that this widget needs to be built again. Flutter then calls <code>build</code>, which reads the new <code>likes</code> and returns a new tree: a full heart and the new number. You never change the screen directly; you change the state, and describe the screen for that state. This is the most important idea in Flutter, and Chapter 10 builds on it.</p>
+
+<p>Testing a stateful widget is like using it: tap, then look. Flutter’s test tools do exactly that, without a phone:</p>
+
+<pre data-code="test/like_test.dart" data-title="test/like_test.dart"></pre>
+<pre data-term="like-test.sh"></pre>
+
+<p><code>tester.tap</code> taps the widget that <code>find.byIcon</code> found, and <code>tester.pump()</code> lets Flutter build the next frame, as it would between two frames on a phone. Then <code>expect</code> checks the screen: one text saying 1, and a full heart.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which widget would you use for a gap of 16 pixels between two widgets?</li><li>What happens to a <code>FilledButton</code> whose <code>onPressed</code> is <code>null</code>?</li><li>In a stateful widget, where do the values that change live, and what must you call after changing them?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.7 Theme and BuildContext</h2>
+
+<p>Choosing a colour for every widget by hand quickly becomes a mess. A <dfn>theme</dfn> chooses them once for the whole app:</p>
+
+<pre data-code="lib/theme.dart" data-from="theme:" data-title="lib/theme.dart (part)"></pre>
+
+<figure data-img="shots/theme.png" data-frame="phone">
+<figcaption>Figure {{n}}.7: Every colour and text size here comes from one seed colour, teal.</figcaption>
+</figure>
+
+<p><code>ThemeData(colorSchemeSeed: Colors.teal)</code> gives Flutter one colour, and Flutter builds a whole <dfn>colour scheme</dfn> from it: a primary colour, lighter containers, matching text colours, all chosen to work together and to be readable. Buttons and bars use the scheme automatically.</p>
+
+<p>Your own widgets read the theme with <code>Theme.of(context)</code>. This is what the <code>BuildContext</code> is for: it knows where the widget sits in the tree, so <code>Theme.of(context)</code> finds the nearest theme above it. <code>theme.textTheme.headlineMedium</code> is a named text style from the scheme, and <code>copyWith</code> (the pattern from Chapter 3’s exercises) changes only its colour. Change the seed to <code>Colors.deepOrange</code> and reload: the whole app follows.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>The <code>.of(context)</code> pattern is everywhere in Flutter: <code>Theme.of</code>, <code>MediaQuery.of</code> for the screen size, <code>Navigator.of</code> for moving between screens in Chapter 8. Each one looks up the tree for the nearest widget that provides that kind of information.</p></aside>
+
+<h2>{{n}}.8 Project: the café drink card</h2>
+
+<p>Let us build a real piece of an app: a card for one drink, with its name and description, a quantity the customer can change, the total, and a button to add it to the order.</p>
+
+<pre data-code="lib/cafe_card.dart" data-from="^class DrinkCard" data-title="lib/cafe_card.dart (part)"></pre>
+
+<figure data-img="shots/cafe-card.png" data-frame="phone">
+<figcaption>Figure {{n}}.8: The drink card. The minus button is off, because the quantity is 1.</figcaption>
+</figure>
+
+<p>Everything in the card is from this chapter, with four new details:</p>
+<ul>
+<li>The widget takes the drink’s <code>name</code>, <code>description</code> and <code>price</code>, and the state reads them as <code>widget.name</code>: <code>widget</code> is the State’s way to reach the widget it belongs to. The card works for any drink.</li>
+<li>The minus button is disabled at 1: <code>onPressed: quantity &gt; 1 ? ... : null</code>. The rule “no fewer than one cup” lives in one line, and the screen shows it without any extra code.</li>
+<li><code>Spacer()</code> takes all the free space in the row, pushing the total to the far end.</li>
+<li><code>SizedBox(width: double.infinity)</code> makes the button as wide as the card; <code>FilledButton.icon</code> is a filled button with an icon and a label.</li>
+</ul>
+
+<p>And the test checks the rule that matters, the total, after two taps on plus and one on minus:</p>
+
+<pre data-code="test/cafe_card_test.dart" data-title="test/cafe_card_test.dart"></pre>
+<pre data-term="cafe-card-test.sh"></pre>
+
+<aside class="box try"><p class="box-title">Try it</p><p>Add a maximum of 10 cups, with the plus button turned off at 10, and extend the test to prove it. Then show the card three times in a <code>Column</code>, for a latte, a tea and a cake, each with its own quantity. Do the three cards share their state?</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Changing a state field without <code>setState</code></td><td>The value changes, but the screen does not</td><td>Change it inside <code>setState(() { ... })</code></td></tr>
+<tr><td>Keeping changing values in the widget instead of the State</td><td>The value is lost when Flutter rebuilds the widget</td><td>Put them in the <code>State</code> class</td></tr>
+<tr><td>A text longer than its space</td><td>Yellow and black stripes: an overflow</td><td><code>maxLines</code> and <code>overflow</code>, or room to wrap</td></tr>
+<tr><td>A <code>Column</code> inside <code>Center</code> without <code>mainAxisSize.min</code></td><td>The content sticks to the top</td><td><code>mainAxisSize: MainAxisSize.min</code></td></tr>
+<tr><td>Hard-coding colours everywhere</td><td>Changing the app’s look means changing every file</td><td>Use the theme and <code>Theme.of(context)</code></td></tr>
+<tr><td>Forgetting <code>const</code></td><td>The analyzer suggests it; the app does extra work</td><td>Add <code>const</code> where everything below is constant</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A screen is a <strong>widget tree</strong>. Some widgets draw (<code>Text</code>, <code>Icon</code>), others arrange (<code>Center</code>, <code>Column</code>, <code>Row</code>).</li>
+<li><code>Text</code> looks the way its <code>TextStyle</code> says; plan for long texts with <code>maxLines</code> and <code>overflow</code>.</li>
+<li><code>Container</code> gives size, padding, margin and decoration; <code>Padding</code> and <code>SizedBox</code> do one job each.</li>
+<li>Buttons have weights (filled, outlined, text, icon); <code>onPressed: null</code> disables one.</li>
+<li>Write your own <code>StatelessWidget</code> for anything you repeat: fields, a <code>const</code> constructor, and <code>build</code>.</li>
+<li>A <code>StatefulWidget</code> keeps its changing values in a <code>State</code> object; <code>setState</code> changes them and rebuilds.</li>
+<li>Take colours and text styles from the <strong>theme</strong> with <code>Theme.of(context)</code>.</li>
+<li>Widget tests tap with <code>tester.tap</code>, rebuild with <code>tester.pump()</code>, and check with <code>expect</code> and <code>find</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>SizedBox(height: 16)</code> in a column, or <code>SizedBox(width: 16)</code> in a row (or <code>spacing: 16</code> on the column or row itself). 2. It is disabled: drawn greyed out, and taps are ignored. 3. In fields of the <code>State</code> class; change them inside <code>setState</code>, so that Flutter builds the widget again.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Build each project with hot reload running, and change one thing at a time. When the screen looks wrong, find the widget responsible in your tree before you change any code.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A business card</h3>
+<p class="project-goal">Rebuild Chapter 1’s name card properly: a <code>Card</code> with a round picture, a name, a job, a divider, and three rows made by your own <code>InfoRow</code> widget.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Card</code>, <code>CircleAvatar</code>, <code>Divider</code>, text styles, and reusing a widget of your own.</p>
+<ol class="steps">
+<li>Copy <code>InfoRow</code> from this chapter.</li>
+<li>In the body, centre a <code>Card</code> with a margin of 24, and inside it a <code>Padding</code> of 24 around a <code>Column</code> with <code>mainAxisSize.min</code>.</li>
+<li>Start the column with <code>CircleAvatar(radius: 40, child: Icon(Icons.person, size: 48))</code>, then the name in bold and the job in grey (<code>Colors.grey.shade700</code>).</li>
+<li>Add <code>Divider(height: 32)</code>, then three <code>InfoRow</code>s.</li>
+<li>Give the page a light background with the <code>Scaffold</code>’s <code>backgroundColor</code>, so the white card stands out.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>Colors.indigo.shade50</code> is a very light indigo; the <code>shade</code> numbers go from 50 (lightest) to 900 (darkest).</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/business-card.png" data-frame="phone">
+<figcaption>Project {{n}}.1: a business card with a reusable InfoRow.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A traffic light</h3>
+<p class="project-goal">Draw a traffic light with three round lamps, and a button that moves from red to amber to green and back to red, with a label for each.</p>
+<p class="project-skills"><strong>You will practise:</strong> a <code>StatefulWidget</code>, <code>BoxDecoration</code> with <code>BoxShape.circle</code>, collection <code>for</code> in a list of widgets, <code>%</code> to go round in a circle, and a widget test.</p>
+<ol class="steps">
+<li>Keep the current lamp as an <code>int</code> in the state: 0, 1 or 2.</li>
+<li>Keep the colours and the labels in two <code>static const</code> lists inside the State class.</li>
+<li>Build the three lamps with <code>for (var i = 0; i &lt; 3; i++)</code> inside the column’s children. The lamp that is on uses its colour; the others use it faded, <code>colors[i].withValues(alpha: 0.2)</code>.</li>
+<li>The button does <code>setState(() =&gt; current = (current + 1) % 3)</code>. Why does <code>% 3</code> bring it back to 0?</li>
+<li>Write a test that taps “Next” three times and checks the label after each tap.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a circle is a <code>Container</code> with equal width and height and <code>shape: BoxShape.circle</code> in its decoration.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/traffic-light.png" data-frame="phone">
+<figcaption>Project {{n}}.2: the traffic light on red.</figcaption>
+</figure>
+<pre data-term="projects/traffic-light-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A star rating</h3>
+<p class="project-goal">Write a reusable <code>StarRating</code> widget that shows five stars, and tells its parent when the user taps one; use it on a page that remembers the rating.</p>
+<p class="project-skills"><strong>You will practise:</strong> passing a function to a widget (a <dfn>callback</dfn>), <code>ValueChanged&lt;int&gt;</code>, keeping state in the parent, and finding the n-th widget in a test.</p>
+<ol class="steps">
+<li><code>StarRating</code> is a <em>stateless</em> widget with two fields: <code>value</code> (how many stars are full) and <code>onChanged</code>, of type <code>ValueChanged&lt;int&gt;</code>, a function that takes an <code>int</code>.</li>
+<li>Build a <code>Row</code> of five <code>IconButton</code>s with a collection <code>for</code>. Star <code>i</code> is <code>Icons.star</code> when <code>i &lt;= value</code>, and <code>Icons.star_border</code> otherwise. Pressing it calls <code>onChanged(i)</code>.</li>
+<li>The page is stateful, keeps <code>rating</code>, and passes <code>onChanged: (v) =&gt; setState(() =&gt; rating = v)</code>.</li>
+<li>Below the stars, show “Tap a star” or “4 out of 5”.</li>
+<li>Test it: <code>find.byIcon(Icons.star_border).at(3)</code> is the fourth empty star. Tap it, pump, and check the text and that four full stars are shown.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is a pattern you will use constantly: the widget that <em>shows</em> the value does not own it. It receives the value from above and reports changes upwards, so the parent stays in charge. Flutter’s own <code>Checkbox</code> and <code>Slider</code> work exactly this way.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/stars.png" data-frame="phone">
+<figcaption>Project {{n}}.3: the rating page before any tap.</figcaption>
+</figure>
+<pre data-term="projects/stars-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Draw the widget tree of <code>lib/contact.dart</code>, from <code>MaterialApp</code> down to every <code>Icon</code> and <code>Text</code>. How deep is it?</li>
+<li><span class="level">Easy</span> Which widget would you use for each: (a) 20 pixels of space around a text; (b) 20 pixels between two buttons in a row; (c) a white box with rounded corners and a shadow; (d) putting one widget in the middle of the screen?</li>
+<li><span class="level">Medium</span> Give <code>InfoRow</code> an optional <code>color</code> parameter for the icon, with teal as the default, and use red for the address.</li>
+<li><span class="level">Medium</span> Stateless or stateful? (a) A label that shows a product’s name. (b) A checkbox. (c) A page with the café’s fixed opening hours. (d) A timer that shows the seconds since a game started.</li>
+<li><span class="level">Challenge</span> In <code>like.dart</code>, replace <code>setState(() { likes++; })</code> with just <code>likes++;</code> and tap the heart three times. What do you see? Now press <strong>r</strong> for a hot reload. What do you see now, and why?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Your widgets so far sit in a column in the middle of the screen. Real screens put things side by side, at the edges, and on top of each other, and must fit a small phone, a large phone and a tablet. The next chapter is all about layout.</p>
+</div>
+</section>

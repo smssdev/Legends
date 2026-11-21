@@ -103,10 +103,10 @@ def write(folder, files):
         p.write_text(text)
 
 
-def shot(web_dir, png, taps="", wait=5000):
+def shot(web_dir, png, taps="", wait=5000, query=""):
     """A screenshot of a Flutter web build at phone size (390 x 780, twice the pixels). taps is a list of
     "x,y" points (in the 390 x 780 page) to click first, separated by spaces."""
-    subprocess.run(["node", str(B5 / "snap.cjs"), str(web_dir), str(png), taps, str(wait)], check=True)
+    subprocess.run(["node", str(B5 / "snap.cjs"), str(web_dir), str(png), taps, str(wait), query], check=True)
 
 
 def dart_examples(here, words_by_lang, sources, errors=(), keep=None):
@@ -137,4 +137,66 @@ def dart_examples(here, words_by_lang, sources, errors=(), keep=None):
             if keep:
                 s.lines = keep(name, s.lines)
             s.save(out / name.replace(".dart", ".sh"))
+        print("wrote", out)
+
+
+def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit_app"):
+    """A chapter of small Flutter apps (Chapter 5 on), in each language:
+      files   {path: text or {lang: text}}: lib/*.dart are apps (each with its own main), test/*.dart tests,
+              projects/<name>.dart and answers/<name>.dart are apps too, kept in those folders here
+      shots   [(png name, app path, "x,y taps")]: screenshots of release builds at phone size
+      tests   [(transcript name, test path)]: `flutter test <path>`, recorded
+    One project per language; the apps are built for the web once, through a generated
+    lib/gallery.dart that runs the app named in the address (?app=name). The reader never sees it."""
+    folder = here.name
+    for lang, words in words_by_lang.items():
+        out = here / lang
+        shutil.rmtree(out, ignore_errors=True)
+        base = WORK / folder / lang
+        shutil.rmtree(base, ignore_errors=True)
+        base.mkdir(parents=True)
+        text, code = sh(f"flutter create --empty {package}", base)
+        if code:
+            raise RuntimeError(text)
+        project = base / package
+        (project / "test").mkdir(exist_ok=True)
+        for f in (project / "test").glob("*.dart"):
+            f.unlink()
+        # projects/ and answers/ apps live in lib/ during the build, under their own names
+        placed = {}
+        for name, src in files.items():
+            src = fill(src if isinstance(src, str) else src[lang], words)
+            target = name if name.startswith(("lib/", "test/")) else "lib/" + name.replace("/", "_")
+            placed[name] = target
+            write(project, {target: src})
+        apps = [t for n, t in placed.items() if t.startswith("lib/")]
+        imports = "\n".join(f"import '{Path(t).name}' as {Path(t).stem};" for t in apps)
+        cases = "\n".join(f"    '{Path(t).stem}' => {Path(t).stem}.main," for t in apps)
+        write(project, {"lib/gallery.dart": f"""// Generated for the book's screenshots: runs the app named in ?app=.
+{imports}
+
+void main() {{
+  final app = Uri.base.queryParameters['app'];
+  final run = switch (app) {{
+{cases}
+    _ => throw ArgumentError('no app $app'),
+  }};
+  run();
+}}
+"""})
+        text, code = sh("dart format . && flutter analyze", project)
+        if code:
+            raise RuntimeError(text)
+        for name, target in placed.items():
+            write(out, {name: (project / target).read_text()})
+        text, code = sh("flutter build web -t lib/gallery.dart --no-web-resources-cdn", project)
+        if code:
+            raise RuntimeError(text)
+        for png, app, taps in shots:
+            stem = Path(placed[app]).stem
+            shot(project / "build" / "web", out / "shots" / png, taps, 6000, f"?app={stem}")
+        for transcript, test in tests:
+            s = Session(project)
+            s.run(f"flutter test {test}")
+            s.save(out / transcript)
         print("wrote", out)
