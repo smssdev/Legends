@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: State with setState and Provider"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "Chapter 11: Talking to an API"; } }
+@page ch11:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -59,7 +61,7 @@
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">34</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p">58</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p">80</span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p">127</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p">152</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p">194</span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p">214</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">232</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">34</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p">58</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p">80</span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p">127</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p">152</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p">194</span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p">214</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p">232</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">254</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -5995,6 +5997,634 @@ Try `flutter pub outdated` for more information.</pre></div>
 <p>The café’s menu is still written in the code. In the next chapter it comes from a server on the internet: HTTP requests with the <code>http</code> package, JSON turned into Dart objects, loading and error screens, and a model that fetches its own data.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b5/api/en">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">Chapter 11</p><h1>Talking to an API</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>run a small API server written in Dart, and talk to it with <code>curl</code></li>
+<li>send GET and POST requests from Flutter with the <code>http</code> package</li>
+<li>turn JSON into Dart objects, and server errors into exceptions with clear messages</li>
+<li>show loading, error and ready states, with a way to try again</li>
+<li>test code that uses the network without any network, with <code>MockClient</code></li>
+</ul>
+</div>
+
+<p class="lead">The café’s menu has lived in the code since Chapter 7. In a real app it lives on a <dfn>server</dfn>, and the app asks for it over the internet, through an <dfn>API</dfn>: a set of addresses that answer with data. In this chapter the café gets its own server, a single Dart file you can run on your computer, and the app learns to ask it for the menu, show what happens while it waits, survive when things go wrong, and send orders back.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every request in this chapter really went over a network connection to a real server while the book was being made, and every error message came from that server. Only the tests use a pretend network, and they say so.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>The café’s server</span></h2>
+
+<p>If you read Book 3 of this series, you have built APIs yourself. If not, here is all you need: the app sends a <dfn>request</dfn> with a <dfn>method</dfn> (GET to read, POST to create) and an address; the server sends back a <dfn>response</dfn> with a <dfn>status code</dfn> (200 OK, 201 Created, 400 bad request, 404 not found, 500 server error) and a body, here in <dfn>JSON</dfn>, the text format for data you met in Book 1. The café’s server, written in plain Dart with no package at all:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server/server.dart</div><pre class="code"><span class="c line-bidi">// A whole server in one file of plain Dart: run it with dart run server.dart.</span>
+<span class="k">const</span> menu = [
+  {<span class="s">&#x27;id&#x27;</span>: <span class="n">1</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Latte&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">45</span>, <span class="s">&#x27;image&#x27;</span>: <span class="s">&#x27;latte&#x27;</span>},
+  {<span class="s">&#x27;id&#x27;</span>: <span class="n">2</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Mint tea&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">25</span>, <span class="s">&#x27;image&#x27;</span>: <span class="s">&#x27;tea&#x27;</span>},
+  {<span class="s">&#x27;id&#x27;</span>: <span class="n">3</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Orange juice&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">40</span>, <span class="s">&#x27;image&#x27;</span>: <span class="s">&#x27;juice&#x27;</span>},
+  {<span class="s">&#x27;id&#x27;</span>: <span class="n">4</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Cherry cake&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">60</span>, <span class="s">&#x27;image&#x27;</span>: <span class="s">&#x27;cake&#x27;</span>},
+  {<span class="s">&#x27;id&#x27;</span>: <span class="n">5</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Cookie&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">20</span>, <span class="s">&#x27;image&#x27;</span>: <span class="s">&#x27;cookie&#x27;</span>},
+  {<span class="s">&#x27;id&#x27;</span>: <span class="n">6</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Muffin&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">35</span>, <span class="s">&#x27;image&#x27;</span>: <span class="s">&#x27;muffin&#x27;</span>},
+];
+
+<span class="k">var</span> nextOrder = <span class="n">1</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="k">final</span> server = <span class="k">await</span> HttpServer.bind(InternetAddress.loopbackIPv4, <span class="n">8080</span>);
+  print(<span class="s">&#x27;Serving the café on http://localhost:${server.port}&#x27;</span>);
+  <span class="k">await</span> <span class="k">for</span> (<span class="k">final</span> request <span class="k">in</span> server) {
+    <span class="k">await</span> handle(request);
+    print(<span class="s">&#x27;${request.method} ${request.uri} -&gt; ${request.response.statusCode}&#x27;</span>);
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; handle(HttpRequest request) <span class="k">async</span> {
+  <span class="k">final</span> response = request.response;
+  <span class="c line-bidi">// Let pages from other addresses (the app in a browser) read the answers.</span>
+  response.headers.<span class="k">set</span>(<span class="s">&#x27;Access-Control-Allow-Origin&#x27;</span>, <span class="s">&#x27;*&#x27;</span>);
+  response.headers.<span class="k">set</span>(<span class="s">&#x27;Access-Control-Allow-Headers&#x27;</span>, <span class="s">&#x27;Content-Type&#x27;</span>);
+  <span class="k">final</span> path = request.uri.path;
+  <span class="k">final</span> parts = path.split(<span class="s">&#x27;/&#x27;</span>);
+
+  <span class="k">if</span> (request.method == <span class="s">&#x27;OPTIONS&#x27;</span>) {
+    <span class="k">await</span> response.close();
+  } <span class="k">else</span> <span class="k">if</span> (path.startsWith(<span class="s">&#x27;/images/&#x27;</span>)) {
+    <span class="k">final</span> file = File(<span class="s">&#x27;images/${parts.last}&#x27;</span>);
+    <span class="k">if</span> (<span class="k">await</span> file.exists()) {
+      response.headers.contentType = ContentType(<span class="s">&#x27;image&#x27;</span>, <span class="s">&#x27;png&#x27;</span>);
+      <span class="k">await</span> response.addStream(file.openRead());
+      <span class="k">await</span> response.close();
+    } <span class="k">else</span> {
+      <span class="k">await</span> send(response, <span class="n">404</span>, {<span class="s">&#x27;error&#x27;</span>: <span class="s">&#x27;Not found&#x27;</span>});
+    }
+  } <span class="k">else</span> <span class="k">if</span> (request.method == <span class="s">&#x27;GET&#x27;</span> &amp;&amp; path == <span class="s">&#x27;/menu&#x27;</span>) {
+    <span class="c line-bidi">// A real network is never instant: wait half a second.</span>
+    <span class="k">await</span> <span class="k">Future</span>&lt;<span class="k">void</span>&gt;.delayed(<span class="k">const</span> Duration(milliseconds: <span class="n">500</span>));
+    <span class="k">final</span> q = (request.uri.queryParameters[<span class="s">&#x27;q&#x27;</span>] ?? <span class="s">&#x27;&#x27;</span>).toLowerCase();
+    <span class="k">await</span> send(response, <span class="n">200</span>, [
+      <span class="k">for</span> (<span class="k">final</span> d <span class="k">in</span> menu)
+        <span class="k">if</span> ((d[<span class="s">&#x27;name&#x27;</span>] <span class="k">as</span> <span class="k">String</span>).toLowerCase().contains(q)) d,
+    ]);
+  } <span class="k">else</span> <span class="k">if</span> (request.method == <span class="s">&#x27;GET&#x27;</span> &amp;&amp;
+      parts.length == <span class="n">3</span> &amp;&amp;
+      parts[<span class="n">1</span>] == <span class="s">&#x27;menu&#x27;</span>) {
+    <span class="k">final</span> id = <span class="k">int</span>.tryParse(parts[<span class="n">2</span>]);
+    <span class="k">final</span> found = menu.where((d) =&gt; d[<span class="s">&#x27;id&#x27;</span>] == id);
+    <span class="k">if</span> (found.isEmpty) {
+      <span class="k">await</span> send(response, <span class="n">404</span>, {<span class="s">&#x27;error&#x27;</span>: <span class="s">&#x27;No drink ${parts[2]}&#x27;</span>});
+    } <span class="k">else</span> {
+      <span class="k">await</span> send(response, <span class="n">200</span>, found.first);
+    }
+  } <span class="k">else</span> <span class="k">if</span> (request.method == <span class="s">&#x27;POST&#x27;</span> &amp;&amp; path == <span class="s">&#x27;/orders&#x27;</span>) {
+    <span class="k">final</span> body = jsonDecode(
+      <span class="k">await</span> utf8.decoder.bind(request).join(),
+    ) <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt;;
+    <span class="k">final</span> name = (body[<span class="s">&#x27;name&#x27;</span>] <span class="k">as</span> <span class="k">String</span>? ?? <span class="s">&#x27;&#x27;</span>).trim();
+    <span class="k">final</span> items = (body[<span class="s">&#x27;items&#x27;</span>] <span class="k">as</span> <span class="k">List</span>&lt;<span class="k">Object</span>?&gt;? ?? []).cast&lt;<span class="k">int</span>&gt;();
+    <span class="c line-bidi">// Never trust what arrives: check it, and say what is wrong.</span>
+    <span class="k">if</span> (name.isEmpty) {
+      <span class="k">await</span> send(response, <span class="n">400</span>, {<span class="s">&#x27;error&#x27;</span>: <span class="s">&#x27;A name is needed&#x27;</span>});
+    } <span class="k">else</span> <span class="k">if</span> (items.isEmpty) {
+      <span class="k">await</span> send(response, <span class="n">400</span>, {<span class="s">&#x27;error&#x27;</span>: <span class="s">&#x27;The order is empty&#x27;</span>});
+    } <span class="k">else</span> {
+      <span class="k">final</span> total = items.fold(
+        <span class="n">0</span>,
+        (sum, id) =&gt;
+            sum + (menu.firstWhere((d) =&gt; d[<span class="s">&#x27;id&#x27;</span>] == id)[<span class="s">&#x27;price&#x27;</span>] <span class="k">as</span> <span class="k">int</span>),
+      );
+      <span class="k">await</span> send(response, <span class="n">201</span>, {
+        <span class="s">&#x27;id&#x27;</span>: nextOrder++,
+        <span class="s">&#x27;name&#x27;</span>: name,
+        <span class="s">&#x27;total&#x27;</span>: total,
+      });
+    }
+  } <span class="k">else</span> <span class="k">if</span> (path.startsWith(<span class="s">&#x27;/broken&#x27;</span>)) {
+    <span class="k">await</span> send(response, <span class="n">500</span>, {<span class="s">&#x27;error&#x27;</span>: <span class="s">&#x27;The kitchen is on fire&#x27;</span>});
+  } <span class="k">else</span> {
+    <span class="k">await</span> send(response, <span class="n">404</span>, {<span class="s">&#x27;error&#x27;</span>: <span class="s">&#x27;Not found&#x27;</span>});
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; send(HttpResponse response, <span class="k">int</span> status, <span class="k">Object</span> body) <span class="k">async</span> {
+  response.statusCode = status;
+  response.headers.contentType = ContentType.json;
+  response.write(<span class="k">const</span> JsonEncoder.withIndent(<span class="s">&#x27;  &#x27;</span>).convert(body));
+  <span class="k">await</span> response.close();
+}</pre></div>
+
+<p>Run it in a terminal, in the folder where you saved it with the café’s pictures in an <code>images</code> folder, and leave it running:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run server.dart</span>
+Serving the café on http://localhost:8080</pre></div>
+
+<p>Before writing any app, talk to the API from another terminal with <code>curl</code>, so that you know exactly what it answers:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">curl -s localhost:8080/menu/1</span>
+{
+  &quot;id&quot;: 1,
+  &quot;name&quot;: &quot;Latte&quot;,
+  &quot;price&quot;: 45,
+  &quot;image&quot;: &quot;latte&quot;
+}
+<span class="c">$ </span><span class="k">curl -s localhost:8080/menu/9 -w &#x27;\nHTTP %{http_code}\n&#x27;</span>
+{
+  &quot;error&quot;: &quot;No drink 9&quot;
+}
+HTTP 404
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8080/orders -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &quot;Sara&quot;, &quot;items&quot;: [1, 4]}&#x27; -w &#x27;\nHTTP %{http_code}\n&#x27;</span>
+{
+  &quot;id&quot;: 2,
+  &quot;name&quot;: &quot;Sara&quot;,
+  &quot;total&quot;: 105
+}
+HTTP 201
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8080/orders -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &quot;&quot;, &quot;items&quot;: [1]}&#x27; -w &#x27;\nHTTP %{http_code}\n&#x27;</span>
+{
+  &quot;error&quot;: &quot;A name is needed&quot;
+}
+HTTP 400</pre></div>
+
+<p>One drink by its id; a drink that does not exist, with a 404 and a message; an order created, with 201; and an order without a name, refused with 400 and a message. The server checks everything it receives, as Chapter 9 said every server must, and every refusal says what is wrong. The app will show these messages to people.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>On the Android emulator, <code>localhost</code> means the emulator itself, not your computer: use <code>http://10.0.2.2:8080</code> to reach a server on your computer. And Android refuses plain <code>http://</code> addresses in release builds; real servers use <code>https://</code>, and for local tests you can allow it in the manifest. On an iPhone simulator, <code>localhost</code> works.</p></aside>
+
+<h2><span class="sec">11.2</span> <span>The first request</span></h2>
+
+<p>Flutter apps make requests with the <code>http</code> package, published by the Dart team. The chapter’s app also uses Provider from Chapter 10:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter pub add http provider</span>
+Resolving dependencies...
+Downloading packages...
++ http 1.6.0
++ http_parser 4.1.2
+  material_color_utilities 0.13.0 (0.13.1 available)
++ nested 1.0.0
++ provider 6.1.5+1
+  test_api 0.7.14 (0.7.15 available)
++ typed_data 1.4.0
+  vector_math 2.4.3 (2.4.4 available)
++ web 1.1.2
+Changed 6 dependencies!
+3 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/fetch.dart (part)</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">List</span>&lt;<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;&gt;&gt; fetchMenu() <span class="k">async</span> {
+  <span class="k">final</span> response = <span class="k">await</span> http.<span class="k">get</span>(Uri.parse(<span class="s">&#x27;http://localhost:8080/menu&#x27;</span>));
+  <span class="k">if</span> (response.statusCode != <span class="n">200</span>) {
+    <span class="k">throw</span> Exception(<span class="s">&#x27;HTTP ${response.statusCode}&#x27;</span>);
+  }
+  <span class="k">return</span> (jsonDecode(response.body) <span class="k">as</span> <span class="k">List</span>).cast&lt;<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;&gt;();
+}
+
+<span class="k">class</span> MenuPage <span class="k">extends</span> StatefulWidget {
+  <span class="k">const</span> MenuPage({<span class="k">super</span>.key});
+
+  @override
+  State&lt;MenuPage&gt; createState() =&gt; _MenuPageState();
+}
+
+<span class="k">class</span> _MenuPageState <span class="k">extends</span> State&lt;MenuPage&gt; {
+  <span class="k">late</span> <span class="k">final</span> <span class="k">Future</span>&lt;<span class="k">List</span>&lt;<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;&gt;&gt; menu = fetchMenu();
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(title: <span class="k">const</span> Text(<span class="s">&#x27;Menu&#x27;</span>)),
+      <span class="c line-bidi">// FutureBuilder shows each moment of a Future: waiting, an error, or the data.</span>
+      body: FutureBuilder(
+        future: menu,
+        builder: (context, snapshot) {
+          <span class="k">if</span> (snapshot.connectionState != ConnectionState.done) {
+            <span class="k">return</span> <span class="k">const</span> Center(child: CircularProgressIndicator());
+          }
+          <span class="k">if</span> (snapshot.hasError) {
+            <span class="k">return</span> Center(child: Text(<span class="s">&#x27;${snapshot.error}&#x27;</span>));
+          }
+          <span class="k">return</span> ListView(
+            children: [
+              <span class="k">for</span> (<span class="k">final</span> drink <span class="k">in</span> snapshot.data!)
+                ListTile(
+                  title: Text(drink[<span class="s">&#x27;name&#x27;</span>] <span class="k">as</span> <span class="k">String</span>),
+                  trailing: Text(<span class="s">&#x27;${drink[&#x27;</span>price<span class="s">&#x27;]} EGP&#x27;</span>),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-api-en-shots-fetch.png" alt=""></div>
+<figcaption>Figure 11.1: The menu, from the server.</figcaption>
+</figure>
+
+<ul>
+<li><code>http.get</code> takes a <code>Uri</code> and returns a <code>Future&lt;Response&gt;</code>, with <code>statusCode</code> and <code>body</code>.</li>
+<li><code>jsonDecode</code>, from <code>dart:convert</code>, turns the JSON text into Dart values: lists, maps, strings and numbers.</li>
+<li><code>FutureBuilder</code> shows each moment of a future: its <code>builder</code> runs again when the future completes. The <code>snapshot</code> says whether it is still waiting, has failed, or has data.</li>
+<li>The future is created once, as a <code>late final</code> field of the State. Creating it inside <code>build</code> would send a new request every time the screen is drawn, which can be many times a second.</li>
+</ul>
+
+<p>This works, and it is how every Flutter developer starts. It also has three weaknesses that the rest of the chapter fixes: the data stays as untyped maps, an error shows as a raw exception, and nothing can be tested without a server.</p>
+
+<h2><span class="sec">11.3</span> <span>From JSON to objects</span></h2>
+
+<p>The professional shape puts everything about the server in one class, and turns every answer into typed Dart objects as soon as it arrives:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/cafe_api.dart (part)</div><pre class="code"><span class="k">class</span> Drink {
+  <span class="k">const</span> Drink({
+    <span class="k">required</span> <span class="k">this</span>.id,
+    <span class="k">required</span> <span class="k">this</span>.name,
+    <span class="k">required</span> <span class="k">this</span>.price,
+    <span class="k">required</span> <span class="k">this</span>.image,
+  });
+
+  <span class="c line-bidi">// One drink from its JSON: a named constructor, as in Chapter 3.</span>
+  <span class="k">factory</span> Drink.fromJson(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt; json) =&gt; Drink(
+    id: json[<span class="s">&#x27;id&#x27;</span>] <span class="k">as</span> <span class="k">int</span>,
+    name: json[<span class="s">&#x27;name&#x27;</span>] <span class="k">as</span> <span class="k">String</span>,
+    price: json[<span class="s">&#x27;price&#x27;</span>] <span class="k">as</span> <span class="k">int</span>,
+    image: json[<span class="s">&#x27;image&#x27;</span>] <span class="k">as</span> <span class="k">String</span>,
+  );
+
+  <span class="k">final</span> <span class="k">int</span> id;
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> price;
+  <span class="k">final</span> <span class="k">String</span> image;
+}
+
+<span class="k">class</span> ApiException <span class="k">implements</span> Exception {
+  ApiException(<span class="k">this</span>.message);
+  <span class="k">final</span> <span class="k">String</span> message;
+
+  @override
+  <span class="k">String</span> toString() =&gt; message;
+}
+
+<span class="c line-bidi">// Everything about the server in one class; the client is given, so tests can give a fake one.</span>
+<span class="k">class</span> CafeApi {
+  CafeApi(<span class="k">this</span>.client, {<span class="k">this</span>.<span class="k">base</span> = <span class="s">&#x27;http://localhost:8080&#x27;</span>});
+
+  <span class="k">final</span> http.Client client;
+  <span class="k">final</span> <span class="k">String</span> <span class="k">base</span>;
+
+  <span class="k">String</span> imageUrl(Drink d) =&gt; <span class="s">&#x27;$base/images/${d.image}.png&#x27;</span>;
+
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu({<span class="k">String</span> query = <span class="s">&#x27;&#x27;</span>}) <span class="k">async</span> {
+    <span class="k">final</span> uri = Uri.parse(<span class="s">&#x27;$base/menu&#x27;</span>)
+        .replace(queryParameters: query.isEmpty ? <span class="k">null</span> : {<span class="s">&#x27;q&#x27;</span>: query});
+    <span class="k">final</span> list = <span class="k">await</span> _send(client.<span class="k">get</span>(uri)) <span class="k">as</span> <span class="k">List</span>&lt;<span class="k">dynamic</span>&gt;;
+    <span class="k">return</span> [
+      <span class="k">for</span> (<span class="k">final</span> item <span class="k">in</span> list) Drink.fromJson(item <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;),
+    ];
+  }
+
+  <span class="k">Future</span>&lt;Drink&gt; drink(<span class="k">int</span> id) <span class="k">async</span> =&gt; Drink.fromJson(
+    <span class="k">await</span> _send(client.<span class="k">get</span>(Uri.parse(<span class="s">&#x27;$base/menu/$id&#x27;</span>)))
+        <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;,
+  );
+
+  <span class="k">Future</span>&lt;<span class="k">int</span>&gt; order(<span class="k">String</span> name, <span class="k">List</span>&lt;<span class="k">int</span>&gt; items) <span class="k">async</span> {
+    <span class="k">final</span> reply = <span class="k">await</span> _send(
+      client.post(
+        Uri.parse(<span class="s">&#x27;$base/orders&#x27;</span>),
+        headers: {<span class="s">&#x27;Content-Type&#x27;</span>: <span class="s">&#x27;application/json&#x27;</span>},
+        body: jsonEncode({<span class="s">&#x27;name&#x27;</span>: name, <span class="s">&#x27;items&#x27;</span>: items}),
+      ),
+    );
+    <span class="k">return</span> (reply <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;)[<span class="s">&#x27;total&#x27;</span>] <span class="k">as</span> <span class="k">int</span>;
+  }
+
+  <span class="k">Future</span>&lt;<span class="k">Object</span>?&gt; _send(<span class="k">Future</span>&lt;http.Response&gt; request) <span class="k">async</span> {
+    <span class="k">final</span> response = <span class="k">await</span> request.timeout(<span class="k">const</span> Duration(seconds: <span class="n">10</span>));
+    <span class="k">final</span> body = jsonDecode(utf8.decode(response.bodyBytes));
+    <span class="c line-bidi">// Anything but 200 is a failure, with the server&#x27;s own message.</span>
+    <span class="k">if</span> (response.statusCode &gt;= <span class="n">300</span>) {
+      <span class="k">throw</span> ApiException(
+        (body <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;)[<span class="s">&#x27;error&#x27;</span>] <span class="k">as</span> <span class="k">String</span>? ??
+            <span class="s">&#x27;HTTP ${response.statusCode}&#x27;</span>,
+      );
+    }
+    <span class="k">return</span> body;
+  }
+}</pre></div>
+
+<ul>
+<li><code>Drink.fromJson</code> is a <dfn>factory constructor</dfn>: a constructor that builds the object from something else, here a map. After it, the rest of the app works with <code>drink.price</code>, an <code>int</code>, and never with <code>json['price']</code>.</li>
+<li><code>CafeApi</code> receives its <code>http.Client</code> instead of creating one. The app gives it a real client; tests will give it a fake one. This is called <dfn>dependency injection</dfn>, and it is what makes network code testable.</li>
+<li>Every request goes through <code>_send</code>: a timeout of ten seconds (Chapter 4), so that a silent server cannot leave the screen waiting forever, the body decoded as UTF-8 so that Arabic arrives intact, and any status of 300 or more turned into an <code>ApiException</code> carrying the server’s own message.</li>
+<li><code>replace(queryParameters: ...)</code> builds <code>/menu?q=tea</code> safely, encoding spaces and Arabic letters correctly.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Parse at the edge. Convert JSON to typed objects in one place, as soon as it arrives, and let the rest of the app see only those objects. If the server changes a field’s name, one line changes, and the compiler finds every use; with maps passed around, the bug appears on a screen, much later.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>Loading, error, ready</span></h2>
+
+<p>A screen that loads from a network is always in one of three states, and must show all three well. The model keeps the state:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/cafe_api.dart (the model)</div><pre class="code"><span class="k">enum</span> Status { loading, ready, failed }
+
+<span class="c line-bidi">// The screen asks the model; the model asks the API.</span>
+<span class="k">class</span> MenuModel <span class="k">extends</span> ChangeNotifier {
+  MenuModel(<span class="k">this</span>.api);
+
+  <span class="k">final</span> CafeApi api;
+  <span class="c line-bidi">// Three states, one at a time: loading, ready, failed.</span>
+  <span class="k">var</span> status = Status.loading;
+  <span class="k">var</span> drinks = &lt;Drink&gt;[];
+  <span class="k">String</span>? error;
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; load() <span class="k">async</span> {
+    status = Status.loading;
+    notifyListeners();
+    <span class="k">try</span> {
+      drinks = <span class="k">await</span> api.menu();
+      status = Status.ready;
+    } <span class="k">on</span> Exception <span class="k">catch</span> (e) {
+      error = <span class="s">&#x27;$e&#x27;</span>;
+      status = Status.failed;
+    }
+    notifyListeners();
+  }
+}</pre></div>
+
+<p>The page shows each state with a switch expression on <code>model.status</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu_app.dart (part)</div><pre class="code">      body: <span class="k">switch</span> (model.status) {
+        Status.loading =&gt; <span class="k">const</span> Center(child: CircularProgressIndicator()),
+        Status.failed =&gt; Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: <span class="n">12</span>,
+            children: [
+              <span class="k">const</span> Icon(Icons.cloud_off, size: <span class="n">64</span>),
+              <span class="k">const</span> Text(<span class="s">&#x27;Could not load the menu&#x27;</span>),
+              Text(model.error ?? <span class="s">&#x27;&#x27;</span>),
+              FilledButton(
+                onPressed: model.load,
+                child: <span class="k">const</span> Text(<span class="s">&#x27;Try again&#x27;</span>),
+              ),
+            ],
+          ),
+        ),
+        <span class="c line-bidi">// Pull down to load again.</span>
+        Status.ready =&gt; RefreshIndicator(
+          onRefresh: model.load,
+          child: ListView(
+            children: [
+              <span class="k">for</span> (<span class="k">final</span> drink <span class="k">in</span> model.drinks)
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(model.api.imageUrl(drink)),
+                    <span class="c line-bidi">// A picture that fails to load leaves the plain circle, not an error.</span>
+                    onBackgroundImageError: (error, stack) {},
+                  ),
+                  title: Text(drink.name),
+                  subtitle: Text(<span class="s">&#x27;${drink.price} EGP&#x27;</span>),
+                  trailing: IconButton(
+                    tooltip: <span class="s">&#x27;Order ${drink.name}&#x27;</span>,
+                    icon: <span class="k">const</span> Icon(Icons.add_shopping_cart),
+                    onPressed: () =&gt; order(context, drink),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      },</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b5-api-en-shots-menu.png" alt=""></div>
+<figcaption>Ready, with pictures from the server</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-api-en-shots-failed.png" alt=""></div>
+<figcaption>Failed: the server answered 500</figcaption>
+</figure>
+</div>
+
+<ul>
+<li>While loading, a spinner. When ready, the list, wrapped in a <code>RefreshIndicator</code>: pulling the list down calls <code>load</code> again.</li>
+<li>When failed, what happened, in the server’s words, and a button to try again, which calls the same <code>load</code>. A screen that fails with no way out is the most common bad experience in mobile apps.</li>
+<li>The pictures come from the server too, with <code>NetworkImage</code>. If one fails, <code>onBackgroundImageError</code> keeps the empty circle instead of an error.</li>
+</ul>
+
+<p>Ordering is a POST. Tapping the cart sends it, and shows the total the server calculated:</p>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-api-en-shots-ordered.png" alt=""></div>
+<figcaption>Figure 11.2: After tapping the cart of the orange juice: the server created the order.</figcaption>
+</figure>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is the future in <code>fetch.dart</code> created in a field and not in <code>build</code>?</li><li>What does <code>CafeApi</code> do with a response whose status is 404?</li><li>What three states must a screen that loads from the network show?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">11.5</span> <span>Testing without a network</span></h2>
+
+<p>Widget tests never reach the internet: every real request returns 400. That is a feature: tests must not depend on a server that may be slow or down. Because <code>CafeApi</code> receives its client, a test can give it a <code>MockClient</code> from <code>package:http/testing.dart</code>, which answers every request with whatever the test decides:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/api_test.dart (part)</div><pre class="code">  test(<span class="s">&#x27;the menu is parsed, and a failure says why&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> good = MockClient((request) <span class="k">async</span> {
+      expect(request.url.path, <span class="s">&#x27;/menu&#x27;</span>);
+      <span class="k">return</span> http.Response(
+        <span class="s">&#x27;[{&quot;id&quot;: 1, &quot;name&quot;: &quot;Latte&quot;, &quot;price&quot;: 45, &quot;image&quot;: &quot;latte&quot;}]&#x27;</span>,
+        <span class="n">200</span>,
+        headers: {<span class="s">&#x27;content-type&#x27;</span>: <span class="s">&#x27;application/json; charset=utf-8&#x27;</span>},
+      );
+    });
+    <span class="k">final</span> drinks = <span class="k">await</span> CafeApi(good).menu();
+    expect(drinks.single.name, <span class="s">&#x27;Latte&#x27;</span>);
+    expect(drinks.single.price, <span class="n">45</span>);
+
+    <span class="k">final</span> bad = MockClient(
+      (request) <span class="k">async</span> =&gt; http.Response(
+        <span class="s">&#x27;{&quot;error&quot;: &quot;The kitchen is on fire&quot;}&#x27;</span>,
+        <span class="n">500</span>,
+        headers: {<span class="s">&#x27;content-type&#x27;</span>: <span class="s">&#x27;application/json; charset=utf-8&#x27;</span>},
+      ),
+    );
+    expect(() =&gt; CafeApi(bad).menu(), throwsA(isA&lt;ApiException&gt;()));
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/api_test.dart</span>
+00:00 +0: loading test/api_test.dart
+00:00 +0: the menu is parsed, and a failure says why
+00:00 +1: All tests passed!</pre></div>
+
+<p>The widget test goes further: the first request fails, the second succeeds, and the test taps “Try again” in between:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/menu_app_test.dart (part)</div><pre class="code">  testWidgets(<span class="s">&#x27;the menu loads, and a failure offers to try again&#x27;</span>, (
+    tester,
+  ) <span class="k">async</span> {
+    <span class="k">var</span> calls = <span class="n">0</span>;
+    <span class="k">final</span> client = MockClient((request) <span class="k">async</span> {
+      calls++;
+      <span class="k">if</span> (calls == <span class="n">1</span>) {
+        <span class="k">return</span> http.Response(
+          <span class="s">&#x27;{&quot;error&quot;: &quot;The kitchen is on fire&quot;}&#x27;</span>,
+          <span class="n">500</span>,
+          headers: {<span class="s">&#x27;content-type&#x27;</span>: <span class="s">&#x27;application/json; charset=utf-8&#x27;</span>},
+        );
+      }
+      <span class="k">return</span> http.Response(
+        <span class="s">&#x27;[{&quot;id&quot;: 2, &quot;name&quot;: &quot;Mint tea&quot;, &quot;price&quot;: 25, &quot;image&quot;: &quot;tea&quot;}]&#x27;</span>,
+        <span class="n">200</span>,
+        headers: {<span class="s">&#x27;content-type&#x27;</span>: <span class="s">&#x27;application/json; charset=utf-8&#x27;</span>},
+      );
+    });
+    <span class="k">await</span> tester.pumpWidget(CafeApp(api: CafeApi(client)));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;The kitchen is on fire&#x27;</span>), findsOneWidget);
+
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;Try again&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;Mint tea&#x27;</span>), findsOneWidget);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/menu_app_test.dart</span>
+00:00 +0: loading test/menu_app_test.dart
+00:00 +0: the menu loads, and a failure offers to try again
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>An <code>http.Response</code> built in a test encodes its body as Latin-1 unless its headers say <code>charset=utf-8</code>. The Arabic edition of this test failed for exactly that reason until the header was added. Real servers send the header; fake ones must too.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Creating the future in <code>build</code></td><td>A new request on every rebuild</td><td>Create it once, in the State or a model</td></tr>
+<tr><td>Ignoring the status code</td><td>An error page parsed as data, and a confusing crash</td><td>Check it, and throw with the server’s message</td></tr>
+<tr><td>No loading or error state</td><td>A blank screen, or one that never recovers</td><td>Show all three states, with “Try again”</td></tr>
+<tr><td><code>localhost</code> on the Android emulator</td><td>Connection refused</td><td><code>10.0.2.2</code></td></tr>
+<tr><td>No internet permission in Android release</td><td>Every request fails only in the published app</td><td>Add the INTERNET permission to the main manifest</td></tr>
+<tr><td>Decoding a body without UTF-8</td><td>Arabic arrives as broken characters</td><td><code>utf8.decode(response.bodyBytes)</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>An API answers requests (GET, POST…) with a status code and a JSON body. Try it with <code>curl</code> before writing the app.</li>
+<li>The <code>http</code> package sends requests; <code>jsonDecode</code> turns the body into Dart values; <code>FutureBuilder</code> shows a future’s progress.</li>
+<li>Put the server in one class that receives its <code>http.Client</code>, turns JSON into typed objects with <code>fromJson</code>, and errors into exceptions with the server’s message, with a timeout.</li>
+<li>Show loading, error (with “Try again”) and ready; <code>RefreshIndicator</code> reloads by pulling.</li>
+<li>Test with <code>MockClient</code>, never with a real network.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>build</code> can run many times, and each run would send a new request; the field is created once. 2. It throws an <code>ApiException</code> with the server’s error message, “No drink 9”. 3. Loading, error (with a way to try again) and ready.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Keep the café’s server running while you build these projects, and try each one with the server stopped, too: every screen must say something useful when the server is not there.</p>
+
+<div class="project">
+<p class="project-label">Project 11.1 · Easy</p>
+<h3>The drink of the day</h3>
+<p class="project-goal">Show one drink, fetched by its id, in a card with its picture from the server.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>CafeApi.drink</code>, <code>FutureBuilder</code> with a switch on the snapshot, and <code>Image.network</code>.</p>
+<ol class="steps">
+<li>Give the page a <code>CafeApi</code> and an id, and create the future once: <code>late final Future&lt;Drink&gt; special = widget.api.drink(widget.id);</code></li>
+<li>In the builder, switch on the snapshot with patterns: <code>AsyncSnapshot(:final error?)</code> matches when there is an error, <code>AsyncSnapshot(:final data?)</code> when there is data, and <code>_</code> while waiting.</li>
+<li>Show the picture with <code>Image.network(widget.api.imageUrl(data))</code> above the name and price.</li>
+<li>Change the id to 9 and see the server’s message instead of the card.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>:final error?</code> means “take the field <code>error</code>, and match only if it is not null”: a compact, safe way to read a snapshot.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-api-en-shots-special.png" alt=""></div>
+<figcaption>Project 11.1: drink number 3.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 11.2 · Medium</p>
+<h3>Send an order, and show what the server says</h3>
+<p class="project-goal">Send an order with a name, disable the button while it is sending, and show the server’s answer: the total, or its error message.</p>
+<p class="project-skills"><strong>You will practise:</strong> POST with a JSON body, a sending state, catching <code>ApiException</code>, <code>mounted</code>, and a test with a 400 answer.</p>
+<ol class="steps">
+<li>Keep <code>sending</code> and <code>message</code> in the state. In <code>send</code>, set <code>sending</code>, call <code>api.order(name.text, [1, 4])</code>, and keep the total or the exception’s message.</li>
+<li>While sending, disable the button and show a small spinner in it, so that nobody sends the order twice.</li>
+<li>After the <code>await</code>, check <code>mounted</code> before <code>setState</code>: the page may have closed while waiting.</li>
+<li>Do <em>not</em> check the name in the app this time: send it empty, and show the server’s message.</li>
+<li>Test with a <code>MockClient</code> that answers 400 with an error, and check that the message appears.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in a real app, check in the app too (Chapter 9): the person learns faster. The server’s message is the safety net for everything the app did not foresee.</p>
+<p><strong>Your result should look like this</strong> (after sending with no name):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-api-en-shots-send-order.png" alt=""></div>
+<figcaption>Project 11.2: the server’s own message.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/send_order_test.dart</span>
+00:00 +0: loading test/send_order_test.dart
+00:00 +0: the message from the server is shown
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 11.3 · Challenge</p>
+<h3>Search on the server, without flooding it</h3>
+<p class="project-goal">Search the menu on the server as the customer types, but ask only when the typing stops for 400 milliseconds.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Timer</code>, cancelling, query parameters, and testing time with <code>tester.pump(Duration)</code>.</p>
+<ol class="steps">
+<li>Keep a <code>Timer? wait</code> in the state. In <code>onChanged</code>, cancel it, and start a new <code>Timer(Duration(milliseconds: 400), ...)</code> that calls <code>api.menu(query: text)</code>.</li>
+<li>Typing “tea” quickly cancels the first two timers: only one request is sent, for “tea”. This is called <dfn>debouncing</dfn>.</li>
+<li>Cancel the timer in <code>dispose</code>.</li>
+<li>Test with a <code>MockClient</code> that records every query. Type “t”, “te”, “tea” with 100 milliseconds between them, check that nothing was asked yet, then pump 400 milliseconds and check that exactly one request, for “tea”, was sent.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in a widget test, time does not pass by itself: <code>tester.pump(Duration(milliseconds: 400))</code> moves the test’s clock forward exactly that much, which makes timing tests fast and exact.</p>
+<p><strong>Your result should look like this</strong> (after typing “tea”):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-api-en-shots-search.png" alt=""></div>
+<figcaption>Project 11.3: the server’s answer for “tea”.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/live_search_test.dart</span>
+00:00 +0: loading test/live_search_test.dart
+00:00 +0: the search waits until typing stops
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> With <code>curl</code>, ask for <code>/menu?q=co</code>, then <code>/nothing</code>. What status codes come back, and why?</li>
+<li><span class="level">Easy</span> Stop the server and open the menu app. Which state does it show, and what message? Start the server and tap “Try again”.</li>
+<li><span class="level medium">Medium</span> Add <code>toJson()</code> to <code>Drink</code>, the opposite of <code>fromJson</code>, and a test that a drink survives the round trip: <code>Drink.fromJson(d.toJson())</code> has the same fields.</li>
+<li><span class="level medium">Medium</span> Add a route <code>GET /hours</code> to the server that answers <code>{"open": "8:00", "close": "22:00"}</code>, check it with <code>curl</code>, and show it at the bottom of the menu.</li>
+<li><span class="level hard">Challenge</span> Make the menu model keep the last menu it received, and when a reload fails, show the old menu with a small banner “Could not refresh”, instead of the full error page. When is that better for people, and when is it dangerous?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 12</p>
+<p>Close the café app and open it again, and everything is gone: the favourites, the basket, the settings. The next chapter saves data on the phone itself: small settings with <code>shared_preferences</code>, and larger data in files and a local database.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -6334,6 +6964,16 @@ Sharing the list is safe only because Dart runs one thing at a time: no two work
 <li>The page already watches the basket, so in this case the result is the same. But <code>read</code> in a callback says exactly what the code does, “use the basket now”, and keeps working if the page is later changed to <code>select</code> only the part it shows; a callback that depends on a value captured from <code>watch</code> can silently use an old one. Make <code>read</code> in callbacks a habit, and you never have to think about it.</li>
 <li>Give the page’s bar an action: <code>IconButton(tooltip: 'Clear', icon: Icon(Icons.delete_sweep), onPressed: () async { final sure = await showDialog&lt;bool&gt;(...); if (sure == true &amp;&amp; context.mounted) context.read&lt;Basket&gt;().clear(); })</code>. The dialog is the same as Chapter 8’s, with “Clear” and “Cancel” buttons. Disable the button when the basket is empty, with <code>onPressed: basket.count == 0 ? null : ...</code>.</li>
 <li>With <code>select</code>, the button rebuilds once per change of the <em>count</em>: adding a drink rebuilds it, and so does removing one. With <code>watch</code>, it rebuilds on every notification of the basket, including changes that do not touch the count, such as a change of price if you add one. In this small app the numbers are close, because almost every change changes the count; in a real app, where a model holds many values, <code>select</code> keeps each widget rebuilding only for what it shows, which is how large screens stay smooth.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 11</h2>
+<ol class="exercises">
+<li><code>/menu?q=co</code> answers 200 with one drink, the Cookie: the server keeps every drink whose name contains “co”, ignoring case. <code>/nothing</code> answers 404 with <code>{"error": "Not found"}</code>: no route matches it, and the last <code>else</code> of the server catches every address it does not know.</li>
+<li>The failed state, with the button “Try again”. The message is not the server’s this time, because there is no server to answer: it is the <code>ClientException</code> of the <code>http</code> package, something like “Connection refused” (in a browser, “XMLHttpRequest error”). That is a good reason to catch <code>http.ClientException</code> in <code>_send</code> and throw <code>ApiException('Cannot reach the café. Check your connection.')</code> instead: people should never see the words of a library. After starting the server, “Try again” loads the menu.</li>
+<li><code>Map&lt;String, dynamic&gt; toJson() =&gt; {'id': id, 'name': name, 'price': price, 'image': image};</code>. The test: <code>final d = Drink(id: 1, name: 'Latte', price: 45, image: 'latte'); final back = Drink.fromJson(d.toJson());</code> then <code>expect</code> each field of <code>back</code> to equal the field of <code>d</code>. To compare whole objects with one <code>expect</code>, give <code>Drink</code> an <code>operator ==</code> and <code>hashCode</code>; Book 6 shows packages that write them for you.</li>
+<li>In <code>handle</code>, before the last <code>else</code>: <code>} else if (request.method == 'GET' &amp;&amp; path == '/hours') { await send(response, 200, {'open': '8:00', 'close': '22:00'}); }</code>. Check it with <code>curl -s localhost:8080/hours</code>. In the app, add <code>Future&lt;(String, String)&gt; hours()</code> to <code>CafeApi</code> returning a record, load it once in the page’s State, and show it with a <code>FutureBuilder</code> under the list, as in Section 11.2; or keep it in <code>MenuModel</code> and load both with <code>Future.wait</code> (Chapter 4).</li>
+<li>In <code>load</code>, do not clear <code>drinks</code>; on failure, set <code>status</code> to <code>failed</code> only if <code>drinks</code> is empty, and otherwise keep <code>ready</code> and set a flag <code>stale = true</code> that the page shows as a small <code>MaterialBanner</code> above the list. It is better for people when old data is still useful: a menu that changes once a day, news, a list of orders that were already placed. It is dangerous when old data can lead to a wrong decision: a price that may have changed before paying, a stock count, a balance. Then the app must say clearly that the data is old, and refuse the action until it is fresh.</li>
 </ol>
 
 </section>

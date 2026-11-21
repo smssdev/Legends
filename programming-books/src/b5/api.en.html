@@ -1,0 +1,226 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/api/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Talking to an API</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>run a small API server written in Dart, and talk to it with <code>curl</code></li>
+<li>send GET and POST requests from Flutter with the <code>http</code> package</li>
+<li>turn JSON into Dart objects, and server errors into exceptions with clear messages</li>
+<li>show loading, error and ready states, with a way to try again</li>
+<li>test code that uses the network without any network, with <code>MockClient</code></li>
+</ul>
+</div>
+
+<p class="lead">The café’s menu has lived in the code since Chapter 7. In a real app it lives on a <dfn>server</dfn>, and the app asks for it over the internet, through an <dfn>API</dfn>: a set of addresses that answer with data. In this chapter the café gets its own server, a single Dart file you can run on your computer, and the app learns to ask it for the menu, show what happens while it waits, survive when things go wrong, and send orders back.</p>
+
+<aside class="bit" data-mood="happy"><p>Every request in this chapter really went over a network connection to a real server while the book was being made, and every error message came from that server. Only the tests use a pretend network, and they say so.</p></aside>
+
+<h2>{{n}}.1 The café’s server</h2>
+
+<p>If you read Book 3 of this series, you have built APIs yourself. If not, here is all you need: the app sends a <dfn>request</dfn> with a <dfn>method</dfn> (GET to read, POST to create) and an address; the server sends back a <dfn>response</dfn> with a <dfn>status code</dfn> (200 OK, 201 Created, 400 bad request, 404 not found, 500 server error) and a body, here in <dfn>JSON</dfn>, the text format for data you met in Book 1. The café’s server, written in plain Dart with no package at all:</p>
+
+<pre data-code="server/server.dart" data-from="^// " data-title="server/server.dart"></pre>
+
+<p>Run it in a terminal, in the folder where you saved it with the café’s pictures in an <code>images</code> folder, and leave it running:</p>
+
+<pre data-term="server-run.sh"></pre>
+
+<p>Before writing any app, talk to the API from another terminal with <code>curl</code>, so that you know exactly what it answers:</p>
+
+<pre data-term="curl.sh"></pre>
+
+<p>One drink by its id; a drink that does not exist, with a 404 and a message; an order created, with 201; and an order without a name, refused with 400 and a message. The server checks everything it receives, as Chapter 9 said every server must, and every refusal says what is wrong. The app will show these messages to people.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>On the Android emulator, <code>localhost</code> means the emulator itself, not your computer: use <code>http://10.0.2.2:8080</code> to reach a server on your computer. And Android refuses plain <code>http://</code> addresses in release builds; real servers use <code>https://</code>, and for local tests you can allow it in the manifest. On an iPhone simulator, <code>localhost</code> works.</p></aside>
+
+<h2>{{n}}.2 The first request</h2>
+
+<p>Flutter apps make requests with the <code>http</code> package, published by the Dart team. The chapter’s app also uses Provider from Chapter {{n-1}}:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<pre data-code="lib/fetch.dart" data-from="^Future" data-title="lib/fetch.dart (part)"></pre>
+
+<figure data-img="shots/fetch.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: The menu, from the server.</figcaption>
+</figure>
+
+<ul>
+<li><code>http.get</code> takes a <code>Uri</code> and returns a <code>Future&lt;Response&gt;</code>, with <code>statusCode</code> and <code>body</code>.</li>
+<li><code>jsonDecode</code>, from <code>dart:convert</code>, turns the JSON text into Dart values: lists, maps, strings and numbers.</li>
+<li><code>FutureBuilder</code> shows each moment of a future: its <code>builder</code> runs again when the future completes. The <code>snapshot</code> says whether it is still waiting, has failed, or has data.</li>
+<li>The future is created once, as a <code>late final</code> field of the State. Creating it inside <code>build</code> would send a new request every time the screen is drawn, which can be many times a second.</li>
+</ul>
+
+<p>This works, and it is how every Flutter developer starts. It also has three weaknesses that the rest of the chapter fixes: the data stays as untyped maps, an error shows as a raw exception, and nothing can be tested without a server.</p>
+
+<h2>{{n}}.3 From JSON to objects</h2>
+
+<p>The professional shape puts everything about the server in one class, and turns every answer into typed Dart objects as soon as it arrives:</p>
+
+<pre data-code="lib/cafe_api.dart" data-from="^class Drink" data-to="^}#3" data-title="lib/cafe_api.dart (part)"></pre>
+
+<ul>
+<li><code>Drink.fromJson</code> is a <dfn>factory constructor</dfn>: a constructor that builds the object from something else, here a map. After it, the rest of the app works with <code>drink.price</code>, an <code>int</code>, and never with <code>json['price']</code>.</li>
+<li><code>CafeApi</code> receives its <code>http.Client</code> instead of creating one. The app gives it a real client; tests will give it a fake one. This is called <dfn>dependency injection</dfn>, and it is what makes network code testable.</li>
+<li>Every request goes through <code>_send</code>: a timeout of ten seconds (Chapter 4), so that a silent server cannot leave the screen waiting forever, the body decoded as UTF-8 so that Arabic arrives intact, and any status of 300 or more turned into an <code>ApiException</code> carrying the server’s own message.</li>
+<li><code>replace(queryParameters: ...)</code> builds <code>/menu?q=tea</code> safely, encoding spaces and Arabic letters correctly.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Parse at the edge. Convert JSON to typed objects in one place, as soon as it arrives, and let the rest of the app see only those objects. If the server changes a field’s name, one line changes, and the compiler finds every use; with maps passed around, the bug appears on a screen, much later.</p></aside>
+
+<h2>{{n}}.4 Loading, error, ready</h2>
+
+<p>A screen that loads from a network is always in one of three states, and must show all three well. The model keeps the state:</p>
+
+<pre data-code="lib/cafe_api.dart" data-from="^enum Status" data-title="lib/cafe_api.dart (the model)"></pre>
+
+<p>The page shows each state with a switch expression on <code>model.status</code>:</p>
+
+<pre data-code="lib/menu_app.dart" data-from="body: switch" data-to="^      },"  data-title="lib/menu_app.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>Ready, with pictures from the server</figcaption>
+</figure>
+<figure data-img="shots/failed.png" data-frame="phone">
+<figcaption>Failed: the server answered 500</figcaption>
+</figure>
+</div>
+
+<ul>
+<li>While loading, a spinner. When ready, the list, wrapped in a <code>RefreshIndicator</code>: pulling the list down calls <code>load</code> again.</li>
+<li>When failed, what happened, in the server’s words, and a button to try again, which calls the same <code>load</code>. A screen that fails with no way out is the most common bad experience in mobile apps.</li>
+<li>The pictures come from the server too, with <code>NetworkImage</code>. If one fails, <code>onBackgroundImageError</code> keeps the empty circle instead of an error.</li>
+</ul>
+
+<p>Ordering is a POST. Tapping the cart sends it, and shows the total the server calculated:</p>
+
+<figure data-img="shots/ordered.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: After tapping the cart of the orange juice: the server created the order.</figcaption>
+</figure>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why is the future in <code>fetch.dart</code> created in a field and not in <code>build</code>?</li><li>What does <code>CafeApi</code> do with a response whose status is 404?</li><li>What three states must a screen that loads from the network show?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Testing without a network</h2>
+
+<p>Widget tests never reach the internet: every real request returns 400. That is a feature: tests must not depend on a server that may be slow or down. Because <code>CafeApi</code> receives its client, a test can give it a <code>MockClient</code> from <code>package:http/testing.dart</code>, which answers every request with whatever the test decides:</p>
+
+<pre data-code="test/api_test.dart" data-from="test(" data-to="^  });" data-title="test/api_test.dart (part)"></pre>
+<pre data-term="api-test.sh"></pre>
+
+<p>The widget test goes further: the first request fails, the second succeeds, and the test taps “Try again” in between:</p>
+
+<pre data-code="test/menu_app_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/menu_app_test.dart (part)"></pre>
+<pre data-term="menu-app-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>An <code>http.Response</code> built in a test encodes its body as Latin-1 unless its headers say <code>charset=utf-8</code>. The Arabic edition of this test failed for exactly that reason until the header was added. Real servers send the header; fake ones must too.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Creating the future in <code>build</code></td><td>A new request on every rebuild</td><td>Create it once, in the State or a model</td></tr>
+<tr><td>Ignoring the status code</td><td>An error page parsed as data, and a confusing crash</td><td>Check it, and throw with the server’s message</td></tr>
+<tr><td>No loading or error state</td><td>A blank screen, or one that never recovers</td><td>Show all three states, with “Try again”</td></tr>
+<tr><td><code>localhost</code> on the Android emulator</td><td>Connection refused</td><td><code>10.0.2.2</code></td></tr>
+<tr><td>No internet permission in Android release</td><td>Every request fails only in the published app</td><td>Add the INTERNET permission to the main manifest</td></tr>
+<tr><td>Decoding a body without UTF-8</td><td>Arabic arrives as broken characters</td><td><code>utf8.decode(response.bodyBytes)</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>An API answers requests (GET, POST…) with a status code and a JSON body. Try it with <code>curl</code> before writing the app.</li>
+<li>The <code>http</code> package sends requests; <code>jsonDecode</code> turns the body into Dart values; <code>FutureBuilder</code> shows a future’s progress.</li>
+<li>Put the server in one class that receives its <code>http.Client</code>, turns JSON into typed objects with <code>fromJson</code>, and errors into exceptions with the server’s message, with a timeout.</li>
+<li>Show loading, error (with “Try again”) and ready; <code>RefreshIndicator</code> reloads by pulling.</li>
+<li>Test with <code>MockClient</code>, never with a real network.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>build</code> can run many times, and each run would send a new request; the field is created once. 2. It throws an <code>ApiException</code> with the server’s error message, “No drink 9”. 3. Loading, error (with a way to try again) and ready.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Keep the café’s server running while you build these projects, and try each one with the server stopped, too: every screen must say something useful when the server is not there.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>The drink of the day</h3>
+<p class="project-goal">Show one drink, fetched by its id, in a card with its picture from the server.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>CafeApi.drink</code>, <code>FutureBuilder</code> with a switch on the snapshot, and <code>Image.network</code>.</p>
+<ol class="steps">
+<li>Give the page a <code>CafeApi</code> and an id, and create the future once: <code>late final Future&lt;Drink&gt; special = widget.api.drink(widget.id);</code></li>
+<li>In the builder, switch on the snapshot with patterns: <code>AsyncSnapshot(:final error?)</code> matches when there is an error, <code>AsyncSnapshot(:final data?)</code> when there is data, and <code>_</code> while waiting.</li>
+<li>Show the picture with <code>Image.network(widget.api.imageUrl(data))</code> above the name and price.</li>
+<li>Change the id to 9 and see the server’s message instead of the card.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>:final error?</code> means “take the field <code>error</code>, and match only if it is not null”: a compact, safe way to read a snapshot.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/special.png" data-frame="phone">
+<figcaption>Project {{n}}.1: drink number 3.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Send an order, and show what the server says</h3>
+<p class="project-goal">Send an order with a name, disable the button while it is sending, and show the server’s answer: the total, or its error message.</p>
+<p class="project-skills"><strong>You will practise:</strong> POST with a JSON body, a sending state, catching <code>ApiException</code>, <code>mounted</code>, and a test with a 400 answer.</p>
+<ol class="steps">
+<li>Keep <code>sending</code> and <code>message</code> in the state. In <code>send</code>, set <code>sending</code>, call <code>api.order(name.text, [1, 4])</code>, and keep the total or the exception’s message.</li>
+<li>While sending, disable the button and show a small spinner in it, so that nobody sends the order twice.</li>
+<li>After the <code>await</code>, check <code>mounted</code> before <code>setState</code>: the page may have closed while waiting.</li>
+<li>Do <em>not</em> check the name in the app this time: send it empty, and show the server’s message.</li>
+<li>Test with a <code>MockClient</code> that answers 400 with an error, and check that the message appears.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in a real app, check in the app too (Chapter 9): the person learns faster. The server’s message is the safety net for everything the app did not foresee.</p>
+<p><strong>Your result should look like this</strong> (after sending with no name):</p>
+<figure data-img="shots/send-order.png" data-frame="phone">
+<figcaption>Project {{n}}.2: the server’s own message.</figcaption>
+</figure>
+<pre data-term="projects/send-order-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Search on the server, without flooding it</h3>
+<p class="project-goal">Search the menu on the server as the customer types, but ask only when the typing stops for 400 milliseconds.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Timer</code>, cancelling, query parameters, and testing time with <code>tester.pump(Duration)</code>.</p>
+<ol class="steps">
+<li>Keep a <code>Timer? wait</code> in the state. In <code>onChanged</code>, cancel it, and start a new <code>Timer(Duration(milliseconds: 400), ...)</code> that calls <code>api.menu(query: text)</code>.</li>
+<li>Typing “tea” quickly cancels the first two timers: only one request is sent, for “tea”. This is called <dfn>debouncing</dfn>.</li>
+<li>Cancel the timer in <code>dispose</code>.</li>
+<li>Test with a <code>MockClient</code> that records every query. Type “t”, “te”, “tea” with 100 milliseconds between them, check that nothing was asked yet, then pump 400 milliseconds and check that exactly one request, for “tea”, was sent.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in a widget test, time does not pass by itself: <code>tester.pump(Duration(milliseconds: 400))</code> moves the test’s clock forward exactly that much, which makes timing tests fast and exact.</p>
+<p><strong>Your result should look like this</strong> (after typing “tea”):</p>
+<figure data-img="shots/search.png" data-frame="phone">
+<figcaption>Project {{n}}.3: the server’s answer for “tea”.</figcaption>
+</figure>
+<pre data-term="projects/live-search-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> With <code>curl</code>, ask for <code>/menu?q=co</code>, then <code>/nothing</code>. What status codes come back, and why?</li>
+<li><span class="level">Easy</span> Stop the server and open the menu app. Which state does it show, and what message? Start the server and tap “Try again”.</li>
+<li><span class="level">Medium</span> Add <code>toJson()</code> to <code>Drink</code>, the opposite of <code>fromJson</code>, and a test that a drink survives the round trip: <code>Drink.fromJson(d.toJson())</code> has the same fields.</li>
+<li><span class="level">Medium</span> Add a route <code>GET /hours</code> to the server that answers <code>{"open": "8:00", "close": "22:00"}</code>, check it with <code>curl</code>, and show it at the bottom of the menu.</li>
+<li><span class="level">Challenge</span> Make the menu model keep the last menu it received, and when a reload fails, show the old menu with a small banner “Could not refresh”, instead of the full error page. When is that better for people, and when is it dangerous?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Close the café app and open it again, and everything is gone: the favourites, the basket, the settings. The next chapter saves data on the phone itself: small settings with <code>shared_preferences</code>, and larger data in files and a local database.</p>
+</div>
+</section>
