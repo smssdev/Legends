@@ -1,0 +1,242 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/lists/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>القوائم والصور والسمات</h1>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تعرض قائمة تتمرر، بـ <code>ListView</code> و<code>ListTile</code></li>
+<li>تعرض ألف عنصر، أو مليوناً، ببناء ما على الشاشة منها فقط</li>
+<li>تضيف الصور إلى تطبيقك، وتعرضها في القوائم والشبكات</li>
+<li>تعرض صوراً من الإنترنت، مع شيء معقول أثناء تحميلها وإن فشلت</li>
+<li>تعطي تطبيقك سمة فاتحة وأخرى داكنة من لون واحد</li>
+</ul>
+</div>
+
+<p class="lead">معظم الشاشات في معظم التطبيقات قوائم: رسائل، ومنتجات، وأغانٍ، وجهات اتصال، وطلبات. ومعظم الباقي شبكات من الصور. يعلّمك هذا الفصل الاثنين، ويضيف الصور نفسها، ويكمل شكل التطبيق بالسمات، ليبدو تطبيقك صحيحاً سواء ضُبط الجوال على الوضع الفاتح أو الداكن. وينتهي بقائمة المقهى: صور حقيقية، وقائمة مبنية من البيانات، ومفضلة يضغطها الزبون.</p>
+
+<aside class="bit" data-mood="happy"><p>أخيراً صار للمقهى صور! رسمتها كلها لهذا الكتاب. وهي تعيش داخل التطبيق، فتظهر في الحال، حتى بلا إنترنت على الإطلاق.</p></aside>
+
+<h2>{{n}}.1 قوائم تتمرر</h2>
+
+<p>الـ <code>Column</code> لا يتمرر: حين يطول أبناؤه عن الشاشة يفيضون. أما الـ <code>ListView</code> فعمود يتمرر. ورفيقه الطبيعي <code>ListTile</code>، صف جاهز فيه Widget اختياري <code>leading</code> في البداية، وعنوان <code>title</code>، وعنوان فرعي <code>subtitle</code> تحته، وWidget <code>trailing</code> في النهاية، مرتبة كما تقول إرشادات Material:</p>
+
+<pre data-code="lib/tiles.dart" data-from="body: ListView" data-to="^        )," data-title="lib/tiles.dart (جزء)"></pre>
+
+<figure data-img="shots/tiles.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: ثلاثة ListTile في ListView.</figcaption>
+</figure>
+
+<p>يتولى <code>ListTile</code> الأحجام والمسافات والاصطفاف، ويصير قابلاً للضغط بمجرد أن تعطيه <code>onTap</code>. استخدمه كلما ناسب صفُّ القائمة شكلَه؛ ومعظم الصفوف تناسبه.</p>
+
+<h2>{{n}}.2 القوائم الطويلة: ListView.builder</h2>
+
+<p>يحتفظ المقهى بكل طلب. وبعد عام تصير الطلبات آلافاً. والـ <code>ListView</code> بقائمة <code>children</code> سيبني Widget لكل منها قبل أن يعرض أولها. أما <code>ListView.builder</code> فيبنيها فقط حين يحتاجها:</p>
+
+<pre data-code="lib/builder.dart" data-from="body: ListView.builder" data-to="^        )," data-title="lib/builder.dart (جزء)"></pre>
+
+<figure data-img="shots/builder.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: أول ألف طلب.</figcaption>
+</figure>
+
+<p>تعطيه عدد العناصر <code>itemCount</code>، ودالة <code>itemBuilder</code> تبني العنصر رقم <code>i</code>. ولا يستدعي Flutter تلك الدالة إلا للعناصر التي على الشاشة، أو التي توشك أن تظهر بالتمرير. ويستطيع اختبار أن يعدّ كم يبني فعلاً:</p>
+
+<pre data-code="test/builder_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/builder_test.dart (جزء)"></pre>
+<pre data-term="builder-test.sh"></pre>
+
+<p>ستة عشر من ألف: ما يتسع له شاشة الاختبار، وبضعة تحتها جاهزة للظهور. وبعد تمرير 3000 بكسل إلى الأسفل يكون قد بنى 69 في المجموع، ويُرمى ما خرج من الشاشة. فقائمة من مليون عنصر تكلّف ما تكلّفه قائمة من عشرين. و<code>tester.drag</code> بالمناسبة يمرر تماماً كما يفعل الإصبع.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>استخدم <code>ListView.builder</code> (أو <code>.separated</code> القادمة) لكل قائمة يأتي طولها من البيانات: فأنت لا تعرف كم ستطول في العام القادم. واحتفظ بـ <code>ListView(children: ...)</code> للقوائم القصيرة الثابتة مثل صفحة الإعدادات.</p></aside>
+
+<h2>{{n}}.3 الصور والشبكات</h2>
+
+<p>الصور التي تأتي مع التطبيق تُسمّى <dfn>الأصول</dfn> (assets). ضع الملفات في مجلد داخل المشروع، مثل <code>assets/images/</code>، واذكر المجلد في <code>pubspec.yaml</code> تحت <code>flutter:</code>:</p>
+
+<pre data-code="pubspec.yaml" data-from="^flutter:" data-title="pubspec.yaml (جزء)"></pre>
+
+<p>المسافات البادئة مهمة في هذا الملف: <code>assets:</code> بمسافتين تحت <code>flutter:</code>، وكل مجلد بأربع مسافات بعد شرطة. وبعد تغيير <code>pubspec.yaml</code> أوقف التطبيق وشغّله من جديد: فالتحديث الفوري لا يلتقط الأصول الجديدة. ثم تعرض <code>Image.asset('assets/images/latte.png')</code> الصورة.</p>
+
+<p>وهنا تُعرض القائمة <dfn>شبكةً</dfn> (grid)، في كل بطاقة صورة:</p>
+
+<pre data-code="lib/grid.dart" data-from="body: GridView.builder" data-to="^        )," data-title="lib/grid.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/grid-phone.png" data-frame="phone">
+<figcaption>الشكل {{n}}.3: عمودان على الجوال.</figcaption>
+</figure>
+</div>
+<figure data-img="shots/grid-tablet.png" data-frame="tablet">
+<figcaption>الشكل {{n}}.4: الشبكة نفسها على جهاز لوحي: أربعة أعمدة، بلا أي تغيير في الكود.</figcaption>
+</figure>
+
+<ul>
+<li><code>GridView.builder</code> للشبكات كـ <code>ListView.builder</code> للقوائم: لا يبني إلا البطاقات التي على الشاشة.</li>
+<li>الـ <code>gridDelegate</code> يقرر شكل الشبكة. و<code>SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 200)</code> تعني «عدد الأعمدة الذي يتسع، ولا عمود أعرض من 200 بكسل»: عمودان على الجوال، وأربعة على الجهاز اللوحي. إنها الشبكة التي بنيتها بيدك في تحدي الفصل {{n-1}}، في سطر واحد. و<code>childAspectRatio: 0.8</code> تجعل كل بطاقة أطول قليلاً من عرضها.</li>
+<li><code>fit: BoxFit.cover</code> تملأ مساحة الصورة كلها وتقص ما لا يتسع؛ و<code>BoxFit.contain</code> تعرض الصورة كلها وتترك أشرطة فارغة. وللصور في البطاقات تكون <code>cover</code> صحيحة دائماً تقريباً.</li>
+<li><code>clipBehavior: Clip.antiAlias</code> على الـ <code>Card</code> تقص الصورة بحسب زوايا البطاقة المستديرة.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>للجوالات شاشات بدرجات حدة مختلفة. ويستطيع Flutter أن يختار نسخة أحدّ من كل صورة تلقائياً: ضع نسخة بضعف الحجم في <code>assets/images/2.0x/</code> بالاسم نفسه، فتستخدمها الجوالات ذات الشاشات الحادة. ومجموعة واحدة من الصور، بالحجم الذي تعرضها به، تكفي للبداية.</p></aside>
+
+<h2>{{n}}.4 صور من الإنترنت</h2>
+
+<p>صور المنتجات والمستخدمين والأخبار تأتي عادة من خادم. و<code>Image.network</code> تعرضها. ولأن الشبكة بطيئة وأحياناً غائبة، أعطها دالتي بناء إضافيتين: ما يُعرض أثناء تحميل الصورة، وما يُعرض إن لم تُحمَّل:</p>
+
+<pre data-code="lib/network.dart" data-from="^class Photo" data-title="lib/network.dart (جزء)"></pre>
+
+<p><code>loadingBuilder</code> تُستدعى مرة بعد مرة والبيانات تصل؛ و<code>progress</code> تكون <code>null</code> حين تكتمل الصورة، فتُعرض الصورة نفسها (<code>child</code>). و<code>errorBuilder</code> تُستدعى حين يفشل التحميل: وصندوق رمادي بأيقونة أفضل بكثير من خطأ أحمر أو فراغ. ويثبت اختبار أن البديل يعمل، لأن الاختبارات لا تصل إلى الإنترنت أبداً: كل طلب في اختبار Widget يفشل، وهذا بالضبط ما نريد فحصه.</p>
+
+<pre data-code="test/network_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/network_test.dart (جزء)"></pre>
+<pre data-term="network-test.sh"></pre>
+
+<p><code>pumpAndSettle</code> تستمر في بناء الإطارات حتى لا يتغير شيء: هنا، حتى يُعالَج الطلب الفاشل ويظهر البديل.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>يحتاج تطبيق أندرويد إذناً لاستخدام الإنترنت. و<code>flutter create</code> لا يعطيه إلا لنسخ التصحيح، فالتطبيق الذي يحمّل الصور تماماً أثناء التطوير لا يعرض أي صورة في نسخة الإصدار التي تنشرها. أضف <code>&lt;uses-permission android:name="android.permission.INTERNET"/&gt;</code> إلى <code>android/app/src/main/AndroidManifest.xml</code>، فوق <code>&lt;application</code>. والفصل 11 يفعل ذلك فعلاً.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>لماذا لا يبني <code>ListView.builder</code> إلا 16 من 1000 عنصر؟</li><li>أين يجب ذكر مجلد صور جديد، وماذا يجب أن تفعل بعد ذكره؟</li><li>ما الفرق بين <code>BoxFit.cover</code> و<code>BoxFit.contain</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.5 فاتح وداكن</h2>
+
+<p>كثير من الناس يضبطون جوالاتهم على الوضع الداكن، ويتوقعون أن يتبعه كل تطبيق. وFlutter يجعل هذا شبه مجاني: أعطِ <code>MaterialApp</code> سمة <code>theme</code> وسمة <code>darkTheme</code>، فيستخدم المناسبة لإعداد الجوال. وهذا التطبيق يضيف مفتاحاً لتجربة الاثنتين:</p>
+
+<pre data-code="lib/themes.dart" data-from="return MaterialApp" data-to="body: ListView" data-title="lib/themes.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/themes-light.png" data-frame="phone">
+<figcaption>فاتح</figcaption>
+</figure>
+<figure data-img="shots/themes-dark.png" data-frame="phone">
+<figcaption>بعد ضغط المفتاح</figcaption>
+</figure>
+</div>
+
+<p>السمتان تنموان من لون البذرة نفسه، البني؛ و<code>brightness: Brightness.dark</code> تطلب النسخة الداكنة من المخطط، بنص فاتح على أسطح داكنة، مختارة لتبقى مقروءة. و<code>themeMode</code> تختار أي السمتين تُستخدم: <code>ThemeMode.system</code>، القيمة الافتراضية، تتبع الجوال؛ و<code>light</code> و<code>dark</code> تفرضان واحدة. وكل Widget في الصورة غيّر لونه بنفسه، لأن أحداً منها لم يختر لوناً خاصاً: كلها تسأل السمة. وهذه مكافأة نصيحة الفصل 5.</p>
+
+<p><code>SwitchListTile</code> هو <code>ListTile</code> في نهايته مفتاح، و<code>CircleAvatar(backgroundImage: AssetImage(...))</code> تعرض صورة في دائرة. ولاحظ <code>AssetImage</code> لا <code>Image.asset</code>: فبعض الـ Widgets لا تريد إلا مصدر الصورة، أي <code>ImageProvider</code>، وترسمها بنفسها.</p>
+
+<h2>{{n}}.6 مشروع: قائمة المقهى</h2>
+
+<p>القائمة تجمع الفصل كله: صنف للبيانات، وقائمة مشروبات، وصور من الأصول، وفاصل بين الصفوف، ومفضلة يضغطها الزبون، معدودة في الشريط.</p>
+
+<pre data-code="lib/menu.dart" data-from="^class Drink" data-title="lib/menu.dart (جزء)"></pre>
+
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>الشكل {{n}}.5: القائمة، بعد ضغط قلبين.</figcaption>
+</figure>
+
+<ul>
+<li>البيانات منفصلة عن الشاشة: صنف <code>Drink</code> وقائمة <code>const</code>. وفي الفصل 11 ستأتي القائمة نفسها من خادم، ولن تتغير الشاشة.</li>
+<li><code>ListView.separated</code> هي <code>ListView.builder</code> مع <code>separatorBuilder</code>: فاصل <code>Divider</code> بين كل صفين، ولا فاصل بعد الأخير.</li>
+<li><code>ClipRRect</code> تستدير زوايا الصورة؛ والعرض والارتفاع الثابتان يبقيان كل الصفوف مصطفة أياً كانت الصورة.</li>
+<li>المفضلة <code>Set</code> من الأسماء في الحالة: ضغط القلب يضيف اسماً أو يحذفه بـ <code>setState</code>، والعنوان يعدّها.</li>
+</ul>
+
+<aside class="box try"><p class="box-title">جرّب</p><p>اجعل الصف كله قابلاً للضغط بـ <code>onTap</code>، يعرض <code>SnackBar</code> باسم المشروب وسعره (انظر المشروع {{n}}.3 لترى كيف تعرض واحداً). ثم رتّب القائمة لتأتي المفضلة أولاً. أي دالة من دوال المجموعات في الفصل 3 تساعد؟</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td><code>Column</code> طويل بدلاً من قائمة</td><td>فيضان: يُقطع الأسفل ولا يتمرر</td><td><code>ListView</code></td></tr>
+<tr><td><code>ListView(children: ...)</code> للبيانات</td><td>يُبنى كل عنصر دفعة واحدة؛ والقوائم الطويلة بطيئة</td><td><code>ListView.builder</code> أو <code>.separated</code></td></tr>
+<tr><td><code>ListView</code> داخل <code>Column</code></td><td>خطأ: «Vertical viewport was given unbounded height»</td><td>لُفّ القائمة بـ <code>Expanded</code></td></tr>
+<tr><td>صورة غير مذكورة في <code>pubspec.yaml</code></td><td>«Unable to load asset» بدلاً من الصورة</td><td>اذكر المجلد، ثم أعد تشغيل التطبيق</td></tr>
+<tr><td>صورة من الشبكة بلا <code>errorBuilder</code></td><td>صندوق خطأ مكان الصورة</td><td>أعطِ بديلاً دائماً</td></tr>
+<tr><td>ألوان ثابتة في الـ Widgets</td><td>نص غير مقروء في الوضع الداكن</td><td>خذ الألوان من السمة</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li><code>ListView</code> يتمرر؛ و<code>ListTile</code> هو الصف المعتاد، بـ <code>leading</code> و<code>title</code> و<code>subtitle</code> و<code>trailing</code>.</li>
+<li><code>ListView.builder</code> و<code>.separated</code> لا تبنيان إلا العناصر الظاهرة: استخدمهما لكل قائمة تأتي من البيانات.</li>
+<li><strong>الأصول</strong> ملفات تأتي مع التطبيق: اذكر مجلدها في <code>pubspec.yaml</code>، وأعد التشغيل، واعرضها بـ <code>Image.asset</code> (أو <code>AssetImage</code>).</li>
+<li><code>GridView.builder</code> مع مفوَّض <code>MaxCrossAxisExtent</code> يضع عدد الأعمدة الذي يتسع له العرض؛ و<code>BoxFit.cover</code> تملأ وتقص.</li>
+<li><code>Image.network</code> تحتاج <code>loadingBuilder</code> و<code>errorBuilder</code>، ونسخ إصدار أندرويد تحتاج إذن الإنترنت.</li>
+<li>أعطِ <code>MaterialApp</code> سمة <code>theme</code> وسمة <code>darkTheme</code>؛ و<code>themeMode</code> تختار، والـ Widgets التي تأخذ ألوانها من السمة تتبعها وحدها.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأنه لا يبني العنصر إلا حين يكون على الشاشة أو يوشك أن يظهر بالتمرير؛ وشاشة الاختبار عرضت نحو ستة عشر صفاً. 2. في <code>pubspec.yaml</code>، تحت <code>flutter:</code> ثم <code>assets:</code>؛ ثم أوقف التطبيق وشغّله من جديد، لأن التحديث الفوري لا يضيف الأصول الجديدة. 3. <code>cover</code> تملأ المساحة كلها وتقص الصورة؛ و<code>contain</code> تعرض الصورة كلها وقد تترك أشرطة فارغة.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبدأ من قائمة بيانات ويحوّلها إلى شاشة. اكتب البيانات أولاً، ثم الشاشة التي تعرضها.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>قائمة جهات الاتصال</h3>
+<p class="project-goal">اعرض ثماني جهات اتصال مرتبة أبجدياً، لكل منها دائرة ملونة فيها حرفها الأول، وفاصل بينها، وعددها في الشريط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>ListView.separated</code> و<code>ListTile</code> و<code>CircleAvatar</code>، والترتيب بالتتابع، والألوان من قائمة.</p>
+<ol class="steps">
+<li>اكتب الأسماء في نص واحد تفصلها فواصل، ثم <code>split(',')..sort()</code>. وترتيب Dart للنصوص العربية يتبع ترتيب الحروف العربية.</li>
+<li>ابنِ <code>ListView.separated</code> فيه <code>ListTile</code> لكل اسم: <code>CircleAvatar</code> فيها <code>names[i][0]</code>، والاسم، وأيقونة هاتف في النهاية.</li>
+<li>لوّن كل دائرة بـ <code>Colors.primaries[i % Colors.primaries.length].shade100</code>.</li>
+<li>اجعل الفواصل تبدأ بعد الدائرة بـ <code>Divider(height: 1, indent: 72)</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>Colors.primaries</code> قائمة بألوان Material الرئيسية؛ و<code>%</code> تعود إلى أولها حين تكون الأسماء أكثر من الألوان.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-img="shots/contacts.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: ثماني جهات اتصال مرتبة.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>اختر صورك</h3>
+<p class="project-goal">اعرض صور المقهى الست في شبكة من عمودين، يحدد فيها ضغطُ الصورة الصورةَ (إطار ملون وعلامة صح) ويلغي الضغط الثاني تحديدها، مع عدد المحدد في الشريط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>GridView.count</code> و<code>GestureDetector</code> و<code>Stack</code> بـ <code>StackFit.expand</code>، وعامل الفرد مع if داخل المجموعة.</p>
+<ol class="steps">
+<li>احفظ مواقع الصور المحددة في <code>Set&lt;int&gt;</code> في الحالة.</li>
+<li>ابنِ <code>GridView.count(crossAxisCount: 2, ...)</code> بمربع لكل صورة. و<code>GestureDetector</code> يجعل أي Widget قابلاً للضغط بـ <code>onTap</code>.</li>
+<li>كل مربع <code>Stack</code> بـ <code>fit: StackFit.expand</code>، ليملأ أبناؤه المربع: أولها الصورة المستديرة الزوايا.</li>
+<li>للمربعات المحددة فقط، أضف إطاراً وعلامة صح: <code>if (selected.contains(i)) ...[border, tick]</code> تضيف Widgetين بشرط واحد.</li>
+<li>خذ الألوان من <code>Theme.of(context).colorScheme</code>: <code>primary</code> للإطار، و<code>onPrimary</code> للعلامة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>onPrimary</code> هو اللون المصمم ليُقرأ <em>فوق</em> <code>primary</code>. ولكل لون في المخطط شريكه «on».</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد ضغطتين):</p>
+<figure data-img="shots/gallery.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: صورتان محددتان.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>اسحب للحذف، مع التراجع</h3>
+<p class="project-goal">اعرض قائمة مشتريات يحذف فيها سحبُ العنصر جانباً العنصرَ، ويعرض شريط في الأسفل التراجع عن الحذف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Dismissible</code>، والمفاتيح، و<code>SnackBar</code> بفعل، واختبار يسحب.</p>
+<ol class="steps">
+<li>احفظ العناصر في قائمة في الحالة، وابنها بـ <code>ListView.builder</code>.</li>
+<li>لُفّ كل <code>ListTile</code> بـ <code>Dismissible</code>. وهو يحتاج <code>key</code> يحدد العنصر، <code>ValueKey(items[i])</code>، ليعرف Flutter <em>أي</em> عنصر سُحب حتى بعد تغير القائمة. وأعطه خلفية <code>background</code> حمراء بأيقونة سلة مهملات.</li>
+<li>في <code>onDismissed</code> احذف العنصر بـ <code>setState</code>، متذكراً إياه وموقعه.</li>
+<li>اعرض <code>ScaffoldMessenger.of(context).showSnackBar(SnackBar(...))</code> مع <code>SnackBarAction</code> عنوانه «تراجع»، يعيد العنصر إلى موقعه.</li>
+<li>اختبره: اسحب العنصر الأول 500 بكسل جانباً، ثم <code>pumpAndSettle</code>، وتأكد أنه اختفى، واضغط «تراجع»، وتأكد أنه عاد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هنا تصير المفاتيح، التي ذكرها الفصل 5، ضرورية. فبلا مفتاح يطابق Flutter الصفوف بمواقعها، وبعد الحذف سيظن أن العنصر التالي هو الذي سُحب.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-img="shots/shopping.png" data-frame="phone">
+<figcaption>المشروع {{n}}.3: قائمة المشتريات، قبل أي سحب.</figcaption>
+</figure>
+<pre data-term="projects/shopping-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> غيّر <code>builder.dart</code> لتعرض 100,000 طلب. هل يبدأ التطبيق أبطأ؟ ولماذا لا؟</li>
+<li><span class="level">سهل</span> في الشبكة، غيّر <code>maxCrossAxisExtent</code> إلى 120، ثم إلى 400. كم عموداً يعرض جوال عرضه 390 بكسلاً في كل مرة؟</li>
+<li><span class="level">متوسط</span> أضف رأساً فوق قائمة المقهى، «6 أصناف»، يتمرر مع القائمة. (تلميح: ابنِ عنصراً أكثر من عدد المشروبات، واجعل العنصر 0 هو الرأس.)</li>
+<li><span class="level">متوسط</span> اجعل تطبيق السمات يتذكر ثلاثة اختيارات بدلاً من اثنين: فاتح، وداكن، و«مثل الجوال»، بـ <code>SegmentedButton</code> أو ثلاثة <code>RadioListTile</code>. أي قيمة من <code>ThemeMode</code> يستخدمها الثالث؟</li>
+<li><span class="level">تحدٍّ</span> ضع <code>ListView</code> داخل <code>Column</code> تحت <code>Text</code> وشغّله. اقرأ الخطأ، واشرحه بقاعدة التخطيط في الفصل 6، وأصلحه بطريقتين مختلفتين.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>ضغط مشروب يجب أن يفتح صفحة عنه، وزر الرجوع يجب أن يعيد الزبون إلى القائمة. الفصل القادم ينتقل بين الشاشات: دفع الصفحات وإغلاقها، وتمرير البيانات إليها وتلقي الإجابات منها، والتبويبات، والقوائم الجانبية.</p>
+</div>
+</section>

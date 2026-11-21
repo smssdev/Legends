@@ -1,0 +1,242 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/lists/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Lists, Images and Themes</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>show a list that scrolls, with <code>ListView</code> and <code>ListTile</code></li>
+<li>show a thousand items, or a million, by building only those on the screen</li>
+<li>add pictures to your app, and show them in lists and grids</li>
+<li>show pictures from the internet, with something sensible while they load and if they fail</li>
+<li>give your app a light and a dark theme from one colour</li>
+</ul>
+</div>
+
+<p class="lead">Most screens in most apps are lists: messages, products, songs, contacts, orders. Most of the rest are grids of pictures. This chapter teaches both, adds the pictures themselves, and finishes the look of the app with themes, so that your app looks right whether the phone is set to light or to dark. It ends with the café’s menu: real pictures, a list built from data, and favourites the customer can tap.</p>
+
+<aside class="bit" data-mood="happy"><p>The café finally has pictures! I drew every one of them for this book. They live inside the app, so they appear instantly, even with no internet at all.</p></aside>
+
+<h2>{{n}}.1 Lists that scroll</h2>
+
+<p>A <code>Column</code> does not scroll: when its children are taller than the screen, they overflow. A <code>ListView</code> is a column that scrolls. Its natural partner is <code>ListTile</code>, a ready-made row with an optional <code>leading</code> widget at the start, a <code>title</code>, a <code>subtitle</code> under it, and a <code>trailing</code> widget at the end, laid out the way Material’s guidelines say:</p>
+
+<pre data-code="lib/tiles.dart" data-from="body: ListView" data-to="^        )," data-title="lib/tiles.dart (part)"></pre>
+
+<figure data-img="shots/tiles.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: Three ListTiles in a ListView.</figcaption>
+</figure>
+
+<p><code>ListTile</code> takes care of the sizes, the spacing and the alignment, and becomes tappable as soon as you give it an <code>onTap</code>. Use it whenever a row of a list fits its shape; most do.</p>
+
+<h2>{{n}}.2 Long lists: ListView.builder</h2>
+
+<p>The café keeps every order. After a year there are thousands. A <code>ListView</code> with a <code>children</code> list would build a widget for each of them before showing the first one. <code>ListView.builder</code> builds them only when they are needed:</p>
+
+<pre data-code="lib/builder.dart" data-from="body: ListView.builder" data-to="^        )," data-title="lib/builder.dart (part)"></pre>
+
+<figure data-img="shots/builder.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: The first of a thousand orders.</figcaption>
+</figure>
+
+<p>You give it the number of items, <code>itemCount</code>, and a function, <code>itemBuilder</code>, that builds item number <code>i</code>. Flutter calls that function only for the items that are on the screen, or about to scroll onto it. A test can count how many it really builds:</p>
+
+<pre data-code="test/builder_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/builder_test.dart (part)"></pre>
+<pre data-term="builder-test.sh"></pre>
+
+<p>Sixteen of a thousand: the ones that fit the test’s screen, plus a few just below it, ready to scroll in. After scrolling 3000 pixels down it has built 69 in total, and those that scrolled away are thrown away again. A list of a million items costs the same as a list of twenty. <code>tester.drag</code>, by the way, scrolls just as a finger would.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Use <code>ListView.builder</code> (or <code>.separated</code>, below) for any list whose length comes from data: you do not know how long it will be next year. Keep <code>ListView(children: ...)</code> for short, fixed lists like a settings page.</p></aside>
+
+<h2>{{n}}.3 Pictures and grids</h2>
+
+<p>Pictures that ship with the app are called <dfn>assets</dfn>. Put the files in a folder of the project, such as <code>assets/images/</code>, and list the folder in <code>pubspec.yaml</code>, under <code>flutter:</code>:</p>
+
+<pre data-code="pubspec.yaml" data-from="^flutter:" data-title="pubspec.yaml (part)"></pre>
+
+<p>Indentation matters in this file: <code>assets:</code> is two spaces in, under <code>flutter:</code>, and each folder four spaces in, after a dash. After changing <code>pubspec.yaml</code>, stop the app and run it again: a hot reload does not pick up new assets. Then <code>Image.asset('assets/images/latte.png')</code> shows the picture.</p>
+
+<p>Here the menu is shown as a <dfn>grid</dfn>, with a picture on each card:</p>
+
+<pre data-code="lib/grid.dart" data-from="body: GridView.builder" data-to="^        )," data-title="lib/grid.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/grid-phone.png" data-frame="phone">
+<figcaption>Figure {{n}}.3: Two columns on a phone.</figcaption>
+</figure>
+</div>
+<figure data-img="shots/grid-tablet.png" data-frame="tablet">
+<figcaption>Figure {{n}}.4: The same grid on a tablet: four columns, without any change to the code.</figcaption>
+</figure>
+
+<ul>
+<li><code>GridView.builder</code> is to grids what <code>ListView.builder</code> is to lists: it builds only the cards on the screen.</li>
+<li>The <code>gridDelegate</code> decides the shape of the grid. <code>SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 200)</code> means “as many columns as fit, none wider than 200 pixels”: two on a phone, four on a tablet. This is the grid you built by hand in Chapter {{n-1}}’s challenge, in one line. <code>childAspectRatio: 0.8</code> makes each card a little taller than it is wide.</li>
+<li><code>fit: BoxFit.cover</code> fills the picture’s space completely and crops what does not fit; <code>BoxFit.contain</code> would show all of the picture and leave empty bands. For photos in cards, <code>cover</code> is almost always right.</li>
+<li><code>clipBehavior: Clip.antiAlias</code> on the <code>Card</code> cuts the picture to the card’s rounded corners.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Phones have screens of different sharpness. Flutter can pick a sharper version of each picture automatically: put a twice-as-large copy in <code>assets/images/2.0x/</code> with the same name, and phones with sharp screens use it. One set of pictures, at the size you show them, is fine to start with.</p></aside>
+
+<h2>{{n}}.4 Pictures from the internet</h2>
+
+<p>Pictures of products, of users and of news usually come from a server. <code>Image.network</code> shows them. Because the network is slow and sometimes absent, give it two extra builders: what to show while the picture loads, and what to show if it cannot:</p>
+
+<pre data-code="lib/network.dart" data-from="^class Photo" data-title="lib/network.dart (part)"></pre>
+
+<p><code>loadingBuilder</code> is called again and again while the bytes arrive; <code>progress</code> is <code>null</code> when the picture is complete, and then the picture itself (<code>child</code>) is shown. <code>errorBuilder</code> is called when loading fails: a grey box with an icon is far better than a red error or an empty hole. A test proves the fallback works, because tests never reach the internet: every request in a widget test fails, which is exactly what we want to check.</p>
+
+<pre data-code="test/network_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/network_test.dart (part)"></pre>
+<pre data-term="network-test.sh"></pre>
+
+<p><code>pumpAndSettle</code> keeps pumping frames until nothing changes any more: here, until the failed request has been handled and the fallback shown.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>An Android app needs permission to use the internet. <code>flutter create</code> gives it only to debug builds, so an app that loads pictures perfectly while you develop shows none in the release you publish. Add <code>&lt;uses-permission android:name="android.permission.INTERNET"/&gt;</code> to <code>android/app/src/main/AndroidManifest.xml</code>, above <code>&lt;application</code>. Chapter 11 does this for real.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does <code>ListView.builder</code> build only 16 of 1000 items?</li><li>Where must a new folder of pictures be listed, and what must you do after listing it?</li><li>What is the difference between <code>BoxFit.cover</code> and <code>BoxFit.contain</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Light and dark</h2>
+
+<p>Many people set their phone to dark mode, and expect every app to follow. Flutter makes it almost free: give <code>MaterialApp</code> a <code>theme</code> and a <code>darkTheme</code>, and it uses the one that matches the phone. This app adds a switch to try both:</p>
+
+<pre data-code="lib/themes.dart" data-from="return MaterialApp" data-to="body: ListView" data-title="lib/themes.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/themes-light.png" data-frame="phone">
+<figcaption>Light</figcaption>
+</figure>
+<figure data-img="shots/themes-dark.png" data-frame="phone">
+<figcaption>After tapping the switch</figcaption>
+</figure>
+</div>
+
+<p>Both themes grow from the same seed colour, brown; <code>brightness: Brightness.dark</code> asks for the dark version of the scheme, with light text on dark surfaces, chosen to stay readable. <code>themeMode</code> picks which theme is used: <code>ThemeMode.system</code>, the default, follows the phone; <code>light</code> and <code>dark</code> force one. Every widget in the screenshot changed colour by itself, because none of them chose a colour of its own: they all ask the theme. That is the reward for Chapter 5’s advice.</p>
+
+<p><code>SwitchListTile</code> is a <code>ListTile</code> with a switch at its end, and <code>CircleAvatar(backgroundImage: AssetImage(...))</code> shows a picture in a circle. Notice <code>AssetImage</code>, not <code>Image.asset</code>: some widgets want only the picture’s source, an <code>ImageProvider</code>, and draw it themselves.</p>
+
+<h2>{{n}}.6 Project: the café menu</h2>
+
+<p>The menu brings the chapter together: a class for the data, a list of drinks, pictures from the assets, a divider between rows, and favourites that the customer can tap, counted in the bar.</p>
+
+<pre data-code="lib/menu.dart" data-from="^class Drink" data-title="lib/menu.dart (part)"></pre>
+
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>Figure {{n}}.5: The menu, after tapping two hearts.</figcaption>
+</figure>
+
+<ul>
+<li>The data is separate from the screen: a class <code>Drink</code> and a <code>const</code> list. In Chapter 11 the same list will come from a server, and the screen will not change.</li>
+<li><code>ListView.separated</code> is <code>ListView.builder</code> with a <code>separatorBuilder</code>: a <code>Divider</code> between two rows, never after the last.</li>
+<li><code>ClipRRect</code> rounds the corners of the picture; a fixed width and height keep every row aligned whatever the picture.</li>
+<li>The favourites are a <code>Set</code> of names in the state: tapping a heart adds or removes a name with <code>setState</code>, and the title counts them.</li>
+</ul>
+
+<aside class="box try"><p class="box-title">Try it</p><p>Make the whole row tappable with <code>onTap</code>, showing a <code>SnackBar</code> with the drink’s name and price (look at Project {{n}}.3 for how to show one). Then sort the list so that favourites come first. Which collection method from Chapter 3 helps?</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A long <code>Column</code> instead of a list</td><td>Overflow: the bottom is cut off and cannot scroll</td><td><code>ListView</code></td></tr>
+<tr><td><code>ListView(children: ...)</code> for data</td><td>Every item is built at once; long lists are slow</td><td><code>ListView.builder</code> or <code>.separated</code></td></tr>
+<tr><td>A <code>ListView</code> inside a <code>Column</code></td><td>An error: “Vertical viewport was given unbounded height”</td><td>Wrap the list in <code>Expanded</code></td></tr>
+<tr><td>A picture not listed in <code>pubspec.yaml</code></td><td>“Unable to load asset” instead of the picture</td><td>List the folder, then restart the app</td></tr>
+<tr><td>No <code>errorBuilder</code> on a network picture</td><td>An error box where the picture should be</td><td>Always give a fallback</td></tr>
+<tr><td>Fixed colours in widgets</td><td>Unreadable text in dark mode</td><td>Take colours from the theme</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><code>ListView</code> scrolls; <code>ListTile</code> is the standard row, with <code>leading</code>, <code>title</code>, <code>subtitle</code> and <code>trailing</code>.</li>
+<li><code>ListView.builder</code> and <code>.separated</code> build only the visible items: use them for any list that comes from data.</li>
+<li><strong>Assets</strong> are files shipped with the app: list their folder in <code>pubspec.yaml</code>, restart, and show them with <code>Image.asset</code> (or <code>AssetImage</code>).</li>
+<li><code>GridView.builder</code> with a <code>MaxCrossAxisExtent</code> delegate fits as many columns as the width allows; <code>BoxFit.cover</code> fills and crops.</li>
+<li><code>Image.network</code> needs a <code>loadingBuilder</code> and an <code>errorBuilder</code>, and Android release builds need the internet permission.</li>
+<li>Give <code>MaterialApp</code> a <code>theme</code> and a <code>darkTheme</code>; <code>themeMode</code> chooses, and widgets that take their colours from the theme follow by themselves.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because it builds an item only when it is on the screen or about to scroll onto it; the test’s screen showed about sixteen rows. 2. In <code>pubspec.yaml</code>, under <code>flutter:</code> then <code>assets:</code>; then stop and run the app again, because hot reload does not add new assets. 3. <code>cover</code> fills the whole space and crops the picture; <code>contain</code> shows the whole picture and may leave empty bands.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project starts from a list of data and turns it into a screen. Write the data first, then the screen that shows it.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A contact list</h3>
+<p class="project-goal">Show eight contacts in alphabetical order, each with a coloured circle holding their first letter, a divider between them, and the number of contacts in the bar.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>ListView.separated</code>, <code>ListTile</code>, <code>CircleAvatar</code>, sorting with a cascade, and colours from a list.</p>
+<ol class="steps">
+<li>Write the names in one string separated by commas, then <code>split(',')..sort()</code>.</li>
+<li>Build a <code>ListView.separated</code> with a <code>ListTile</code> per name: a <code>CircleAvatar</code> with <code>names[i][0]</code>, the name, and a phone icon at the end.</li>
+<li>Colour each circle with <code>Colors.primaries[i % Colors.primaries.length].shade100</code>.</li>
+<li>Make the dividers start after the circle with <code>Divider(height: 1, indent: 72)</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>Colors.primaries</code> is a list of Material’s main colours; <code>%</code> goes back to the start of it when there are more names than colours.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/contacts.png" data-frame="phone">
+<figcaption>Project {{n}}.1: eight contacts in order.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Choose your photos</h3>
+<p class="project-goal">Show the café’s six pictures in a two-column grid where tapping a picture selects it (a coloured border and a tick) and tapping it again unselects it, with the number selected in the bar.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>GridView.count</code>, <code>GestureDetector</code>, a <code>Stack</code> with <code>StackFit.expand</code>, and the spread operator with collection <code>if</code>.</p>
+<ol class="steps">
+<li>Keep the selected indexes in a <code>Set&lt;int&gt;</code> in the state.</li>
+<li>Build a <code>GridView.count(crossAxisCount: 2, ...)</code> with a tile per picture. <code>GestureDetector</code> makes any widget tappable with <code>onTap</code>.</li>
+<li>Each tile is a <code>Stack</code> with <code>fit: StackFit.expand</code>, so that its children fill the tile: first the rounded picture.</li>
+<li>Only for selected tiles, add a border and a tick: <code>if (selected.contains(i)) ...[border, tick]</code> adds two widgets with one condition.</li>
+<li>Take the colours from <code>Theme.of(context).colorScheme</code>: <code>primary</code> for the border, <code>onPrimary</code> for the tick.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>onPrimary</code> is the colour designed to be readable <em>on</em> <code>primary</code>. Every colour of the scheme has its “on” partner.</p>
+<p><strong>Your result should look like this</strong> (after two taps):</p>
+<figure data-img="shots/gallery.png" data-frame="phone">
+<figcaption>Project {{n}}.2: two pictures selected.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Swipe to delete, with undo</h3>
+<p class="project-goal">Show a shopping list where swiping an item sideways removes it, and a snack bar at the bottom offers to undo.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Dismissible</code>, keys, <code>SnackBar</code> with an action, and a test that drags.</p>
+<ol class="steps">
+<li>Keep the items in a list in the state, and build them with <code>ListView.builder</code>.</li>
+<li>Wrap each <code>ListTile</code> in a <code>Dismissible</code>. It needs a <code>key</code> that identifies the item, <code>ValueKey(items[i])</code>, so that Flutter knows <em>which</em> item was swiped away even after the list changes. Give it a red <code>background</code> with a bin icon.</li>
+<li>In <code>onDismissed</code>, remove the item with <code>setState</code>, remembering it and its index.</li>
+<li>Show <code>ScaffoldMessenger.of(context).showSnackBar(SnackBar(...))</code> with a <code>SnackBarAction</code> labelled “Undo”, which puts the item back at its index.</li>
+<li>Test it: drag the first item 500 pixels sideways, <code>pumpAndSettle</code>, check that it is gone, tap “Undo”, and check that it is back.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is where keys, mentioned in Chapter 5, become essential. Without the key, Flutter matches rows by their position, and after a removal it would think the next item had been swiped.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/shopping.png" data-frame="phone">
+<figcaption>Project {{n}}.3: the shopping list, before any swipe.</figcaption>
+</figure>
+<pre data-term="projects/shopping-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>builder.dart</code> to show 100,000 orders. Does the app start any slower? Why not?</li>
+<li><span class="level">Easy</span> In the grid, change <code>maxCrossAxisExtent</code> to 120, then to 400. How many columns does a 390-pixel phone show each time?</li>
+<li><span class="level">Medium</span> Add a header above the menu list, “6 items”, that scrolls away with the list. (Hint: build one more item than there are drinks, and make item 0 the header.)</li>
+<li><span class="level">Medium</span> Make the theme app remember three choices instead of two: light, dark and “like the phone”, using a <code>SegmentedButton</code> or three <code>RadioListTile</code>s. Which value of <code>ThemeMode</code> does the third one use?</li>
+<li><span class="level">Challenge</span> Put a <code>ListView</code> inside a <code>Column</code>, under a <code>Text</code>, and run it. Read the error, explain it with Chapter 6’s rule of layout, and fix it in two different ways.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Tapping a drink should open a page about it, and the back button should bring the customer back to the menu. The next chapter moves between screens: pushing and popping pages, passing data to them and getting answers back, tabs, and drawers.</p>
+</div>
+</section>
