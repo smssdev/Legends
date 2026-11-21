@@ -1114,7 +1114,8 @@
             },
             {
               "en": "Publishing to Google Play and the App Store",
-              "ar": "النشر على Google Play وApp Store"
+              "ar": "النشر على Google Play وApp Store",
+              "src": "b5/publish"
             }
           ]
         }
@@ -1137,6 +1138,26 @@
           "en": "Flutter, Dart, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.",
           "ar": "Flutter وDart وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط."
         }
+      },
+      "blurb": {
+        "en": "You know the basics of programming; now put an app on a phone. With Bit as your guide, this book teaches Dart from the ground up, then Flutter: widgets, layouts, lists, navigation, forms, state, talking to an API and saving data. It builds every app in Arabic and English, right to left and left to right, finishes with a complete notes app, and takes it to Google Play and the App Store. Every example is real, tested code, with screenshots of it running.",
+        "ar": "تعرف أساسيات البرمجة؛ والآن ضع تطبيقاً على جوال. ومع «بِت» مرشداً، يعلّمك هذا الكتاب Dart من أساسها، ثم Flutter: العناصر، والتخطيطات، والقوائم، والتنقل، والنماذج، والحالة، والحديث مع API، وحفظ البيانات. ويبني كل تطبيق بالعربية والإنجليزية، من اليمين ومن اليسار، وينتهي بتطبيق ملاحظات كامل يأخذه إلى Google Play وApp Store. كل مثال كود حقيقي مُختبر، مع صور له وهو يعمل."
+      },
+      "learn": {
+        "en": [
+          "Write Dart: types, null safety, classes, collections and async code",
+          "Build screens from widgets, layouts, lists, themes and forms",
+          "Navigate between screens and manage state with Provider",
+          "Talk to an API and save data with preferences, files and SQLite",
+          "Make apps in Arabic and English, sign them and publish them"
+        ],
+        "ar": [
+          "تكتب Dart: الأنواع، والأمان من null، والأصناف، والمجموعات، والكود غير المتزامن",
+          "تبني الشاشات من العناصر والتخطيطات والقوائم والثيمات والنماذج",
+          "تتنقل بين الشاشات وتدير الحالة بـ Provider",
+          "تتحدث مع API وتحفظ البيانات في التفضيلات والملفات وSQLite",
+          "تصنع تطبيقات بالعربية والإنجليزية، وتوقّعها وتنشرها"
+        ]
       }
     },
     {
