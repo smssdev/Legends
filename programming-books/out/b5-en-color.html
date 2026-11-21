@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "Chapter 9: Forms and Input"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "Chapter 10: State with setState and Provider"; } }
+@page ch10:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -157,7 +159,7 @@ if (isMember && day === "Tuesday") {
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">35</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p">59</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p">81</span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p">126</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p">193</span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">213</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">35</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p">59</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p">81</span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p">126</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p">193</span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p">213</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">231</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -5605,6 +5607,494 @@ Try `flutter pub outdated` for more information.</pre></div>
 <p>Part II is complete: you can build any screen and move between screens. But each screen keeps its own state, and the order placed on one page does not reach the basket on another. Part III begins with state that the whole app shares, with <code>setState</code> and with Provider.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b5/state/en">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>State with setState and Provider</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell state that belongs to one widget from state that the whole app shares</li>
+<li>lift state up to a parent, and pass changes back with callbacks</li>
+<li>move shared state into a model class with <code>ChangeNotifier</code>, and test it without any screen</li>
+<li>rebuild exactly what depends on a model, with <code>ListenableBuilder</code></li>
+<li>share a model across every screen with the <code>provider</code> package: <code>watch</code>, <code>read</code> and <code>select</code></li>
+</ul>
+</div>
+
+<p class="lead">Part III builds real apps, and real apps share data between screens. The basket is filled on the menu, counted in the bar, listed on its own page and emptied at the checkout. Until now each widget kept its own state, which is perfect for a switch or a text field and hopeless for a basket. This chapter grows the café step by step, from <code>setState</code> in one widget to one basket that every screen shares, and shows the line of thought behind each step, so that you can choose for yourself.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The question of this chapter is not “which library is best?”. It is “who needs to know about this value?”. Answer that, and the right place for the state follows.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>Two kinds of state</span></h2>
+
+<p><dfn>State</dfn> is any data that can change while the app runs and that the screen depends on. It comes in two kinds:</p>
+
+<table>
+<thead><tr><th></th><th>Local state</th><th>App state</th></tr></thead>
+<tbody>
+<tr><td>Who needs it</td><td>One widget</td><td>Several widgets, often on different screens</td></tr>
+<tr><td>Examples</td><td>The current tab, whether a password is shown, the text being typed</td><td>The basket, the signed-in user, the favourites, the settings</td></tr>
+<tr><td>Where it lives</td><td>In the widget’s <code>State</code>, changed with <code>setState</code></td><td>In a model class above the widgets that use it</td></tr>
+</tbody>
+</table>
+
+<p>Everything you built in Part II used local state, correctly. Do not turn local state into app state “just in case”: a value that only one widget needs is simplest and safest inside that widget.</p>
+
+<h2><span class="sec">10.2</span> <span>Lifting state up</span></h2>
+
+<p>The first step needs no new tool. When two widgets need the same value, move it to their nearest common parent, which passes the value down to one and a way to change it down to the other:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/lift.dart (part)</div><pre class="code"><span class="k">class</span> _CafePageState <span class="k">extends</span> State&lt;CafePage&gt; {
+  <span class="c line-bidi">// The basket lives in the parent; both children get it, and a way to change it.</span>
+  <span class="k">final</span> basket = &lt;Drink&gt;[];
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(title: <span class="k">const</span> Text(<span class="s">&#x27;Menu&#x27;</span>)),
+      body: DrinkList(onAdd: (drink) =&gt; setState(() =&gt; basket.add(drink))),
+      bottomNavigationBar: BasketBar(basket: basket),
+    );
+  }
+}
+
+<span class="k">class</span> DrinkList <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> DrinkList({<span class="k">super</span>.key, <span class="k">required</span> <span class="k">this</span>.onAdd});
+
+  <span class="c line-bidi">// The list does not own the basket: it calls back up.</span>
+  <span class="k">final</span> ValueChanged&lt;Drink&gt; onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> ListView(
+      children: [
+        <span class="k">for</span> (<span class="k">final</span> drink <span class="k">in</span> drinks)
+          ListTile(
+            title: Text(drink.name),
+            subtitle: Text(<span class="s">&#x27;${drink.price} EGP&#x27;</span>),
+            trailing: IconButton(
+              tooltip: <span class="s">&#x27;Add ${drink.name}&#x27;</span>,
+              icon: <span class="k">const</span> Icon(Icons.add_circle_outline),
+              onPressed: () =&gt; onAdd(drink),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+<span class="k">class</span> BasketBar <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> BasketBar({<span class="k">super</span>.key, <span class="k">required</span> <span class="k">this</span>.basket});
+
+  <span class="k">final</span> <span class="k">List</span>&lt;Drink&gt; basket;
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">final</span> total = basket.fold(<span class="n">0</span>, (sum, d) =&gt; sum + d.price);
+    <span class="k">return</span> Container(
+      color: Theme.of(context).colorScheme.primaryContainer,
+      padding: <span class="k">const</span> EdgeInsets.all(<span class="n">20</span>),
+      child: Text(
+        <span class="s">&#x27;${basket.length} items · Total $total EGP&#x27;</span>,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    );
+  }
+}</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-state-en-shots-lift.png" alt=""></div>
+<figcaption>Figure 10.1: After adding two lattes and a cake. The list and the bar are separate widgets sharing one basket.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 520 160" role="img" aria-label="CafePage holds the basket; it passes onAdd down to DrinkList and the basket down to BasketBar; DrinkList calls onAdd upwards">
+<g font-family="JetBrains Mono" font-size="13" text-anchor="middle">
+<rect x="185" y="15" width="150" height="40" rx="8" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/><text x="260" y="33" fill="#312e81">CafePage</text><text x="260" y="48" fill="#312e81" font-size="11">basket</text>
+<rect x="40" y="110" width="150" height="36" rx="8" fill="#fff" stroke="#4338ca" stroke-width="2"/><text x="115" y="133" fill="#111">DrinkList</text>
+<rect x="330" y="110" width="150" height="36" rx="8" fill="#fff" stroke="#4338ca" stroke-width="2"/><text x="405" y="133" fill="#111">BasketBar</text>
+<g stroke="#111" stroke-width="1.8" fill="none"><path d="M215,55 L130,108"/><path d="M305,55 L390,108"/></g>
+<path d="M100,108 Q120,70 190,50" stroke="#0f766e" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+<g font-size="11"><text x="200" y="90" fill="#111">onAdd ↓</text><text x="80" y="78" fill="#0f766e">calls onAdd ↑</text><text x="385" y="82" fill="#111">basket ↓</text></g>
+</g>
+</svg>
+<figcaption>Figure 10.2: Data flows down, events flow up. Only the parent changes the basket.</figcaption>
+</figure>
+
+<p><code>DrinkList</code> does not know what a basket is: it receives <code>onAdd</code>, a function, and calls it. <code>BasketBar</code> receives the list and shows it. Only <code>CafePage</code> owns the basket, and only it calls <code>setState</code>, so there is exactly one place where the basket can change. This pattern, <em>data down, events up</em>, is the foundation of everything else in this chapter.</p>
+
+<h2><span class="sec">10.3</span> <span>A model for the basket</span></h2>
+
+<p>Lifting works well for neighbours. It becomes painful when the shared value must travel through many layers that do not use it, or across screens. The next step takes the basket out of the widgets entirely, into a class of its own: a <dfn>model</dfn>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/basket.dart</div><pre class="code"><span class="c line-bidi">// A ChangeNotifier: the data, the rules, and a way to tell listeners it changed.</span>
+<span class="k">import</span> <span class="s">&#x27;package:material_ui/material_ui.dart&#x27;</span>;
+
+<span class="k">class</span> Basket <span class="k">extends</span> ChangeNotifier {
+  <span class="k">final</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt; _counts = {};
+  <span class="k">final</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt; _prices = {};
+
+  <span class="c line-bidi">// Read-only views: the outside can look, not touch.</span>
+  <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt; <span class="k">get</span> counts =&gt; <span class="k">Map</span>.unmodifiable(_counts);
+  <span class="k">int</span> <span class="k">get</span> count =&gt; _counts.values.fold(<span class="n">0</span>, (a, b) =&gt; a + b);
+  <span class="k">int</span> <span class="k">get</span> total =&gt;
+      _counts.entries.fold(<span class="n">0</span>, (sum, e) =&gt; sum + e.value * _prices[e.key]!);
+
+  <span class="k">void</span> add(<span class="k">String</span> name, <span class="k">int</span> price) {
+    _counts.update(name, (n) =&gt; n + <span class="n">1</span>, ifAbsent: () =&gt; <span class="n">1</span>);
+    _prices[name] = price;
+    <span class="c line-bidi">// Every change ends with notifyListeners().</span>
+    notifyListeners();
+  }
+
+  <span class="k">void</span> remove(<span class="k">String</span> name) {
+    <span class="k">final</span> n = _counts[name];
+    <span class="k">if</span> (n == <span class="k">null</span>) <span class="k">return</span>;
+    <span class="k">if</span> (n == <span class="n">1</span>) {
+      _counts.remove(name);
+    } <span class="k">else</span> {
+      _counts[name] = n - <span class="n">1</span>;
+    }
+    notifyListeners();
+  }
+}</pre></div>
+
+<p><code>Basket</code> <code>extends ChangeNotifier</code>, a small class from Flutter’s foundation that keeps a list of <dfn>listeners</dfn>, functions to call when something changes, and calls them all when you call <code>notifyListeners()</code>. The model holds the data, privately; offers read-only views (<code>counts</code> returns an unmodifiable copy, so no screen can change the basket behind its back); and has methods for every change, each ending with <code>notifyListeners()</code>. The rules of the basket now live in one class, with no widgets in it, which means it can be tested in a few milliseconds:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/basket_test.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:flutter_test/flutter_test.dart&#x27;</span>;
+<span class="k">import</span> <span class="s">&#x27;package:bit_app/basket.dart&#x27;</span>;
+
+<span class="k">void</span> main() {
+  test(<span class="s">&#x27;the basket adds, counts and totals&#x27;</span>, () {
+    <span class="k">final</span> basket = Basket();
+    <span class="k">var</span> told = <span class="n">0</span>;
+    basket.addListener(() =&gt; told++);
+
+    basket.add(<span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>);
+    basket.add(<span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>);
+    basket.add(<span class="s">&#x27;Cherry cake&#x27;</span>, <span class="n">60</span>);
+    expect(basket.count, <span class="n">3</span>);
+    expect(basket.total, <span class="n">150</span>);
+    expect(basket.counts[<span class="s">&#x27;Latte&#x27;</span>], <span class="n">2</span>);
+
+    basket.remove(<span class="s">&#x27;Latte&#x27;</span>);
+    expect(basket.total, <span class="n">105</span>);
+    expect(told, <span class="n">4</span>);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/basket_test.dart</span>
+00:00 +0: loading test/basket_test.dart
+00:00 +0: the basket adds, counts and totals
+00:00 +1: All tests passed!</pre></div>
+
+<p>A plain <code>test</code>, not <code>testWidgets</code>: no screen is built at all. The test also counts the notifications, four for four changes, because a change that forgets to notify is the most common bug in a model.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Keep your rules in models and your models free of widgets: no <code>BuildContext</code>, no colours, no navigation. A model like this can be tested exhaustively and quickly, reused by another screen, and kept when the design of the screens changes completely.</p></aside>
+
+<h2><span class="sec">10.4</span> <span>Listening without packages: ListenableBuilder</span></h2>
+
+<p>Flutter can listen to a model on its own. <code>ListenableBuilder</code> calls its <code>builder</code> again each time the model notifies:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/listenable.dart (part)</div><pre class="code">      bottomNavigationBar: ListenableBuilder(
+        listenable: basket,
+        builder: (context, child) =&gt; Container(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          padding: <span class="k">const</span> EdgeInsets.all(<span class="n">20</span>),
+          child: Text(<span class="s">&#x27;${basket.count} items · Total ${basket.total} EGP&#x27;</span>),
+        ),
+      ),</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-state-en-shots-listenable.png" alt=""></div>
+<figcaption>Figure 10.3: After adding a mint tea and an orange juice. Only the bar was rebuilt.</figcaption>
+</figure>
+
+<p>There is no <code>setState</code> anywhere in this app, and the page is a <code>StatelessWidget</code>. The buttons call <code>basket.add</code>; the basket notifies; only the <code>ListenableBuilder</code> around the bar rebuilds. This is already a big improvement: the state is out of the widgets, and only what depends on it is rebuilt. What remains awkward is getting the basket to every widget that needs it: here it is passed through the constructor, which would mean passing it through every page of a large app.</p>
+
+<h2><span class="sec">10.5</span> <span>Provider</span></h2>
+
+<p>The <code>provider</code> package solves that last problem: put the model once above the whole app, and let any widget below ask for it by its type. It is the approach Flutter’s own documentation teaches first. Add it:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter pub add provider</span>
+Resolving dependencies...
+Downloading packages...
+  material_color_utilities 0.13.0 (0.13.1 available)
++ nested 1.0.0
++ provider 6.1.5+1
+  test_api 0.7.14 (0.7.15 available)
+  vector_math 2.4.3 (2.4.4 available)
+Changed 2 dependencies!
+3 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/provided.dart (providing the basket)</div><pre class="code"><span class="k">void</span> main() {
+  runApp(
+    <span class="c line-bidi">// Provide one basket above the whole app.</span>
+    ChangeNotifierProvider(
+      create: (context) =&gt; Basket(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: <span class="k">false</span>,
+        home: <span class="k">const</span> MenuPage(),
+      ),
+    ),
+  );
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/provided.dart (the button in the bar)</div><pre class="code"><span class="k">class</span> BasketButton <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> BasketButton({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="c line-bidi">// select: rebuild only when this one number changes.</span>
+    <span class="k">final</span> count = context.select&lt;Basket, <span class="k">int</span>&gt;((b) =&gt; b.count);
+    <span class="k">return</span> IconButton(
+      tooltip: <span class="s">&#x27;Basket&#x27;</span>,
+      onPressed: () =&gt; Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =&gt; <span class="k">const</span> BasketPage()),
+      ),
+      icon: Badge(
+        isLabelVisible: count &gt; <span class="n">0</span>,
+        label: Text(<span class="s">&#x27;$count&#x27;</span>),
+        child: <span class="k">const</span> Icon(Icons.shopping_bag),
+      ),
+    );
+  }
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/provided.dart (the basket page)</div><pre class="code"><span class="k">class</span> BasketPage <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> BasketPage({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="c line-bidi">// watch: read the basket, and rebuild when it changes.</span>
+    <span class="k">final</span> basket = context.watch&lt;Basket&gt;();
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(title: <span class="k">const</span> Text(<span class="s">&#x27;Basket&#x27;</span>)),
+      body: basket.count == <span class="n">0</span>
+          ? <span class="k">const</span> Center(child: Text(<span class="s">&#x27;Your basket is empty&#x27;</span>))
+          : ListView(
+              children: [
+                <span class="k">for</span> (<span class="k">final</span> MapEntry(key: name, value: n)
+                    <span class="k">in</span> basket.counts.entries)
+                  ListTile(
+                    title: Text(<span class="s">&#x27;$n × $name&#x27;</span>),
+                    trailing: IconButton(
+                      tooltip: <span class="s">&#x27;Remove $name&#x27;</span>,
+                      icon: <span class="k">const</span> Icon(Icons.remove_circle_outline),
+                      onPressed: () =&gt; basket.remove(name),
+                    ),
+                  ),
+              ],
+            ),
+      bottomNavigationBar: Padding(
+        padding: <span class="k">const</span> EdgeInsets.all(<span class="n">16</span>),
+        child: FilledButton(
+          onPressed: basket.count == <span class="n">0</span> ? <span class="k">null</span> : () {},
+          child: Text(<span class="s">&#x27;Check out · ${basket.total} EGP&#x27;</span>),
+        ),
+      ),
+    );
+  }
+}</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b5-state-en-shots-provided-menu.png" alt=""></div>
+<figcaption>The menu, after three taps</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-state-en-shots-provided-basket.png" alt=""></div>
+<figcaption>The basket page, a different screen</figcaption>
+</figure>
+</div>
+
+<p>Three ways to get the model, for three different needs:</p>
+<table>
+<thead><tr><th>Call</th><th>What it does</th><th>Use it</th></tr></thead>
+<tbody>
+<tr><td><code>context.watch&lt;Basket&gt;()</code></td><td>Gets the basket, and rebuilds this widget whenever it notifies</td><td>In <code>build</code>, when the screen shows the model</td></tr>
+<tr><td><code>context.read&lt;Basket&gt;()</code></td><td>Gets the basket, without listening</td><td>In callbacks such as <code>onPressed</code>, to call a method</td></tr>
+<tr><td><code>context.select&lt;Basket, int&gt;((b) =&gt; b.count)</code></td><td>Gets one value, and rebuilds only when that value changes</td><td>In <code>build</code>, when a widget needs one small part</td></tr>
+</tbody>
+</table>
+
+<p>The menu’s add buttons use <code>read</code>: they change the basket but do not show it, so they have no reason to rebuild. The badge uses <code>select</code>: it rebuilds when the count changes, not when anything else in the basket does. The basket page uses <code>watch</code>: it shows everything. The <code>Badge</code> widget draws the count on the bag icon, and hides when it is zero.</p>
+
+<p>The widget test provides a basket exactly as <code>main</code> does, and walks across the two screens:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/provided_test.dart (part)</div><pre class="code">  testWidgets(<span class="s">&#x27;adding on the menu shows up in the basket page&#x27;</span>, (tester) <span class="k">async</span> {
+    <span class="k">await</span> tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (context) =&gt; Basket(),
+        child: <span class="k">const</span> MaterialApp(home: MenuPage()),
+      ),
+    );
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Add Latte&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Add Latte&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Add Cherry cake&#x27;</span>));
+    <span class="k">await</span> tester.pump();
+    expect(find.text(<span class="s">&#x27;3&#x27;</span>), findsOneWidget);
+
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Basket&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;2 × Latte&#x27;</span>), findsOneWidget);
+    expect(find.text(<span class="s">&#x27;Check out · 150 EGP&#x27;</span>), findsOneWidget);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/provided_test.dart</span>
+00:00 +0: loading test/provided_test.dart
+00:00 +0: adding on the menu shows up in the basket page
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Calling <code>context.watch</code> inside <code>onPressed</code> is an error: a callback runs once, it cannot “rebuild when the model changes”. And calling <code>context.read</code> in <code>build</code> is a quiet bug: the widget shows the model once and never updates. The rule is short: <code>watch</code> and <code>select</code> in <code>build</code>, <code>read</code> in callbacks.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Is the text being typed in a search field local state or app state?</li><li>What must every method that changes a <code>ChangeNotifier</code> do at the end?</li><li>Which call would you use in an <code>onPressed</code> to add to the basket?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">10.6</span> <span>Choosing where state lives</span></h2>
+
+<p>Every approach in this chapter is right somewhere:</p>
+<ol>
+<li>Start with <code>setState</code> in the widget that uses the value.</li>
+<li>When a neighbour needs it too, lift it to their parent, with callbacks.</li>
+<li>When it holds rules worth testing, or many widgets need it, move it into a <code>ChangeNotifier</code> model.</li>
+<li>When widgets on many screens need it, provide the model above the app.</li>
+</ol>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>The Flutter world has many state management packages: Provider, Riverpod (by Provider’s own author), BLoC, and others. They differ in style, but every one of them is built on the ideas of this chapter: state outside the widgets, changes in one place, and widgets that rebuild when what they show changes. Learn these ideas well, and any of them takes an afternoon.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting <code>notifyListeners()</code></td><td>The model changes, the screen does not</td><td>End every changing method with it; test the count of notifications</td></tr>
+<tr><td>Exposing the model’s list itself</td><td>Screens change it without notifying</td><td>Private fields, read-only views, methods for changes</td></tr>
+<tr><td><code>watch</code> in a callback</td><td>An error from Provider</td><td><code>read</code> in callbacks</td></tr>
+<tr><td><code>read</code> in <code>build</code></td><td>The screen never updates</td><td><code>watch</code> or <code>select</code> in <code>build</code></td></tr>
+<tr><td>Asking for a model that is not provided above</td><td>“Could not find the correct Provider”</td><td>Put the provider above every widget that asks, usually above <code>MaterialApp</code></td></tr>
+<tr><td>Making everything app state</td><td>Every change rebuilds widgets that do not care</td><td>Keep local state local</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Local state</strong> belongs in a widget’s <code>State</code>; <strong>app state</strong> lives in a model above the widgets that share it.</li>
+<li><strong>Lift state up</strong> to the nearest common parent: data down, events up through callbacks.</li>
+<li>A <code>ChangeNotifier</code> model holds the data privately, offers read-only views, and calls <code>notifyListeners()</code> after every change; test it with plain <code>test</code>s.</li>
+<li><code>ListenableBuilder</code> rebuilds only what listens to a model.</li>
+<li>Provider puts a model above the app with <code>ChangeNotifierProvider</code>; widgets use <code>watch</code> and <code>select</code> in <code>build</code>, <code>read</code> in callbacks.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Local state: only the search field and its results need it, while the person types. 2. Call <code>notifyListeners()</code>. 3. <code>context.read&lt;Basket&gt;().add(...)</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">For each project, write the model first, with a plain test, before any screen. If the model is right, the screens are easy.</p>
+
+<div class="project">
+<p class="project-label">Project 10.1 · Easy</p>
+<h3>A counter model</h3>
+<p class="project-goal">Count the cups served today with a <code>ChangeNotifier</code>, shown in a stateless page with a button to add one and another to reset.</p>
+<p class="project-skills"><strong>You will practise:</strong> a model with a private field and a getter, methods that notify, and <code>ListenableBuilder</code>.</p>
+<ol class="steps">
+<li>Write <code>Counter extends ChangeNotifier</code> with a private <code>_value</code>, a getter <code>value</code>, and <code>increment</code> and <code>reset</code>, each ending with <code>notifyListeners()</code>.</li>
+<li>Write a <em>stateless</em> page that receives the counter through its constructor.</li>
+<li>Wrap only the number in a <code>ListenableBuilder</code>.</li>
+<li>Pass the methods themselves as callbacks: <code>onPressed: counter.increment</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>counter.increment</code> without brackets is the method as a value (Chapter 2): exactly what <code>onPressed</code> wants.</p>
+<p><strong>Your result should look like this</strong> (after three taps):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-state-en-shots-counter.png" alt=""></div>
+<figcaption>Project 10.1: three cups.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 10.2 · Medium</p>
+<h3>Favourites on two tabs</h3>
+<p class="project-goal">Show all the drinks on one tab and only the favourites on another, with a heart on each drink and a badge with the number of favourites, all sharing one model through Provider.</p>
+<p class="project-skills"><strong>You will practise:</strong> a model holding a <code>Set</code>, <code>ChangeNotifierProvider</code>, <code>watch</code> and <code>read</code>, an empty state, and a test across tabs.</p>
+<ol class="steps">
+<li>Write <code>Favourites</code> with a private <code>Set&lt;String&gt;</code>, <code>contains</code>, a read-only <code>names</code>, and <code>toggle</code>.</li>
+<li>Provide it above <code>MaterialApp</code>.</li>
+<li>The shell keeps the current tab with <code>setState</code> (local state), and watches the favourites (app state). Both kinds side by side, each in its place.</li>
+<li>The list shows every drink, or only the favourites, from the same code; tapping a heart calls <code>context.read&lt;Favourites&gt;().toggle(name)</code>.</li>
+<li>Test: like the mint tea, switch tab, and find it there, and not the latte.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> give each heart a tooltip with the drink’s name, “Like Mint tea”: <code>find.byTooltip</code> then finds the exact button, and screen readers say something useful.</p>
+<p><strong>Your result should look like this</strong> (after liking two drinks and opening the second tab):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-state-en-shots-favourites.png" alt=""></div>
+<figcaption>Project 10.2: two favourites, and their badge.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/favourites_test.dart</span>
+00:00 +0: loading test/favourites_test.dart
+00:00 +0: a heart on one tab shows on the other
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 10.3 · Challenge</p>
+<h3>Settings for the whole app</h3>
+<p class="project-goal">Make a settings model, provided above <code>MaterialApp</code>, whose switches change the whole app at once: dark mode, and larger text.</p>
+<p class="project-skills"><strong>You will practise:</strong> a model with setters that notify, <code>MaterialApp</code> itself watching a model, <code>MediaQuery.withClampedTextScaling</code>, and testing a widget’s properties.</p>
+<ol class="steps">
+<li>Write <code>Settings</code> with private <code>_dark</code> and <code>_big</code>, getters, and <dfn>setters</dfn> (<code>set dark(bool value)</code>) that store the value and notify: <code>settings.dark = true</code> then reads like a field.</li>
+<li>Provide it, then let the widget that builds <code>MaterialApp</code> watch it, choosing <code>themeMode</code> from <code>dark</code>.</li>
+<li>For larger text, wrap the home page in <code>MediaQuery.withClampedTextScaling</code> with a scale of 1.3 when <code>big</code> is on.</li>
+<li>The settings page uses two <code>SwitchListTile</code>s with <code>watch</code> for their values and <code>read</code> in <code>onChanged</code>.</li>
+<li>Test: find the <code>MaterialApp</code>, check its <code>themeMode</code>, tap the switch, settle, check again.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>tester.widget&lt;MaterialApp&gt;(finder)</code> gives you the widget itself, so you can check any of its properties, not only what is drawn.</p>
+<p><strong>Your result should look like this</strong> (after turning both switches on):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-state-en-shots-settings.png" alt=""></div>
+<figcaption>Project 10.3: dark mode and large text, for the whole app.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/settings_test.dart</span>
+00:00 +0: loading test/settings_test.dart
+00:00 +0: the setting changes the whole app
+00:01 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Local or app state? (a) Whether a dropdown is open. (b) The language of the app. (c) The position of a page view. (d) The orders the customer has placed today.</li>
+<li><span class="level">Easy</span> Add a method <code>clear()</code> to <code>Basket</code>, and a test that it empties the basket and notifies once.</li>
+<li><span class="level medium">Medium</span> On the basket page, the remove buttons call <code>basket.remove</code> on the basket from <code>watch</code>. It works; why is <code>context.read</code> still the better habit there?</li>
+<li><span class="level medium">Medium</span> Add a “Clear” button to the basket page that asks for confirmation with a dialog (Chapter 8) before calling <code>clear()</code>.</li>
+<li><span class="level hard">Challenge</span> Count how many times <code>BasketButton</code> rebuilds by printing in its <code>build</code>, then replace <code>select</code> with <code>watch</code> and compare, while adding and removing the same drink. Explain the difference.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 11</p>
+<p>The café’s menu is still written in the code. In the next chapter it comes from a server on the internet: HTTP requests with the <code>http</code> package, JSON turned into Dart objects, loading and error screens, and a model that fetches its own data.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -5934,6 +6424,16 @@ Sharing the list is safe only because Dart runs one thing at a time: no two work
 <li>Remove the spaces in the validator: <code>(value) =&gt; RegExp(r'^[0-9]{11}$').hasMatch((value ?? '').replaceAll(' ', '')) ? null : '...'</code>. Do the same when you read the value to send it, so that the server receives <code>01001234567</code>. Accepting what people naturally type, then cleaning it, is kinder than refusing it.</li>
 <li>Add a listener, or call <code>setState</code> in the name field’s <code>onChanged</code>, and give the button <code>onPressed: name.text.trim().isEmpty ? null : place</code>. A disabled button is clear for one obvious missing field; but when several fields are wrong, a greyed-out button does not say <em>what</em> is wrong, and people are left guessing. Long forms are usually better with an enabled button and clear messages after the tap.</li>
 <li>Keep a <code>TimeOfDay? pickup</code> in the state, and a button that calls <code>final t = await showTimePicker(context: context, initialTime: TimeOfDay.now());</code>. If <code>t</code> is not <code>null</code>, check <code>t.hour &gt;= 8 &amp;&amp; t.hour &lt; 22</code>; store it with <code>setState</code> if it passes, or show a snack bar explaining the opening hours if it does not. To make it part of the form’s validation, put it in a <code>FormField&lt;TimeOfDay&gt;</code>, as the terms checkbox of Project 9.2 does.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 10</h2>
+<ol class="exercises">
+<li>(a) Local: only the dropdown cares, and only while it is open. (b) App state: every screen shows text in it, so it lives in a model above <code>MaterialApp</code>, like the settings of Project 10.3. (c) Local, kept by the page view’s controller. (d) App state: the orders page, a badge and the checkout all need them, and they should survive leaving any one screen.</li>
+<li>Add <code>void clear() { _counts.clear(); _prices.clear(); notifyListeners(); }</code>. The test adds two items, counts notifications with a listener as the chapter’s test does, calls <code>clear()</code>, and expects <code>count</code> to be 0, <code>total</code> to be 0, and exactly one more notification: a method that notifies once per item removed would make every listener rebuild many times for one action.</li>
+<li>The page already watches the basket, so in this case the result is the same. But <code>read</code> in a callback says exactly what the code does, “use the basket now”, and keeps working if the page is later changed to <code>select</code> only the part it shows; a callback that depends on a value captured from <code>watch</code> can silently use an old one. Make <code>read</code> in callbacks a habit, and you never have to think about it.</li>
+<li>Give the page’s bar an action: <code>IconButton(tooltip: 'Clear', icon: Icon(Icons.delete_sweep), onPressed: () async { final sure = await showDialog&lt;bool&gt;(...); if (sure == true &amp;&amp; context.mounted) context.read&lt;Basket&gt;().clear(); })</code>. The dialog is the same as Chapter 8’s, with “Clear” and “Cancel” buttons. Disable the button when the basket is empty, with <code>onPressed: basket.count == 0 ? null : ...</code>.</li>
+<li>With <code>select</code>, the button rebuilds once per change of the <em>count</em>: adding a drink rebuilds it, and so does removing one. With <code>watch</code>, it rebuilds on every notification of the basket, including changes that do not touch the count, such as a change of price if you add one. In this small app the numbers are close, because almost every change changes the count; in a real app, where a model holds many values, <code>select</code> keeps each widget rebuilding only for what it shows, which is how large screens stay smooth.</li>
 </ol>
 
 </section>
