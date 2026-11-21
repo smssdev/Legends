@@ -107,3 +107,34 @@ def shot(web_dir, png, taps="", wait=5000):
     """A screenshot of a Flutter web build at phone size (390 x 780, twice the pixels). taps is a list of
     "x,y" points (in the 390 x 780 page) to click first, separated by spaces."""
     subprocess.run(["node", str(B5 / "snap.cjs"), str(web_dir), str(png), taps, str(wait)], check=True)
+
+
+def dart_examples(here, words_by_lang, sources, errors=(), keep=None):
+    """A chapter of single-file Dart examples (Chapters 2 to 4): writes every source in each language,
+    formats them with dart format, runs each with `dart run` and saves what it printed as name.sh.
+    sources: {path: text, or {lang: text}}. errors: files that show a mistake (a compile or runtime
+    error is expected there and refused everywhere else). keep(name, lines) may shorten an output."""
+    folder = here.name
+    for lang, words in words_by_lang.items():
+        out = here / lang
+        shutil.rmtree(out, ignore_errors=True)
+        work = WORK / folder / lang
+        shutil.rmtree(work, ignore_errors=True)
+        files = {name: fill(src if isinstance(src, str) else src[lang], words) for name, src in sources.items()}
+        write(work, files)
+        # Every example is formatted the standard way, as Chapter 1 asks the reader to do.
+        text, code = sh("dart format .", work)
+        if code:
+            raise RuntimeError(text)
+        files = {name: (work / name).read_text() for name in files}
+        write(out, files)
+        for name in files:
+            s = Session(work / Path(name).parent)
+            s.run(f"dart run {Path(name).name}", check=False)
+            failed = any("Error" in l or "Unhandled exception" in l for l in s.lines)
+            if failed != (name in errors):
+                raise RuntimeError(name + "\n" + "\n".join(s.lines))
+            if keep:
+                s.lines = keep(name, s.lines)
+            s.save(out / name.replace(".dart", ".sh"))
+        print("wrote", out)

@@ -1,0 +1,290 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/classes/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Classes, Null Safety and Collections</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe your own kinds of value with classes: fields, constructors, methods and getters</li>
+<li>work safely with values that may be missing, using Dart’s null safety</li>
+<li>give a fixed set of choices a name with enums</li>
+<li>keep many values in lists, maps and sets, and choose the right one</li>
+<li>return several values at once with records, and take them apart with patterns</li>
+</ul>
+</div>
+
+<p class="lead">At the end of Chapter {{n-1}}, the café’s prices were loose constants and an order was a handful of parameters. Real programs need better shapes for their data: a menu item that knows its name and its price, an order that knows its lines and its total. This chapter gives you those shapes. It also introduces the feature that makes Dart stand out among languages: <em>null safety</em>, which turns the most common crash in the world into a message from the compiler.</p>
+
+<aside class="bit" data-mood="happy"><p>Every Flutter widget you will ever write is a class, and every screen shows a list of something. This chapter is where Dart stops being a calculator and starts being the language of apps.</p></aside>
+
+<h2>{{n}}.1 Classes</h2>
+
+<p>A <dfn>class</dfn> describes a kind of value: what each value knows, and what it can do. Each value made from it is an <dfn>object</dfn>, or an <dfn>instance</dfn> of the class. Here is a menu item:</p>
+
+<pre data-code="menu_item.dart" data-title="menu_item.dart"></pre>
+<pre data-term="menu_item.sh"></pre>
+
+<ul>
+<li><dfn>Fields</dfn> are the variables inside each object: every menu item has its own <code>name</code> and <code>price</code>. They are <code>final</code>, because a menu item never changes after it is made.</li>
+<li>The <dfn>constructor</dfn> makes objects. It has the class’s name, and <code>this.name</code> is Dart’s shortcut for “put this argument straight into the field <code>name</code>”. Because every field is <code>final</code>, the constructor can be <code>const</code>, and so can the items made with it.</li>
+<li><code>priceFor</code> is a <dfn>method</dfn>: a function that belongs to the object and can use its fields.</li>
+<li><code>toString</code> decides what <code>print</code> shows. Every class has one; <code>@override</code> says that we replace the default, which would only print <code>Instance of 'MenuItem'</code>.</li>
+</ul>
+
+<p>You reach a field or a method with a dot: <code>latte.name</code>, <code>cookie.priceFor(3)</code>. Notice that there is no <code>new</code>: in Dart you make an object by calling the constructor like a function.</p>
+
+<h3>Named parameters, getters and private fields</h3>
+
+<pre data-code="order.dart" data-title="order.dart"></pre>
+<pre data-term="order.sh"></pre>
+
+<p>Three more tools appear in this program, and you will see all three in every Flutter app:</p>
+<ul>
+<li>The constructor of <code>MenuItem</code> takes <strong>named parameters</strong>, <code>{required this.name, required this.price}</code>. Calls become self-explaining: <code>MenuItem(name: 'Latte', price: 45)</code>. This is exactly how Flutter’s widgets are built: <code>Text('Hi', style: ...)</code> calls a constructor with named parameters.</li>
+<li>A <dfn>getter</dfn>, written with <code>get</code>, looks like a field from outside (<code>cake.isExpensive</code>, without brackets) but runs code every time it is read. <code>Order</code> uses two, <code>count</code> and <code>total</code>, so they are always up to date.</li>
+<li>A name that starts with an underscore, like <code>_lines</code>, is <dfn>private</dfn>: only code in the same file can use it. Other code can add to an order only through <code>add</code>, so nobody can break it from outside. This is called <dfn>encapsulation</dfn>.</li>
+</ul>
+
+<p>The total uses <code>fold</code>, which walks the list carrying a value from one item to the next: it starts at <code>0</code>, and for each item returns the sum so far plus the item’s price. Section {{n}}.4 shows it again.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>In VS Code, put the cursor on a class name and press <strong>Ctrl+.</strong> (<strong>Cmd+.</strong> on a Mac): the Dart extension offers quick fixes, such as creating a constructor for the final fields you just wrote. Write the fields; let the editor write the repetitive part.</p></aside>
+
+<h2>{{n}}.2 Null safety</h2>
+
+<p>Sometimes a value is simply not there: a customer without a nickname, a contact without a phone, a search with no result. Dart has a special value for “nothing”: <code>null</code>. In many languages any variable can be <code>null</code> at any time, and using one by accident crashes the program. Tony Hoare, who invented the null reference in 1965, later called it his “billion-dollar mistake”.</p>
+
+<p>Dart solves it with <dfn>null safety</dfn>: a variable can hold <code>null</code> only if its type says so, with a question mark. <code>String</code> is always a string. <code>String?</code> is a string <em>or</em> <code>null</code>.</p>
+
+<pre data-code="null-error.dart" data-title="null-error.dart"></pre>
+<pre data-term="null-error.sh" class="error"></pre>
+
+<p>The compiler refuses to ask for the length of something that may not exist, and even suggests a fix. Dart gives you four tools to work with nullable values:</p>
+
+<pre data-code="nullable.dart" data-title="nullable.dart"></pre>
+<pre data-term="nullable.sh"></pre>
+
+<table>
+<thead><tr><th>Tool</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>??</code></td><td>The value on the left, or the one on the right if the left is <code>null</code></td><td><code>nickname ?? 'Guest'</code></td></tr>
+<tr><td><code>?.</code></td><td>Use the member only if the value is not <code>null</code>; otherwise the result is <code>null</code></td><td><code>nickname?.length</code></td></tr>
+<tr><td><code>??=</code></td><td>Give the variable a value only if it is <code>null</code></td><td><code>nickname ??= 'Bito'</code></td></tr>
+<tr><td><code>if (x != null)</code></td><td>Inside the <code>if</code>, Dart knows <code>x</code> is not <code>null</code></td><td><code>other.length</code></td></tr>
+</tbody>
+</table>
+
+<p>The last one is called <dfn>type promotion</dfn>: after you check, Dart promotes <code>other</code> from <code>String?</code> to <code>String</code> for the rest of the block, so you can use it freely. It is the cleanest of the four, and the one to reach for first.</p>
+
+<h3>The ! operator, and why to avoid it</h3>
+
+<p>There is a fifth tool: <code>!</code> after a value tells Dart “trust me, this is not <code>null</code>”. The compiler believes you, and checks only when the program runs:</p>
+
+<pre data-code="bang-error.dart" data-title="bang-error.dart"></pre>
+<pre data-term="bang-error.sh" class="error"></pre>
+
+<p>This time the program compiled, ran, and crashed: an <dfn>unhandled exception</dfn>. The line starting with <code>#0</code> says where: in <code>main</code>, line 4. On a phone, this is an app that closes in the user’s hand.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Treat every <code>!</code> as a small promise you might break. Prefer an <code>if</code> check, <code>??</code> with a sensible default, or a type that is not nullable in the first place. When you do use <code>!</code>, be able to say in one sentence why the value can never be <code>null</code> there.</p></aside>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>Dart added null safety in version 2.12, in 2021, and made it compulsory in Dart 3. Every package on <code>pub.dev</code> had to be updated; it was one of the largest migrations any language has done, and it is why Flutter apps rarely crash on a missing value.</p></aside>
+
+<h2>{{n}}.3 Enums</h2>
+
+<p>When a value can only be one of a few fixed choices, such as the sizes of a cup, give the choices names with an <dfn>enum</dfn> (short for <em>enumeration</em>):</p>
+
+<pre data-code="sizes.dart" data-title="sizes.dart"></pre>
+<pre data-term="sizes.sh"></pre>
+
+<p><code>CupSize</code> has exactly three values: <code>CupSize.small</code>, <code>CupSize.medium</code> and <code>CupSize.large</code>. A Dart enum can carry fields, like a class: here each size knows how much it adds to the price, given in brackets after its name. <code>CupSize.values</code> is the list of all of them, and every value has a <code>name</code>.</p>
+
+<p>Why not just use the strings <code>'small'</code>, <code>'medium'</code> and <code>'large'</code>? Because a typo such as <code>'lagre'</code> is a perfectly good string, and the bug appears much later. A typo in <code>CupSize.lagre</code> does not compile. And because the compiler knows every value of an enum, it checks that a switch covers them all:</p>
+
+<pre data-code="enum-missing.dart" data-title="enum-missing.dart"></pre>
+<pre data-term="enum-missing.sh" class="error"></pre>
+
+<p>This is the exhaustiveness checking promised in Chapter {{n-1}}. Imagine the café adds an extra-large cup next year: every switch that forgot it stops compiling, and points you straight to it. Notice also that the message does not say “add a default”: a wildcard <code>_</code> would silence it, but then the new size would silently get the wrong label. Add the case instead.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What is the difference between <code>int</code> and <code>int?</code>?</li><li>What does <code>name?.length ?? 0</code> give when <code>name</code> is <code>null</code>?</li><li>Why is an enum safer than a string for the size of a cup?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Lists</h2>
+
+<p>Dart has three main <dfn>collections</dfn>, values that hold other values: lists, maps and sets. You met lists in Chapter {{n-1}}; here they are in full.</p>
+
+<pre data-code="lists.dart" data-title="lists.dart"></pre>
+<pre data-term="lists.sh"></pre>
+
+<p>A list keeps its items in order, and you reach each one by its <dfn>index</dfn>, counting from 0. <code>&lt;int&gt;[...]</code> makes a list that can hold only <code>int</code>s: its type is <code>List&lt;int&gt;</code>, read “list of int”. The type in angle brackets is called a <dfn>type argument</dfn>, and it is what makes collections safe: Dart will not let a string into a list of numbers.</p>
+
+<p>The middle of the program shows three features that you will use in every Flutter screen:</p>
+<ul>
+<li>The <dfn>spread operator</dfn> <code>...</code> puts all the items of one list inside another.</li>
+<li><dfn>Collection if</dfn>: <code>if (isFriday) 0</code> adds the item only when the condition is true.</li>
+<li><dfn>Collection for</dfn>: <code>for (var p in prices) p * 2</code> adds one item for each round of the loop.</li>
+</ul>
+<p>In Flutter, a screen is a list of widgets, so you will write things like <code>children: [Title(), if (loggedIn) Profile(), for (var n in notes) NoteCard(n)]</code>. That one line replaces a dozen lines of <code>add</code> calls.</p>
+
+<p>Finally, <code>fold</code> carries a running total through the list, and <code>where</code> and <code>map</code> filter and transform, as in Chapter {{n-1}}. Both return a lazy <code>Iterable</code>, which only does the work when you need the items; <code>toList()</code> turns it into a real list.</p>
+
+<h2>{{n}}.5 Maps</h2>
+
+<p>A <dfn>map</dfn> connects <dfn>keys</dfn> to <dfn>values</dfn>, like a dictionary connects words to meanings. The café’s stock is a map from the name of each thing to how many are left:</p>
+
+<pre data-code="maps.dart" data-title="maps.dart"></pre>
+<pre data-term="maps.sh"></pre>
+
+<p>The type <code>Map&lt;String, int&gt;</code> says the keys are strings and the values are ints. Each key appears once. <code>stock['milk']</code> looks a value up; <code>stock['beans'] = 5</code> adds or replaces one.</p>
+
+<p>Look at the second line of the output: asking for a key that is not there gives <code>null</code>. That is why the type of <code>stock['milk']</code> is <code>int?</code>, not <code>int</code>, and why Dart refuses to put it straight into an <code>int</code>:</p>
+
+<pre data-code="map-error.dart" data-title="map-error.dart"></pre>
+<pre data-term="map-error.sh" class="error"></pre>
+
+<p>Null safety reaches everywhere. The fix is the one used in <code>maps.dart</code>: decide what a missing key means, here <code>?? 0</code>, and say it in the code. To change a value, <code>update</code> takes the key and a function from the old value to the new one, and <code>ifAbsent</code> says what to do when the key is missing. To visit every pair, loop over <code>stock.entries</code>; each entry has a <code>key</code> and a <code>value</code>.</p>
+
+<h2>{{n}}.6 Sets</h2>
+
+<p>A <dfn>set</dfn> is a collection in which each value appears at most once. Adding something that is already there does nothing:</p>
+
+<pre data-code="sets.dart" data-title="sets.dart"></pre>
+<pre data-term="sets.sh"></pre>
+
+<p>Sets answer questions about groups: which tags do the latte and the cake share (<code>intersection</code>), which tags appear on either (<code>union</code>), which belong to one but not the other (<code>difference</code>). And <code>toSet()</code> is the shortest way to remove repeats from a list. Checking <code>contains</code> on a set is fast even for millions of items, because a set does not have to look through its values one by one.</p>
+
+<table>
+<thead><tr><th>Collection</th><th>Written</th><th>Choose it when</th></tr></thead>
+<tbody>
+<tr><td><code>List</code></td><td><code>[1, 2, 2]</code></td><td>Order matters, or the same value may appear twice: a queue, the lines of a receipt</td></tr>
+<tr><td><code>Set</code></td><td><code>{1, 2}</code></td><td>Each value once, and you ask “is it in?”: tags, selected items</td></tr>
+<tr><td><code>Map</code></td><td><code>{'a': 1}</code></td><td>You look things up by a key: stock by name, users by id</td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p><code>{}</code> on its own is an empty <em>map</em>, not an empty set, because maps came first. Write <code>&lt;String&gt;{}</code> for an empty set of strings, and <code>&lt;String, int&gt;{}</code> for an empty map, so that both you and Dart know which you mean.</p></aside>
+
+<h2>{{n}}.7 Records and patterns</h2>
+
+<p>Sometimes a function needs to return two values. Before Dart 3 you would write a small class just for that. Now there are <dfn>records</dfn>:</p>
+
+<pre data-code="records.dart" data-title="records.dart"></pre>
+<pre data-term="records.sh"></pre>
+
+<p><code>(int, int)</code> is the type of a record with two ints, and <code>(sorted.first, sorted.last)</code> makes one. Its fields are called <code>$1</code>, <code>$2</code> and so on, but the nicer way is a <dfn>pattern</dfn>: <code>var (low, high) = ...</code> takes the record apart into two variables in one line. This is called <dfn>destructuring</dfn>. A record can also have named fields, like <code>({String name, int price})</code>, read with a dot.</p>
+
+<p>The function also shows a <dfn>cascade</dfn>, <code>..</code>: <code>[...prices]..sort()</code> makes a copy of the list, sorts it, and gives back the copy rather than the result of <code>sort</code> (which returns nothing). Cascades let you call several methods on the same object in a row.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Use a record for a quick pair of values that travel together for a moment, such as the result of a function. When the values have a meaning of their own and methods to go with them, such as a menu item, write a class.</p></aside>
+
+<h2>{{n}}.8 Project: the café order book</h2>
+
+<p>Let us put the chapter together. The café’s menu becomes a list of objects, each with a category, and an order becomes a class that counts how many of each item a table ordered:</p>
+
+<pre data-code="cafe.dart" data-title="cafe.dart"></pre>
+<pre data-term="cafe.sh"></pre>
+
+<p>Follow the order for table 4: two lattes, a cake, another latte, and three cookies. <code>add</code> uses <code>update</code> with <code>ifAbsent</code>, so the second latte adds to the first instead of making a new line: there are three lattes. The lines are sorted by name, with a cascade and a collection <code>for</code>. The total is 3 × 45 + 60 + 3 × 20 = 255. And <code>categories</code> is a set built with a collection <code>for</code>, so each category appears once however many items share it.</p>
+
+<p>Notice how much the class hides. Code outside <code>Order</code> cannot touch <code>_counts</code>: it can only add items and read the total and the lines. If tomorrow the café wants to store orders differently, only <code>Order</code> changes, and every screen that uses it keeps working.</p>
+
+<aside class="box try"><p class="box-title">Try it</p><p>Add a method <code>remove(MenuItem item)</code> that takes one away, and deletes the line when it reaches zero. Then add a getter <code>drinksOnly</code> that returns the lines for drinks only. Which collection tools did you use?</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Using a <code>String?</code> as if it were a <code>String</code></td><td>Compile error: the property “cannot be accessed … because it is potentially null”</td><td>Check with <code>if</code>, or use <code>?.</code> and <code>??</code></td></tr>
+<tr><td>Adding <code>!</code> to silence the compiler</td><td>A crash when the value is <code>null</code>: “Null check operator used on a null value”</td><td>Handle the <code>null</code> case for real</td></tr>
+<tr><td><code>int x = map[key];</code></td><td>Compile error: <code>int?</code> can’t be assigned to <code>int</code></td><td><code>map[key] ?? 0</code>, or check <code>containsKey</code></td></tr>
+<tr><td>A switch on an enum that forgets a value</td><td>Compile error: not exhaustively matched</td><td>Add the missing case, not a <code>_</code></td></tr>
+<tr><td><code>var tags = {};</code> for a set</td><td>It is an empty map</td><td><code>var tags = &lt;String&gt;{};</code></td></tr>
+<tr><td><code>list[list.length]</code></td><td>A <code>RangeError</code> when the program runs: indexes go up to <code>length - 1</code></td><td>Use <code>list.last</code>, or check the index</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A <strong>class</strong> describes a kind of object: <strong>fields</strong>, a <strong>constructor</strong> (with <code>this.field</code> and named parameters), <strong>methods</strong>, <strong>getters</strong>, and <code>toString</code>. Names starting with <code>_</code> are private to the file.</li>
+<li><strong>Null safety</strong>: a type can hold <code>null</code> only if it ends in <code>?</code>. Use <code>if (x != null)</code>, <code>??</code>, <code>?.</code> and <code>??=</code>; avoid <code>!</code>.</li>
+<li>An <strong>enum</strong> names a fixed set of values, can carry fields, and lets the compiler check that a switch covers them all.</li>
+<li><strong>Lists</strong> keep order; <strong>sets</strong> keep each value once; <strong>maps</strong> connect keys to values, and looking a key up gives a nullable value.</li>
+<li>Inside a collection, <code>...</code>, <code>if</code> and <code>for</code> build items; Flutter uses them to build lists of widgets.</li>
+<li>A <strong>record</strong>, like <code>(int, int)</code>, returns several values at once, and a <strong>pattern</strong> takes it apart: <code>var (a, b) = ...</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. An <code>int</code> always holds a number; an <code>int?</code> holds a number or <code>null</code>, and must be checked before it is used as a number. 2. <code>0</code>: <code>name?.length</code> is <code>null</code>, and <code>?? 0</code> replaces it. 3. A misspelt enum value does not compile, and a switch on the enum is checked for every value; a misspelt string is still a valid string, and nothing checks the switch.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project models something with classes and collections, the way you will model the data behind a Flutter screen. Run each one often, and try values that are missing as well as values that are there.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A contact book</h3>
+<p class="project-goal">Keep a list of contacts, some with a phone number and some without, and print them safely.</p>
+<p class="project-skills"><strong>You will practise:</strong> a class with a nullable field, an optional named parameter, <code>??</code> and <code>?.</code>, and <code>where</code>.</p>
+<ol class="steps">
+<li>Write a class <code>Contact</code> with a <code>final String name</code> and a <code>final String? phone</code>.</li>
+<li>Give it a <code>const</code> constructor where the name is positional and the phone is an optional named parameter: <code>const Contact(this.name, {this.phone});</code>. An optional nullable parameter needs no default: it is <code>null</code> when it is not given.</li>
+<li>Add a method <code>describe()</code> that shows the phone, or “no phone” when there is none, with <code>??</code>.</li>
+<li>Make a list of three contacts, one without a phone, and print them. Count the contacts that have a phone with <code>where</code>.</li>
+<li>Print every phone without spaces using <code>?.replaceAll(' ', '')</code>. What does the contact without a phone give?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> inside a string, <code>${phone ?? 'no phone'}</code> needs the braces, because it is an expression and not a plain name.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/contacts.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Which words are used most?</h3>
+<p class="project-goal">Count how many times each word appears in a text, and print the three most used.</p>
+<p class="project-skills"><strong>You will practise:</strong> a <code>Map&lt;String, int&gt;</code> as a counter, missing keys, sorting map entries, <code>take</code>, and sets.</p>
+<ol class="steps">
+<li>Split the text into words with <code>split(' ')</code>.</li>
+<li>Count with a map: for each word, <code>counts[w] = (counts[w] ?? 0) + 1</code>. Explain why the <code>?? 0</code> is needed the first time a word is seen.</li>
+<li>Print how many words there are, and how many are different (the length of the map).</li>
+<li>Turn <code>counts.entries</code> into a list, and sort it from the largest value down: <code>sort((a, b) =&gt; b.value.compareTo(a.value))</code>. Print the first three with <code>take(3)</code>.</li>
+<li>Check your count of different words another way, with <code>words.toSet().length</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>compareTo</code> returns a negative number, zero or a positive number. Swapping <code>a</code> and <code>b</code> reverses the order, which is how you sort from the largest down.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/words.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Shapes and their areas</h3>
+<p class="project-goal">Model circles, rectangles and squares as different classes, calculate their areas with one switch that the compiler checks, and sort them by area.</p>
+<p class="project-skills"><strong>You will practise:</strong> class inheritance with <code>extends</code>, <code>sealed</code> classes, switching on an object’s type with patterns, <code>import</code>, and <code>fold</code> with a <code>double</code>.</p>
+<ol class="steps">
+<li>Write <code>sealed class Shape</code>, and three classes that <dfn>extend</dfn> it: <code>Circle</code> with a radius, <code>Rect</code> with a width and a height, <code>Square</code> with a side. A <code>Circle</code> <em>is a</em> <code>Shape</code>, so it can go in a <code>List&lt;Shape&gt;</code>.</li>
+<li><code>sealed</code> means that no other file may add another kind of <code>Shape</code>. The compiler therefore knows all the kinds, exactly as it knows the values of an enum.</li>
+<li>Write <code>double area(Shape s)</code> as a switch expression with <dfn>object patterns</dfn>: <code>Circle(radius: var r) =&gt; math.pi * r * r</code> matches circles and takes their radius out in one step. Write <code>import 'dart:math' as math;</code> at the top for <code>math.pi</code>.</li>
+<li>Remove one case and read the error. Put it back.</li>
+<li>Sort a list of shapes by area, print each with two digits after the point, and the total with <code>fold(0.0, ...)</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> start <code>fold</code> with <code>0.0</code>, not <code>0</code>: the starting value decides the type of the running total, and areas are <code>double</code>s.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/shapes.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Predict what each line prints, then check: with <code>String? a;</code> and <code>String? b = 'Dart';</code>, print <code>a ?? b</code>, <code>b?.length</code> and <code>a?.length ?? -1</code>; then run <code>a ??= 'Flutter'; a ??= 'Kotlin';</code> and print <code>a</code>.</li>
+<li><span class="level">Easy</span> List, set or map? (a) The songs in a playlist, in order. (b) The ids of the messages a user has read. (c) The price of each product, by its code. (d) The scores of a game, which may repeat.</li>
+<li><span class="level">Medium</span> Add a method <code>copyWith</code> to the <code>MenuItem</code> of <code>order.dart</code>, which returns a new item with some fields changed: <code>latte.copyWith(price: 36)</code>. (Hint: its parameters are nullable, and <code>??</code> keeps the old value.) Flutter’s own classes use this pattern everywhere.</li>
+<li><span class="level">Medium</span> Group a list of words by their first letter into a <code>Map&lt;String, List&lt;String&gt;&gt;</code>, using <code>putIfAbsent</code>. Look it up on <code>api.dart.dev</code>.</li>
+<li><span class="level">Challenge</span> Write an enum <code>Day</code> with a field for its label and a getter <code>isWeekend</code>, and print every day with “weekend” or “workday”. Then add a new day to the enum and see which code still works without any change.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>So far every line of your programs runs immediately. But apps wait all the time: for the network, for a file, for the user. The next chapter teaches Dart to wait without freezing, with <code>Future</code>, <code>async</code> and <code>await</code>, and to handle values that keep arriving, with <code>Stream</code>.</p>
+</div>
+</section>

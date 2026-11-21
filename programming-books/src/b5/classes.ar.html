@@ -1,0 +1,290 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/classes/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>الأصناف والأمان من القيم الفارغة والمجموعات</h1>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تصف أنواع قيمك الخاصة بالأصناف (classes): الحقول والمُنشئات والدوال التابعة والـ getters</li>
+<li>تتعامل بأمان مع القيم التي قد تغيب، بالأمان من القيم الفارغة في Dart</li>
+<li>تعطي مجموعة ثابتة من الاختيارات اسماً بالـ enum</li>
+<li>تحفظ قيماً كثيرة في القوائم (List) والخرائط (Map) والمجموعات (Set)، وتختار المناسبة منها</li>
+<li>تُرجع عدة قيم دفعة واحدة بالـ Records، وتفكّها بالأنماط</li>
+</ul>
+</div>
+
+<p class="lead">في آخر الفصل {{n-1}} كانت أسعار المقهى ثوابت متفرقة، والطلب حفنة من المعاملات. والبرامج الحقيقية تحتاج أشكالاً أفضل لبياناتها: صنف في القائمة يعرف اسمه وسعره، وطلب يعرف أسطره وإجماليه. هذا الفصل يعطيك هذه الأشكال. ويقدّم أيضاً الميزة التي تميّز Dart بين اللغات: <em>الأمان من القيم الفارغة</em> (null safety)، الذي يحوّل أشهر انهيار في العالم إلى رسالة من المترجم.</p>
+
+<aside class="bit" data-mood="happy"><p>كل Widget ستكتبه في Flutter صنف (class)، وكل شاشة تعرض قائمة من شيء ما. في هذا الفصل تتوقف Dart عن أن تكون آلة حاسبة، وتصير لغة التطبيقات.</p></aside>
+
+<h2>{{n}}.1 الأصناف</h2>
+
+<p><dfn>الصنف</dfn> (class) يصف نوعاً من القيم: ما تعرفه كل قيمة، وما تستطيع فعله. وكل قيمة تُصنع منه <dfn>كائن</dfn> (object)، أو <dfn>نسخة</dfn> (instance) من الصنف. وهذا صنف من قائمة المقهى:</p>
+
+<pre data-code="menu_item.dart" data-title="menu_item.dart"></pre>
+<pre data-term="menu_item.sh"></pre>
+
+<ul>
+<li><dfn>الحقول</dfn> (fields) متغيرات داخل كل كائن: لكل صنف في القائمة <code>name</code> و<code>price</code> خاصان به. وهي <code>final</code>، لأن الصنف لا يتغير بعد صنعه.</li>
+<li><dfn>المُنشئ</dfn> (constructor) يصنع الكائنات. اسمه اسم الصنف، و<code>this.name</code> اختصار Dart لعبارة «ضع هذا المعامل في الحقل <code>name</code> مباشرة». ولأن كل الحقول <code>final</code>، يمكن أن يكون المُنشئ <code>const</code>، وكذلك الكائنات المصنوعة به.</li>
+<li><code>priceFor</code> <dfn>دالة تابعة</dfn> (method): دالة تخص الكائن وتستطيع استخدام حقوله.</li>
+<li><code>toString</code> تقرر ما تعرضه <code>print</code>. لكل صنف واحدة؛ و<code>@override</code> تقول إننا نستبدل الافتراضية، التي لا تطبع إلا <code>Instance of 'MenuItem'</code>.</li>
+</ul>
+
+<p>تصل إلى الحقل أو الدالة التابعة بنقطة: <code>latte.name</code> و<code>cookie.priceFor(3)</code>. ولاحظ أنه لا يوجد <code>new</code>: ففي Dart تصنع الكائن باستدعاء المُنشئ كأنه دالة.</p>
+
+<h3>المعاملات المسماة والـ getters والحقول الخاصة</h3>
+
+<pre data-code="order.dart" data-title="order.dart"></pre>
+<pre data-term="order.sh"></pre>
+
+<p>تظهر في هذا البرنامج ثلاث أدوات أخرى، وستراها كلها في كل تطبيق Flutter:</p>
+<ul>
+<li>مُنشئ <code>MenuItem</code> يأخذ <strong>معاملات مسماة</strong>، <code>{required this.name, required this.price}</code>. فيشرح الاستدعاء نفسه: <code>MenuItem(name: 'لاتيه', price: 45)</code>. وهكذا بالضبط تُبنى Widgets في Flutter: <code>Text('أهلاً', style: ...)</code> استدعاء لمُنشئ بمعاملات مسماة.</li>
+<li>الـ <dfn>getter</dfn>، ويُكتب بـ <code>get</code>، يبدو من الخارج كحقل (<code>cake.isExpensive</code>، بلا أقواس)، لكنه يشغّل كوداً في كل مرة يُقرأ فيها. و<code>Order</code> يستخدم اثنين، <code>count</code> و<code>total</code>، فهما محدّثان دائماً.</li>
+<li>الاسم الذي يبدأ بشرطة سفلية، مثل <code>_lines</code>، <dfn>خاص</dfn> (private): لا يستخدمه إلا الكود الموجود في الملف نفسه. فلا يستطيع الكود الآخر أن يضيف إلى الطلب إلا عبر <code>add</code>، ولا يستطيع أحد أن يفسده من الخارج. وهذا يُسمّى <dfn>التغليف</dfn> (encapsulation).</li>
+</ul>
+
+<p>والإجمالي يستخدم <code>fold</code>، التي تمر على القائمة حاملة قيمة من عنصر إلى الذي يليه: تبدأ من <code>0</code>، ولكل عنصر تُرجع المجموع حتى الآن مضافاً إليه سعر العنصر. وسيعود القسم {{n}}.4 إليها.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>في VS Code ضع المؤشر على اسم صنف واضغط <strong>Ctrl+.</strong> (أو <strong>Cmd+.</strong> على Mac): تعرض إضافة Dart إصلاحات سريعة، مثل إنشاء مُنشئ للحقول النهائية التي كتبتها للتو. اكتب الحقول، ودع المحرر يكتب الجزء المتكرر.</p></aside>
+
+<h2>{{n}}.2 الأمان من القيم الفارغة</h2>
+
+<p>أحياناً لا تكون القيمة موجودة ببساطة: زبون بلا لقب، وجهة اتصال بلا هاتف، وبحث بلا نتيجة. ولدى Dart قيمة خاصة تعني «لا شيء»: <code>null</code>. في لغات كثيرة يمكن لأي متغير أن يكون <code>null</code> في أي وقت، واستخدامه عن غير قصد يوقف البرنامج. وقد سمّاه توني هور، الذي اخترع المرجع الفارغ عام 1965، فيما بعد «خطأ المليار دولار».</p>
+
+<p>وتحل Dart هذا بـ <dfn>الأمان من القيم الفارغة</dfn>: لا يحمل المتغير <code>null</code> إلا إذا قال نوعه ذلك، بعلامة استفهام. <code>String</code> نص دائماً، و<code>String?</code> نص <em>أو</em> <code>null</code>.</p>
+
+<pre data-code="null-error.dart" data-title="null-error.dart"></pre>
+<pre data-term="null-error.sh" class="error"></pre>
+
+<p>المترجم يرفض أن يسأل عن طول شيء قد لا يكون موجوداً، بل ويقترح حلاً. وتعطيك Dart أربع أدوات للتعامل مع القيم التي قد تكون فارغة:</p>
+
+<pre data-code="nullable.dart" data-title="nullable.dart"></pre>
+<pre data-term="nullable.sh"></pre>
+
+<table>
+<thead><tr><th>الأداة</th><th>معناها</th><th>مثال</th></tr></thead>
+<tbody>
+<tr><td><code>??</code></td><td>القيمة على اليسار، أو التي على اليمين إن كانت اليسرى <code>null</code></td><td><code>nickname ?? 'زائر'</code></td></tr>
+<tr><td><code>?.</code></td><td>استخدم العضو فقط إن لم تكن القيمة <code>null</code>؛ وإلا فالنتيجة <code>null</code></td><td><code>nickname?.length</code></td></tr>
+<tr><td><code>??=</code></td><td>أعطِ المتغير قيمة فقط إن كان <code>null</code></td><td><code>nickname ??= 'بيتو'</code></td></tr>
+<tr><td><code>if (x != null)</code></td><td>داخل الـ <code>if</code> تعرف Dart أن <code>x</code> ليس <code>null</code></td><td><code>other.length</code></td></tr>
+</tbody>
+</table>
+
+<p>الأخيرة تُسمّى <dfn>ترقية النوع</dfn> (type promotion): بعد أن تفحص، ترقّي Dart المتغير <code>other</code> من <code>String?</code> إلى <code>String</code> لبقية الكتلة، فتستخدمه بحرية. وهي أنظف الأربع، وأول ما تلجأ إليه.</p>
+
+<h3>العامل ! ولماذا تتجنبه</h3>
+
+<p>هناك أداة خامسة: <code>!</code> بعد القيمة تقول لـ Dart «ثق بي، هذا ليس <code>null</code>». فيصدّقك المترجم، ولا يفحص إلا حين يعمل البرنامج:</p>
+
+<pre data-code="bang-error.dart" data-title="bang-error.dart"></pre>
+<pre data-term="bang-error.sh" class="error"></pre>
+
+<p>هذه المرة تُرجم البرنامج، وعمل، ثم انهار: <dfn>استثناء غير معالَج</dfn> (unhandled exception). والسطر الذي يبدأ بـ <code>#0</code> يقول أين: في <code>main</code>، السطر 4. وعلى الجوال، هذا تطبيق يُغلق في يد المستخدم.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>عامل كل <code>!</code> كوعد صغير قد تنكثه. وفضّل عليه فحصاً بـ <code>if</code>، أو <code>??</code> بقيمة افتراضية معقولة، أو نوعاً لا يقبل <code>null</code> من الأصل. وحين تستخدم <code>!</code> فعلاً، فلتكن قادراً على أن تقول في جملة واحدة لماذا لا يمكن أن تكون القيمة <code>null</code> هناك أبداً.</p></aside>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>أضافت Dart الأمان من القيم الفارغة في الإصدار 2.12 عام 2021، وجعلته إلزامياً في Dart 3. واضطرت كل حزمة على <code>pub.dev</code> إلى التحديث؛ وكانت من أكبر عمليات الانتقال التي مرت بها لغة، ولهذا نادراً ما تنهار تطبيقات Flutter بسبب قيمة غائبة.</p></aside>
+
+<h2>{{n}}.3 الـ enum</h2>
+
+<p>حين لا يمكن للقيمة أن تكون إلا واحداً من اختيارات ثابتة قليلة، مثل أحجام الكوب، فأعطِ الاختيارات أسماء بـ <dfn>enum</dfn> (اختصار <em>enumeration</em>، أي «تعداد»):</p>
+
+<pre data-code="sizes.dart" data-title="sizes.dart"></pre>
+<pre data-term="sizes.sh"></pre>
+
+<p>لـ <code>CupSize</code> ثلاث قيم بالضبط: <code>CupSize.small</code> و<code>CupSize.medium</code> و<code>CupSize.large</code>. والـ enum في Dart يمكن أن يحمل حقولاً، كالصنف: هنا يعرف كل حجم كم يضيف إلى السعر، ويُعطى ذلك بين قوسين بعد اسمه. و<code>CupSize.values</code> قائمة بها كلها، ولكل قيمة <code>name</code> هو اسمها في الكود، ولهذا يظهر بالإنجليزية.</p>
+
+<p>لماذا لا نستخدم النصوص <code>'small'</code> و<code>'medium'</code> و<code>'large'</code> فقط؟ لأن خطأ إملائياً مثل <code>'lagre'</code> نص صحيح تماماً، والخطأ يظهر بعد وقت طويل. أما الخطأ في <code>CupSize.lagre</code> فلا يُترجم. ولأن المترجم يعرف كل قيم الـ enum، فهو يتأكد أن الـ switch يغطيها كلها:</p>
+
+<pre data-code="enum-missing.dart" data-title="enum-missing.dart"></pre>
+<pre data-term="enum-missing.sh" class="error"></pre>
+
+<p>هذا هو فحص الشمول الذي وعدك به الفصل {{n-1}}. تخيّل أن المقهى أضاف كوباً كبيراً جداً في العام القادم: كل switch نسيه يتوقف عن الترجمة، ويشير إليك مباشرة. ولاحظ أن الرسالة تقترح البدل أو الحالات الناقصة: والبدل <code>_</code> سيُسكتها، لكن الحجم الجديد سيأخذ عندها الوصف الخطأ بصمت. أضف الحالة بدلاً منه.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ما الفرق بين <code>int</code> و<code>int?</code>؟</li><li>كم تعطي <code>name?.length ?? 0</code> حين يكون <code>name</code> هو <code>null</code>؟</li><li>لماذا الـ enum أأمن من النص لحجم الكوب؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.4 القوائم</h2>
+
+<p>لدى Dart ثلاث <dfn>مجموعات</dfn> (collections) رئيسية، أي قيم تحمل قيماً أخرى: القوائم والخرائط والمجموعات. قابلت القوائم في الفصل {{n-1}}، وهذه هي كاملة.</p>
+
+<pre data-code="lists.dart" data-title="lists.dart"></pre>
+<pre data-term="lists.sh"></pre>
+
+<p>القائمة تحفظ عناصرها بالترتيب، وتصل إلى كل عنصر بـ <dfn>موقعه</dfn> (index) بدءاً من 0. و<code>&lt;int&gt;[...]</code> تصنع قائمة لا تحمل إلا <code>int</code>: نوعها <code>List&lt;int&gt;</code>، وتُقرأ «قائمة من int». والنوع بين القوسين الزاويين يُسمّى <dfn>معامل النوع</dfn> (type argument)، وهو ما يجعل المجموعات آمنة: فلن تسمح Dart بدخول نص إلى قائمة أرقام.</p>
+
+<p>ويعرض وسط البرنامج ثلاث ميزات ستستخدمها في كل شاشة Flutter:</p>
+<ul>
+<li><dfn>عامل الفرد</dfn> (spread) <code>...</code> يضع كل عناصر قائمة داخل أخرى.</li>
+<li><dfn>if داخل المجموعة</dfn>: <code>if (isFriday) 0</code> يضيف العنصر فقط حين يكون الشرط صحيحاً.</li>
+<li><dfn>for داخل المجموعة</dfn>: <code>for (var p in prices) p * 2</code> يضيف عنصراً لكل دورة.</li>
+</ul>
+<p>في Flutter الشاشة قائمة من الـ Widgets، فستكتب أشياء مثل <code>children: [Title(), if (loggedIn) Profile(), for (var n in notes) NoteCard(n)]</code>. وهذا السطر الواحد يغني عن عشرات الأسطر من استدعاءات <code>add</code>.</p>
+
+<p>وأخيراً، <code>fold</code> تحمل مجموعاً متراكماً عبر القائمة، و<code>where</code> و<code>map</code> تصفّيان وتحوّلان كما في الفصل {{n-1}}. وكلتاهما تُرجع <code>Iterable</code> كسولاً، لا يعمل إلا حين تحتاج العناصر؛ و<code>toList()</code> تحوّله إلى قائمة حقيقية.</p>
+
+<h2>{{n}}.5 الخرائط</h2>
+
+<p><dfn>الخريطة</dfn> (Map) تصل <dfn>مفاتيح</dfn> بـ <dfn>قيم</dfn>، كما يصل القاموس الكلمات بمعانيها. ومخزون المقهى خريطة من اسم كل شيء إلى الكمية الباقية منه:</p>
+
+<pre data-code="maps.dart" data-title="maps.dart"></pre>
+<pre data-term="maps.sh"></pre>
+
+<p>النوع <code>Map&lt;String, int&gt;</code> يقول إن المفاتيح نصوص والقيم أعداد صحيحة. وكل مفتاح يظهر مرة واحدة. <code>stock['حليب']</code> تبحث عن قيمة، و<code>stock['بُن'] = 5</code> تضيف قيمة أو تستبدلها.</p>
+
+<p>انظر إلى السطر الثاني من المخرجات: السؤال عن مفتاح غير موجود يعطي <code>null</code>. ولهذا نوع <code>stock['حليب']</code> هو <code>int?</code> لا <code>int</code>، ولهذا ترفض Dart أن تضعه في <code>int</code> مباشرة:</p>
+
+<pre data-code="map-error.dart" data-title="map-error.dart"></pre>
+<pre data-term="map-error.sh" class="error"></pre>
+
+<p>الأمان من القيم الفارغة يصل إلى كل مكان. والحل هو المستخدم في <code>maps.dart</code>: قرّر ماذا يعني غياب المفتاح، وهنا <code>?? 0</code>، وقله في الكود. ولتغيير قيمة، تأخذ <code>update</code> المفتاح ودالة من القيمة القديمة إلى الجديدة، وتقول <code>ifAbsent</code> ماذا تفعل حين يغيب المفتاح. وللمرور على كل زوج، كرّر على <code>stock.entries</code>؛ ولكل مدخل <code>key</code> و<code>value</code>.</p>
+
+<h2>{{n}}.6 المجموعات</h2>
+
+<p><dfn>المجموعة</dfn> (Set) لا تظهر فيها أي قيمة أكثر من مرة. وإضافة شيء موجود فيها لا تفعل شيئاً:</p>
+
+<pre data-code="sets.dart" data-title="sets.dart"></pre>
+<pre data-term="sets.sh"></pre>
+
+<p>المجموعات تجيب عن أسئلة حول الفئات: أي الوسوم يشترك فيها اللاتيه والكيك (<code>intersection</code>، التقاطع)، وأيها يظهر في أي منهما (<code>union</code>، الاتحاد)، وأيها في الأول دون الثاني (<code>difference</code>، الفرق). و<code>toSet()</code> أقصر طريق لحذف التكرار من قائمة. والسؤال <code>contains</code> سريع في المجموعة حتى مع ملايين العناصر، لأنها لا تحتاج أن تبحث في قيمها واحدة واحدة.</p>
+
+<table>
+<thead><tr><th>المجموعة</th><th>تُكتب</th><th>اخترها حين</th></tr></thead>
+<tbody>
+<tr><td><code>List</code></td><td><code>[1, 2, 2]</code></td><td>يهم الترتيب، أو قد تظهر القيمة مرتين: طابور، أو أسطر فاتورة</td></tr>
+<tr><td><code>Set</code></td><td><code>{1, 2}</code></td><td>كل قيمة مرة واحدة، وسؤالك «هل هي موجودة؟»: الوسوم، والعناصر المختارة</td></tr>
+<tr><td><code>Map</code></td><td><code>{'a': 1}</code></td><td>تبحث عن الأشياء بمفتاح: المخزون بالاسم، والمستخدمون بالرقم</td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p><code>{}</code> وحدها خريطة فارغة، لا مجموعة فارغة، لأن الخرائط جاءت أولاً. اكتب <code>&lt;String&gt;{}</code> لمجموعة نصوص فارغة، و<code>&lt;String, int&gt;{}</code> لخريطة فارغة، ليعرف كلاكما، أنت وDart، ماذا تقصد.</p></aside>
+
+<h2>{{n}}.7 الـ Records والأنماط</h2>
+
+<p>أحياناً تحتاج الدالة أن تُرجع قيمتين. قبل Dart 3 كنت تكتب صنفاً صغيراً لهذا وحده. أما الآن فهناك <dfn>الـ Records</dfn> (السجلات):</p>
+
+<pre data-code="records.dart" data-title="records.dart"></pre>
+<pre data-term="records.sh"></pre>
+
+<p><code>(int, int)</code> نوع Record فيه عددان صحيحان، و<code>(sorted.first, sorted.last)</code> تصنع واحداً. حقوله اسمها <code>$1</code> و<code>$2</code> وهكذا، لكن الطريقة الأجمل <dfn>نمط</dfn>: <code>var (low, high) = ...</code> تفكّ الـ Record إلى متغيرين في سطر واحد. وهذا يُسمّى <dfn>التفكيك</dfn> (destructuring). ويمكن أن يكون للـ Record حقول مسماة أيضاً، مثل <code>({String name, int price})</code>، تُقرأ بنقطة.</p>
+
+<p>وتعرض الدالة أيضاً <dfn>التتابع</dfn> (cascade) <code>..</code>: <code>[...prices]..sort()</code> تصنع نسخة من القائمة وترتبها، وتُرجع النسخة نفسها لا ناتج <code>sort</code> (التي لا تُرجع شيئاً). والتتابع يتيح لك أن تستدعي عدة دوال على الكائن نفسه واحدة بعد أخرى.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>استخدم الـ Record لزوج قيم يسافران معاً لحظة، مثل ناتج دالة. وحين يكون للقيم معنى خاص بها ودوال تتبعها، مثل صنف في القائمة، فاكتب class.</p></aside>
+
+<h2>{{n}}.8 مشروع: دفتر طلبات المقهى</h2>
+
+<p>لنجمع الفصل كله. تصير قائمة المقهى قائمة كائنات، لكل منها فئة، ويصير الطلب صنفاً يعدّ كم طلبت كل طاولة من كل صنف:</p>
+
+<pre data-code="cafe.dart" data-title="cafe.dart"></pre>
+<pre data-term="cafe.sh"></pre>
+
+<p>تتبّع طلب الطاولة 4: كوبا لاتيه، وقطعة كيك، وكوب لاتيه آخر، وثلاث قطع كوكيز. تستخدم <code>add</code> الدالة <code>update</code> مع <code>ifAbsent</code>، فيُضاف اللاتيه الثاني إلى الأول بدلاً من أن يصنع سطراً جديداً: ثلاثة أكواب لاتيه. والأسطر مرتبة بالاسم، بالتتابع و<code>for</code> داخل القائمة. والإجمالي 3 × 45 + 60 + 3 × 20 = 255. أما <code>categories</code> فمجموعة مبنية بـ <code>for</code> داخلها، فتظهر كل فئة مرة واحدة مهما كثرت الأصناف التي تشترك فيها. وأسماء الفئات <code>drink</code> و<code>food</code> بالإنجليزية لأنها أسماؤها في الكود.</p>
+
+<p>لاحظ كم يخفي الصنف. لا يستطيع الكود خارج <code>Order</code> أن يلمس <code>_counts</code>: يستطيع فقط أن يضيف أصنافاً ويقرأ الإجمالي والأسطر. وإن أراد المقهى غداً أن يحفظ الطلبات بطريقة أخرى، فلن يتغير إلا <code>Order</code>، وستبقى كل شاشة تستخدمه تعمل.</p>
+
+<aside class="box try"><p class="box-title">جرّب</p><p>أضف دالة <code>remove(MenuItem item)</code> تنقص قطعة واحدة، وتحذف السطر حين يصل إلى الصفر. ثم أضف getter اسمه <code>drinksOnly</code> يُرجع أسطر المشروبات وحدها. أي أدوات المجموعات استخدمت؟</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>استخدام <code>String?</code> كأنه <code>String</code></td><td>خطأ ترجمة: لا يمكن الوصول إلى الخاصية «لأنها قد تكون null»</td><td>افحص بـ <code>if</code>، أو استخدم <code>?.</code> و<code>??</code></td></tr>
+<tr><td>إضافة <code>!</code> لإسكات المترجم</td><td>انهيار حين تكون القيمة <code>null</code>: «Null check operator used on a null value»</td><td>عالج حالة <code>null</code> فعلاً</td></tr>
+<tr><td><code>int x = map[key];</code></td><td>خطأ ترجمة: لا يمكن وضع <code>int?</code> في <code>int</code></td><td><code>map[key] ?? 0</code>، أو افحص <code>containsKey</code></td></tr>
+<tr><td>switch على enum ينسى قيمة</td><td>خطأ ترجمة: المطابقة غير شاملة</td><td>أضف الحالة الناقصة، لا <code>_</code></td></tr>
+<tr><td><code>var tags = {};</code> لمجموعة</td><td>إنها خريطة فارغة</td><td><code>var tags = &lt;String&gt;{};</code></td></tr>
+<tr><td><code>list[list.length]</code></td><td><code>RangeError</code> حين يعمل البرنامج: المواقع تنتهي عند <code>length - 1</code></td><td>استخدم <code>list.last</code>، أو افحص الموقع</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li><strong>الصنف</strong> يصف نوعاً من الكائنات: <strong>حقول</strong>، و<strong>مُنشئ</strong> (بـ <code>this.field</code> والمعاملات المسماة)، و<strong>دوال تابعة</strong>، و<strong>getters</strong>، و<code>toString</code>. والأسماء التي تبدأ بـ <code>_</code> خاصة بالملف.</li>
+<li><strong>الأمان من القيم الفارغة</strong>: لا يحمل النوع <code>null</code> إلا إذا انتهى بـ <code>?</code>. استخدم <code>if (x != null)</code> و<code>??</code> و<code>?.</code> و<code>??=</code>، وتجنّب <code>!</code>.</li>
+<li>الـ <strong>enum</strong> يسمّي مجموعة ثابتة من القيم، ويمكن أن يحمل حقولاً، ويتيح للمترجم أن يتأكد أن الـ switch يغطيها كلها.</li>
+<li><strong>القوائم</strong> تحفظ الترتيب، و<strong>المجموعات</strong> تحفظ كل قيمة مرة، و<strong>الخرائط</strong> تصل المفاتيح بالقيم، والبحث بمفتاح يعطي قيمة قد تكون فارغة.</li>
+<li>داخل المجموعة تبني <code>...</code> و<code>if</code> و<code>for</code> العناصر، وFlutter يستخدمها لبناء قوائم الـ Widgets.</li>
+<li>الـ <strong>Record</strong>، مثل <code>(int, int)</code>، يُرجع عدة قيم دفعة واحدة، و<strong>النمط</strong> يفكّه: <code>var (a, b) = ...</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. الـ <code>int</code> يحمل عدداً دائماً؛ أما <code>int?</code> فيحمل عدداً أو <code>null</code>، ولا بد من فحصه قبل استخدامه عدداً. 2. <code>0</code>: فـ <code>name?.length</code> تساوي <code>null</code>، و<code>?? 0</code> تستبدلها. 3. قيمة الـ enum المكتوبة خطأ لا تُترجم، والـ switch عليه يُفحص لكل قيمة؛ أما النص المكتوب خطأ فما زال نصاً صحيحاً، ولا شيء يفحص الـ switch.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يصوّر شيئاً بالأصناف والمجموعات، كما ستصوّر البيانات التي خلف شاشات Flutter. شغّل كل مشروع كثيراً، وجرّب القيم الغائبة كما تجرّب الموجودة.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>دفتر جهات الاتصال</h3>
+<p class="project-goal">احفظ قائمة جهات اتصال، بعضها برقم هاتف وبعضها بدونه، واطبعها بأمان.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> صنف بحقل قد يكون فارغاً، ومعامل مسمى اختياري، و<code>??</code> و<code>?.</code>، و<code>where</code>.</p>
+<ol class="steps">
+<li>اكتب صنفاً <code>Contact</code> فيه <code>final String name</code> و<code>final String? phone</code>.</li>
+<li>أعطه مُنشئاً <code>const</code> يكون الاسم فيه موضعياً والهاتف معاملاً مسمى اختيارياً: <code>const Contact(this.name, {this.phone});</code>. والمعامل الاختياري الذي يقبل <code>null</code> لا يحتاج قيمة افتراضية: إنه <code>null</code> حين لا يُعطى.</li>
+<li>أضف دالة <code>describe()</code> تعرض الهاتف، أو «لا هاتف» حين لا يوجد، بـ <code>??</code>.</li>
+<li>اصنع قائمة بثلاث جهات اتصال، واحدة بلا هاتف، واطبعها. وعُدّ من لديهم هاتف بـ <code>where</code>.</li>
+<li>اطبع كل هاتف بلا مسافات بـ <code>?.replaceAll(' ', '')</code>. ماذا تعطي الجهة التي بلا هاتف؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> داخل النص تحتاج <code>${phone ?? 'لا هاتف'}</code> إلى الأقواس المعقوفة، لأنها تعبير وليست اسماً مجرداً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-term="projects/contacts.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>ما الكلمات الأكثر استخداماً؟</h3>
+<p class="project-goal">عُدّ كم مرة تظهر كل كلمة في نص، واطبع الكلمات الثلاث الأكثر استخداماً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Map&lt;String, int&gt;</code> عدّاداً، والمفاتيح الغائبة، وترتيب مدخلات الخريطة، و<code>take</code>، والمجموعات.</p>
+<ol class="steps">
+<li>قسّم النص إلى كلمات بـ <code>split(' ')</code>.</li>
+<li>عُدّ بخريطة: لكل كلمة، <code>counts[w] = (counts[w] ?? 0) + 1</code>. اشرح لماذا نحتاج <code>?? 0</code> أول مرة تظهر فيها الكلمة.</li>
+<li>اطبع عدد الكلمات، وعدد المختلفة منها (طول الخريطة).</li>
+<li>حوّل <code>counts.entries</code> إلى قائمة، ورتّبها من القيمة الأكبر نزولاً: <code>sort((a, b) =&gt; b.value.compareTo(a.value))</code>. واطبع الثلاث الأولى بـ <code>take(3)</code>.</li>
+<li>تحقق من عدد الكلمات المختلفة بطريقة أخرى، بـ <code>words.toSet().length</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في العربية تلتصق واو العطف بالكلمة، فتُعدّ «والقطة» كلمة مختلفة عن «القطة». ولهذا اخترنا نصاً بلا واو ملتصقة؛ وفصل الحروف الملتصقة مسألة أكبر من هذا المشروع.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-term="projects/words.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>الأشكال ومساحاتها</h3>
+<p class="project-goal">صوّر الدوائر والمستطيلات والمربعات أصنافاً مختلفة، واحسب مساحاتها بـ switch واحد يفحصه المترجم، ورتّبها بالمساحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الوراثة بين الأصناف بـ <code>extends</code>، والأصناف <code>sealed</code>، والـ switch على نوع الكائن بالأنماط، و<code>import</code>، و<code>fold</code> بقيمة <code>double</code>.</p>
+<ol class="steps">
+<li>اكتب <code>sealed class Shape</code>، وثلاثة أصناف <dfn>ترثه</dfn> بـ <code>extends</code>: <code>Circle</code> بنصف قطر، و<code>Rect</code> بعرض وارتفاع، و<code>Square</code> بضلع. والـ <code>Circle</code> <em>هو</em> <code>Shape</code>، فيمكن أن يدخل في <code>List&lt;Shape&gt;</code>.</li>
+<li><code>sealed</code> تعني أنه لا يجوز لأي ملف آخر أن يضيف نوعاً آخر من <code>Shape</code>. فيعرف المترجم كل الأنواع، تماماً كما يعرف قيم الـ enum.</li>
+<li>اكتب <code>double area(Shape s)</code> تعبيرَ switch بـ <dfn>أنماط الكائنات</dfn>: <code>Circle(radius: var r) =&gt; math.pi * r * r</code> يطابق الدوائر ويُخرج نصف قطرها في خطوة واحدة. واكتب <code>import 'dart:math' as math;</code> في أعلى الملف لـ <code>math.pi</code>.</li>
+<li>احذف حالة واحدة واقرأ الخطأ، ثم أعدها.</li>
+<li>رتّب قائمة أشكال بالمساحة، واطبع كل شكل برقمين بعد الفاصلة، والإجمالي بـ <code>fold(0.0, ...)</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ابدأ <code>fold</code> بـ <code>0.0</code> لا بـ <code>0</code>: فالقيمة الأولى تحدد نوع المجموع المتراكم، والمساحات <code>double</code>.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-term="projects/shapes.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> توقّع ما يطبعه كل سطر ثم تحقق: مع <code>String? a;</code> و<code>String? b = 'Dart';</code> اطبع <code>a ?? b</code> و<code>b?.length</code> و<code>a?.length ?? -1</code>؛ ثم نفّذ <code>a ??= 'Flutter'; a ??= 'Kotlin';</code> واطبع <code>a</code>.</li>
+<li><span class="level">سهل</span> قائمة أم مجموعة أم خريطة؟ (أ) الأغاني في قائمة تشغيل، بالترتيب. (ب) أرقام الرسائل التي قرأها المستخدم. (ج) سعر كل منتج، برمزه. (د) نتائج لعبة، قد تتكرر.</li>
+<li><span class="level">متوسط</span> أضف دالة <code>copyWith</code> إلى <code>MenuItem</code> في <code>order.dart</code>، تُرجع صنفاً جديداً مع تغيير بعض الحقول: <code>latte.copyWith(price: 36)</code>. (تلميح: معاملاتها تقبل <code>null</code>، و<code>??</code> تحتفظ بالقيمة القديمة.) وأصناف Flutter نفسها تستخدم هذا النمط في كل مكان.</li>
+<li><span class="level">متوسط</span> جمّع قائمة كلمات حسب حرفها الأول في <code>Map&lt;String, List&lt;String&gt;&gt;</code>، بـ <code>putIfAbsent</code>. وابحث عنها في <code>api.dart.dev</code>.</li>
+<li><span class="level">تحدٍّ</span> اكتب enum اسمه <code>Day</code> فيه حقل لاسم اليوم وgetter اسمه <code>isWeekend</code>، واطبع كل يوم مع «عطلة» أو «يوم عمل». ثم أضف يوماً جديداً إلى الـ enum وانظر أي كود ما زال يعمل دون أي تغيير.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>حتى الآن يعمل كل سطر في برامجك في الحال. لكن التطبيقات تنتظر طوال الوقت: الشبكة، والملفات، والمستخدم. الفصل القادم يعلّم Dart أن تنتظر دون أن تتجمد، بـ <code>Future</code> و<code>async</code> و<code>await</code>، وأن تتعامل مع قيم تصل باستمرار، بـ <code>Stream</code>.</p>
+</div>
+</section>

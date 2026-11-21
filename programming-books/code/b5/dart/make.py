@@ -5,13 +5,12 @@ Each example is a single file run with `dart run file.dart`; what it printed (or
 for the files that show a mistake) is saved next to it as file.sh, which the book prints as a terminal.
 The practice projects' solutions are in projects/.
 """
-import shutil
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE.parent))
-from kit import WORK, Session, fill, sh, write  # noqa: E402
+from kit import dart_examples  # noqa: E402
 
 T = {
     "en": dict(
@@ -547,28 +546,7 @@ void main() {
 
 
 def main():
-    for lang, words in T.items():
-        out = HERE / lang
-        shutil.rmtree(out, ignore_errors=True)
-        work = WORK / "dart" / lang
-        shutil.rmtree(work, ignore_errors=True)
-        files = {name: fill(src if isinstance(src, str) else src[lang], words)
-                 for name, src in {**FILES, **PROJECTS, **ANSWERS}.items()}
-        write(work, files)
-        # Every example is formatted the standard way, as the chapter asks the reader to do.
-        out_fmt, code = sh("dart format .", work)
-        if code:
-            raise RuntimeError(out_fmt)
-        files = {name: (work / name).read_text() for name in files}
-        write(out, files)
-        for name in files:
-            folder = work / Path(name).parent
-            s = Session(folder)
-            s.run(f"dart run {Path(name).name}", check=False)
-            if name not in ERRORS and any("Error" in l for l in s.lines):
-                raise RuntimeError("\n".join(s.lines))
-            s.save(out / name.replace(".dart", ".sh"))
-        print("wrote", out)
+    dart_examples(HERE, T, {**FILES, **PROJECTS, **ANSWERS}, ERRORS)
 
 
 if __name__ == "__main__":
