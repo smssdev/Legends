@@ -1,0 +1,16 @@
+<ol class="exercises">
+<li><code>10 ~/ 3</code> تساوي <code>3</code> (من النوع <code>int</code>)، و<code>10 % 3</code> تساوي <code>1</code>، و<code>10 / 4</code> تساوي <code>2.5</code> (من النوع <code>double</code>)، و<code>'ab' * 3</code> تكرر النص، و<code>'Dart'.length</code> تعدّ حروفه الأربعة:
+<pre data-code="answers/predict.dart" data-title="answers/predict.dart"></pre>
+<pre data-term="answers/predict.sh"></pre></li>
+<li>أيام الأسبوع: <code>const</code>، لأن 7 معروفة قبل أن يعمل البرنامج. والنتيجة في لعبة جارية: <code>var</code>، لأنها تتغير. ووقت فتح التطبيق: <code>final</code>، لأنه يُضبط مرة لكنه لا يُعرف إلا حين يعمل التطبيق. والاسم الذي كتبه المستخدم: <code>final</code>، للسبب نفسه (وإن استطاع المستخدم تعديله لاحقاً فالاسم الجديد قيمة جديدة).</li>
+<li>يصير السعر تعبيرَ switch واحداً؛ و<code>&lt; 13 || &gt;= 65</code> تجمع نمطي علاقة:
+<pre data-code="answers/ticket_switch.dart" data-title="answers/ticket_switch.dart"></pre>
+<pre data-term="answers/ticket_switch.sh"></pre></li>
+<li>الصفر والواحد والاثنان حالات خاصة، وبعدها يقرر باقي القسمة على 100 الصيغة: من 3 إلى 10 جمع («أكواب»)، ومن 11 إلى 99 تمييز منصوب («كوباً»)، وما عدا ذلك، كالمئة، مفرد («كوب»). و<code>_ when ...</code> نمط بدل بشرط، يطابق حين يكون الشرط بعد <code>when</code> صحيحاً:
+<pre data-code="answers/plural.dart" data-title="answers/plural.dart"></pre>
+<pre data-term="answers/plural.sh"></pre>
+وهذه القواعد نفسها هي ما تتبعه أدوات الترجمة في Flutter، كما سترى في الفصل 13.</li>
+<li>الحلقة الداخلية تبني صفاً واحداً في <code>StringBuffer</code>، الذي يجمع قطع النص بكفاءة؛ و<code>padLeft(4)</code> يعطي كل رقم العرض نفسه، فتصطف الأعمدة:
+<pre data-code="answers/table.dart" data-title="answers/table.dart"></pre>
+<pre data-term="answers/table.sh"></pre></li>
+</ol>

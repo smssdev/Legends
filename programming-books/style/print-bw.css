@@ -56,3 +56,6 @@ figure.browser { border-color: #bbb; }
 .project { background: #fff; border-color: #111; }
 .project-label, .project-label.medium, .project-label.hard { background: #111; }
 .project .steps > li::before { background: #111; }
+.output pre .k { color: #000; }
+.output pre .c { color: #555; }
+.phone { border-color: #222; box-shadow: none; }

@@ -1,0 +1,16 @@
+hello_bit/
+  .gitignore
+  .metadata
+  README.md
+  analysis_options.yaml
+  android/
+  hello_bit.iml
+  ios/
+  lib/
+  linux/
+  macos/
+  pubspec.lock
+  pubspec.yaml
+  test/
+  web/
+  windows/

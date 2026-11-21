@@ -1,0 +1,362 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/setup/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Setting Up Flutter</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what Flutter is, and how one codebase becomes an Android app and an iPhone app</li>
+<li>install Flutter and the tools around it, and read what <code>flutter doctor</code> tells you</li>
+<li>create a project and know what each of its folders is for</li>
+<li>run an app, and change it while it runs with hot reload</li>
+<li>check your work the way professionals do: tests, the analyzer and the formatter</li>
+</ul>
+</div>
+
+<p class="lead">By the end of this chapter you will have a real app running on a phone, or on an emulator that behaves like one, and you will have changed it while it was running and watched the change appear in a fraction of a second. Most of the chapter is setting up: it is the least exciting part of the book, and the most important. A good setup, checked once, saves you hours of confusing errors later.</p>
+
+<aside class="bit" data-mood="happy"><p>Hello again! In the earlier books I lived in a browser. Now I want to live in your pocket. Install the tools with me, one step at a time, and by the end of the chapter I will be waving at you from a phone screen.</p></aside>
+
+<h2>{{n}}.1 What Flutter is</h2>
+
+<p><dfn>Flutter</dfn> is a free toolkit, made by Google, for building apps. You write your app once, in a language called <dfn>Dart</dfn>, and Flutter turns it into an Android app, an iPhone app, a website, or a desktop program for Windows, macOS and Linux. Each of these is called a <dfn>platform</dfn>. This book focuses on the two that matter most for most people: Android and iOS, the system of the iPhone.</p>
+
+<p>Before toolkits like Flutter, a company that wanted an app on both kinds of phone usually built it twice: once in Kotlin or Java for Android, and once in Swift for iOS, often by two different teams. Every feature was written twice, tested twice, and had its bugs fixed twice. Flutter lets one developer, or one team, write it once.</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="Your Dart code runs on the Flutter framework, which runs on the Flutter engine, which runs on Android, iOS, the web and desktop">
+<g font-family="Inter" font-size="14" text-anchor="middle">
+<rect x="60" y="12" width="400" height="40" rx="10" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/>
+<text x="260" y="37" fill="#312e81" font-weight="700">Your app, written in Dart</text>
+<rect x="60" y="62" width="400" height="40" rx="10" fill="#fff" stroke="#4338ca" stroke-width="2"/>
+<text x="260" y="87" fill="#111">Flutter framework: widgets, layout, animation</text>
+<rect x="60" y="112" width="400" height="40" rx="10" fill="#fff" stroke="#4338ca" stroke-width="2"/>
+<text x="260" y="137" fill="#111">Flutter engine: draws every pixel itself</text>
+<g fill="#f7f8fc" stroke="#0f766e" stroke-width="2">
+<rect x="60" y="172" width="91" height="40" rx="8"/><rect x="163" y="172" width="91" height="40" rx="8"/>
+<rect x="266" y="172" width="91" height="40" rx="8"/><rect x="369" y="172" width="91" height="40" rx="8"/>
+</g>
+<g fill="#0f766e" font-weight="700"><text x="105" y="197">Android</text><text x="208" y="197">iOS</text><text x="311" y="197">Web</text><text x="414" y="197">Desktop</text></g>
+</g>
+</svg>
+<figcaption>Figure {{n}}.1: One codebase, four kinds of platform. Your code sits on top; Flutter does the rest.</figcaption>
+</figure>
+
+<p>Flutter has one unusual idea that explains much of what you will see in this book: it <strong>draws every pixel of the app itself</strong>. Many other toolkits ask the phone to draw its own buttons and text boxes, so the app looks slightly different on each phone. Flutter brings its own drawing engine instead, the same one on every platform, so a button looks and behaves exactly as you designed it, everywhere. That is also why a screenshot of a Flutter app running in a browser looks exactly like the same app on a phone.</p>
+
+<p>The language, Dart, was also made by Google. It looks familiar if you know JavaScript, but it checks your types before the program runs, as you will see in Chapter {{n+1}}. You do not install Dart separately: it comes inside Flutter.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>Dart was announced in 2011 as a language for the web. Flutter 1.0 came out in December 2018, with Dart as its only language, and gave Dart a second life: today most Dart code in the world is Flutter apps, running on phones.</p></aside>
+
+<h2>{{n}}.2 What you need</h2>
+
+<p>Building mobile apps needs more tools than building web pages, because each phone system comes with its own tools from its own company. Here is the whole list. You do not need all of it today; the next sections install it in order.</p>
+
+<table>
+<thead><tr><th>Tool</th><th>What it is for</th><th>Needed on</th></tr></thead>
+<tbody>
+<tr><td>Flutter SDK</td><td>Flutter itself, with Dart inside it</td><td>Every computer</td></tr>
+<tr><td>Git</td><td>Flutter uses it to update itself, and you use it for your code (Book 1)</td><td>Every computer</td></tr>
+<tr><td>Visual Studio Code</td><td>The editor, with the Flutter extension</td><td>Every computer</td></tr>
+<tr><td>Android Studio</td><td>The Android SDK (Google’s tools for Android) and the Android emulator</td><td>Every computer</td></tr>
+<tr><td>Xcode</td><td>Apple’s tools for iOS, and the iPhone simulator</td><td>Only a Mac</td></tr>
+</tbody>
+</table>
+
+<p>An <dfn>SDK</dfn>, a <em>software development kit</em>, is a folder of tools for building software for one system. An <dfn>emulator</dfn> is a program that pretends to be a phone, on your computer screen, so you can run your app without a real phone. Apple calls its version a <em>simulator</em>.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Apps for the iPhone can only be built on a Mac, because Xcode only runs on macOS. If you use Windows or Linux, you can still learn everything in this book with Android, and your Dart code will run on an iPhone unchanged later. Chapter 15 explains how teams without a Mac publish to the App Store.</p></aside>
+
+<h2>{{n}}.3 Installing the Flutter SDK</h2>
+
+<p>Installing Flutter means three things: downloading it, putting it in a folder, and telling your terminal where to find it.</p>
+
+<ol>
+<li>Open <code>docs.flutter.dev</code>, choose <em>Get started</em>, then your system (Windows, macOS or Linux). Follow the instructions for <em>Android</em> as your first target. Install Git first if the page asks for it.</li>
+<li>Download the Flutter SDK, a large zip file, and unzip it into a folder whose path has <strong>no spaces</strong> and does not need administrator rights. Good choices are <code>C:\dev\flutter</code> on Windows and <code>~/development/flutter</code> on macOS and Linux.</li>
+<li>Add the <code>bin</code> folder inside it (for example <code>C:\dev\flutter\bin</code>) to your <dfn>PATH</dfn>, the list of folders where the terminal looks for commands. The page shows how for your system.</li>
+<li>Close every terminal and open a new one. Then ask Flutter who it is:</li>
+</ol>
+
+<pre data-term="version.sh"></pre>
+
+<p>Four lines, and each one means something. The first is the version of Flutter, <code>3.50.1</code>, from the <code>stable</code> <dfn>channel</dfn>: the releases that are tested and safe for real apps. The next two say exactly which code of the framework and the engine you have, with the dates they were made. The last line is the most interesting for the next chapter: Flutter 3.50.1 brings <strong>Dart 3.14.0</strong> with it, and DevTools, a set of tools for looking inside a running app that you will meet later.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>If the terminal answers <code>flutter: command not found</code> (or, on Windows, “not recognized as an internal or external command”), the PATH is wrong, or the terminal was opened before you changed it. Open a new terminal first; that fixes it most of the time. If not, check the path letter by letter: it must end in <code>flutter\bin</code> or <code>flutter/bin</code>.</p></aside>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Install Visual Studio Code now if you do not have it, then the <strong>Flutter</strong> extension from its Extensions view (it installs the Dart extension with it). The extension can also download the Flutter SDK for you, when you create your first project from the Command Palette. Either way ends in the same place.</p></aside>
+
+<h2>{{n}}.4 Asking the doctor</h2>
+
+<p>Flutter needs the other tools in the table, and it can check them for you. The command <code>flutter doctor</code> examines your computer and writes a report, one line per tool. Here is the real report from the computer this book was built on, a Linux machine with no Android tools installed yet:</p>
+
+<pre data-term="doctor.sh"></pre>
+
+<p>Read the report like a checklist. A <code>[✓]</code> means ready. A <code>[✗]</code> means missing, and a <code>!</code> is a warning: something works only partly. Under every problem, the doctor tells you what to do, often with the exact command or link. This machine has two problems:</p>
+<ul>
+<li><strong>Android toolchain:</strong> no Android SDK was found. This one matters: without it, there is no Android app. The doctor says how to fix it: install Android Studio.</li>
+<li><strong>Linux toolchain:</strong> some libraries for building Linux desktop programs are missing. This book does not build desktop programs, so this line can be ignored.</li>
+</ul>
+<p>Your report will look a little different: on Windows you will see a line for Visual Studio (for Windows desktop programs, which you can also ignore), and on a Mac a line for Xcode.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Fix the doctor’s report one line at a time, from the top, and run <code>flutter doctor</code> again after each fix. Fix only the platforms you build for: a red line for Linux desktop on a phone developer’s laptop is not a problem. When something strange happens months later, run the doctor first; it is the fastest way to find out what changed.</p></aside>
+
+<h3>Installing the Android tools</h3>
+<ol>
+<li>Download Android Studio from <code>developer.android.com/studio</code> and install it. Open it once, and let its setup wizard install the Android SDK.</li>
+<li>In Android Studio, open the <strong>SDK Manager</strong>, and on the <em>SDK Tools</em> tab tick <strong>Android SDK Command-line Tools</strong>, then apply.</li>
+<li>Accept Google’s licences for the SDK, from the terminal: <code>flutter doctor --android-licenses</code>. Read each licence and answer <code>y</code>.</li>
+<li>Create an emulator: in Android Studio, open the <strong>Device Manager</strong>, add a virtual device, choose a recent phone (a Pixel is a good choice) and a recent system image, and finish.</li>
+<li>Run <code>flutter doctor</code> again. The Android line should now show <code>[✓]</code>.</li>
+</ol>
+
+<h3>On a Mac: the iOS tools</h3>
+<p>Install Xcode from the Mac App Store; it is large, so give it time. Open it once to finish its setup, then run <code>flutter doctor</code> and do exactly what the Xcode section of the report says, one line at a time. The report names the commands for your version of Xcode, which is safer than any list printed in a book.</p>
+
+<aside class="bit" data-mood="think"><p>Installing tools is the part of programming where everyone gets stuck at least once. When you do, copy the exact error message into a search engine. Somebody had the same problem last week, and somebody else answered them.</p></aside>
+
+<h2>{{n}}.5 Your first project</h2>
+
+<p>One command creates a complete app, ready to run. Open a terminal in the folder where you keep your projects:</p>
+
+<pre data-term="create.sh"></pre>
+
+<p>Flutter wrote 131 files, then downloaded the packages the app needs (“Got dependencies”). The project’s name, <code>hello_bit</code>, follows Dart’s rule for names of projects and files: only lower-case letters, digits and underscores. A name like <code>HelloBit</code> or <code>hello-bit</code> is refused.</p>
+
+<p>Open the folder in VS Code (<em>File, Open Folder</em>). This is what is inside:</p>
+
+<pre data-code="tree.txt" data-title="hello_bit"></pre>
+
+<table>
+<thead><tr><th>Name</th><th>What it is</th><th>How often you touch it</th></tr></thead>
+<tbody>
+<tr><td><code>lib/</code></td><td>Your Dart code. The app starts in <code>lib/main.dart</code></td><td>All the time</td></tr>
+<tr><td><code>test/</code></td><td>Tests for your code</td><td>All the time</td></tr>
+<tr><td><code>pubspec.yaml</code></td><td>The project’s name, version, and the packages it uses</td><td>Often</td></tr>
+<tr><td><code>android/</code>, <code>ios/</code></td><td>Small native projects that wrap your app for each phone system: its icon, its permissions, its name in the store</td><td>Sometimes</td></tr>
+<tr><td><code>web/</code>, <code>linux/</code>, <code>macos/</code>, <code>windows/</code></td><td>The same, for the web and for desktops</td><td>Rarely</td></tr>
+<tr><td><code>analysis_options.yaml</code></td><td>The rules the analyzer checks your code against</td><td>Rarely</td></tr>
+<tr><td><code>pubspec.lock</code></td><td>The exact versions of every package that was downloaded. Flutter writes it; you commit it</td><td>Never by hand</td></tr>
+<tr><td><code>README.md</code>, <code>.gitignore</code>, <code>.metadata</code>, <code>hello_bit.iml</code></td><td>A description, the files Git should ignore, and notes for Flutter and for editors</td><td>Rarely</td></tr>
+</tbody>
+</table>
+
+<p>Open <code>pubspec.yaml</code>. Among many helpful comments, the part that matters today is the list of <dfn>dependencies</dfn>, the packages your app uses:</p>
+
+<pre data-code="hello_bit/pubspec.yaml" data-from="^dependencies:" data-to="cupertino_icons" data-title="pubspec.yaml"></pre>
+
+<p>A <dfn>package</dfn> is a library of code that someone published for others to use, on the website <code>pub.dev</code>. Your app uses three. <code>flutter</code> is Flutter itself. <code>material_ui</code> holds the <dfn>Material</dfn> widgets: buttons, bars, cards and text fields in the style of Google’s Material Design, which this book uses everywhere. <code>cupertino_icons</code> holds icons in Apple’s style. The <code>^1.1.0</code> means “version 1.1.0 or any later version that promises to stay compatible with it”.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>In earlier versions of Flutter the Material widgets were part of Flutter itself, and every app started with <code>import 'package:flutter/material.dart';</code>. Flutter 3.47 moved them into their own package, <code>material_ui</code>, so that they can improve on their own schedule. You will still find the old line in most tutorials on the internet; Section {{n}}.9 shows what Flutter says about it.</p></aside>
+
+<h2>{{n}}.6 Reading main.dart</h2>
+
+<p>The new project is a small counter app: a number in the middle of the screen, and a button that adds one to it. Its code, in <code>lib/main.dart</code>, is about 120 lines long, most of them comments that explain the code. Here is how it starts:</p>
+
+<pre data-code="template/main.dart" data-from="^import" data-to="^}#2" data-title="lib/main.dart (from the template)"></pre>
+
+<p>Do not try to understand every word yet: the next chapters explain them all. For now, look at the shape. The first line <dfn>imports</dfn> the Material widgets, so this file can use them. Then comes <code>main</code>, the function where every Dart program starts. It calls <code>runApp</code>, which takes a <dfn>widget</dfn> and shows it on the screen. A widget is a description of a piece of the screen: a text, a button, a whole page. In Flutter, everything you see is a widget, and widgets are built from smaller widgets, like boxes inside boxes. Chapter 5 is all about them.</p>
+
+<p>The counter is a fine example, but it is too much to read on your first day. Replace the whole content of <code>lib/main.dart</code> with this much smaller app:</p>
+
+<pre data-code="hello_bit/lib/main_v1.dart" data-title="lib/main.dart"></pre>
+
+<p>Read it from the outside in, the way Flutter builds it:</p>
+<ul>
+<li><code>main</code> calls <code>runApp</code> with our app, <code>HelloBitApp</code>.</li>
+<li><code>HelloBitApp</code> is a <code>StatelessWidget</code>: a widget that never changes once it is shown. Its <code>build</code> method returns what it looks like.</li>
+<li><code>MaterialApp</code> is the frame of an app in Material style. Its <code>home</code> is the first screen.</li>
+<li><code>Scaffold</code> is the skeleton of one screen: here, a bar at the top (<code>appBar</code>) and the rest of the screen (<code>body</code>).</li>
+<li><code>AppBar</code> shows a title, centred, on an indigo bar with white text.</li>
+<li><code>Center</code> puts its one <code>child</code> in the middle of the space it has, and <code>Text</code> shows the greeting at 32 logical pixels.</li>
+</ul>
+
+<p>Notice how the code is shaped like the screen: the bar and the body are inside the scaffold, which is inside the app. Notice also the commas at the end of almost every line. Dart allows a comma after the last item, and Flutter developers always put one there: the formatter then puts each item on its own line, and the code keeps the shape of the screen.</p>
+
+<h2>{{n}}.7 Running the app</h2>
+
+<p>An app needs somewhere to run. Start your emulator from Android Studio’s Device Manager (or plug in an Android phone with <em>USB debugging</em> turned on in its developer options), then ask Flutter which devices it can see:</p>
+
+<pre data-term="devices.sh"></pre>
+
+<p>The book’s machine, a computer without a screen in a data centre, sees only itself and a browser. Your list will show your emulator, with a name such as <code>sdk gphone64 x86 64</code>, or your phone. Now run the app, from the project folder:</p>
+
+<pre data-term="run.sh"></pre>
+
+<p>On your machine the first line names your emulator, and the first build of an Android app takes a minute or two, because Flutter builds the whole Android project behind the scenes. The book’s machine ran the app in a browser, on a small web server, and the next line warns about debugging in that setup, which does not concern you. When the browser opened the app, Flutter printed the addresses of its debug service and of DevTools, the tools for looking inside a running app. Then <code>flutter run</code> stays open and waits for keys: you will use them in a moment. In VS Code you can also press <strong>F5</strong>, which runs the app in the same way, with buttons instead of keys.</p>
+
+<figure data-img="shots/first-run.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: Hello Bit, running. The ribbon in the corner says this is a debug build.</figcaption>
+</figure>
+
+<p>Your first app! The red <strong>DEBUG</strong> ribbon in the corner reminds you that this is a <dfn>debug build</dfn>, built for developing: it is slower, and full of help for finding mistakes. The version you publish is a <dfn>release build</dfn>, fast and without the ribbon. Chapter 15 builds one.</p>
+
+<h2>{{n}}.8 Hot reload</h2>
+
+<p>This is the moment Flutter developers fall in love with it. Leave the app running. In <code>lib/main.dart</code>, change <code>Colors.indigo</code> to <code>Colors.teal</code>, and the greeting to <code>'Hello, hot reload!'</code>. Save the file, and press <strong>r</strong> in the terminal where <code>flutter run</code> is waiting (in VS Code, saving is enough: it reloads for you).</p>
+
+<div class="phones">
+<figure data-img="shots/first-run.png" data-frame="phone">
+<figcaption>Before</figcaption>
+</figure>
+<figure data-img="shots/hot-reload.png" data-frame="phone">
+<figcaption>After pressing r</figcaption>
+</figure>
+</div>
+
+<p>The terminal shows what happened:</p>
+
+<pre data-term="reload.sh"></pre>
+
+<p><dfn>Hot reload</dfn> sent only the changed code into the running app and rebuilt the screen in a fraction of a second (the terminal gives the exact time), without starting the app again. On a phone it is just as fast. You will change a colour, a size or a word, see it, and change it again, dozens of times a minute. This is how Flutter developers design screens: not by imagining, but by trying.</p>
+
+<p>The other keys are worth knowing:</p>
+<table>
+<thead><tr><th>Key</th><th>What it does</th><th>When to use it</th></tr></thead>
+<tbody>
+<tr><td><strong>r</strong></td><td>Hot reload: new code, same running app, values kept</td><td>Almost always</td></tr>
+<tr><td><strong>R</strong></td><td>Hot restart: the app starts again from <code>main</code>, values lost</td><td>When a change does not appear after <strong>r</strong>, such as a change inside <code>main</code></td></tr>
+<tr><td><strong>q</strong></td><td>Quit: stops the app</td><td>When you are done</td></tr>
+</tbody>
+</table>
+
+<aside class="box try"><p class="box-title">Try it</p><p>With the app running, change the font size from 32 to 48 and reload. Then try <code>Colors.deepOrange</code>, then <code>Colors.black</code> for the bar. Count how many seconds each change takes, from typing to seeing.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which command tells you what is missing on your computer?</li><li>In which folder do you write your Dart code, and in which file does the app start?</li><li>What is the difference between pressing <strong>r</strong> and <strong>R</strong>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.9 Checking your work like a professional</h2>
+
+<p>The project came with a test, in <code>test/widget_test.dart</code>. A <dfn>test</dfn> is code that runs your app’s code and checks that it does what it should, so that you do not have to check by hand after every change. Run the tests:</p>
+
+<pre data-term="test-fails.sh" class="error"></pre>
+
+<p>A failure, and a useful one. The test was written for the counter app: it tries to show <code>MyApp</code> and press its button, and we replaced <code>MyApp</code> with <code>HelloBitApp</code>. Read the message from the top: the file, the line (16), the column (35), and the reason, “Couldn’t find constructor 'MyApp'”. Every error message in Dart and Flutter has this shape, and reading it slowly is a skill you will use every day.</p>
+
+<p>Replace the test with one that checks our app:</p>
+
+<pre data-code="hello_bit/test/widget_test.dart" data-title="test/widget_test.dart"></pre>
+
+<p><code>testWidgets</code> describes a test with a name. Inside, <code>pumpWidget</code> shows our app in a pretend screen, without any emulator, and <code>expect</code> checks that exactly one widget shows the greeting. Run the tests again:</p>
+
+<pre data-term="test-passes.sh"></pre>
+
+<p>Two more tools belong in your routine. The <dfn>analyzer</dfn> reads your code without running it and points out mistakes, risky code and outdated code. The <dfn>formatter</dfn> rewrites your code in the one standard style that all Dart developers use, so that nobody argues about spaces.</p>
+
+<pre data-term="analyze.sh"></pre>
+
+<p>“No issues found!”, and the formatter found nothing to change. Now see what the analyzer says about the same app with the old import line from Section {{n}}.5:</p>
+
+<pre data-term="old-import.sh" class="error"></pre>
+
+<p>An <code>info</code> is the mildest kind of message: the app still works. But the analyzer explains exactly what is outdated, since which version, and what to use instead. When you copy code from an older tutorial, run the analyzer and follow its advice.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Before you call any change finished, run three commands: <code>dart format .</code>, <code>flutter analyze</code> and <code>flutter test</code>. Professional teams run the same three automatically on every change, and refuse changes that fail them. Make it a habit from your first app, and commit your project to Git as you did in Book 1: <code>flutter create</code> already wrote a <code>.gitignore</code> for you.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Flutter in a folder with spaces, or in <code>Program Files</code></td><td>Strange errors when building, or no permission to update</td><td>Move it to a simple path such as <code>C:\dev\flutter</code></td></tr>
+<tr><td>Changing PATH and using the old terminal</td><td><code>flutter: command not found</code></td><td>Open a new terminal</td></tr>
+<tr><td>Licences not accepted</td><td>The doctor complains, and Android builds fail</td><td><code>flutter doctor --android-licenses</code></td></tr>
+<tr><td>A project name with capitals or hyphens</td><td><code>flutter create</code> refuses it</td><td>Use <code>snake_case</code>: <code>hello_bit</code></td></tr>
+<tr><td>A change does not appear after <strong>r</strong></td><td>The screen stays the same</td><td>Check that the file is saved; press <strong>R</strong> for a hot restart</td></tr>
+<tr><td>Old tutorials’ <code>package:flutter/material.dart</code></td><td>The analyzer reports it as deprecated</td><td>Import <code>package:material_ui/material_ui.dart</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Flutter</strong> builds apps for Android, iOS, the web and desktops from one codebase written in <strong>Dart</strong>, and draws every pixel itself.</li>
+<li>Install the <strong>Flutter SDK</strong> in a simple folder and add its <code>bin</code> to your <strong>PATH</strong>; Android Studio gives you the Android SDK and the emulator, and Xcode (only on a Mac) the iOS tools.</li>
+<li><code>flutter doctor</code> checks everything and says how to fix what is missing. Fix only the platforms you build for.</li>
+<li><code>flutter create name</code> makes a project. Your code lives in <code>lib/</code>, starting in <code>lib/main.dart</code>; packages are listed in <code>pubspec.yaml</code>, and the Material widgets come from <code>material_ui</code>.</li>
+<li>Everything on the screen is a <strong>widget</strong>, and the code has the shape of the screen.</li>
+<li><code>flutter run</code> starts the app; <strong>r</strong> is hot reload, <strong>R</strong> hot restart, <strong>q</strong> quit.</li>
+<li>Before calling a change done: <code>dart format .</code>, <code>flutter analyze</code>, <code>flutter test</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>flutter doctor</code>. 2. In <code>lib/</code>; the app starts in <code>lib/main.dart</code>, in the function <code>main</code>. 3. <strong>r</strong> (hot reload) puts the new code into the running app and keeps its values; <strong>R</strong> (hot restart) starts the app again from <code>main</code>, so the values start again too.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project starts with <code>flutter create</code>, as in this chapter. Keep <code>flutter run</code> open while you work, and reload after every small change.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Your name card</h3>
+<p class="project-goal">Make an app that shows a card about you: an icon, your name, your job, and your city.</p>
+<p class="project-skills"><strong>You will practise:</strong> creating a project, changing <code>main.dart</code>, colours and text sizes, and hot reload.</p>
+<ol class="steps">
+<li>Create a project called <code>name_card</code>, and replace <code>lib/main.dart</code> with the Hello Bit app.</li>
+<li>Change the bar’s title and its colour to <code>Colors.deepOrange</code>. Type <code>Colors.</code> in VS Code and look at the list it offers: every colour of the Material palette has a name.</li>
+<li>To show several lines, the body’s <code>Center</code> needs a <code>Column</code> as its child, with a list of <code>children</code>. Chapter 6 explains <code>Column</code>; for now, copy its shape from this part of the solution:
+<pre data-code="projects/name_card/lib/main.dart" data-from="body:" data-to="^        )," data-title="lib/main.dart (part)"></pre></li>
+<li>Add an <code>Icon(Icons.person, size: 96, color: Colors.deepOrange)</code> above your name, and a <code>SizedBox(height: 8)</code> between two lines when they feel too close.</li>
+<li>Delete <code>test/widget_test.dart</code> (or write a test that finds your name), then run <code>flutter analyze</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>debugShowCheckedModeBanner: false</code> on the <code>MaterialApp</code> hides the DEBUG ribbon, which is nice for screenshots. The ribbon never appears in release builds anyway.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/name-card.png" data-frame="phone">
+<figcaption>Project {{n}}.1: a name card in deep orange.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Counting in twos</h3>
+<p class="project-goal">Keep the counter app that <code>flutter create</code> makes, but make it start at 10 and count in twos, and update its test so that it passes.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading code you did not write, small precise changes, and fixing a test.</p>
+<ol class="steps">
+<li>Create a project called <code>counter_by_two</code>, run it, and press the button a few times. Then read <code>lib/main.dart</code> with its comments.</li>
+<li>Find the line that gives the counter its first value, and the line that adds one to it. Each needs one small change.</li>
+<li>Press <strong>r</strong>. Does the counter start at 10? Now press <strong>R</strong>. Explain the difference.</li>
+<li>Run <code>flutter test</code>. It fails: the test still expects 0, then 1. Change the test to expect 10, then 12, and give it a better name.</li>
+<li>Run the test again until it passes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look for <code>_counter</code>. In Dart, <code>_counter += 2</code> is a short way to write <code>_counter = _counter + 2</code>, exactly as in JavaScript.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/counter-by-two.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A reset button</h3>
+<p class="project-goal">Add a button to the counter app’s bar that puts the counter back to zero, and a test that proves it works.</p>
+<p class="project-skills"><strong>You will practise:</strong> adding a widget inside an existing one, reading Flutter’s documentation, and writing a test that taps.</p>
+<ol class="steps">
+<li>Create a project called <code>counter_reset</code>. In <code>lib/main.dart</code>, find the <code>AppBar</code>.</li>
+<li><code>AppBar</code> has a parameter called <code>actions</code>: a list of widgets shown at the end of the bar. Look it up on <code>api.flutter.dev</code>, then add an <code>IconButton</code> with <code>Icons.refresh</code> to it.</li>
+<li>When the button is pressed, set the counter to zero. Copy the pattern from <code>_incrementCounter</code>: the change happens inside <code>setState(() { ... })</code>, which tells Flutter to draw the screen again. Chapter 10 explains why.</li>
+<li>Give the button a <code>tooltip</code>, a short label for people who use screen readers.</li>
+<li>Write a test that taps <code>+</code> twice, checks that the screen shows 2, taps the refresh icon, and checks that it shows 0. <code>find.byIcon(Icons.refresh)</code> finds the button.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> after every <code>tester.tap</code> in a test, call <code>await tester.pump()</code> before checking: it lets Flutter draw the new screen, as it would between two frames on a phone.</p>
+<p><strong>Your result should look like this</strong> (after three taps on <code>+</code>):</p>
+<figure data-img="shots/counter-reset.png" data-frame="phone">
+<figcaption>Project {{n}}.3: the counter with a reset button in its bar.</figcaption>
+</figure>
+<pre data-term="projects/counter-reset.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Run <code>flutter doctor -v</code> (the <code>-v</code> means <em>verbose</em>). What extra information does it give for each line? Write down where your Flutter SDK and your Android SDK are installed.</li>
+<li><span class="level">Easy</span> In Hello Bit, change the greeting to your own name and the bar to your favourite colour, using hot reload. Then put the bar’s title on the left by removing one line. Which line?</li>
+<li><span class="level">Medium</span> Find, in <code>hello_bit</code>, the file where Android gets the app’s name that appears under its icon, and the file where iOS gets it. (Hint: look in <code>android/app/src/main</code> and <code>ios/Runner</code>.)</li>
+<li><span class="level">Medium</span> Change the test of Hello Bit so that it fails on purpose, for example by expecting a different greeting. Run it, and explain each line of the failure message.</li>
+<li><span class="level">Challenge</span> Write down, as a numbered checklist, everything you did to go from an empty computer to a running app, with the time each step took. Ask a friend to follow it on their computer, and fix every step where they got stuck. This is how teams write their setup documents.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You ran a Flutter app; now it is time to learn the language it is written in. The next chapter teaches Dart from its first line: variables and their types, numbers and text, decisions, loops and functions, and it ends with a receipt printer for Bit’s café.</p>
+</div>
+</section>

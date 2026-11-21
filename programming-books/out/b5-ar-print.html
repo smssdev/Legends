@@ -1,0 +1,1609 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>Flutter من الصفر</title><link rel="stylesheet" href="../style/book.css"><link rel="stylesheet" href="../style/print-bw.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.875in 0.8in 0.625in;
+  @top-center { content: "Flutter من الصفر"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #555; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #111;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.875in; margin-right: 0.625in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: تجهيز Flutter"; } }
+@page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "الفصل 2: أساسيات Dart"; } }
+@page ch02:first { @top-center { content: none; } }
+@page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
+</style></head>
+<body><section class="front half-title"><p class="ht">Flutter من الصفر</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الخامس</p>
+          <h1 class="tp-title">Flutter من الصفر</h1>
+          <p class="tp-sub">لغة Dart وأول تطبيقاتك لأندرويد وiOS</p>
+          <p class="tp-level">مبتدئ ← مبرمج مبتدئ محترف</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>Flutter من الصفر</strong><br>لغة Dart وأول تطبيقاتك لأندرويد وiOS</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>Flutter وDart وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تجهيز Flutter</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">أساسيات Dart</span><span class="toc-p">39</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الأصناف والأمان من القيم الفارغة والمجموعات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Dart غير المتزامنة: Future وStream</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: بناء الشاشات</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">كل شيء Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تخطيطات تناسب كل شاشة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">القوائم والصور والسمات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التنقل بين الشاشات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">النماذج والإدخال</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: تطبيقات حقيقية</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الحالة بـ setState وProvider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الاتصال بواجهة برمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">حفظ البيانات على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">العربية والإنجليزية والاتجاه من اليمين</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">مشروع: تطبيق ملاحظات كامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">النشر على Google Play وApp Store</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">66</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">يأخذك هذا الكتاب من أول سطر تكتبه بلغة Dart إلى أول تطبيق لك على Google Play وApp Store. وهو مكتوب لمن يعرف أساسيات البرمجة: القيم والمتغيرات، والقرارات، والحلقات، والدوال. إن قرأت الجزأين الأول والثالث من <em>البرمجة من الصفر</em>، الكتاب الأول في هذه السلسلة، فأنت جاهز. وإن تعلمت في مكان آخر وبأي لغة، فأنت جاهز أيضاً: يشرح الكتاب كل جديد في Dart وFlutter من البداية، وينبّهك إلى ما يختلفان فيه عن JavaScript.</p>
+
+<h2 class="plain-h">ما تحتاجه</h2>
+<ul>
+<li>حاسوب بنظام Windows أو macOS أو Linux، بذاكرة 8 جيجابايت على الأقل: فمحاكي أندرويد يحتاج مساحة. ولبناء تطبيقات iPhone تحتاج إلى جهاز Mac، لأن أدوات Apple لا تعمل إلا عليه؛ وكل ما عدا ذلك في الكتاب يعمل على الأنظمة الثلاثة.</li>
+<li>جوال أندرويد أو iPhone مرحَّب به لكنه ليس شرطاً: فالمحاكي على حاسوبك يؤدي المهمة نفسها.</li>
+<li>أدوات مجانية ستثبّتها في الفصل 1: Flutter (وبداخله Dart)، وVisual Studio Code، وAndroid Studio.</li>
+</ul>
+
+<h2 class="plain-h">كيف نُظّم الكتاب</h2>
+<p>فصول الكتاب خمسة عشر، في ثلاثة أجزاء. اقرأها بالترتيب: كل فصل يبني على ما قبله.</p>
+<ul>
+<li><strong>Dart</strong> يثبّت Flutter ويعلّمك اللغة التي يُكتب بها كل تطبيق Flutter: أساسياتها، والأصناف والأمان من القيم الفارغة، والمجموعات، والكود الذي ينتظر الأشياء بـ Future وStream.</li>
+<li><strong>بناء الشاشات</strong> عن كل ما يراه المستخدم: الـ Widgets، والتخطيطات التي تناسب كل شاشة، والقوائم والصور والسمات، والتنقل بين الشاشات، والنماذج.</li>
+<li><strong>تطبيقات حقيقية</strong> يضيف ما تحتاجه التطبيقات الحقيقية: الحالة التي تتغير، والبيانات من الإنترنت، والبيانات المحفوظة على الجوال، والعربية والإنجليزية مع الاتجاه من اليمين، وتطبيق ملاحظات كامل يجمع كل ذلك، والنشر على المتجرين.</li>
+</ul>
+
+<h2 class="plain-h">في كل فصل</h2>
+<p>يسير كل فصل على النمط نفسه، فتعرف دائماً أين أنت: ما ستتعلمه؛ وشرح مبني على أمثلة حقيقية تعمل؛ وأسئلة «اختبر نفسك» في المنتصف؛ وصناديق فيها نصائح وفخاخ وعادات المحترفين؛ وجدول بالأخطاء الشائعة؛ وملخص؛ و<strong>ثلاثة مشاريع تطبيقية</strong> (سهل ومتوسط وتحدٍّ) بخطوات وتلميحات؛ وتمارين بثلاثة مستويات. إجابات «اختبر نفسك» بعد كل ملخص، وإجابات التمارين في آخر الكتاب.</p>
+<p>المشاريع أهم ما في الكتاب. أن تقرأ عن مهارة لا يعني أنك تملكها. ابنِ مشروعاً واحداً على الأقل من كل فصل قبل أن تنتقل إلى ما بعده.</p>
+
+<h2 class="plain-h">كود حقيقي ومخرجات حقيقية</h2>
+<p>كل مثال في هذا الكتاب ملف حقيقي، وكل جلسة طرفية سُجّلت أثناء إعداد الكتاب، وكل صورة شاشة هي التطبيق نفسه. حين يعرض الفصل 1 اختباراً يفشل ثم ينجح، فهذا ما كتبه Flutter فعلاً. وسترى النتائج نفسها بالإصدارات نفسها:</p>
+<table>
+<thead><tr><th>الأداة</th><th>الإصدار</th></tr></thead>
+<tbody>
+<tr><td>Flutter</td><td>3.50.1 (المستقر)</td></tr>
+<tr><td>Dart</td><td>3.14.0 (يأتي مع Flutter)</td></tr>
+<tr><td>material_ui</td><td>1.1</td></tr>
+</tbody>
+</table>
+<p>التُقطت صور الشاشات من التطبيق وهو يعمل في متصفح بمقاس شاشة جوال، وهكذا بالضبط يرسمه Flutter على الجوال: فـ Flutter يرسم كل نقطة على الشاشة بنفسه، فيبدو الكود نفسه بالشكل نفسه في كل مكان. والأدوات تتغير بسرعة؛ فإن كتب إصدار أحدث شيئاً مختلفاً قليلاً فاقرأ الفرق: غالباً ما يعلّمك ما الذي تغيّر ولماذا.</p>
+
+<h2 class="plain-h">قراءة الأمثلة</h2>
+<ul>
+<li>اللسان الداكن فوق المثال يذكر اسم الملف ومساره في المشروع. اكتب الكود بنفسك، ثم شغّله.</li>
+<li>الصندوق ذو النقاط الملونة الثلاث يعرض ما ظهر في <strong>الطرفية</strong>. السطر الذي يبدأ بـ <code>$</code> أمر تكتبه أنت (دون <code>$</code>)، والأسطر تحته هي الرد. والسطر الذي يبدأ بـ <code>#</code> يشرح الغرض من الأمر التالي.</li>
+<li>الصورة داخل إطار جوال لقطة من التطبيق.</li>
+<li>الكود يُكتب بالإنجليزية دائماً، أما التعليقات والنصوص التي يراها المستخدم فبالعربية في هذا الإصدار من الكتاب.</li>
+</ul>
+
+<h2 class="plain-h">الصناديق</h2>
+<table>
+<thead><tr><th>الصندوق</th><th>ما فيه</th></tr></thead>
+<tbody>
+<tr><td>نصيحة</td><td>طريق مختصر أو طريقة أذكى لعمل شيء</td></tr>
+<tr><td>انتبه</td><td>فخ شائع، وكيف تتجنبه</td></tr>
+<tr><td>هل تعلم؟</td><td>قصة أو حقيقة من عالم تطبيقات الجوال</td></tr>
+<tr><td>عادة المحترفين</td><td>كيف يعمل المطورون ذوو الخبرة، ولماذا</td></tr>
+<tr><td>جرّب</td><td>تجربة صغيرة تقوم بها الآن، على لوحة المفاتيح</td></tr>
+<tr><td>اختبر نفسك</td><td>ثلاثة أسئلة قصيرة في منتصف الفصل، وإجاباتها بعد الملخص</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">بِت يعود</h2>
+<p>بِت، الروبوت البنفسجي الصغير من الكتب السابقة، يرافقك في هذا الكتاب أيضاً. وهذه المرة يريد أن يسكن جوالك. ستجده في فقاعات الكلام، يشاركك حيلاً تعلّمها بالطريقة الصعبة، ويشجعك قبل المشاريع.</p>
+
+<h2 class="plain-h">مستودع الكود</h2>
+<p>كل مثال وكل مشروع وكل إجابة تمرين موجودة في مستودع الكود الخاص بالكتاب، لتقارن عملك أو تبدأ من نسخة تعمل حين تتعثر. وفي التطبيقات يحفظ المستودع الملفات التي تكتبها أنت (<code>lib/</code> و<code>test/</code> و<code>pubspec.yaml</code>)، أما الباقي فيصنعه <code>flutter create</code>، تماماً كما يعرض الفصل 1. لكن اكتب الأمثلة بنفسك أولاً: أصابعك تتعلم أسرع من عينيك.</p>
+
+<h2 class="plain-h">كلمة من المؤلف</h2>
+<p>الجوال هو الحاسوب الذي يحمله معظم الناس في العالم كل يوم. وأن تبني له، بلغتك، لمن حولك، من أمتع ما يمكن أن يفعله مطوّر. هذا الكتاب موجود بالعربية والإنجليزية، كُتب لكل لغة على حدة لا مترجَماً كلمة بكلمة، وتطبيقاته تتحدث اللغتين. أهلاً بك، واستمتع بالرحلة.</p>
+<p><strong>سليمان ماجد سعيد صلاح</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b5/setup/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>تجهيز Flutter</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تشرح ما هو Flutter، وكيف يصير كود واحد تطبيقاً لأندرويد وتطبيقاً لـ iPhone</li>
+<li>تثبّت Flutter والأدوات المحيطة به، وتقرأ ما يقوله لك <code>flutter doctor</code></li>
+<li>تنشئ مشروعاً وتعرف الغرض من كل مجلد فيه</li>
+<li>تشغّل تطبيقاً، وتغيّره وهو يعمل بالتحديث الفوري</li>
+<li>تفحص عملك كما يفعل المحترفون: الاختبارات والمحلل والمنسّق</li>
+</ul>
+</div>
+
+<p class="lead">في آخر هذا الفصل سيكون لديك تطبيق حقيقي يعمل على جوال، أو على محاكٍ يتصرف مثله، وستكون قد غيّرته وهو يعمل ورأيت التغيير يظهر في جزء من الثانية. معظم الفصل تجهيز: إنه أقل أجزاء الكتاب إثارة، وأهمها. فالتجهيز الجيد، المفحوص مرة واحدة، يوفّر عليك ساعات من الأخطاء المحيّرة لاحقاً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أهلاً من جديد! في الكتب السابقة كنت أعيش في المتصفح، والآن أريد أن أعيش في جيبك. ثبّت الأدوات معي خطوة خطوة، وفي آخر الفصل سألوّح لك من شاشة جوال.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>ما هو Flutter</span></h2>
+
+<p><dfn>Flutter</dfn> مجموعة أدوات مجانية من Google لبناء التطبيقات. تكتب تطبيقك مرة واحدة بلغة اسمها <dfn>Dart</dfn>، فيحوّله Flutter إلى تطبيق أندرويد، وتطبيق iPhone، وموقع ويب، وبرنامج لسطح المكتب على Windows وmacOS وLinux. ويُسمّى كل واحد من هذه <dfn>منصة</dfn>. ويركّز هذا الكتاب على المنصتين الأهم لمعظم الناس: أندرويد، وiOS نظام الـ iPhone.</p>
+
+<p>قبل أدوات مثل Flutter، كانت الشركة التي تريد تطبيقاً على نوعي الجوال تبنيه في الغالب مرتين: مرة بلغة Kotlin أو Java لأندرويد، ومرة بلغة Swift لـ iOS، وكثيراً ما يكون ذلك بفريقين مختلفين. فكل ميزة تُكتب مرتين، وتُختبر مرتين، وتُصلح أخطاؤها مرتين. أما Flutter فيتيح لمطوّر واحد، أو فريق واحد، أن يكتبها مرة واحدة.</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="كودك بلغة Dart يعمل فوق إطار Flutter، الذي يعمل فوق محرك Flutter، الذي يعمل على أندرويد وiOS والويب وسطح المكتب">
+<g font-family="Cairo" font-size="15" text-anchor="middle">
+<rect x="60" y="12" width="400" height="40" rx="10" fill="#f2f2f2" stroke="#2b2b2b" stroke-width="2"/>
+<text x="260" y="38" fill="#1a1a1a" font-weight="700">تطبيقك، مكتوباً بلغة Dart</text>
+<rect x="60" y="62" width="400" height="40" rx="10" fill="#fff" stroke="#2b2b2b" stroke-width="2"/>
+<text x="260" y="88" fill="#111">إطار Flutter: الـ Widgets والتخطيط والحركة</text>
+<rect x="60" y="112" width="400" height="40" rx="10" fill="#fff" stroke="#2b2b2b" stroke-width="2"/>
+<text x="260" y="138" fill="#111">محرك Flutter: يرسم كل نقطة بنفسه</text>
+<g fill="#f5f5f5" stroke="#2b2b2b" stroke-width="2">
+<rect x="60" y="172" width="91" height="40" rx="8"/><rect x="163" y="172" width="91" height="40" rx="8"/>
+<rect x="266" y="172" width="91" height="40" rx="8"/><rect x="369" y="172" width="91" height="40" rx="8"/>
+</g>
+<g fill="#2b2b2b" font-weight="700"><text x="105" y="198">سطح المكتب</text><text x="208" y="198">الويب</text><text x="311" y="198">iOS</text><text x="414" y="198">أندرويد</text></g>
+</g>
+</svg>
+<figcaption>الشكل 1.1: كود واحد، وأربعة أنواع من المنصات. كودك في الأعلى، وFlutter يتولى الباقي.</figcaption>
+</figure>
+
+<p>لدى Flutter فكرة غير مألوفة تفسّر كثيراً مما ستراه في هذا الكتاب: إنه <strong>يرسم كل نقطة في التطبيق بنفسه</strong>. أدوات كثيرة أخرى تطلب من الجوال أن يرسم أزراره ومربعات النص الخاصة به، فيبدو التطبيق مختلفاً قليلاً على كل جوال. أما Flutter فيحمل محرك رسم خاصاً به، هو نفسه على كل منصة، فيبدو الزر ويتصرف كما صممته تماماً في كل مكان. ولهذا أيضاً تبدو صورة تطبيق Flutter وهو يعمل في المتصفح مطابقة للتطبيق نفسه على الجوال.</p>
+
+<p>واللغة، Dart، من صنع Google أيضاً. تبدو مألوفة إن كنت تعرف JavaScript، لكنها تفحص أنواع القيم قبل أن يعمل البرنامج، كما سترى في الفصل 2. ولا تثبّت Dart وحدها: فهي تأتي داخل Flutter.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>أُعلن عن Dart عام 2011 لغةً للويب. ثم صدر Flutter 1.0 في ديسمبر 2018 وDart لغته الوحيدة، فأعطاها حياة ثانية: اليوم معظم كود Dart في العالم تطبيقات Flutter تعمل على الجوالات.</p></aside>
+
+<h2><span class="sec">1.2</span> <span>ما تحتاجه</span></h2>
+
+<p>بناء تطبيقات الجوال يحتاج أدوات أكثر من بناء صفحات الويب، لأن لكل نظام جوال أدواته الخاصة من شركته. هذه القائمة كاملة. لا تحتاجها كلها اليوم؛ الأقسام التالية تثبّتها بالترتيب.</p>
+
+<table>
+<thead><tr><th>الأداة</th><th>الغرض منها</th><th>تلزم على</th></tr></thead>
+<tbody>
+<tr><td>Flutter SDK</td><td>Flutter نفسه، وبداخله Dart</td><td>كل حاسوب</td></tr>
+<tr><td>Git</td><td>يستخدمه Flutter ليحدّث نفسه، وتستخدمه أنت لكودك (الكتاب الأول)</td><td>كل حاسوب</td></tr>
+<tr><td>Visual Studio Code</td><td>المحرر، مع إضافة Flutter</td><td>كل حاسوب</td></tr>
+<tr><td>Android Studio</td><td>أدوات Google لأندرويد (Android SDK) ومحاكي أندرويد</td><td>كل حاسوب</td></tr>
+<tr><td>Xcode</td><td>أدوات Apple لـ iOS، ومحاكي الـ iPhone</td><td>جهاز Mac فقط</td></tr>
+</tbody>
+</table>
+
+<p><dfn>الـ SDK</dfn>، اختصار <em>Software Development Kit</em> أي «حزمة تطوير البرمجيات»، مجلد أدوات لبناء البرامج لنظام واحد. و<dfn>المحاكي</dfn> برنامج يتظاهر بأنه جوال، على شاشة حاسوبك، لتشغّل تطبيقك دون جوال حقيقي. وتسمّي Apple نسختها <em>Simulator</em>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>تطبيقات الـ iPhone لا تُبنى إلا على جهاز Mac، لأن Xcode لا يعمل إلا على macOS. فإن كنت تستخدم Windows أو Linux فما زال بإمكانك تعلّم كل ما في هذا الكتاب بأندرويد، وسيعمل كود Dart الذي تكتبه على الـ iPhone لاحقاً دون تغيير. ويشرح الفصل 15 كيف تنشر الفرق التي لا تملك Mac على App Store.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>تثبيت Flutter SDK</span></h2>
+
+<p>تثبيت Flutter ثلاثة أشياء: أن تنزّله، وتضعه في مجلد، وتخبر الطرفية أين تجده.</p>
+
+<ol>
+<li>افتح <code>docs.flutter.dev</code>، واختر <em>Get started</em> ثم نظامك (Windows أو macOS أو Linux). اتبع تعليمات <em>Android</em> هدفاً أول. وثبّت Git أولاً إن طلبت الصفحة ذلك.</li>
+<li>نزّل Flutter SDK، وهو ملف مضغوط كبير، وفكّه في مجلد <strong>لا مسافات في مساره</strong> ولا يحتاج صلاحيات المدير. من الاختيارات الجيدة <code>C:\dev\flutter</code> على Windows، و<code>~/development/flutter</code> على macOS وLinux.</li>
+<li>أضف مجلد <code>bin</code> الذي بداخله (مثلاً <code>C:\dev\flutter\bin</code>) إلى <dfn>PATH</dfn>، وهو قائمة المجلدات التي تبحث فيها الطرفية عن الأوامر. والصفحة تشرح الطريقة لنظامك.</li>
+<li>أغلق كل الطرفيات وافتح واحدة جديدة. ثم اسأل Flutter من هو:</li>
+</ol>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># أي Flutter، وأي Dart بداخله؟</span>
+<span class="c">$ </span><span class="k">flutter --version</span>
+Flutter 3.50.1 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision ae9b586f34 (3 days ago) • 2026-11-18 17:01:07 -0800
+Engine • hash 51379e6df48ea8ee7205623b90fe66491cad8df3 (revision 4d35714800) (3 days ago) • 2026-11-18 01:50:07.000Z
+Tools • Dart 3.14.0 • DevTools 2.61.0</pre></div>
+
+<p>أربعة أسطر، ولكل منها معنى. الأول إصدار Flutter، <code>3.50.1</code>، من <dfn>القناة</dfn> <code>stable</code>: الإصدارات المختبرة والآمنة للتطبيقات الحقيقية. والسطران التاليان يحددان بالضبط أي كود من الإطار والمحرك لديك، مع تاريخ صنعه. والسطر الأخير أهمها للفصل القادم: Flutter 3.50.1 يحمل معه <strong>Dart 3.14.0</strong>، وDevTools، مجموعة أدوات للنظر داخل تطبيق يعمل ستقابلها لاحقاً.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>إن ردّت الطرفية بـ <code>flutter: command not found</code> (أو على Windows بأنه «not recognized as an internal or external command»)، فـ PATH غير صحيح، أو أن الطرفية فُتحت قبل أن تغيّره. افتح طرفية جديدة أولاً؛ هذا يحل المشكلة غالباً. وإن لم يحلها، فراجع المسار حرفاً حرفاً: يجب أن ينتهي بـ <code>flutter\bin</code> أو <code>flutter/bin</code>.</p></aside>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>ثبّت Visual Studio Code الآن إن لم يكن لديك، ثم إضافة <strong>Flutter</strong> من قسم الإضافات فيه (وتثبّت معها إضافة Dart). ويمكن للإضافة أيضاً أن تنزّل Flutter SDK لك، حين تنشئ أول مشروع من لوحة الأوامر. والطريقتان تنتهيان إلى المكان نفسه.</p></aside>
+
+<h2><span class="sec">1.4</span> <span>اسأل الطبيب</span></h2>
+
+<p>يحتاج Flutter إلى باقي الأدوات في الجدول، ويستطيع أن يفحصها لك. الأمر <code>flutter doctor</code> يفحص حاسوبك ويكتب تقريراً، سطراً لكل أداة. هذا هو التقرير الحقيقي من الحاسوب الذي أُعدّ عليه هذا الكتاب، جهاز Linux لم تُثبَّت عليه أدوات أندرويد بعد:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># هل كل شيء جاهز؟</span>
+<span class="c">$ </span><span class="k">flutter doctor</span>
+Doctor summary (to see all details, run flutter doctor -v):
+[✓] Flutter (Channel stable, 3.50.1, on Ubuntu 24.04.5 LTS 6.18.44-fc-v726, locale C.UTF-8)
+[✗] Android toolchain - develop for Android devices
+    ✗ Unable to locate Android SDK.
+      Install Android Studio from: https://developer.android.com/studio/index.html
+      On first launch it will assist you in installing the Android SDK components.
+      (or visit https://flutter.dev/to/linux-android-setup for detailed instructions).
+      If the Android SDK has been installed to a custom location, please use
+      `flutter config --android-sdk` to update to that location.
+
+[✓] Chrome - develop for the web
+[✗] Linux toolchain - develop for Linux desktop
+    ✗ GTK 3.0 development libraries are required for Linux development.
+      They are likely available from your distribution (e.g.: apt install libgtk-3-dev)
+    ! Unable to access driver information using &#x27;eglinfo&#x27;.
+      It is likely available from your distribution (e.g.: apt install mesa-utils)
+[✓] Connected device (2 available)
+[✓] Network resources
+
+! Doctor found issues in 2 categories.</pre></div>
+
+<p>اقرأ التقرير كقائمة مراجعة. <code>[✓]</code> تعني جاهز، و<code>[✗]</code> تعني ناقص، و<code>!</code> تحذير: شيء يعمل جزئياً فقط. وتحت كل مشكلة يخبرك الطبيب بما تفعله، وكثيراً ما يذكر الأمر أو الرابط بالضبط. في هذا الجهاز مشكلتان:</p>
+<ul>
+<li><strong>Android toolchain:</strong> لم يُعثر على Android SDK. وهذه مهمة: فبدونها لا يوجد تطبيق أندرويد. والطبيب يقول كيف تُصلح: ثبّت Android Studio.</li>
+<li><strong>Linux toolchain:</strong> تنقص بعض المكتبات اللازمة لبناء برامج سطح المكتب على Linux. وهذا الكتاب لا يبني برامج لسطح المكتب، فيمكن تجاهل هذا السطر.</li>
+</ul>
+<p>سيبدو تقريرك مختلفاً قليلاً: على Windows سترى سطراً لـ Visual Studio (لبرامج سطح المكتب على Windows، ويمكنك تجاهله أيضاً)، وعلى Mac سطراً لـ Xcode.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>أصلح تقرير الطبيب سطراً سطراً من الأعلى، وشغّل <code>flutter doctor</code> من جديد بعد كل إصلاح. ولا تصلح إلا المنصات التي تبني لها: سطر أحمر لسطح مكتب Linux على حاسوب مطوّر تطبيقات جوال ليس مشكلة. وحين يحدث شيء غريب بعد أشهر، شغّل الطبيب أولاً؛ إنه أسرع طريق لمعرفة ما تغيّر.</p></aside>
+
+<h3>تثبيت أدوات أندرويد</h3>
+<ol>
+<li>نزّل Android Studio من <code>developer.android.com/studio</code> وثبّته. افتحه مرة، واترك معالج الإعداد فيه يثبّت Android SDK.</li>
+<li>في Android Studio افتح <strong>SDK Manager</strong>، وفي تبويب <em>SDK Tools</em> اختر <strong>Android SDK Command-line Tools</strong>، ثم طبّق.</li>
+<li>اقبل تراخيص Google الخاصة بالـ SDK من الطرفية: <code>flutter doctor --android-licenses</code>. اقرأ كل ترخيص وأجب بـ <code>y</code>.</li>
+<li>أنشئ محاكياً: في Android Studio افتح <strong>Device Manager</strong>، وأضف جهازاً افتراضياً، واختر جوالاً حديثاً (Pixel اختيار جيد) ونسخة نظام حديثة، ثم أنهِ.</li>
+<li>شغّل <code>flutter doctor</code> من جديد. يجب أن يظهر سطر أندرويد الآن بعلامة <code>[✓]</code>.</li>
+</ol>
+
+<h3>على Mac: أدوات iOS</h3>
+<p>ثبّت Xcode من Mac App Store؛ إنه كبير، فامنحه وقته. افتحه مرة ليكمل إعداده، ثم شغّل <code>flutter doctor</code> ونفّذ بالضبط ما يقوله قسم Xcode في التقرير، سطراً سطراً. فالتقرير يذكر الأوامر المناسبة لإصدار Xcode لديك، وهذا أضمن من أي قائمة مطبوعة في كتاب.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>تثبيت الأدوات هو الجزء من البرمجة الذي يتعثر فيه الجميع مرة على الأقل. وحين يحدث لك ذلك، انسخ رسالة الخطأ كما هي في محرك بحث. لقد واجه أحدهم المشكلة نفسها الأسبوع الماضي، وأجابه أحد آخر.</p></div></div>
+
+<h2><span class="sec">1.5</span> <span>مشروعك الأول</span></h2>
+
+<p>أمر واحد ينشئ تطبيقاً كاملاً جاهزاً للتشغيل. افتح طرفية في المجلد الذي تحفظ فيه مشاريعك:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># مشروع جديد اسمه hello_bit</span>
+<span class="c">$ </span><span class="k">flutter create hello_bit</span>
+Creating project hello_bit...
+Got dependencies in `hello_bit`.
+Wrote 131 files.
+
+All done!
+You can find general documentation for Flutter at: https://docs.flutter.dev/
+Detailed API documentation is available at: https://api.flutter.dev/
+If you prefer video documentation, consider: https://www.youtube.com/c/flutterdev
+
+In order to run your application, type:
+
+  $ cd hello_bit
+  $ flutter run
+
+Your application code is in hello_bit/lib/main.dart.</pre></div>
+
+<p>كتب Flutter مئة وواحداً وثلاثين ملفاً، ثم نزّل الحزم التي يحتاجها التطبيق («Got dependencies»). واسم المشروع، <code>hello_bit</code>، يتبع قاعدة Dart في أسماء المشاريع والملفات: حروف إنجليزية صغيرة وأرقام وشرطات سفلية فقط. فاسم مثل <code>HelloBit</code> أو <code>hello-bit</code> مرفوض.</p>
+
+<p>افتح المجلد في VS Code (<em>File، ثم Open Folder</em>). هذا ما بداخله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello_bit</div><pre class="code">hello_bit/
+  .gitignore
+  .metadata
+  README.md
+  analysis_options.yaml
+  android/
+  hello_bit.iml
+  ios/
+  lib/
+  linux/
+  macos/
+  pubspec.lock
+  pubspec.yaml
+  test/
+  web/
+  windows/</pre></div>
+
+<table>
+<thead><tr><th>الاسم</th><th>ما هو</th><th>كم مرة تلمسه</th></tr></thead>
+<tbody>
+<tr><td><code>lib/</code></td><td>كود Dart الخاص بك. يبدأ التطبيق من <code>lib/main.dart</code></td><td>طوال الوقت</td></tr>
+<tr><td><code>test/</code></td><td>اختبارات كودك</td><td>طوال الوقت</td></tr>
+<tr><td><code>pubspec.yaml</code></td><td>اسم المشروع وإصداره والحزم التي يستخدمها</td><td>كثيراً</td></tr>
+<tr><td><code>android/</code> و<code>ios/</code></td><td>مشروعان أصليان صغيران يغلّفان تطبيقك لكل نظام جوال: أيقونته وصلاحياته واسمه في المتجر</td><td>أحياناً</td></tr>
+<tr><td><code>web/</code> و<code>linux/</code> و<code>macos/</code> و<code>windows/</code></td><td>الشيء نفسه للويب ولسطح المكتب</td><td>نادراً</td></tr>
+<tr><td><code>analysis_options.yaml</code></td><td>القواعد التي يفحص المحلل كودك بها</td><td>نادراً</td></tr>
+<tr><td><code>pubspec.lock</code></td><td>الإصدارات الدقيقة لكل حزمة نُزّلت. يكتبه Flutter، وتحفظه أنت في Git</td><td>لا تعدّله بيدك أبداً</td></tr>
+<tr><td><code>README.md</code> و<code>.gitignore</code> و<code>.metadata</code> و<code>hello_bit.iml</code></td><td>وصف للمشروع، والملفات التي يتجاهلها Git، وملاحظات لـ Flutter وللمحررات</td><td>نادراً</td></tr>
+</tbody>
+</table>
+
+<p>افتح <code>pubspec.yaml</code>. بين تعليقات كثيرة مفيدة، الجزء المهم اليوم هو قائمة <dfn>الاعتماديات</dfn>، أي الحزم التي يستخدمها تطبيقك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">pubspec.yaml</div><pre class="code">dependencies:
+  flutter:
+    sdk: flutter
+  material_ui: ^<span class="n">1.1</span>.<span class="n">0</span>
+
+  <span class="c line-bidi"># The following adds the Cupertino Icons font to your application.</span>
+  <span class="c line-bidi"># Use with the CupertinoIcons class for iOS style icons.</span>
+  cupertino_icons: ^<span class="n">1.0</span>.<span class="n">8</span></pre></div>
+
+<p><dfn>الحزمة</dfn> مكتبة كود نشرها أحدهم ليستخدمها الآخرون، على موقع <code>pub.dev</code>. وتطبيقك يستخدم ثلاثاً. <code>flutter</code> هي Flutter نفسه. و<code>material_ui</code> فيها Widgets <dfn>Material</dfn>: الأزرار والأشرطة والبطاقات ومربعات النص بأسلوب Material Design من Google، وهو الأسلوب الذي يستخدمه هذا الكتاب في كل مكان. و<code>cupertino_icons</code> فيها أيقونات بأسلوب Apple. أما <code>^1.1.0</code> فتعني «الإصدار 1.1.0 أو أي إصدار أحدث يعد بأن يبقى متوافقاً معه».</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>في إصدارات Flutter السابقة كانت Widgets Material جزءاً من Flutter نفسه، وكان كل تطبيق يبدأ بالسطر <code>import 'package:flutter/material.dart';</code>. ثم نقلها Flutter 3.47 إلى حزمة مستقلة، <code>material_ui</code>، لتتطور على جدولها الخاص. وما زلت ستجد السطر القديم في معظم الدروس على الإنترنت؛ والقسم 1.9 يعرض ما يقوله Flutter عنه.</p></aside>
+
+<h2><span class="sec">1.6</span> <span>قراءة main.dart</span></h2>
+
+<p>المشروع الجديد تطبيق عدّاد صغير: رقم في وسط الشاشة، وزر يضيف إليه واحداً. وكوده في <code>lib/main.dart</code> نحو 120 سطراً، معظمها تعليقات تشرح الكود. هكذا يبدأ:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/main.dart (من القالب)</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:material_ui/material_ui.dart&#x27;</span>;
+
+<span class="k">void</span> main() {
+  runApp(<span class="k">const</span> MyApp());
+}
+
+<span class="k">class</span> MyApp <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> MyApp({<span class="k">super</span>.key});
+
+  <span class="c line-bidi">// This widget is the root of your application.</span>
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> MaterialApp(
+      title: <span class="s">&#x27;Flutter Demo&#x27;</span>,
+      theme: ThemeData(
+        <span class="c line-bidi">// This is the theme of your application.</span>
+        <span class="c line-bidi">//</span>
+        <span class="c line-bidi">// TRY THIS: Try running your application with &quot;flutter run&quot;. You&#x27;ll see</span>
+        <span class="c line-bidi">// the application has a purple toolbar. Then, without quitting the app,</span>
+        <span class="c line-bidi">// try changing the seedColor in the colorScheme below to Colors.green</span>
+        <span class="c line-bidi">// and then invoke &quot;hot reload&quot; (save your changes or press the &quot;hot</span>
+        <span class="c line-bidi">// reload&quot; button in a Flutter-supported IDE, or press &quot;r&quot; if you used</span>
+        <span class="c line-bidi">// the command line to start the app).</span>
+        <span class="c line-bidi">//</span>
+        <span class="c line-bidi">// Notice that the counter didn&#x27;t reset back to zero; the application</span>
+        <span class="c line-bidi">// state is not lost during the reload. To reset the state, use hot</span>
+        <span class="c line-bidi">// restart instead.</span>
+        <span class="c line-bidi">//</span>
+        <span class="c line-bidi">// This works for code too, not just values: Most code changes can be</span>
+        <span class="c line-bidi">// tested with just a hot reload.</span>
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: <span class="k">const</span> MyHomePage(title: <span class="s">&#x27;Flutter Demo Home Page&#x27;</span>),
+    );
+  }
+}</pre></div>
+
+<p>لا تحاول أن تفهم كل كلمة الآن: الفصول القادمة تشرحها كلها. انظر الآن إلى الشكل فقط. السطر الأول <dfn>يستورد</dfn> Widgets Material، ليتمكن هذا الملف من استخدامها. ثم تأتي <code>main</code>، الدالة التي يبدأ منها كل برنامج Dart. وهي تستدعي <code>runApp</code>، التي تأخذ <dfn>Widget</dfn> وتعرضه على الشاشة. والـ Widget وصف لجزء من الشاشة: نص، أو زر، أو صفحة كاملة. في Flutter كل ما تراه Widget، والـ Widgets تُبنى من Widgets أصغر، كصناديق داخل صناديق. والفصل 5 مخصص لها.</p>
+
+<p>العدّاد مثال جيد، لكنه أكثر مما يُقرأ في يومك الأول. استبدل محتوى <code>lib/main.dart</code> كله بهذا التطبيق الأصغر بكثير:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/main.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:material_ui/material_ui.dart&#x27;</span>;
+
+<span class="c line-bidi">// كل برنامج Dart يبدأ بتشغيل main().</span>
+<span class="k">void</span> main() {
+  runApp(<span class="k">const</span> HelloBitApp());
+}
+
+<span class="c line-bidi">// التطبيق كله Widget واحد: وصف لما يُعرض على الشاشة.</span>
+<span class="k">class</span> HelloBitApp <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> HelloBitApp({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> MaterialApp(
+      title: <span class="s">&#x27;مرحباً بِت&#x27;</span>,
+      home: Scaffold(
+        appBar: AppBar(
+          title: <span class="k">const</span> Text(<span class="s">&#x27;مرحباً بِت&#x27;</span>),
+          centerTitle: <span class="k">true</span>,
+          <span class="c line-bidi">// لون الشريط، ولون النص عليه.</span>
+          backgroundColor: Colors.indigo,
+          foregroundColor: Colors.white,
+        ),
+        body: <span class="k">const</span> Center(
+          child: Text(<span class="s">&#x27;مرحباً يا Flutter!&#x27;</span>, style: TextStyle(fontSize: <span class="n">32</span>)),
+        ),
+      ),
+    );
+  }
+}</pre></div>
+
+<p>اقرأه من الخارج إلى الداخل، بالطريقة التي يبنيه بها Flutter:</p>
+<ul>
+<li><code>main</code> تستدعي <code>runApp</code> مع تطبيقنا، <code>HelloBitApp</code>.</li>
+<li><code>HelloBitApp</code> من نوع <code>StatelessWidget</code>: Widget لا يتغير أبداً بعد عرضه. ودالته <code>build</code> تُرجع شكله.</li>
+<li><code>MaterialApp</code> إطار تطبيق بأسلوب Material، و<code>home</code> هي شاشته الأولى.</li>
+<li><code>Scaffold</code> هيكل شاشة واحدة: هنا شريط في الأعلى (<code>appBar</code>) وباقي الشاشة (<code>body</code>).</li>
+<li><code>AppBar</code> يعرض عنواناً في المنتصف، على شريط نيلي بنص أبيض.</li>
+<li><code>Center</code> يضع ابنه الوحيد <code>child</code> في وسط المساحة المتاحة له، و<code>Text</code> يعرض التحية بحجم 32 بكسلاً منطقياً.</li>
+</ul>
+
+<p>لاحظ أن الكود يأخذ شكل الشاشة: الشريط والمحتوى داخل الهيكل، والهيكل داخل التطبيق. ولاحظ أيضاً الفواصل في آخر كل سطر تقريباً. تسمح Dart بفاصلة بعد آخر عنصر، ومطورو Flutter يضعونها دائماً: فيضع المنسّق كل عنصر في سطر مستقل، ويحتفظ الكود بشكل الشاشة.</p>
+
+<p>أما النصوص العربية في التطبيق فتظهر كما تتوقع لأن كل سطر فيها عربي خالص. وحين يجتمع في السطر الواحد عربي وإنجليزي، أو حين تريد أن تبدأ الشاشة كلها من اليمين، يحتاج التطبيق إلى أن يعرف أن لغته عربية. وهذا موضوع الفصل 13 كله.</p>
+
+<h2><span class="sec">1.7</span> <span>تشغيل التطبيق</span></h2>
+
+<p>التطبيق يحتاج مكاناً يعمل فيه. شغّل المحاكي من Device Manager في Android Studio (أو صِل جوال أندرويد فعّلت فيه <em>USB debugging</em> من خيارات المطوّر)، ثم اسأل Flutter عن الأجهزة التي يراها:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># أي الأجهزة يمكنها تشغيل التطبيق الآن؟</span>
+<span class="c">$ </span><span class="k">flutter devices</span>
+Found 2 connected devices:
+  Linux (desktop) • linux  • linux-x64      • Ubuntu 24.04.5 LTS 6.18.44-fc-v726
+  Chrome (web)    • chrome • web-javascript • Google Chrome for Testing 153.0.8010.12
+
+Run &quot;flutter emulators&quot; to list and start any available device emulators.
+
+If you expected another device to be detected, please run &quot;flutter doctor&quot; to diagnose potential issues. You may also try increasing the time to wait for connected devices with the &quot;--device-timeout&quot; flag. Visit https://flutter.dev/setup/ for troubleshooting tips.</pre></div>
+
+<p>جهاز الكتاب حاسوب بلا شاشة في مركز بيانات، فلا يرى إلا نفسه ومتصفحاً. أما قائمتك فستعرض محاكيك، باسم مثل <code>sdk gphone64 x86 64</code>، أو جوالك. والآن شغّل التطبيق من مجلد المشروع:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># شغّله (هنا في متصفح، وعندك في محاكٍ أو جوال)</span>
+<span class="c">$ </span><span class="k">flutter run</span>
+Launching lib/main.dart on Web Server in debug mode...
+Waiting for connection from debug service on Web Server...         28.9s
+lib/main.dart is being served at http://localhost:8099
+The web-server device requires the Dart Debug Chrome extension for debugging. Consider using the Chrome or Edge devices for an improved development workflow.
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate &quot;flutter run&quot; but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+Debug service listening on ws://127.0.0.1:39033/iXfKki57Stw=/ws
+A Dart VM Service on Web Server is available at: http://127.0.0.1:39033/iXfKki57Stw=
+The Flutter DevTools debugger and profiler on Web Server is available at: http://127.0.0.1:39033/iXfKki57Stw=/devtools/?uri=ws://127.0.0.1:39033/iXfKki57Stw=/ws</pre></div>
+
+<p>على جهازك سيذكر السطر الأول اسم المحاكي، وأول بناء لتطبيق أندرويد يستغرق دقيقة أو اثنتين، لأن Flutter يبني مشروع أندرويد كاملاً خلف الستار. أما جهاز الكتاب فشغّل التطبيق في متصفح على خادم ويب صغير، والسطر التالي يحذّر من التصحيح في هذا الإعداد، وهذا لا يعنيك. وحين فتح المتصفح التطبيق، كتب Flutter عناوين خدمة التصحيح وDevTools، أدوات النظر داخل التطبيق العامل. ثم يبقى <code>flutter run</code> مفتوحاً ينتظر المفاتيح: ستستخدمها بعد لحظة. ويمكنك في VS Code أيضاً أن تضغط <strong>F5</strong>، فيشغّل التطبيق بالطريقة نفسها، بأزرار بدلاً من المفاتيح.</p>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-ar-shots-first-run.png" alt=""></div>
+<figcaption>الشكل 1.2: «مرحباً بِت» يعمل. والشريط في الزاوية يقول إن هذه نسخة تصحيح.</figcaption>
+</figure>
+
+<p>أول تطبيق لك! الشريط الأحمر <strong>DEBUG</strong> في الزاوية يذكّرك بأن هذه <dfn>نسخة تصحيح</dfn> (debug build)، مبنية للتطوير: أبطأ، ومليئة بالمساعدة على إيجاد الأخطاء. أما النسخة التي تنشرها فهي <dfn>نسخة الإصدار</dfn> (release build)، سريعة وبلا الشريط. والفصل 15 يبني واحدة.</p>
+
+<h2><span class="sec">1.8</span> <span>التحديث الفوري</span></h2>
+
+<p>هذه هي اللحظة التي يقع فيها مطورو Flutter في حبه. اترك التطبيق يعمل. في <code>lib/main.dart</code> غيّر <code>Colors.indigo</code> إلى <code>Colors.teal</code>، والتحية إلى <code>'مرحباً بالتحديث الفوري!'</code>. احفظ الملف، واضغط <strong>r</strong> في الطرفية التي ينتظر فيها <code>flutter run</code> (وفي VS Code يكفي الحفظ: فهو يحدّث لك).</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-ar-shots-first-run.png" alt=""></div>
+<figcaption>قبل</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-ar-shots-hot-reload.png" alt=""></div>
+<figcaption>بعد ضغط r</figcaption>
+</figure>
+</div>
+
+<p>والطرفية تقول ما حدث:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># حُفظ lib/main.dart بلون ونص جديدين، ثم ضُغط r</span>
+r
+Performing hot reload...                                           168ms
+Reloaded application in 169ms.
+Application finished.</pre></div>
+
+<p><dfn>التحديث الفوري</dfn> (hot reload) أرسل الكود المتغير وحده إلى التطبيق العامل وأعاد بناء الشاشة في جزء من الثانية (والطرفية تذكر الوقت بالضبط)، دون أن يبدأ التطبيق من جديد. وعلى الجوال هو بالسرعة نفسها. ستغيّر لوناً أو حجماً أو كلمة، فتراه، ثم تغيّره مرة أخرى، عشرات المرات في الدقيقة. هكذا يصمم مطورو Flutter شاشاتهم: لا بالتخيل، بل بالتجربة.</p>
+
+<p>وتستحق باقي المفاتيح أن تعرفها:</p>
+<table>
+<thead><tr><th>المفتاح</th><th>ما يفعله</th><th>متى تستخدمه</th></tr></thead>
+<tbody>
+<tr><td><strong>r</strong></td><td>تحديث فوري: كود جديد، والتطبيق نفسه يعمل، والقيم محفوظة</td><td>في معظم الأحيان</td></tr>
+<tr><td><strong>R</strong></td><td>إعادة تشغيل فورية (hot restart): يبدأ التطبيق من جديد من <code>main</code>، وتضيع القيم</td><td>حين لا يظهر تغيير بعد <strong>r</strong>، كتغيير داخل <code>main</code></td></tr>
+<tr><td><strong>q</strong></td><td>خروج: يوقف التطبيق</td><td>حين تنتهي</td></tr>
+</tbody>
+</table>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>والتطبيق يعمل، غيّر حجم الخط من 32 إلى 48 وحدّث. ثم جرّب <code>Colors.deepOrange</code>، ثم <code>Colors.black</code> للشريط. وعُدّ كم ثانية يستغرق كل تغيير، من الكتابة إلى الرؤية.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي أمر يخبرك بما ينقص على حاسوبك؟</li><li>في أي مجلد تكتب كود Dart، ومن أي ملف يبدأ التطبيق؟</li><li>ما الفرق بين ضغط <strong>r</strong> وضغط <strong>R</strong>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">1.9</span> <span>افحص عملك كالمحترفين</span></h2>
+
+<p>جاء المشروع ومعه اختبار، في <code>test/widget_test.dart</code>. و<dfn>الاختبار</dfn> كود يشغّل كود تطبيقك ويتأكد أنه يفعل ما يجب، فلا تحتاج إلى الفحص بيدك بعد كل تغيير. شغّل الاختبارات:</p>
+
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># شغّل الاختبارات التي جاءت مع القالب</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0 -1: loading test/widget_test.dart [E]
+  Failed to load &quot;test/widget_test.dart&quot;:
+  Compilation failed for testPath=test/widget_test.dart: test/widget_test.dart:16:35: Error: Couldn&#x27;t find constructor &#x27;MyApp&#x27;.
+      await tester.pumpWidget(const MyApp());
+                                    ^^^^^
+  .
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  test/widget_test.dart: loading test/widget_test.dart
+test/widget_test.dart:16:35: Error: Couldn&#x27;t find constructor &#x27;MyApp&#x27;.
+    await tester.pumpWidget(const MyApp());
+                                  ^^^^^</pre></div>
+
+<p>فشل، ومفيد. فالاختبار كُتب لتطبيق العدّاد: يحاول عرض <code>MyApp</code> والضغط على زرها، ونحن استبدلنا <code>MyApp</code> بـ <code>HelloBitApp</code>. اقرأ الرسالة من الأعلى: الملف، والسطر (16)، والعمود (35)، والسبب: «Couldn’t find constructor 'MyApp'»، أي لم يُعثر على المُنشئ <code>MyApp</code>. كل رسالة خطأ في Dart وFlutter لها هذا الشكل، وقراءتها على مهل مهارة ستستخدمها كل يوم.</p>
+
+<p>استبدل الاختبار باختبار يفحص تطبيقنا:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/widget_test.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:flutter_test/flutter_test.dart&#x27;</span>;
+<span class="k">import</span> <span class="s">&#x27;package:hello_bit/main.dart&#x27;</span>;
+
+<span class="k">void</span> main() {
+  testWidgets(<span class="s">&#x27;يعرض التحية&#x27;</span>, (WidgetTester tester) <span class="k">async</span> {
+    <span class="k">await</span> tester.pumpWidget(<span class="k">const</span> HelloBitApp());
+    expect(find.text(<span class="s">&#x27;مرحباً بالتحديث الفوري!&#x27;</span>), findsOneWidget);
+  });
+}</pre></div>
+
+<p><code>testWidgets</code> تصف اختباراً باسم. وبداخله تعرض <code>pumpWidget</code> تطبيقنا على شاشة وهمية، بلا أي محاكٍ، وتتأكد <code>expect</code> أن Widget واحداً بالضبط يعرض التحية. شغّل الاختبارات مرة أخرى:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># الاختبار بعد تحديثه لتطبيقنا</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0: يعرض التحية
+00:00 +1: All tests passed!</pre></div>
+
+<p>وأداتان أخريان تنتميان إلى روتينك. <dfn>المحلل</dfn> (analyzer) يقرأ كودك دون تشغيله ويشير إلى الأخطاء والكود الخطر والكود القديم. و<dfn>المنسّق</dfn> (formatter) يعيد كتابة كودك بالأسلوب القياسي الوحيد الذي يستخدمه كل مطوري Dart، فلا يختلف أحد على المسافات.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># ابحث عن المشكلات دون تشغيل أي شيء</span>
+<span class="c">$ </span><span class="k">flutter analyze</span>
+Analyzing hello_bit...                                          
+No issues found! (ran in 4.1s)
+<span class="c line-bidi"># نسّق كل الملفات بالطريقة المعتمدة</span>
+<span class="c">$ </span><span class="k">dart format .</span>
+Formatted lib/main.dart
+Formatted 2 files (1 changed) in 0.01 seconds.</pre></div>
+
+<p>«No issues found!»: لا مشكلات. أما المنسّق فأعاد ترتيب ملف واحد، <code>lib/main.dart</code>: فسطر التحية الجديدة صار أطول من 80 حرفاً، وهو أقصى طول للسطر في أسلوب Dart، فقسّمه على عدة أسطر هكذا:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/main.dart (جزء)</div><pre class="code">        body: <span class="k">const</span> Center(
+          child: Text(
+            <span class="s">&#x27;مرحباً بالتحديث الفوري!&#x27;</span>,
+            style: TextStyle(fontSize: <span class="n">32</span>),
+          ),
+        ),</pre></div>
+
+<p>والآن انظر ماذا يقول المحلل عن التطبيق نفسه بسطر الاستيراد القديم من القسم 1.5:</p>
+
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># التطبيق نفسه بالاستيراد الذي تستخدمه الدروس القديمة</span>
+<span class="c">$ </span><span class="k">flutter analyze</span>
+Analyzing hello_bit...                                          
+
+   info • &#x27;package:flutter/material.dart&#x27; is deprecated and shouldn&#x27;t be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:1:1 • deprecated_member_use
+
+1 issue found. (ran in 0.7s)</pre></div>
+
+<p>الـ <code>info</code> أخف أنواع الرسائل: فالتطبيق ما زال يعمل. لكن المحلل يشرح بالضبط ما القديم، ومنذ أي إصدار، وما البديل. فحين تنسخ كوداً من درس قديم، شغّل المحلل واتبع نصيحته.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>قبل أن تعتبر أي تغيير منتهياً، شغّل ثلاثة أوامر: <code>dart format .</code> و<code>flutter analyze</code> و<code>flutter test</code>. والفرق المحترفة تشغّل الثلاثة نفسها تلقائياً على كل تغيير، وترفض التغيير الذي يفشل فيها. اجعلها عادة من أول تطبيق، واحفظ مشروعك في Git كما فعلت في الكتاب الأول: فقد كتب <code>flutter create</code> ملف <code>.gitignore</code> لك.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>Flutter في مجلد بمسافات، أو في <code>Program Files</code></td><td>أخطاء غريبة عند البناء، أو لا صلاحية للتحديث</td><td>انقله إلى مسار بسيط مثل <code>C:\dev\flutter</code></td></tr>
+<tr><td>تغيير PATH ثم استخدام الطرفية القديمة</td><td><code>flutter: command not found</code></td><td>افتح طرفية جديدة</td></tr>
+<tr><td>التراخيص غير مقبولة</td><td>يشتكي الطبيب، وتفشل بناءات أندرويد</td><td><code>flutter doctor --android-licenses</code></td></tr>
+<tr><td>اسم مشروع بحروف كبيرة أو شرطات</td><td>يرفضه <code>flutter create</code></td><td>استخدم <code>snake_case</code>: <code>hello_bit</code></td></tr>
+<tr><td>تغيير لا يظهر بعد <strong>r</strong></td><td>تبقى الشاشة كما هي</td><td>تأكد أن الملف محفوظ، واضغط <strong>R</strong></td></tr>
+<tr><td><code>package:flutter/material.dart</code> من الدروس القديمة</td><td>يذكره المحلل على أنه قديم (deprecated)</td><td>استورد <code>package:material_ui/material_ui.dart</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><strong>Flutter</strong> يبني تطبيقات لأندرويد وiOS والويب وسطح المكتب من كود واحد مكتوب بلغة <strong>Dart</strong>، ويرسم كل نقطة بنفسه.</li>
+<li>ثبّت <strong>Flutter SDK</strong> في مجلد بسيط وأضف مجلد <code>bin</code> فيه إلى <strong>PATH</strong>؛ وAndroid Studio يعطيك Android SDK والمحاكي، وXcode (على Mac فقط) أدوات iOS.</li>
+<li><code>flutter doctor</code> يفحص كل شيء ويقول كيف تُصلح الناقص. ولا تصلح إلا المنصات التي تبني لها.</li>
+<li><code>flutter create name</code> ينشئ مشروعاً. كودك في <code>lib/</code> ويبدأ من <code>lib/main.dart</code>؛ والحزم مذكورة في <code>pubspec.yaml</code>، وWidgets Material تأتي من <code>material_ui</code>.</li>
+<li>كل ما على الشاشة <strong>Widget</strong>، والكود يأخذ شكل الشاشة.</li>
+<li><code>flutter run</code> يشغّل التطبيق؛ و<strong>r</strong> تحديث فوري، و<strong>R</strong> إعادة تشغيل، و<strong>q</strong> خروج.</li>
+<li>قبل أن تعتبر التغيير منتهياً: <code>dart format .</code> و<code>flutter analyze</code> و<code>flutter test</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>flutter doctor</code>. 2. في <code>lib/</code>؛ ويبدأ التطبيق من <code>lib/main.dart</code>، في الدالة <code>main</code>. 3. <strong>r</strong> (التحديث الفوري) يضع الكود الجديد في التطبيق العامل ويحتفظ بقيمه؛ و<strong>R</strong> (إعادة التشغيل) يبدأ التطبيق من جديد من <code>main</code>، فتبدأ القيم من جديد أيضاً.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبدأ بـ <code>flutter create</code> كما في هذا الفصل. اترك <code>flutter run</code> مفتوحاً وأنت تعمل، وحدّث بعد كل تغيير صغير.</p>
+
+<div class="project">
+<p class="project-label">المشروع 1.1 · سهل</p>
+<h3>بطاقتك الشخصية</h3>
+<p class="project-goal">اصنع تطبيقاً يعرض بطاقة عنك: أيقونة، واسمك، وعملك، ومدينتك.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إنشاء مشروع، وتعديل <code>main.dart</code>، والألوان وأحجام النص، والتحديث الفوري.</p>
+<ol class="steps">
+<li>أنشئ مشروعاً اسمه <code>name_card</code>، واستبدل <code>lib/main.dart</code> بتطبيق «مرحباً بِت».</li>
+<li>غيّر عنوان الشريط ولونه إلى <code>Colors.deepOrange</code>. اكتب <code>Colors.</code> في VS Code وانظر إلى القائمة التي يعرضها: لكل لون في لوحة Material اسم.</li>
+<li>لعرض عدة أسطر، يحتاج <code>Center</code> في المحتوى إلى <code>Column</code> ابناً له، بقائمة من <code>children</code>. يشرح الفصل 6 الـ <code>Column</code>؛ وانسخ شكله الآن من هذا الجزء من الحل:
+<div class="listing" dir="ltr"><div class="listing-title">lib/main.dart (جزء)</div><pre class="code">        body: <span class="k">const</span> Center(
+          <span class="c line-bidi">// Column يضع أبناءه واحداً تحت الآخر (يشرحه الفصل 6).</span>
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.person, size: <span class="n">96</span>, color: Colors.deepOrange),
+              Text(<span class="s">&#x27;سارة أحمد&#x27;</span>, style: TextStyle(fontSize: <span class="n">32</span>)),
+              <span class="c line-bidi">// صندوق فارغ بارتفاع 8 بكسل: مسافة بين سطرين.</span>
+              SizedBox(height: <span class="n">8</span>),
+              Text(
+                <span class="s">&#x27;مطوّرة تطبيقات تحت التدريب&#x27;</span>,
+                style: TextStyle(fontSize: <span class="n">18</span>),
+              ),
+              Text(<span class="s">&#x27;القاهرة، مصر&#x27;</span>, style: TextStyle(fontSize: <span class="n">18</span>)),
+            ],
+          ),
+        ),</pre></div></li>
+<li>أضف <code>Icon(Icons.person, size: 96, color: Colors.deepOrange)</code> فوق اسمك، و<code>SizedBox(height: 8)</code> بين سطرين حين تراهما متقاربين.</li>
+<li>احذف <code>test/widget_test.dart</code> (أو اكتب اختباراً يجد اسمك)، ثم شغّل <code>flutter analyze</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>debugShowCheckedModeBanner: false</code> في <code>MaterialApp</code> يخفي شريط DEBUG، وهذا لطيف لصور الشاشة. والشريط لا يظهر في نسخ الإصدار أصلاً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-ar-shots-name-card.png" alt=""></div>
+<figcaption>المشروع 1.1: بطاقة شخصية باللون البرتقالي.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 1.2 · متوسط</p>
+<h3>العدّ اثنين اثنين</h3>
+<p class="project-goal">احتفظ بتطبيق العدّاد الذي يصنعه <code>flutter create</code>، لكن اجعله يبدأ من 10 ويعدّ اثنين اثنين، وحدّث اختباره لينجح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة كود لم تكتبه، والتعديلات الصغيرة الدقيقة، وإصلاح اختبار.</p>
+<ol class="steps">
+<li>أنشئ مشروعاً اسمه <code>counter_by_two</code>، وشغّله، واضغط الزر بضع مرات. ثم اقرأ <code>lib/main.dart</code> وتعليقاته.</li>
+<li>ابحث عن السطر الذي يعطي العدّاد قيمته الأولى، والسطر الذي يضيف إليه واحداً. كل منهما يحتاج تعديلاً صغيراً.</li>
+<li>اضغط <strong>r</strong>. هل يبدأ العدّاد من 10؟ والآن اضغط <strong>R</strong>. اشرح الفرق.</li>
+<li>شغّل <code>flutter test</code>. سيفشل: فالاختبار ما زال يتوقع 0 ثم 1. غيّره ليتوقع 10 ثم 12، وأعطه اسماً أفضل.</li>
+<li>شغّل الاختبار من جديد حتى ينجح.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ابحث عن <code>_counter</code>. في Dart، <code>_counter += 2</code> طريقة مختصرة لكتابة <code>_counter = _counter + 2</code>، تماماً كما في JavaScript.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># العداد الذي يبدأ من 10 ويعدّ اثنين اثنين</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0: يعدّ اثنين اثنين بدءاً من عشرة
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 1.3 · تحدٍّ</p>
+<h3>زر للتصفير</h3>
+<p class="project-goal">أضف إلى شريط تطبيق العدّاد زراً يعيده إلى الصفر، واختباراً يثبت أنه يعمل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إضافة Widget داخل Widget موجود، وقراءة وثائق Flutter، وكتابة اختبار يضغط الأزرار.</p>
+<ol class="steps">
+<li>أنشئ مشروعاً اسمه <code>counter_reset</code>. وفي <code>lib/main.dart</code> ابحث عن <code>AppBar</code>.</li>
+<li>لـ <code>AppBar</code> معامل اسمه <code>actions</code>: قائمة Widgets تظهر في آخر الشريط. ابحث عنه في <code>api.flutter.dev</code>، ثم أضف إليه <code>IconButton</code> بالأيقونة <code>Icons.refresh</code>.</li>
+<li>حين يُضغط الزر، اجعل العدّاد صفراً. انسخ النمط من <code>_incrementCounter</code>: التغيير يحدث داخل <code>setState(() { ... })</code>، التي تطلب من Flutter أن يرسم الشاشة من جديد. والفصل 10 يشرح السبب.</li>
+<li>أعطِ الزر <code>tooltip</code>، وصفاً قصيراً لمن يستخدمون قارئ الشاشة.</li>
+<li>اكتب اختباراً يضغط <code>+</code> مرتين، ويتأكد أن الشاشة تعرض 2، ثم يضغط أيقونة التصفير ويتأكد أنها تعرض 0. و<code>find.byIcon(Icons.refresh)</code> يجد الزر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> بعد كل <code>tester.tap</code> في الاختبار، استدعِ <code>await tester.pump()</code> قبل الفحص: فهي تترك Flutter يرسم الشاشة الجديدة، كما يحدث بين إطارين على الجوال.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد ثلاث ضغطات على <code>+</code>):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-ar-shots-counter-reset.png" alt=""></div>
+<figcaption>المشروع 1.3: العدّاد وفي شريطه زر للتصفير.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c line-bidi"># العداد بزر للتصفير</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0: زر التصفير يعيد العداد إلى الصفر
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> شغّل <code>flutter doctor -v</code> (و<code>-v</code> تعني <em>verbose</em>، أي مفصّل). ما المعلومات الإضافية التي يعطيها لكل سطر؟ اكتب أين ثُبّت Flutter SDK وAndroid SDK على جهازك.</li>
+<li><span class="level">سهل</span> في «مرحباً بِت» غيّر التحية إلى اسمك ولون الشريط إلى لونك المفضل، بالتحديث الفوري. ثم انقل عنوان الشريط إلى أوله بحذف سطر واحد. أي سطر؟</li>
+<li><span class="level medium">متوسط</span> ابحث في <code>hello_bit</code> عن الملف الذي يأخذ منه أندرويد اسم التطبيق الظاهر تحت أيقونته، والملف الذي يأخذه منه iOS. (تلميح: ابحث في <code>android/app/src/main</code> و<code>ios/Runner</code>.)</li>
+<li><span class="level medium">متوسط</span> غيّر اختبار «مرحباً بِت» ليفشل عمداً، مثلاً بأن يتوقع تحية مختلفة. شغّله، واشرح كل سطر في رسالة الفشل.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب في قائمة مرقّمة كل ما فعلته لتنتقل من حاسوب فارغ إلى تطبيق يعمل، مع الوقت الذي استغرقته كل خطوة. اطلب من صديق أن يتبعها على حاسوبه، وأصلح كل خطوة تعثّر فيها. هكذا تكتب الفرق وثائق التجهيز.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+<p>شغّلت تطبيق Flutter؛ وحان الوقت لتتعلم اللغة المكتوب بها. الفصل القادم يعلّمك Dart من أول سطر: المتغيرات وأنواعها، والأرقام والنصوص، والقرارات، والحلقات والدوال، وينتهي بطابعة فواتير لمقهى بِت.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b5/dart/ar">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">الفصل 2</p><h1>أساسيات Dart</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تكتب برنامج Dart وتشغّله من الطرفية</li>
+<li>تحفظ القيم في متغيرات، وتختار بين <code>var</code> و<code>final</code> و<code>const</code></li>
+<li>تتعامل مع أنواع Dart الأساسية: <code>int</code> و<code>double</code> و<code>String</code> و<code>bool</code></li>
+<li>تتخذ القرارات بـ <code>if</code>، وبـ <code>switch</code> وأنماطه</li>
+<li>تكرر العمل بالحلقات، وتجمعه في دوال بمعاملات مسماة</li>
+<li>تقرأ رسائل أخطاء مترجم Dart، وتجعلها تساعدك</li>
+</ul>
+</div>
+
+<p class="lead">كل تطبيق Flutter برنامج Dart، فقبل أن تبني الشاشات تحتاج إلى اللغة. والخبر الجيد: إن كنت تعرف JavaScript، أو أي لغة فيها متغيرات و<code>if</code> وحلقات، فستألف Dart في ساعة. الفرق الكبير الوحيد أن Dart تعرف <dfn>نوع</dfn> كل قيمة، وتفحص برنامجك قبل أن يعمل. وهذا يصطاد عائلات كاملة من الأخطاء قبل أن تصل إلى جوال المستخدم. يعلّمك هذا الفصل الأساسيات، برنامجاً صغيراً بعد آخر، وينتهي بطابعة فواتير لمقهى بِت.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>في هذا الفصل نترك الجوال قليلاً ونتحدث مع Dart مباشرة، في الطرفية. لا شاشات ولا محاكي: أنت واللغة وإجابات سريعة جداً.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>أول برنامج Dart</span></h2>
+
+<p>ثبّت Flutter لغة Dart لك. أنشئ مجلداً لهذا الفصل، وافتحه في VS Code، وأنشئ ملفاً اسمه <code>hello.dart</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello.dart</div><pre class="code"><span class="k">void</span> main() {
+  print(<span class="s">&#x27;مرحباً يا Dart!&#x27;</span>);
+}</pre></div>
+
+<p>شغّله من الطرفية:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run hello.dart</span>
+مرحباً يا Dart!</pre></div>
+
+<p>ثلاث قواعد تظهر من الآن في هذه الأسطر الثلاثة:</p>
+<ul>
+<li>كل برنامج Dart يبدأ من دالة اسمها <code>main</code>. وبدونها لا يوجد ما يُشغَّل.</li>
+<li><code>print</code> تكتب سطراً في الطرفية، مثل <code>console.log</code> في JavaScript.</li>
+<li>كل جملة تنتهي بفاصلة منقوطة. في JavaScript كان يمكنك أحياناً أن تتركها؛ أما في Dart فلا.</li>
+</ul>
+<p>يُكتب النص بين علامتي تنصيص مفردتين أو مزدوجتين. ومعظم كود Dart، بما فيه كود Flutter نفسه، يستخدم المفردتين، وكذلك هذا الكتاب.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>للتجارب السريعة افتح <code>dartpad.dev</code> في المتصفح: يشغّل Dart (بل وتطبيقات Flutter الصغيرة) دون تثبيت أي شيء. إنه مثالي لتجربة سطر لست متأكداً منه.</p></aside>
+
+<h2><span class="sec">2.2</span> <span>المتغيرات وأنواعها</span></h2>
+
+<p>المتغير اسم لقيمة، تماماً كما في الكتاب الأول. وتعطيك Dart عدة طرق لإنشائه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">variables.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// تستنتج Dart النوع من أول قيمة: score من النوع int إلى الأبد.</span>
+  <span class="k">var</span> score = <span class="n">0</span>;
+  score = score + <span class="n">10</span>;
+  print(score);
+
+  <span class="c line-bidi">// أو اكتب النوع بنفسك.</span>
+  <span class="k">String</span> name = <span class="s">&#x27;سارة&#x27;</span>;
+  print(name);
+
+  <span class="c line-bidi">// final: تُضبط مرة واحدة، عند تشغيل البرنامج.</span>
+  <span class="k">final</span> joined = DateTime.now().year;
+  print(joined &gt; <span class="n">2000</span>);
+
+  <span class="c line-bidi">// const: معروفة قبل تشغيل البرنامج، ولا تتغير أبداً.</span>
+  <span class="k">const</span> maxPlayers = <span class="n">4</span>;
+  print(maxPlayers);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run variables.dart</span>
+10
+سارة
+true
+4</pre></div>
+
+<p>مع <code>var</code> تنظر Dart إلى القيمة الأولى وتقرر نوع المتغير: <code>score</code> يبدأ بـ <code>0</code>، فهو <code>int</code>، أي عدد صحيح. وهذا يُسمّى <dfn>استنتاج النوع</dfn>. ويمكنك أيضاً أن تكتب النوع بنفسك، كما في <code>String name</code>. وفي الحالتين يثبت النوع إلى الأبد: المتغير الذي يحمل أرقاماً لا يحمل نصاً أبداً. انظر ماذا يحدث لو حاولت:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">type-error.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> score = <span class="n">0</span>;
+  score = <span class="s">&#x27;عشرة&#x27;</span>;
+  print(score);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run type-error.dart</span>
+type-error.dart:3:11: Error: A value of type &#x27;String&#x27; can&#x27;t be assigned to a variable of type &#x27;int&#x27;.
+  score = &#x27;عشرة&#x27;;
+          ^</pre></div>
+
+<p>لم يعمل البرنامج أصلاً. فقبل تشغيل أي شيء، <dfn>تترجم</dfn> Dart البرنامج: تقرؤه كله وتحوّله إلى تعليمات للحاسوب، وتفحص الأنواع في الطريق. والخطأ يقول أين (السطر 3، العمود 11، والعلامة <code>^</code> تشير إليه) ولماذا، بكلمات واضحة: قيمة من النوع <code>String</code> لا يمكن وضعها في متغير من النوع <code>int</code>. وفي JavaScript كان السطر نفسه سيعمل، ويظهر الخطأ لاحقاً في مكان آخر، وربما على جوال مستخدم.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>منذ Dart 2 صار كل برنامج Dart <em>آمن الأنواع</em>: المتغير المعرّف <code>int</code> لا يمكن أن يحمل غير ذلك أبداً أثناء عمل البرنامج. ومترجم Dart يستفيد من هذا الوعد ليجعل تطبيقك أسرع أيضاً.</p></aside>
+
+<h3>final وconst</h3>
+
+<p>معظم القيم في البرنامج لا تتغير أبداً بعد ضبطها. ولدى Dart كلمتان لها:</p>
+<ul>
+<li><code>final</code>: تُضبط القيمة مرة واحدة، حين يصل البرنامج إلى ذلك السطر، ولا تتغير بعدها. ويمكن أن تأتي من حساب، أو من الساعة، أو من المستخدم.</li>
+<li><code>const</code>: القيمة معروفة <em>قبل</em> أن يعمل البرنامج، مكتوبة في الكود مباشرة، مثل <code>4</code> أو <code>'سارة'</code>. فتستطيع Dart أن تبنيها مرة واحدة وتشاركها.</li>
+</ul>
+<p>في <code>variables.dart</code> تأتي سنة الانضمام من الساعة (<code>DateTime.now()</code>)، فلا يمكن أن تكون إلا <code>final</code>. أما أقصى عدد للاعبين فمكتوب في الكود، فيمكن أن يكون <code>const</code>. جرّب أن تغيّر <code>final</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">final-error.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">final</span> name = <span class="s">&#x27;سارة&#x27;</span>;
+  name = <span class="s">&#x27;عمر&#x27;</span>;
+  print(name);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run final-error.dart</span>
+final-error.dart:3:3: Error: Can&#x27;t assign to the final variable &#x27;name&#x27;.
+  name = &#x27;عمر&#x27;;
+  ^^^^</pre></div>
+
+<table>
+<thead><tr><th>في Dart</th><th>المعنى</th><th>الأقرب في JavaScript</th></tr></thead>
+<tbody>
+<tr><td><code>var</code></td><td>يمكن أن يتغير؛ ونوعه من أول قيمة</td><td><code>let</code></td></tr>
+<tr><td><code>final</code></td><td>يُضبط مرة واحدة، أثناء عمل البرنامج</td><td><code>const</code></td></tr>
+<tr><td><code>const</code></td><td>معروف قبل أن يعمل البرنامج</td><td>(لا يوجد)</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>استخدم <code>final</code> افتراضياً، و<code>const</code> للقيم المكتوبة في الكود، و<code>var</code> فقط حين يجب أن تتغير القيمة. وفي Flutter تهم <code>const</code> أكثر: فالـ Widget الثابت يُبنى مرة ويُعاد استخدامه، ولهذا رأيت <code>const Text(...)</code> في الفصل 1. والمحلل يذكّرك حين تنسى.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>الأرقام والنصوص والصواب والخطأ</span></h2>
+
+<p>لدى Dart مجموعة صغيرة من الأنواع الأساسية ستستخدمها في كل برنامج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">numbers.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">int</span> cups = <span class="n">7</span>;
+  <span class="k">double</span> price = <span class="n">12.5</span>;
+  <span class="k">num</span> anything = <span class="n">3</span>;
+  <span class="k">bool</span> open = <span class="k">true</span>;
+  print(cups);
+  print(price);
+  print(anything);
+  print(open);
+
+  <span class="c line-bidi">// / تعطي double دائماً؛ و~/ تقسم وتحذف ما بعد الفاصلة.</span>
+  print(<span class="n">7</span> / <span class="n">2</span>);
+  print(<span class="n">7</span> ~/ <span class="n">2</span>);
+  print(<span class="n">7</span> % <span class="n">2</span>);
+
+  <span class="c line-bidi">// النص القادم من المستخدم أو من ملف يصير رقماً بـ parse.</span>
+  <span class="k">int</span> age = <span class="k">int</span>.parse(<span class="s">&#x27;34&#x27;</span>);
+  <span class="k">double</span> weight = <span class="k">double</span>.parse(<span class="s">&#x27;2.75&#x27;</span>);
+  print(age + <span class="n">1</span>);
+  print(weight * <span class="n">2</span>);
+
+  <span class="c line-bidi">// رقمان بعد الفاصلة، نصاً جاهزاً للعرض.</span>
+  print((<span class="n">10</span> / <span class="n">3</span>).toStringAsFixed(<span class="n">2</span>));
+  print(age.toString() + <span class="s">&#x27;!&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run numbers.dart</span>
+7
+12.5
+3
+true
+3.5
+3
+1
+35
+5.5
+3.33
+34!</pre></div>
+
+<table>
+<thead><tr><th>النوع</th><th>ما يحمله</th><th>أمثلة</th></tr></thead>
+<tbody>
+<tr><td><code>int</code></td><td>الأعداد الصحيحة</td><td><code>7</code> و<code>-3</code> و<code>2026</code></td></tr>
+<tr><td><code>double</code></td><td>الأعداد بفاصلة عشرية</td><td><code>12.5</code> و<code>0.1</code></td></tr>
+<tr><td><code>num</code></td><td>أياً من النوعين</td><td><code>3</code> أو <code>3.5</code></td></tr>
+<tr><td><code>String</code></td><td>النصوص</td><td><code>'القاهرة'</code></td></tr>
+<tr><td><code>bool</code></td><td><code>true</code> أو <code>false</code>، ولا شيء غيرهما</td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>لدى JavaScript نوع واحد من الأرقام، ولدى Dart نوعان، ويظهر الفرق في القسمة. العامل <code>/</code> يعطي <code>double</code> دائماً: <code>7 / 2</code> تساوي <code>3.5</code>. والعامل <code>~/</code> يقسم ويحذف كل ما بعد الفاصلة، فيعطي <code>int</code>: <code>7 ~/ 2</code> تساوي <code>3</code>. وباقي القسمة <code>%</code> يعمل كما تعرفه.</p>
+
+<p>لا تحوّل Dart النص إلى رقم ولا الرقم إلى نص من تلقاء نفسها. فالنص الذي يحوي رقماً، القادم من مربع نص أو من ملف، يصير رقماً بـ <code>int.parse</code> أو <code>double.parse</code>. والرقم يصير نصاً بـ <code>toString()</code>، أو بـ <code>toStringAsFixed(2)</code> لتبقى خانتان بالضبط بعد الفاصلة، وهذا ما تريده للأسعار.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p><code>int.parse('12a')</code> يوقف البرنامج بخطأ، لأن <code>'12a'</code> ليس رقماً. فحين يأتي النص من المستخدم، استخدم <code>int.tryParse</code>، التي تعطي <code>null</code> (لا قيمة) بدلاً من أن توقف البرنامج. ويشرح الفصل 3 الـ <code>null</code>، ويستخدم الفصل 9 الدالة <code>tryParse</code> في نماذج حقيقية.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>النصوص</span></h2>
+
+<p>لنصوص Dart ميزة ستستخدمها في كل سطر تقريباً من تطبيقات Flutter: <dfn>الاستيفاء</dfn> (interpolation)، أي وضع القيم داخل النص.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">strings.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> name = <span class="s">&#x27;سارة&#x27;</span>;
+  <span class="k">var</span> items = <span class="n">3</span>;
+  <span class="k">var</span> price = <span class="n">12.5</span>;
+
+  <span class="c line-bidi">// $name تضع متغيراً في النص؛ و${...} أي تعبير.</span>
+  print(<span class="s">&#x27;أهلاً بعودتك، $name!&#x27;</span>);
+  print(<span class="s">&#x27;$items قطع × $price = ${items * price}&#x27;</span>);
+  print(<span class="s">&#x27;السعر: ${price.toStringAsFixed(2)}&#x27;</span>);
+
+  <span class="c line-bidi">// ثلاث علامات تنصيص: نص على عدة أسطر.</span>
+  <span class="k">var</span> poem = <span class="s">&#x27;&#x27;&#x27;الورد أحمر،
+  وDart كذلك،
+  لكل قيمة نوع،
+  فاعرف نوعك.&#x27;&#x27;&#x27;</span>;
+  print(poem);
+
+  <span class="k">var</span> raw = <span class="s">&#x27;  مقهى بِت  &#x27;</span>;
+  print(<span class="s">&#x27;[${raw.trim()}]&#x27;</span>);
+  print(raw.trim().toUpperCase());
+  print(name.length);
+  print(name.contains(<span class="s">&#x27;سارة&#x27;</span>));
+  print(<span class="s">&#x27;7&#x27;</span>.padLeft(<span class="n">3</span>, <span class="s">&#x27;0&#x27;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run strings.dart</span>
+أهلاً بعودتك، سارة!
+3 قطع × 12.5 = 37.5
+السعر: 12.50
+الورد أحمر،
+  وDart كذلك،
+  لكل قيمة نوع،
+  فاعرف نوعك.
+[مقهى بِت]
+مقهى بِت
+4
+true
+007</pre></div>
+
+<ul>
+<li><code>$name</code> داخل النص تضع هناك قيمة المتغير <code>name</code>.</li>
+<li><code>${items * price}</code>، مع الأقواس المعقوفة، تضع هناك ناتج أي تعبير. استخدم الأقواس كلما كان هناك أكثر من اسم مجرد، حتى في <code>${price.toStringAsFixed(2)}</code>.</li>
+<li>ثلاث علامات تنصيص، <code>'''</code>، تبدأ نصاً يمتد على عدة أسطر، ويحتفظ بفواصل الأسطر والمسافات.</li>
+<li>للنصوص دوال مفيدة: <code>trim()</code> تحذف المسافات من الطرفين، و<code>toUpperCase()</code> تجعل الحروف الإنجليزية كبيرة (ولا تغيّر العربية، فليس فيها حروف كبيرة)، و<code>contains</code> تبحث، و<code>padLeft(3, '0')</code> تملأ من اليسار حتى طول معين، و<code>length</code> تعدّ الحروف.</li>
+</ul>
+
+<p>لاحظ أن أياً من هذه الدوال لم يغيّر <code>raw</code> ولا <code>name</code>. فالنصوص في Dart لا تتغير؛ كل دالة تُرجع نصاً جديداً. ولهذا يجب أن تستخدم ناتج <code>raw.trim()</code>، أو تحفظه، ليكون مفيداً.</p>
+
+<h2><span class="sec">2.5</span> <span>العوامل</span></h2>
+
+<p>العوامل تكاد تكون نفسها في JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">operators.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> score = <span class="n">10</span>;
+  <span class="c line-bidi">// score += 5 طريقة مختصرة لكتابة score = score + 5.</span>
+  score += <span class="n">5</span>;
+  score++;
+  print(score);
+
+  print(score == <span class="n">16</span>);
+  print(score != <span class="n">16</span>);
+  print(score &gt; <span class="n">10</span> &amp;&amp; score &lt; <span class="n">20</span>);
+  print(score &lt; <span class="n">10</span> || score &gt; <span class="n">15</span>);
+  print(!(score &gt; <span class="n">10</span>));
+
+  print(<span class="n">5</span> == <span class="n">5.0</span>);
+  print(<span class="s">&#x27;5&#x27;</span> == <span class="n">5</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run operators.dart</span>
+16
+true
+false
+true
+true
+false
+true
+false</pre></div>
+
+<p><code>+=</code> و<code>++</code> والمقارنات والعوامل المنطقية <code>&amp;&amp;</code> و<code>||</code> و<code>!</code> تعمل كما تعرفها. وشيء واحد أبسط: في Dart <code>==</code> فقط، بلا <code>===</code>، لأنها لا تحوّل الأنواع عند المقارنة أبداً. <code>5 == 5.0</code> تساوي <code>true</code> (فكلاهما العدد خمسة)، لكن <code>'5' == 5</code> تساوي <code>false</code>: النص لا يساوي رقماً أبداً.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>كم تعطي <code>9 / 2</code> و<code>9 ~/ 2</code>؟</li><li>أيهما تستخدم لقيمة تأتي من الساعة: <code>final</code> أم <code>const</code>؟</li><li>كيف تكتب النص <code>الإجمالي: 30</code> من متغير <code>total</code> قيمته <code>30</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">2.6</span> <span>القرارات بـ if</span></h2>
+
+<p><code>if</code> و<code>else if</code> و<code>else</code> تعمل تماماً كما في الكتاب الأول. وهذا شبّاك التذاكر من جديد، بلغة Dart:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ticket.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> age = <span class="n">9</span>;
+  <span class="k">var</span> isMember = <span class="k">true</span>;
+
+  <span class="k">int</span> price;
+  <span class="k">if</span> (age &lt; <span class="n">4</span>) {
+    price = <span class="n">0</span>;
+  } <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) {
+    price = <span class="n">6</span>;
+  } <span class="k">else</span> {
+    price = <span class="n">10</span>;
+  }
+
+  <span class="k">if</span> (isMember) {
+    price = price ~/ <span class="n">2</span>;
+  }
+
+  <span class="c line-bidi">// الشرط ? إن تحقق : إن لم يتحقق، للاختيارات الصغيرة.</span>
+  <span class="k">var</span> kind = age &lt; <span class="n">18</span> ? <span class="s">&#x27;طفل&#x27;</span> : <span class="s">&#x27;بالغ&#x27;</span>;
+  <span class="k">var</span> who = isMember ? <span class="s">&#x27;عضو&#x27;</span> : <span class="s">&#x27;زائر&#x27;</span>;
+  print(<span class="s">&#x27;العمر $age ($kind، $who) يدفع $price&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run ticket.dart</span>
+العمر 9 (طفل، عضو) يدفع 3</pre></div>
+
+<p>في الكود تفصيلان جديدان. الأول: <code>int price;</code> تعرّف متغيراً بلا قيمة. ثم تتأكد Dart أن كل طريق عبر <code>if</code> يعطيه قيمة قبل أن يُستخدم: احذف <code>else</code> ولن يُترجَم البرنامج. والثاني: الشرط يجب أن يكون <code>bool</code> حقيقياً. في JavaScript كان <code>if (count)</code> صحيحاً لأي رقم غير الصفر؛ أما في Dart فهو خطأ. اكتب ما تقصده: <code>if (count &gt; 0)</code>.</p>
+
+<p>والعامل الشرطي <code>condition ? a : b</code> يعمل كما في JavaScript، وستستخدمه باستمرار في Flutter لتختار بين Widgetين أو لونين.</p>
+
+<h2><span class="sec">2.7</span> <span>switch والأنماط</span></h2>
+
+<p><code>switch</code> في Dart من أفضل ميزاتها، وأقوى بكثير من نظيره في JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">switch.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> size = <span class="s">&#x27;M&#x27;</span>;
+
+  <span class="c line-bidi">// لا حاجة إلى break: لا تنتقل Dart أبداً إلى الحالة التالية.</span>
+  <span class="k">switch</span> (size) {
+    <span class="k">case</span> <span class="s">&#x27;S&#x27;</span>:
+      print(<span class="s">&#x27;كوب صغير&#x27;</span>);
+    <span class="k">case</span> <span class="s">&#x27;M&#x27;</span>:
+      print(<span class="s">&#x27;كوب وسط&#x27;</span>);
+    <span class="k">case</span> <span class="s">&#x27;L&#x27;</span>:
+      print(<span class="s">&#x27;كوب كبير&#x27;</span>);
+    <span class="k">default</span>:
+      print(<span class="s">&#x27;حجم غير معروف&#x27;</span>);
+  }
+
+  <span class="c line-bidi">// تعبير switch ينتج قيمة. وأول نمط يطابق هو الذي يفوز.</span>
+  <span class="k">var</span> day = <span class="s">&#x27;الجمعة&#x27;</span>;
+  <span class="k">var</span> kind = <span class="k">switch</span> (day) {
+    <span class="s">&#x27;الجمعة&#x27;</span> || <span class="s">&#x27;السبت&#x27;</span> =&gt; <span class="s">&#x27;عطلة&#x27;</span>,
+    _ =&gt; <span class="s">&#x27;يوم عمل&#x27;</span>,
+  };
+  print(kind);
+
+  <span class="k">for</span> (<span class="k">var</span> score <span class="k">in</span> [<span class="n">95</span>, <span class="n">83</span>, <span class="n">71</span>, <span class="n">40</span>]) {
+    <span class="k">var</span> grade = <span class="k">switch</span> (score) {
+      <span class="c line-bidi">// &gt;= 90 نمط: يطابق أي قيمة لا تقل عن 90.</span>
+      &gt;= <span class="n">90</span> =&gt; <span class="s">&#x27;A&#x27;</span>,
+      &gt;= <span class="n">80</span> =&gt; <span class="s">&#x27;B&#x27;</span>,
+      &gt;= <span class="n">70</span> =&gt; <span class="s">&#x27;C&#x27;</span>,
+      &gt;= <span class="n">50</span> =&gt; <span class="s">&#x27;D&#x27;</span>,
+      <span class="c line-bidi">// _ يطابق أي شيء: الحالة لكل ما عدا ذلك.</span>
+      _ =&gt; <span class="s">&#x27;F&#x27;</span>,
+    };
+    print(<span class="s">&#x27;$score -&gt; $grade&#x27;</span>);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run switch.dart</span>
+كوب وسط
+عطلة
+95 -&gt; A
+83 -&gt; B
+71 -&gt; C
+40 -&gt; F</pre></div>
+
+<p>الـ <code>switch</code> الأول جملة، كالتي تعرفها، مع تحسين واحد: لا يوجد <code>break</code>. كل <code>case</code> ينتهي حيث يبدأ التالي، ولا تنتقل Dart إلى الحالة التالية عن طريق الخطأ أبداً.</p>
+
+<p>والثاني والثالث <dfn>تعبيرات switch</dfn>: تنتج قيمة تذهب مباشرة إلى متغير. في كل سطر <dfn>نمط</dfn> على يسار <code>=&gt;</code> ونتيجة على يمينه، وأول نمط يطابق هو الذي يفوز:</p>
+<ul>
+<li>القيمة العادية، مثل <code>'الجمعة'</code>، تطابق حين تساويها القيمة.</li>
+<li><code>||</code> بين نمطين تطابق أياً منهما.</li>
+<li><code>&gt;= 90</code> <em>نمط علاقة</em>: يطابق أي قيمة لا تقل عن 90. وبهذا تصير التقديرات قائمة قصيرة واضحة.</li>
+<li><code>_</code>، <em>البدل</em>، يطابق أي شيء. ضعه في الآخر، لكل ما عدا ذلك.</li>
+</ul>
+
+<p>تعبير switch يجب أن يغطي كل قيمة ممكنة. فلو حذفت سطر <code>_</code> من التقديرات لما تُرجم البرنامج، لأن الدرجة 40 لن يكون لها تقدير. وتسمّي Dart هذا <dfn>فحص الشمول</dfn> (exhaustiveness checking)، وفي الفصل 3 ستراه يصطاد أخطاء حقيقية.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>انظر إلى التقديرات مرة أخرى: خمسة أسطر، بلا <code>if</code> ولا <code>else</code>، وتستطيع أن تقرأها بصوت عالٍ كالجدول المعلّق على حائط المعلم. لهذا أحب تعبيرات switch.</p></div></div>
+
+<h2><span class="sec">2.8</span> <span>الحلقات</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">loops.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// عُدّ من 1 إلى 3.</span>
+  <span class="k">for</span> (<span class="k">var</span> i = <span class="n">1</span>; i &lt;= <span class="n">3</span>; i++) {
+    print(<span class="s">&#x27;الدورة $i&#x27;</span>);
+  }
+
+  <span class="c line-bidi">// for-in: كل عنصر في القائمة، بالترتيب.</span>
+  <span class="k">var</span> drinks = [<span class="s">&#x27;شاي&#x27;</span>, <span class="s">&#x27;قهوة&#x27;</span>, <span class="s">&#x27;عصير&#x27;</span>];
+  <span class="k">for</span> (<span class="k">var</span> drink <span class="k">in</span> drinks) {
+    print(drink);
+  }
+
+  <span class="c line-bidi">// while: كرّر ما دام الشرط صحيحاً.</span>
+  <span class="k">var</span> cups = <span class="n">3</span>;
+  <span class="k">while</span> (cups &gt; <span class="n">0</span>) {
+    print(<span class="s">&#x27;الكوب $cups&#x27;</span>);
+    cups--;
+  }
+
+  <span class="c line-bidi">// continue تقفز إلى الدورة التالية؛ وbreak تخرج من الحلقة.</span>
+  <span class="k">for</span> (<span class="k">var</span> n = <span class="n">1</span>; n &lt;= <span class="n">10</span>; n++) {
+    <span class="k">if</span> (n % <span class="n">2</span> == <span class="n">0</span>) <span class="k">continue</span>;
+    <span class="k">if</span> (n &gt; <span class="n">7</span>) <span class="k">break</span>;
+    print(n);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run loops.dart</span>
+الدورة 1
+الدورة 2
+الدورة 3
+شاي
+قهوة
+عصير
+الكوب 3
+الكوب 2
+الكوب 1
+1
+3
+5
+7</pre></div>
+
+<p>كل هذا مألوف. <code>for</code> التقليدية تعدّ. و<code>for (var drink in drinks)</code> تزور كل عنصر في القائمة بالترتيب، مثل <code>for...of</code> في JavaScript. و<code>while</code> تكرر ما دام شرطها صحيحاً. و<code>continue</code> تتخطى باقي دورة واحدة، و<code>break</code> تخرج من الحلقة: فالحلقة الأخيرة تتخطى الأعداد الزوجية وتتوقف بعد 7.</p>
+
+<p>والأقواس المربعة، <code>['شاي', 'قهوة', 'عصير']</code>، تصنع <dfn>قائمة</dfn> (List)، وهو اسم المصفوفة في Dart. ويغطي الفصل 3 القوائم بالكامل، مع الـ Map والـ Set.</p>
+
+<h2><span class="sec">2.9</span> <span>الدوال</span></h2>
+
+<p>الدوال في Dart تعلن نوع ما تُرجعه، ونوع كل معامل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">functions.dart</div><pre class="code"><span class="k">int</span> square(<span class="k">int</span> n) {
+  <span class="k">return</span> n * n;
+}
+
+<span class="c line-bidi">// تعبير واحد؟ السهم =&gt; يحل محل { return ...; }.</span>
+<span class="k">int</span> cube(<span class="k">int</span> n) =&gt; n * n * n;
+
+<span class="c line-bidi">// المعاملات المسماة تُكتب بأسمائها؛ والمطلوب منها لا بد أن يُعطى.</span>
+<span class="k">double</span> price({<span class="k">required</span> <span class="k">int</span> cups, <span class="k">double</span> each = <span class="n">12.5</span>}) =&gt; cups * each;
+
+<span class="c line-bidi">// المعاملات الموضعية الاختيارية بين قوسين مربعين.</span>
+<span class="k">String</span> greet(<span class="k">String</span> name, [<span class="k">String</span> greeting = <span class="s">&#x27;مرحباً&#x27;</span>]) =&gt; <span class="s">&#x27;$greeting، $name!&#x27;</span>;
+
+<span class="k">void</span> main() {
+  print(square(<span class="n">4</span>));
+  print(cube(<span class="n">3</span>));
+  print(price(cups: <span class="n">2</span>));
+  print(price(each: <span class="n">20</span>, cups: <span class="n">3</span>));
+  print(greet(<span class="s">&#x27;سارة&#x27;</span>));
+  print(greet(<span class="s">&#x27;عمر&#x27;</span>, <span class="s">&#x27;صباح الخير&#x27;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run functions.dart</span>
+16
+27
+25.0
+60.0
+مرحباً، سارة!
+صباح الخير، عمر!</pre></div>
+
+<ul>
+<li><code>int square(int n)</code> تأخذ <code>int</code> وتُرجع <code>int</code>. والدالة التي لا تُرجع شيئاً تُعلَن <code>void</code>، مثل <code>main</code>.</li>
+<li>حين يكون جسم الدالة تعبيراً واحداً، يحل السهم <code>=&gt;</code> محل الأقواس و<code>return</code>، كما في <code>cube</code>.</li>
+<li><dfn>المعاملات المسماة</dfn> تُكتب بين أقواس معقوفة <code>{...}</code>، وتُعطى بأسمائها عند استدعاء الدالة: <code>price(cups: 2)</code>. ترتيبها لا يهم، والاستدعاء يُقرأ كجملة. و<code>required</code> تعني أنه لا بد أن يُعطى، والباقي يحتاج قيمة افتراضية، مثل <code>each = 12.5</code>.</li>
+<li><dfn>المعاملات الموضعية الاختيارية</dfn> بين أقواس مربعة <code>[...]</code>، كما في <code>greet</code>.</li>
+</ul>
+
+<p>المعاملات المسماة في كل مكان في Flutter: فكل <code>Text(..., style: ...)</code> وكل <code>AppBar(title: ..., centerTitle: true)</code> كتبته في الفصل 1 كان استدعاءً بمعاملات مسماة. وحين تنسى معاملاً مطلوباً، تخبرك Dart قبل أن يعمل أي شيء:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">named-error.dart</div><pre class="code"><span class="k">double</span> price({<span class="k">required</span> <span class="k">int</span> cups, <span class="k">double</span> each = <span class="n">12.5</span>}) =&gt; cups * each;
+
+<span class="k">void</span> main() {
+  print(price(each: <span class="n">20</span>));
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run named-error.dart</span>
+named-error.dart:4:14: Error: Required named parameter &#x27;cups&#x27; must be provided.
+  print(price(each: 20));
+             ^
+named-error.dart:1:8: Context: Found this candidate, but the arguments don&#x27;t match.
+double price({required int cups, double each = 12.5}) =&gt; cups * each;
+       ^^^^^</pre></div>
+
+<p>والجزء الثاني من الرسالة، <code>Context</code>، يعرض الدالة التي كنت تحاول استدعاءها، لترى ما تتوقعه.</p>
+
+<h3>الدوال قيم</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">values.dart</div><pre class="code"><span class="k">int</span> twice(<span class="k">int</span> n) =&gt; n * <span class="n">2</span>;
+
+<span class="k">void</span> main() {
+  <span class="c line-bidi">// الدالة قيمة: يمكن حفظها في متغير وتمريرها إلى دالة أخرى.</span>
+  <span class="k">var</span> change = twice;
+  print(change(<span class="n">21</span>));
+
+  <span class="c line-bidi">// دالة بلا اسم، تُكتب حيث نحتاجها.</span>
+  <span class="k">var</span> prices = [<span class="n">12</span>, <span class="n">30</span>, <span class="n">8</span>, <span class="n">45</span>];
+  <span class="k">var</span> cheap = prices.where((p) =&gt; p &lt; <span class="n">20</span>).toList();
+  <span class="k">var</span> doubled = prices.map(twice).toList();
+  print(cheap);
+  print(doubled);
+
+  prices.forEach((p) {
+    print(<span class="s">&#x27;${p.toString().padLeft(3)} جنيه&#x27;</span>);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run values.dart</span>
+42
+[12, 8]
+[24, 60, 16, 90]
+ 12 جنيه
+ 30 جنيه
+  8 جنيه
+ 45 جنيه</pre></div>
+
+<p>يمكن حفظ الدالة في متغير، مثل <code>change</code>، وتمريرها إلى دالة أخرى. و<code>(p) =&gt; p &lt; 20</code> <dfn>دالة مجهولة</dfn>، أي دالة بلا اسم، تُكتب حيث نحتاجها. <code>where</code> تبقي العناصر التي تُرجع لها <code>true</code>، و<code>map</code> تحوّل كل عنصر، و<code>forEach</code> تشغّلها لكل عنصر. إن قرأت الكتاب الأول فهذه هي <code>filter</code> و<code>map</code> و<code>forEach</code> بأسماء مختلفة قليلاً. وفي Flutter، <code>onPressed</code> في كل زر دالة مجهولة: الكود الذي يعمل حين يُضغط.</p>
+
+<h2><span class="sec">2.10</span> <span>مشروع: فاتورة المقهى</span></h2>
+
+<p>يحتاج مقهى بِت إلى برنامج يطبع الفواتير. والقواعد:</p>
+<ol>
+<li>اللاتيه بـ 45 جنيهاً، والكوكيز بـ 20، والكيك بـ 60.</li>
+<li>يوم الجمعة خصم 20% على كل شيء، ويوم السبت 10%.</li>
+<li>تُضاف خدمة 12% بعد الخصم، مقرّبة إلى أقرب جنيه.</li>
+<li>لا تذكر الفاتورة إلا ما طُلب، بالأسماء في جهة والمبالغ في الجهة الأخرى.</li>
+</ol>
+
+<div class="listing" dir="ltr"><div class="listing-title">receipt.dart</div><pre class="code"><span class="c line-bidi">// الأسعار بالجنيه الكامل؛ والفصل 3 يضعها في صنف.</span>
+<span class="k">const</span> latte = <span class="n">45</span>;
+<span class="k">const</span> cookie = <span class="n">20</span>;
+<span class="k">const</span> cake = <span class="n">60</span>;
+<span class="k">const</span> width = <span class="n">26</span>;
+
+<span class="c line-bidi">// اليوم يحدد الخصم: 20% يوم الجمعة، و10% يوم السبت.</span>
+<span class="k">int</span> discountPercent(<span class="k">String</span> day) =&gt; <span class="k">switch</span> (day) {
+  <span class="s">&#x27;الجمعة&#x27;</span> =&gt; <span class="n">20</span>,
+  <span class="s">&#x27;السبت&#x27;</span> =&gt; <span class="n">10</span>,
+  _ =&gt; <span class="n">0</span>,
+};
+
+<span class="c line-bidi">// سطر واحد من الفاتورة: الاسم في جهة، والمبلغ في الأخرى.</span>
+<span class="k">String</span> line(<span class="k">String</span> name, <span class="k">int</span> amount) =&gt;
+    name.padRight(width - <span class="n">8</span>) + amount.toString().padLeft(<span class="n">8</span>);
+
+<span class="k">void</span> printReceipt({
+  <span class="k">required</span> <span class="k">String</span> day,
+  <span class="k">int</span> lattes = <span class="n">0</span>,
+  <span class="k">int</span> cookies = <span class="n">0</span>,
+  <span class="k">int</span> cakes = <span class="n">0</span>,
+}) {
+  <span class="k">var</span> subtotal = lattes * latte + cookies * cookie + cakes * cake;
+  <span class="k">var</span> discount = subtotal * discountPercent(day) ~/ <span class="n">100</span>;
+  <span class="c line-bidi">// تُقرّب الخدمة إلى أقرب جنيه.</span>
+  <span class="k">var</span> service = ((subtotal - discount) * <span class="n">0.12</span>).round();
+  <span class="k">var</span> total = subtotal - discount + service;
+
+  print(<span class="s">&#x27;=&#x27;</span> * width);
+  print(<span class="s">&#x27;مقهى بِت · $day&#x27;</span>);
+  print(<span class="s">&#x27;-&#x27;</span> * width);
+  <span class="k">if</span> (lattes &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;$lattes × لاتيه&#x27;</span>, lattes * latte));
+  <span class="k">if</span> (cookies &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;$cookies × كوكيز&#x27;</span>, cookies * cookie));
+  <span class="k">if</span> (cakes &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;$cakes × كيك&#x27;</span>, cakes * cake));
+  print(<span class="s">&#x27;-&#x27;</span> * width);
+  print(line(<span class="s">&#x27;المجموع&#x27;</span>, subtotal));
+  <span class="k">if</span> (discount &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;الخصم&#x27;</span>, -discount));
+  print(line(<span class="s">&#x27;الخدمة 12%&#x27;</span>, service));
+  print(line(<span class="s">&#x27;المطلوب&#x27;</span>, total));
+  print(<span class="s">&#x27;=&#x27;</span> * width);
+}
+
+<span class="k">void</span> main() {
+  printReceipt(day: <span class="s">&#x27;الجمعة&#x27;</span>, lattes: <span class="n">2</span>, cookies: <span class="n">3</span>);
+  printReceipt(day: <span class="s">&#x27;الاثنين&#x27;</span>, cakes: <span class="n">1</span>, lattes: <span class="n">1</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run receipt.dart</span>
+==========================
+مقهى بِت · الجمعة
+--------------------------
+2 × لاتيه               90
+3 × كوكيز               60
+--------------------------
+المجموع                150
+الخصم                  -30
+الخدمة 12%              14
+المطلوب                134
+==========================
+==========================
+مقهى بِت · الاثنين
+--------------------------
+1 × لاتيه               45
+1 × كيك                 60
+--------------------------
+المجموع                105
+الخدمة 12%              13
+المطلوب                118
+==========================</pre></div>
+
+<p>تتبّع فاتورة الجمعة كما يفعل الحاسوب. كوبا لاتيه وثلاث قطع كوكيز تساوي 150. والجمعة تعطي 20%، فالخصم <code>150 * 20 ~/ 100</code>، أي 30. والخدمة 12% من 120، أي 14.4، و<code>round()</code> تجعلها 14. والإجمالي 150 − 30 + 14 = 134.</p>
+
+<p>انظر إلى ما يستخدمه كل جزء من البرنامج. الأسعار <code>const</code>. والخصم تعبير switch في دالة سهم. و<code>line</code> تبني كل سطر بـ <code>padRight</code> و<code>padLeft</code>، فتصطف المبالغ. و<code>printReceipt</code> تستخدم معاملات مسماة بقيم افتراضية، فالزبون الذي طلب كيكاً فقط لا يحتاج أن يقول «صفر لاتيه». و<code>'=' * width</code> تكرر نصاً: راحة صغيرة أخرى من Dart.</p>
+
+<p>ولاحظ شكل الفاتورة العربية: كل سطر يبدأ بحرف عربي فيُعرض من اليمين، فتظهر الأسماء في اليمين والمبالغ مصطفة في عمود على اليسار. ذلك لأن <code>padRight</code> تضيف المسافات في <em>نهاية</em> النص، ونهاية السطر العربي يساره. ولاحظ أيضاً أن الخصم <code>-30</code> ظهر <code>30-</code>: فإشارة السالب حرف محايد يأخذ اتجاه ما حوله. هذه هي مشكلات خلط الاتجاهين، ويحلها Flutter في التطبيقات حين يعرف أن لغتها عربية، كما سترى في الفصل 13.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>أضف الشاي بـ 15 جنيهاً إلى القائمة وإلى <code>printReceipt</code>. ثم اطبع فاتورة يوم السبت لكوبي شاي وقطعة كيك، واحسب الإجمالي بيدك قبل أن تشغّل البرنامج.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان الفاصلة المنقوطة</td><td>خطأ ترجمة: <code>Expected ';' after this.</code></td><td>أنهِ كل جملة بـ <code>;</code></td></tr>
+<tr><td>وضع نص في متغير رقمي</td><td>خطأ ترجمة: لا يمكن وضع <code>String</code> في <code>int</code></td><td>حوّله بـ <code>int.parse</code>، أو استخدم متغيراً آخر</td></tr>
+<tr><td>استخدام <code>/</code> حين تحتاج عدداً صحيحاً</td><td><code>double</code> حيث يُنتظر <code>int</code></td><td>استخدم <code>~/</code></td></tr>
+<tr><td><code>if (count)</code> مع رقم</td><td>خطأ ترجمة: لا يمكن وضع <code>int</code> في <code>bool</code></td><td>اكتب المقارنة: <code>count &gt; 0</code></td></tr>
+<tr><td><code>'الإجمالي: ' + total</code> مع رقم</td><td>خطأ ترجمة: لا يمكن وضع <code>int</code> في <code>String</code></td><td>استخدم الاستيفاء: <code>'الإجمالي: $total'</code></td></tr>
+<tr><td>ترك معامل مسمى <code>required</code></td><td>خطأ ترجمة يذكر المعامل الناقص</td><td>أعطه: <code>price(cups: 2)</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>برنامج Dart يبدأ من <code>main</code>، ويطبع بـ <code>print</code>، وينهي الجمل بـ <code>;</code>، ويعمل بـ <code>dart run file.dart</code>.</li>
+<li>لكل قيمة <strong>نوع</strong> يُفحص قبل أن يعمل البرنامج. و<code>var</code> تستنتجه من أول قيمة، ولا يتغير أبداً.</li>
+<li>فضّل <code>final</code> (يُضبط مرة) و<code>const</code> (معروف قبل التشغيل)، ولا تستخدم <code>var</code> إلا للقيم التي تتغير.</li>
+<li><code>int</code> و<code>double</code> نوعان من الأرقام: <code>/</code> تعطي <code>double</code>، و<code>~/</code> تعطي <code>int</code>. حوّل النص بـ <code>parse</code>، والرقم بـ <code>toString</code> أو <code>toStringAsFixed</code>.</li>
+<li>النصوص تستخدم <strong>الاستيفاء</strong>: <code>$name</code> و<code>${expression}</code>.</li>
+<li>الشروط يجب أن تكون <code>bool</code>. و<code>==</code> لا تحوّل الأنواع أبداً.</li>
+<li><code>switch</code> لا يحتاج <code>break</code>؛ و<strong>تعبيرات switch</strong> بالأنماط (<code>||</code> و<code>&gt;= 90</code> و<code>_</code>) تنتج قيماً ويجب أن تغطي كل الحالات.</li>
+<li>الدوال تعلن أنواعها؛ و<code>=&gt;</code> للتعبير الواحد؛ و<strong>المعاملات المسماة</strong> بين <code>{}</code>، بـ <code>required</code> أو بقيم افتراضية. والدوال قيم.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>4.5</code> (من النوع <code>double</code>) و<code>4</code> (من النوع <code>int</code>). 2. <code>final</code>: فالقيمة لا تُعرف إلا حين يعمل البرنامج. 3. <code>'الإجمالي: $total'</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ثلاثة برامج صغيرة يستخدم كل منها معظم الفصل. اكتب كلاً منها في ملف خاص، وشغّله كثيراً، واختبر الحالات الغريبة كما تختبر العادية.</p>
+
+<div class="project">
+<p class="project-label">المشروع 2.1 · سهل</p>
+<h3>جدول درجات الحرارة</h3>
+<p class="project-goal">اطبع جدولاً لدرجات الحرارة من −10 إلى 40 درجة مئوية بخطوات من 10، مع الدرجة نفسها بالفهرنهايت وكلمة تصف الإحساس بها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حلقة <code>for</code> بخطوة، وحساب <code>double</code>، و<code>toStringAsFixed</code>، و<code>padLeft</code>، وتعبير switch بأنماط العلاقة.</p>
+<ol class="steps">
+<li>اكتب دالة <code>double toFahrenheit(double c)</code>: اضرب في 9، واقسم على 5، وأضف 32. وتأكد منها بـ 100 مئوية، أي 212 فهرنهايت.</li>
+<li>اكتب <code>String feel(double c)</code> تعبيرَ switch: تحت 10 بارد، وتحت 20 معتدل، وتحت 30 دافئ، وما عدا ذلك حار.</li>
+<li>كرّر بـ <code>c += 10</code>. متغير الحلقة <code>int</code>؛ فحوّله إلى <code>double</code> بـ <code>toDouble()</code> قبل استدعاء الدالتين.</li>
+<li>اصفف الأعمدة بـ <code>padLeft</code>، واعرض رقماً واحداً بعد الفاصلة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ترتيب الأنماط مهم، كما في سلسلة <code>else if</code>: يجب أن يأتي <code>&lt; 10</code> قبل <code>&lt; 20</code>.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run temperatures.dart</span>
+ -10 °C =  14.0 °F  بارد
+   0 °C =  32.0 °F  بارد
+  10 °C =  50.0 °F  معتدل
+  20 °C =  68.0 °F  دافئ
+  30 °C =  86.0 °F  حار
+  40 °C = 104.0 °F  حار</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 2.2 · متوسط</p>
+<h3>ما قوة كلمة المرور هذه؟</h3>
+<p class="project-goal">قيّم كلمة مرور بأنها ضعيفة أو مقبولة أو قوية، حسب طولها وأنواع الحروف التي فيها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على حروف النص، والعدّ، والمعاملات المسماة بقيمة افتراضية، وتعبير switch على رقم.</p>
+<ol class="steps">
+<li>اكتب <code>String strength(String password, {int minLength = 8})</code>.</li>
+<li>مرّ على الحروف بـ <code>for (var ch in password.split(''))</code>، وعُدّ الأرقام، والحروف الإنجليزية الكبيرة، والصغيرة، وكل ما عداها.</li>
+<li>الحرف كبير حين يكون <code>ch.toUpperCase() == ch</code> و<code>ch.toLowerCase() != ch</code> معاً. لماذا نحتاج الشرط الثاني؟ (جرّبه مع <code>'#'</code>.)</li>
+<li>أعطِ نقطة لكل واحد من: الطول الأدنى، ورقم واحد على الأقل، وحروف كبيرة وصغيرة معاً، ورمز آخر واحد على الأقل. أربع نقاط قوية، ونقطتان أو ثلاث مقبولة، وأقل من ذلك ضعيفة.</li>
+<li>اختبر خمس كلمات مرور، من <code>cairo</code> إلى <code>Cairo#2026</code>، وكلمة قصيرة مع <code>minLength: 4</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في تعبير switch، يعالج <code>2 || 3 =&gt; ...</code> القيمتين في سطر واحد.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run password.dart</span>
+cairo        ضعيفة
+cairo2026    مقبولة
+Cairo2026    مقبولة
+Cairo#2026   قوية
+Ab#1         مقبولة
+Ab#1 (minLength: 4) قوية</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 2.3 · تحدٍّ</p>
+<h3>آلة الباقي</h3>
+<p class="project-goal">إذا عرفت السعر والمبلغ المدفوع بالجنيه الكامل، فأعطِ الباقي بأقل عدد من الأوراق والعملات، أو قل كم ينقص.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>~/</code> و<code>%</code> معاً، وحلقة على قائمة <code>const</code>، وبناء قائمة من النتائج، والخروج المبكر بـ <code>return</code>.</p>
+<ol class="steps">
+<li>اكتب الأوراق والعملات في قائمة <code>const</code> من الأكبر نزولاً: 200 و100 و50 و20 و10 و5 و1.</li>
+<li>اكتب <code>String change({required int price, required int paid})</code>. عالج الحالات الخاصة أولاً: دفع أقل من السعر، ودفع السعر بالضبط. واخرج مبكراً من كل منهما.</li>
+<li>لكل ورقة، <code>left ~/ note</code> هو عدد ما يدخل منها، و<code>left % note</code> هو ما يبقى للأصغر.</li>
+<li>اجمع الأجزاء في قائمة، <code>var parts = &lt;String&gt;[];</code>، ولا تضف إلا الأوراق المستخدمة، ثم اربطها بـ <code>' + '</code>.</li>
+<li>اختبر أربع حالات: 500 لسعر 137، و50 لسعر 45، والمبلغ بالضبط، ومبلغاً لا يكفي.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذه الطريقة البسيطة، أخذ أكبر ورقة تدخل دائماً، تُسمّى خوارزمية <em>جشعة</em> (greedy). وهي تعطي أقل عدد من الأوراق لهذه القيم، لكن ليس لكل مجموعة عملات ممكنة. هل تجد مجموعة تفشل فيها؟</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run change.dart</span>
+الباقي: 1 × 200 + 1 × 100 + 1 × 50 + 1 × 10 + 3 × 1
+الباقي: 1 × 5
+الباقي: لا باقي
+الباقي: المبلغ لا يكفي: ينقص 20.</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> توقّع ثم تحقق بـ Dart: <code>10 ~/ 3</code> و<code>10 % 3</code> و<code>10 / 4</code> و<code>'ab' * 3</code> و<code>'Dart'.length</code>.</li>
+<li><span class="level">سهل</span> لكل قيمة اختر <code>var</code> أو <code>final</code> أو <code>const</code>، وقل لماذا: عدد أيام الأسبوع؛ والنتيجة في لعبة جارية؛ ووقت فتح التطبيق؛ والاسم الذي كتبه المستخدم.</li>
+<li><span class="level medium">متوسط</span> أعد كتابة سعر التذكرة في <code>ticket.dart</code> تعبيرَ switch واحداً على <code>age</code>، بأنماط العلاقة.</li>
+<li><span class="level medium">متوسط</span> العربية تعدّ بصيغ أكثر من الإنجليزية: «كوب واحد»، «كوبان»، «3 أكواب»، «11 كوباً»، «100 كوب». اكتب دالة <code>plural</code> تأخذ العدد ومعاملات مسماة مطلوبة للصيغ (<code>one</code> و<code>two</code> و<code>few</code> و<code>many</code>)، وتعطي الصيغة الصحيحة لـ 0 و1 و2 و3 و10 و11 و99 و100 و103. (تلميح: ما يقرر الصيغة بعد الاثنين هو باقي قسمة العدد على 100.)</li>
+<li><span class="level hard">تحدٍّ</span> اطبع جدول الضرب من 1 إلى 9 شبكةً بأعمدة مصفوفة، بحلقتي <code>for</code> متداخلتين، و<code>padLeft</code>، و<code>StringBuffer</code> (ابحث عنه في <code>api.dart.dev</code>) لبناء كل صف قبل طباعته.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 3</p>
+<p>أسعار المقهى ثوابت متفرقة، والطلب حفنة من المعاملات. في الفصل القادم ستعطيها شكلاً بالأصناف، وتقابل <code>null</code> والأمان من القيم الفارغة في Dart، وتحفظ قوائم طعام كاملة في القوائم والـ Map والـ Set.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">حاول حل كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف حلك عن هذا فليس بالضرورة خطأ: معظم المسائل لها حلول جيدة كثيرة. إن كان حلك يعالج الحالات العادية وغير العادية، وتستطيع أن تشرح اختياراتك، فهو حل جيد. والكود الكامل المختبر لكل حل موجود في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li>تضيف <code>-v</code> لكل سطر التفاصيل التي وراء الفحص: أين ثُبّت Flutter ومن أي عنوان Git، وإصدارا Dart وDevTools، وأين Android SDK والمنصات وأدوات البناء التي فيه، وأي Java يستخدمها Android Studio، ومسار Chrome، وكل جهاز متصل مع إصدار نظامه. سجّل المسارين، مسار Flutter ومسار Android SDK: فهما أول ما تفحصه حين لا تجد أداةٌ الأخرى.</li>
+<li>غيّر <code>'مرحباً بالتحديث الفوري!'</code> و<code>Colors.teal</code> واحفظ؛ ومع التحديث الفوري يظهر كل تغيير في الحال. ولنقل العنوان احذف <code>centerTitle: true,</code>. على أندرويد ينتقل العنوان إلى أول الشريط؛ وعلى الـ iPhone يبقى في المنتصف، لأن العنوان في المنتصف هو أسلوب الـ iPhone نفسه، وFlutter يتبع عادات كل منصة ما لم تقل غير ذلك.</li>
+<li>يأخذ أندرويد الاسم الظاهر تحت الأيقونة من <code>android/app/src/main/AndroidManifest.xml</code>، في <code>android:label="hello_bit"</code>. ويأخذه iOS من <code>ios/Runner/Info.plist</code>، في القيمة التي بعد <code>CFBundleDisplayName</code>، وقد ضبطها <code>flutter create</code> على <code>Hello Bit</code>. وتغيير اسم التطبيق للمتجرين من الأسباب القليلة لتعديل هذين المجلدين؛ والفصل 15 يفعل ذلك.</li>
+<li>غيّر النص المتوقع، مثلاً إلى <code>find.text('مرحباً يا Dart!')</code>. تذكر رسالة الفشل اسم الاختبار، ثم ما كان متوقعاً (Widget واحد بالضبط بهذا النص) وما وُجد (لا شيء)، ثم ملف وسطر الـ <code>expect</code> الذي فشل. اقرأها هكذا: «في هذا الاختبار، في هذا السطر، توقعت هذا، فوجدت ذاك». ولكل فشل اختبار الأجزاء الثلاثة نفسها.</li>
+<li>لا توجد إجابة واحدة. القائمة الجيدة فيها خطوة واحدة في كل سطر، والأمر أو الرابط بالضبط، وما يجب أن تراه حين تنجح الخطوة (مثلاً «يعرض <code>flutter doctor</code> العلامة [✓] أمام Android toolchain»)، والمشكلات التي واجهها الناس مع حلولها. وكل صديق يتبعها سيجد خطوة ظننتها واضحة: وهذا هو الغرض من التمرين.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 2</h2>
+<ol class="exercises">
+<li><code>10 ~/ 3</code> تساوي <code>3</code> (من النوع <code>int</code>)، و<code>10 % 3</code> تساوي <code>1</code>، و<code>10 / 4</code> تساوي <code>2.5</code> (من النوع <code>double</code>)، و<code>'ab' * 3</code> تكرر النص، و<code>'Dart'.length</code> تعدّ حروفه الأربعة:
+<div class="listing" dir="ltr"><div class="listing-title">answers/predict.dart</div><pre class="code"><span class="k">void</span> main() {
+  print(<span class="n">10</span> ~/ <span class="n">3</span>);
+  print(<span class="n">10</span> % <span class="n">3</span>);
+  print(<span class="n">10</span> / <span class="n">4</span>);
+  print(<span class="s">&#x27;ab&#x27;</span> * <span class="n">3</span>);
+  print(<span class="s">&#x27;Dart&#x27;</span>.length);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run predict.dart</span>
+3
+1
+2.5
+ababab
+4</pre></div></li>
+<li>أيام الأسبوع: <code>const</code>، لأن 7 معروفة قبل أن يعمل البرنامج. والنتيجة في لعبة جارية: <code>var</code>، لأنها تتغير. ووقت فتح التطبيق: <code>final</code>، لأنه يُضبط مرة لكنه لا يُعرف إلا حين يعمل التطبيق. والاسم الذي كتبه المستخدم: <code>final</code>، للسبب نفسه (وإن استطاع المستخدم تعديله لاحقاً فالاسم الجديد قيمة جديدة).</li>
+<li>يصير السعر تعبيرَ switch واحداً؛ و<code>&lt; 13 || &gt;= 65</code> تجمع نمطي علاقة:
+<div class="listing" dir="ltr"><div class="listing-title">answers/ticket_switch.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> age = <span class="n">9</span>;
+  <span class="k">var</span> isMember = <span class="k">true</span>;
+
+  <span class="k">var</span> price = <span class="k">switch</span> (age) {
+    &lt; <span class="n">4</span> =&gt; <span class="n">0</span>,
+    &lt; <span class="n">13</span> || &gt;= <span class="n">65</span> =&gt; <span class="n">6</span>,
+    _ =&gt; <span class="n">10</span>,
+  };
+  <span class="k">if</span> (isMember) price = price ~/ <span class="n">2</span>;
+  print(<span class="s">&#x27;العمر $age يدفع $price&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run ticket_switch.dart</span>
+العمر 9 يدفع 3</pre></div></li>
+<li>الصفر والواحد والاثنان حالات خاصة، وبعدها يقرر باقي القسمة على 100 الصيغة: من 3 إلى 10 جمع («أكواب»)، ومن 11 إلى 99 تمييز منصوب («كوباً»)، وما عدا ذلك، كالمئة، مفرد («كوب»). و<code>_ when ...</code> نمط بدل بشرط، يطابق حين يكون الشرط بعد <code>when</code> صحيحاً:
+<div class="listing" dir="ltr"><div class="listing-title">answers/plural.dart</div><pre class="code"><span class="k">String</span> plural(
+  <span class="k">int</span> count, {
+  <span class="k">required</span> <span class="k">String</span> one,
+  <span class="k">required</span> <span class="k">String</span> two,
+  <span class="k">required</span> <span class="k">String</span> few,
+  <span class="k">required</span> <span class="k">String</span> many,
+}) {
+  <span class="k">var</span> rest = count % <span class="n">100</span>;
+  <span class="k">return</span> <span class="k">switch</span> (count) {
+    <span class="n">0</span> =&gt; <span class="s">&#x27;لا $few&#x27;</span>,
+    <span class="n">1</span> =&gt; <span class="s">&#x27;$one واحد&#x27;</span>,
+    <span class="n">2</span> =&gt; two,
+    _ <span class="k">when</span> rest &gt;= <span class="n">3</span> &amp;&amp; rest &lt;= <span class="n">10</span> =&gt; <span class="s">&#x27;$count $few&#x27;</span>,
+    _ <span class="k">when</span> rest &gt;= <span class="n">11</span> =&gt; <span class="s">&#x27;$count $many&#x27;</span>,
+    _ =&gt; <span class="s">&#x27;$count $one&#x27;</span>,
+  };
+}
+
+<span class="k">void</span> main() {
+  <span class="k">for</span> (<span class="k">var</span> n <span class="k">in</span> [<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">10</span>, <span class="n">11</span>, <span class="n">99</span>, <span class="n">100</span>, <span class="n">103</span>]) {
+    print(plural(n, one: <span class="s">&#x27;كوب&#x27;</span>, two: <span class="s">&#x27;كوبان&#x27;</span>, few: <span class="s">&#x27;أكواب&#x27;</span>, many: <span class="s">&#x27;كوباً&#x27;</span>));
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run plural.dart</span>
+لا أكواب
+كوب واحد
+كوبان
+3 أكواب
+10 أكواب
+11 كوباً
+99 كوباً
+100 كوب
+103 أكواب</pre></div>
+وهذه القواعد نفسها هي ما تتبعه أدوات الترجمة في Flutter، كما سترى في الفصل 13.</li>
+<li>الحلقة الداخلية تبني صفاً واحداً في <code>StringBuffer</code>، الذي يجمع قطع النص بكفاءة؛ و<code>padLeft(4)</code> يعطي كل رقم العرض نفسه، فتصطف الأعمدة:
+<div class="listing" dir="ltr"><div class="listing-title">answers/table.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">for</span> (<span class="k">var</span> row = <span class="n">1</span>; row &lt;= <span class="n">9</span>; row++) {
+    <span class="k">var</span> line = StringBuffer();
+    <span class="k">for</span> (<span class="k">var</span> col = <span class="n">1</span>; col &lt;= <span class="n">9</span>; col++) {
+      line.write((row * col).toString().padLeft(<span class="n">4</span>));
+    }
+    print(line);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run table.dart</span>
+   1   2   3   4   5   6   7   8   9
+   2   4   6   8  10  12  14  16  18
+   3   6   9  12  15  18  21  24  27
+   4   8  12  16  20  24  28  32  36
+   5  10  15  20  25  30  35  40  45
+   6  12  18  24  30  36  42  48  54
+   7  14  21  28  35  42  49  56  63
+   8  16  24  32  40  48  56  64  72
+   9  18  27  36  45  54  63  72  81</pre></div></li>
+</ol>
+
+</section>
+</body></html>

@@ -1,0 +1,322 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/dart/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>أساسيات Dart</h1>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تكتب برنامج Dart وتشغّله من الطرفية</li>
+<li>تحفظ القيم في متغيرات، وتختار بين <code>var</code> و<code>final</code> و<code>const</code></li>
+<li>تتعامل مع أنواع Dart الأساسية: <code>int</code> و<code>double</code> و<code>String</code> و<code>bool</code></li>
+<li>تتخذ القرارات بـ <code>if</code>، وبـ <code>switch</code> وأنماطه</li>
+<li>تكرر العمل بالحلقات، وتجمعه في دوال بمعاملات مسماة</li>
+<li>تقرأ رسائل أخطاء مترجم Dart، وتجعلها تساعدك</li>
+</ul>
+</div>
+
+<p class="lead">كل تطبيق Flutter برنامج Dart، فقبل أن تبني الشاشات تحتاج إلى اللغة. والخبر الجيد: إن كنت تعرف JavaScript، أو أي لغة فيها متغيرات و<code>if</code> وحلقات، فستألف Dart في ساعة. الفرق الكبير الوحيد أن Dart تعرف <dfn>نوع</dfn> كل قيمة، وتفحص برنامجك قبل أن يعمل. وهذا يصطاد عائلات كاملة من الأخطاء قبل أن تصل إلى جوال المستخدم. يعلّمك هذا الفصل الأساسيات، برنامجاً صغيراً بعد آخر، وينتهي بطابعة فواتير لمقهى بِت.</p>
+
+<aside class="bit" data-mood="happy"><p>في هذا الفصل نترك الجوال قليلاً ونتحدث مع Dart مباشرة، في الطرفية. لا شاشات ولا محاكي: أنت واللغة وإجابات سريعة جداً.</p></aside>
+
+<h2>{{n}}.1 أول برنامج Dart</h2>
+
+<p>ثبّت Flutter لغة Dart لك. أنشئ مجلداً لهذا الفصل، وافتحه في VS Code، وأنشئ ملفاً اسمه <code>hello.dart</code>:</p>
+
+<pre data-code="hello.dart" data-title="hello.dart"></pre>
+
+<p>شغّله من الطرفية:</p>
+
+<pre data-term="hello.sh"></pre>
+
+<p>ثلاث قواعد تظهر من الآن في هذه الأسطر الثلاثة:</p>
+<ul>
+<li>كل برنامج Dart يبدأ من دالة اسمها <code>main</code>. وبدونها لا يوجد ما يُشغَّل.</li>
+<li><code>print</code> تكتب سطراً في الطرفية، مثل <code>console.log</code> في JavaScript.</li>
+<li>كل جملة تنتهي بفاصلة منقوطة. في JavaScript كان يمكنك أحياناً أن تتركها؛ أما في Dart فلا.</li>
+</ul>
+<p>يُكتب النص بين علامتي تنصيص مفردتين أو مزدوجتين. ومعظم كود Dart، بما فيه كود Flutter نفسه، يستخدم المفردتين، وكذلك هذا الكتاب.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>للتجارب السريعة افتح <code>dartpad.dev</code> في المتصفح: يشغّل Dart (بل وتطبيقات Flutter الصغيرة) دون تثبيت أي شيء. إنه مثالي لتجربة سطر لست متأكداً منه.</p></aside>
+
+<h2>{{n}}.2 المتغيرات وأنواعها</h2>
+
+<p>المتغير اسم لقيمة، تماماً كما في الكتاب الأول. وتعطيك Dart عدة طرق لإنشائه:</p>
+
+<pre data-code="variables.dart" data-title="variables.dart"></pre>
+<pre data-term="variables.sh"></pre>
+
+<p>مع <code>var</code> تنظر Dart إلى القيمة الأولى وتقرر نوع المتغير: <code>score</code> يبدأ بـ <code>0</code>، فهو <code>int</code>، أي عدد صحيح. وهذا يُسمّى <dfn>استنتاج النوع</dfn>. ويمكنك أيضاً أن تكتب النوع بنفسك، كما في <code>String name</code>. وفي الحالتين يثبت النوع إلى الأبد: المتغير الذي يحمل أرقاماً لا يحمل نصاً أبداً. انظر ماذا يحدث لو حاولت:</p>
+
+<pre data-code="type-error.dart" data-title="type-error.dart"></pre>
+<pre data-term="type-error.sh" class="error"></pre>
+
+<p>لم يعمل البرنامج أصلاً. فقبل تشغيل أي شيء، <dfn>تترجم</dfn> Dart البرنامج: تقرؤه كله وتحوّله إلى تعليمات للحاسوب، وتفحص الأنواع في الطريق. والخطأ يقول أين (السطر 3، العمود 11، والعلامة <code>^</code> تشير إليه) ولماذا، بكلمات واضحة: قيمة من النوع <code>String</code> لا يمكن وضعها في متغير من النوع <code>int</code>. وفي JavaScript كان السطر نفسه سيعمل، ويظهر الخطأ لاحقاً في مكان آخر، وربما على جوال مستخدم.</p>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>منذ Dart 2 صار كل برنامج Dart <em>آمن الأنواع</em>: المتغير المعرّف <code>int</code> لا يمكن أن يحمل غير ذلك أبداً أثناء عمل البرنامج. ومترجم Dart يستفيد من هذا الوعد ليجعل تطبيقك أسرع أيضاً.</p></aside>
+
+<h3>final وconst</h3>
+
+<p>معظم القيم في البرنامج لا تتغير أبداً بعد ضبطها. ولدى Dart كلمتان لها:</p>
+<ul>
+<li><code>final</code>: تُضبط القيمة مرة واحدة، حين يصل البرنامج إلى ذلك السطر، ولا تتغير بعدها. ويمكن أن تأتي من حساب، أو من الساعة، أو من المستخدم.</li>
+<li><code>const</code>: القيمة معروفة <em>قبل</em> أن يعمل البرنامج، مكتوبة في الكود مباشرة، مثل <code>4</code> أو <code>'سارة'</code>. فتستطيع Dart أن تبنيها مرة واحدة وتشاركها.</li>
+</ul>
+<p>في <code>variables.dart</code> تأتي سنة الانضمام من الساعة (<code>DateTime.now()</code>)، فلا يمكن أن تكون إلا <code>final</code>. أما أقصى عدد للاعبين فمكتوب في الكود، فيمكن أن يكون <code>const</code>. جرّب أن تغيّر <code>final</code>:</p>
+
+<pre data-code="final-error.dart" data-title="final-error.dart"></pre>
+<pre data-term="final-error.sh" class="error"></pre>
+
+<table>
+<thead><tr><th>في Dart</th><th>المعنى</th><th>الأقرب في JavaScript</th></tr></thead>
+<tbody>
+<tr><td><code>var</code></td><td>يمكن أن يتغير؛ ونوعه من أول قيمة</td><td><code>let</code></td></tr>
+<tr><td><code>final</code></td><td>يُضبط مرة واحدة، أثناء عمل البرنامج</td><td><code>const</code></td></tr>
+<tr><td><code>const</code></td><td>معروف قبل أن يعمل البرنامج</td><td>(لا يوجد)</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>استخدم <code>final</code> افتراضياً، و<code>const</code> للقيم المكتوبة في الكود، و<code>var</code> فقط حين يجب أن تتغير القيمة. وفي Flutter تهم <code>const</code> أكثر: فالـ Widget الثابت يُبنى مرة ويُعاد استخدامه، ولهذا رأيت <code>const Text(...)</code> في الفصل {{n-1}}. والمحلل يذكّرك حين تنسى.</p></aside>
+
+<h2>{{n}}.3 الأرقام والنصوص والصواب والخطأ</h2>
+
+<p>لدى Dart مجموعة صغيرة من الأنواع الأساسية ستستخدمها في كل برنامج:</p>
+
+<pre data-code="numbers.dart" data-title="numbers.dart"></pre>
+<pre data-term="numbers.sh"></pre>
+
+<table>
+<thead><tr><th>النوع</th><th>ما يحمله</th><th>أمثلة</th></tr></thead>
+<tbody>
+<tr><td><code>int</code></td><td>الأعداد الصحيحة</td><td><code>7</code> و<code>-3</code> و<code>2026</code></td></tr>
+<tr><td><code>double</code></td><td>الأعداد بفاصلة عشرية</td><td><code>12.5</code> و<code>0.1</code></td></tr>
+<tr><td><code>num</code></td><td>أياً من النوعين</td><td><code>3</code> أو <code>3.5</code></td></tr>
+<tr><td><code>String</code></td><td>النصوص</td><td><code>'القاهرة'</code></td></tr>
+<tr><td><code>bool</code></td><td><code>true</code> أو <code>false</code>، ولا شيء غيرهما</td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>لدى JavaScript نوع واحد من الأرقام، ولدى Dart نوعان، ويظهر الفرق في القسمة. العامل <code>/</code> يعطي <code>double</code> دائماً: <code>7 / 2</code> تساوي <code>3.5</code>. والعامل <code>~/</code> يقسم ويحذف كل ما بعد الفاصلة، فيعطي <code>int</code>: <code>7 ~/ 2</code> تساوي <code>3</code>. وباقي القسمة <code>%</code> يعمل كما تعرفه.</p>
+
+<p>لا تحوّل Dart النص إلى رقم ولا الرقم إلى نص من تلقاء نفسها. فالنص الذي يحوي رقماً، القادم من مربع نص أو من ملف، يصير رقماً بـ <code>int.parse</code> أو <code>double.parse</code>. والرقم يصير نصاً بـ <code>toString()</code>، أو بـ <code>toStringAsFixed(2)</code> لتبقى خانتان بالضبط بعد الفاصلة، وهذا ما تريده للأسعار.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p><code>int.parse('12a')</code> يوقف البرنامج بخطأ، لأن <code>'12a'</code> ليس رقماً. فحين يأتي النص من المستخدم، استخدم <code>int.tryParse</code>، التي تعطي <code>null</code> (لا قيمة) بدلاً من أن توقف البرنامج. ويشرح الفصل {{n+1}} الـ <code>null</code>، ويستخدم الفصل 9 الدالة <code>tryParse</code> في نماذج حقيقية.</p></aside>
+
+<h2>{{n}}.4 النصوص</h2>
+
+<p>لنصوص Dart ميزة ستستخدمها في كل سطر تقريباً من تطبيقات Flutter: <dfn>الاستيفاء</dfn> (interpolation)، أي وضع القيم داخل النص.</p>
+
+<pre data-code="strings.dart" data-title="strings.dart"></pre>
+<pre data-term="strings.sh"></pre>
+
+<ul>
+<li><code>$name</code> داخل النص تضع هناك قيمة المتغير <code>name</code>.</li>
+<li><code>${items * price}</code>، مع الأقواس المعقوفة، تضع هناك ناتج أي تعبير. استخدم الأقواس كلما كان هناك أكثر من اسم مجرد، حتى في <code>${price.toStringAsFixed(2)}</code>.</li>
+<li>ثلاث علامات تنصيص، <code>'''</code>، تبدأ نصاً يمتد على عدة أسطر، ويحتفظ بفواصل الأسطر والمسافات.</li>
+<li>للنصوص دوال مفيدة: <code>trim()</code> تحذف المسافات من الطرفين، و<code>toUpperCase()</code> تجعل الحروف الإنجليزية كبيرة (ولا تغيّر العربية، فليس فيها حروف كبيرة)، و<code>contains</code> تبحث، و<code>padLeft(3, '0')</code> تملأ من اليسار حتى طول معين، و<code>length</code> تعدّ الحروف.</li>
+</ul>
+
+<p>لاحظ أن أياً من هذه الدوال لم يغيّر <code>raw</code> ولا <code>name</code>. فالنصوص في Dart لا تتغير؛ كل دالة تُرجع نصاً جديداً. ولهذا يجب أن تستخدم ناتج <code>raw.trim()</code>، أو تحفظه، ليكون مفيداً.</p>
+
+<h2>{{n}}.5 العوامل</h2>
+
+<p>العوامل تكاد تكون نفسها في JavaScript:</p>
+
+<pre data-code="operators.dart" data-title="operators.dart"></pre>
+<pre data-term="operators.sh"></pre>
+
+<p><code>+=</code> و<code>++</code> والمقارنات والعوامل المنطقية <code>&amp;&amp;</code> و<code>||</code> و<code>!</code> تعمل كما تعرفها. وشيء واحد أبسط: في Dart <code>==</code> فقط، بلا <code>===</code>، لأنها لا تحوّل الأنواع عند المقارنة أبداً. <code>5 == 5.0</code> تساوي <code>true</code> (فكلاهما العدد خمسة)، لكن <code>'5' == 5</code> تساوي <code>false</code>: النص لا يساوي رقماً أبداً.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>كم تعطي <code>9 / 2</code> و<code>9 ~/ 2</code>؟</li><li>أيهما تستخدم لقيمة تأتي من الساعة: <code>final</code> أم <code>const</code>؟</li><li>كيف تكتب النص <code>الإجمالي: 30</code> من متغير <code>total</code> قيمته <code>30</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.6 القرارات بـ if</h2>
+
+<p><code>if</code> و<code>else if</code> و<code>else</code> تعمل تماماً كما في الكتاب الأول. وهذا شبّاك التذاكر من جديد، بلغة Dart:</p>
+
+<pre data-code="ticket.dart" data-title="ticket.dart"></pre>
+<pre data-term="ticket.sh"></pre>
+
+<p>في الكود تفصيلان جديدان. الأول: <code>int price;</code> تعرّف متغيراً بلا قيمة. ثم تتأكد Dart أن كل طريق عبر <code>if</code> يعطيه قيمة قبل أن يُستخدم: احذف <code>else</code> ولن يُترجَم البرنامج. والثاني: الشرط يجب أن يكون <code>bool</code> حقيقياً. في JavaScript كان <code>if (count)</code> صحيحاً لأي رقم غير الصفر؛ أما في Dart فهو خطأ. اكتب ما تقصده: <code>if (count &gt; 0)</code>.</p>
+
+<p>والعامل الشرطي <code>condition ? a : b</code> يعمل كما في JavaScript، وستستخدمه باستمرار في Flutter لتختار بين Widgetين أو لونين.</p>
+
+<h2>{{n}}.7 switch والأنماط</h2>
+
+<p><code>switch</code> في Dart من أفضل ميزاتها، وأقوى بكثير من نظيره في JavaScript:</p>
+
+<pre data-code="switch.dart" data-title="switch.dart"></pre>
+<pre data-term="switch.sh"></pre>
+
+<p>الـ <code>switch</code> الأول جملة، كالتي تعرفها، مع تحسين واحد: لا يوجد <code>break</code>. كل <code>case</code> ينتهي حيث يبدأ التالي، ولا تنتقل Dart إلى الحالة التالية عن طريق الخطأ أبداً.</p>
+
+<p>والثاني والثالث <dfn>تعبيرات switch</dfn>: تنتج قيمة تذهب مباشرة إلى متغير. في كل سطر <dfn>نمط</dfn> على يسار <code>=&gt;</code> ونتيجة على يمينه، وأول نمط يطابق هو الذي يفوز:</p>
+<ul>
+<li>القيمة العادية، مثل <code>'الجمعة'</code>، تطابق حين تساويها القيمة.</li>
+<li><code>||</code> بين نمطين تطابق أياً منهما.</li>
+<li><code>&gt;= 90</code> <em>نمط علاقة</em>: يطابق أي قيمة لا تقل عن 90. وبهذا تصير التقديرات قائمة قصيرة واضحة.</li>
+<li><code>_</code>، <em>البدل</em>، يطابق أي شيء. ضعه في الآخر، لكل ما عدا ذلك.</li>
+</ul>
+
+<p>تعبير switch يجب أن يغطي كل قيمة ممكنة. فلو حذفت سطر <code>_</code> من التقديرات لما تُرجم البرنامج، لأن الدرجة 40 لن يكون لها تقدير. وتسمّي Dart هذا <dfn>فحص الشمول</dfn> (exhaustiveness checking)، وفي الفصل {{n+1}} ستراه يصطاد أخطاء حقيقية.</p>
+
+<aside class="bit" data-mood="wow"><p>انظر إلى التقديرات مرة أخرى: خمسة أسطر، بلا <code>if</code> ولا <code>else</code>، وتستطيع أن تقرأها بصوت عالٍ كالجدول المعلّق على حائط المعلم. لهذا أحب تعبيرات switch.</p></aside>
+
+<h2>{{n}}.8 الحلقات</h2>
+
+<pre data-code="loops.dart" data-title="loops.dart"></pre>
+<pre data-term="loops.sh"></pre>
+
+<p>كل هذا مألوف. <code>for</code> التقليدية تعدّ. و<code>for (var drink in drinks)</code> تزور كل عنصر في القائمة بالترتيب، مثل <code>for...of</code> في JavaScript. و<code>while</code> تكرر ما دام شرطها صحيحاً. و<code>continue</code> تتخطى باقي دورة واحدة، و<code>break</code> تخرج من الحلقة: فالحلقة الأخيرة تتخطى الأعداد الزوجية وتتوقف بعد 7.</p>
+
+<p>والأقواس المربعة، <code>['شاي', 'قهوة', 'عصير']</code>، تصنع <dfn>قائمة</dfn> (List)، وهو اسم المصفوفة في Dart. ويغطي الفصل {{n+1}} القوائم بالكامل، مع الـ Map والـ Set.</p>
+
+<h2>{{n}}.9 الدوال</h2>
+
+<p>الدوال في Dart تعلن نوع ما تُرجعه، ونوع كل معامل:</p>
+
+<pre data-code="functions.dart" data-title="functions.dart"></pre>
+<pre data-term="functions.sh"></pre>
+
+<ul>
+<li><code>int square(int n)</code> تأخذ <code>int</code> وتُرجع <code>int</code>. والدالة التي لا تُرجع شيئاً تُعلَن <code>void</code>، مثل <code>main</code>.</li>
+<li>حين يكون جسم الدالة تعبيراً واحداً، يحل السهم <code>=&gt;</code> محل الأقواس و<code>return</code>، كما في <code>cube</code>.</li>
+<li><dfn>المعاملات المسماة</dfn> تُكتب بين أقواس معقوفة <code>{...}</code>، وتُعطى بأسمائها عند استدعاء الدالة: <code>price(cups: 2)</code>. ترتيبها لا يهم، والاستدعاء يُقرأ كجملة. و<code>required</code> تعني أنه لا بد أن يُعطى، والباقي يحتاج قيمة افتراضية، مثل <code>each = 12.5</code>.</li>
+<li><dfn>المعاملات الموضعية الاختيارية</dfn> بين أقواس مربعة <code>[...]</code>، كما في <code>greet</code>.</li>
+</ul>
+
+<p>المعاملات المسماة في كل مكان في Flutter: فكل <code>Text(..., style: ...)</code> وكل <code>AppBar(title: ..., centerTitle: true)</code> كتبته في الفصل {{n-1}} كان استدعاءً بمعاملات مسماة. وحين تنسى معاملاً مطلوباً، تخبرك Dart قبل أن يعمل أي شيء:</p>
+
+<pre data-code="named-error.dart" data-title="named-error.dart"></pre>
+<pre data-term="named-error.sh" class="error"></pre>
+
+<p>والجزء الثاني من الرسالة، <code>Context</code>، يعرض الدالة التي كنت تحاول استدعاءها، لترى ما تتوقعه.</p>
+
+<h3>الدوال قيم</h3>
+
+<pre data-code="values.dart" data-title="values.dart"></pre>
+<pre data-term="values.sh"></pre>
+
+<p>يمكن حفظ الدالة في متغير، مثل <code>change</code>، وتمريرها إلى دالة أخرى. و<code>(p) =&gt; p &lt; 20</code> <dfn>دالة مجهولة</dfn>، أي دالة بلا اسم، تُكتب حيث نحتاجها. <code>where</code> تبقي العناصر التي تُرجع لها <code>true</code>، و<code>map</code> تحوّل كل عنصر، و<code>forEach</code> تشغّلها لكل عنصر. إن قرأت الكتاب الأول فهذه هي <code>filter</code> و<code>map</code> و<code>forEach</code> بأسماء مختلفة قليلاً. وفي Flutter، <code>onPressed</code> في كل زر دالة مجهولة: الكود الذي يعمل حين يُضغط.</p>
+
+<h2>{{n}}.10 مشروع: فاتورة المقهى</h2>
+
+<p>يحتاج مقهى بِت إلى برنامج يطبع الفواتير. والقواعد:</p>
+<ol>
+<li>اللاتيه بـ 45 جنيهاً، والكوكيز بـ 20، والكيك بـ 60.</li>
+<li>يوم الجمعة خصم 20% على كل شيء، ويوم السبت 10%.</li>
+<li>تُضاف خدمة 12% بعد الخصم، مقرّبة إلى أقرب جنيه.</li>
+<li>لا تذكر الفاتورة إلا ما طُلب، بالأسماء في جهة والمبالغ في الجهة الأخرى.</li>
+</ol>
+
+<pre data-code="receipt.dart" data-title="receipt.dart"></pre>
+<pre data-term="receipt.sh"></pre>
+
+<p>تتبّع فاتورة الجمعة كما يفعل الحاسوب. كوبا لاتيه وثلاث قطع كوكيز تساوي 150. والجمعة تعطي 20%، فالخصم <code>150 * 20 ~/ 100</code>، أي 30. والخدمة 12% من 120، أي 14.4، و<code>round()</code> تجعلها 14. والإجمالي 150 − 30 + 14 = 134.</p>
+
+<p>انظر إلى ما يستخدمه كل جزء من البرنامج. الأسعار <code>const</code>. والخصم تعبير switch في دالة سهم. و<code>line</code> تبني كل سطر بـ <code>padRight</code> و<code>padLeft</code>، فتصطف المبالغ. و<code>printReceipt</code> تستخدم معاملات مسماة بقيم افتراضية، فالزبون الذي طلب كيكاً فقط لا يحتاج أن يقول «صفر لاتيه». و<code>'=' * width</code> تكرر نصاً: راحة صغيرة أخرى من Dart.</p>
+
+<p>ولاحظ شكل الفاتورة العربية: كل سطر يبدأ بحرف عربي فيُعرض من اليمين، فتظهر الأسماء في اليمين والمبالغ مصطفة في عمود على اليسار. ذلك لأن <code>padRight</code> تضيف المسافات في <em>نهاية</em> النص، ونهاية السطر العربي يساره. ولاحظ أيضاً أن الخصم <code>-30</code> ظهر <code>30-</code>: فإشارة السالب حرف محايد يأخذ اتجاه ما حوله. هذه هي مشكلات خلط الاتجاهين، ويحلها Flutter في التطبيقات حين يعرف أن لغتها عربية، كما سترى في الفصل 13.</p>
+
+<aside class="box try"><p class="box-title">جرّب</p><p>أضف الشاي بـ 15 جنيهاً إلى القائمة وإلى <code>printReceipt</code>. ثم اطبع فاتورة يوم السبت لكوبي شاي وقطعة كيك، واحسب الإجمالي بيدك قبل أن تشغّل البرنامج.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان الفاصلة المنقوطة</td><td>خطأ ترجمة: <code>Expected ';' after this.</code></td><td>أنهِ كل جملة بـ <code>;</code></td></tr>
+<tr><td>وضع نص في متغير رقمي</td><td>خطأ ترجمة: لا يمكن وضع <code>String</code> في <code>int</code></td><td>حوّله بـ <code>int.parse</code>، أو استخدم متغيراً آخر</td></tr>
+<tr><td>استخدام <code>/</code> حين تحتاج عدداً صحيحاً</td><td><code>double</code> حيث يُنتظر <code>int</code></td><td>استخدم <code>~/</code></td></tr>
+<tr><td><code>if (count)</code> مع رقم</td><td>خطأ ترجمة: لا يمكن وضع <code>int</code> في <code>bool</code></td><td>اكتب المقارنة: <code>count &gt; 0</code></td></tr>
+<tr><td><code>'الإجمالي: ' + total</code> مع رقم</td><td>خطأ ترجمة: لا يمكن وضع <code>int</code> في <code>String</code></td><td>استخدم الاستيفاء: <code>'الإجمالي: $total'</code></td></tr>
+<tr><td>ترك معامل مسمى <code>required</code></td><td>خطأ ترجمة يذكر المعامل الناقص</td><td>أعطه: <code>price(cups: 2)</code></td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>برنامج Dart يبدأ من <code>main</code>، ويطبع بـ <code>print</code>، وينهي الجمل بـ <code>;</code>، ويعمل بـ <code>dart run file.dart</code>.</li>
+<li>لكل قيمة <strong>نوع</strong> يُفحص قبل أن يعمل البرنامج. و<code>var</code> تستنتجه من أول قيمة، ولا يتغير أبداً.</li>
+<li>فضّل <code>final</code> (يُضبط مرة) و<code>const</code> (معروف قبل التشغيل)، ولا تستخدم <code>var</code> إلا للقيم التي تتغير.</li>
+<li><code>int</code> و<code>double</code> نوعان من الأرقام: <code>/</code> تعطي <code>double</code>، و<code>~/</code> تعطي <code>int</code>. حوّل النص بـ <code>parse</code>، والرقم بـ <code>toString</code> أو <code>toStringAsFixed</code>.</li>
+<li>النصوص تستخدم <strong>الاستيفاء</strong>: <code>$name</code> و<code>${expression}</code>.</li>
+<li>الشروط يجب أن تكون <code>bool</code>. و<code>==</code> لا تحوّل الأنواع أبداً.</li>
+<li><code>switch</code> لا يحتاج <code>break</code>؛ و<strong>تعبيرات switch</strong> بالأنماط (<code>||</code> و<code>&gt;= 90</code> و<code>_</code>) تنتج قيماً ويجب أن تغطي كل الحالات.</li>
+<li>الدوال تعلن أنواعها؛ و<code>=&gt;</code> للتعبير الواحد؛ و<strong>المعاملات المسماة</strong> بين <code>{}</code>، بـ <code>required</code> أو بقيم افتراضية. والدوال قيم.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>4.5</code> (من النوع <code>double</code>) و<code>4</code> (من النوع <code>int</code>). 2. <code>final</code>: فالقيمة لا تُعرف إلا حين يعمل البرنامج. 3. <code>'الإجمالي: $total'</code>.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ثلاثة برامج صغيرة يستخدم كل منها معظم الفصل. اكتب كلاً منها في ملف خاص، وشغّله كثيراً، واختبر الحالات الغريبة كما تختبر العادية.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>جدول درجات الحرارة</h3>
+<p class="project-goal">اطبع جدولاً لدرجات الحرارة من −10 إلى 40 درجة مئوية بخطوات من 10، مع الدرجة نفسها بالفهرنهايت وكلمة تصف الإحساس بها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حلقة <code>for</code> بخطوة، وحساب <code>double</code>، و<code>toStringAsFixed</code>، و<code>padLeft</code>، وتعبير switch بأنماط العلاقة.</p>
+<ol class="steps">
+<li>اكتب دالة <code>double toFahrenheit(double c)</code>: اضرب في 9، واقسم على 5، وأضف 32. وتأكد منها بـ 100 مئوية، أي 212 فهرنهايت.</li>
+<li>اكتب <code>String feel(double c)</code> تعبيرَ switch: تحت 10 بارد، وتحت 20 معتدل، وتحت 30 دافئ، وما عدا ذلك حار.</li>
+<li>كرّر بـ <code>c += 10</code>. متغير الحلقة <code>int</code>؛ فحوّله إلى <code>double</code> بـ <code>toDouble()</code> قبل استدعاء الدالتين.</li>
+<li>اصفف الأعمدة بـ <code>padLeft</code>، واعرض رقماً واحداً بعد الفاصلة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ترتيب الأنماط مهم، كما في سلسلة <code>else if</code>: يجب أن يأتي <code>&lt; 10</code> قبل <code>&lt; 20</code>.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-term="projects/temperatures.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>ما قوة كلمة المرور هذه؟</h3>
+<p class="project-goal">قيّم كلمة مرور بأنها ضعيفة أو مقبولة أو قوية، حسب طولها وأنواع الحروف التي فيها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على حروف النص، والعدّ، والمعاملات المسماة بقيمة افتراضية، وتعبير switch على رقم.</p>
+<ol class="steps">
+<li>اكتب <code>String strength(String password, {int minLength = 8})</code>.</li>
+<li>مرّ على الحروف بـ <code>for (var ch in password.split(''))</code>، وعُدّ الأرقام، والحروف الإنجليزية الكبيرة، والصغيرة، وكل ما عداها.</li>
+<li>الحرف كبير حين يكون <code>ch.toUpperCase() == ch</code> و<code>ch.toLowerCase() != ch</code> معاً. لماذا نحتاج الشرط الثاني؟ (جرّبه مع <code>'#'</code>.)</li>
+<li>أعطِ نقطة لكل واحد من: الطول الأدنى، ورقم واحد على الأقل، وحروف كبيرة وصغيرة معاً، ورمز آخر واحد على الأقل. أربع نقاط قوية، ونقطتان أو ثلاث مقبولة، وأقل من ذلك ضعيفة.</li>
+<li>اختبر خمس كلمات مرور، من <code>cairo</code> إلى <code>Cairo#2026</code>، وكلمة قصيرة مع <code>minLength: 4</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في تعبير switch، يعالج <code>2 || 3 =&gt; ...</code> القيمتين في سطر واحد.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-term="projects/password.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>آلة الباقي</h3>
+<p class="project-goal">إذا عرفت السعر والمبلغ المدفوع بالجنيه الكامل، فأعطِ الباقي بأقل عدد من الأوراق والعملات، أو قل كم ينقص.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>~/</code> و<code>%</code> معاً، وحلقة على قائمة <code>const</code>، وبناء قائمة من النتائج، والخروج المبكر بـ <code>return</code>.</p>
+<ol class="steps">
+<li>اكتب الأوراق والعملات في قائمة <code>const</code> من الأكبر نزولاً: 200 و100 و50 و20 و10 و5 و1.</li>
+<li>اكتب <code>String change({required int price, required int paid})</code>. عالج الحالات الخاصة أولاً: دفع أقل من السعر، ودفع السعر بالضبط. واخرج مبكراً من كل منهما.</li>
+<li>لكل ورقة، <code>left ~/ note</code> هو عدد ما يدخل منها، و<code>left % note</code> هو ما يبقى للأصغر.</li>
+<li>اجمع الأجزاء في قائمة، <code>var parts = &lt;String&gt;[];</code>، ولا تضف إلا الأوراق المستخدمة، ثم اربطها بـ <code>' + '</code>.</li>
+<li>اختبر أربع حالات: 500 لسعر 137، و50 لسعر 45، والمبلغ بالضبط، ومبلغاً لا يكفي.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذه الطريقة البسيطة، أخذ أكبر ورقة تدخل دائماً، تُسمّى خوارزمية <em>جشعة</em> (greedy). وهي تعطي أقل عدد من الأوراق لهذه القيم، لكن ليس لكل مجموعة عملات ممكنة. هل تجد مجموعة تفشل فيها؟</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-term="projects/change.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> توقّع ثم تحقق بـ Dart: <code>10 ~/ 3</code> و<code>10 % 3</code> و<code>10 / 4</code> و<code>'ab' * 3</code> و<code>'Dart'.length</code>.</li>
+<li><span class="level">سهل</span> لكل قيمة اختر <code>var</code> أو <code>final</code> أو <code>const</code>، وقل لماذا: عدد أيام الأسبوع؛ والنتيجة في لعبة جارية؛ ووقت فتح التطبيق؛ والاسم الذي كتبه المستخدم.</li>
+<li><span class="level">متوسط</span> أعد كتابة سعر التذكرة في <code>ticket.dart</code> تعبيرَ switch واحداً على <code>age</code>، بأنماط العلاقة.</li>
+<li><span class="level">متوسط</span> العربية تعدّ بصيغ أكثر من الإنجليزية: «كوب واحد»، «كوبان»، «3 أكواب»، «11 كوباً»، «100 كوب». اكتب دالة <code>plural</code> تأخذ العدد ومعاملات مسماة مطلوبة للصيغ (<code>one</code> و<code>two</code> و<code>few</code> و<code>many</code>)، وتعطي الصيغة الصحيحة لـ 0 و1 و2 و3 و10 و11 و99 و100 و103. (تلميح: ما يقرر الصيغة بعد الاثنين هو باقي قسمة العدد على 100.)</li>
+<li><span class="level">تحدٍّ</span> اطبع جدول الضرب من 1 إلى 9 شبكةً بأعمدة مصفوفة، بحلقتي <code>for</code> متداخلتين، و<code>padLeft</code>، و<code>StringBuffer</code> (ابحث عنه في <code>api.dart.dev</code>) لبناء كل صف قبل طباعته.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>أسعار المقهى ثوابت متفرقة، والطلب حفنة من المعاملات. في الفصل القادم ستعطيها شكلاً بالأصناف، وتقابل <code>null</code> والأمان من القيم الفارغة في Dart، وتحفظ قوائم طعام كاملة في القوائم والـ Map والـ Set.</p>
+</div>
+</section>

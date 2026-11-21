@@ -30,6 +30,12 @@ KEYWORDS = ("const let var if else switch case break default return function for
 PHP_KEYWORDS = set(KEYWORDS) | set(("function fn foreach as elseif match enum public private protected abstract final "
                                     "namespace use declare require require_once include echo print array mixed int "
                                     "string bool float void never self parent clone implements trait list").split())
+# Dart's own words (Book 5).
+DART_KEYWORDS = set(("var final const late void int double num bool String dynamic Object List Map Set Future Stream "
+                     "if else switch case default break continue return for while do in is as new true false null "
+                     "class extends implements with mixin enum abstract sealed base interface extension on this super "
+                     "import export library part show hide async await yield sync try catch finally throw rethrow "
+                     "required static get set operator factory typedef covariant external when assert Function").split())
 SQL_KEYWORDS = set(("SELECT FROM WHERE AND OR NOT NULL IS IN AS ON JOIN LEFT RIGHT INNER OUTER FULL GROUP BY ORDER "
                     "HAVING LIMIT OFFSET INSERT INTO VALUES UPDATE SET DELETE CREATE TABLE INDEX UNIQUE PRIMARY KEY "
                     "FOREIGN REFERENCES DEFAULT CHECK CONSTRAINT ALTER ADD DROP COLUMN BEGIN COMMIT ROLLBACK "
@@ -60,7 +66,7 @@ ORDINAL_AR = ["الأول", "الثاني", "الثالث", "الرابع", "ا�
 def highlight_js(src, words=KEYWORDS, comment=r"//[^\n]*"):
     """Very small JavaScript highlighter: enough for a black-and-white book. PHP and SQL use it too, with
     their own keywords and comments."""
-    token = re.compile(rf"({comment})|(`(?:\\.|[^`])*`|\"(?:\\.|[^\"\n])*\"|'(?:\\.|[^'\n])*')|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_$][\w$]*)\b")
+    token = re.compile(rf"({comment})|('''[\s\S]*?'''|`(?:\\.|[^`])*`|\"(?:\\.|[^\"\n])*\"|'(?:\\.|[^'\n])*')|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_$][\w$]*)\b")
     out, pos = [], 0
     for m in token.finditer(src):
         out.append(html.escape(src[pos:m.start()]))
@@ -129,6 +135,10 @@ def highlight(src, name):
         return highlight_js(src)
     if ext in ("html", "css"):
         return highlight_markup(src, ext)
+    if ext == "dart":
+        return highlight_js(src, DART_KEYWORDS)
+    if ext == "yaml":
+        return highlight_js(src, (), r"#[^\n]*")
     if ext == "php":
         return highlight_js(src, PHP_KEYWORDS, r"//[^\n]*|#(?!\[)[^\n]*")
     if ext == "sql":
@@ -223,6 +233,16 @@ def fill_code(chapter, lang):
         return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
                 f'<span class="output-title">{label}</span></div><pre>{printed}</pre></div>')
 
+    def term(m):
+        # <pre data-term="run.sh"></pre>: a recorded terminal session (Book 5), shown as a terminal: the
+        # commands after $ stand out, the # lines say what the next command is for.
+        attrs = m.group(1)
+        f = re.search(r'data-term="([^"]+)"', attrs).group(1)
+        text = (code_dir / f).read_text().rstrip("\n")
+        cls = "output error" if "error" in attrs else "output"
+        return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
+                f'<span class="output-title">{label}</span></div><pre>{highlight_shell(text)}</pre></div>')
+
     def check(m):
         # <pre data-check="file.ts"></pre>: what the TypeScript compiler says about the file, for real.
         attrs = m.group(1)
@@ -286,6 +306,9 @@ def fill_code(chapter, lang):
         target.parent.mkdir(parents=True, exist_ok=True)
         if not target.exists() or target.read_bytes() != src.read_bytes():
             target.write_bytes(src.read_bytes())
+        if 'data-frame="phone"' in attrs:
+            # A phone app (Book 5): the screenshot in a phone's outline, with no browser bar.
+            return f'<figure class="phone-shot"><div class="phone"><img src="img/{name}" alt=""></div>'
         bar = (f'<div class="browser-bar" dir="ltr"><i></i><i></i><i></i>'
                f'<span>{html.escape(url)}</span><b>{width}px</b></div>')
         return f'<figure class="browser">{bar}<img src="img/{name}" alt="">'
@@ -294,6 +317,7 @@ def fill_code(chapter, lang):
     chapter = re.sub(r'<figure (data-render="[^"]+"[^>]*)>', page, chapter)
     chapter = re.sub(r'<pre (data-code="[^"]+"(?:[^>"]|"[^"]*")*)></pre>', code, chapter)  # ">" may appear inside a quoted value
     chapter = re.sub(r'<pre (data-out="[^"]+"[^>]*)></pre>', out, chapter)
+    chapter = re.sub(r'<pre (data-term="[^"]+"[^>]*)></pre>', term, chapter)
     chapter = re.sub(r'<pre (data-check="[^"]+"[^>]*)></pre>', check, chapter)
     chapter = re.sub(r'<pre (data-sh="[^"]+"[^>]*)></pre>', shell, chapter)
     return chapter
@@ -324,8 +348,8 @@ def front_matter(book, lang, pages_of=None):
           <p><strong>{book["title"][lang]}</strong><br>{book["subtitle"][lang]}</p>
           <p>© 2026 {t["author"]}. {t["rights"]}</p>
           <p>{t["edition"]}, 2026</p>
-          <p>{t["code"]}</p>
-          <p>{t["trademarks"]}</p>
+          <p>{book["notes"]["code"][lang] if "notes" in book else t["code"]}</p>
+          <p>{book["notes"]["trademarks"][lang] if "notes" in book else t["trademarks"]}</p>
           <p>ISBN: ———</p>
         </section>''',
     ]

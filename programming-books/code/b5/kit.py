@@ -1,0 +1,109 @@
+"""Helpers for Book 5's examples: run Dart and Flutter for real and save what the terminal showed.
+
+  sh(cmd, cwd)            runs a shell command as a reader would (see below) -> (output, exit code)
+  Session(cwd)            s.note("comment"); s.run("dart run x.dart", shown=None) -> output; s.save(path)
+  fill(text, words)       replaces {w_name} placeholders, and nothing else (Dart is full of braces)
+  shot(web_dir, png, ...) serves a Flutter web build and screenshots it at phone size (see snap.cjs)
+
+The tools: Flutter 3.50.1 with its Dart 3.14 in /opt/flutter (or on PATH). Flutter warns when it runs as
+root, so when this machine's user is root the commands run as the ordinary user "reader" (create it with
+useradd -m reader), with only the settings a reader's terminal has.
+"""
+import os
+import re
+import shutil
+import subprocess
+from pathlib import Path
+
+B5 = Path(__file__).parent
+FLUTTER = Path(os.environ.get("FLUTTER_ROOT", "/opt/flutter"))
+RUNUSER = shutil.which("runuser")
+AS_READER = os.geteuid() == 0 and RUNUSER and Path("/home/reader").exists()
+HOME = Path("/home/reader") if AS_READER else Path.home()
+WORK = HOME / "b5-work"  # projects are created here, outside the repository, as a reader would
+
+
+def env():
+    e = {"HOME": str(HOME), "USER": HOME.name, "LANG": "C.UTF-8", "TERM": "dumb", "CI": "1",
+         "PATH": f"{FLUTTER}/bin:/usr/local/bin:/usr/bin:/bin", "PUB_CACHE": str(HOME / ".pub-cache")}
+    # Downloading packages through this machine's proxy, if it has one: never shown in a transcript.
+    for k in ("HTTPS_PROXY", "https_proxy"):
+        if os.environ.get(k):
+            e[k] = os.environ[k]
+    e["NO_PROXY"] = "localhost,127.0.0.1"
+    cert = Path("/opt/ca-bundle.crt")
+    if os.environ.get("SSL_CERT_FILE"):
+        if AS_READER and not cert.exists():
+            shutil.copy(os.environ["SSL_CERT_FILE"], cert)
+            cert.chmod(0o644)
+        e["SSL_CERT_FILE"] = str(cert) if AS_READER else os.environ["SSL_CERT_FILE"]
+    return e
+
+
+def wrap(cmd):
+    return [RUNUSER, "-u", "reader", "--", "bash", "-c", cmd] if AS_READER else ["bash", "-c", cmd]
+
+
+def popen(cmd, cwd, **kw):
+    return subprocess.Popen(wrap(cmd), cwd=cwd, env=env(), **kw)
+
+
+def clean(out, cwd):
+    out = out.replace("\r", "")
+    out = re.sub(r"\x1b\[[0-9;?]*[A-Za-z]", "", out)  # no terminal colours in a book
+    out = out.replace(str(cwd) + "/", "").replace(str(WORK) + "/", "").replace(str(HOME), "~")
+    return out.rstrip("\n")
+
+
+def sh(cmd, cwd, timeout=900):
+    Path(cwd).mkdir(parents=True, exist_ok=True)
+    if AS_READER:
+        subprocess.run(["chown", "-R", "reader:reader", str(WORK)], check=False)
+    r = subprocess.run(wrap(cmd), cwd=cwd, env=env(), capture_output=True, text=True, timeout=timeout)
+    return clean(r.stdout + r.stderr, cwd), r.returncode
+
+
+def fill(text, words):
+    return re.sub(r"\{(w_\w+)\}", lambda m: words[m.group(1)], text)
+
+
+class Session:
+    def __init__(self, cwd):
+        self.cwd, self.lines = Path(cwd), []
+
+    def note(self, text):
+        self.lines.append(f"# {text}")
+
+    def run(self, cmd, shown=None, check=True, keep=None):
+        """Runs cmd; the transcript shows `shown` (the command as the reader types it) if given.
+        keep(lines) -> lines may shorten a long answer; the book says so where it does."""
+        out, code = sh(cmd, self.cwd)
+        if check and code:
+            raise RuntimeError(f"{cmd} failed ({code}):\n{out}")
+        self.lines.append("$ " + (shown or cmd))
+        lines = out.split("\n") if out else []
+        if keep:
+            lines = keep(lines)
+        self.lines.extend(lines)
+        return out
+
+    def add(self, text):
+        self.lines.extend(text.rstrip("\n").split("\n"))
+
+    def save(self, path):
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text("\n".join(self.lines) + "\n")
+        self.lines = []
+
+
+def write(folder, files):
+    for name, text in files.items():
+        p = Path(folder) / name
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(text)
+
+
+def shot(web_dir, png, taps="", wait=5000):
+    """A screenshot of a Flutter web build at phone size (390 x 780, twice the pixels). taps is a list of
+    "x,y" points (in the 390 x 780 page) to click first, separated by spaces."""
+    subprocess.run(["node", str(B5 / "snap.cjs"), str(web_dir), str(png), taps, str(wait)], check=True)

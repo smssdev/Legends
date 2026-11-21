@@ -1,0 +1,1676 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>Flutter from Zero</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "Flutter from Zero"; font: 700 8pt 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: Setting Up Flutter"; } }
+@page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: Dart Basics"; } }
+@page ch02:first { @top-center { content: none; } }
+@page preface { @top-center { content: "How to Use This Book"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "Answers to the Exercises"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">From Zero to Senior · Book 5</p>
+  <h1 class="cv-title">Flutter from Zero</h1>
+  <p class="cv-sub">Dart and Your First Mobile Apps for Android and iOS</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="s"></span><span class="k">void</span> main() {
+  runApp(<span class="k">const</span> HelloBit());
+}
+
+<span class="k">final</span> grade = <span class="k">switch</span> (score) {
+  &gt;= <span class="n">90</span> =&gt; <span class="s">&#x27;A&#x27;</span>,
+  _ =&gt; <span class="s">&#x27;B&#x27;</span>,
+};</pre></div><div class="cv-tracks"><span>Dart</span><span>Flutter</span><span>Android</span><span>iOS</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">Beginner → Junior</span><span class="cv-author">Soliman Maged Saeed Salah</span></div>
+</div></section><section class="front half-title"><p class="ht">Flutter from Zero</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 5</p>
+          <h1 class="tp-title">Flutter from Zero</h1>
+          <p class="tp-sub">Dart and Your First Mobile Apps for Android and iOS</p>
+          <p class="tp-level">Beginner → Junior</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>Flutter from Zero</strong><br>Dart and Your First Mobile Apps for Android and iOS</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
+          <p>Flutter, Dart, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">35</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">59</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">This book takes you from your first line of Dart to your first app in Google Play and the App Store. It is written for people who already know the basics of programming: values and variables, decisions, loops and functions. If you read Parts I and III of <em>Code from Zero</em>, the first book of this series, you are ready. If you learned somewhere else, in any language, you are ready too: the book explains everything that is new in Dart and in Flutter from the beginning, and points out where they differ from JavaScript.</p>
+
+<h2 class="plain-h">What you need</h2>
+<ul>
+<li>A computer with Windows, macOS or Linux, with at least 8 GB of memory: the Android emulator needs room. To build apps for the iPhone you need a Mac, because Apple’s tools only run there; everything else in the book works on any of the three.</li>
+<li>An Android phone or an iPhone is welcome but not required: an emulator on your computer does the same job.</li>
+<li>Free tools that you will install in Chapter 1: Flutter (which includes Dart), Visual Studio Code, and Android Studio.</li>
+</ul>
+
+<h2 class="plain-h">How the book is organised</h2>
+<p>The fifteen chapters are grouped in three parts. Read them in order: each one builds on the ones before.</p>
+<ul>
+<li><strong>Dart</strong> installs Flutter and teaches the language every Flutter app is written in: its basics, classes and null safety, collections, and code that waits for things with futures and streams.</li>
+<li><strong>Building Screens</strong> is about what the user sees: widgets, layouts that fit every screen, lists, images and themes, moving between screens, and forms.</li>
+<li><strong>Real Apps</strong> adds what real apps need: state that changes, data from the internet, data saved on the phone, Arabic and English with right-to-left layouts, a complete notes app that uses everything, and publishing to the two stores.</li>
+</ul>
+
+<h2 class="plain-h">Every chapter</h2>
+<p>Each chapter follows the same pattern, so you always know where you are: what you will learn; explanations built on real, running examples; a quick check in the middle; boxes with tips, traps and professional habits; a table of common mistakes; a summary; <strong>three practice projects</strong> (easy, medium and challenge) with steps and hints; and exercises at three levels. Answers to the quick checks follow each summary, and answers to the exercises are at the end of the book.</p>
+<p>The projects matter more than anything else. Reading about a skill is not having it. Build at least one project per chapter before moving on.</p>
+
+<h2 class="plain-h">Real code, real output</h2>
+<p>Every listing in this book is a real file, every terminal session was recorded while the book was being made, and every screenshot is the real app. When Chapter 1 shows a test failing and then passing, that is what Flutter printed. You will see the same results with the same versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<tr><td>Flutter</td><td>3.50.1 (stable)</td></tr>
+<tr><td>Dart</td><td>3.14.0 (it comes with Flutter)</td></tr>
+<tr><td>material_ui</td><td>1.1</td></tr>
+</tbody>
+</table>
+<p>The screenshots were taken from the app running in a browser at the size of a phone screen, which is exactly how Flutter draws it on a phone: Flutter paints every pixel itself, so the same code looks the same everywhere. Tools change quickly. If a newer version prints something slightly different, read the difference: it usually teaches you what changed and why.</p>
+
+<h2 class="plain-h">Reading the examples</h2>
+<ul>
+<li>A dark tab above a listing gives the file’s name and its path in the project. Type the code yourself, then run it.</li>
+<li>A box with three coloured dots shows what appeared in the <strong>terminal</strong>. A line starting with <code>$</code> is a command for you to type (without the <code>$</code>); the lines below it are the answer. A line starting with <code>#</code> says what the next command is for.</li>
+<li>A picture in a phone outline is a screenshot of the app.</li>
+</ul>
+
+<h2 class="plain-h">The boxes</h2>
+<table>
+<thead><tr><th>Box</th><th>What it contains</th></tr></thead>
+<tbody>
+<tr><td>Tip</td><td>A shortcut or a smarter way of doing something</td></tr>
+<tr><td>Watch out</td><td>A common trap, and how to avoid it</td></tr>
+<tr><td>Did you know?</td><td>A true story or fact from the world of mobile apps</td></tr>
+<tr><td>Professional habit</td><td>How experienced developers work, and why</td></tr>
+<tr><td>Try it</td><td>A small experiment to do right now, at the keyboard</td></tr>
+<tr><td>Quick check</td><td>Three short questions in the middle of the chapter, with answers after the summary</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Bit is back</h2>
+<p>Bit, the small purple robot from the earlier books, walks with you through this one too. This time Bit wants to live on your phone. You will find Bit in speech bubbles, sharing tricks it learned the hard way and cheering you on before the projects.</p>
+
+<h2 class="plain-h">The code repository</h2>
+<p>Every example, every project and every exercise answer is in the book’s code repository, so you can compare your work or start from a working version when you are stuck. For apps, the repository keeps the files you write (<code>lib/</code>, <code>test/</code> and <code>pubspec.yaml</code>); <code>flutter create</code> makes the rest, exactly as Chapter 1 shows. But type the examples yourself first: your fingers learn faster than your eyes.</p>
+
+<h2 class="plain-h">A word from the author</h2>
+<p>A phone is the computer most people in the world carry every day. Building for it, in your own language, for the people around you, is one of the most rewarding things a developer can do. This book exists in English and in Arabic, written for each language rather than translated word for word, and its apps speak both. Welcome, and enjoy the journey.</p>
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b5/setup/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>Setting Up Flutter</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what Flutter is, and how one codebase becomes an Android app and an iPhone app</li>
+<li>install Flutter and the tools around it, and read what <code>flutter doctor</code> tells you</li>
+<li>create a project and know what each of its folders is for</li>
+<li>run an app, and change it while it runs with hot reload</li>
+<li>check your work the way professionals do: tests, the analyzer and the formatter</li>
+</ul>
+</div>
+
+<p class="lead">By the end of this chapter you will have a real app running on a phone, or on an emulator that behaves like one, and you will have changed it while it was running and watched the change appear in a fraction of a second. Most of the chapter is setting up: it is the least exciting part of the book, and the most important. A good setup, checked once, saves you hours of confusing errors later.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Hello again! In the earlier books I lived in a browser. Now I want to live in your pocket. Install the tools with me, one step at a time, and by the end of the chapter I will be waving at you from a phone screen.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>What Flutter is</span></h2>
+
+<p><dfn>Flutter</dfn> is a free toolkit, made by Google, for building apps. You write your app once, in a language called <dfn>Dart</dfn>, and Flutter turns it into an Android app, an iPhone app, a website, or a desktop program for Windows, macOS and Linux. Each of these is called a <dfn>platform</dfn>. This book focuses on the two that matter most for most people: Android and iOS, the system of the iPhone.</p>
+
+<p>Before toolkits like Flutter, a company that wanted an app on both kinds of phone usually built it twice: once in Kotlin or Java for Android, and once in Swift for iOS, often by two different teams. Every feature was written twice, tested twice, and had its bugs fixed twice. Flutter lets one developer, or one team, write it once.</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="Your Dart code runs on the Flutter framework, which runs on the Flutter engine, which runs on Android, iOS, the web and desktop">
+<g font-family="Inter" font-size="14" text-anchor="middle">
+<rect x="60" y="12" width="400" height="40" rx="10" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/>
+<text x="260" y="37" fill="#312e81" font-weight="700">Your app, written in Dart</text>
+<rect x="60" y="62" width="400" height="40" rx="10" fill="#fff" stroke="#4338ca" stroke-width="2"/>
+<text x="260" y="87" fill="#111">Flutter framework: widgets, layout, animation</text>
+<rect x="60" y="112" width="400" height="40" rx="10" fill="#fff" stroke="#4338ca" stroke-width="2"/>
+<text x="260" y="137" fill="#111">Flutter engine: draws every pixel itself</text>
+<g fill="#f7f8fc" stroke="#0f766e" stroke-width="2">
+<rect x="60" y="172" width="91" height="40" rx="8"/><rect x="163" y="172" width="91" height="40" rx="8"/>
+<rect x="266" y="172" width="91" height="40" rx="8"/><rect x="369" y="172" width="91" height="40" rx="8"/>
+</g>
+<g fill="#0f766e" font-weight="700"><text x="105" y="197">Android</text><text x="208" y="197">iOS</text><text x="311" y="197">Web</text><text x="414" y="197">Desktop</text></g>
+</g>
+</svg>
+<figcaption>Figure 1.1: One codebase, four kinds of platform. Your code sits on top; Flutter does the rest.</figcaption>
+</figure>
+
+<p>Flutter has one unusual idea that explains much of what you will see in this book: it <strong>draws every pixel of the app itself</strong>. Many other toolkits ask the phone to draw its own buttons and text boxes, so the app looks slightly different on each phone. Flutter brings its own drawing engine instead, the same one on every platform, so a button looks and behaves exactly as you designed it, everywhere. That is also why a screenshot of a Flutter app running in a browser looks exactly like the same app on a phone.</p>
+
+<p>The language, Dart, was also made by Google. It looks familiar if you know JavaScript, but it checks your types before the program runs, as you will see in Chapter 2. You do not install Dart separately: it comes inside Flutter.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>Dart was announced in 2011 as a language for the web. Flutter 1.0 came out in December 2018, with Dart as its only language, and gave Dart a second life: today most Dart code in the world is Flutter apps, running on phones.</p></aside>
+
+<h2><span class="sec">1.2</span> <span>What you need</span></h2>
+
+<p>Building mobile apps needs more tools than building web pages, because each phone system comes with its own tools from its own company. Here is the whole list. You do not need all of it today; the next sections install it in order.</p>
+
+<table>
+<thead><tr><th>Tool</th><th>What it is for</th><th>Needed on</th></tr></thead>
+<tbody>
+<tr><td>Flutter SDK</td><td>Flutter itself, with Dart inside it</td><td>Every computer</td></tr>
+<tr><td>Git</td><td>Flutter uses it to update itself, and you use it for your code (Book 1)</td><td>Every computer</td></tr>
+<tr><td>Visual Studio Code</td><td>The editor, with the Flutter extension</td><td>Every computer</td></tr>
+<tr><td>Android Studio</td><td>The Android SDK (Google’s tools for Android) and the Android emulator</td><td>Every computer</td></tr>
+<tr><td>Xcode</td><td>Apple’s tools for iOS, and the iPhone simulator</td><td>Only a Mac</td></tr>
+</tbody>
+</table>
+
+<p>An <dfn>SDK</dfn>, a <em>software development kit</em>, is a folder of tools for building software for one system. An <dfn>emulator</dfn> is a program that pretends to be a phone, on your computer screen, so you can run your app without a real phone. Apple calls its version a <em>simulator</em>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Apps for the iPhone can only be built on a Mac, because Xcode only runs on macOS. If you use Windows or Linux, you can still learn everything in this book with Android, and your Dart code will run on an iPhone unchanged later. Chapter 15 explains how teams without a Mac publish to the App Store.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>Installing the Flutter SDK</span></h2>
+
+<p>Installing Flutter means three things: downloading it, putting it in a folder, and telling your terminal where to find it.</p>
+
+<ol>
+<li>Open <code>docs.flutter.dev</code>, choose <em>Get started</em>, then your system (Windows, macOS or Linux). Follow the instructions for <em>Android</em> as your first target. Install Git first if the page asks for it.</li>
+<li>Download the Flutter SDK, a large zip file, and unzip it into a folder whose path has <strong>no spaces</strong> and does not need administrator rights. Good choices are <code>C:\dev\flutter</code> on Windows and <code>~/development/flutter</code> on macOS and Linux.</li>
+<li>Add the <code>bin</code> folder inside it (for example <code>C:\dev\flutter\bin</code>) to your <dfn>PATH</dfn>, the list of folders where the terminal looks for commands. The page shows how for your system.</li>
+<li>Close every terminal and open a new one. Then ask Flutter who it is:</li>
+</ol>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># Which Flutter, and which Dart inside it?</span>
+<span class="c">$ </span><span class="k">flutter --version</span>
+Flutter 3.50.1 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision ae9b586f34 (3 days ago) • 2026-11-18 17:01:07 -0800
+Engine • hash 51379e6df48ea8ee7205623b90fe66491cad8df3 (revision 4d35714800) (3 days ago) • 2026-11-18 01:50:07.000Z
+Tools • Dart 3.14.0 • DevTools 2.61.0</pre></div>
+
+<p>Four lines, and each one means something. The first is the version of Flutter, <code>3.50.1</code>, from the <code>stable</code> <dfn>channel</dfn>: the releases that are tested and safe for real apps. The next two say exactly which code of the framework and the engine you have, with the dates they were made. The last line is the most interesting for the next chapter: Flutter 3.50.1 brings <strong>Dart 3.14.0</strong> with it, and DevTools, a set of tools for looking inside a running app that you will meet later.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>If the terminal answers <code>flutter: command not found</code> (or, on Windows, “not recognized as an internal or external command”), the PATH is wrong, or the terminal was opened before you changed it. Open a new terminal first; that fixes it most of the time. If not, check the path letter by letter: it must end in <code>flutter\bin</code> or <code>flutter/bin</code>.</p></aside>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Install Visual Studio Code now if you do not have it, then the <strong>Flutter</strong> extension from its Extensions view (it installs the Dart extension with it). The extension can also download the Flutter SDK for you, when you create your first project from the Command Palette. Either way ends in the same place.</p></aside>
+
+<h2><span class="sec">1.4</span> <span>Asking the doctor</span></h2>
+
+<p>Flutter needs the other tools in the table, and it can check them for you. The command <code>flutter doctor</code> examines your computer and writes a report, one line per tool. Here is the real report from the computer this book was built on, a Linux machine with no Android tools installed yet:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># Is everything ready?</span>
+<span class="c">$ </span><span class="k">flutter doctor</span>
+Doctor summary (to see all details, run flutter doctor -v):
+[✓] Flutter (Channel stable, 3.50.1, on Ubuntu 24.04.5 LTS 6.18.44-fc-v726, locale C.UTF-8)
+[✗] Android toolchain - develop for Android devices
+    ✗ Unable to locate Android SDK.
+      Install Android Studio from: https://developer.android.com/studio/index.html
+      On first launch it will assist you in installing the Android SDK components.
+      (or visit https://flutter.dev/to/linux-android-setup for detailed instructions).
+      If the Android SDK has been installed to a custom location, please use
+      `flutter config --android-sdk` to update to that location.
+
+[✓] Chrome - develop for the web
+[✗] Linux toolchain - develop for Linux desktop
+    ✗ GTK 3.0 development libraries are required for Linux development.
+      They are likely available from your distribution (e.g.: apt install libgtk-3-dev)
+    ! Unable to access driver information using &#x27;eglinfo&#x27;.
+      It is likely available from your distribution (e.g.: apt install mesa-utils)
+[✓] Connected device (2 available)
+[✓] Network resources
+
+! Doctor found issues in 2 categories.</pre></div>
+
+<p>Read the report like a checklist. A <code>[✓]</code> means ready. A <code>[✗]</code> means missing, and a <code>!</code> is a warning: something works only partly. Under every problem, the doctor tells you what to do, often with the exact command or link. This machine has two problems:</p>
+<ul>
+<li><strong>Android toolchain:</strong> no Android SDK was found. This one matters: without it, there is no Android app. The doctor says how to fix it: install Android Studio.</li>
+<li><strong>Linux toolchain:</strong> some libraries for building Linux desktop programs are missing. This book does not build desktop programs, so this line can be ignored.</li>
+</ul>
+<p>Your report will look a little different: on Windows you will see a line for Visual Studio (for Windows desktop programs, which you can also ignore), and on a Mac a line for Xcode.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Fix the doctor’s report one line at a time, from the top, and run <code>flutter doctor</code> again after each fix. Fix only the platforms you build for: a red line for Linux desktop on a phone developer’s laptop is not a problem. When something strange happens months later, run the doctor first; it is the fastest way to find out what changed.</p></aside>
+
+<h3>Installing the Android tools</h3>
+<ol>
+<li>Download Android Studio from <code>developer.android.com/studio</code> and install it. Open it once, and let its setup wizard install the Android SDK.</li>
+<li>In Android Studio, open the <strong>SDK Manager</strong>, and on the <em>SDK Tools</em> tab tick <strong>Android SDK Command-line Tools</strong>, then apply.</li>
+<li>Accept Google’s licences for the SDK, from the terminal: <code>flutter doctor --android-licenses</code>. Read each licence and answer <code>y</code>.</li>
+<li>Create an emulator: in Android Studio, open the <strong>Device Manager</strong>, add a virtual device, choose a recent phone (a Pixel is a good choice) and a recent system image, and finish.</li>
+<li>Run <code>flutter doctor</code> again. The Android line should now show <code>[✓]</code>.</li>
+</ol>
+
+<h3>On a Mac: the iOS tools</h3>
+<p>Install Xcode from the Mac App Store; it is large, so give it time. Open it once to finish its setup, then run <code>flutter doctor</code> and do exactly what the Xcode section of the report says, one line at a time. The report names the commands for your version of Xcode, which is safer than any list printed in a book.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Installing tools is the part of programming where everyone gets stuck at least once. When you do, copy the exact error message into a search engine. Somebody had the same problem last week, and somebody else answered them.</p></div></div>
+
+<h2><span class="sec">1.5</span> <span>Your first project</span></h2>
+
+<p>One command creates a complete app, ready to run. Open a terminal in the folder where you keep your projects:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># A new project called hello_bit</span>
+<span class="c">$ </span><span class="k">flutter create hello_bit</span>
+Creating project hello_bit...
+Got dependencies in `hello_bit`.
+Wrote 131 files.
+
+All done!
+You can find general documentation for Flutter at: https://docs.flutter.dev/
+Detailed API documentation is available at: https://api.flutter.dev/
+If you prefer video documentation, consider: https://www.youtube.com/c/flutterdev
+
+In order to run your application, type:
+
+  $ cd hello_bit
+  $ flutter run
+
+Your application code is in hello_bit/lib/main.dart.</pre></div>
+
+<p>Flutter wrote 131 files, then downloaded the packages the app needs (“Got dependencies”). The project’s name, <code>hello_bit</code>, follows Dart’s rule for names of projects and files: only lower-case letters, digits and underscores. A name like <code>HelloBit</code> or <code>hello-bit</code> is refused.</p>
+
+<p>Open the folder in VS Code (<em>File, Open Folder</em>). This is what is inside:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello_bit</div><pre class="code">hello_bit/
+  .gitignore
+  .metadata
+  README.md
+  analysis_options.yaml
+  android/
+  hello_bit.iml
+  ios/
+  lib/
+  linux/
+  macos/
+  pubspec.lock
+  pubspec.yaml
+  test/
+  web/
+  windows/</pre></div>
+
+<table>
+<thead><tr><th>Name</th><th>What it is</th><th>How often you touch it</th></tr></thead>
+<tbody>
+<tr><td><code>lib/</code></td><td>Your Dart code. The app starts in <code>lib/main.dart</code></td><td>All the time</td></tr>
+<tr><td><code>test/</code></td><td>Tests for your code</td><td>All the time</td></tr>
+<tr><td><code>pubspec.yaml</code></td><td>The project’s name, version, and the packages it uses</td><td>Often</td></tr>
+<tr><td><code>android/</code>, <code>ios/</code></td><td>Small native projects that wrap your app for each phone system: its icon, its permissions, its name in the store</td><td>Sometimes</td></tr>
+<tr><td><code>web/</code>, <code>linux/</code>, <code>macos/</code>, <code>windows/</code></td><td>The same, for the web and for desktops</td><td>Rarely</td></tr>
+<tr><td><code>analysis_options.yaml</code></td><td>The rules the analyzer checks your code against</td><td>Rarely</td></tr>
+<tr><td><code>pubspec.lock</code></td><td>The exact versions of every package that was downloaded. Flutter writes it; you commit it</td><td>Never by hand</td></tr>
+<tr><td><code>README.md</code>, <code>.gitignore</code>, <code>.metadata</code>, <code>hello_bit.iml</code></td><td>A description, the files Git should ignore, and notes for Flutter and for editors</td><td>Rarely</td></tr>
+</tbody>
+</table>
+
+<p>Open <code>pubspec.yaml</code>. Among many helpful comments, the part that matters today is the list of <dfn>dependencies</dfn>, the packages your app uses:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">pubspec.yaml</div><pre class="code">dependencies:
+  flutter:
+    sdk: flutter
+  material_ui: ^<span class="n">1.1</span>.<span class="n">0</span>
+
+  <span class="c line-bidi"># The following adds the Cupertino Icons font to your application.</span>
+  <span class="c line-bidi"># Use with the CupertinoIcons class for iOS style icons.</span>
+  cupertino_icons: ^<span class="n">1.0</span>.<span class="n">8</span></pre></div>
+
+<p>A <dfn>package</dfn> is a library of code that someone published for others to use, on the website <code>pub.dev</code>. Your app uses three. <code>flutter</code> is Flutter itself. <code>material_ui</code> holds the <dfn>Material</dfn> widgets: buttons, bars, cards and text fields in the style of Google’s Material Design, which this book uses everywhere. <code>cupertino_icons</code> holds icons in Apple’s style. The <code>^1.1.0</code> means “version 1.1.0 or any later version that promises to stay compatible with it”.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>In earlier versions of Flutter the Material widgets were part of Flutter itself, and every app started with <code>import 'package:flutter/material.dart';</code>. Flutter 3.47 moved them into their own package, <code>material_ui</code>, so that they can improve on their own schedule. You will still find the old line in most tutorials on the internet; Section 1.9 shows what Flutter says about it.</p></aside>
+
+<h2><span class="sec">1.6</span> <span>Reading main.dart</span></h2>
+
+<p>The new project is a small counter app: a number in the middle of the screen, and a button that adds one to it. Its code, in <code>lib/main.dart</code>, is about 120 lines long, most of them comments that explain the code. Here is how it starts:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/main.dart (from the template)</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:material_ui/material_ui.dart&#x27;</span>;
+
+<span class="k">void</span> main() {
+  runApp(<span class="k">const</span> MyApp());
+}
+
+<span class="k">class</span> MyApp <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> MyApp({<span class="k">super</span>.key});
+
+  <span class="c line-bidi">// This widget is the root of your application.</span>
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> MaterialApp(
+      title: <span class="s">&#x27;Flutter Demo&#x27;</span>,
+      theme: ThemeData(
+        <span class="c line-bidi">// This is the theme of your application.</span>
+        <span class="c line-bidi">//</span>
+        <span class="c line-bidi">// TRY THIS: Try running your application with &quot;flutter run&quot;. You&#x27;ll see</span>
+        <span class="c line-bidi">// the application has a purple toolbar. Then, without quitting the app,</span>
+        <span class="c line-bidi">// try changing the seedColor in the colorScheme below to Colors.green</span>
+        <span class="c line-bidi">// and then invoke &quot;hot reload&quot; (save your changes or press the &quot;hot</span>
+        <span class="c line-bidi">// reload&quot; button in a Flutter-supported IDE, or press &quot;r&quot; if you used</span>
+        <span class="c line-bidi">// the command line to start the app).</span>
+        <span class="c line-bidi">//</span>
+        <span class="c line-bidi">// Notice that the counter didn&#x27;t reset back to zero; the application</span>
+        <span class="c line-bidi">// state is not lost during the reload. To reset the state, use hot</span>
+        <span class="c line-bidi">// restart instead.</span>
+        <span class="c line-bidi">//</span>
+        <span class="c line-bidi">// This works for code too, not just values: Most code changes can be</span>
+        <span class="c line-bidi">// tested with just a hot reload.</span>
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: <span class="k">const</span> MyHomePage(title: <span class="s">&#x27;Flutter Demo Home Page&#x27;</span>),
+    );
+  }
+}</pre></div>
+
+<p>Do not try to understand every word yet: the next chapters explain them all. For now, look at the shape. The first line <dfn>imports</dfn> the Material widgets, so this file can use them. Then comes <code>main</code>, the function where every Dart program starts. It calls <code>runApp</code>, which takes a <dfn>widget</dfn> and shows it on the screen. A widget is a description of a piece of the screen: a text, a button, a whole page. In Flutter, everything you see is a widget, and widgets are built from smaller widgets, like boxes inside boxes. Chapter 5 is all about them.</p>
+
+<p>The counter is a fine example, but it is too much to read on your first day. Replace the whole content of <code>lib/main.dart</code> with this much smaller app:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/main.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:material_ui/material_ui.dart&#x27;</span>;
+
+<span class="c line-bidi">// Every Dart program starts by running main().</span>
+<span class="k">void</span> main() {
+  runApp(<span class="k">const</span> HelloBitApp());
+}
+
+<span class="c line-bidi">// The whole app is one widget: a description of what to show.</span>
+<span class="k">class</span> HelloBitApp <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> HelloBitApp({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> MaterialApp(
+      title: <span class="s">&#x27;Hello Bit&#x27;</span>,
+      home: Scaffold(
+        appBar: AppBar(
+          title: <span class="k">const</span> Text(<span class="s">&#x27;Hello Bit&#x27;</span>),
+          centerTitle: <span class="k">true</span>,
+          <span class="c line-bidi">// The colour of the bar, and of the text on it.</span>
+          backgroundColor: Colors.indigo,
+          foregroundColor: Colors.white,
+        ),
+        body: <span class="k">const</span> Center(
+          child: Text(<span class="s">&#x27;Hello, Flutter!&#x27;</span>, style: TextStyle(fontSize: <span class="n">32</span>)),
+        ),
+      ),
+    );
+  }
+}</pre></div>
+
+<p>Read it from the outside in, the way Flutter builds it:</p>
+<ul>
+<li><code>main</code> calls <code>runApp</code> with our app, <code>HelloBitApp</code>.</li>
+<li><code>HelloBitApp</code> is a <code>StatelessWidget</code>: a widget that never changes once it is shown. Its <code>build</code> method returns what it looks like.</li>
+<li><code>MaterialApp</code> is the frame of an app in Material style. Its <code>home</code> is the first screen.</li>
+<li><code>Scaffold</code> is the skeleton of one screen: here, a bar at the top (<code>appBar</code>) and the rest of the screen (<code>body</code>).</li>
+<li><code>AppBar</code> shows a title, centred, on an indigo bar with white text.</li>
+<li><code>Center</code> puts its one <code>child</code> in the middle of the space it has, and <code>Text</code> shows the greeting at 32 logical pixels.</li>
+</ul>
+
+<p>Notice how the code is shaped like the screen: the bar and the body are inside the scaffold, which is inside the app. Notice also the commas at the end of almost every line. Dart allows a comma after the last item, and Flutter developers always put one there: the formatter then puts each item on its own line, and the code keeps the shape of the screen.</p>
+
+<h2><span class="sec">1.7</span> <span>Running the app</span></h2>
+
+<p>An app needs somewhere to run. Start your emulator from Android Studio’s Device Manager (or plug in an Android phone with <em>USB debugging</em> turned on in its developer options), then ask Flutter which devices it can see:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># Which devices can run the app right now?</span>
+<span class="c">$ </span><span class="k">flutter devices</span>
+Found 2 connected devices:
+  Linux (desktop) • linux  • linux-x64      • Ubuntu 24.04.5 LTS 6.18.44-fc-v726
+  Chrome (web)    • chrome • web-javascript • Google Chrome for Testing 153.0.8010.12
+
+Run &quot;flutter emulators&quot; to list and start any available device emulators.
+
+If you expected another device to be detected, please run &quot;flutter doctor&quot; to diagnose potential issues. You may also try increasing the time to wait for connected devices with the &quot;--device-timeout&quot; flag. Visit https://flutter.dev/setup/ for troubleshooting tips.</pre></div>
+
+<p>The book’s machine, a computer without a screen in a data centre, sees only itself and a browser. Your list will show your emulator, with a name such as <code>sdk gphone64 x86 64</code>, or your phone. Now run the app, from the project folder:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># Run it (here in a browser; on your machine, an emulator or a phone)</span>
+<span class="c">$ </span><span class="k">flutter run</span>
+Launching lib/main.dart on Web Server in debug mode...
+Waiting for connection from debug service on Web Server...         28.5s
+lib/main.dart is being served at http://localhost:8099
+The web-server device requires the Dart Debug Chrome extension for debugging. Consider using the Chrome or Edge devices for an improved development workflow.
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate &quot;flutter run&quot; but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+Debug service listening on ws://127.0.0.1:33723/X1oHN-nVS58=/ws
+A Dart VM Service on Web Server is available at: http://127.0.0.1:33723/X1oHN-nVS58=
+The Flutter DevTools debugger and profiler on Web Server is available at: http://127.0.0.1:33723/X1oHN-nVS58=/devtools/?uri=ws://127.0.0.1:33723/X1oHN-nVS58=/ws</pre></div>
+
+<p>On your machine the first line names your emulator, and the first build of an Android app takes a minute or two, because Flutter builds the whole Android project behind the scenes. The book’s machine ran the app in a browser, on a small web server, and the next line warns about debugging in that setup, which does not concern you. When the browser opened the app, Flutter printed the addresses of its debug service and of DevTools, the tools for looking inside a running app. Then <code>flutter run</code> stays open and waits for keys: you will use them in a moment. In VS Code you can also press <strong>F5</strong>, which runs the app in the same way, with buttons instead of keys.</p>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-en-shots-first-run.png" alt=""></div>
+<figcaption>Figure 1.2: Hello Bit, running. The ribbon in the corner says this is a debug build.</figcaption>
+</figure>
+
+<p>Your first app! The red <strong>DEBUG</strong> ribbon in the corner reminds you that this is a <dfn>debug build</dfn>, built for developing: it is slower, and full of help for finding mistakes. The version you publish is a <dfn>release build</dfn>, fast and without the ribbon. Chapter 15 builds one.</p>
+
+<h2><span class="sec">1.8</span> <span>Hot reload</span></h2>
+
+<p>This is the moment Flutter developers fall in love with it. Leave the app running. In <code>lib/main.dart</code>, change <code>Colors.indigo</code> to <code>Colors.teal</code>, and the greeting to <code>'Hello, hot reload!'</code>. Save the file, and press <strong>r</strong> in the terminal where <code>flutter run</code> is waiting (in VS Code, saving is enough: it reloads for you).</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-en-shots-first-run.png" alt=""></div>
+<figcaption>Before</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-en-shots-hot-reload.png" alt=""></div>
+<figcaption>After pressing r</figcaption>
+</figure>
+</div>
+
+<p>The terminal shows what happened:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># lib/main.dart is saved with a new colour and text, then r is pressed</span>
+r
+Performing hot reload...                                           179ms
+Reloaded application in 180ms.
+Application finished.</pre></div>
+
+<p><dfn>Hot reload</dfn> sent only the changed code into the running app and rebuilt the screen in a fraction of a second (the terminal gives the exact time), without starting the app again. On a phone it is just as fast. You will change a colour, a size or a word, see it, and change it again, dozens of times a minute. This is how Flutter developers design screens: not by imagining, but by trying.</p>
+
+<p>The other keys are worth knowing:</p>
+<table>
+<thead><tr><th>Key</th><th>What it does</th><th>When to use it</th></tr></thead>
+<tbody>
+<tr><td><strong>r</strong></td><td>Hot reload: new code, same running app, values kept</td><td>Almost always</td></tr>
+<tr><td><strong>R</strong></td><td>Hot restart: the app starts again from <code>main</code>, values lost</td><td>When a change does not appear after <strong>r</strong>, such as a change inside <code>main</code></td></tr>
+<tr><td><strong>q</strong></td><td>Quit: stops the app</td><td>When you are done</td></tr>
+</tbody>
+</table>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>With the app running, change the font size from 32 to 48 and reload. Then try <code>Colors.deepOrange</code>, then <code>Colors.black</code> for the bar. Count how many seconds each change takes, from typing to seeing.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which command tells you what is missing on your computer?</li><li>In which folder do you write your Dart code, and in which file does the app start?</li><li>What is the difference between pressing <strong>r</strong> and <strong>R</strong>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">1.9</span> <span>Checking your work like a professional</span></h2>
+
+<p>The project came with a test, in <code>test/widget_test.dart</code>. A <dfn>test</dfn> is code that runs your app’s code and checks that it does what it should, so that you do not have to check by hand after every change. Run the tests:</p>
+
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># Run the tests that came with the template</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0 -1: loading test/widget_test.dart [E]
+  Failed to load &quot;test/widget_test.dart&quot;:
+  Compilation failed for testPath=test/widget_test.dart: test/widget_test.dart:16:35: Error: Couldn&#x27;t find constructor &#x27;MyApp&#x27;.
+      await tester.pumpWidget(const MyApp());
+                                    ^^^^^
+  .
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  test/widget_test.dart: loading test/widget_test.dart
+test/widget_test.dart:16:35: Error: Couldn&#x27;t find constructor &#x27;MyApp&#x27;.
+    await tester.pumpWidget(const MyApp());
+                                  ^^^^^</pre></div>
+
+<p>A failure, and a useful one. The test was written for the counter app: it tries to show <code>MyApp</code> and press its button, and we replaced <code>MyApp</code> with <code>HelloBitApp</code>. Read the message from the top: the file, the line (16), the column (35), and the reason, “Couldn’t find constructor 'MyApp'”. Every error message in Dart and Flutter has this shape, and reading it slowly is a skill you will use every day.</p>
+
+<p>Replace the test with one that checks our app:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/widget_test.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:flutter_test/flutter_test.dart&#x27;</span>;
+<span class="k">import</span> <span class="s">&#x27;package:hello_bit/main.dart&#x27;</span>;
+
+<span class="k">void</span> main() {
+  testWidgets(<span class="s">&#x27;shows the greeting&#x27;</span>, (WidgetTester tester) <span class="k">async</span> {
+    <span class="k">await</span> tester.pumpWidget(<span class="k">const</span> HelloBitApp());
+    expect(find.text(<span class="s">&#x27;Hello, hot reload!&#x27;</span>), findsOneWidget);
+  });
+}</pre></div>
+
+<p><code>testWidgets</code> describes a test with a name. Inside, <code>pumpWidget</code> shows our app in a pretend screen, without any emulator, and <code>expect</code> checks that exactly one widget shows the greeting. Run the tests again:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># The test, updated for our app</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0: shows the greeting
+00:00 +1: All tests passed!</pre></div>
+
+<p>Two more tools belong in your routine. The <dfn>analyzer</dfn> reads your code without running it and points out mistakes, risky code and outdated code. The <dfn>formatter</dfn> rewrites your code in the one standard style that all Dart developers use, so that nobody argues about spaces.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># Look for problems without running anything</span>
+<span class="c">$ </span><span class="k">flutter analyze</span>
+Analyzing hello_bit...                                          
+No issues found! (ran in 5.5s)
+<span class="c line-bidi"># Format every file the standard way</span>
+<span class="c">$ </span><span class="k">dart format .</span>
+Formatted 2 files (0 changed) in 0.01 seconds.</pre></div>
+
+<p>“No issues found!”, and the formatter found nothing to change. Now see what the analyzer says about the same app with the old import line from Section 1.5:</p>
+
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># The same app with the import from older tutorials</span>
+<span class="c">$ </span><span class="k">flutter analyze</span>
+Analyzing hello_bit...                                          
+
+   info • &#x27;package:flutter/material.dart&#x27; is deprecated and shouldn&#x27;t be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:1:1 • deprecated_member_use
+
+1 issue found. (ran in 2.6s)</pre></div>
+
+<p>An <code>info</code> is the mildest kind of message: the app still works. But the analyzer explains exactly what is outdated, since which version, and what to use instead. When you copy code from an older tutorial, run the analyzer and follow its advice.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Before you call any change finished, run three commands: <code>dart format .</code>, <code>flutter analyze</code> and <code>flutter test</code>. Professional teams run the same three automatically on every change, and refuse changes that fail them. Make it a habit from your first app, and commit your project to Git as you did in Book 1: <code>flutter create</code> already wrote a <code>.gitignore</code> for you.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Flutter in a folder with spaces, or in <code>Program Files</code></td><td>Strange errors when building, or no permission to update</td><td>Move it to a simple path such as <code>C:\dev\flutter</code></td></tr>
+<tr><td>Changing PATH and using the old terminal</td><td><code>flutter: command not found</code></td><td>Open a new terminal</td></tr>
+<tr><td>Licences not accepted</td><td>The doctor complains, and Android builds fail</td><td><code>flutter doctor --android-licenses</code></td></tr>
+<tr><td>A project name with capitals or hyphens</td><td><code>flutter create</code> refuses it</td><td>Use <code>snake_case</code>: <code>hello_bit</code></td></tr>
+<tr><td>A change does not appear after <strong>r</strong></td><td>The screen stays the same</td><td>Check that the file is saved; press <strong>R</strong> for a hot restart</td></tr>
+<tr><td>Old tutorials’ <code>package:flutter/material.dart</code></td><td>The analyzer reports it as deprecated</td><td>Import <code>package:material_ui/material_ui.dart</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Flutter</strong> builds apps for Android, iOS, the web and desktops from one codebase written in <strong>Dart</strong>, and draws every pixel itself.</li>
+<li>Install the <strong>Flutter SDK</strong> in a simple folder and add its <code>bin</code> to your <strong>PATH</strong>; Android Studio gives you the Android SDK and the emulator, and Xcode (only on a Mac) the iOS tools.</li>
+<li><code>flutter doctor</code> checks everything and says how to fix what is missing. Fix only the platforms you build for.</li>
+<li><code>flutter create name</code> makes a project. Your code lives in <code>lib/</code>, starting in <code>lib/main.dart</code>; packages are listed in <code>pubspec.yaml</code>, and the Material widgets come from <code>material_ui</code>.</li>
+<li>Everything on the screen is a <strong>widget</strong>, and the code has the shape of the screen.</li>
+<li><code>flutter run</code> starts the app; <strong>r</strong> is hot reload, <strong>R</strong> hot restart, <strong>q</strong> quit.</li>
+<li>Before calling a change done: <code>dart format .</code>, <code>flutter analyze</code>, <code>flutter test</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>flutter doctor</code>. 2. In <code>lib/</code>; the app starts in <code>lib/main.dart</code>, in the function <code>main</code>. 3. <strong>r</strong> (hot reload) puts the new code into the running app and keeps its values; <strong>R</strong> (hot restart) starts the app again from <code>main</code>, so the values start again too.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project starts with <code>flutter create</code>, as in this chapter. Keep <code>flutter run</code> open while you work, and reload after every small change.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>Your name card</h3>
+<p class="project-goal">Make an app that shows a card about you: an icon, your name, your job, and your city.</p>
+<p class="project-skills"><strong>You will practise:</strong> creating a project, changing <code>main.dart</code>, colours and text sizes, and hot reload.</p>
+<ol class="steps">
+<li>Create a project called <code>name_card</code>, and replace <code>lib/main.dart</code> with the Hello Bit app.</li>
+<li>Change the bar’s title and its colour to <code>Colors.deepOrange</code>. Type <code>Colors.</code> in VS Code and look at the list it offers: every colour of the Material palette has a name.</li>
+<li>To show several lines, the body’s <code>Center</code> needs a <code>Column</code> as its child, with a list of <code>children</code>. Chapter 6 explains <code>Column</code>; for now, copy its shape from this part of the solution:
+<div class="listing" dir="ltr"><div class="listing-title">lib/main.dart (part)</div><pre class="code">        body: <span class="k">const</span> Center(
+          <span class="c line-bidi">// A Column puts its children one under the other (Chapter 6 explains it).</span>
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.person, size: <span class="n">96</span>, color: Colors.deepOrange),
+              Text(<span class="s">&#x27;Sara Ahmed&#x27;</span>, style: TextStyle(fontSize: <span class="n">32</span>)),
+              <span class="c line-bidi">// An empty box of 8 pixels: a gap between two lines.</span>
+              SizedBox(height: <span class="n">8</span>),
+              Text(
+                <span class="s">&#x27;Flutter developer in training&#x27;</span>,
+                style: TextStyle(fontSize: <span class="n">18</span>),
+              ),
+              Text(<span class="s">&#x27;Cairo, Egypt&#x27;</span>, style: TextStyle(fontSize: <span class="n">18</span>)),
+            ],
+          ),
+        ),</pre></div></li>
+<li>Add an <code>Icon(Icons.person, size: 96, color: Colors.deepOrange)</code> above your name, and a <code>SizedBox(height: 8)</code> between two lines when they feel too close.</li>
+<li>Delete <code>test/widget_test.dart</code> (or write a test that finds your name), then run <code>flutter analyze</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>debugShowCheckedModeBanner: false</code> on the <code>MaterialApp</code> hides the DEBUG ribbon, which is nice for screenshots. The ribbon never appears in release builds anyway.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-en-shots-name-card.png" alt=""></div>
+<figcaption>Project 1.1: a name card in deep orange.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.2 · Medium</p>
+<h3>Counting in twos</h3>
+<p class="project-goal">Keep the counter app that <code>flutter create</code> makes, but make it start at 10 and count in twos, and update its test so that it passes.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading code you did not write, small precise changes, and fixing a test.</p>
+<ol class="steps">
+<li>Create a project called <code>counter_by_two</code>, run it, and press the button a few times. Then read <code>lib/main.dart</code> with its comments.</li>
+<li>Find the line that gives the counter its first value, and the line that adds one to it. Each needs one small change.</li>
+<li>Press <strong>r</strong>. Does the counter start at 10? Now press <strong>R</strong>. Explain the difference.</li>
+<li>Run <code>flutter test</code>. It fails: the test still expects 0, then 1. Change the test to expect 10, then 12, and give it a better name.</li>
+<li>Run the test again until it passes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look for <code>_counter</code>. In Dart, <code>_counter += 2</code> is a short way to write <code>_counter = _counter + 2</code>, exactly as in JavaScript.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># The counter that starts at 10 and counts in twos</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0: counts in twos from ten
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 1.3 · Challenge</p>
+<h3>A reset button</h3>
+<p class="project-goal">Add a button to the counter app’s bar that puts the counter back to zero, and a test that proves it works.</p>
+<p class="project-skills"><strong>You will practise:</strong> adding a widget inside an existing one, reading Flutter’s documentation, and writing a test that taps.</p>
+<ol class="steps">
+<li>Create a project called <code>counter_reset</code>. In <code>lib/main.dart</code>, find the <code>AppBar</code>.</li>
+<li><code>AppBar</code> has a parameter called <code>actions</code>: a list of widgets shown at the end of the bar. Look it up on <code>api.flutter.dev</code>, then add an <code>IconButton</code> with <code>Icons.refresh</code> to it.</li>
+<li>When the button is pressed, set the counter to zero. Copy the pattern from <code>_incrementCounter</code>: the change happens inside <code>setState(() { ... })</code>, which tells Flutter to draw the screen again. Chapter 10 explains why.</li>
+<li>Give the button a <code>tooltip</code>, a short label for people who use screen readers.</li>
+<li>Write a test that taps <code>+</code> twice, checks that the screen shows 2, taps the refresh icon, and checks that it shows 0. <code>find.byIcon(Icons.refresh)</code> finds the button.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> after every <code>tester.tap</code> in a test, call <code>await tester.pump()</code> before checking: it lets Flutter draw the new screen, as it would between two frames on a phone.</p>
+<p><strong>Your result should look like this</strong> (after three taps on <code>+</code>):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-setup-en-shots-counter-reset.png" alt=""></div>
+<figcaption>Project 1.3: the counter with a reset button in its bar.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c line-bidi"># The counter with a reset button</span>
+<span class="c">$ </span><span class="k">flutter test</span>
+00:00 +0: loading test/widget_test.dart
+00:00 +0: the reset button goes back to zero
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Run <code>flutter doctor -v</code> (the <code>-v</code> means <em>verbose</em>). What extra information does it give for each line? Write down where your Flutter SDK and your Android SDK are installed.</li>
+<li><span class="level">Easy</span> In Hello Bit, change the greeting to your own name and the bar to your favourite colour, using hot reload. Then put the bar’s title on the left by removing one line. Which line?</li>
+<li><span class="level medium">Medium</span> Find, in <code>hello_bit</code>, the file where Android gets the app’s name that appears under its icon, and the file where iOS gets it. (Hint: look in <code>android/app/src/main</code> and <code>ios/Runner</code>.)</li>
+<li><span class="level medium">Medium</span> Change the test of Hello Bit so that it fails on purpose, for example by expecting a different greeting. Run it, and explain each line of the failure message.</li>
+<li><span class="level hard">Challenge</span> Write down, as a numbered checklist, everything you did to go from an empty computer to a running app, with the time each step took. Ask a friend to follow it on their computer, and fix every step where they got stuck. This is how teams write their setup documents.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+<p>You ran a Flutter app; now it is time to learn the language it is written in. The next chapter teaches Dart from its first line: variables and their types, numbers and text, decisions, loops and functions, and it ends with a receipt printer for Bit’s café.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b5/dart/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>Dart Basics</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write and run a Dart program from the terminal</li>
+<li>store values in variables, and choose between <code>var</code>, <code>final</code> and <code>const</code></li>
+<li>work with Dart’s basic types: <code>int</code>, <code>double</code>, <code>String</code> and <code>bool</code></li>
+<li>make decisions with <code>if</code>, and with <code>switch</code> and its patterns</li>
+<li>repeat work with loops, and package it in functions with named parameters</li>
+<li>read the Dart compiler’s error messages, and let them help you</li>
+</ul>
+</div>
+
+<p class="lead">Every Flutter app is a Dart program, so before you build screens you need the language. The good news: if you know JavaScript, or any other language with variables, <code>if</code> and loops, Dart will feel familiar within an hour. The one big difference is that Dart knows the <dfn>type</dfn> of every value, and checks your program before it runs. That catches whole families of bugs before they reach a user’s phone. This chapter teaches the basics, one small program at a time, and ends with a receipt printer for Bit’s café.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>In this chapter we leave the phone for a while and talk to Dart directly, in the terminal. No screens, no emulator: just you, the language, and very fast answers.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>Your first Dart program</span></h2>
+
+<p>Flutter installed Dart for you. Create a folder for this chapter, open it in VS Code, and create a file called <code>hello.dart</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello.dart</div><pre class="code"><span class="k">void</span> main() {
+  print(<span class="s">&#x27;Hello, Dart!&#x27;</span>);
+}</pre></div>
+
+<p>Run it from the terminal:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run hello.dart</span>
+Hello, Dart!</pre></div>
+
+<p>Three rules are already visible in these three lines:</p>
+<ul>
+<li>Every Dart program starts in a function called <code>main</code>. Without it, there is nothing to run.</li>
+<li><code>print</code> writes a line in the terminal, like <code>console.log</code> in JavaScript.</li>
+<li>Every statement ends with a semicolon. In JavaScript you could sometimes leave it out; in Dart you cannot.</li>
+</ul>
+<p>Text can be written between single or double quotes. Most Dart code, including Flutter’s own, uses single quotes, and so does this book.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>For quick experiments, open <code>dartpad.dev</code> in a browser: it runs Dart (and even small Flutter apps) with nothing installed. It is perfect for trying a line you are not sure about.</p></aside>
+
+<h2><span class="sec">2.2</span> <span>Variables and their types</span></h2>
+
+<p>A variable is a name for a value, exactly as in Book 1. Dart gives you several ways to create one:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">variables.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// Dart works out the type from the first value: score is an int, for ever.</span>
+  <span class="k">var</span> score = <span class="n">0</span>;
+  score = score + <span class="n">10</span>;
+  print(score);
+
+  <span class="c line-bidi">// Or write the type yourself.</span>
+  <span class="k">String</span> name = <span class="s">&#x27;Sara&#x27;</span>;
+  print(name);
+
+  <span class="c line-bidi">// final: set once, when the program runs.</span>
+  <span class="k">final</span> joined = DateTime.now().year;
+  print(joined &gt; <span class="n">2000</span>);
+
+  <span class="c line-bidi">// const: known before the program runs, and never changes.</span>
+  <span class="k">const</span> maxPlayers = <span class="n">4</span>;
+  print(maxPlayers);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run variables.dart</span>
+10
+Sara
+true
+4</pre></div>
+
+<p>With <code>var</code>, Dart looks at the first value and decides the variable’s type: <code>score</code> starts as <code>0</code>, so it is an <code>int</code>, a whole number. This is called <dfn>type inference</dfn>. You can also write the type yourself, as with <code>String name</code>. Either way, the type is fixed for ever: a variable that holds numbers can never hold text. See what happens if you try:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">type-error.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> score = <span class="n">0</span>;
+  score = <span class="s">&#x27;ten&#x27;</span>;
+  print(score);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run type-error.dart</span>
+type-error.dart:3:11: Error: A value of type &#x27;String&#x27; can&#x27;t be assigned to a variable of type &#x27;int&#x27;.
+  score = &#x27;ten&#x27;;
+          ^</pre></div>
+
+<p>The program did not run at all. Before running anything, Dart <dfn>compiles</dfn> the program: it reads it all and turns it into instructions for the computer, checking the types on the way. The error says where (line 3, column 11, marked with <code>^</code>) and why, in plain words. In JavaScript the same line would have run, and the bug would have appeared later, somewhere else, perhaps on a user’s phone.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>Since Dart 2, every Dart program has been <em>type safe</em>: a variable declared as <code>int</code> can never hold anything else while the program runs. Dart’s compiler uses that promise to make your app faster, too.</p></aside>
+
+<h3>final and const</h3>
+
+<p>Most values in a program never change after they are set. Dart has two words for them:</p>
+<ul>
+<li><code>final</code>: the value is set once, when the program reaches that line, and never changes after. It can come from a calculation, the clock, or the user.</li>
+<li><code>const</code>: the value is known <em>before</em> the program runs, written directly in the code, like <code>4</code> or <code>'Sara'</code>. Dart can then build it once and share it.</li>
+</ul>
+<p>In <code>variables.dart</code>, the year someone joined comes from the clock (<code>DateTime.now()</code>), so it can only be <code>final</code>. The maximum number of players is written in the code, so it can be <code>const</code>. Try to change a <code>final</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">final-error.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">final</span> name = <span class="s">&#x27;Sara&#x27;</span>;
+  name = <span class="s">&#x27;Omar&#x27;</span>;
+  print(name);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run final-error.dart</span>
+final-error.dart:3:3: Error: Can&#x27;t assign to the final variable &#x27;name&#x27;.
+  name = &#x27;Omar&#x27;;
+  ^^^^</pre></div>
+
+<table>
+<thead><tr><th>Dart</th><th>Meaning</th><th>Closest in JavaScript</th></tr></thead>
+<tbody>
+<tr><td><code>var</code></td><td>Can change; type decided by the first value</td><td><code>let</code></td></tr>
+<tr><td><code>final</code></td><td>Set once, while the program runs</td><td><code>const</code></td></tr>
+<tr><td><code>const</code></td><td>Known before the program runs</td><td>(none)</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Use <code>final</code> by default, <code>const</code> for values written in the code, and <code>var</code> only when the value must change. In Flutter, <code>const</code> matters even more: a <code>const</code> widget is built once and reused, which is why you saw <code>const Text(...)</code> in Chapter 1. The analyzer reminds you when you forget.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>Numbers, text and truth</span></h2>
+
+<p>Dart has a small set of basic types that you will use in every program:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">numbers.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">int</span> cups = <span class="n">7</span>;
+  <span class="k">double</span> price = <span class="n">12.5</span>;
+  <span class="k">num</span> anything = <span class="n">3</span>;
+  <span class="k">bool</span> open = <span class="k">true</span>;
+  print(cups);
+  print(price);
+  print(anything);
+  print(open);
+
+  <span class="c line-bidi">// / always gives a double; ~/ divides and drops what is after the point.</span>
+  print(<span class="n">7</span> / <span class="n">2</span>);
+  print(<span class="n">7</span> ~/ <span class="n">2</span>);
+  print(<span class="n">7</span> % <span class="n">2</span>);
+
+  <span class="c line-bidi">// Text from a user or a file becomes a number with parse.</span>
+  <span class="k">int</span> age = <span class="k">int</span>.parse(<span class="s">&#x27;34&#x27;</span>);
+  <span class="k">double</span> weight = <span class="k">double</span>.parse(<span class="s">&#x27;2.75&#x27;</span>);
+  print(age + <span class="n">1</span>);
+  print(weight * <span class="n">2</span>);
+
+  <span class="c line-bidi">// Two digits after the point, as text, ready to show.</span>
+  print((<span class="n">10</span> / <span class="n">3</span>).toStringAsFixed(<span class="n">2</span>));
+  print(age.toString() + <span class="s">&#x27;!&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run numbers.dart</span>
+7
+12.5
+3
+true
+3.5
+3
+1
+35
+5.5
+3.33
+34!</pre></div>
+
+<table>
+<thead><tr><th>Type</th><th>What it holds</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><code>int</code></td><td>Whole numbers</td><td><code>7</code>, <code>-3</code>, <code>2026</code></td></tr>
+<tr><td><code>double</code></td><td>Numbers with a decimal point</td><td><code>12.5</code>, <code>0.1</code></td></tr>
+<tr><td><code>num</code></td><td>Either of the two</td><td><code>3</code> or <code>3.5</code></td></tr>
+<tr><td><code>String</code></td><td>Text</td><td><code>'Cairo'</code></td></tr>
+<tr><td><code>bool</code></td><td><code>true</code> or <code>false</code>, nothing else</td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>JavaScript has one kind of number; Dart has two, and the difference shows in division. The operator <code>/</code> always gives a <code>double</code>: <code>7 / 2</code> is <code>3.5</code>. The operator <code>~/</code> divides and drops everything after the point, giving an <code>int</code>: <code>7 ~/ 2</code> is <code>3</code>. The remainder, <code>%</code>, works as you know it.</p>
+
+<p>Dart never turns text into a number, or a number into text, by itself. Text that contains a number, from a text box or a file, is turned into a number with <code>int.parse</code> or <code>double.parse</code>. A number becomes text with <code>toString()</code>, or with <code>toStringAsFixed(2)</code> to keep exactly two digits after the point, which is what you want for prices.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p><code>int.parse('12a')</code> stops the program with an error, because <code>'12a'</code> is not a number. When the text comes from a user, use <code>int.tryParse</code>, which gives <code>null</code> (no value) instead of stopping. Chapter 3 explains <code>null</code>, and Chapter 9 uses <code>tryParse</code> in real forms.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>Strings</span></h2>
+
+<p>Dart’s strings have one feature you will use in almost every line of a Flutter app: <dfn>interpolation</dfn>, putting values inside text.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">strings.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> name = <span class="s">&#x27;Sara&#x27;</span>;
+  <span class="k">var</span> items = <span class="n">3</span>;
+  <span class="k">var</span> price = <span class="n">12.5</span>;
+
+  <span class="c line-bidi">// $name puts a variable in the text; ${...} any expression.</span>
+  print(<span class="s">&#x27;Welcome back, $name!&#x27;</span>);
+  print(<span class="s">&#x27;$items items × $price = ${items * price}&#x27;</span>);
+  print(<span class="s">&#x27;Price: ${price.toStringAsFixed(2)}&#x27;</span>);
+
+  <span class="c line-bidi">// Three quotes: text over several lines.</span>
+  <span class="k">var</span> poem = <span class="s">&#x27;&#x27;&#x27;Roses are red,
+  Dart is too,
+  every value has a type,
+  and so should you.&#x27;&#x27;&#x27;</span>;
+  print(poem);
+
+  <span class="k">var</span> raw = <span class="s">&#x27;  bit café  &#x27;</span>;
+  print(<span class="s">&#x27;[${raw.trim()}]&#x27;</span>);
+  print(raw.trim().toUpperCase());
+  print(name.length);
+  print(name.contains(<span class="s">&#x27;Sara&#x27;</span>));
+  print(<span class="s">&#x27;7&#x27;</span>.padLeft(<span class="n">3</span>, <span class="s">&#x27;0&#x27;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run strings.dart</span>
+Welcome back, Sara!
+3 items × 12.5 = 37.5
+Price: 12.50
+Roses are red,
+  Dart is too,
+  every value has a type,
+  and so should you.
+[bit café]
+BIT CAFÉ
+4
+true
+007</pre></div>
+
+<ul>
+<li><code>$name</code> inside a string puts the value of the variable <code>name</code> there.</li>
+<li><code>${items * price}</code>, with braces, puts the result of any expression there. Use the braces whenever there is more than a plain name, even <code>${price.toStringAsFixed(2)}</code>.</li>
+<li>Three quotes, <code>'''</code>, start a string that can run over several lines, keeping the line breaks and the spaces.</li>
+<li>Strings have useful methods: <code>trim()</code> removes spaces at both ends, <code>toUpperCase()</code> makes capitals, <code>contains</code> searches, <code>padLeft(3, '0')</code> fills on the left up to a length, and <code>length</code> counts the characters.</li>
+</ul>
+
+<p>Notice that none of these methods changed <code>raw</code> or <code>name</code>. Strings in Dart cannot be changed; every method returns a new string. That is why the result of <code>raw.trim()</code> must be used, or stored, to be useful.</p>
+
+<h2><span class="sec">2.5</span> <span>Operators</span></h2>
+
+<p>The operators are almost the same as in JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">operators.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> score = <span class="n">10</span>;
+  <span class="c line-bidi">// score += 5 is a short way to write score = score + 5.</span>
+  score += <span class="n">5</span>;
+  score++;
+  print(score);
+
+  print(score == <span class="n">16</span>);
+  print(score != <span class="n">16</span>);
+  print(score &gt; <span class="n">10</span> &amp;&amp; score &lt; <span class="n">20</span>);
+  print(score &lt; <span class="n">10</span> || score &gt; <span class="n">15</span>);
+  print(!(score &gt; <span class="n">10</span>));
+
+  print(<span class="n">5</span> == <span class="n">5.0</span>);
+  print(<span class="s">&#x27;5&#x27;</span> == <span class="n">5</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run operators.dart</span>
+16
+true
+false
+true
+true
+false
+true
+false</pre></div>
+
+<p><code>+=</code>, <code>++</code>, the comparisons and the logical operators <code>&amp;&amp;</code>, <code>||</code> and <code>!</code> work as you know them. One thing is simpler: Dart has only <code>==</code>, no <code>===</code>, because it never converts types when comparing. <code>5 == 5.0</code> is <code>true</code> (both are the number five), but <code>'5' == 5</code> is <code>false</code>: text is never equal to a number.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What do <code>9 / 2</code> and <code>9 ~/ 2</code> give?</li><li>Which do you use for a value that comes from the clock: <code>final</code> or <code>const</code>?</li><li>How do you write the text <code>Total: 30</code> from a variable <code>total</code> that holds <code>30</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">2.6</span> <span>Decisions with if</span></h2>
+
+<p><code>if</code>, <code>else if</code> and <code>else</code> work exactly as in Book 1. Here is the cinema kiosk again, in Dart:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ticket.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> age = <span class="n">9</span>;
+  <span class="k">var</span> isMember = <span class="k">true</span>;
+
+  <span class="k">int</span> price;
+  <span class="k">if</span> (age &lt; <span class="n">4</span>) {
+    price = <span class="n">0</span>;
+  } <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) {
+    price = <span class="n">6</span>;
+  } <span class="k">else</span> {
+    price = <span class="n">10</span>;
+  }
+
+  <span class="k">if</span> (isMember) {
+    price = price ~/ <span class="n">2</span>;
+  }
+
+  <span class="c line-bidi">// condition ? if true : if false, for small choices.</span>
+  <span class="k">var</span> kind = age &lt; <span class="n">18</span> ? <span class="s">&#x27;Child&#x27;</span> : <span class="s">&#x27;Adult&#x27;</span>;
+  <span class="k">var</span> who = isMember ? <span class="s">&#x27;member&#x27;</span> : <span class="s">&#x27;guest&#x27;</span>;
+  print(<span class="s">&#x27;Age $age ($kind, $who) pays $price&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run ticket.dart</span>
+Age 9 (Child, member) pays 3</pre></div>
+
+<p>Two details are new. First, <code>int price;</code> declares a variable without a value. Dart then checks that every path through the <code>if</code> gives it one before it is used: remove the <code>else</code>, and the program does not compile. Second, a condition must be a real <code>bool</code>. In JavaScript, <code>if (count)</code> was true for any number but zero; in Dart, it is an error. Write what you mean: <code>if (count &gt; 0)</code>.</p>
+
+<p>The conditional operator, <code>condition ? a : b</code>, works as in JavaScript, and you will use it constantly in Flutter to choose between two widgets or two colours.</p>
+
+<h2><span class="sec">2.7</span> <span>switch and patterns</span></h2>
+
+<p>Dart’s <code>switch</code> is one of its best features, and much more powerful than JavaScript’s:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">switch.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> size = <span class="s">&#x27;M&#x27;</span>;
+
+  <span class="c line-bidi">// No break needed: Dart never runs into the next case.</span>
+  <span class="k">switch</span> (size) {
+    <span class="k">case</span> <span class="s">&#x27;S&#x27;</span>:
+      print(<span class="s">&#x27;Small cup&#x27;</span>);
+    <span class="k">case</span> <span class="s">&#x27;M&#x27;</span>:
+      print(<span class="s">&#x27;Medium cup&#x27;</span>);
+    <span class="k">case</span> <span class="s">&#x27;L&#x27;</span>:
+      print(<span class="s">&#x27;Large cup&#x27;</span>);
+    <span class="k">default</span>:
+      print(<span class="s">&#x27;Unknown size&#x27;</span>);
+  }
+
+  <span class="c line-bidi">// A switch expression produces a value. The first pattern that matches wins.</span>
+  <span class="k">var</span> day = <span class="s">&#x27;friday&#x27;</span>;
+  <span class="k">var</span> kind = <span class="k">switch</span> (day) {
+    <span class="s">&#x27;friday&#x27;</span> || <span class="s">&#x27;saturday&#x27;</span> =&gt; <span class="s">&#x27;Weekend&#x27;</span>,
+    _ =&gt; <span class="s">&#x27;Workday&#x27;</span>,
+  };
+  print(kind);
+
+  <span class="k">for</span> (<span class="k">var</span> score <span class="k">in</span> [<span class="n">95</span>, <span class="n">83</span>, <span class="n">71</span>, <span class="n">40</span>]) {
+    <span class="k">var</span> grade = <span class="k">switch</span> (score) {
+      <span class="c line-bidi">// &gt;= 90 is a pattern: it matches any value that is at least 90.</span>
+      &gt;= <span class="n">90</span> =&gt; <span class="s">&#x27;A&#x27;</span>,
+      &gt;= <span class="n">80</span> =&gt; <span class="s">&#x27;B&#x27;</span>,
+      &gt;= <span class="n">70</span> =&gt; <span class="s">&#x27;C&#x27;</span>,
+      &gt;= <span class="n">50</span> =&gt; <span class="s">&#x27;D&#x27;</span>,
+      <span class="c line-bidi">// _ matches anything: the case for everyone else.</span>
+      _ =&gt; <span class="s">&#x27;F&#x27;</span>,
+    };
+    print(<span class="s">&#x27;$score -&gt; $grade&#x27;</span>);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run switch.dart</span>
+Medium cup
+Weekend
+95 -&gt; A
+83 -&gt; B
+71 -&gt; C
+40 -&gt; F</pre></div>
+
+<p>The first <code>switch</code> is a statement, like the one you know, with one improvement: there is no <code>break</code>. Each <code>case</code> ends where the next one starts, and Dart never runs into the next case by accident.</p>
+
+<p>The second and third are <dfn>switch expressions</dfn>: they produce a value, which goes straight into a variable. Each line has a <dfn>pattern</dfn> on the left of <code>=&gt;</code> and a result on the right, and the first pattern that matches wins:</p>
+<ul>
+<li>A plain value, such as <code>'friday'</code>, matches when the value is equal to it.</li>
+<li><code>||</code> between two patterns matches either of them.</li>
+<li><code>&gt;= 90</code> is a <em>relational pattern</em>: it matches any value that is at least 90. That makes grading one short, readable list.</li>
+<li><code>_</code>, the <em>wildcard</em>, matches anything. Put it last, for everyone else.</li>
+</ul>
+
+<p>A switch expression must cover every possible value. If you remove the <code>_</code> line from the grades, the program does not compile, because a score of 40 would have no grade. Dart calls this <dfn>exhaustiveness checking</dfn>, and in Chapter 3 you will see it catch real bugs.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Look at the grades again: five lines, no <code>if</code>, no <code>else</code>, and you can read it aloud like the table on a teacher’s wall. That is why I love switch expressions.</p></div></div>
+
+<h2><span class="sec">2.8</span> <span>Loops</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">loops.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// Count from 1 to 3.</span>
+  <span class="k">for</span> (<span class="k">var</span> i = <span class="n">1</span>; i &lt;= <span class="n">3</span>; i++) {
+    print(<span class="s">&#x27;Round $i&#x27;</span>);
+  }
+
+  <span class="c line-bidi">// for-in: every item of a list, in order.</span>
+  <span class="k">var</span> drinks = [<span class="s">&#x27;tea&#x27;</span>, <span class="s">&#x27;coffee&#x27;</span>, <span class="s">&#x27;juice&#x27;</span>];
+  <span class="k">for</span> (<span class="k">var</span> drink <span class="k">in</span> drinks) {
+    print(drink);
+  }
+
+  <span class="c line-bidi">// while: repeat as long as the condition is true.</span>
+  <span class="k">var</span> cups = <span class="n">3</span>;
+  <span class="k">while</span> (cups &gt; <span class="n">0</span>) {
+    print(<span class="s">&#x27;Cup $cups&#x27;</span>);
+    cups--;
+  }
+
+  <span class="c line-bidi">// continue skips to the next round; break leaves the loop.</span>
+  <span class="k">for</span> (<span class="k">var</span> n = <span class="n">1</span>; n &lt;= <span class="n">10</span>; n++) {
+    <span class="k">if</span> (n % <span class="n">2</span> == <span class="n">0</span>) <span class="k">continue</span>;
+    <span class="k">if</span> (n &gt; <span class="n">7</span>) <span class="k">break</span>;
+    print(n);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run loops.dart</span>
+Round 1
+Round 2
+Round 3
+tea
+coffee
+juice
+Cup 3
+Cup 2
+Cup 1
+1
+3
+5
+7</pre></div>
+
+<p>All of these are familiar. The classic <code>for</code> counts. <code>for (var drink in drinks)</code> visits each item of a list in order, like <code>for...of</code> in JavaScript. <code>while</code> repeats as long as its condition is true. <code>continue</code> skips the rest of one round, and <code>break</code> leaves the loop: the last loop skips even numbers and stops after 7.</p>
+
+<p>The square brackets, <code>['tea', 'coffee', 'juice']</code>, make a <dfn>list</dfn>, Dart’s name for an array. Chapter 3 covers lists fully, with maps and sets.</p>
+
+<h2><span class="sec">2.9</span> <span>Functions</span></h2>
+
+<p>Functions in Dart declare the type of what they return, and the type of each parameter:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">functions.dart</div><pre class="code"><span class="k">int</span> square(<span class="k">int</span> n) {
+  <span class="k">return</span> n * n;
+}
+
+<span class="c line-bidi">// One expression? The arrow =&gt; replaces { return ...; }.</span>
+<span class="k">int</span> cube(<span class="k">int</span> n) =&gt; n * n * n;
+
+<span class="c line-bidi">// Named parameters are written with their names; required ones must be given.</span>
+<span class="k">double</span> price({<span class="k">required</span> <span class="k">int</span> cups, <span class="k">double</span> each = <span class="n">12.5</span>}) =&gt; cups * each;
+
+<span class="c line-bidi">// Optional positional parameters go in square brackets.</span>
+<span class="k">String</span> greet(<span class="k">String</span> name, [<span class="k">String</span> greeting = <span class="s">&#x27;Hello&#x27;</span>]) =&gt; <span class="s">&#x27;$greeting, $name!&#x27;</span>;
+
+<span class="k">void</span> main() {
+  print(square(<span class="n">4</span>));
+  print(cube(<span class="n">3</span>));
+  print(price(cups: <span class="n">2</span>));
+  print(price(each: <span class="n">20</span>, cups: <span class="n">3</span>));
+  print(greet(<span class="s">&#x27;Sara&#x27;</span>));
+  print(greet(<span class="s">&#x27;Omar&#x27;</span>, <span class="s">&#x27;Good morning&#x27;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run functions.dart</span>
+16
+27
+25.0
+60.0
+Hello, Sara!
+Good morning, Omar!</pre></div>
+
+<ul>
+<li><code>int square(int n)</code> takes an <code>int</code> and returns an <code>int</code>. A function that returns nothing is declared <code>void</code>, like <code>main</code>.</li>
+<li>When the body is one expression, the arrow <code>=&gt;</code> replaces the braces and <code>return</code>, as in <code>cube</code>.</li>
+<li><dfn>Named parameters</dfn> are written in braces, <code>{...}</code>, and given by name when you call the function: <code>price(cups: 2)</code>. Their order does not matter, and the call reads like a sentence. <code>required</code> means it must be given; the others need a default value, such as <code>each = 12.5</code>.</li>
+<li><dfn>Optional positional parameters</dfn> go in square brackets, <code>[...]</code>, as in <code>greet</code>.</li>
+</ul>
+
+<p>Named parameters are everywhere in Flutter: every <code>Text(..., style: ...)</code> and <code>AppBar(title: ..., centerTitle: true)</code> you wrote in Chapter 1 was a call with named parameters. And when you forget a required one, Dart tells you before anything runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">named-error.dart</div><pre class="code"><span class="k">double</span> price({<span class="k">required</span> <span class="k">int</span> cups, <span class="k">double</span> each = <span class="n">12.5</span>}) =&gt; cups * each;
+
+<span class="k">void</span> main() {
+  print(price(each: <span class="n">20</span>));
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run named-error.dart</span>
+named-error.dart:4:14: Error: Required named parameter &#x27;cups&#x27; must be provided.
+  print(price(each: 20));
+             ^
+named-error.dart:1:8: Context: Found this candidate, but the arguments don&#x27;t match.
+double price({required int cups, double each = 12.5}) =&gt; cups * each;
+       ^^^^^</pre></div>
+
+<p>The second part of the message, <code>Context</code>, shows the function you were trying to call, so you can see what it expects.</p>
+
+<h3>Functions are values</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">values.dart</div><pre class="code"><span class="k">int</span> twice(<span class="k">int</span> n) =&gt; n * <span class="n">2</span>;
+
+<span class="k">void</span> main() {
+  <span class="c line-bidi">// A function is a value: it can be stored in a variable and passed to another function.</span>
+  <span class="k">var</span> change = twice;
+  print(change(<span class="n">21</span>));
+
+  <span class="c line-bidi">// A function without a name, written where it is needed.</span>
+  <span class="k">var</span> prices = [<span class="n">12</span>, <span class="n">30</span>, <span class="n">8</span>, <span class="n">45</span>];
+  <span class="k">var</span> cheap = prices.where((p) =&gt; p &lt; <span class="n">20</span>).toList();
+  <span class="k">var</span> doubled = prices.map(twice).toList();
+  print(cheap);
+  print(doubled);
+
+  prices.forEach((p) {
+    print(<span class="s">&#x27;${p.toString().padLeft(3)} EGP&#x27;</span>);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run values.dart</span>
+42
+[12, 8]
+[24, 60, 16, 90]
+ 12 EGP
+ 30 EGP
+  8 EGP
+ 45 EGP</pre></div>
+
+<p>A function can be stored in a variable, like <code>change</code>, and passed to another function. <code>(p) =&gt; p &lt; 20</code> is an <dfn>anonymous function</dfn>, a function without a name, written right where it is needed. <code>where</code> keeps the items for which it returns <code>true</code>, <code>map</code> transforms every item, and <code>forEach</code> runs it for each item. If you read Book 1, these are <code>filter</code>, <code>map</code> and <code>forEach</code> under slightly different names. In Flutter, every button’s <code>onPressed</code> is an anonymous function: the code to run when it is pressed.</p>
+
+<h2><span class="sec">2.10</span> <span>Project: the café receipt</span></h2>
+
+<p>Bit’s café needs a program that prints receipts. The rules:</p>
+<ol>
+<li>A latte costs 45 pounds, a cookie 20, a cake 60.</li>
+<li>On Fridays everything is 20% off, and on Saturdays 10% off.</li>
+<li>A 12% service charge is added after the discount, rounded to the nearest pound.</li>
+<li>The receipt lists only what was ordered, with names on the left and amounts on the right.</li>
+</ol>
+
+<div class="listing" dir="ltr"><div class="listing-title">receipt.dart</div><pre class="code"><span class="c line-bidi">// Prices in whole pounds; Chapter 3 keeps them in a class.</span>
+<span class="k">const</span> latte = <span class="n">45</span>;
+<span class="k">const</span> cookie = <span class="n">20</span>;
+<span class="k">const</span> cake = <span class="n">60</span>;
+<span class="k">const</span> width = <span class="n">26</span>;
+
+<span class="c line-bidi">// The day decides the discount: 20% on Fridays, 10% on Saturdays.</span>
+<span class="k">int</span> discountPercent(<span class="k">String</span> day) =&gt; <span class="k">switch</span> (day) {
+  <span class="s">&#x27;friday&#x27;</span> =&gt; <span class="n">20</span>,
+  <span class="s">&#x27;saturday&#x27;</span> =&gt; <span class="n">10</span>,
+  _ =&gt; <span class="n">0</span>,
+};
+
+<span class="c line-bidi">// One line of the receipt: name on the left, amount on the right.</span>
+<span class="k">String</span> line(<span class="k">String</span> name, <span class="k">int</span> amount) =&gt;
+    name.padRight(width - <span class="n">8</span>) + amount.toString().padLeft(<span class="n">8</span>);
+
+<span class="k">void</span> printReceipt({
+  <span class="k">required</span> <span class="k">String</span> day,
+  <span class="k">int</span> lattes = <span class="n">0</span>,
+  <span class="k">int</span> cookies = <span class="n">0</span>,
+  <span class="k">int</span> cakes = <span class="n">0</span>,
+}) {
+  <span class="k">var</span> subtotal = lattes * latte + cookies * cookie + cakes * cake;
+  <span class="k">var</span> discount = subtotal * discountPercent(day) ~/ <span class="n">100</span>;
+  <span class="c line-bidi">// Service is rounded to the nearest pound.</span>
+  <span class="k">var</span> service = ((subtotal - discount) * <span class="n">0.12</span>).round();
+  <span class="k">var</span> total = subtotal - discount + service;
+
+  print(<span class="s">&#x27;=&#x27;</span> * width);
+  print(<span class="s">&#x27;BIT CAFÉ · $day&#x27;</span>);
+  print(<span class="s">&#x27;-&#x27;</span> * width);
+  <span class="k">if</span> (lattes &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;$lattes × Latte&#x27;</span>, lattes * latte));
+  <span class="k">if</span> (cookies &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;$cookies × Cookie&#x27;</span>, cookies * cookie));
+  <span class="k">if</span> (cakes &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;$cakes × Cake&#x27;</span>, cakes * cake));
+  print(<span class="s">&#x27;-&#x27;</span> * width);
+  print(line(<span class="s">&#x27;Subtotal&#x27;</span>, subtotal));
+  <span class="k">if</span> (discount &gt; <span class="n">0</span>) print(line(<span class="s">&#x27;Discount&#x27;</span>, -discount));
+  print(line(<span class="s">&#x27;Service 12%&#x27;</span>, service));
+  print(line(<span class="s">&#x27;To pay&#x27;</span>, total));
+  print(<span class="s">&#x27;=&#x27;</span> * width);
+}
+
+<span class="k">void</span> main() {
+  printReceipt(day: <span class="s">&#x27;friday&#x27;</span>, lattes: <span class="n">2</span>, cookies: <span class="n">3</span>);
+  printReceipt(day: <span class="s">&#x27;monday&#x27;</span>, cakes: <span class="n">1</span>, lattes: <span class="n">1</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run receipt.dart</span>
+==========================
+BIT CAFÉ · friday
+--------------------------
+2 × Latte               90
+3 × Cookie              60
+--------------------------
+Subtotal               150
+Discount               -30
+Service 12%             14
+To pay                 134
+==========================
+==========================
+BIT CAFÉ · monday
+--------------------------
+1 × Latte               45
+1 × Cake                60
+--------------------------
+Subtotal               105
+Service 12%             13
+To pay                 118
+==========================</pre></div>
+
+<p>Follow Friday’s receipt as the computer does. Two lattes and three cookies make 150. Friday gives 20%, so the discount is <code>150 * 20 ~/ 100</code>, which is 30. The service is 12% of 120, which is 14.4, and <code>round()</code> makes it 14. The total is 150 − 30 + 14 = 134.</p>
+
+<p>Look at what each part of the program uses. The prices are <code>const</code>. The discount is a switch expression in an arrow function. <code>line</code> builds each line with <code>padRight</code> and <code>padLeft</code>, so the amounts line up. <code>printReceipt</code> uses named parameters with defaults, so a customer who only ordered a cake does not need to say “zero lattes”. And <code>'=' * width</code> repeats a string: another small Dart convenience.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Add tea, at 15 pounds, to the menu and to <code>printReceipt</code>. Then print a Saturday receipt for two teas and a cake, and check the total by hand before you run it.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting a semicolon</td><td>Compile error: <code>Expected ';' after this.</code></td><td>End every statement with <code>;</code></td></tr>
+<tr><td>Putting text into a number variable</td><td>Compile error: a <code>String</code> can’t be assigned to an <code>int</code></td><td>Convert with <code>int.parse</code>, or use another variable</td></tr>
+<tr><td>Using <code>/</code> when a whole number is needed</td><td>A <code>double</code> where an <code>int</code> is expected</td><td>Use <code>~/</code></td></tr>
+<tr><td><code>if (count)</code> with a number</td><td>Compile error: an <code>int</code> can’t be assigned to a <code>bool</code></td><td>Write the comparison: <code>count &gt; 0</code></td></tr>
+<tr><td><code>'Total: ' + total</code> with a number</td><td>Compile error: an <code>int</code> can’t be assigned to a <code>String</code></td><td>Use interpolation: <code>'Total: $total'</code></td></tr>
+<tr><td>Leaving out a <code>required</code> named argument</td><td>Compile error naming the missing parameter</td><td>Give it: <code>price(cups: 2)</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A Dart program starts in <code>main</code>, prints with <code>print</code>, ends statements with <code>;</code>, and runs with <code>dart run file.dart</code>.</li>
+<li>Every value has a <strong>type</strong>, checked before the program runs. <code>var</code> infers it from the first value; it never changes.</li>
+<li>Prefer <code>final</code> (set once) and <code>const</code> (known before running); use <code>var</code> only for values that change.</li>
+<li><code>int</code> and <code>double</code> are two kinds of number: <code>/</code> gives a <code>double</code>, <code>~/</code> an <code>int</code>. Convert text with <code>parse</code>, and numbers with <code>toString</code> or <code>toStringAsFixed</code>.</li>
+<li>Strings use <strong>interpolation</strong>: <code>$name</code> and <code>${expression}</code>.</li>
+<li>Conditions must be <code>bool</code>. <code>==</code> never converts types.</li>
+<li><code>switch</code> needs no <code>break</code>; <strong>switch expressions</strong> with patterns (<code>||</code>, <code>&gt;= 90</code>, <code>_</code>) produce values and must cover every case.</li>
+<li>Functions declare their types; <code>=&gt;</code> for one expression; <strong>named parameters</strong> in <code>{}</code>, with <code>required</code> or defaults. Functions are values.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>4.5</code> (a <code>double</code>) and <code>4</code> (an <code>int</code>). 2. <code>final</code>: the value is only known when the program runs. 3. <code>'Total: $total'</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Three small programs that each use most of the chapter. Write them in files of their own, run them often, and test the strange cases as well as the normal ones.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>A temperature table</h3>
+<p class="project-goal">Print a table of temperatures from −10 to 40 degrees Celsius in steps of 10, with the same temperature in Fahrenheit and a word for how it feels.</p>
+<p class="project-skills"><strong>You will practise:</strong> a <code>for</code> loop with a step, <code>double</code> arithmetic, <code>toStringAsFixed</code>, <code>padLeft</code>, and a switch expression with relational patterns.</p>
+<ol class="steps">
+<li>Write a function <code>double toFahrenheit(double c)</code>: multiply by 9, divide by 5, add 32. Check it with 100 °C, which is 212 °F.</li>
+<li>Write <code>String feel(double c)</code> as a switch expression: below 10 is cold, below 20 mild, below 30 warm, and anything else hot.</li>
+<li>Loop with <code>c += 10</code>. The loop variable is an <code>int</code>; turn it into a <code>double</code> with <code>toDouble()</code> before calling the functions.</li>
+<li>Line the columns up with <code>padLeft</code>, and show one digit after the point.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the order of the patterns matters, as in an <code>else if</code> chain: <code>&lt; 10</code> must come before <code>&lt; 20</code>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run temperatures.dart</span>
+ -10 °C =  14.0 °F  cold
+   0 °C =  32.0 °F  cold
+  10 °C =  50.0 °F  mild
+  20 °C =  68.0 °F  warm
+  30 °C =  86.0 °F  hot
+  40 °C = 104.0 °F  hot</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>How strong is this password?</h3>
+<p class="project-goal">Rate a password as weak, fair or strong by its length and the kinds of characters it contains.</p>
+<p class="project-skills"><strong>You will practise:</strong> looping over the characters of a string, counting, named parameters with a default, and a switch expression on a number.</p>
+<ol class="steps">
+<li>Write <code>String strength(String password, {int minLength = 8})</code>.</li>
+<li>Loop over the characters with <code>for (var ch in password.split(''))</code>, and count digits, capital letters, small letters and everything else.</li>
+<li>A character is a capital letter when <code>ch.toUpperCase() == ch</code> and <code>ch.toLowerCase() != ch</code>. Why is the second test needed? (Try it with <code>'#'</code>.)</li>
+<li>Give one point each for: the minimum length, at least one digit, both capital and small letters, and at least one other character. Four points is strong, two or three fair, less weak.</li>
+<li>Test five passwords, from <code>cairo</code> to <code>Cairo#2026</code>, and one short password with <code>minLength: 4</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in the switch expression, <code>2 || 3 =&gt; 'fair'</code> handles both values in one line.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run password.dart</span>
+cairo        weak
+cairo2026    fair
+Cairo2026    fair
+Cairo#2026   strong
+Ab#1         fair
+Ab#1 (minLength: 4) strong</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>The change machine</h3>
+<p class="project-goal">Given a price and the amount paid, in whole pounds, give the change using as few notes and coins as possible, or say how much is missing.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>~/</code> and <code>%</code> together, a loop over a <code>const</code> list, building a list of results, and early <code>return</code>.</p>
+<ol class="steps">
+<li>Write the notes and coins as a <code>const</code> list from the largest down: 200, 100, 50, 20, 10, 5, 1.</li>
+<li>Write <code>String change({required int price, required int paid})</code>. First handle the special cases: paid less than the price, and paid exactly the price. Return early from each.</li>
+<li>For each note, <code>left ~/ note</code> is how many fit, and <code>left % note</code> is what is left for the smaller ones.</li>
+<li>Collect the parts in a list, <code>var parts = &lt;String&gt;[];</code>, adding only the notes that were used, and join them with <code>' + '</code>.</li>
+<li>Test four cases: 500 for a price of 137, 50 for 45, the exact amount, and too little.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this simple method, always taking the largest note that fits, is called a <em>greedy</em> algorithm. It gives the fewest notes for these values, but not for every possible set of coins. Can you find a set where it fails?</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run change.dart</span>
+Change: 1 × 200 + 1 × 100 + 1 × 50 + 1 × 10 + 3 × 1
+Change: 1 × 5
+Change: no change
+Change: Not enough: 20 more needed.</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Predict, then check with Dart: <code>10 ~/ 3</code>, <code>10 % 3</code>, <code>10 / 4</code>, <code>'ab' * 3</code>, <code>'Dart'.length</code>.</li>
+<li><span class="level">Easy</span> For each value, choose <code>var</code>, <code>final</code> or <code>const</code>, and say why: the number of days in a week; the score in a running game; the time the app was opened; the name the user typed.</li>
+<li><span class="level medium">Medium</span> Rewrite the ticket price in <code>ticket.dart</code> as a single switch expression on <code>age</code>, using relational patterns.</li>
+<li><span class="level medium">Medium</span> Write a function <code>String plural(int count, String word)</code> that gives <code>'1 cup'</code>, <code>'2 cups'</code> and <code>'0 cups'</code>. Then add an optional named parameter for irregular words, so that <code>plural(2, 'child', many: 'children')</code> works.</li>
+<li><span class="level hard">Challenge</span> Print a multiplication table from 1 to 9 as a grid, with every column lined up, using two nested <code>for</code> loops, <code>padLeft</code>, and a <code>StringBuffer</code> (look it up on <code>api.dart.dev</code>) to build each row before printing it.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>The café’s prices are loose constants, and an order is a handful of parameters. In the next chapter you will give them shape with classes, meet <code>null</code> and Dart’s null safety, and store whole menus in lists, maps and sets.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most problems have several good solutions. If yours handles normal and unusual cases, and you can explain your choices, it is a good answer. The full, tested code for every answer is in the book’s code repository.</p>
+
+<h2 class="plain-h">Chapter 1</h2>
+<ol class="exercises">
+<li>For every line, <code>-v</code> adds the details behind the check: where Flutter is installed and from which Git address, the Dart and DevTools versions, where the Android SDK is, which platforms and build tools it contains, which Java Android Studio uses, the path of Chrome, and each connected device with its system version. Note the two paths, Flutter’s and the Android SDK’s: they are the first thing to check when a tool cannot find the other.</li>
+<li>Change <code>'Hello, hot reload!'</code> and <code>Colors.teal</code>, and save; with hot reload each change appears at once. To move the title, remove <code>centerTitle: true,</code>. On Android the title then moves to the start of the bar; on an iPhone it stays centred, because a centred title is the iPhone’s own style, and Flutter follows each platform’s habits unless you say otherwise.</li>
+<li>Android takes the name under the icon from <code>android/app/src/main/AndroidManifest.xml</code>, in <code>android:label="hello_bit"</code>. iOS takes it from <code>ios/Runner/Info.plist</code>, in the value after <code>CFBundleDisplayName</code>, which <code>flutter create</code> set to <code>Hello Bit</code>. Changing the app’s name for the stores is one of the few reasons to edit these folders; Chapter 15 does it.</li>
+<li>Change the expected text, for example to <code>find.text('Hello, Dart!')</code>. The failure names the test, then says what was expected (exactly one widget with that text) and what was found (none), then the file and line of the <code>expect</code> that failed. Read it as: “in this test, at this line, I expected this, and got that”. Every test failure has the same three parts.</li>
+<li>There is no single answer. A good checklist has one action per line, the exact command or link, what you should see when the step worked (for example “<code>flutter doctor</code> shows [✓] Android toolchain”), and the problems people met with their solutions. Each friend who follows it finds a step you thought was obvious: that is the point of the exercise.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 2</h2>
+<ol class="exercises">
+<li><code>10 ~/ 3</code> is <code>3</code> (an <code>int</code>), <code>10 % 3</code> is <code>1</code>, <code>10 / 4</code> is <code>2.5</code> (a <code>double</code>), <code>'ab' * 3</code> repeats the string, and <code>'Dart'.length</code> counts its four characters:
+<div class="listing" dir="ltr"><div class="listing-title">answers/predict.dart</div><pre class="code"><span class="k">void</span> main() {
+  print(<span class="n">10</span> ~/ <span class="n">3</span>);
+  print(<span class="n">10</span> % <span class="n">3</span>);
+  print(<span class="n">10</span> / <span class="n">4</span>);
+  print(<span class="s">&#x27;ab&#x27;</span> * <span class="n">3</span>);
+  print(<span class="s">&#x27;Dart&#x27;</span>.length);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run predict.dart</span>
+3
+1
+2.5
+ababab
+4</pre></div></li>
+<li>The days in a week: <code>const</code>, because 7 is known before the program runs. The score in a running game: <code>var</code>, because it changes. The time the app was opened: <code>final</code>, because it is set once but only known when the app runs. The name the user typed: <code>final</code>, for the same reason (if the user can edit it later, the new name is a new value).</li>
+<li>The price becomes one switch expression; <code>&lt; 13 || &gt;= 65</code> combines two relational patterns:
+<div class="listing" dir="ltr"><div class="listing-title">answers/ticket_switch.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">var</span> age = <span class="n">9</span>;
+  <span class="k">var</span> isMember = <span class="k">true</span>;
+
+  <span class="k">var</span> price = <span class="k">switch</span> (age) {
+    &lt; <span class="n">4</span> =&gt; <span class="n">0</span>,
+    &lt; <span class="n">13</span> || &gt;= <span class="n">65</span> =&gt; <span class="n">6</span>,
+    _ =&gt; <span class="n">10</span>,
+  };
+  <span class="k">if</span> (isMember) price = price ~/ <span class="n">2</span>;
+  print(<span class="s">&#x27;Age $age pays $price&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run ticket_switch.dart</span>
+Age 9 pays 3</pre></div></li>
+<li>An empty default for <code>many</code> means “not given”, so the usual <code>s</code> is added:
+<div class="listing" dir="ltr"><div class="listing-title">answers/plural.dart</div><pre class="code"><span class="k">String</span> plural(<span class="k">int</span> count, <span class="k">String</span> word, {<span class="k">String</span> many = <span class="s">&#x27;&#x27;</span>}) {
+  <span class="k">if</span> (count == <span class="n">1</span>) <span class="k">return</span> <span class="s">&#x27;$count $word&#x27;</span>;
+  <span class="k">return</span> <span class="s">&#x27;$count ${many.isEmpty ? &#x27;</span>${word}s<span class="s">&#x27; : many}&#x27;</span>;
+}
+
+<span class="k">void</span> main() {
+  print(plural(<span class="n">1</span>, <span class="s">&#x27;cup&#x27;</span>));
+  print(plural(<span class="n">2</span>, <span class="s">&#x27;cup&#x27;</span>));
+  print(plural(<span class="n">0</span>, <span class="s">&#x27;cup&#x27;</span>));
+  print(plural(<span class="n">2</span>, <span class="s">&#x27;child&#x27;</span>, many: <span class="s">&#x27;children&#x27;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run plural.dart</span>
+1 cup
+2 cups
+0 cups
+2 children</pre></div></li>
+<li>The inner loop builds one row in a <code>StringBuffer</code>, which collects pieces of text efficiently; <code>padLeft(4)</code> gives every number the same width, so the columns line up:
+<div class="listing" dir="ltr"><div class="listing-title">answers/table.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">for</span> (<span class="k">var</span> row = <span class="n">1</span>; row &lt;= <span class="n">9</span>; row++) {
+    <span class="k">var</span> line = StringBuffer();
+    <span class="k">for</span> (<span class="k">var</span> col = <span class="n">1</span>; col &lt;= <span class="n">9</span>; col++) {
+      line.write((row * col).toString().padLeft(<span class="n">4</span>));
+    }
+    print(line);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run table.dart</span>
+   1   2   3   4   5   6   7   8   9
+   2   4   6   8  10  12  14  16  18
+   3   6   9  12  15  18  21  24  27
+   4   8  12  16  20  24  28  32  36
+   5  10  15  20  25  30  35  40  45
+   6  12  18  24  30  36  42  48  54
+   7  14  21  28  35  42  49  56  63
+   8  16  24  32  40  48  56  64  72
+   9  18  27  36  45  54  63  72  81</pre></div></li>
+</ol>
+
+</section>
+</body></html>
