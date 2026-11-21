@@ -140,12 +140,14 @@ def dart_examples(here, words_by_lang, sources, errors=(), keep=None):
         print("wrote", out)
 
 
-def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit_app"):
+def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit_app", assets=None):
     """A chapter of small Flutter apps (Chapter 5 on), in each language:
       files   {path: text or {lang: text}}: lib/*.dart are apps (each with its own main), test/*.dart tests,
               projects/<name>.dart and answers/<name>.dart are apps too, kept in those folders here
       shots   [(png name, app path, "x,y taps"[, "WxH"])]: screenshots of release builds, at phone size
               (390x780) unless a size is given
+      assets  a folder of files the apps use (images): copied to assets/ in the project, and listed in
+              pubspec.yaml, as the chapter shows
       tests   [(transcript name, test path[, keep])]: `flutter test <path>`, recorded; with keep, the test
               is expected to fail and keep(lines) shortens what is printed
     One project per language; the apps are built for the web once, through a generated
@@ -161,6 +163,14 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
         if code:
             raise RuntimeError(text)
         project = base / package
+        if assets:
+            shutil.copytree(assets, project / "assets", dirs_exist_ok=True)
+            pubspec = project / "pubspec.yaml"
+            folders = sorted({str(p.parent.relative_to(project)) + "/" for p in (project / "assets").rglob("*") if p.is_file()})
+            text = pubspec.read_text().replace("  uses-material-design: true\n",
+                                               "  uses-material-design: true\n  assets:\n" + "".join(f"    - {f}\n" for f in folders))
+            pubspec.write_text(text)
+            write(out, {"pubspec.yaml": text})
         (project / "test").mkdir(exist_ok=True)
         for f in (project / "test").glob("*.dart"):
             f.unlink()
@@ -196,7 +206,7 @@ void main() {{
             raise RuntimeError(text)
         for png, app, taps, *size in shots:
             stem = Path(placed[app]).stem
-            shot(project / "build" / "web", out / "shots" / png, taps, 6000, f"?app={stem}", *size)
+            shot(project / "build" / "web", out / "shots" / png, fill(taps, words), 6000, f"?app={stem}", *size)
         for transcript, test, *fails in tests:
             # (transcript, test) must pass; (transcript, test, keep) is expected to fail, and keep(lines)
             # chooses the lines the book prints.
