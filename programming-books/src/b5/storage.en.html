@@ -1,0 +1,219 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/storage/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Saving Data on the Device</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>choose where each kind of data belongs: preferences, a file, a database, or secure storage</li>
+<li>keep settings and small lists with <code>shared_preferences</code>, and load them before the first frame</li>
+<li>save a history as a JSON file in the app’s own folder, safely</li>
+<li>keep many records in an SQLite database with <code>sqflite</code>, and search them</li>
+<li>test every kind of storage without a phone</li>
+</ul>
+</div>
+
+<p class="lead">Close the café app and open it again, and everything is gone: the dark mode you chose, the hearts, the basket. Everything in this book so far lived in memory, and memory is emptied every time the app closes. People expect the opposite: an app remembers. This chapter writes data to the phone’s own storage, in three ways for three sizes of data, and every screenshot in it was taken <em>after</em> closing the app and opening it again.</p>
+
+<aside class="bit" data-mood="happy"><p>To take this chapter’s screenshots, the browser really reloaded each app after the taps, which empties all its memory. Whatever you see on them came back from storage.</p></aside>
+
+<h2>{{n}}.1 What to keep, and where</h2>
+
+<table>
+<thead><tr><th>Data</th><th>Where</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>A few small values</td><td><code>shared_preferences</code></td><td>dark mode, language, the last name typed</td></tr>
+<tr><td>One document, read and written whole</td><td>a file (JSON)</td><td>an order history, a draft, an export</td></tr>
+<tr><td>Many records, searched and changed one by one</td><td>a database (SQLite)</td><td>notes, messages, a product catalogue</td></tr>
+<tr><td>Secrets</td><td><code>flutter_secure_storage</code></td><td>a login token, a password</td></tr>
+<tr><td>A copy of what the server sent</td><td>a file or a database, as a cache</td><td>the menu, to show it offline</td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Preferences and files are plain text on the device: anyone with access to the phone, or a backup of it, can read them. Never put a password or a login token there; <code>flutter_secure_storage</code> keeps them in the Keychain on iOS and an encrypted store on Android. Book 6 uses it for real logins.</p></aside>
+
+<h2>{{n}}.2 Small values: <code>shared_preferences</code></h2>
+
+<p>The <code>shared_preferences</code> package keeps key–value pairs, strings, numbers, booleans and lists of strings, in each platform’s own place: on Android a preferences file, on iOS <code>NSUserDefaults</code>, on the web the browser’s local storage. The chapter adds it with the other packages it uses:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>The settings model of Chapter {{n-2}}, now with a memory:</p>
+
+<pre data-code="lib/settings_app.dart" data-from="^class Settings" data-to="^}#2" data-title="lib/settings_app.dart (part)"></pre>
+
+<figure data-img="shots/settings.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: Both switches turned on, then the app closed and opened again.</figcaption>
+</figure>
+
+<ul>
+<li><code>SharedPreferencesAsync</code> is the package’s current interface: every read and write is a <code>Future</code>, because it really goes to the disk. <code>getBool</code> returns <code>null</code> for a key that was never saved, hence <code>?? false</code>.</li>
+<li>The setters change the field and notify <em>first</em>, then save. The switch moves at once; the disk catches up a moment later.</li>
+<li><code>main</code> is now <code>async</code>. <code>WidgetsFlutterBinding.ensureInitialized()</code> prepares the engine, which plugins need to reach the platform, and <code>await settings.load()</code> reads everything before <code>runApp</code>: the very first frame is already dark, instead of flashing light and then switching.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Loading before <code>runApp</code> is right for a few settings, which take milliseconds. Never load large data there: the person stares at a blank screen until it finishes. Large data loads after the first frame, with a loading state, as in Chapter {{n-1}}.</p></aside>
+
+<p>Preferences also keep lists of strings, which is enough for the favourites. Save the drinks’ ids, not their names: a name can be corrected or translated, an id stays:</p>
+
+<pre data-code="lib/favourites_app.dart" data-from="^class Favourites" data-to="^}" data-title="lib/favourites_app.dart (part)"></pre>
+
+<figure data-img="shots/favourites.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: Two hearts, still there after opening the app again.</figcaption>
+</figure>
+
+<p>To test storage, give the package a pretend disk in memory, from its platform interface package. A new model reading what the first one saved is exactly “opening the app again”:</p>
+
+<pre data-code="test/settings_test.dart" data-from="^void main" data-title="test/settings_test.dart"></pre>
+<pre data-term="settings-test.sh"></pre>
+
+<h2>{{n}}.3 Files: one document at a time</h2>
+
+<p>An order history grows, and has structure: a list of orders, each with a name and a total. It is one document, read when the screen opens and written when an order is added: a JSON file. Every app has its own private folder for such files, given by the <code>path_provider</code> package:</p>
+
+<pre data-code="lib/order_book.dart" data-from="^class Order {" data-title="lib/order_book.dart (part)"></pre>
+
+<ul>
+<li><code>getApplicationDocumentsDirectory()</code> returns the app’s documents folder: private to the app, kept until the app is uninstalled, and included in the phone’s backups. For data that can be downloaded again, <code>getApplicationCacheDirectory()</code> is the right place: the system may empty it when space runs low.</li>
+<li>The folder function is a parameter with a default, exactly like the <code>http.Client</code> of Chapter {{n-1}}: the app gets the real folder, the test gets a temporary one.</li>
+<li>A missing file is not an error: it is the first time.</li>
+<li>Writing goes to a new file first, then <code>rename</code> puts it in place in one step. If the battery dies in the middle of writing, the old file is still whole. Writing directly over the file could leave half of it, and the history would be lost.</li>
+</ul>
+
+<p>The test uses a real folder on the disk, and even checks the exact text in the file:</p>
+
+<pre data-code="test/order_book_test.dart" data-from="  test(" data-to="^  });" data-title="test/order_book_test.dart (part)"></pre>
+<pre data-term="order-book-test.sh"></pre>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p><code>path_provider</code> and the <code>dart:io</code> files do not work on the web: a web page has no folders. That is why the screenshots of this chapter come from preferences, which do work in a browser, and the file and database examples are proven by tests. If your app must also run on the web, choose preferences, or a package that supports it, from the start.</p></aside>
+
+<h2>{{n}}.4 A database: <code>sqflite</code></h2>
+
+<p>A file is read and written whole. With a thousand notes, changing one tick means rewriting all of them, and finding the notes that contain a word means reading all of them. A database does both directly. Every phone has <dfn>SQLite</dfn>, a small database in a single file, and the <code>sqflite</code> package lets Flutter use it with the SQL you may know from Book 3:</p>
+
+<pre data-code="lib/notes_db.dart" data-title="lib/notes_db.dart"></pre>
+
+<ul>
+<li><code>openDatabase</code> opens the file, or creates it. <code>onCreate</code> runs only the first time, and creates the table.</li>
+<li><code>version</code> is the version of your <em>table design</em>. When a later version of the app needs a new column, it raises the number to 2 and adds an <code>onUpgrade</code> that runs <code>ALTER TABLE</code>: the notes already on people’s phones are kept and updated, not lost.</li>
+<li><code>insert</code>, <code>query</code>, <code>update</code> and <code>delete</code> build the SQL for you. <code>insert</code> returns the new row’s id.</li>
+<li>The search word goes in <code>whereArgs</code>, and the SQL has a <code>?</code> in its place. Never build SQL by joining text: a note containing a quote would break it, and in a server it would be a security hole.</li>
+<li>SQLite has no booleans: <code>toRow</code> and <code>fromRow</code> translate between <code>true</code> and 1 at the edge, like <code>fromJson</code> in Chapter {{n-1}}.</li>
+</ul>
+
+<p>On a computer, tests reach SQLite through the <code>sqflite_common_ffi</code> package, and a database can live only in memory:</p>
+
+<pre data-code="test/notes_db_test.dart" data-from="^void main" data-title="test/notes_db_test.dart"></pre>
+<pre data-term="notes-db-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Keep storage behind a small class with plain methods: <code>load</code>, <code>add</code>, <code>search</code>. The screens never see SQL, file paths or keys. When the data outgrows preferences, or moves to a server, one class changes, and every screen keeps working.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where would you keep the language the person chose? Their 500 notes? Their login token?</li><li>Why do the setters change the field before saving, and not after?</li><li>Why does <code>OrderBook</code> write to a new file and then rename it?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting <code>WidgetsFlutterBinding.ensureInitialized()</code></td><td>An error about the binding when a plugin is used before <code>runApp</code></td><td>Call it first in an <code>async</code> main</td></tr>
+<tr><td>Not handling a missing key or file</td><td>A crash the very first time the app opens</td><td><code>?? default</code>, and <code>exists()</code></td></tr>
+<tr><td>Saving names instead of ids</td><td>Favourites disappear when a name is corrected or translated</td><td>Save stable ids</td></tr>
+<tr><td>Writing a file directly over the old one</td><td>Half a file after a crash, and lost data</td><td>Write a new file, then <code>rename</code></td></tr>
+<tr><td>Building SQL by joining text</td><td>Broken queries, and SQL injection</td><td><code>?</code> and <code>whereArgs</code></td></tr>
+<tr><td>Tokens in preferences</td><td>Secrets readable on the device and in backups</td><td><code>flutter_secure_storage</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Memory empties when the app closes; storage on the device stays.</li>
+<li><code>shared_preferences</code> for a few small values; a JSON file for one document; SQLite with <code>sqflite</code> for many records; secure storage for secrets.</li>
+<li>Load settings before <code>runApp</code>, after <code>WidgetsFlutterBinding.ensureInitialized()</code>; change the screen first, then save.</li>
+<li>Files go in the app’s folder from <code>path_provider</code>; write a new file, then rename it.</li>
+<li>A database has a version and <code>onCreate</code>/<code>onUpgrade</code>; values go in <code>whereArgs</code>.</li>
+<li>Test with an in-memory preferences store, a temporary folder, and an in-memory database.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The language in <code>shared_preferences</code>; the notes in an SQLite database; the token in <code>flutter_secure_storage</code>. 2. So that the screen answers at once; the disk is slower, and nobody should wait for it to see a switch move. 3. So that a crash in the middle of writing leaves the old file whole instead of half a new one: <code>rename</code> replaces it in one step.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project has one test that matters most: close the app and open it again. In a browser, reload the page; on a phone or emulator, stop the app completely, not only hot restart.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Cups today, remembered</h3>
+<p class="project-goal">The cup counter of Chapter {{n-2}}, kept on the device: the number survives closing the app.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>getInt</code> and <code>setInt</code>, loading in <code>initState</code>, <code>mounted</code>, and a nullable “not loaded yet”.</p>
+<ol class="steps">
+<li>In the State, keep <code>final prefs = SharedPreferencesAsync();</code> and <code>int? cups;</code>: <code>null</code> means “not loaded yet”.</li>
+<li>In <code>initState</code>, call <code>load()</code>, which reads <code>getInt('cups') ?? 0</code>, then, if <code>mounted</code>, sets it with <code>setState</code>.</li>
+<li>“One more” and “Reset” call <code>change(value)</code>, which sets the state and then saves with <code>setInt</code>.</li>
+<li>While <code>cups</code> is <code>null</code>, show nothing: a wrong 0 that turns into 3 is worse than a blank moment.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>initState</code> cannot be <code>async</code>, so it starts the future and does not wait for it; <code>load</code> calls <code>setState</code> when the value arrives.</p>
+<p><strong>Your result should look like this</strong> (three cups, then the app closed and opened):</p>
+<figure data-img="shots/cups.png" data-frame="phone">
+<figcaption>Project {{n}}.1: still 3.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Recent searches</h3>
+<p class="project-goal">Remember the last five searches, newest first and without repeats, as chips that fill the field again.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>getStringList</code>, list rules in a model, <code>remove</code>, chips, and a model test.</p>
+<ol class="steps">
+<li>A <code>Recent</code> model keeps <code>words</code>. Its <code>add</code> trims the word, ignores it if empty, and builds <code>[w, ...words.where((old) =&gt; old != w)].take(5).toList()</code>.</li>
+<li>Save with <code>setStringList</code> after every change; <code>clear</code> uses <code>prefs.remove('recent')</code>.</li>
+<li>The field’s <code>onSubmitted</code> adds the word and clears the field. Each word is an <code>ActionChip</code> that puts it back in the field.</li>
+<li>Test the rules: add a, b, c, d, e, f, then b again and a blank; expect <code>['b', 'f', 'e', 'd', 'c']</code>, and the same list from a new model.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> searching for a word already in the list moves it to the front instead of adding it twice: the <code>where</code> removes the old one before the new one is put first.</p>
+<p><strong>Your result should look like this</strong> (after searching for tea, cake, latte and tea again, then opening the app again):</p>
+<figure data-img="shots/recent.png" data-frame="phone">
+<figcaption>Project {{n}}.2: tea moved back to the front.</figcaption>
+</figure>
+<pre data-term="projects/recent-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A basket that survives anything</h3>
+<p class="project-goal">Save the whole basket as JSON, restore it on opening, and never crash on a damaged value or one from another version of the app.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>jsonEncode</code> of a map, a format version, <code>try</code>/<code>catch</code>, and tests of bad data.</p>
+<ol class="steps">
+<li>Keep <code>counts</code>, a <code>Map&lt;int, int&gt;</code> from drink id to quantity. After every change, save <code>{'version': 1, 'items': {...}}</code> with <code>setString</code>.</li>
+<li>JSON keys are always strings: write the ids as <code>'${e.key}'</code>, and read them back with <code>int.parse</code>.</li>
+<li>In <code>load</code>, return without changes if the version is not 1, and skip ids that are no longer on the menu.</li>
+<li>Wrap the reading in <code>try</code>; in <code>catch</code>, empty the basket and remove the damaged value, so that the app opens normally next time too.</li>
+<li>Test four bad values: <code>not json</code>, a list, version 2, and a quantity that is a string. Each must give an empty basket.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> anything saved on a device will one day be read by a newer version of your app, or come back damaged. The version number costs one line, and saves you from guessing what an old value meant.</p>
+<p><strong>Your result should look like this</strong> (two lattes and a cake, then the app closed and opened):</p>
+<figure data-img="shots/saved-basket.png" data-frame="phone">
+<figcaption>Project {{n}}.3: the basket came back.</figcaption>
+</figure>
+<pre data-term="projects/saved-basket-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a third setting to the settings app, “Sounds”, on by default. What value must <code>load</code> use when the key was never saved, and why is it not <code>false</code> this time?</li>
+<li><span class="level">Easy</span> Open the settings app in a browser, turn dark mode on, and open the browser’s developer tools at Application, Local storage. What key and value do you find?</li>
+<li><span class="level">Medium</span> Add <code>clear()</code> to <code>OrderBook</code>, which deletes the file, and a test that <code>load</code> returns an empty list after it, even when called twice.</li>
+<li><span class="level">Medium</span> Version 2 of the notes database needs a <code>created</code> column with the time each note was written. Write the new <code>openDatabase</code> options, with <code>onUpgrade</code>, so that version 1 databases on people’s phones keep their notes.</li>
+<li><span class="level">Challenge</span> Make the menu of Chapter {{n-1}} work offline: after every successful load, save the JSON in a file in the cache folder, and when loading fails, show the saved menu with a note “Shown from your last visit”. Which class changes, and which do not?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The Arabic apps in this book have been turned right to left with one line, and their dates and numbers have not been touched. The next chapter does it properly: one app in Arabic and English, with all its text in translation files, the direction, dates and numbers following the language, and a switch between them.</p>
+</div>
+</section>
