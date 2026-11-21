@@ -1,0 +1,6 @@
+#!/bin/sh
+# deliver <event> [signature]: the payment provider; signs unless told
+hmac=$(printf %s "$1" | openssl dgst -sha256 -hmac whsec_test | cut -d" " -f2)
+curl -s -X POST localhost:4000/webhooks/billing \
+  -H "x-signature: sha256=${2:-$hmac}" -d "$1"
+echo
