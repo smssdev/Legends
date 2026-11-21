@@ -1,0 +1,224 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/l10n/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>العربية والإنجليزية والاتجاه من اليمين</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تبني تخطيطات صحيحة في الاتجاهين، بـ <em>البداية</em> و<em>النهاية</em> بدل اليسار واليمين</li>
+<li>تضع كل نصوص التطبيق في ملفات ترجمة، ملف لكل لغة، وتولّد منها كود Dart</li>
+<li>تكتب صيغ الجمع كما يجب، ومنها صيغ العربية الست</li>
+<li>تنسّق الأسعار والتواريخ لكل لغة، وتختار بين الأرقام الغربية والأرقام الهندية</li>
+<li>تتيح للناس تبديل اللغة داخل التطبيق، وتتذكر اختيارهم</li>
+</ul>
+</div>
+
+<p class="lead">التطبيقات العربية في هذا الكتاب حتى الآن قُلبت من اليمين إلى اليسار بسطر واحد وعد الكتاب بشرحه. هذا السطر يفرض اتجاهاً؛ لا يترجم شيئاً، ولا يغيّر أزرار Material نفسها، ولا يعرف كيف تعدّ العربية. وهذا الفصل يبني تطبيق المقهى كما يجب بلغتين معاً: كل نصوصه في ملفات ترجمة، والاتجاه يتبع اللغة، والجمع والأسعار والتواريخ تُكتب كما تكتبها كل لغة، وقائمة للتبديل.</p>
+
+<aside class="bit" data-mood="happy"><p>تطبيق هذا الفصل واحد في نسختي الكتاب، لأنه يتكلم اللغتين. وحدها التعليقات في الكود بلغة النسخة التي تقرؤها.</p></aside>
+
+<h2>{{n}}.1 البداية والنهاية، لا اليسار واليمين</h2>
+
+<p>العربية تُكتب من اليمين إلى اليسار، وكذلك كل ما حولها: أول عنصر في الصف على اليمين، وسهم الرجوع يشير إلى اليمين، وأيقونة القائمة على يمين نصها. وFlutter يعكس كل هذا وحده، من <dfn>اتجاه النص</dfn>، ما دام الكود يقول <em>البداية</em> و<em>النهاية</em> (start وend) بدل اليسار واليمين:</p>
+
+<pre data-code="lib/directions.dart" data-from="^            Directionality(" data-to="^                      ),#2" data-title="lib/directions.dart (جزء)"></pre>
+
+<figure data-img="shots/directions.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: البطاقتان نفسهما في الاتجاهين. والثانية وحدها صحيحة بالعربية.</figcaption>
+</figure>
+
+<ul>
+<li><code>Directionality</code> يحدد الاتجاه لكل ما تحته. وفي العادة لا تكتبه أبداً: فـ <code>MaterialApp</code> يحدده من اللغة.</li>
+<li>الـ <code>Row</code> ينعكس في البطاقتين: الكوب يأتي أولاً، في جهة البداية. والسهم <code>Icons.arrow_forward</code> ينعكس أيضاً: فـ Material تعلّم الأيقونات التي لها اتجاه.</li>
+<li><code dir="ltr">EdgeInsets.only(left: 48)</code> تبقى على اليسار في العربية، حيث صار <em>نهاية</em> الصف: فالفراغ في الجهة الخطأ. أما <code dir="ltr">EdgeInsetsDirectional.only(start: 48)</code> فتتبع الاتجاه.</li>
+<li>والأزواج نفسها في كل مكان: <code>Alignment.centerLeft</code> و<code>AlignmentDirectional.centerStart</code>، و<code>BorderRadius</code> و<code>BorderRadiusDirectional</code>، و<code>Positioned</code> و<code>PositionedDirectional</code>، و<code>TextAlign.left</code> و<code>TextAlign.start</code>.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>اكتب البداية والنهاية من أول سطر في كل تطبيق، حتى لو كان بلغة واحدة اليوم. لن يكلفك شيئاً، ويوم تأتي نسخته العربية أو العبرية أو الفارسية أو الأردية يكون التخطيط صحيحاً من قبل. واحتفظ باليسار واليمين لما هو مادي فعلاً: اتجاه ظل، أو صورة يجب ألا تُقلب.</p></aside>
+
+<h2>{{n}}.2 النصوص في ملفات ترجمة</h2>
+
+<p>أداة Flutter نفسها للترجمة هي <code>gen-l10n</code> (و«l10n» اختصار لـ localization: حرف l، ثم عشرة أحرف، ثم n). تقرأ ملف <dfn>ARB</dfn> لكل لغة، وهو ملف JSON للنصوص، وتكتب صنف Dart فيه دالة لكل نص. والحزم: <code>flutter_localizations</code> التي تأتي مع Flutter وفيها ترجمات عناصره، و<code>intl</code> التي تنسّق الأرقام والتواريخ:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>إعدادان يشغّلان الأداة. في <code>pubspec.yaml</code>، تحت <code dir="ltr">flutter:</code>، السطر <code dir="ltr">generate: true</code> يعيد توليد الكود مع كل <code dir="ltr">flutter run</code> وكل بناء. وملف <code>l10n.yaml</code> في جذر المشروع يقول أين الملفات:</p>
+
+<pre data-code="l10n.yaml" data-title="l10n.yaml"></pre>
+
+<p>والملف الإنجليزي هو <dfn>القالب</dfn>: فيه كل نص، مع وصفه و<dfn>عناصره النائبة</dfn>، أي القيم التي تتغير:</p>
+
+<pre data-code="lib/l10n/app_en.arb" data-from="^{" data-to="pickUpOn" data-title="lib/l10n/app_en.arb (جزء)"></pre>
+
+<p>والملف العربي فيه المفاتيح نفسها والنصوص وحدها:</p>
+
+<pre data-code="lib/l10n/app_ar.arb" data-from="^{" data-to="pickUpOn" data-title="lib/l10n/app_ar.arb (جزء)"></pre>
+
+<pre data-term="gen-l10n.sh"></pre>
+
+<p>كتبت الأداة <code>lib/l10n/app_localizations.dart</code> وملفاً لكل لغة. وصار كل مفتاح خاصية أو دالة: <code>l.appTitle</code> و<code dir="ltr">l.price(45)</code> و<code dir="ltr">l.pickUpOn(day)</code>. فالمفتاح الناقص في العربية، أو العنصر النائب المكتوب خطأ، صار خطأ عند بناء التطبيق، لا فراغاً على شاشة أحد.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>الملفات المولَّدة ليست ملكك: لا تعدّلها أبداً، فالبناء القادم يكتبها من جديد. ولهذا أيضاً يستثنيها <code>analysis_options.yaml</code> في المشروع من المحلل: <code dir="ltr">lib/l10n/app_localizations*.dart</code>.</p></aside>
+
+<h2>{{n}}.3 الجمع: ست صيغ في العربية</h2>
+
+<p>للإنجليزية صيغتان: قطعة وقطع. وللعربية ست: الصفر، والمفرد، والمثنى، والقليل (3 إلى 10)، والكثير (11 إلى 99)، والباقي (100 و101…). فالرسالة التي تضيف «s» لا تُترجم؛ أما <dfn>رسالة الجمع</dfn> بصيغة ICU فتُترجم:</p>
+
+<pre data-code="lib/l10n/app_ar.arb" data-from="items" data-to="items" data-title="lib/l10n/app_ar.arb (سطر واحد)"></pre>
+
+<p><code>=0</code> و<code>=1</code> و<code>=2</code> أعداد بعينها؛ أما <code>few</code> و<code>many</code> و<code>other</code> ففئات اللغة نفسها، و<code>intl</code> تعرف أي الأعداد في أي فئة في كل لغة. والاختبار يتحقق من الصيغ، ومن الأسعار والتواريخ المنسّقة:</p>
+
+<pre data-code="test/l10n_test.dart" data-from="    final en" data-to="^  });" data-title="test/l10n_test.dart (جزء)"></pre>
+<pre data-term="l10n-test.sh"></pre>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>العدد في رسالة الجمع يُكتب كما هو، <code>1500</code>، أما العنصر النائب الذي له <code dir="ltr">"format": "decimalPattern"</code> فيُجمَّع، <code>1,500</code>. فللأسعار والأعداد الكبيرة أعطِ العدد عنصراً نائباً خاصاً به مع تنسيق.</p></aside>
+
+<h2>{{n}}.4 التطبيق بلغتين</h2>
+
+<p>يعطي التطبيق <code>MaterialApp</code> اللغات التي يدعمها، و<dfn>المندوبين</dfn> (delegates) الذين يحمّلون نصوص كل لغة، واللغة المستخدمة:</p>
+
+<pre data-code="lib/delegates.dart" data-from="^// " data-title="lib/delegates.dart"></pre>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>يولّد <code>gen-l10n</code> أيضاً قائمة جاهزة، <code>AppLocalizations.localizationsDelegates</code>، وكثير من الدروس تستخدمها. وفي Flutter 3.50 ما زالت تسمّي ترجمات Material من <code>flutter_localizations</code>، من قبل انتقال Material إلى <code>material_ui</code>. ومعها تُرجمت نصوصنا، أما نصوص Material فلا: بل لم يستطع منتقي التاريخ أن يُفتح بالعربية، لأنه لم يجد نصوصاً عربية لأزراره. وتحذير Flutter نفسه في الاختبار سمّى الحل: مندوبنا، ثم <code>GlobalMaterialLocalizations.delegates</code> (بالجمع) من <code>material_ui</code>، التي تجلب نصوص Material ونصوص Cupertino واتجاه النص.</p></aside>
+
+<pre data-code="lib/bilingual_app.dart" data-from="^class CafeApp" data-to="^}" data-title="lib/bilingual_app.dart (جزء)"></pre>
+
+<p>وداخل الشاشات يعطي <code dir="ltr">AppLocalizations.of(context)</code> نصوص اللغة الحالية. ولا شيء في الصفحة يقول «إنجليزي» أو «عربي»:</p>
+
+<pre data-code="lib/bilingual_app.dart" data-from="    final l = " data-to="          for (final (name" data-title="lib/bilingual_app.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/english.png" data-frame="phone">
+<figcaption>بالإنجليزية، بعد ثلاث لمسات ويوم</figcaption>
+</figure>
+<figure data-img="shots/arabic.png" data-frame="phone">
+<figcaption>بالعربية، اللمسات نفسها</figcaption>
+</figure>
+</div>
+
+<p>قارن الشاشتين: العنوان، والترحيب، والمشروبات والأسعار، والجمع (3 items و3 قطع)، والتاريخ مع اسم اليوم، واتجاه الصفحة كلها، والسهم، بل ومكان زر اللغة. سطر واحد في <code>MaterialApp</code> غيّر كل هذا. وعناصر Material نفسها تتبعه:</p>
+
+<figure data-img="shots/picker.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: منتقي التاريخ من Material، بالعربية، من اليمين إلى اليسار.</figcaption>
+</figure>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>انظر إلى الشاشة العربية مرة أخرى: السعر يقول 45، والتاريخ يقول ٣ ديسمبر ٢٠٢٦. واختبار القسم {{n}}.3 أخذ «3 ديسمبر 2026» من الرسالة نفسها. والفرق هو Material: فحين يبدأ التطبيق بالعربية تحمّل Material بيانات التواريخ العربية الخاصة بها، وهي تكتب الأرقام الهندية، فيستخدمها كل تاريخ يُنسَّق بعد ذلك؛ أما الأعداد فلا تتأثر. فإن كان تطبيقك يجب أن يستخدم نوعاً واحداً من الأرقام في كل مكان، فقرّره مرة واحدة: نسّق بـ <code>ar_EG</code> للأرقام الهندية، أو بلغة أرقامها غربية للاثنين، واختبر على الشاشة، لا بـ <code>lookupAppLocalizations</code> وحدها.</p></aside>
+
+<h2>{{n}}.5 اختيار اللغة</h2>
+
+<p>القيمة الافتراضية لـ <code>locale</code> هي <code>null</code>، فيأخذ Flutter لغة الجوال إن كان التطبيق يدعمها، وإلا فأول لغة مدعومة. وكثيرون في البلاد العربية يستخدمون جوالات بالإنجليزية ويريدون التطبيق بالعربية، أو العكس: فأعطهم الاختيار، وتذكّره، كما في الفصل {{n-1}}:</p>
+
+<pre data-code="lib/bilingual_app.dart" data-from="^class LanguageChoice" data-to="^}" data-title="lib/bilingual_app.dart (جزء)"></pre>
+
+<p>والقائمة تكتب كل لغة بكلماتها هي، «English» و«العربية»، أياً كانت اللغة الحالية: فمن لا يقرأ اللغة الحالية يجب أن يجد لغته. والاختبار يختار العربية، ثم يتحقق من الترجمة والاتجاه وما حُفظ:</p>
+
+<pre data-code="test/bilingual_test.dart" data-from="    await tester.tap" data-to="^  });" data-title="test/bilingual_test.dart (جزء)"></pre>
+<pre data-term="bilingual-test.sh"></pre>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ما الخطأ في <code dir="ltr">EdgeInsets.only(left: 16)</code> في تطبيق له نسخة عربية؟</li><li>كم صيغة جمع في العربية، وأي عدد هو «الكثير»: 3 أم 11 أم 100؟</li><li>ماذا تعني <code dir="ltr">locale: null</code> في <code>MaterialApp</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>اليسار واليمين في الهوامش والمحاذاة</td><td>فراغات وزوايا في الجهة الخطأ بالعربية</td><td><code>EdgeInsetsDirectional</code> و<code>AlignmentDirectional</code>، والبداية والنهاية</td></tr>
+<tr><td>نصوص مكتوبة داخل العناصر</td><td>تطبيق لا يُترجم دون إعادة كتابة شاشاته</td><td>كل نص في ملفات ARB</td></tr>
+<tr><td>وصل النصوص للجمع أو للجمل</td><td>«1 items»، وترتيب كلمات عربي لا يمكن بناؤه</td><td>رسالة ICU واحدة لكل جملة، بعناصر نائبة</td></tr>
+<tr><td>فرض الاتجاه بـ <code>Directionality</code> حول التطبيق</td><td>تبقى نصوص Material بالإنجليزية، ولا تُترجم التواريخ</td><td><code>locale</code> و<code>supportedLocales</code> والمندوبون</td></tr>
+<tr><td>استخدام قائمة المندوبين المولَّدة في Flutter 3.50</td><td>عناصر Material لا تجد ترجمات؛ ويفشل منتقي التاريخ</td><td>مندوبنا و<code>GlobalMaterialLocalizations.delegates</code> من <code>material_ui</code></td></tr>
+<tr><td>تعديل الملفات المولَّدة</td><td>تضيع التغييرات مع البناء القادم</td><td>عدّل ملفات ARB</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>قل البداية والنهاية: <code>EdgeInsetsDirectional</code> و<code>AlignmentDirectional</code> و<code>BorderRadiusDirectional</code>؛ والصفوف والأيقونات ذات الاتجاه تنعكس وحدها.</li>
+<li>النصوص في ملف ARB لكل لغة؛ و<code>gen-l10n</code>، الذي يشغّله <code dir="ltr">generate: true</code> و<code>l10n.yaml</code>، يحوّلها إلى <code>AppLocalizations</code>.</li>
+<li>العناصر النائبة تحمل القيم، مع تنسيقات للأعداد والتواريخ؛ وجمع ICU يغطي صيغ العربية الست.</li>
+<li><code>MaterialApp</code> تأخذ <code>supportedLocales</code> والمندوبين و<code>locale</code> (و<code>null</code> تتبع الجوال)؛ والاتجاه يأتي من اللغة.</li>
+<li><code>intl</code> تنسّق الأعداد والتواريخ؛ وفي الأعداد تكتب <code>ar</code> من 0 إلى 9 و<code>ar_EG</code> من ٠ إلى ٩؛ وحين تُحمَّل Material بالعربية تستخدم التواريخ أرقامها الهندية.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. في العربية يبدأ الصف من اليمين، فالفراغ على اليسار في نهايته، أي في الجهة الخطأ؛ و<code dir="ltr">EdgeInsetsDirectional.only(start: 16)</code> تتبع الاتجاه. 2. ست؛ و11 «كثير» (11 إلى 99)، و3 «قليل»، و100 «باقي». 3. اتبع لغة الجوال، إن كان التطبيق يدعمها.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع الثلاثة تستخدم ملفات ARB نفسها التي يستخدمها تطبيق الفصل، وتُفتح بلغة النسخة التي تقرؤها. وجرّب كل واحد باللغة الأخرى أيضاً: غيّر <code>locale</code> وشغّله من جديد.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>الأكواب، بكل صيغها</h3>
+<p class="project-goal">عُدّ الأكواب برسالة جمع صحيحة في اللغتين، من الصفر إلى مئة وواحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> جمع ICU بأعداد بعينها وبفئات، واختبار كل صيغة.</p>
+<ol class="steps">
+<li>أضف <code>cups</code> إلى <code>app_en.arb</code>: <code dir="ltr">{count, plural, =0{No cups yet} =1{1 cup} other{{count} cups}}</code>، مع عنصر نائب <code>count</code> من نوع <code>int</code>.</li>
+<li>وأضف العربية بصيغها الست: <code>=0{لا أكواب بعد} =1{كوب واحد} =2{كوبان} few{{count} أكواب} many{{count} كوبًا} other{{count} كوب}</code>.</li>
+<li>اعرض <code dir="ltr">l.cups(cups)</code> بخط كبير، مع زر <code>oneMore</code> يضيف واحداً.</li>
+<li>اختبر بـ <code>lookupAppLocalizations</code>: 0 و1 و2 و11 بالإنجليزية؛ و0 و1 و2 و3 و10 و11 و99 و100 و101 بالعربية.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code dir="ltr">lookupAppLocalizations(Locale('ar'))</code> تعطي نصوص لغة واحدة بلا Widget ولا context: أسرع طريقة لاختبار الترجمات.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (بعد إحدى عشرة لمسة):</p>
+<figure data-img="shots/cups.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: أحد عشر كوباً.</figcaption>
+</figure>
+<pre data-term="projects/cups-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>إيصال واحد لثلاثة جماهير</h3>
+<p class="project-goal">نسّق المجموع والوقت نفسيهما لقرّاء الإنجليزية، ولقرّاء العربية الذين يستخدمون الأرقام الغربية، وللقرّاء في مصر الذين يستخدمون الأرقام الهندية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>NumberFormat.currency</code>، و<code>DateFormat</code> بلغة، واختبار النصوص المنسّقة بدقة.</p>
+<ol class="steps">
+<li>اكتب <code dir="ltr">totalIn(locale)</code> بـ <code dir="ltr">NumberFormat.currency(locale: locale, name: 'EGP', decimalDigits: 0)</code>، و<code dir="ltr">timeIn(locale)</code> بـ <code dir="ltr">DateFormat.yMMMd(locale).add_jm()</code>.</li>
+<li>اعرض بطاقة لكل من <code>en</code> و<code>ar</code> و<code>ar_EG</code>، فيها المجموع والوقت.</li>
+<li>اختبر النصوص بدقة. وانظر جيداً إلى ما يعود: فالوقت الإنجليزي فيه مسافة ضيقة لا تنكسر قبل AM، والمجموعان العربيان يبدآن بعلامة اتجاه من اليمين غير مرئية، ومسافة لا تنكسر تُبقي «EGP» على سطر الرقم نفسه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أي الأرقام تستخدم اختيار يخص جمهورك، لا قاعدة في اللغة: ففي مصر والخليج يشيع النوعان، وفي شمال إفريقيا الأرقام الغربية هي الأصل. وكثير من التطبيقات تجعله إعداداً.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure data-img="shots/receipt.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: الإيصال نفسه، بثلاث طرق.</figcaption>
+</figure>
+<pre data-term="projects/receipt-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>فقاعات محادثة في الاتجاهين</h3>
+<p class="project-goal">ابنِ شاشة محادثة فقاعاتها في الجهة الصحيحة، وزاويتها الصغيرة تشير إلى الكاتب، في الاتجاهين، وأثبت ذلك باختبار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>AlignmentDirectional</code> و<code>EdgeInsetsDirectional</code> و<code>BorderRadiusDirectional</code>، واختبار المواضع.</p>
+<ol class="steps">
+<li>الـ <code>Bubble</code> يأخذ <code>text</code> و<code>mine</code>. حاذِه إلى <code>centerEnd</code> إن كانت رسالتي، وإلى <code>centerStart</code> إن لم تكن.</li>
+<li>أعطه هامشاً عريضاً في الجهة الأخرى، فلا تعبر الرسائل الطويلة الشاشة كلها.</li>
+<li>دوّر كل الزوايا إلا واحدة: <code>bottomEnd</code> لرسائلي، و<code>bottomStart</code> لرسائلهم.</li>
+<li>اختبر برسم فقاعتين في كل اتجاه ومقارنة <code dir="ltr">tester.getCenter(...).dx</code>: رسالتي يجب أن تكون على اليمين بالإنجليزية وعلى اليسار بالعربية.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن لم تحتج فقاعتك أي تغيير لتكون صحيحة في الاتجاه الآخر، فقد أحسنت كتابتها. والاختبار يثبت ذلك، فتبقى صحيحة بعد كل تغيير لاحق.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure data-img="shots/chat.png" data-frame="phone">
+<figcaption>المشروع {{n}}.3: سهم الرجوع والفقاعات وأيقونة الإرسال كلها تتبع الاتجاه.</figcaption>
+</figure>
+<pre data-term="projects/chat-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> احذف الترجمة العربية لـ <code>language</code> من <code>app_ar.arb</code> وشغّل <code dir="ltr">flutter gen-l10n</code>. ماذا تقول الأداة، وماذا سيعرض التطبيق العربي؟</li>
+<li><span class="level">سهل</span> في <code>directions.dart</code> ضع <code>Icons.chevron_right</code> ثم <code>Icons.coffee</code> مكان <code>Icons.arrow_forward</code>. أيها ينعكس بالعربية، ولماذا يجب ألا ينعكس الكوب؟</li>
+<li><span class="level">متوسط</span> أضف أسفل القائمة سطراً يعرض المجموع أيضاً: «3 قطع · 145 جنيه». اكتبه رسالة واحدة بعنصرين نائبين، لا رسالتين تُوصلان في الكود، واشرح لماذا.</li>
+<li><span class="level">متوسط</span> أضف لغة ثالثة تختارها إلى <code>supportedLocales</code> بإضافة ملف ARB لها. ماذا يحدث للنصوص التي لم تترجمها بعد؟</li>
+<li><span class="level">تحدٍّ</span> اعرض التاريخ «3 ديسمبر» على أنه <em>اليوم</em> أو <em>غداً</em> أو التاريخ نفسه، باللغتين، برسالة <code>select</code> (<code dir="ltr">{when, select, today{…} tomorrow{…} other{…}}</code>). أي جزء يقرر «اليوم»، ولماذا يجب ألا يكون ملف ARB؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>كل شيء في مكانه: العناصر، والتخطيطات، والقوائم، والتنقل، والنماذج، والحالة، والـ API، والتخزين، ولغتان. والفصل القادم يجمع كل ذلك في تطبيق واحد كامل، تطبيق ملاحظات يُكتب ملفاً ملفاً، مع اختباراته، كما يُبنى التطبيق الحقيقي.</p>
+</div>
+</section>

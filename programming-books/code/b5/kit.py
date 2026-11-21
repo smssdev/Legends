@@ -31,6 +31,9 @@ def env():
         if os.environ.get(k):
             e[k] = os.environ[k]
     e["NO_PROXY"] = "localhost,127.0.0.1"
+    # The Android SDK, for the release builds of the last chapter.
+    if Path("/opt/android-sdk").exists():
+        e["ANDROID_HOME"] = "/opt/android-sdk"
     cert = Path("/opt/ca-bundle.crt")
     if os.environ.get("SSL_CERT_FILE"):
         if AS_READER and not cert.exists():
@@ -234,15 +237,17 @@ void main() {{
         if code:
             raise RuntimeError(text)
         for name, target in placed.items():
-            write(out, {name: (project / target).read_text()})
+            write(out, {name.removeprefix("root/"): (project / target).read_text()})
         text, code = sh("flutter build web -t lib/gallery.dart --no-web-resources-cdn", project)
         if code:
             raise RuntimeError(text)
         for png, app, taps, *size in shots:
             # "lib/router.dart#/drinks/3" opens the app at that route
             app, _, route = app.partition("#")
+            # "lib/notes_app.dart?lang=ar" opens it in a browser that speaks Arabic
+            app, _, extra = fill(app, words).partition("?")
             stem = Path(placed[app]).stem
-            query = f"?app={stem}" + (f"#{route}" if route else "")
+            query = f"?app={stem}" + (f"&{extra}" if extra else "") + (f"#{route}" if route else "")
             shot(project / "build" / "web", out / "shots" / png, fill(taps, words), 6000, query, *size)
         for transcript, test, *fails in tests:
             # (transcript, test) must pass; (transcript, test, keep) is expected to fail, and keep(lines)
