@@ -1,0 +1,226 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/api/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>الاتصال بواجهة برمجية</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشغّل خادم API صغيراً مكتوباً بـ Dart، وتحدّثه بـ <code>curl</code></li>
+<li>ترسل طلبات GET وPOST من Flutter بحزمة <code>http</code></li>
+<li>تحوّل JSON إلى كائنات Dart، وأخطاء الخادم إلى استثناءات برسائل واضحة</li>
+<li>تعرض حالات التحميل والخطأ والجاهزية، مع طريقة لإعادة المحاولة</li>
+<li>تختبر كوداً يستخدم الشبكة بلا أي شبكة، بـ <code>MockClient</code></li>
+</ul>
+</div>
+
+<p class="lead">عاشت قائمة المقهى في الكود منذ الفصل 7. أما في تطبيق حقيقي فتعيش على <dfn>خادم</dfn>، ويطلبها التطبيق عبر الإنترنت من خلال <dfn>API</dfn>: مجموعة عناوين تجيب ببيانات. وفي هذا الفصل يصبح للمقهى خادمه، ملف Dart واحد تشغّله على جهازك، ويتعلم التطبيق أن يطلب منه القائمة، ويعرض ما يحدث وهو ينتظر، وينجو حين تسوء الأمور، ويرسل الطلبات إليه.</p>
+
+<aside class="bit" data-mood="happy"><p>كل طلب في هذا الفصل ذهب فعلاً عبر اتصال شبكة إلى خادم حقيقي أثناء إعداد الكتاب، وكل رسالة خطأ جاءت من ذلك الخادم. وحدها الاختبارات تستخدم شبكة متخيَّلة، وهي تقول ذلك صراحة.</p></aside>
+
+<h2>{{n}}.1 خادم المقهى</h2>
+
+<p>إن قرأت الكتاب الثالث من هذه السلسلة فقد بنيت APIs بنفسك. وإن لم تقرأه فهذا كل ما تحتاجه: يرسل التطبيق <dfn>طلباً</dfn> بـ<dfn>طريقة</dfn> (GET للقراءة، وPOST للإنشاء) وعنوان، فيردّ الخادم <dfn>باستجابة</dfn> فيها <dfn>رمز حالة</dfn> (200 تمام، و201 أُنشئ، و400 طلب خاطئ، و404 غير موجود، و500 خطأ في الخادم) وجسم، وهو هنا بصيغة <dfn>JSON</dfn>، الصيغة النصية للبيانات التي عرفتها في الكتاب الأول. وهذا خادم المقهى، مكتوباً بـ Dart الخالصة بلا أي حزمة:</p>
+
+<pre data-code="server/server.dart" data-from="^// " data-title="server/server.dart"></pre>
+
+<p>شغّله في طرفية، داخل المجلد الذي حفظته فيه ومعه صور المقهى في مجلد <code>images</code>، واتركه يعمل:</p>
+
+<pre data-term="server-run.sh"></pre>
+
+<p>وقبل أن تكتب أي تطبيق، حدّث الـ API من طرفية أخرى بـ <code>curl</code>، لتعرف بالضبط بماذا يجيب:</p>
+
+<pre data-term="curl.sh"></pre>
+
+<p>مشروب واحد برقمه؛ ومشروب غير موجود، برمز 404 ورسالة؛ وطلب أُنشئ، برمز 201؛ وطلب بلا اسم، رُفض برمز 400 ورسالة. فالخادم يتحقق من كل ما يصله، كما قال الفصل 9 إن كل خادم يجب أن يفعل، وكل رفض يقول ما الخطأ. وسيعرض التطبيق هذه الرسائل للناس.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>في محاكي أندرويد يعني <code>localhost</code> المحاكي نفسه لا جهازك: استخدم <code dir="ltr">http://10.0.2.2:8080</code> لتصل إلى خادم على جهازك. وأندرويد يرفض عناوين <code dir="ltr">http://</code> العادية في نسخ الإصدار؛ فالخوادم الحقيقية تستخدم <code dir="ltr">https://</code>، وللتجارب المحلية تستطيع السماح بها في ملف الـ manifest. أما في محاكي آيفون فيعمل <code>localhost</code>.</p></aside>
+
+<h2>{{n}}.2 أول طلب</h2>
+
+<p>تطبيقات Flutter ترسل الطلبات بحزمة <code>http</code>، التي ينشرها فريق Dart. ويستخدم تطبيق الفصل أيضاً Provider من الفصل {{n-1}}:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<pre data-code="lib/fetch.dart" data-from="^Future" data-title="lib/fetch.dart (جزء)"></pre>
+
+<figure data-img="shots/fetch.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: القائمة، من الخادم.</figcaption>
+</figure>
+
+<ul>
+<li><code>http.get</code> تأخذ <code>Uri</code> وتعيد <code dir="ltr">Future&lt;Response&gt;</code>، فيها <code>statusCode</code> و<code>body</code>.</li>
+<li><code>jsonDecode</code>، من <code>dart:convert</code>، تحوّل نص JSON إلى قيم Dart: قوائم وخرائط ونصوص وأرقام.</li>
+<li><code>FutureBuilder</code> يعرض كل لحظة من لحظات الـ Future: تُنفَّذ دالة <code>builder</code> من جديد حين يكتمل. و<code>snapshot</code> يقول هل ما زال ينتظر، أم فشل، أم وصلت البيانات.</li>
+<li>يُنشأ الـ Future مرة واحدة، حقلاً <code dir="ltr">late final</code> في الـ State. ولو أُنشئ داخل <code>build</code> لأُرسل طلب جديد في كل مرة تُرسم فيها الشاشة، وقد يكون ذلك مرات كثيرة في الثانية.</li>
+</ul>
+
+<p>هذا يعمل، وهكذا يبدأ كل مطور Flutter. لكن فيه ثلاث نقاط ضعف يصلحها باقي الفصل: البيانات تبقى خرائط بلا أنواع، والخطأ يظهر استثناءً خاماً، ولا شيء يمكن اختباره بلا خادم.</p>
+
+<h2>{{n}}.3 من JSON إلى كائنات</h2>
+
+<p>الشكل الاحترافي يضع كل ما يخص الخادم في صنف واحد، ويحوّل كل إجابة إلى كائنات Dart لها أنواع لحظة وصولها:</p>
+
+<pre data-code="lib/cafe_api.dart" data-from="^class Drink" data-to="^}#3" data-title="lib/cafe_api.dart (جزء)"></pre>
+
+<ul>
+<li><code>Drink.fromJson</code> <dfn>مُنشئ factory</dfn>: مُنشئ يبني الكائن من شيء آخر، وهو هنا خريطة. وبعده يعمل باقي التطبيق مع <code>drink.price</code>، وهو <code>int</code>، ولا يلمس <code dir="ltr">json['price']</code> أبداً.</li>
+<li><code>CafeApi</code> يتسلّم الـ <code>http.Client</code> بدل أن ينشئه. فالتطبيق يعطيه عميلاً حقيقياً، والاختبارات ستعطيه عميلاً مزيفاً. وهذا يسمى <dfn>حقن الاعتماديات</dfn>، وهو ما يجعل كود الشبكة قابلاً للاختبار.</li>
+<li>كل طلب يمر من <code>_send</code>: مهلة عشر ثوانٍ (الفصل 4)، فلا يترك خادم صامت الشاشة تنتظر إلى الأبد، وجسم يُفك بـ UTF-8 فتصل العربية سليمة، وأي رمز حالة من 300 فما فوق يتحول إلى <code>ApiException</code> يحمل رسالة الخادم نفسه.</li>
+<li><code dir="ltr">replace(queryParameters: ...)</code> تبني <code dir="ltr">/menu?q=شاي</code> بأمان، فتُرمَّز المسافات والحروف العربية كما يجب.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>حلّل البيانات عند الحافة. حوّل JSON إلى كائنات لها أنواع في مكان واحد، لحظة وصولها، ولا تدع باقي التطبيق يرى غير هذه الكائنات. فإن غيّر الخادم اسم حقل تغيّر سطر واحد، ووجد المترجم كل استخدام له؛ أما مع الخرائط المتداولة في كل مكان فيظهر الخطأ على شاشة ما، بعد وقت طويل.</p></aside>
+
+<h2>{{n}}.4 تحميل، خطأ، جاهز</h2>
+
+<p>الشاشة التي تحمّل من الشبكة في واحدة من ثلاث حالات دائماً، ويجب أن تُحسن عرضها كلها. والنموذج يحفظ الحالة:</p>
+
+<pre data-code="lib/cafe_api.dart" data-from="^enum Status" data-title="lib/cafe_api.dart (النموذج)"></pre>
+
+<p>وتعرض الصفحة كل حالة بتعبير switch على <code>model.status</code>:</p>
+
+<pre data-code="lib/menu_app.dart" data-from="body: switch" data-to="^      },"  data-title="lib/menu_app.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>جاهزة، بصور من الخادم</figcaption>
+</figure>
+<figure data-img="shots/failed.png" data-frame="phone">
+<figcaption>فشلت: أجاب الخادم بـ 500</figcaption>
+</figure>
+</div>
+
+<ul>
+<li>أثناء التحميل، مؤشر دوّار. وحين تجهز، القائمة داخل <code>RefreshIndicator</code>: سحب القائمة إلى الأسفل يستدعي <code>load</code> من جديد.</li>
+<li>وحين تفشل، ما حدث بكلمات الخادم، وزر لإعادة المحاولة يستدعي <code>load</code> نفسها. فالشاشة التي تفشل بلا مخرج هي أشهر تجربة سيئة في تطبيقات الجوال.</li>
+<li>والصور تأتي من الخادم أيضاً، بـ <code>NetworkImage</code>. وإن فشلت إحداها أبقت <code>onBackgroundImageError</code> الدائرة الفارغة بدل الخطأ.</li>
+</ul>
+
+<p>والطلب POST. لمس عربة المشروب يرسله، ويعرض المجموع الذي حسبه الخادم:</p>
+
+<figure data-img="shots/ordered.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: بعد لمس عربة عصير البرتقال: أنشأ الخادم الطلب.</figcaption>
+</figure>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>لماذا يُنشأ الـ Future في <code>fetch.dart</code> في حقل لا في <code>build</code>؟</li><li>ماذا يفعل <code>CafeApi</code> باستجابة رمز حالتها 404؟</li><li>ما الحالات الثلاث التي يجب أن تعرضها شاشة تحمّل من الشبكة؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.5 الاختبار بلا شبكة</h2>
+
+<p>اختبارات الـ Widgets لا تصل إلى الإنترنت أبداً: كل طلب حقيقي يعود برمز 400. وهذه ميزة: فالاختبارات يجب ألا تعتمد على خادم قد يبطئ أو يتوقف. ولأن <code>CafeApi</code> يتسلّم عميله، يستطيع الاختبار أن يعطيه <code>MockClient</code> من <code dir="ltr">package:http/testing.dart</code>، يجيب كل طلب بما يقرره الاختبار:</p>
+
+<pre data-code="test/api_test.dart" data-from="test(" data-to="^  });" data-title="test/api_test.dart (جزء)"></pre>
+<pre data-term="api-test.sh"></pre>
+
+<p>واختبار الـ Widget يذهب أبعد: الطلب الأول يفشل، والثاني ينجح، والاختبار يلمس «أعد المحاولة» بينهما:</p>
+
+<pre data-code="test/menu_app_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/menu_app_test.dart (جزء)"></pre>
+<pre data-term="menu-app-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>الـ <code>http.Response</code> المبني في اختبار يرمّز جسمه بـ Latin-1 ما لم تقل ترويساته <code dir="ltr">charset=utf-8</code>. وقد فشل هذا الاختبار في نسخته العربية لهذا السبب بالضبط حتى أُضيفت الترويسة. الخوادم الحقيقية ترسلها، والمزيفة يجب أن ترسلها أيضاً.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>إنشاء الـ Future في <code>build</code></td><td>طلب جديد مع كل إعادة بناء</td><td>أنشئه مرة واحدة، في الـ State أو في نموذج</td></tr>
+<tr><td>تجاهل رمز الحالة</td><td>صفحة خطأ تُحلَّل على أنها بيانات، وانهيار مربك</td><td>افحصه، وارمِ استثناءً برسالة الخادم</td></tr>
+<tr><td>لا حالة تحميل ولا خطأ</td><td>شاشة فارغة، أو شاشة لا تتعافى أبداً</td><td>اعرض الحالات الثلاث، مع «أعد المحاولة»</td></tr>
+<tr><td><code>localhost</code> في محاكي أندرويد</td><td>رفض الاتصال</td><td><code dir="ltr">10.0.2.2</code></td></tr>
+<tr><td>لا صلاحية إنترنت في نسخة أندرويد المنشورة</td><td>كل طلب يفشل في التطبيق المنشور وحده</td><td>أضف صلاحية INTERNET إلى الـ manifest الرئيسي</td></tr>
+<tr><td>فك الجسم بلا UTF-8</td><td>تصل العربية حروفاً مكسورة</td><td><code dir="ltr">utf8.decode(response.bodyBytes)</code></td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>الـ API يجيب الطلبات (GET وPOST…) برمز حالة وجسم JSON. جرّبه بـ <code>curl</code> قبل كتابة التطبيق.</li>
+<li>حزمة <code>http</code> ترسل الطلبات، و<code>jsonDecode</code> تحوّل الجسم إلى قيم Dart، و<code>FutureBuilder</code> يعرض تقدم الـ Future.</li>
+<li>ضع الخادم في صنف واحد يتسلّم <code>http.Client</code>، ويحوّل JSON إلى كائنات لها أنواع بـ <code>fromJson</code>، والأخطاء إلى استثناءات برسالة الخادم، مع مهلة.</li>
+<li>اعرض التحميل والخطأ (مع «أعد المحاولة») والجاهزية؛ و<code>RefreshIndicator</code> يعيد التحميل بالسحب.</li>
+<li>اختبر بـ <code>MockClient</code>، ولا تختبر بشبكة حقيقية أبداً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن <code>build</code> قد تُنفَّذ مرات كثيرة، وكل مرة كانت سترسل طلباً جديداً؛ أما الحقل فيُنشأ مرة واحدة. 2. يرمي <code>ApiException</code> برسالة خطأ الخادم، «لا مشروب برقم 9». 3. التحميل، والخطأ (مع طريقة لإعادة المحاولة)، والجاهزية.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">أبقِ خادم المقهى يعمل وأنت تبني هذه المشاريع، وجرّب كل واحد والخادم متوقف أيضاً: فكل شاشة يجب أن تقول شيئاً مفيداً حين لا يكون الخادم موجوداً.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>مشروب اليوم</h3>
+<p class="project-goal">اعرض مشروباً واحداً، مطلوباً برقمه، في بطاقة بصورته من الخادم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>CafeApi.drink</code>، و<code>FutureBuilder</code> مع switch على الـ snapshot، و<code>Image.network</code>.</p>
+<ol class="steps">
+<li>أعطِ الصفحة <code>CafeApi</code> ورقماً، وأنشئ الـ Future مرة واحدة: <code dir="ltr">late final Future&lt;Drink&gt; special = widget.api.drink(widget.id);</code></li>
+<li>في الـ builder، اعمل switch على الـ snapshot بالأنماط: <code dir="ltr">AsyncSnapshot(:final error?)</code> يطابق حين يكون هناك خطأ، و<code dir="ltr">AsyncSnapshot(:final data?)</code> حين تكون هناك بيانات، و<code>_</code> أثناء الانتظار.</li>
+<li>اعرض الصورة بـ <code dir="ltr">Image.network(widget.api.imageUrl(data))</code> فوق الاسم والسعر.</li>
+<li>غيّر الرقم إلى 9 وشاهد رسالة الخادم بدل البطاقة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code dir="ltr">:final error?</code> تعني «خذ الحقل <code>error</code>، ولا تطابق إلا إن لم يكن null»: طريقة مختصرة وآمنة لقراءة الـ snapshot.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure data-img="shots/special.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: المشروب رقم 3.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>أرسل طلباً، واعرض ما يقوله الخادم</h3>
+<p class="project-goal">أرسل طلباً باسم، وأطفئ الزر أثناء الإرسال، واعرض إجابة الخادم: المجموع، أو رسالة خطئه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> POST بجسم JSON، وحالة إرسال، والتقاط <code>ApiException</code>، و<code>mounted</code>، واختبار بإجابة 400.</p>
+<ol class="steps">
+<li>احفظ <code>sending</code> و<code>message</code> في الحالة. وفي <code>send</code> فعّل <code>sending</code>، واستدعِ <code dir="ltr">api.order(name.text, [1, 4])</code>، واحفظ المجموع أو رسالة الاستثناء.</li>
+<li>أثناء الإرسال، أطفئ الزر واعرض فيه مؤشراً دوّاراً صغيراً، فلا يرسل أحد الطلب مرتين.</li>
+<li>بعد <code>await</code> افحص <code>mounted</code> قبل <code>setState</code>: فقد تُغلق الصفحة أثناء الانتظار.</li>
+<li><em>لا</em> تتحقق من الاسم في التطبيق هذه المرة: أرسله فارغاً، واعرض رسالة الخادم.</li>
+<li>اختبر بـ <code>MockClient</code> يجيب بـ 400 وخطأ، وتأكد أن الرسالة تظهر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في تطبيق حقيقي، تحقق في التطبيق أيضاً (الفصل 9): فالشخص يعرف الخطأ أسرع. ورسالة الخادم شبكة الأمان لكل ما لم يتوقعه التطبيق.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (بعد الإرسال بلا اسم):</p>
+<figure data-img="shots/send-order.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: رسالة الخادم نفسه.</figcaption>
+</figure>
+<pre data-term="projects/send-order-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>ابحث في الخادم، دون أن تُغرقه</h3>
+<p class="project-goal">ابحث في القائمة على الخادم والزبون يكتب، لكن لا تسأل إلا حين تتوقف الكتابة 400 جزء من الثانية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Timer</code>، والإلغاء، ومعاملات العنوان، واختبار الوقت بـ <code dir="ltr">tester.pump(Duration)</code>.</p>
+<ol class="steps">
+<li>احفظ <code dir="ltr">Timer? wait</code> في الحالة. وفي <code>onChanged</code> ألغه، وابدأ <code dir="ltr">Timer(Duration(milliseconds: 400), ...)</code> جديداً يستدعي <code dir="ltr">api.menu(query: text)</code>.</li>
+<li>كتابة «شاي» بسرعة تلغي المؤقتين الأولين: فيُرسل طلب واحد فقط، لـ«شاي». وهذا يسمى <dfn>debouncing</dfn>.</li>
+<li>ألغِ المؤقت في <code>dispose</code>.</li>
+<li>اختبر بـ <code>MockClient</code> يسجل كل بحث. اكتب «ش» ثم «شا» ثم «شاي» بفاصل 100 جزء من الثانية بينها، وتأكد أن شيئاً لم يُطلب بعد، ثم قدّم الوقت 400 جزء من الثانية وتأكد أن طلباً واحداً بالضبط، لـ«شاي»، قد أُرسل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في اختبار الـ Widget لا يمضي الوقت وحده: <code dir="ltr">tester.pump(Duration(milliseconds: 400))</code> تقدّم ساعة الاختبار بهذا القدر بالضبط، فتصبح اختبارات التوقيت سريعة ودقيقة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (بعد كتابة «شاي»):</p>
+<figure data-img="shots/search.png" data-frame="phone">
+<figcaption>المشروع {{n}}.3: إجابة الخادم لـ«شاي».</figcaption>
+</figure>
+<pre data-term="projects/live-search-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اطلب بـ <code>curl</code> العنوان <code dir="ltr">/menu?q=كو</code>، ثم <code dir="ltr">/nothing</code>. ما رموز الحالة التي تعود، ولماذا؟</li>
+<li><span class="level">سهل</span> أوقف الخادم وافتح تطبيق القائمة. أي حالة يعرض، وبأي رسالة؟ شغّل الخادم والمس «أعد المحاولة».</li>
+<li><span class="level">متوسط</span> أضف <code>toJson()</code> إلى <code>Drink</code>، عكس <code>fromJson</code>، واختباراً يتأكد أن المشروب ينجو من الرحلة ذهاباً وإياباً: <code dir="ltr">Drink.fromJson(d.toJson())</code> له الحقول نفسها.</li>
+<li><span class="level">متوسط</span> أضف إلى الخادم المسار <code dir="ltr">GET /hours</code> الذي يجيب <code dir="ltr">{"open": "8:00", "close": "22:00"}</code>، وجرّبه بـ <code>curl</code>، واعرضه أسفل القائمة.</li>
+<li><span class="level">تحدٍّ</span> اجعل نموذج القائمة يحتفظ بآخر قائمة وصلته، وحين تفشل إعادة التحميل اعرض القائمة القديمة مع شريط صغير «تعذّر التحديث»، بدل صفحة الخطأ الكاملة. متى يكون هذا أفضل للناس، ومتى يكون خطيراً؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>أغلق تطبيق المقهى وافتحه من جديد، فإذا كل شيء قد ضاع: المفضلة، والسلة، والإعدادات. والفصل القادم يحفظ البيانات على الجوال نفسه: الإعدادات الصغيرة بـ <code>shared_preferences</code>، والبيانات الأكبر في ملفات وقاعدة بيانات محلية.</p>
+</div>
+</section>
