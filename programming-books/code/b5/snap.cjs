@@ -4,7 +4,8 @@
 //        <signal>/ready, waits for <signal>/go, then shoots <signal>/after.png into the path in <signal>/go
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
-const [src, out, a3 = '', a4 = '5000', query = ''] = process.argv.slice(2);
+const [src, out, a3 = '', a4 = '5000', query = '', size = '390x780'] = process.argv.slice(2);
+const [W, H] = size.split('x').map(Number);
 const types = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.html': 'text/html', '.wasm': 'application/wasm',
   '.json': 'application/json', '.png': 'image/png', '.otf': 'font/otf', '.ttf': 'font/ttf' };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -12,7 +13,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function browser() {
   // Flutter draws with WebGL; a machine without a graphics card draws it in software.
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const page = await b.newPage({ viewport: { width: 390, height: 780 }, deviceScaleFactor: 2 });
+  const page = await b.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
   return [b, page];
 }
 

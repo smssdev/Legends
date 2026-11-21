@@ -1,0 +1,267 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/layout/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Layouts That Fit Every Screen</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain how Flutter decides the size and the place of every widget</li>
+<li>arrange widgets in rows and columns, and share out the free space</li>
+<li>recognise an overflow, read its message, and fix it</li>
+<li>put widgets on top of each other with <code>Stack</code></li>
+<li>let items flow onto the next line with <code>Wrap</code></li>
+<li>build one screen that fits a small phone, a large phone and a tablet</li>
+</ul>
+</div>
+
+<p class="lead">Chapter {{n-1}} gave you the pieces. This chapter puts them in their places. A real screen has a bar at the top, cards side by side, a price pushed to the far edge, a badge on the corner of an icon, and it must look right on a narrow phone held upright and on a tablet lying on its side. Flutter has a small set of layout widgets that do all of this, and one simple rule behind them. Learn the rule, and layouts stop being guesswork.</p>
+
+<aside class="bit" data-mood="think"><p>When a layout looks wrong, do not change numbers at random. Ask three questions: how much room did this widget get from its parent, how big did it decide to be, and where did its parent put it? This chapter teaches you to answer all three.</p></aside>
+
+<h2>{{n}}.1 The rule of layout</h2>
+
+<p>Flutter lays out the whole widget tree with one rule, usually summed up in one line:</p>
+
+<p style="text-align:center"><strong>Constraints go down. Sizes go up. The parent sets the position.</strong></p>
+
+<ol>
+<li>A parent tells each child the <dfn>constraints</dfn> it must respect: the smallest and the largest width and height it may have. The screen gives the app its own size; a <code>Padding</code> of 16 gives its child 32 pixels less in each direction; a <code>SizedBox(width: 300)</code> gives exactly 300.</li>
+<li>Each child chooses its size within those limits, after asking its own children the same question, and reports it back up.</li>
+<li>The parent places each child: <code>Center</code> in the middle, <code>Column</code> one under the other, <code>Row</code> side by side.</li>
+</ol>
+
+<p>A widget does not choose its own position, and cannot be bigger than its constraints allow. Almost every layout problem you will meet is one of these steps doing something you did not expect, and the sections below show the common ones.</p>
+
+<h2>{{n}}.2 Rows and columns</h2>
+
+<p>A <code>Row</code> places its children side by side, along its <dfn>main axis</dfn>, which is horizontal. A <code>Column</code> does the same vertically. The other direction is the <dfn>cross axis</dfn>. Two properties decide where the children go: <code>mainAxisAlignment</code> along the main axis, and <code>crossAxisAlignment</code> across it. This app shows the same three coloured boxes in four rows:</p>
+
+<pre data-code="lib/rows.dart" data-from="^class RowsPage" data-title="lib/rows.dart (part)"></pre>
+
+<figure data-img="shots/rows.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: The same row with four alignments. The grey band is the row’s own space.</figcaption>
+</figure>
+
+<p><code>start</code> packs the boxes at the beginning, <code>center</code> in the middle, <code>spaceBetween</code> puts all the free space between them, and <code>spaceEvenly</code> gives equal space around each one. In the last row, <code>CrossAxisAlignment.end</code> moves the boxes to the bottom of the 80-pixel band. <code>Box</code> and <code>Labelled</code> are two small widgets written for this example, in the same file; <code>Box</code> is reused all through the chapter.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>“Start” and “end” mean the beginning and the end of the reading direction, not left and right. In an Arabic app a row starts on the right, and every <code>start</code> in your code follows it. Write <code>start</code> and <code>end</code>, never “left” and “right”, and your layouts will work in both directions for free; Chapter 13 uses this.</p></aside>
+
+<h2>{{n}}.3 Sharing the space: Expanded and Flexible</h2>
+
+<p>Boxes of fixed sizes rarely fill a screen exactly. <code>Expanded</code> and <code>Flexible</code> decide who gets the space that is left:</p>
+
+<pre data-code="lib/expanded.dart" data-from="^class ExpandedPage" data-title="lib/expanded.dart (part)"></pre>
+
+<figure data-img="shots/expanded.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: Expanded fills, flex shares, Flexible lets a long text wrap.</figcaption>
+</figure>
+
+<ul>
+<li>In the first row, boxes 1 and 3 keep their 56 pixels, and <code>Expanded</code> makes box 2 take everything else.</li>
+<li>In the second, all three are expanded, and <code>flex: 2</code> gives box 2 two shares of the space for every one share of the others.</li>
+<li>In the third, the text is wrapped in <code>Flexible</code>: it may use the space left between the icon and the teal box, and no more, so it goes onto a second line instead of pushing the box off the screen.</li>
+</ul>
+<p>The difference between the two: <code>Expanded</code> <em>must</em> fill its share, while <code>Flexible</code> <em>may</em> use up to its share, and is happy to be smaller.</p>
+
+<h2>{{n}}.4 When it does not fit: overflow</h2>
+
+<p>What happens without <code>Flexible</code>? A <code>Row</code> gives each child as much width as it wants, and a long text wants to be very wide. The tests show it best, because they report every layout error. Here is a row 300 pixels wide with an icon and a long name:</p>
+
+<pre data-code="test/overflow_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/overflow_test.dart (part)"></pre>
+<pre data-term="overflow-test.sh" class="error"></pre>
+
+<p>“A RenderFlex overflowed by 2008 pixels on the right.” A <dfn>RenderFlex</dfn> is the object that lays out a <code>Row</code> or a <code>Column</code>, and <dfn>overflow</dfn> means its children need more room than it has. The number is so large because tests draw every letter as a square box; in a running app it would be smaller, but the problem would be the same. In a debug build the app shows the overflow as yellow and black stripes along the edge, impossible to miss; a release build hides them, and the text is simply cut off. The same row with <code>Flexible</code> around the text passes:</p>
+
+<pre data-term="fixed-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Test your layouts with the longest real text, not the shortest: the longest dish name on the menu, the user with a double-barrelled surname, the German translation. Text in a row should almost always be inside <code>Expanded</code> or <code>Flexible</code>, and have a plan for overflow (<code>maxLines</code> and <code>overflow</code>, from Chapter {{n-1}}).</p></aside>
+
+<h2>{{n}}.5 Layers: Stack</h2>
+
+<p>Sometimes widgets must sit on top of each other: a label on a picture, a badge on an icon. <code>Stack</code> paints its children one over the other, the first at the bottom:</p>
+
+<pre data-code="lib/stack.dart" data-from="Stack(" data-to="^            ),#2" data-title="lib/stack.dart (part)"></pre>
+
+<figure data-img="shots/stack.png" data-frame="phone">
+<figcaption>Figure {{n}}.3: A banner with a label in its corner and a title along its bottom, and a badge on a cart.</figcaption>
+</figure>
+
+<p>A child without position takes the stack’s size: here the brown box sets the size of the banner. <code>Positioned</code> pins a child to edges of the stack: <code>top: 12</code> is 12 pixels from the top. <code>PositionedDirectional</code> does the same with <code>start</code> and <code>end</code> instead of <code>left</code> and <code>right</code>, so the label moves to the other corner in an Arabic app. Giving both <code>start</code> and <code>end</code> stretches the title row across the banner.</p>
+
+<p>The cart badge sits partly <em>outside</em> the icon, with negative positions. A stack normally clips anything outside its edges; <code>clipBehavior: Clip.none</code> lets the badge show.</p>
+
+<h2>{{n}}.6 Flowing onto the next line: Wrap</h2>
+
+<p>A <code>Row</code> never goes onto a second line. When you have a number of small items, such as tags or filter chips, use <code>Wrap</code>: it fills a line, then starts the next.</p>
+
+<pre data-code="lib/wrap.dart" data-from="child: Wrap" data-to="^        )," data-title="lib/wrap.dart (part)"></pre>
+
+<figure data-img="shots/wrap.png" data-frame="phone">
+<figcaption>Figure {{n}}.4: Nine chips, as many per line as fit.</figcaption>
+</figure>
+
+<p><code>spacing</code> is the gap between chips on a line, and <code>runSpacing</code> the gap between lines. On a wider screen the same code puts more chips on each line, without any change.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>In a <code>Column</code>, which property moves the children up and down: <code>mainAxisAlignment</code> or <code>crossAxisAlignment</code>?</li><li>What is the difference between <code>Expanded</code> and <code>Flexible</code>?</li><li>Why use <code>PositionedDirectional</code> with <code>start</code> instead of <code>Positioned</code> with <code>left</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.7 Every screen size</h2>
+
+<p>Your app will run on phones of many widths, held upright or sideways, and on tablets. Two tools tell you how much room you have:</p>
+<ul>
+<li><code>MediaQuery.sizeOf(context)</code> gives the size of the whole screen.</li>
+<li><code>LayoutBuilder</code> gives the constraints of the place where it sits, and lets you build different widgets for different widths. Prefer it: a widget should depend on the room it gets, not on the size of the screen, so that it also works inside half of a tablet.</li>
+</ul>
+
+<pre data-code="lib/responsive.dart" data-from="final size" data-to="^            ),#2" data-title="lib/responsive.dart (part)"></pre>
+
+<figure data-img="shots/responsive-phone.png" data-frame="phone">
+<figcaption>Figure {{n}}.5: On a phone, 390 pixels wide: the panels are stacked.</figcaption>
+</figure>
+
+<figure data-img="shots/responsive-tablet.png" data-frame="tablet">
+<figcaption>Figure {{n}}.6: The same app on a tablet held sideways, 820 pixels wide: side by side, the menu twice as wide.</figcaption>
+</figure>
+
+<p>The first line of the app prints what <code>MediaQuery</code> says. Below it, <code>LayoutBuilder</code> chooses: under 600 pixels, a column; from 600, a row with <code>Expanded</code> panels. The number 600 is a <dfn>breakpoint</dfn>, the width where the layout changes. Material’s guidelines use 600 as the boundary between phones and tablets, which is why so many apps use it too.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Real phones have notches, rounded corners and a home bar that cover parts of the screen. Wrap the content of a screen in <code>SafeArea</code> when it has no <code>AppBar</code>, and Flutter keeps it clear of them. The screenshots in this book come from a browser, which has none of these, but your phone does.</p></aside>
+
+<h2>{{n}}.8 Project: the café dashboard</h2>
+
+<p>The owner of the café wants a dashboard: a banner, today’s three numbers, and two sections, on whatever device is at hand.</p>
+
+<pre data-code="lib/dashboard.dart" data-from="^class Dashboard" data-title="lib/dashboard.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/dashboard-phone.png" data-frame="phone">
+<figcaption>Figure {{n}}.7: The dashboard on a phone.</figcaption>
+</figure>
+</div>
+<figure data-img="shots/dashboard-tablet.png" data-frame="tablet">
+<figcaption>Figure {{n}}.8: The same code on a tablet: the two sections sit side by side.</figcaption>
+</figure>
+
+<p>Read it from the top, with the rule of layout in mind:</p>
+<ul>
+<li>The outer <code>Column</code> stretches its children across the width (<code>CrossAxisAlignment.stretch</code>), so the banner is as wide as the screen.</li>
+<li>The banner is a <code>Container</code> of fixed height with a <code>LinearGradient</code>, and <code>alignment: AlignmentDirectional.bottomStart</code> puts the title in its bottom corner, the start one.</li>
+<li>Three <code>Expanded</code> cards share the width of the stats row equally, on every screen.</li>
+<li><code>LayoutBuilder</code> stacks the two sections on a phone and puts them side by side on a tablet.</li>
+<li><code>Stat</code> and <code>Section</code> are small widgets of their own, so the layout code reads like a description of the screen.</li>
+</ul>
+
+<aside class="box try"><p class="box-title">Try it</p><p>Run the dashboard on your emulator, then rotate it (there is a rotate button in the emulator’s toolbar). Which part of the layout changes? Then add a fourth stat, and find the width at which the four cards become too narrow for their numbers.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Long text in a <code>Row</code></td><td>Overflow: stripes in debug, cut text in release</td><td>Wrap the text in <code>Expanded</code> or <code>Flexible</code></td></tr>
+<tr><td><code>Expanded</code> outside a <code>Row</code>, <code>Column</code> or <code>Flex</code></td><td>An error: “Incorrect use of ParentDataWidget”</td><td>Use it only as a direct child of those</td></tr>
+<tr><td>A <code>Column</code> that should hug its content</td><td>It takes all the height, and a card around it stretches</td><td><code>mainAxisSize: MainAxisSize.min</code></td></tr>
+<tr><td>Using <code>left</code> and <code>right</code></td><td>Arabic layouts come out mirrored wrongly</td><td><code>start</code> and <code>end</code>, and the <code>…Directional</code> widgets</td></tr>
+<tr><td>Choosing layouts by the screen size</td><td>A widget breaks when it is placed in a smaller area</td><td><code>LayoutBuilder</code>, which gives the room actually available</td></tr>
+<tr><td>Content under the notch or the home bar</td><td>Text hidden behind the phone’s own parts</td><td><code>SafeArea</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Constraints go down, sizes go up, the parent sets the position.</strong></li>
+<li><code>Row</code> and <code>Column</code> place children along the <strong>main axis</strong>; <code>mainAxisAlignment</code> and <code>crossAxisAlignment</code> place them along and across it.</li>
+<li><code>Expanded</code> fills the free space and <code>flex</code> shares it; <code>Flexible</code> may use up to its share.</li>
+<li>An <strong>overflow</strong> means children need more room than they got; read the message, and give text <code>Flexible</code> room.</li>
+<li><code>Stack</code> layers widgets; <code>Positioned</code> and <code>PositionedDirectional</code> pin them to edges; <code>Clip.none</code> lets them stick out.</li>
+<li><code>Wrap</code> flows items onto more lines.</li>
+<li><code>LayoutBuilder</code> builds different layouts for different widths; 600 pixels is the usual breakpoint between phone and tablet. <code>SafeArea</code> avoids notches.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>mainAxisAlignment</code>: a column’s main axis is vertical. 2. <code>Expanded</code> must fill its share of the free space; <code>Flexible</code> may take up to its share, but can be smaller. 3. Because <code>start</code> follows the reading direction: the widget moves to the right side in an Arabic app without any change to the code.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">For each project, sketch the screen on paper first and draw the rows and columns over it. Then write the code from the outside in, running it after each layer.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A weather card</h3>
+<p class="project-goal">Show today’s weather in a card: a sun icon at the start, the city and two lines of description in the middle, and a large temperature at the end.</p>
+<p class="project-skills"><strong>You will practise:</strong> a <code>Row</code> with an <code>Expanded</code> middle, a <code>Column</code> that hugs its content, and a text style from the theme.</p>
+<ol class="steps">
+<li>In the body, centre a <code>Card</code> with a margin of 16 and padding of 20, holding a <code>Row</code>.</li>
+<li>Put the icon first, then a <code>SizedBox(width: 16)</code>.</li>
+<li>The middle is an <code>Expanded</code> <code>Column</code>, aligned to the start, with the city in bold and two lines below it.</li>
+<li>Last, the temperature, with <code>Theme.of(context).textTheme.displaySmall</code>.</li>
+<li>Run it. If the card fills the whole height of the screen, find the column responsible and fix it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a <code>Column</code> takes all the height it is allowed unless you say <code>mainAxisSize: MainAxisSize.min</code>; inside a row inside a card, that makes the whole card as tall as the screen. This book’s first version of this project did exactly that.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/weather.png" data-frame="phone">
+<figcaption>Project {{n}}.1: the weather card.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A cart with a badge</h3>
+<p class="project-goal">Put a cart icon in the app bar with a red badge that counts the cups added, shows “9+” above nine, and disappears at zero.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Stack</code> with <code>PositionedDirectional</code> and negative offsets, collection <code>if</code> inside a stack, and a test that taps ten times.</p>
+<ol class="steps">
+<li>Write a stateless <code>CartBadge</code> that takes <code>count</code> and returns a <code>Stack</code> with the icon and, only <code>if (count &gt; 0)</code>, the badge.</li>
+<li>Place the badge with <code>PositionedDirectional(top: -8, end: -10, ...)</code>, and remember <code>clipBehavior: Clip.none</code>.</li>
+<li>The badge shows <code>count &gt; 9 ? '9+' : '$count'</code>.</li>
+<li>A stateful page keeps <code>cups</code>, shows the badge in the app bar’s <code>actions</code>, and has a button that adds one.</li>
+<li>Write a test: no badge at first, then ten taps, then “9+”.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> to check that the badge is not there at the start, <code>expect(find.text('0'), findsNothing)</code>.</p>
+<p><strong>Your result should look like this</strong> (after three taps):</p>
+<figure data-img="shots/cart.png" data-frame="phone">
+<figcaption>Project {{n}}.2: three cups in the cart.</figcaption>
+</figure>
+<pre data-term="projects/badge-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A grid that fits</h3>
+<p class="project-goal">Show the café’s drinks as tiles, with as many columns as fit (at least two), each tile the same size, filling the width exactly on a phone and on a tablet.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>LayoutBuilder</code>, calculating sizes from constraints, <code>clamp</code>, and <code>Wrap</code> with exact widths.</p>
+<ol class="steps">
+<li>Inside a <code>LayoutBuilder</code>, decide the number of columns: one per 180 pixels of width, <code>(constraints.maxWidth / 180).floor()</code>, kept between 2 and 6 with <code>clamp(2, 6)</code>.</li>
+<li>Calculate the width of a tile so that the tiles and the gaps between them fill the width exactly: the width, minus a gap for each space between columns, divided by the number of columns.</li>
+<li>Build a <code>Wrap</code> with that gap as <code>spacing</code> and <code>runSpacing</code>, and a tile per drink, each a <code>Container</code> of that width and three quarters of it in height.</li>
+<li>Check it on a phone and on a wide window: two columns, then four.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> Chapter 7 introduces <code>GridView</code>, which does this for long lists and scrolls. Doing it once by hand shows you exactly what it calculates.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="phones">
+<figure data-img="shots/grid-phone.png" data-frame="phone">
+<figcaption>On a phone: two columns</figcaption>
+</figure>
+</div>
+<figure data-img="shots/grid-tablet.png" data-frame="tablet">
+<figcaption>On a tablet: four columns, from the same code</figcaption>
+</figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A <code>Padding</code> of 16 on all sides sits inside a screen 390 pixels wide. What is the largest width its child can have? And inside that, a <code>SizedBox(width: 500)</code>: how wide is it really, and why?</li>
+<li><span class="level">Easy</span> Which widget and which property would you use to: (a) push a price to the far end of a row; (b) give one column of a row twice the width of the other; (c) put a “sold out” ribbon over a picture?</li>
+<li><span class="level">Medium</span> In <code>rows.dart</code>, add a row with <code>MainAxisAlignment.spaceAround</code>, and explain the difference from <code>spaceEvenly</code> by measuring the gaps in your screenshot.</li>
+<li><span class="level">Medium</span> Change the dashboard so that on screens wider than 900 pixels the stats move into a column on the side, next to the two sections. Which widget decides, and where does it go?</li>
+<li><span class="level">Challenge</span> Write a test that pumps the dashboard inside a <code>SizedBox(width: 320)</code> (a very small phone) and finds out whether anything overflows. If something does, fix it, and keep the test.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The café’s menu has eight drinks today and will have eighty next year. The next chapter shows lists that scroll and build only what is on the screen, images from the app and from the internet, and themes that give the whole app one look, in light and dark.</p>
+</div>
+</section>

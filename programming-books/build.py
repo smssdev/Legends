@@ -306,9 +306,10 @@ def fill_code(chapter, lang):
         target.parent.mkdir(parents=True, exist_ok=True)
         if not target.exists() or target.read_bytes() != src.read_bytes():
             target.write_bytes(src.read_bytes())
-        if 'data-frame="phone"' in attrs:
-            # A phone app (Book 5): the screenshot in a phone's outline, with no browser bar.
-            return f'<figure class="phone-shot"><div class="phone"><img src="img/{name}" alt=""></div>'
+        if 'data-frame="phone"' in attrs or 'data-frame="tablet"' in attrs:
+            # A phone app (Book 5): the screenshot in a phone's (or a tablet's) outline, with no browser bar.
+            cls = "phone tablet" if 'data-frame="tablet"' in attrs else "phone"
+            return f'<figure class="phone-shot"><div class="{cls}"><img src="img/{name}" alt=""></div>'
         bar = (f'<div class="browser-bar" dir="ltr"><i></i><i></i><i></i>'
                f'<span>{html.escape(url)}</span><b>{width}px</b></div>')
         return f'<figure class="browser">{bar}<img src="img/{name}" alt="">'

@@ -201,3 +201,4 @@ figure.phone-shot { background: none; padding: 0; }
 .phone img { display: block; width: 100%; height: auto; }
 .phones { display: flex; justify-content: center; gap: 0.3in; break-inside: avoid; }
 .phones figure.phone-shot { margin: 0.6em 0; }
+.phone.tablet { width: 4.4in; border-radius: 12pt; }
