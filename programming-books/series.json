@@ -956,7 +956,8 @@
             },
             {
               "en": "Observability and Incidents",
-              "ar": "المراقبة والتعامل مع الأعطال"
+              "ar": "المراقبة والتعامل مع الأعطال",
+              "src": "b4/incidents"
             }
           ]
         },
