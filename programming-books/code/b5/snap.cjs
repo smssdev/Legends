@@ -42,12 +42,30 @@ async function serve() {
   const [b, page] = await browser();
   await page.goto(`http://localhost:${srv.address().port}/${query}`);
   await sleep(+a4);
-  for (const t of a3.split(' ').filter(Boolean)) {
-    const [x, y] = t.split(',').map(Number);
-    await page.mouse.click(x, y);
-    await sleep(400);
+  // Taps: "x,y x,y" by position, or "role=name|text=name|wait=ms" by what the screen says, through
+  // Flutter's accessibility tree (the same labels a screen reader reads), which is turned on first.
+  const byLabel = a3.includes('=');
+  if (byLabel) {
+    await page.evaluate(() => document.querySelector('flt-semantics-placeholder')?.click());
+    await sleep(800);
   }
-  await sleep(800);
+  for (const t of a3.split(byLabel ? '|' : ' ').filter(Boolean)) {
+    if (!byLabel) {
+      const [x, y] = t.split(',').map(Number);
+      await page.mouse.click(x, y);
+    } else {
+      const [kind, ...rest] = t.split('=');
+      const name = rest.join('=');
+      if (kind === 'wait') { await sleep(+name); continue; }
+      // A label starts with the name: a list tile's label is its title, a line break, then its subtitle.
+      const starts = new RegExp('^' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const target = page.getByRole(kind === 'text' ? 'button' : kind, { name: starts });
+      await target.first().click();
+    }
+    await sleep(700);
+  }
+  await page.mouse.move(1, 1);
+  await sleep(byLabel ? 2500 : 800);
   await page.screenshot({ path: out });
   await b.close();
   srv.close();

@@ -1,0 +1,276 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/navigation/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>التنقل بين الشاشات</h1>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تفتح شاشة جديدة وتعود منها، بـ <code>Navigator.push</code> و<code>pop</code></li>
+<li>تعطي الشاشة البيانات التي تحتاجها، وتتلقى منها إجابة حين تُغلق</li>
+<li>تسأل المستخدم سؤالاً في نافذة حوار</li>
+<li>تنظّم التطبيق بالتبويبات، وشريط التنقل السفلي، والقائمة الجانبية</li>
+<li>تعطي كل شاشة عنواناً بحزمة <code>go_router</code>، ومعها صفحة للعناوين غير الموجودة</li>
+</ul>
+</div>
+
+<p class="lead">حتى الآن كان لكل تطبيق شاشة واحدة. أما التطبيقات الحقيقية ففيها شاشات كثيرة: القائمة، وصفحة لكل مشروب، والطلب، والحساب، والإعدادات. والانتقال بينها، وحمل البيانات من واحدة إلى التالية، يُسمّى <dfn>التنقل</dfn> (navigation). ويعطيك Flutter نموذجاً بسيطاً له، كومة من الصفحات، وبضعة Widgets تنظّم المستوى الأعلى من التطبيق. ويغطي هذا الفصل الاثنين، ثم يضيف الحزمة التي تستخدمها معظم فرق Flutter للعناوين.</p>
+
+<aside class="bit" data-mood="think"><p>كل صورة شاشة في هذا الفصل التُقطت بعد ضغطات حقيقية على التطبيق العامل، وُجدت الأزرار فيها بأسمائها، كما يجدها قارئ الشاشة. وإن غاب اسم زر، لم تجده الضغطات، ولم يجده المستخدم الكفيف أيضاً. الأسماء مهمة.</p></aside>
+
+<h2>{{n}}.1 كومة من الصفحات</h2>
+
+<p>يحفظ Flutter شاشات التطبيق في <dfn>كومة</dfn> (stack)، كرزمة من البطاقات. والـ <code>Navigator</code> يعرض العليا. <code>push</code> تضع صفحة جديدة في الأعلى؛ و<code>pop</code> ترفع الصفحة العليا وتعرض التي تحتها من جديد.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="push تضع صفحة المشروب فوق القائمة؛ وpop ترفعها">
+<g font-family="Cairo" font-size="14" text-anchor="middle">
+<rect x="350" y="80" width="140" height="44" rx="8" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/><text x="420" y="107" fill="#312e81">القائمة</text>
+<rect x="190" y="80" width="140" height="44" rx="8" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/><text x="260" y="107" fill="#312e81">القائمة</text>
+<rect x="190" y="30" width="140" height="44" rx="8" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="260" y="57" fill="#0f766e">صفحة اللاتيه</text>
+<rect x="30" y="80" width="140" height="44" rx="8" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/><text x="100" y="107" fill="#312e81">القائمة</text>
+<g fill="#111" font-family="JetBrains Mono" font-size="13"><text x="340" y="20">push</text><text x="180" y="20">pop</text></g>
+<g stroke="#111" stroke-width="1.8" fill="none"><path d="M370,26 Q340,10 310,26"/><path d="M210,26 Q180,10 150,26"/></g>
+</g>
+</svg>
+<figcaption>الشكل {{n}}.1: push تضع صفحة فوق الكومة؛ وpop ترفعها من جديد.</figcaption>
+</figure>
+
+<pre data-code="lib/push.dart" data-from="^class MenuPage" data-to="^}#1" data-title="lib/push.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/push-menu.png" data-frame="phone">
+<figcaption>القائمة</figcaption>
+</figure>
+<figure data-img="shots/push-drink.png" data-frame="phone">
+<figcaption>بعد ضغط «لاتيه»</figcaption>
+</figure>
+</div>
+
+<p><code>Navigator.push</code> تأخذ الـ context و<dfn>مساراً</dfn> (route): كائناً يعرف كيف يعرض صفحة وكيف يحرّكها عند دخولها. و<code>MaterialPageRoute</code> تستخدم حركة المنصة الخاصة: انزلاقاً من الجانب على iOS، وحركة أندرويد الخاصة على أندرويد. ودالتها <code>builder</code> تبني الصفحة الجديدة، وهنا تعطيها المشروب الذي ضُغط عبر مُنشئها: وهذه أبسط طريقة لتمرير البيانات إلى صفحة وأفضلها.</p>
+
+<p>وللصفحة الجديدة سهم رجوع في شريطها لم يكتبه أحد: يضيفه <code>AppBar</code> كلما كانت تحتها صفحة. وفي التطبيق العربي يشير السهم إلى اليمين، لأن الرجوع يكون نحو البداية. والضغط عليه، أو زر الرجوع في الجوال، أو السحب من الحافة في الـ iPhone، كلها تستدعي <code>Navigator.pop</code> لك.</p>
+
+<h2>{{n}}.2 تلقي إجابة</h2>
+
+<p>كثيراً ما يكون للصفحة الجديدة سؤال تجيب عنه. فصفحة المشروب في المقهى تسأل «كم كوباً؟»، والقائمة تحتاج الإجابة. ويمكن لـ <code>pop</code> أن تحمل قيمة عائدة، و<code>push</code> تُرجع <code>Future</code> يكتمل بها، فتنتظرها القائمة ببساطة بـ <code>await</code>:</p>
+
+<pre data-code="lib/result.dart" data-from="Future&lt;void&gt; open" data-to="^  }#1" data-title="lib/result.dart (القائمة)"></pre>
+<pre data-code="lib/result.dart" data-from="FilledButton(" data-to="^                )," data-title="lib/result.dart (صفحة المشروب)"></pre>
+
+<div class="phones">
+<figure data-img="shots/result-order.png" data-frame="phone">
+<figcaption>بعد ضغط «لاتيه» ثم +</figcaption>
+</figure>
+<figure data-img="shots/result-back.png" data-frame="phone">
+<figcaption>بعد «أضف 2 إلى الطلب»</figcaption>
+</figure>
+</div>
+
+<ul>
+<li><code>Navigator.push&lt;int&gt;</code> تقول ما نوع الإجابة المنتظرة. و<code>Navigator.pop(context, quantity)</code> تغلق الصفحة وترسل الإجابة.</li>
+<li>وإن غادر الزبون بسهم الرجوع بدلاً من ذلك، فالإجابة <code>null</code>: يجب أن يعالج الكود هذه الحالة، وهو هنا لا يفعل شيئاً ببساطة.</li>
+<li>بعد <code>await</code> قد تكون الشاشة تغيّرت: بل قد يكون الزبون غادر القائمة. و<code>context.mounted</code> تتأكد أن الـ Widget ما زال على الشاشة قبل استخدام الـ context الخاص به. والمحلل يحذّرك حين تنسى.</li>
+<li>الكمية وزر الإضافة في <code>bottomNavigationBar</code> الخاص بالـ Scaffold، داخل <code>SafeArea</code>: في الأسفل دائماً، وفي متناول الإبهام دائماً.</li>
+</ul>
+
+<p>والاختبار يسلك الطريق نفسه، ويثبت أن الإجابة تصل:</p>
+
+<pre data-code="test/result_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/result_test.dart (جزء)"></pre>
+<pre data-term="result-test.sh"></pre>
+
+<h2>{{n}}.3 نوافذ الحوار مسارات أيضاً</h2>
+
+<p>نافذة الحوار التي تسأل «هل أنت متأكد؟» صفحة صغيرة فوق الكومة، بآلية الإجابة نفسها:</p>
+
+<pre data-code="lib/dialog.dart" data-from="Future&lt;void&gt; delete" data-to="^  }#1" data-title="lib/dialog.dart (جزء)"></pre>
+
+<figure data-img="shots/dialog.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: بعد ضغط سلة الطلب 101.</figcaption>
+</figure>
+
+<p><code>showDialog</code> تدفع نافذة الحوار وتُرجع <code>Future</code> بإجابتها. وكل زر يغلقها بـ <code>true</code> أو <code>false</code>؛ والضغط خارج النافذة يغلقها بـ <code>null</code>. وكتابة <code>sure == true</code> تعامل «لا إجابة» على أنها «لا»، وهذا الاختيار الآمن لكل ما يحذف.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>سمِّ أزرار الحوار بما تفعله («احذف»، «إلغاء»)، لا «نعم» و«لا» أبداً: فالناس يقرؤون الأزرار لا السؤال. ولا تسأل إلا قبل الأفعال التي لا يمكن التراجع عنها؛ وفي كل ما عداها، نفّذ فوراً واعرض التراجع، كما في قائمة المشتريات في الفصل 7. فنافذة حوار لكل فعل تعلّم الناس أن يضغطوا «نعم» دون قراءة.</p></aside>
+
+<h2>{{n}}.4 التبويبات</h2>
+
+<p>حين يكون للشاشة أقسام قليلة متساوية الأهمية، تعرضها التبويبات جنباً إلى جنب تحت الشريط، ويتنقل المستخدم بينها بضغطة أو سحبة:</p>
+
+<pre data-code="lib/tabs.dart" data-from="return DefaultTabController" data-to="^    );" data-title="lib/tabs.dart (جزء)"></pre>
+
+<figure data-img="shots/tabs.png" data-frame="phone">
+<figcaption>الشكل {{n}}.3: بعد ضغط «المأكولات».</figcaption>
+</figure>
+
+<p>يجب أن يبقى <code>TabBar</code> (التبويبات) و<code>TabBarView</code> (الصفحات) متزامنين: ضغط تبويب يحرّك الصفحات، وسحب الصفحات يحرّك المؤشر. و<dfn>المتحكم</dfn> (controller) يبقيهما متزامنين، و<code>DefaultTabController</code> ينشئ واحداً لكل ما تحته. وعدد التبويبات وعدد الصفحات و<code>length</code> يجب أن تكون كلها واحداً.</p>
+
+<h2>{{n}}.5 الأقسام الرئيسية للتطبيق</h2>
+
+<p>لمعظم التطبيقات من ثلاثة إلى خمسة أقسام رئيسية، في المتناول دائماً. وعلى الجوال تعيش في <code>NavigationBar</code> في الأسفل؛ والأماكن الأقل أهمية تذهب إلى <code>Drawer</code>، قائمة جانبية تنزلق من الحافة:</p>
+
+<pre data-code="lib/shell.dart" data-from="^class _ShellState" data-title="lib/shell.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/shell-orders.png" data-frame="phone">
+<figcaption>بعد ضغط «الطلبات»</figcaption>
+</figure>
+<figure data-img="shots/shell-drawer.png" data-frame="phone">
+<figcaption>بعد ضغط أيقونة القائمة</figcaption>
+</figure>
+</div>
+
+<ul>
+<li>الـ <code>NavigationBar</code> ليس تنقلاً بمعنى الكومة: إنه لا يدفع شيئاً. بل يغيّر رقماً في الحالة، فيعرض المحتوى صفحة ذلك الرقم.</li>
+<li><code>IndexedStack</code> تبني كل الصفحات وتعرض واحدة فقط. فالصفحة التي تغادرها تحتفظ بموضع تمريرها وحالتها، والعودة إليها فورية. (أما عرض <code>pages[page]</code> فيعيد بناء كل صفحة من الصفر.)</li>
+<li>إعطاء الـ <code>Scaffold</code> قائمة <code>drawer</code> يضيف أيقونة القائمة إلى الشريط وحده، في البداية؛ وضغطها، أو السحب من حافة البداية، يفتح القائمة. وفي التطبيق العربي تنزلق من اليمين كما ترى.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ماذا تُرجع <code>Navigator.push</code>، ومتى يكتمل؟</li><li>لماذا تفحص <code>context.mounted</code> بعد <code>await</code>؟</li><li>لماذا يستخدم التطبيق <code>IndexedStack</code> بدلاً من عرض الصفحة الحالية وحدها؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.6 عنوان لكل شاشة: go_router</h2>
+
+<p>دفع الصفحات باليد مثالي للتطبيقات الصغيرة. أما الكبيرة فتحتاج أن يكون لكل شاشة <dfn>عنوان</dfn>، مسار مثل <code>/drinks/1</code>، كما لصفحات المواقع. عندها يستطيع رابط في إشعار أو بريد أن يفتح الشاشة الصحيحة مباشرة (<dfn>رابط عميق</dfn>، deep link)، ويكون لنسخة الويب من التطبيق عناوين حقيقية، ويعمل زر الرجوع في المتصفح. وينشر فريق Flutter حزمة لهذا، <code>go_router</code>. أضفها إلى المشروع:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>وجد <code>flutter pub add</code> أحدث إصدار يناسب المشروع، ونزّله ونزّل الحزم التي يحتاجها، وكتبه في <code>pubspec.yaml</code>:</p>
+
+<pre data-code="pubspec.yaml" data-from="^dependencies:" data-to="material_ui" data-title="pubspec.yaml (جزء)"></pre>
+
+<p>والآن صف الشاشات مسارات:</p>
+
+<pre data-code="lib/router.dart" data-from="^final router" data-to="^);" data-title="lib/router.dart (جزء)"></pre>
+
+<figure data-img="shots/router.png" data-frame="phone">
+<figcaption>الشكل {{n}}.4: التطبيق مفتوحاً مباشرة على العنوان /drinks/1، بلا أي ضغطة.</figcaption>
+</figure>
+
+<ul>
+<li>كل <code>GoRoute</code> يصل مساراً <code>path</code> بصفحة. والمسارات داخل <code>routes</code> تحت أبيها: <code>drinks/:id</code> تحت <code>/</code> هي <code>/drinks/:id</code>، وتبقى القائمة تحتها، فيقود سهم الرجوع إلى القائمة.</li>
+<li><code>:id</code> <dfn>معامل مسار</dfn>: ما يكون في ذلك الجزء من العنوان يصل في <code>state.pathParameters['id']</code>، نصاً دائماً.</li>
+<li><code>context.go('/drinks/$i')</code> تغيّر العنوان؛ ويبني الموجّه كومة الصفحات المطابقة له.</li>
+<li>يستخدم التطبيق <code>MaterialApp.router</code> مع <code>routerConfig</code> بدلاً من <code>home</code>.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>العنوان قد يحمل أي شيء، لأنه قد يأتي من خارج التطبيق. فـ <code>int.parse</code> للعنوان <code>/drinks/abc</code> ترمي خطأ، و<code>/drinks/99</code> مشروب غير موجود. افحص معاملات المسار دائماً، وأعطِ الموجّه <code>errorBuilder</code> للعناوين التي لا تطابق شيئاً. والمشروع {{n}}.3 يفعل الأمرين.</p></aside>
+
+<table>
+<thead><tr><th>تحتاج إلى</th><th>استخدم</th></tr></thead>
+<tbody>
+<tr><td>صفحة تفاصيل، أو نموذج، أو شاشة لمرة واحدة</td><td><code>Navigator.push</code> و<code>pop</code></td></tr>
+<tr><td>سؤال له إجابة</td><td><code>showDialog</code>، أو <code>push</code> بنتيجة</td></tr>
+<tr><td>أقسام شاشة واحدة</td><td><code>TabBar</code> و<code>TabBarView</code></td></tr>
+<tr><td>الأقسام الرئيسية الثلاثة إلى الخمسة</td><td><code>NavigationBar</code></td></tr>
+<tr><td>الأماكن الثانوية: الإعدادات، والمساعدة</td><td><code>Drawer</code></td></tr>
+<tr><td>العناوين، والروابط العميقة، والويب</td><td><code>go_router</code></td></tr>
+</tbody>
+</table>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان أن الإجابة قد تكون <code>null</code></td><td>انهيار، أو فعل خاطئ، حين يرجع المستخدم</td><td>افحص <code>null</code> قبل استخدام النتيجة</td></tr>
+<tr><td>استخدام <code>context</code> بعد <code>await</code> بلا فحص</td><td>أخطاء حين تكون الصفحة قد أُغلقت</td><td><code>if (!context.mounted) return;</code></td></tr>
+<tr><td><code>Navigator.of(context)</code> بـ context الـ Widget الذي يبني <code>MaterialApp</code> نفسه</td><td>«Navigator operation requested with a context that does not include a Navigator»</td><td>استخدم context Widget تحت <code>MaterialApp</code></td></tr>
+<tr><td>عدد تبويبات مختلف عن عدد الصفحات</td><td>خطأ من متحكم التبويبات</td><td>العدد نفسه للتبويبات والصفحات و<code>length</code></td></tr>
+<tr><td>تمرير البيانات عبر متغيرات عامة</td><td>صفحات تعتمد على حالة خفية، وأخطاء عند الرجوع</td><td>مرّرها عبر مُنشئ الصفحة</td></tr>
+<tr><td>الثقة بمعاملات المسار</td><td>انهيار مع عناوين يكتبها الناس أو يشاركونها</td><td>حلّلها بـ <code>tryParse</code>، وافحصها، واعرض صفحة «غير موجود»</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>الصفحات <strong>كومة</strong>: <code>Navigator.push</code> مع <code>MaterialPageRoute</code> تضيف صفحة، و<code>pop</code> ترفعها؛ وسهم الرجوع يظهر وحده.</li>
+<li>مرّر البيانات <strong>إلى</strong> الصفحة عبر مُنشئها، و<strong>منها</strong> بـ <code>pop(context, value)</code>؛ و<code>await push</code> تتلقاها، أو <code>null</code>.</li>
+<li>بعد <code>await</code> افحص <code>context.mounted</code> قبل استخدام الـ context.</li>
+<li><code>showDialog</code> مسار بإجابة؛ وسمِّ أزراره بأفعالها.</li>
+<li><code>DefaultTabController</code> و<code>TabBar</code> و<code>TabBarView</code> تصنع التبويبات؛ و<code>NavigationBar</code> مع <code>IndexedStack</code> تصنع الأقسام الرئيسية؛ و<code>Drawer</code> تحمل الباقي.</li>
+<li><code>go_router</code> تعطي كل شاشة عنواناً، بمعاملات مسار ومسارات متداخلة و<code>errorBuilder</code>؛ وأضفها بـ <code>flutter pub add</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>Future</code> بإجابة الصفحة؛ ويكتمل حين تُغلق الصفحة، بالقيمة المعطاة لـ <code>pop</code>، أو <code>null</code> إن لم تكن هناك قيمة. 2. لأن المستخدم قد يكون غادر الشاشة أثناء الانتظار؛ واستخدام context Widget لم يعد على الشاشة خطأ. 3. لتبقى كل الصفحات حية، فتحتفظ كل منها بموضع تمريرها وحالتها حين يعود المستخدم.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كتابة مشروع تنقل، ارسم الشاشات صناديق والطرق بينها أسهماً. وكل سهم <code>push</code> أو <code>pop</code> أو <code>go</code>.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>صفحة «عن المقهى»</h3>
+<p class="project-goal">أضف إلى الصفحة الرئيسية للمقهى زراً يفتح صفحة «عن مقهى بِت»، واختباراً يفتحها ويرجع منها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Navigator.push</code>، وسهم الرجوع التلقائي، واختبار التنقل.</p>
+<ol class="steps">
+<li>اكتب <code>HomePage</code> فيها <code>FilledButton</code> في الوسط، و<code>AboutPage</code> فيها أيقونة وفقرة.</li>
+<li>الزر يدفع <code>AboutPage</code> بـ <code>MaterialPageRoute</code>.</li>
+<li>شغّله، وافتح الصفحة، وارجع بالسهم؛ وعلى أندرويد جرّب زر الرجوع في الجوال أيضاً.</li>
+<li>اختبره: اضغط الزر، ثم <code>pumpAndSettle</code> (فالصفحة تنزلق عبر عدة إطارات)، وتأكد أن الفقرة موجودة، ثم <code>tester.pageBack()</code>، وانتظر الاستقرار، وتأكد أنها اختفت.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>pageBack</code> تضغط سهم الرجوع لك، أينما كان على الشاشة.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-img="shots/about.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: صفحة «عن المقهى».</figcaption>
+</figure>
+<pre data-term="projects/about-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>صفحات المرة الأولى</h3>
+<p class="project-goal">رحّب بالزبائن الجدد بثلاث صفحات يسحبونها، ونقاط تُظهر أين هم، وزر «التالي» يصير «ابدأ»، وزر «تخطَّ»؛ وحين ينتهون، ضع الصفحة الرئيسية مكان صفحات التعريف لكيلا يعود الرجوع إليها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>PageView</code> بمتحكم، و<code>dispose</code>، والـ Records في قائمة، و<code>AnimatedContainer</code>، و<code>pushReplacement</code>.</p>
+<ol class="steps">
+<li>صف الصفحات قائمة من الـ Records: <code>(icon, title, text)</code>. وابنِ <code>PageView</code> بصفحة لكل منها، مفككاً إياها بنمط: <code>for (final (icon, title, text) in pages)</code>.</li>
+<li>أنشئ <code>PageController</code> في الحالة، وأعطه للـ <code>PageView</code>، وحرّره في <code>dispose()</code>: فالمتحكمات تحجز موارد، ويجب أن يحررها الـ State حين يُزال.</li>
+<li>تابع الصفحة الحالية بـ <code>onPageChanged</code>. وارسم النقاط بـ <code>AnimatedContainer</code>: الحالية عريضة، والأخرى صغيرة؛ والتغيير يتحرك وحده.</li>
+<li>«التالي» يستدعي <code>controller.nextPage(...)</code>؛ وفي الصفحة الأخيرة يصير «ابدأ».</li>
+<li>«ابدأ» و«تخطَّ» يستدعيان <code>Navigator.pushReplacement</code>، التي تضع الصفحة الرئيسية مكان صفحات التعريف بدلاً من أن تضعها فوقها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مع <code>push</code> كان زر الرجوع في الجوال على الشاشة الرئيسية سيعيد صفحات التعريف. أما <code>pushReplacement</code> فتزيلها من الكومة نهائياً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد ضغط «التالي» مرة):</p>
+<figure data-img="shots/onboarding.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: الصفحة الثانية من ثلاث.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>عناوين لا تكسر التطبيق</h3>
+<p class="project-goal">أعطِ القائمة عناوين بـ <code>go_router</code>، واجعل كل عنوان خاطئ، <code>/drinks/abc</code> أو <code>/drinks/99</code> أو <code>/nothing</code>، يعرض صفحة «الصفحة غير موجودة» ودودة فيها طريق للعودة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> معاملات المسار، و<code>int.tryParse</code>، وفحص الحدود، و<code>errorBuilder</code>، و<code>initialLocation</code>، واختبار الموجّه.</p>
+<ol class="steps">
+<li>اكتب الموجّه دالةً، <code>GoRouter router([String start = '/'])</code>، مع <code>initialLocation: start</code>، ليستطيع الاختبار فتح التطبيق على أي عنوان.</li>
+<li>في دالة بناء <code>drinks/:id</code>، حلّل الرقم بـ <code>int.tryParse</code>، وأرجع <code>NotFoundPage</code> حين يكون <code>null</code> أو خارج القائمة.</li>
+<li>أعطِ الموجّه <code>errorBuilder: (context, state) =&gt; const NotFoundPage()</code> للعناوين التي لا تطابق أي مسار.</li>
+<li>في <code>NotFoundPage</code> أيقونة ورسالة وزر يفعل <code>context.go('/')</code>.</li>
+<li>اختبر: ابدأ عند <code>/drinks/99</code>، وتأكد من الرسالة، واضغط الزر، وتأكد من القائمة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في المتصفح تستطيع تجربة أي عنوان بكتابته بعد <code>#</code> في شريط العنوان؛ وعلى الجوال تصل العناوين نفسها عبر الروابط العميقة.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (عند <code>/drinks/99</code>):</p>
+<figure data-img="shots/not-found.png" data-frame="phone">
+<figcaption>المشروع {{n}}.3: صفحة ودودة لمشروب غير موجود.</figcaption>
+</figure>
+<pre data-term="projects/routes-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في <code>result.dart</code>، ماذا يحدث إن اختار الزبون 3 أكواب لاتيه ثم ضغط سهم الرجوع بدلاً من الزر؟ تحقق من إجابتك بتشغيله.</li>
+<li><span class="level">سهل</span> غيّر نافذة الحوار ليصير الضغط خارجها لا يفعل شيئاً، ويضطر المستخدم إلى اختيار زر. (ابحث عن معامل في <code>showDialog</code>.)</li>
+<li><span class="level">متوسط</span> أعطِ تبويبات <code>tabs.dart</code> شارة بعدد العناصر في كل منها، بالـ Widget <code>Badge</code> حول أيقونة التبويب.</li>
+<li><span class="level">متوسط</span> في التطبيق ذي الأقسام، استبدل <code>IndexedStack</code> بـ <code>children[page]</code>، وضع قائمة طويلة في الصفحة الأولى، ومرّرها، وانتقل إلى قسم آخر ثم عُد. ما الذي تغيّر، ولماذا؟</li>
+<li><span class="level">تحدٍّ</span> مع <code>go_router</code>، أضف مساراً <code>/orders/:id</code> خارج مسارات القائمة، وزراً في صفحة المشروب يفتح الطلب 7 بـ <code>context.go</code> وآخر بـ <code>context.push</code>. قارن أين يقود سهم الرجوع في كل حالة، واشرح الفرق.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>يستطيع الزبون أن يتصفح المقهى الآن، لكنه لا يستطيع أن يخبره بشيء: اسماً، أو رقم هاتف، أو ملاحظة للنادل. الفصل القادم عن النماذج: مربعات النص، ولوحات المفاتيح، والاختيارات، وفحص ما يكتبه الناس قبل إرساله.</p>
+</div>
+</section>

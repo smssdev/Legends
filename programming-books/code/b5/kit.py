@@ -140,7 +140,7 @@ def dart_examples(here, words_by_lang, sources, errors=(), keep=None):
         print("wrote", out)
 
 
-def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit_app", assets=None):
+def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit_app", assets=None, packages=()):
     """A chapter of small Flutter apps (Chapter 5 on), in each language:
       files   {path: text or {lang: text}}: lib/*.dart are apps (each with its own main), test/*.dart tests,
               projects/<name>.dart and answers/<name>.dart are apps too, kept in those folders here
@@ -148,6 +148,7 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
               (390x780) unless a size is given
       assets  a folder of files the apps use (images): copied to assets/ in the project, and listed in
               pubspec.yaml, as the chapter shows
+      packages  packages to add with `flutter pub add`, recorded as pub-add.sh
       tests   [(transcript name, test path[, keep])]: `flutter test <path>`, recorded; with keep, the test
               is expected to fail and keep(lines) shortens what is printed
     One project per language; the apps are built for the web once, through a generated
@@ -171,6 +172,11 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
                                                "  uses-material-design: true\n  assets:\n" + "".join(f"    - {f}\n" for f in folders))
             pubspec.write_text(text)
             write(out, {"pubspec.yaml": text})
+        if packages:
+            s = Session(project)
+            s.run("flutter pub add " + " ".join(packages))
+            s.save(out / "pub-add.sh")
+            write(out, {"pubspec.yaml": (project / "pubspec.yaml").read_text()})
         (project / "test").mkdir(exist_ok=True)
         for f in (project / "test").glob("*.dart"):
             f.unlink()
@@ -205,8 +211,11 @@ void main() {{
         if code:
             raise RuntimeError(text)
         for png, app, taps, *size in shots:
+            # "lib/router.dart#/drinks/3" opens the app at that route
+            app, _, route = app.partition("#")
             stem = Path(placed[app]).stem
-            shot(project / "build" / "web", out / "shots" / png, fill(taps, words), 6000, f"?app={stem}", *size)
+            query = f"?app={stem}" + (f"#{route}" if route else "")
+            shot(project / "build" / "web", out / "shots" / png, fill(taps, words), 6000, query, *size)
         for transcript, test, *fails in tests:
             # (transcript, test) must pass; (transcript, test, keep) is expected to fail, and keep(lines)
             # chooses the lines the book prints.
