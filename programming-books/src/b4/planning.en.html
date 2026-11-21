@@ -1,0 +1,201 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/planning/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Estimation, Planning and Working with Product</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain why single-number estimates are almost always late</li>
+<li>estimate in ranges, and add the ranges up correctly</li>
+<li>forecast from the team’s real history instead of from guesses</li>
+<li>slice work so that it can be planned, shipped and measured</li>
+<li>plan with product as a partner: trade-offs, priorities and saying no</li>
+<li>report progress and risk honestly, early and in plain words</li>
+</ul>
+</div>
+
+<p class="lead">“How long will deposits take?” is the question a senior engineer hears most, and answers worst. The honest answer is not a number but a range with a probability, and most people around the team have never heard one. This chapter shows, with Bit Booking’s deposits feature from Chapter {{n-9}} and a few lines of code, why single numbers go wrong, how to give a better answer, and how to plan together with product so that the answer becomes useful instead of a promise you will break.</p>
+
+<aside class="bit" data-mood="think"><p>An estimate is not a promise; it is a statement about uncertainty. “Three to five weeks, most likely four” tells product more than “four weeks”, and it is the only answer that can be right.</p></aside>
+
+<h2>{{n}}.1 Why estimates are late</h2>
+
+<p>Ask a developer how long a task takes, and they will usually give the <em>most likely</em> duration: what happens if nothing surprising happens. Three facts make that number too small:</p>
+<ul>
+<li><strong>Tasks are lopsided.</strong> A task estimated at three days may take two, but it may also take eight; it can hardly take minus two. The surprises are almost all on one side.</li>
+<li><strong>Surprises add up; savings do not.</strong> When one task finishes early, the time is rarely given back; when one runs late, everything after it waits.</li>
+<li><strong>The list is incomplete.</strong> Nobody estimates the task they have not thought of yet, and on every real feature there are some.</li>
+</ul>
+
+<p>Then the most likely numbers of six tasks are added together, and the total is presented as a date. That total is not the most likely duration of the project. It is close to its best case.</p>
+
+<h2>{{n}}.2 Ranges, added correctly</h2>
+
+<p>A better estimate gives three numbers for each task: the <em>best case</em>, the <em>most likely</em>, and a realistic <em>worst case</em> (not a disaster, but the bad week that happens one time in ten). Here is the deposits feature, split into the tasks the team listed:</p>
+
+<pre data-code="estimate.ts" data-from="// " data-to="^];" data-title="estimate.ts"></pre>
+
+<p>Ranges cannot simply be added, but they can be <em>simulated</em>. The script plays the project 10,000 times. In each run, each task gets a random duration drawn from its range, more often near the likely value and less often near the edges, and the run’s total is recorded. This is a <dfn>Monte Carlo simulation</dfn>, and it is the honest way to add uncertain things:</p>
+
+<pre data-code="estimate.ts" data-from="^// #2" data-title="estimate.ts"></pre>
+
+<pre data-code="estimate.sh" data-title="Terminal"></pre>
+
+<p>The usual answer, the sum of the likely numbers, is 16 days. The simulation says that the project finishes within 16 days in only 3% of the runs. Half of the runs need 21 days or more. The numbers to give are the <dfn>percentiles</dfn>: “P50 is 21 days” means an even chance; “P85 is 24 days” means that 85 runs in a hundred finished within it. For a date that other people will plan around, a launch or a promise to a salon chain, use the P85. For the team’s own planning, the P50 is fine, as long as everybody knows it is a coin toss.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: a range is not padding</p><p>Adding “50% for safety” to every task looks similar, but it hides the uncertainty instead of showing it, and every padded estimate is eventually filled with work. Give the range openly, and say which tasks make it wide: here “webhook and payment states” (2 to 10 days) is the risk, and a two-day spike on it would narrow the whole estimate more than anything else.</p></aside>
+
+<h2>{{n}}.3 Forecasting from history</h2>
+
+<p>Estimating each task works for one feature. For a whole backlog, there is a better source of truth than anyone’s opinion: what the team has actually finished. The tracker knows how many items were done in each recent week. If the remaining items are of similar size, a future week is likely to look like one of the past weeks:</p>
+
+<pre data-code="forecast.ts" data-from="// " data-to="const backlog" data-title="forecast.ts"></pre>
+
+<pre data-code="forecast.ts" data-from="for (let run" data-to="^}" data-title="forecast.ts"></pre>
+
+<pre data-code="forecast.sh" data-title="Terminal"></pre>
+
+<p>Each simulated future is built from real weeks, including the week with zero items (a production incident) and the slow week (two people on holiday). So the forecast includes the kinds of disruption the team really has, without anyone having to predict them. The answer, “38 items: P50 nine weeks, P85 ten”, cost no estimation meeting at all. It needs only two things: that items are sliced to a similar small size, and that the history is honest (items counted when they are done, in production, not when they are almost done).</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Six tasks have likely durations adding up to 16 days. Why is 16 days a poor answer to “when will it be done”?</li><li>What does “P85 is 24 days” mean, and when would you give the P85 rather than the P50?</li><li>Why does a forecast from past weeks already include holidays and incidents?</li></ol></aside>
+
+<h2>{{n}}.4 Learning from your own estimates</h2>
+
+<p>Every team has a bias, and it can be measured. Keep the estimate and the actual duration of each finished story, and compare them every month:</p>
+
+<pre data-code="calibrate.ts" data-from="// " data-title="calibrate.ts"></pre>
+
+<pre data-code="calibrate.sh" data-title="Terminal"></pre>
+
+<p>Seven stories in ten took longer than estimated; the typical one took two thirds longer, and one in ten took three times as long. None finished early. This is normal, and it is useful: it tells the team that its “most likely” numbers are really closer to best cases, and that the deposits estimate of 16 likely days, corrected by the team’s own median, is about 27. The goal is not to punish anyone for a bad estimate (that only teaches people to pad). It is to <dfn>calibrate</dfn>: to learn how far the team’s guesses are from reality, and use that, until the guesses improve.</p>
+
+<h2>{{n}}.5 Slicing the work</h2>
+
+<p>Forecasts are only as good as the items they count, and planning is only as good as the order in which value arrives. Both depend on <dfn>slicing</dfn>: cutting a feature into <em>vertical slices</em>, each of which works end to end, from the page to the database, and can be shipped and used on its own. The deposits feature, sliced:</p>
+
+<table>
+<thead><tr><th>Slice</th><th>What a user can do after it ships</th></tr></thead>
+<tbody>
+<tr><td>1. One salon, one fixed deposit</td><td>Customers of a pilot salon pay 50 EGP when they book</td></tr>
+<tr><td>2. Refund on cancellation</td><td>A cancellation more than 24 hours ahead is refunded automatically</td></tr>
+<tr><td>3. Each salon sets its deposit</td><td>Owners choose the amount, or switch deposits off</td></tr>
+<tr><td>4. Owner’s deposit report</td><td>Owners see deposits, refunds and no-shows per week</td></tr>
+<tr><td>5. Partial refunds and disputes</td><td>Support handles the hard cases</td></tr>
+</tbody>
+</table>
+
+<p>Compare that with slicing by layer (“database, then API, then UI”): nothing works until the last layer is done, the first real feedback arrives at the end, and the riskiest discovery happens when there is no time left. With vertical slices, slice 1 ships to one salon behind a feature flag (Chapter {{n-4}}) in about a week, and its real numbers (do customers pay? do no-shows fall?) decide whether slices 3 to 5 are worth building at all. Often they are not, and the cheapest feature is the one you learned you did not need.</p>
+
+<h2>{{n}}.6 Planning with product</h2>
+
+<p>A product manager decides <em>what</em> is worth doing and <em>why</em>; engineering knows <em>what it costs</em> and <em>what is possible</em>. A good plan needs both, so treat product as a partner in one conversation, not as a customer who places orders. Three ideas make that conversation work:</p>
+<ul>
+<li><strong>Fix two, flex one.</strong> Scope, date and quality cannot all be fixed. When the date is fixed (a marketing launch), the scope flexes: the slices are ordered, and whatever is ready by the date ships. Quality is not on the table; lowering it only moves the cost to later, with interest.</li>
+<li><strong>Order by value for the cost.</strong> Rank work by the value it brings, or the cost of not having it, divided by its size. A small slice that removes most no-shows beats a large one that removes a few more. Put engineering work (the technical debt of Chapter {{n-1}}, the reliability work that the error budget of Chapter {{n-2}} calls for) in the same list, in the same terms, so it is chosen, not smuggled in.</li>
+<li><strong>Plan in horizons.</strong> <em>Now</em> (the next few weeks) is detailed and committed; <em>next</em> (the coming quarter) is ordered but open; <em>later</em> is a list of problems, not of features. Detail far ahead is wasted; it will change.</li>
+</ul>
+
+<p>And the senior skill in all of this is saying no well. “No” alone ends a conversation; “not now, because…, and here is what we could do instead” continues it. “Deposits for every salon by the 1st is not possible. A pilot with one salon by the 1st is, and its numbers will tell us whether the rest is worth five more weeks.” That answer gives product a choice and the information to make it.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: re-forecast every week, out loud</p><p>Run the forecast each week with that week’s real numbers, and share the change, not just the date: “P85 moved from week 10 to week 11, because two items turned out to be four; slicing slice 5 differently would bring it back.” A forecast that moves a little every week is trusted. A date that holds for two months and then slips by six weeks is not, whatever the reason.</p></aside>
+
+<h2>{{n}}.7 Reporting honestly</h2>
+
+<p>Bad news does not improve with age. The moment the team knows a date is at risk is the moment to say so, because that is when the most options remain: cut scope, move the date, add a spike, change the order. A short status that works, every week, has four lines: <em>where we are</em> (slices done, from the tracker, not from feelings); <em>the forecast</em> (P50 and P85, and how they moved); <em>risks</em>, each with what is being done about it; and <em>decisions needed</em>, from whom, by when. Green, yellow and red labels are fine as a summary, but a project that is green every week until it is red has not been reported, only described hopefully.</p>
+
+<p>Above all, keep estimates and commitments apart. An estimate is the team’s best knowledge, and it changes as knowledge changes. A commitment is a decision, made with product, about what to promise outside the team, usually at the P85, with scope as the thing that flexes. When the two are confused, engineers learn to pad and product learns not to believe them, and both lose.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Quoting the sum of likely numbers</td><td>Late almost every time</td><td>Ranges, simulated; quote P50 and P85</td></tr>
+<tr><td>Padding every task</td><td>Uncertainty hidden, work expands</td><td>Show the range and its widest task</td></tr>
+<tr><td>Estimation meetings for every backlog item</td><td>Hours spent, little accuracy</td><td>Slice to similar sizes and forecast from history</td></tr>
+<tr><td>Counting items “almost done”</td><td>A forecast built on fiction</td><td>Count only what is in production</td></tr>
+<tr><td>Never comparing estimates with actuals</td><td>The same bias forever</td><td>Calibrate monthly, without blame</td></tr>
+<tr><td>Slicing by layer</td><td>Nothing works until the end</td><td>Vertical slices that ship on their own</td></tr>
+<tr><td>Fixing scope, date and quality</td><td>Quality gives way silently</td><td>Fix two; let scope flex</td></tr>
+<tr><td>Engineering work outside the plan</td><td>It never happens, or happens in secret</td><td>Same list, same terms as features</td></tr>
+<tr><td>Bad news held back</td><td>Fewer options when it comes out</td><td>Say it early, with options</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Single-number estimates are late because tasks are <strong>lopsided</strong>, delays add up and lists are incomplete.</li>
+<li>Estimate tasks as <strong>ranges</strong>, add them with a <strong>Monte Carlo simulation</strong>, and give <strong>P50 and P85</strong>.</li>
+<li><strong>Forecast from history</strong>: sample past weeks’ throughput for small, similar items.</li>
+<li><strong>Calibrate</strong> by comparing estimates with actuals, without blame.</li>
+<li>Cut features into <strong>vertical slices</strong> that ship and teach on their own.</li>
+<li>Plan with product: <strong>fix two, flex scope</strong>, order by value for the cost, plan in horizons, say <strong>“not now, but…”</strong>.</li>
+<li>Re-forecast weekly, report risks early, and keep <strong>estimates and commitments</strong> apart.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because each likely number assumes nothing goes wrong in that task, and across six tasks something almost always does: the surprises are lopsided (a task can run far over, but hardly far under), delays pass on while early finishes rarely do, and unlisted work appears. The sum is close to the best case; in the simulation the project finishes within it only 3% of the time. 2. That in 85 of every 100 simulated projects, the work finished within 24 days. Give the P85 when other people will plan around the date or a promise depends on it (a launch, a contract, a customer); the P50 is a coin toss, fine for the team’s internal planning if everyone knows it. 3. Because it is built from the weeks that really happened. The week with zero items had an incident, the slow week had holidays; sampling those weeks puts the same kinds of disruption, at the same frequency, into the forecast, without anyone predicting them.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project uses your own work, or a project you know well, so that the numbers mean something to you.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Your own calibration</h3>
+<p class="project-goal">Measure your own estimating bias over two weeks.</p>
+<p class="project-skills"><strong>You will practise:</strong> estimating, measuring, and honest records.</p>
+<ol class="steps">
+<li>Before each task, write a best, likely and worst estimate in hours.</li>
+<li>After it, write the actual time, including the parts you did not expect.</li>
+<li>After two weeks, run <code>calibrate.ts</code> on your data, and also count how often the actual time fell inside your range.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a well-calibrated range contains the actual time about eight times in ten. If yours does far less often, widen your worst case, not your likely value.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>How many by the date?</h3>
+<p class="project-goal">Turn the forecast around: given a fixed date, how many items will be done?</p>
+<p class="project-skills"><strong>You will practise:</strong> Monte Carlo forecasting, and planning with a fixed date.</p>
+<ol class="steps">
+<li>Change <code>forecast.ts</code> to simulate a fixed number of weeks and count the items done in each run.</li>
+<li>Print how many items are done with 50%, 85% and 95% confidence after six weeks.</li>
+<li>Use the result to draw a line in an ordered list of slices: “above this line, very likely by the launch; below it, possibly”.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> for “how many”, the confident answer is the <em>low</em> percentile: the number of items that 85% of the runs reached at least.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A weekly forecast report</h3>
+<p class="project-goal">Produce a status report automatically, every week, from the tracker’s data.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading real data, forecasting, and writing for non-engineers.</p>
+<ol class="steps">
+<li>Export the done dates of finished items and the count of remaining items from your tracker (most can export CSV, or have an API).</li>
+<li>Compute the weekly throughput, run the forecast, and compare with last week’s forecast.</li>
+<li>Write a four-line report: where we are, the forecast and how it moved, the biggest risk, and a decision needed if the P85 passed the target date.</li>
+<li>Run it on a schedule in the pipeline, and post it where product reads it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> use only the last 8 to 12 weeks; older history describes a team, a codebase and a backlog that no longer exist.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Your manager asks: “Can you finish the owner’s report in a week?” The likely estimate is four days, the worst case nine. Write an answer that is honest and useful.</li>
+<li><span class="level">Easy</span> Slice “customers can reschedule a booking” into three vertical slices, the first of which can ship in two or three days.</li>
+<li><span class="level">Medium</span> The team’s throughput was 5 items a week; for the last three weeks it has been 2, because of an outage and its follow-up work. What do you do with the forecast, and what do you tell product?</li>
+<li><span class="level">Medium</span> Product wants deposits, a loyalty programme and a new owner app this quarter; the forecast covers about half of it. Describe the conversation, and the decisions you need from product.</li>
+<li><span class="level">Challenge</span> In the estimate of section {{n}}.2, the webhook task has the widest range. Change its worst case from 10 days to 6 (the result of a two-day spike) and work out, or run, the new P85. Was the spike worth two days?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Leading, planning and deciding are what senior roles are hired for. The next chapter is about showing that you can do them: interviews, system design rounds, and growing your career from here.</p>
+</div>
+</section>

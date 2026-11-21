@@ -1,0 +1,215 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/leadership/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Technical Leadership and Architecture Decisions</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>lead the technical direction of a team without managing anyone</li>
+<li>decide who makes a decision, and how much process it deserves</li>
+<li>keep architecture decisions as a log the whole team can read</li>
+<li>test whether a choice is robust, not just whether it wins</li>
+<li>run design reviews that end in a decision, even when people disagree</li>
+<li>turn architecture rules into checks the pipeline runs, and change a running system safely</li>
+</ul>
+</div>
+
+<p class="lead">Until now, the hard parts of this book were systems. From here, the hard part is people. A senior engineer is judged less by the code they write than by the decisions their team makes: whether they are good, whether they are made in time, whether anyone remembers why, and whether the code still follows them a year later. Book 2 introduced decision records and the weighted matrix for one front end. This chapter uses them across a whole product, with Bit Booking’s real decisions, and adds the parts that make them last.</p>
+
+<aside class="bit" data-mood="think"><p>A useful question for a senior engineer at the end of a week is not “what did I build?” but “what is the team able to do now that it could not do on Monday?” A decision made, a doubt removed, a colleague unblocked: these often matter more than another pull request.</p></aside>
+
+<h2>{{n}}.1 Leading without managing</h2>
+
+<p>A <dfn>technical lead</dfn> (or a staff engineer, in larger companies) owns the technical direction of a team or an area, usually without anyone reporting to them. Their authority is borrowed: from being right often, from explaining clearly, and from listening. In practice the role is four habits:</p>
+<ul>
+<li><strong>Seeing the whole:</strong> knowing how the pieces fit, where the risks are, and which problems are coming in six months, not just this sprint.</li>
+<li><strong>Making decisions happen:</strong> noticing when a decision is needed, getting the right people to make it, writing it down, and moving on.</li>
+<li><strong>Raising the floor:</strong> reviews, pairing, examples and checks that make the whole team’s work better, not only their own.</li>
+<li><strong>Translating:</strong> explaining technical risk in terms of customers, time and money to product and management, and business goals in technical terms to the team.</li>
+</ul>
+
+<p>The trap is to keep doing only what made you senior: taking the hardest ticket and disappearing into it. Do some of that, to stay close to the code, but if the team waits for you on every decision, you have become its bottleneck.</p>
+
+<h2>{{n}}.2 Who decides, and how much process</h2>
+
+<p>Book 2 sorted decisions into one-way doors, hard to undo, and two-way doors, cheap to undo. Across a product a second question matters as much: how far does the decision reach? Changing a library inside one module touches one team; changing how all modules talk to the database touches everyone, for years. Together they set the process:</p>
+
+<table>
+<thead><tr><th>Decision</th><th>Example</th><th>Process</th></tr></thead>
+<tbody>
+<tr><td>Easy to undo, local</td><td>A date library in one module</td><td>The person doing the work decides</td></tr>
+<tr><td>Hard to undo, local</td><td>A module’s data model</td><td>A short review, and a decision record</td></tr>
+<tr><td>Easy to undo, wide</td><td>A new lint rule for all code</td><td>Announce, try for two weeks, keep or drop</td></tr>
+<tr><td>Hard to undo, wide</td><td>One database or several; the job queue</td><td>A design doc, a review, a decision record</td></tr>
+</tbody>
+</table>
+
+<p>For the decisions that need a process, name the roles before the discussion starts. A common scheme is <dfn>DACI</dfn>: one <em>Driver</em> who runs the process and writes the documents; one <em>Approver</em> who makes the final call; <em>Contributors</em> who are consulted; and those <em>Informed</em> afterwards. One approver, not a committee: the commonest reason decisions take months is that nobody knew who could say yes.</p>
+
+<h2>{{n}}.3 The decision log</h2>
+
+<p>Bit Booking keeps its architecture decision records in <code>docs/adr/</code>, one numbered file each, in the template every record follows:</p>
+
+<pre data-code="docs/adr/template.md" data-title="docs/adr/template.md"></pre>
+
+<p>Over a product’s life the records become a log, and the log tells a story. Here is the decision that turned out wrong, and the one that replaced it:</p>
+
+<pre data-code="docs/adr/0004-jobs-in-postgresql.md" data-title="docs/adr/0004-jobs-in-postgresql.md"></pre>
+
+<p>Notice what the new record does not do: it does not delete or edit record 2. Record 2 stays, marked <em>Superseded by 0004</em>, because it explains what the team believed in March and why; somebody who later suggests “why not Redis for jobs?” finds the whole story in two files. A small tool lists the log and starts new records, so that writing one is never harder than skipping it:</p>
+
+<pre data-code="adr.ts" data-from="const [command" data-title="adr.ts"></pre>
+
+<pre data-code="adr.sh" data-title="Terminal"></pre>
+
+<p>Three habits keep the log useful. Records are short, a page at most; the long reasoning belongs in the design doc they link to. Records are reviewed in a pull request like code, and merged when the decision is made, so the status is always true. And each record says when to revisit it (“above 100 jobs a second”), which turns a future argument into a measurement.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why should a decision with a wide reach have exactly one approver?</li><li>Record 2 turned out to be wrong. Why is it kept rather than deleted or corrected?</li><li>What does the line “Revisit above 100 jobs a second” add to a decision record?</li></ol></aside>
+
+<h2>{{n}}.4 Is the choice robust?</h2>
+
+<p>A weighted matrix, as in Book 2, turns a discussion into numbers: criteria, weights for what matters to this team now, and scores agreed in the review. Here it compares three ways of running Bit Booking’s background jobs:</p>
+
+<pre data-code="matrix.ts" data-from="// " data-to="^];" data-title="matrix.ts"></pre>
+
+<p>A matrix has a weakness that experienced people know: the weights are opinions, and with enough adjustment any option can win. So the second half of the script asks the senior question, <em>would the decision change if we were somewhat wrong about what matters?</em> It halves each weight, then multiplies it by one and a half, one at a time, and reports any change of winner:</p>
+
+<pre data-code="matrix.ts" data-from="let stable" data-title="matrix.ts"></pre>
+
+<pre data-code="matrix.sh" data-title="Terminal"></pre>
+
+<p>The PostgreSQL queue wins by more than a full point, and no single change of weight alters that: the decision is <dfn>robust</dfn>, and the meeting can be short. If a change had flipped the winner, say “scale headroom ×1.5 changes the winner to cloud queue”, the matrix would have done something more valuable than pick a winner: it would have shown exactly which disagreement to discuss. Is growth really a top concern for the next two years? That question, not the arithmetic, is the decision.</p>
+
+<aside class="box tip"><p class="box-title">Tip: buy information before deciding</p><p>When a score is a guess (“can PostgreSQL handle our job volume?”), replace it with a measurement before deciding: a load test, a spike of a day or two, a call with a team that uses it. Record 4 says “load tests show PostgreSQL handles 200 a second”; record 2 said “we were unsure”. The difference is half a day of work.</p></aside>
+
+<h2>{{n}}.5 Design reviews that end in a decision</h2>
+
+<p>Chapter {{n-7}} described the design document. Its value comes from the review, and reviews fail in familiar ways: nobody reads the document before the meeting, the loudest person wins, or the discussion never ends. A process that works:</p>
+<ol>
+<li><strong>Write first, meet second.</strong> The driver shares the document with a date by which a decision is needed. Reviewers comment in writing, so quiet people and other time zones are heard.</li>
+<li><strong>Meet only for what is left.</strong> Settled points are not repeated; the meeting covers the disagreements, one by one.</li>
+<li><strong>Separate facts from preferences.</strong> A disagreement about a fact (“PostgreSQL cannot handle it”) is settled by measuring. A disagreement about values (“we care more about cost than headroom”) is settled by the approver.</li>
+<li><strong>Decide on the date.</strong> The approver decides, even with doubts left; the decision record notes the doubts and when to revisit.</li>
+</ol>
+
+<p>Then comes the part that makes teams fast: <dfn>disagree and commit</dfn>. People who argued for the other option say so in the review, and once the decision is made, they help it succeed rather than waiting for it to fail. That is only fair if the process was fair: everyone was heard, the reasons are written down, and the record says what evidence would reopen the question.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: write the strongest version of the other side</p><p>Before recommending an option, write the best argument for the one you are rejecting, well enough that its supporters would agree with your summary. If you cannot, you do not yet understand the decision. If you can, the others will trust your recommendation, because they can see you understood them.</p></aside>
+
+<h2>{{n}}.6 Architecture that stays</h2>
+
+<p>A decision record says what the team agreed; it does not stop the code from drifting away from it. Record 1 says that modules use each other only through their code. Six months later, in a hurry, someone imports another module’s internals, the review misses it, and the boundary is gone. The answer is to turn the rule into a test, run by the pipeline on every pull request. Tests of this kind are called <dfn>fitness functions</dfn>: automated checks that the architecture still has a property the team chose.</p>
+
+<pre data-code="rules.ts" data-from="const broken" data-to="^}#1" data-title="rules.ts"></pre>
+
+<pre data-code="rules.sh" data-title="Terminal"></pre>
+
+<p>The check found a real break: the refund code reaches into the payment module’s provider client, skipping the module’s public <code>index.ts</code>. The pipeline fails, the message says what to do, and the conversation happens on the pull request, while it is one line to fix. Other properties can be guarded the same way: no module reads another’s tables (search the SQL), no request handler is slower than its budget (the load test of Chapter {{n-7}}), no dependency without a licence the company allows, no new service without a runbook. Write a fitness function for each decision that you would be upset to see quietly broken.</p>
+
+<h2>{{n}}.7 Changing a running system</h2>
+
+<p>Most architecture work is not choosing a design for something new; it is moving something that customers use every day from one design to another, as record 4 moved the jobs. Big rewrites, where the old system is frozen while a new one is built, usually fail: the old system keeps changing, the new one takes longer than planned, and the switch-over is a single huge risk. The safer pattern has a name, the <dfn>strangler fig</dfn>, after a plant that grows around a tree until it can stand alone:</p>
+<ol>
+<li>Put a seam in front of the old thing: one place where every job is created.</li>
+<li>Send a small share of the work to the new path, behind a feature flag (Chapter {{n-3}}).</li>
+<li>Compare the results, and watch the SLIs of Chapter {{n-1}}.</li>
+<li>Move more work across, step by step, each step reversible.</li>
+<li>When nothing uses the old path, delete it, and supersede the decision record.</li>
+</ol>
+
+<p>Changes like this compete with features for the same people, which makes them a product conversation, not only a technical one. Make it in the product’s terms: “the Redis queue lost jobs twice this year; each time two salons complained; the move takes three weeks and removes one service we run”. A <dfn>technical debt</dfn> register (each item with its cost to customers or to the team, and an estimate to fix) lets the team and product choose together, every planning cycle, how much to repay. The next chapter is about that conversation.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>The lead takes every hard ticket</td><td>The team waits; the lead is the bottleneck</td><td>Spend time on decisions, reviews, unblocking</td></tr>
+<tr><td>Nobody knows who decides</td><td>Discussions last months</td><td>Name a driver and one approver first</td></tr>
+<tr><td>Heavy process for every choice</td><td>Small decisions get stuck</td><td>Match process to reversibility and reach</td></tr>
+<tr><td>Editing or deleting old records</td><td>The history of why is lost</td><td>Supersede, and keep the old record</td></tr>
+<tr><td>Trusting the matrix total</td><td>Weights tuned until the favourite wins</td><td>Check sensitivity; discuss the weight that flips it</td></tr>
+<tr><td>Scores that are guesses</td><td>Decisions on opinions</td><td>Measure or spike first</td></tr>
+<tr><td>Reviews without a decision date</td><td>Endless discussion</td><td>Comments first, then a meeting, then a decision</td></tr>
+<tr><td>Rules only in documents</td><td>The code drifts away from them</td><td>Fitness functions in the pipeline</td></tr>
+<tr><td>The big rewrite</td><td>Late, risky, a single switch-over</td><td>Strangle the old system step by step</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A technical lead <strong>sees the whole, makes decisions happen, raises the floor and translates</strong>, mostly without formal authority.</li>
+<li>Match the process to <strong>reversibility and reach</strong>; name a <strong>driver and one approver</strong> before discussing.</li>
+<li>Keep <strong>decision records</strong> as a log: short, reviewed, never deleted, <strong>superseded</strong> when they change, with a condition to revisit.</li>
+<li>Use the matrix as a summary, and check that the choice is <strong>robust</strong> to changes in the weights.</li>
+<li>Run reviews <strong>in writing first</strong>, settle facts by measuring and values by the approver, decide on the date, then <strong>disagree and commit</strong>.</li>
+<li>Turn important rules into <strong>fitness functions</strong> that the pipeline runs.</li>
+<li>Change running systems step by step, the <strong>strangler fig</strong> way, and discuss technical debt in product terms.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because with several approvers, any one of them can delay or block, and nobody can end the discussion; decisions that touch everyone then take months, and the product waits. One approver, named before the discussion, listens to everyone, and then decides on the date; if people disagree, the reasons go into the record instead of into a longer meeting. 2. Because it is the team’s memory of what it believed, and why, at the time. Deleting it hides the history; editing it rewrites it. Kept and marked “Superseded by 0004”, it shows the reasoning that failed (and the incidents that proved it), so nobody proposes the same thing again without new facts. 3. A condition that would make the decision wrong. It turns a future argument (“shouldn’t we move off PostgreSQL?”) into a measurement anyone can check, and it can become an alert on the job rate, so the team learns that the assumption has changed before customers do.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project extends the tools of this chapter and uses them on Bit Booking, or on a project of your own.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Supersede, properly</h3>
+<p class="project-goal">Teach the decision tool to supersede a record.</p>
+<p class="project-skills"><strong>You will practise:</strong> small tools, file formats, and keeping history.</p>
+<ol class="steps">
+<li>Add <code>node adr.ts supersede 0003 "Money as integer minor units"</code>: it creates the new record, with “Supersedes 0003” in its context.</li>
+<li>Change the old record’s status line to “Superseded by 0006”, and nothing else in it.</li>
+<li>Make the list show superseded records last, and add a check that fails if a record points to a number that does not exist.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> run the check in the pipeline too; a broken link between records is a small thing that makes the log hard to trust.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Where would the winner change?</h3>
+<p class="project-goal">Find, for each criterion, the exact weight at which the winner changes.</p>
+<p class="project-skills"><strong>You will practise:</strong> sensitivity analysis and explaining numbers.</p>
+<ol class="steps">
+<li>For each criterion, search the weights from 0 to 100 (keeping the others fixed) and print the first weight at which another option wins, or “never”.</li>
+<li>Add a score uncertainty: let each score move by one point up or down, and count in how many of the combinations each option wins.</li>
+<li>Write one paragraph, for a reader who never saw the script, saying how sure the team can be.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> five criteria and three options give 3<sup>15</sup> score combinations, about 14 million; that runs in seconds, but sample randomly if you add more.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A rule for every decision</h3>
+<p class="project-goal">Make the architecture checks a small framework, with one fitness function per decision record.</p>
+<p class="project-skills"><strong>You will practise:</strong> fitness functions, static analysis, and linking documents to code.</p>
+<ol class="steps">
+<li>Give each record an optional line <code>Check: name</code>, and a folder of checks named the same way.</li>
+<li>Write checks for records 1 and 3: no module reads another module’s tables in its SQL strings; no <code>parseFloat</code> or <code>toFixed</code> on money outside formatting code.</li>
+<li>In the pipeline, run every check of an accepted record; when one fails, print the record’s title and its number, so the author can read why.</li>
+<li>Add a way to mark a known exception in code, with the record number and a reason, and list all exceptions in a weekly report.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a check that is wrong one time in ten will be switched off within a month. Start strict and narrow, and widen only what you can check reliably.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Place each decision in the table of section {{n}}.2 and say what process it needs: renaming a function in one module; moving all dates to UTC; adding a column to one module’s table; choosing a new error tracker for the company.</li>
+<li><span class="level">Easy</span> Rewrite this decision record line so that it can be checked later: “We chose PostgreSQL because it scales well enough.”</li>
+<li><span class="level">Medium</span> In a review, two seniors disagree: one says the cloud queue is cheaper, the other says it is more expensive. Is this a disagreement of facts or of values, and how do you settle it?</li>
+<li><span class="level">Medium</span> The fitness function of section {{n}}.6 fails on a pull request that must ship today to fix a customer problem. What do you do, today and next week?</li>
+<li><span class="level">Challenge</span> Plan the move from the Redis queue to the PostgreSQL queue as a strangler fig: the seam, the flag, how to compare the two paths, the SLIs to watch, how to roll back at each step, and when to delete the old path.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Decisions need time, and time is what product and management ask about first. The next chapter is about estimating honestly, planning work in slices, and working with product as a partner rather than a customer.</p>
+</div>
+</section>

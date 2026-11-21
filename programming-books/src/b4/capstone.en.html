@@ -1,0 +1,244 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b4/capstone/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Capstone: Ship a SaaS Product</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>turn Bit Booking from one salon’s app into a product any salon can sign up for</li>
+<li>keep every salon’s data apart in one database, enforced by the database itself</li>
+<li>sell plans with limits that hold even when requests arrive at the same moment</li>
+<li>let the payment provider switch plans through signed webhooks that apply exactly once</li>
+<li>prove the rules that must never break with tests on the real database</li>
+<li>launch with a checklist, and know what to measure the day after</li>
+</ul>
+</div>
+
+<p class="lead">This book followed one product, Bit Booking, from a one-page spec to a system that is designed, delivered, watched and led. In this last chapter it becomes a business: <dfn>software as a service</dfn> (SaaS), sold by subscription to many salons, each of which must feel it has the product to itself. Three new problems come with that: keeping customers’ data apart, enforcing what each plan allows, and taking money. Everything else is the earlier chapters, used together. Every command below was run, and every answer is real.</p>
+
+<aside class="bit" data-mood="happy"><p>Each section names the chapter its ideas come from. The point of a capstone is not new techniques; it is seeing that the ones you already have fit together into something you could sell tomorrow.</p></aside>
+
+<h2>{{n}}.1 The brief</h2>
+
+<p>The founders write: <em>“Any salon can sign up and take bookings online. The free plan allows a few bookings a month; Pro is 499 EGP a month with no limit. A salon must never see another salon’s data. Nobody is ever double-booked, and nobody is charged, or upgraded, twice.”</em> In the language of Chapter {{n-15}}, those last sentences are the rules that must never break, and each needs a guarantee, not a hope:</p>
+
+<table>
+<thead><tr><th>Rule</th><th>Guaranteed by</th></tr></thead>
+<tbody>
+<tr><td>A salon sees only its own data</td><td>Row-level security in PostgreSQL, for every query</td></tr>
+<tr><td>No double booking</td><td>The exclusion constraint of Chapter {{n-15}}, now per salon</td></tr>
+<tr><td>A plan’s limit is never exceeded</td><td>A row lock per salon, and the count taken under it</td></tr>
+<tr><td>A payment changes the plan exactly once</td><td>Signed webhooks, with the event id as a primary key</td></tr>
+</tbody>
+</table>
+
+<h2>{{n}}.2 The plan</h2>
+
+<p>Before any code, the decisions of Chapter {{n-3}}. The biggest is how to keep tenants apart, and it is a one-way door with a wide reach:</p>
+<ul>
+<li><strong>A database per salon:</strong> the strongest separation, but thousands of databases to migrate, back up and watch, and no way to report across them.</li>
+<li><strong>A schema per salon:</strong> similar, a little lighter, with the same operational weight.</li>
+<li><strong>One database, a <code>salon_id</code> on every row:</strong> simple to run and to report on, and one forgotten <code>WHERE salon_id = …</code> away from showing one salon another’s customers.</li>
+</ul>
+
+<p>The team chooses the third, and removes its danger: the database itself will add the condition to every query, so forgetting it in the code cannot leak anything. That decision goes into a decision record with its reason and the condition for revisiting (“a salon that needs its data in its own country”). Then the work is sliced as in Chapter {{n-2}} (sign-up, limits, billing, launch), each slice shipped behind a flag, and forecast from the team’s weeks.</p>
+
+<h2>{{n}}.3 One database, many salons</h2>
+
+<p>Every table that belongs to a salon carries its <code>salon_id</code>, and the double-booking constraint now includes it, so two salons may each have a “Mona” at ten o’clock:</p>
+
+<pre data-code="schema.sql" data-from="^-- #3" data-to="^);" data-title="schema.sql"></pre>
+
+<p>Then <dfn>row-level security</dfn> (RLS): a PostgreSQL feature that adds a condition, a <em>policy</em>, to every query on a table, whatever the query says. The policy compares each row’s salon with a setting that the application sets at the start of each transaction:</p>
+
+<pre data-code="schema.sql" data-from="^-- #5" data-to="GRANT SELECT ON plans" data-title="schema.sql"></pre>
+
+<p>Two details matter. The application connects as <code>app_user</code>, a role without the right to bypass policies; table owners and superusers bypass RLS, so an application that connects as the owner is not protected at all. And the policy compares with <code>current_salon()</code>, which turns both “never set” and “empty” into NULL, which matches no row. The empty case was found by this chapter’s tests: once a pooled connection has used the setting in one transaction, later transactions on the same connection see an empty string, not NULL, and the plain cast to a number failed. A small trap, and exactly why the rules that must never break are tested on the real database.</p>
+
+<p>In the application, every request runs inside one helper, which sets the salon for its transaction and nothing longer:</p>
+
+<pre data-code="db.ts" data-from="^// #1" data-title="db.ts"></pre>
+
+<p>Here is what the database enforces, whatever the application does. As <code>app_user</code>, with no salon set, there is nothing to see; with a salon set, only that salon’s rows:</p>
+
+<pre data-code="rls.sh" data-title="Terminal"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out: the paths around the policy</p><p>RLS protects queries through <code>app_user</code>. It does not protect a background job or a report that connects as the owner, a cache keyed without the salon, files in storage, or logs and traces. Each of those needs the salon in its key or its path, and a test. Treat the salon id like the user id of Chapter {{n-12}}: it comes from the authenticated request, never from the request body.</p></aside>
+
+<h2>{{n}}.4 Plans and their limits</h2>
+
+<p>A free plan’s limit sounds trivial: count this month’s bookings, refuse when there are five. The trap is the moment between counting and inserting. Two requests arriving together both count four, both insert, and the salon has six. The fix is the row lock of Book 3’s transactions chapter: lock the salon’s row first, so concurrent bookings of the <em>same</em> salon take turns, while other salons are not slowed at all:</p>
+
+<pre data-code="bookings.ts" data-from="export function book" data-to="^}" data-title="bookings.ts"></pre>
+
+<p>The answers carry the status codes of Chapter {{n-14}}’s contract: <code>409</code> when the slot was just taken, and <code>402 Payment Required</code> when the plan is the reason, with a message that tells the owner what to do. A small script plays a salon’s booking page (salon A starts the month with three bookings):</p>
+
+<pre data-code="book" data-title="book"></pre>
+
+<pre data-code="book.sh" data-title="Terminal"></pre>
+
+<p>The fourth booking, the fifth of the month, is refused with the upgrade message; the second was refused for a different reason, an overlap with the first, and did not count. In the product, the limit is shown long before it is reached (“4 of 5 bookings used”), because a salon that discovers it in front of a customer leaves.</p>
+
+<h2>{{n}}.5 Billing by webhook</h2>
+
+<p>The payment provider (Chapter {{n-11}}) runs the checkout and the monthly charges; the product learns that a salon paid from a <dfn>webhook</dfn>, an HTTP request the provider sends to us. Anyone on the internet can send a request to that address, so every webhook must prove that it comes from the provider: the provider signs the exact body with a secret only the two of you know, and we check the signature. And the provider retries when it gets no answer, so the same event may arrive twice: its id becomes a primary key, and a second delivery inserts nothing and changes nothing:</p>
+
+<pre data-code="billing.ts" data-from="^// #1" data-title="billing.ts"></pre>
+
+<pre data-code="upgrade.sh" data-title="Terminal"></pre>
+
+<p>A forged signature is refused; the real event is applied; the same event delivered again is acknowledged without being applied again (answering <code>200</code>, so the provider stops retrying); and salon A, now on Pro, books past the old limit. In a real product, the event also records the period paid for, so that a late “subscription cancelled” event and an early “renewed” one, arriving in the wrong order, still leave the right plan.</p>
+
+<h2>{{n}}.6 Tenants, from the outside</h2>
+
+<p>Each salon’s API key leads to its salon, and from there RLS does the rest. Salon B lists its bookings, and tries to open booking 1, which belongs to salon A:</p>
+
+<pre data-code="tenants.sh" data-title="Terminal"></pre>
+
+<p>Notice the <code>404</code>: to salon B, salon A’s booking does not exist, because RLS removes it before the query sees it. Answering <code>403 Forbidden</code> would tell B that booking 1 exists and belongs to someone else, which is already a leak. The same rule applies to everything that names another tenant’s object: say “not found”.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does the application connect as <code>app_user</code> rather than as the owner of the tables?</li><li>Two bookings for the same free salon arrive at the same moment, with four used. What stops both from succeeding?</li><li>Why does the second delivery of the same billing event answer <code>200</code> and not an error?</li></ol></aside>
+
+<h2>{{n}}.7 Proving the rules</h2>
+
+<p>The four rules of the brief each get a test on the real database (Book 3’s testing chapters). The most important is the race: ten bookings at the same moment, for a free salon with two bookings left. Exactly two must succeed, every time:</p>
+
+<pre data-code="app.test.ts" data-from="^test(#3" data-to="^});" data-title="app.test.ts"></pre>
+
+<pre data-code="test.sh" data-title="Terminal"></pre>
+
+<p>Remove the <code>FOR UPDATE</code> and run it again: it fails, because more than two bookings get through. That is how you know the test tests something. These four go into the pipeline of Chapter {{n-6}}, next to a fitness function in the spirit of Chapter {{n-3}}: a check that every table with a <code>salon_id</code> column has row-level security enabled, so that next year’s new table cannot quietly skip it.</p>
+
+<h2>{{n}}.8 Running a business</h2>
+
+<p>A SaaS product has two kinds of numbers. The reliability numbers of Chapter {{n-4}}: an SLO for booking availability and latency, alerts on burn rate, and per-salon views so that one large salon’s problem is not averaged away. And business numbers, which product and the founders read every week. The first of them is <dfn>monthly recurring revenue</dfn> (MRR), straight from the database:</p>
+
+<pre data-code="metrics.sql" data-title="metrics.sql"></pre>
+
+<pre data-code="metrics.sh" data-title="Terminal"></pre>
+
+<p>Next to it, the numbers that explain MRR: <dfn>activation</dfn> (the share of new salons that take a real booking in their first week), <dfn>conversion</dfn> (free salons that upgrade), and <dfn>churn</dfn> (paying salons that cancel each month). Each is a SQL query on events the product already records, and each points to work: low activation means the sign-up is too hard; high churn means something is wrong after the first month. These are the numbers to put next to the error budget when planning with product, as Chapter {{n-2}} described.</p>
+
+<h2>{{n}}.9 Launch</h2>
+
+<p>The launch is not a day of heroics; it is a checklist, reviewed a week ahead, with every item either done or consciously accepted as a risk:</p>
+
+<pre data-code="launch.md" data-title="launch.md"></pre>
+
+<p>Each line is a chapter: the five-minute sign-up is the spec of Chapter {{n-15}}; the restored backup, the failure planning of Chapter {{n-9}}; staging rebuilt from nothing, Chapter {{n-5}}; the sign-up flag, Chapter {{n-6}}; SLOs and runbooks, Chapter {{n-4}}. Then open sign-ups to a first group of salons, watch, and widen: the canary of Chapter {{n-6}}, applied to customers instead of versions. The last line has no tick on purpose. The day after launch, the work changes from building to learning: activation, conversion, the error budget and the complaints decide the next slices.</p>
+
+<h2>{{n}}.10 What you built</h2>
+
+<table>
+<thead><tr><th>Part of the product</th><th>Chapters</th></tr></thead>
+<tbody>
+<tr><td>The brief, the rules that never break, the first slices</td><td>{{n-15}}, {{n-2}}</td></tr>
+<tr><td>The API contract and its status codes</td><td>{{n-14}}</td></tr>
+<tr><td>Keys, accounts and who may see what</td><td>{{n-12}}</td></tr>
+<tr><td>Payments and webhooks</td><td>{{n-11}}</td></tr>
+<tr><td>One database, locks, and what to scale when</td><td>{{n-10}}, {{n-8}}</td></tr>
+<tr><td>Timeouts, retries and idempotency</td><td>{{n-9}}</td></tr>
+<tr><td>Pipeline, flags and staged rollout</td><td>{{n-6}}</td></tr>
+<tr><td>Infrastructure and environments</td><td>{{n-5}}</td></tr>
+<tr><td>SLOs, alerts and incidents</td><td>{{n-4}}</td></tr>
+<tr><td>Decisions, plans and the people around them</td><td>{{n-3}} to {{n-1}}</td></tr>
+</tbody>
+</table>
+
+<p>It is a small product, and it is a real one: the same shape, scaled up, as most of the SaaS software in the world.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Tenant filter only in application code</td><td>One forgotten condition leaks data</td><td>Row-level security on every tenant table</td></tr>
+<tr><td>The app connects as the table owner</td><td>RLS is silently bypassed</td><td>A role without bypass rights</td></tr>
+<tr><td>Session settings on pooled connections</td><td>One request’s tenant leaks into the next</td><td><code>SET LOCAL</code>, inside the transaction</td></tr>
+<tr><td>Count, then insert, without a lock</td><td>Limits exceeded under load</td><td>Lock the tenant’s row, count under it</td></tr>
+<tr><td>Unsigned webhooks</td><td>Anyone can upgrade themselves</td><td>Verify the signature, in constant time</td></tr>
+<tr><td>Webhooks applied on every delivery</td><td>Double upgrades, double credits</td><td>Event id as a primary key</td></tr>
+<tr><td><code>403</code> for other tenants’ objects</td><td>Their existence is revealed</td><td><code>404</code>, as if they did not exist</td></tr>
+<tr><td>Limits discovered by surprise</td><td>Angry customers, lost trust</td><td>Show usage before the limit</td></tr>
+<tr><td>Launch as a single big day</td><td>Every problem at once</td><td>Checklist, small first group, widen</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A SaaS product adds three problems: <strong>tenant isolation, plan limits and billing</strong>.</li>
+<li>One database with <code>salon_id</code> everywhere and <strong>row-level security</strong>, through a role that cannot bypass it, with the tenant set by <code>SET LOCAL</code> per transaction.</li>
+<li>Enforce limits under a <strong>lock on the tenant’s row</strong>; prove it with a <strong>race test</strong>.</li>
+<li>Accept <strong>signed</strong> webhooks only, and apply each event <strong>once</strong>.</li>
+<li>Answer <strong>404</strong> for another tenant’s objects.</li>
+<li>Watch <strong>SLOs and business numbers</strong> together: MRR, activation, conversion, churn.</li>
+<li>Launch from a <strong>checklist</strong>, to a small group first, then learn and slice again.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the owner of a table, like a superuser, bypasses row-level security: every policy would be ignored, and a missing condition in the code would leak data again. <code>app_user</code> has only the rights it needs and no right to bypass policies, so the database adds the salon’s condition to every query it runs. 2. The lock on the salon’s row. The first transaction to run <code>SELECT … FOR UPDATE</code> holds it; the second waits at that line until the first commits. The first counts four and inserts the fifth; the second then counts five and is refused with <code>402</code>. Without the lock, both would count four and both would insert. 3. Because the event has already been applied, which is exactly what the provider wanted. An error would make the provider believe the delivery failed and retry again and again; <code>200</code> with <code>applied: false</code> says “received, and already done”, and the retries stop.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects take the product further, the way the next months of a real SaaS would. Write the rule, then the test, then the code.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Usage before the limit</h3>
+<p class="project-goal">Show each salon how much of its plan it has used.</p>
+<p class="project-skills"><strong>You will practise:</strong> tenant-scoped queries, contracts and product details.</p>
+<ol class="steps">
+<li>Add <code>GET /usage</code>: the plan, the bookings this month, the limit, and the date the count resets.</li>
+<li>Add it to the contract, with an example for a free and a Pro salon.</li>
+<li>Write a test that one salon’s usage never includes another salon’s bookings.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the month should be the salon’s month, in its own time zone, not the server’s; store the time zone on the salon.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Self-service sign-up</h3>
+<p class="project-goal">Let a salon sign up, get its first API key, and take a booking in under five minutes.</p>
+<p class="project-skills"><strong>You will practise:</strong> onboarding, secrets shown once, and measuring activation.</p>
+<ol class="steps">
+<li>Add <code>POST /signup</code>: creates the salon and its first staff member, and returns an API key shown only once (store its hash).</li>
+<li>Record events: <code>signed_up</code>, <code>first_booking</code>, with times.</li>
+<li>Write the activation query: the share of salons with a first booking within 7 days of signing up.</li>
+<li>Time yourself signing up as a new salon, and remove one step.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> sign-up creates the tenant, so it runs before any salon is set; give it its own small function with its own tests, and keep it the only code that writes a salon without being inside one.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Complete billing</h3>
+<p class="project-goal">Handle the full life of a subscription, out of order and with failures.</p>
+<p class="project-skills"><strong>You will practise:</strong> event ordering, state machines, and money in production.</p>
+<ol class="steps">
+<li>Add events for <code>subscription.created</code>, <code>renewed</code>, <code>payment_failed</code> and <code>cancelled</code>, each with the period it covers.</li>
+<li>Store the subscription’s state and paid-until date; apply an event only if it is newer than the state it would change.</li>
+<li>On <code>payment_failed</code>, keep Pro for a grace period of 7 days, email the owner, then return to free; existing bookings stay.</li>
+<li>Test every pair of events arriving in the wrong order, and a full year of renewals in one run with a fake clock.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> draw the states and transitions first (free, active, past due, cancelled); every event either moves along an arrow on the drawing or is ignored and logged.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A new table <code>reviews</code> is added, with a <code>salon_id</code> column. List the three things that must be done so that it is as safe as <code>bookings</code>.</li>
+<li><span class="level">Easy</span> Why does the limit count bookings by <code>created_at</code> this month, rather than by the date of the appointment? Give one case where each choice would be unfair.</li>
+<li><span class="level">Medium</span> A nightly report job connects as the owner and sends each salon a summary email. What could go wrong, and how do you make it as safe as the API?</li>
+<li><span class="level">Medium</span> The largest salon now has 40% of all bookings, and its busy evenings slow down every other salon. Using Chapters {{n-10}} and {{n-8}}, what are your options, in the order you would try them?</li>
+<li><span class="level">Challenge</span> A salon chain asks for its data to be kept in its own country. Write the decision record: the options, what changes in the code, the infrastructure and the pipeline, and the price you would charge for it.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You started this book able to build a front end and a back end. You finish it able to take a product from an idea to paying customers: to specify it, design it, deliver it, watch it, lead the decisions around it, plan it with others, and show what you did. The other books of the series go deeper into single areas, from mobile apps to AI and to leading teams, and each one will feel familiar now: it is the same craft, seen from closer.</p>
+</div>
+</section>

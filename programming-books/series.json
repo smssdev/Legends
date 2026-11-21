@@ -956,7 +956,8 @@
             },
             {
               "en": "Observability and Incidents",
-              "ar": "المراقبة والتعامل مع الأعطال"
+              "ar": "المراقبة والتعامل مع الأعطال",
+              "src": "b4/incidents"
             }
           ]
         },
@@ -968,19 +969,23 @@
           "chapters": [
             {
               "en": "Technical Leadership and Architecture Decisions",
-              "ar": "القيادة التقنية وقرارات المعمارية"
+              "ar": "القيادة التقنية وقرارات المعمارية",
+              "src": "b4/leadership"
             },
             {
               "en": "Estimation, Planning and Working with Product",
-              "ar": "التقدير والتخطيط والعمل مع فريق المنتج"
+              "ar": "التقدير والتخطيط والعمل مع فريق المنتج",
+              "src": "b4/planning"
             },
             {
               "en": "Interviews and Growing Your Career",
-              "ar": "المقابلات وتطوير مسارك المهني"
+              "ar": "المقابلات وتطوير مسارك المهني",
+              "src": "b4/career"
             },
             {
               "en": "Capstone: Ship a SaaS Product",
-              "ar": "المشروع الختامي: أطلق منتج SaaS"
+              "ar": "المشروع الختامي: أطلق منتج SaaS",
+              "src": "b4/capstone"
             }
           ]
         }
