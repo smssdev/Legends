@@ -1,0 +1,242 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/publish/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>النشر على Google Play وApp Store</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تعطي التطبيق هويته: معرّفاً فريداً، واسماً بكل لغة، وإصداراً، وأيقونة</li>
+<li>تنشئ مفتاح رفع وتوقّع نسخ إصدار أندرويد دون أن تضع سراً في أي ملف</li>
+<li>تبني Android App Bundle وتتحقق ممن وقّعه</li>
+<li>تمر على Google Play Console وApp Store Connect، من الحساب إلى المراجعة</li>
+<li>تحتفظ بروتين قصير يتكرر مع كل إصدار بعد الأول</li>
+</ul>
+</div>
+
+<p class="lead">ملاحظات بِت تعمل على جوالك. ولتعمل على جوالات الآخرين تحتاج ما يملكه كل تطبيق منشور: اسماً يراه الناس بلغتهم، وأيقونة، وإصداراً، وتوقيعاً يثبت أن كل تحديث منك أنت، وصفحة في متجر. وهذا الفصل يفعل كل ذلك لتطبيق الفصل {{n-1}}، فعلاً: فالأيقونة رُسمت، والمفتاح أُنشئ، والحزمة بُنيت ووُقّعت على الجهاز الذي صنع هذا الكتاب. ووحدها مواقع المتاجر لا يمكن تشغيلها في كتاب؛ وفيها يكون الفصل جولة مرشدة.</p>
+
+<aside class="bit" data-mood="happy"><p>كل ما في الطرفية في هذا الفصل شُغّل فعلاً، ومنه بناء إصدار أندرويد. أما خطوات iOS فتحتاج جهاز Mac عليه Xcode، وجهاز الكتاب ليس كذلك، فهي موصوفة لا معروضة: ستراها على جهاز Mac الخاص بك.</p></aside>
+
+<h2>{{n}}.1 هوية التطبيق</h2>
+
+<p>لكل تطبيق في متجر <dfn>معرّف تطبيق</dfn> (application id في أندرويد، وbundle id في iOS): نطاق مقلوب فريد في العالم، <em>ولا يمكن تغييره أبداً</em> بعد النشر. ويبنيه <code dir="ltr">flutter create</code> من <code dir="ltr">--org</code> واسم المشروع:</p>
+
+<pre data-term="create.sh"></pre>
+
+<p>صار معرّف ملاحظات بِت <code>online.bitcafe.bit_notes</code> على المنصتين. استخدم نطاقاً تملكه، أو على الأقل نطاقاً لن يستخدمه غيرك: فـ Google Play ترفض <code>com.example</code>.</p>
+
+<p>و<dfn>الإصدار</dfn> يعيش في <code>pubspec.yaml</code>، من جزأين:</p>
+
+<pre data-code="pubspec.yaml" data-from="^name:" data-to="version: 1" data-title="pubspec.yaml (جزء)"></pre>
+
+<ul>
+<li><code>1.0.0</code> هو <dfn>اسم الإصدار</dfn> الذي يراه الناس في المتجر: غيّره كما تشاء، وعادة بالصيغة major.minor.patch.</li>
+<li>و<code>+1</code> هو <dfn>رقم البناء</dfn> الذي تعرف به المتاجر أي بناء أحدث. يجب أن يكبر مع كل رفع، ولا يتشارك رفعان رقماً واحداً أبداً.</li>
+</ul>
+
+<p>والاسم تحت الأيقونة يُضبط لكل منصة. ففي أندرويد يشير الـ manifest إلى نص من الموارد، لتكون لكل لغة نسختها:</p>
+
+<pre data-code="android/app/src/main/AndroidManifest.xml" data-from="<application" data-to="android:label" data-title="android/app/src/main/AndroidManifest.xml (جزء)"></pre>
+<pre data-code="android/app/src/main/res/values/strings.xml" data-title="android/app/src/main/res/values/strings.xml"></pre>
+<pre data-code="android/app/src/main/res/values-ar/strings.xml" data-title="android/app/src/main/res/values-ar/strings.xml"></pre>
+
+<p>وفي iOS يُفعل الشيء نفسه في Xcode: <code>CFBundleDisplayName</code> في <code dir="ltr">ios/Runner/Info.plist</code>، وملف <code>InfoPlist.strings</code> لكل لغة.</p>
+
+<h2>{{n}}.2 الأيقونة</h2>
+
+<p>كل منصة تحتاج الأيقونة بمقاسات كثيرة، وأندرويد يريد أيضاً <dfn>أيقونة متكيّفة</dfn>: واجهة وخلفية يقصّهما كل جوال بشكله. وحزمة <code>flutter_launcher_icons</code> تصنعها كلها من صورة كبيرة واحدة. وإعداداتها في <code>pubspec.yaml</code>:</p>
+
+<pre data-code="pubspec.yaml" data-from="^flutter_launcher_icons:" data-title="pubspec.yaml (النهاية)"></pre>
+<pre data-term="icons.sh"></pre>
+
+<div class="phones">
+<figure data-img="assets/icon/icon.png" data-frame="icon">
+<figcaption>الصورة: 1024 × 1024</figcaption>
+</figure>
+<figure data-img="shots/launcher.png" data-frame="icon">
+<figcaption>إحدى النتائج: 192 × 192، لأحدّ شاشات أندرويد</figcaption>
+</figure>
+</div>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>ارسم الأيقونة لأصغر مقاس لها لا لأكبره: فعرضها على الجوال نحو سنتيمتر. شكل واحد واضح، وتباين قوي، وبلا نص. واجعل المهم من واجهة الأيقونة المتكيّفة في الثلثين الأوسطين: فالجوالات تقص الأطراف دوائر ومربعات وقطرات.</p></aside>
+
+<h2>{{n}}.3 التوقيع لأندرويد</h2>
+
+<p>أندرويد لا يثبّت إلا التطبيقات <dfn>الموقّعة</dfn>، والمتجر لا يقبل تحديثاً إلا إن وُقّع بالمفتاح نفسه الذي وُقّع به ما قبله. وGoogle Play تستخدم مفتاحين: <dfn>مفتاح توقيع التطبيق</dfn> الذي تحتفظ به Google وتوقّع به ما ينزّله الناس، و<dfn>مفتاح الرفع</dfn> الخاص بك الذي يثبت لـ Google أن الرفع منك. فإن فقدت مفتاح الرفع استطاعت Google استبداله؛ ولا يستطيع أحد غيرك التوقيع باسمك. وتنشئ مفتاح الرفع مرة واحدة، بـ <code>keytool</code> الذي يأتي مع Java:</p>
+
+<pre data-term="keytool.sh"></pre>
+
+<ul>
+<li><code dir="ltr">-validity 10000</code> يوم: نحو 27 سنة. فالتطبيق يُوقَّع بالمفتاح نفسه طوال حياته.</li>
+<li><code dir="ltr">-storepass:env STORE_PASSWORD</code> تقرأ كلمة المرور من متغير بيئة، فلا تظهر أبداً في الأمر، ولا في سجل الطرفية، ولا في ملف. وقبل تشغيله اضبط المتغير دون أن يظهر: <code dir="ltr">read -s STORE_PASSWORD &amp;&amp; export STORE_PASSWORD</code>.</li>
+<li>و<code>keytool</code> تقترح صيغة PKCS12 الأحدث؛ وكلتاهما تعمل، ودليل Flutter نفسه يستخدم JKS كما هنا.</li>
+<li>والمفتاح في <code dir="ltr">~/keys</code>، خارج المشروع. واحفظ نسخة منه في مكان آمن، وكلمة مروره في مدير كلمات مرور.</li>
+</ul>
+
+<p>وGradle، أداة البناء في أندرويد، تحتاج أن تجده. وملف صغير يقول أين، ولا شيء أكثر:</p>
+
+<pre data-code="android/key.properties" data-title="android/key.properties"></pre>
+
+<p>وقالب Flutter يُبقيه من قبل، هو وكل ملف مفاتيح، خارج Git:</p>
+
+<pre data-term="gitignore.sh"></pre>
+
+<p>ثم يوقّع ملف Gradle الخاص بالتطبيق نسخ الإصدار به. يُضاف سطرا استيراد في أعلى <code>android/app/build.gradle.kts</code>، وتُستبدل كتلة <code>buildTypes</code> التي كانت توقّع بمفتاح التطوير في القالب:</p>
+
+<pre data-code="android/app/build.gradle.kts" data-from="^    // #2" data-to="^    }#2" data-title="android/app/build.gradle.kts (جزء)"></pre>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>كثير من الأدلة تضع كلمات المرور في <code>key.properties</code>. هذا يعمل، لكن عندها يحمل ملف على قرصك كل ما يلزم للتوقيع باسمك، ويكفي <code dir="ltr">git add -f</code> واحد بلا انتباه لنشره. أما قراءة كلمة المرور من البيئة فتجعل الملف بلا ضرر. وعلى خادم البناء يأتي المتغير من مخزن أسرار الخادم.</p></aside>
+
+<h2>{{n}}.4 نسخة الإصدار</h2>
+
+<p>المتاجر تريد <dfn>Android App Bundle</dfn> (<code>.aab</code>): تبني منه Google Play ملف APK صغيراً لكل نوع من الجوالات. وأمر واحد يبنيه موقّعاً:</p>
+
+<pre data-term="build.sh"></pre>
+
+<p>نسخة الإصدار ليست التطبيق الذي شغّلته أثناء التطوير. إنها مترجمة مسبقاً إلى لغة الآلة، بلا أدوات التصحيح، ولا يبقى فيها من الأيقونات إلا ما يستخدمه التطبيق: فخط أيقونات Material نزل من 1.6 ميجابايت إلى نحو كيلوبايتين. وقبل رفع أي شيء، تأكد أنها موقّعة بمفتاحك لا بمفتاح التطوير:</p>
+
+<pre data-term="printcert.sh"></pre>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>لتجرّب نسخة الإصدار الحقيقية على جوالك قبل النشر، شغّل <code dir="ltr">flutter run --release</code> والجوال موصول. إنها أسرع من نسخة التطوير التي تعرفها، وهي ما سيحصل عليه الناس. وأكثر مفاجآت «كان يعمل على جوالي» تُكتشف بهذه الطريقة.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>أي جزء من <code dir="ltr">1.4.2+17</code> يجب أن يكبر مع كل رفع؟</li><li>ماذا يحدث إن فقدت مفتاح الرفع على Google Play؟ ومعرّف التطبيق: هل تستطيع تغييره لاحقاً؟</li><li>لماذا لا يحمل <code>key.properties</code> في هذا الفصل أي كلمة مرور؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.5 Google Play</h2>
+
+<p>الباقي يحدث في <dfn>Play Console</dfn>، موقع Google للمطورين. وشاشاته تتغير كثيراً، لكن الطريق ثابت منذ سنوات. وعند كتابة هذا الكتاب:</p>
+
+<ol class="steps">
+<li><strong>الحساب.</strong> سجّل مطوراً، مرة واحدة، برسوم 25 دولاراً أمريكياً تُدفع مرة، والتحقق من الهوية. حساب شخصي، أو حساب مؤسسة يحتاج رقمها الرسمي.</li>
+<li><strong>إنشاء التطبيق.</strong> اسمه في المتجر، ولغته الافتراضية، وهل هو تطبيق أم لعبة، ومجاني أم مدفوع. والمجاني لا يصير مدفوعاً لاحقاً أبداً.</li>
+<li><strong>صفحة المتجر.</strong> وصف قصير ووصف كامل بكل لغة تدعمها، والأيقونة بمقاس 512 × 512، وصورة عرض بمقاس 1024 × 500، ولقطتا شاشة للجوال على الأقل. واكتب الصفحة العربية بنفسك، كما كتبت ملف ARB العربي للتطبيق.</li>
+<li><strong>محتوى التطبيق.</strong> رابط سياسة الخصوصية، ونموذج <dfn>أمان البيانات</dfn> (Data safety: ما يجمعه التطبيق ولماذا؛ فملاحظات بِت تحفظ الملاحظات على الجوال وحده، ولا ترسل شيئاً)، واستبيان تصنيف المحتوى، والفئة العمرية المستهدفة، وهل فيه إعلانات.</li>
+<li><strong>الاختبار.</strong> ارفع ملف <code>.aab</code> إلى مسار الاختبار الداخلي أولاً: فيحصل عليه حتى مئة شخص تدعوهم خلال دقائق. والحسابات الشخصية الجديدة يجب أن تجري بعده اختباراً مغلقاً مع اثني عشر مختبراً على الأقل لأربعة عشر يوماً قبل أن يُسمح لها بالنشر للجميع.</li>
+<li><strong>الإنتاج.</strong> أنشئ إصداراً في مسار الإنتاج، بالحزمة نفسها أو برقم بناء أحدث، مع ملاحظات عما تغيّر بكل لغة. وتراجعه Google، عادة خلال ساعات وأحياناً أيام، ثم يظهر التطبيق.</li>
+</ol>
+
+<p>ومع أول رفع تفعّل Play Console <dfn>توقيع التطبيقات من Play</dfn> (Play App Signing): تنشئ Google مفتاح توقيع التطبيق، وتتحقق بعدها من مفتاح رفعك مع كل رفع.</p>
+
+<h2>{{n}}.6 App Store</h2>
+
+<p>طريق Apple يحتاج شيئين لا يحتاجهما طريق أندرويد: جهاز Mac عليه Xcode، لأن تطبيقات iOS لا تُبنى ولا توقَّع إلا هناك، وعضوية مدفوعة في <dfn>Apple Developer Program</dfn> بـ 99 دولاراً أمريكياً في السنة. ثم:</p>
+
+<ol class="steps">
+<li><strong>الهوية.</strong> في موقع المطورين، سجّل المعرّف <code>online.bitcafe.bitNotes</code> (معرّفات iOS لا تقبل <code>_</code>، فيكتبه <code dir="ltr">flutter create</code> بهذا الشكل). وفي Xcode افتح <code dir="ltr">ios/Runner.xcworkspace</code>، واختر فريقك في <em>Signing &amp; Capabilities</em>، ودع Xcode يدير الشهادات.</li>
+<li><strong>سجل التطبيق.</strong> في <dfn>App Store Connect</dfn>، موقع Apple للمطورين، أنشئ التطبيق بالمعرّف نفسه، واسمه، ولغته الأساسية.</li>
+<li><strong>البناء والرفع.</strong> <code dir="ltr">flutter build ipa</code> يبني أرشيفاً موقّعاً في <code dir="ltr">build/ios/ipa</code>. ارفعه بتطبيق Transporter من Apple، أو افتح الأرشيف في Organizer داخل Xcode واختر <em>Distribute App</em>.</li>
+<li><strong>TestFlight.</strong> يظهر البناء في TestFlight بعد دقائق من المعالجة. ويستطيع فريقك تثبيته فوراً؛ أما المختبرون من الخارج، حتى عشرة آلاف، فبعد مراجعة قصيرة.</li>
+<li><strong>صفحة المتجر.</strong> لقطات شاشة لكل مقاس آيفون مطلوب، وأوصاف بكل لغة، ورابط سياسة الخصوصية، وبطاقة الخصوصية: ما يجمعه التطبيق، كما في نموذج Google.</li>
+<li><strong>المراجعة.</strong> أرسل الإصدار إلى App Review. وتراجع Apple التطبيق مقابل إرشاداتها، عادة خلال يوم أو يومين؛ والرفض يقول السبب، فتجيب أو ترفع بناءً مصلَحاً.</li>
+</ol>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>استخدم مسارات الاختبار في المتجرين مع كل إصدار، لا الأول وحده: فالاختبار الداخلي وTestFlight يكلفانك يوماً، ويوفّران على مستخدميك الخطأ الذي فاتك. ثم انشر لنسبة صغيرة من الناس أولاً (فالمتجران يسمحان بالنشر المرحلي)، وراقب تقارير الأعطال، ثم انشر للجميع.</p></aside>
+
+<h2>{{n}}.7 كل إصدار بعد الأول</h2>
+
+<ol class="steps">
+<li>ارفع الإصدار في <code>pubspec.yaml</code>: اسم إصدار جديد إن كان يجب أن يلاحظه الناس، ورقم بناء أعلى دائماً.</li>
+<li>شغّل <code dir="ltr">flutter analyze</code> و<code dir="ltr">flutter test</code>. وجرّب نسخة الإصدار على جوال حقيقي، باللغتين وفي الاتجاهين.</li>
+<li>ابنِ، وتحقق من التوقيع، وارفع إلى مسار الاختبار، ثم انشر.</li>
+<li>اكتب ملاحظات الإصدار بكل لغة: فالناس يقرؤونها.</li>
+<li>وبعد النشر اقرأ تقارير الأعطال والمراجعات في المتجرين. وأجب عن المراجعات: بأدب، وبلغة صاحبها.</li>
+</ol>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td><code>com.example</code> معرّفاً</td><td>ترفض Google Play الرفع</td><td><code dir="ltr">--org</code> بنطاقك المقلوب، من البداية</td></tr>
+<tr><td>رفع رقم البناء نفسه مرتين</td><td>يرفضه المتجر</td><td>ارفع <code dir="ltr">+N</code> مع كل رفع</td></tr>
+<tr><td>إصدار موقّع بمفتاح التطوير</td><td>ترفضه Google Play</td><td><code>signingConfig</code> للإصدار؛ وتحقق بـ <code dir="ltr">keytool -printcert</code></td></tr>
+<tr><td>كلمات مرور أو مفاتيح في Git</td><td>يستطيع أي أحد التوقيع باسمك</td><td>المفاتيح خارج المشروع؛ وكلمات المرور من البيئة</td></tr>
+<tr><td>فقدان النسخة الوحيدة من المفتاح</td><td>إجراء طويل مع Google؛ ومستحيل بلا Play App Signing</td><td>نسختان آمنتان، وPlay App Signing</td></tr>
+<tr><td>اختبار نسخة التطوير وحدها</td><td>مشكلات الإصدار وحده تصل إلى الناس</td><td><code dir="ltr">flutter run --release</code> ومسار اختبار</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>اختر معرّف التطبيق مرة واحدة، بـ <code dir="ltr">--org</code>؛ فلا يمكن تغييره أبداً. والإصدار <code dir="ltr">name+build</code>، ورقم البناء يكبر مع كل رفع.</li>
+<li>أعطِ الاسم بكل لغة (<code dir="ltr">values-ar/strings.xml</code> و<code>InfoPlist.strings</code>)، وولّد كل الأيقونات بـ <code>flutter_launcher_icons</code>.</li>
+<li>أنشئ مفتاح رفع بـ <code>keytool</code>، واحفظه خارج المشروع، وأعطِ Gradle كلمة مروره من البيئة.</li>
+<li><code dir="ltr">flutter build appbundle</code> يصنع ملف <code>.aab</code> الموقّع؛ و<code dir="ltr">keytool -printcert</code> يثبت من وقّعه.</li>
+<li>Play Console وApp Store Connect: صفحة المتجر، ونماذج الخصوصية، ومسار اختبار، ومراجعة، ثم نشر مرحلي.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. رقم البناء، <code>17</code>؛ أما اسم الإصدار فقد يبقى كما هو. 2. مع Play App Signing تستطيع Google تسجيل مفتاح رفع جديد بعد أن تثبت هويتك؛ أما معرّف التطبيق فلا يتغير أبداً: فالمعرّف الجديد تطبيق جديد، بلا مستخدميه ولا مراجعاته. 3. حتى لا يعطي الملف، لو نُسخ أو أُضيف إلى Git خطأً، أحداً القدرة على التوقيع باسمك: فكلمة المرور تأتي من البيئة وقت البناء.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع الثلاثة تأخذ ملاحظات بِت أبعد نحو إصدارات حقيقية. وكل واحد شُغّل على جهاز الكتاب، فتستطيع مقارنة طرفيتك بالكتاب.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>الإصدار 1.0.1</h3>
+<p class="project-goal">ابنِ إصداراً جديداً دون تعديل أي ملف، وأثبت ما بداخله.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code dir="ltr">--build-name</code> و<code dir="ltr">--build-number</code>، وبناء APK، وقراءة تطبيق مبني بـ <code>aapt2</code>.</p>
+<ol class="steps">
+<li>ابنِ APK بإصدار يُعطى في سطر الأوامر: <code dir="ltr">flutter build apk --build-name 1.0.1 --build-number 2</code>. فالخيارات تغلب <code>pubspec.yaml</code>، وهكذا ترقّم خوادم البناء ما تبنيه.</li>
+<li>اقرأ التطبيق المبني بـ <code>aapt2</code>، من مجلد <code>build-tools</code> في Android SDK.</li>
+<li>جِد المعرّف، ورمز الإصدار واسمه، والاسم بكل لغة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ملف APK يُثبَّت مباشرة على الجوال، فهو مفيد لتجربة بناء؛ أما المتجر فيريد <code>.aab</code>.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/version.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>ملاحظات بِت على الويب</h3>
+<p class="project-goal">ابنِ نسخة الإصدار للويب، وضعها على الإنترنت.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code dir="ltr">flutter build web</code>، وأيقونات الويب من <code>flutter_launcher_icons</code>، واستضافة مجلد.</p>
+<ol class="steps">
+<li>شغّل <code dir="ltr">flutter build web</code>. والنتيجة <code dir="ltr">build/web</code>: ملفات عادية يستطيع أي مستضيف ويب أن يقدّمها.</li>
+<li>جرّبها محلياً أولاً: قدّم <code dir="ltr">build/web</code> بأي خادم ملفات ثابتة وافتحها؛ والملاحظات تُحفظ في تخزين المتصفح.</li>
+<li>ضع المجلد على الإنترنت: على GitHub Pages أو Netlify أو Firebase Hosting أو خادمك. وإن كان في مجلد فرعي مثل <code dir="ltr">/bit-notes/</code> فابنِ بـ <code dir="ltr">--base-href /bit-notes/</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> نسخة الويب طريقة جيدة لعرض التطبيق على الناس قبل أن يصل إلى المتاجر: رابط واحد يكفي.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (مقدَّمة من <code dir="ltr">build/web</code>):</p>
+<pre data-term="projects/web.sh"></pre>
+<figure data-img="shots/web.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: نسخة الإصدار في متصفح، باسم التطبيق وأيقونته.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>أمر واحد قبل كل إصدار</h3>
+<p class="project-goal">اكتب سكربتاً يفحص ويختبر ويبني ويتحقق، ويتوقف عند أول فشل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سكربتات الطرفية، و<code dir="ltr">set -e</code>، ووضع روتين الفصل في مكان واحد.</p>
+<ol class="steps">
+<li>أنشئ <code dir="ltr">tool/release.sh</code> وفي أعلاه <code dir="ltr">set -e</code>: فيتوقف السكربت ما إن يفشل أمر.</li>
+<li>شغّل بالترتيب <code dir="ltr">flutter analyze</code> و<code dir="ltr">flutter test</code> و<code dir="ltr">flutter build appbundle</code>، ثم <code dir="ltr">keytool -printcert</code> على الحزمة، مع سطر قبل كل خطوة يقول ما هي.</li>
+<li>شغّله بـ <code dir="ltr">sh tool/release.sh</code>، بعد ضبط <code>STORE_PASSWORD</code>.</li>
+<li>اكسر اختباراً عمداً وشغّله من جديد: يجب ألا تُبنى أي حزمة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> سكربت كهذا أول خطوة نحو خادم بناء، يشغّل الخطوات نفسها مع كل تغيير، والمفتاح وكلمة مروره محفوظان في أسرار الخادم.</p>
+<pre data-code="projects/release.sh" data-title="tool/release.sh"></pre>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/release-run.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> تطبيقك في الإصدار <code dir="ltr">2.3.0+41</code>. وأصلحت خطأً صغيراً. ماذا يجب أن يكون الإصدار التالي، وما الذي يجب أن يكون عليه على الأقل؟</li>
+<li><span class="level">سهل</span> شغّل <code dir="ltr">flutter build appbundle</code> دون ضبط <code>STORE_PASSWORD</code>. ماذا يحدث، ولماذا هذا أفضل من البناء بصمت بلا توقيع؟</li>
+<li><span class="level">متوسط</span> اكتب إجابات أمان البيانات لملاحظات بِت: ماذا تجمع، وهل تشارك شيئاً، وهل يُرسل شيء خارج الجوال؟ وماذا سيتغير لو نسخت الملاحظات احتياطياً على خادم؟</li>
+<li><span class="level">متوسط</span> اكتب الوصف القصير لملاحظات بِت في المتجر بالإنجليزية والعربية، في أقل من 80 حرفاً لكل منهما. ما الذي يجعله جيداً؟</li>
+<li><span class="level">تحدٍّ</span> اجعل <code dir="ltr">tool/release.sh</code> يرفض البناء إن لم يكن رقم البناء في <code>pubspec.yaml</code> أعلى من الرقم في ملف <code>last-build.txt</code>، وحدّث هذا الملف بعد كل بناء ناجح. لماذا يفيد هذا الفحص رغم أن المتجر سيرفض الرفع على أي حال؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">إلى أين بعد ذلك</p>
+<p>بدأت هذا الكتاب بمجلد فارغ وتحية على الشاشة. وتنهيه بتطبيق بلغتين، باختباراته وأيقونته وتوقيعه، جاهز للمتاجر. والكتاب التالي في السلسلة، <em>احتراف تطبيقات الموبايل بـ Flutter</em>، يذهب حيث تذهب التطبيقات الحقيقية بعد ذلك: بنية التطبيقات الكبيرة، وRiverpod وBloc، وتسجيل دخول حقيقي، والمزامنة بلا إنترنت، والحركات، والأداء، وخوادم البناء التي تنشر مع كل تغيير.</p>
+</div>
+</section>

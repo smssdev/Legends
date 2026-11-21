@@ -1,0 +1,242 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/publish/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Publishing to Google Play and the App Store</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>give an app its identity: a unique id, a name in each language, a version and an icon</li>
+<li>create an upload key and sign Android release builds without putting a secret in any file</li>
+<li>build an Android App Bundle and check who signed it</li>
+<li>walk through Google Play Console and App Store Connect, from account to review</li>
+<li>keep a short, repeatable routine for every release after the first</li>
+</ul>
+</div>
+
+<p class="lead">Bit Notes runs on your phone. To run on everyone else’s, it needs what every published app has: a name people see in their language, an icon, a version, a signature that proves each update comes from you, and a page in a store. This chapter does all of it for the app of Chapter {{n-1}}, for real: the icon was drawn, the key was made, and the bundle was built and signed on the machine that made this book. Only the stores’ websites cannot be run in a book; for them, the chapter is a guided walk.</p>
+
+<aside class="bit" data-mood="happy"><p>Everything in a terminal in this chapter really ran, including the Android release build. The iOS steps need a Mac with Xcode, which the book’s machine is not, so they are described and not shown: you will see them on your own Mac.</p></aside>
+
+<h2>{{n}}.1 The app’s identity</h2>
+
+<p>Every app in a store has an <dfn>application id</dfn> (Android) or <dfn>bundle id</dfn> (iOS): a reversed domain that is unique in the world and <em>can never change</em> once published. <code>flutter create</code> builds it from <code>--org</code> and the project’s name:</p>
+
+<pre data-term="create.sh"></pre>
+
+<p>Bit Notes is now <code>online.bitcafe.bit_notes</code> on both platforms. Use a domain you own, or at least one nobody else will use: <code>com.example</code> is refused by Google Play.</p>
+
+<p>The <dfn>version</dfn> lives in <code>pubspec.yaml</code>, in two parts:</p>
+
+<pre data-code="pubspec.yaml" data-from="^name:" data-to="version: 1" data-title="pubspec.yaml (part)"></pre>
+
+<ul>
+<li><code>1.0.0</code> is the <dfn>version name</dfn> that people see in the store: change it as you like, usually major.minor.patch.</li>
+<li><code>+1</code> is the <dfn>build number</dfn>, which the stores use to know which build is newer. It must grow with every upload, and two uploads can never share one.</li>
+</ul>
+
+<p>The name under the icon is set per platform. On Android, the manifest points to a text resource, so that each language can have its own:</p>
+
+<pre data-code="android/app/src/main/AndroidManifest.xml" data-from="<application" data-to="android:label" data-title="android/app/src/main/AndroidManifest.xml (part)"></pre>
+<pre data-code="android/app/src/main/res/values/strings.xml" data-title="android/app/src/main/res/values/strings.xml"></pre>
+<pre data-code="android/app/src/main/res/values-ar/strings.xml" data-title="android/app/src/main/res/values-ar/strings.xml"></pre>
+
+<p>On iOS the same is done in Xcode: <code>CFBundleDisplayName</code> in <code>ios/Runner/Info.plist</code>, and an <code>InfoPlist.strings</code> file for each language.</p>
+
+<h2>{{n}}.2 The icon</h2>
+
+<p>Every platform needs the icon in many sizes, and Android also wants an <dfn>adaptive icon</dfn>: a foreground and a background that each phone cuts into its own shape. The <code>flutter_launcher_icons</code> package makes them all from one large picture. Its settings go in <code>pubspec.yaml</code>:</p>
+
+<pre data-code="pubspec.yaml" data-from="^flutter_launcher_icons:" data-title="pubspec.yaml (the end)"></pre>
+<pre data-term="icons.sh"></pre>
+
+<div class="phones">
+<figure data-img="assets/icon/icon.png" data-frame="icon">
+<figcaption>The picture: 1024 × 1024</figcaption>
+</figure>
+<figure data-img="shots/launcher.png" data-frame="icon">
+<figcaption>One of the results: 192 × 192, for the sharpest Android screens</figcaption>
+</figure>
+</div>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Draw the icon for its smallest size, not its largest: on a phone it is about a centimetre wide. One clear shape, strong contrast, no text. Keep the important part of an adaptive foreground in the middle two thirds: phones cut the edges off in circles, squares and drops.</p></aside>
+
+<h2>{{n}}.3 Signing for Android</h2>
+
+<p>Android only installs apps that are <dfn>signed</dfn>, and a store accepts an update only if it is signed by the same key as before. Google Play uses two keys: the <dfn>app signing key</dfn>, which Google keeps and uses to sign what people download, and your <dfn>upload key</dfn>, which proves to Google that an upload comes from you. If you lose the upload key, Google can replace it; nobody else can sign in your name. You make the upload key once, with <code>keytool</code>, which comes with Java:</p>
+
+<pre data-term="keytool.sh"></pre>
+
+<ul>
+<li><code>-validity 10000</code> days: about 27 years. An app is signed with the same key for its whole life.</li>
+<li><code>-storepass:env STORE_PASSWORD</code> reads the password from an environment variable, so it never appears in the command, the terminal’s history, or a file. Before running it, set the variable without showing it: <code>read -s STORE_PASSWORD &amp;&amp; export STORE_PASSWORD</code>.</li>
+<li><code>keytool</code> suggests the newer PKCS12 format; both work, and Flutter’s own guide uses JKS, as here.</li>
+<li>The key goes in <code>~/keys</code>, outside the project. Keep a copy somewhere safe, with its password in a password manager.</li>
+</ul>
+
+<p>Gradle, Android’s build tool, needs to find it. A small file says where, and nothing more:</p>
+
+<pre data-code="android/key.properties" data-title="android/key.properties"></pre>
+
+<p>Flutter’s template already keeps it, and every key file, out of Git:</p>
+
+<pre data-term="gitignore.sh"></pre>
+
+<p>Then the app’s Gradle file signs release builds with it. Two imports go at the top of <code>android/app/build.gradle.kts</code>, and the template’s <code>buildTypes</code> block, which signed with the debug key, is replaced:</p>
+
+<pre data-code="android/app/build.gradle.kts" data-from="^    // #2" data-to="^    }#2" data-title="android/app/build.gradle.kts (part)"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Many guides put the passwords in <code>key.properties</code>. It works, but then a file on your disk holds everything needed to sign in your name, and one careless <code>git add -f</code> publishes it. Reading the password from the environment keeps the file harmless. On a build server, the variable comes from the server’s secret store.</p></aside>
+
+<h2>{{n}}.4 The release build</h2>
+
+<p>Stores want an <dfn>Android App Bundle</dfn> (<code>.aab</code>): Google Play builds from it a small APK for each kind of phone. One command builds it, signed:</p>
+
+<pre data-term="build.sh"></pre>
+
+<p>A release build is not the app you ran during development. It is compiled ahead of time to machine code, without the debugging tools, and only the icons the app uses are kept: the Material icon font went from 1.6 MB to about 2 KB. Before uploading anything, check that it is signed with your key and not the debug one:</p>
+
+<pre data-term="printcert.sh"></pre>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>To try the real release build on your own phone before publishing, run <code>flutter run --release</code> with the phone connected. It is faster than the debug build you know, and it is what people will get. Most “it worked on my phone” surprises are found this way.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which part of <code>1.4.2+17</code> must grow with every upload?</li><li>What happens if you lose your upload key on Google Play? And the app’s id: can you change it later?</li><li>Why does this chapter’s <code>key.properties</code> hold no password?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Google Play</h2>
+
+<p>The rest happens in the <dfn>Play Console</dfn>, Google’s website for developers. Its screens change often, but the path has been the same for years. At the time of writing:</p>
+
+<ol class="steps">
+<li><strong>Account.</strong> Register as a developer, once, with a one-time fee of 25 US dollars and an identity check. A personal account or an organisation’s, which needs its own official number.</li>
+<li><strong>Create the app.</strong> Its name in the store, its default language, app or game, free or paid. Free can never become paid later.</li>
+<li><strong>Store listing.</strong> A short and a full description in each language you support, the icon at 512 × 512, a feature picture of 1024 × 500, and at least two screenshots of the phone. Write the Arabic listing yourself, as you wrote the app’s ARB file.</li>
+<li><strong>App content.</strong> A link to a privacy policy, the <dfn>Data safety</dfn> form (what the app collects and why: Bit Notes keeps notes only on the phone, and sends nothing), a content rating questionnaire, the target age, and whether there are ads.</li>
+<li><strong>Testing.</strong> Upload the <code>.aab</code> to the internal testing track first: up to a hundred people you invite get it in minutes. New personal accounts must then run a closed test with at least twelve testers for fourteen days before they may publish to everyone.</li>
+<li><strong>Production.</strong> Create a release in the production track, with the same bundle or a newer build number, and notes on what changed, in each language. Google reviews it, usually within hours, sometimes days, and the app appears.</li>
+</ol>
+
+<p>On the first upload, Play Console turns on <dfn>Play App Signing</dfn>: Google creates the app signing key, and from then on checks your upload key on every upload.</p>
+
+<h2>{{n}}.6 The App Store</h2>
+
+<p>Apple’s path needs two things the Android one does not: a Mac with Xcode, because iOS apps are built and signed only there, and a paid membership of the <dfn>Apple Developer Program</dfn>, 99 US dollars a year. Then:</p>
+
+<ol class="steps">
+<li><strong>Identity.</strong> On the developer website, register the bundle id <code>online.bitcafe.bitNotes</code> (iOS ids cannot contain <code>_</code>, so <code>flutter create</code> writes it in this form). In Xcode, open <code>ios/Runner.xcworkspace</code>, choose your team under <em>Signing &amp; Capabilities</em>, and let Xcode manage the certificates.</li>
+<li><strong>The app record.</strong> In <dfn>App Store Connect</dfn>, Apple’s website for developers, create the app with the same bundle id, its name, and its primary language.</li>
+<li><strong>Build and upload.</strong> <code>flutter build ipa</code> builds a signed archive in <code>build/ios/ipa</code>. Upload it with Apple’s Transporter app, or open the archive in Xcode’s Organizer and choose <em>Distribute App</em>.</li>
+<li><strong>TestFlight.</strong> The build appears in TestFlight after a few minutes of processing. Your team can install it at once; outside testers, up to ten thousand, after a short review.</li>
+<li><strong>The listing.</strong> Screenshots for each required iPhone size, descriptions in each language, a privacy policy link, and the privacy “nutrition label”: what the app collects, as in Google’s form.</li>
+<li><strong>Review.</strong> Submit the version for App Review. Apple checks the app against its guidelines, usually within a day or two; a rejection says why, and you answer or upload a fixed build.</li>
+</ol>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Use the stores’ testing tracks for every release, not only the first: internal testing and TestFlight cost you a day, and spare your users the bug you missed. Then publish to a small percentage of people first (both stores allow a staged rollout), watch the crash reports, and only then to everyone.</p></aside>
+
+<h2>{{n}}.7 Every release after the first</h2>
+
+<ol class="steps">
+<li>Raise the version in <code>pubspec.yaml</code>: a new version name if people should notice, and always a higher build number.</li>
+<li>Run <code>flutter analyze</code> and <code>flutter test</code>. Try the release build on a real phone, in both languages and both directions.</li>
+<li>Build, check the signature, upload to the testing track, then roll out.</li>
+<li>Write the release notes in each language: people read them.</li>
+<li>After release, read the crash reports and the reviews in both consoles. Answer reviews: politely, in the reviewer’s language.</li>
+</ol>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>com.example</code> as the id</td><td>Google Play refuses the upload</td><td><code>--org</code> with your own reversed domain, from the start</td></tr>
+<tr><td>Uploading the same build number twice</td><td>The store refuses it</td><td>Raise <code>+N</code> with every upload</td></tr>
+<tr><td>Release signed with the debug key</td><td>Google Play refuses it</td><td>A <code>signingConfig</code> for release; check with <code>keytool -printcert</code></td></tr>
+<tr><td>Passwords or keys in Git</td><td>Anyone can sign as you</td><td>Keys outside the project; passwords from the environment</td></tr>
+<tr><td>Losing the only copy of the key</td><td>A long process with Google; impossible without Play App Signing</td><td>Two safe copies, and Play App Signing</td></tr>
+<tr><td>Testing only the debug build</td><td>Release-only problems reach people</td><td><code>flutter run --release</code> and a testing track</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Choose the app’s id once, with <code>--org</code>; it can never change. The version is <code>name+build</code>, and the build number grows with every upload.</li>
+<li>Give the name per language (<code>values-ar/strings.xml</code>, <code>InfoPlist.strings</code>) and generate every icon with <code>flutter_launcher_icons</code>.</li>
+<li>Make an upload key with <code>keytool</code>, keep it outside the project, and give Gradle its password from the environment.</li>
+<li><code>flutter build appbundle</code> makes the signed <code>.aab</code>; <code>keytool -printcert</code> proves who signed it.</li>
+<li>Play Console and App Store Connect: listing, privacy forms, a testing track, review, then a staged release.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The build number, <code>17</code>; the version name may stay the same. 2. With Play App Signing, Google can register a new upload key after you prove who you are; the app’s id can never change: a new id is a new app, without its users or reviews. 3. So that the file, even if copied or committed by mistake, does not give anyone the power to sign as you: the password comes from the environment at build time.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The three projects take Bit Notes further toward real releases. Each one ran on the book’s machine, so you can compare your terminal with the book.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Version 1.0.1</h3>
+<p class="project-goal">Build a new version without editing any file, and prove what is inside it.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>--build-name</code> and <code>--build-number</code>, APK builds, and reading a built app with <code>aapt2</code>.</p>
+<ol class="steps">
+<li>Build an APK with the version given on the command line: <code>flutter build apk --build-name 1.0.1 --build-number 2</code>. The flags win over <code>pubspec.yaml</code>, which is how build servers number their builds.</li>
+<li>Read the built app with <code>aapt2</code>, from the Android SDK’s <code>build-tools</code> folder.</li>
+<li>Find the id, the version code and name, and the name in each language.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> an APK installs directly on a phone, which makes it handy for trying a build; the store wants the <code>.aab</code>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/version.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Bit Notes on the web</h3>
+<p class="project-goal">Build the release version for the web, and put it online.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>flutter build web</code>, the web icons from <code>flutter_launcher_icons</code>, and hosting a folder.</p>
+<ol class="steps">
+<li>Run <code>flutter build web</code>. The result is <code>build/web</code>: plain files, which any web host can serve.</li>
+<li>Try it locally first: serve <code>build/web</code> with any static server and open it; notes are kept in the browser’s storage.</li>
+<li>Put the folder online: on GitHub Pages, Netlify, Firebase Hosting, or your own server. If it lives in a sub-folder, like <code>/bit-notes/</code>, build with <code>--base-href /bit-notes/</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the web version of an app is a good way to show it to people before it is in the stores: a link is enough.</p>
+<p><strong>Your result should look like this</strong> (served from <code>build/web</code>):</p>
+<pre data-term="projects/web.sh"></pre>
+<figure data-img="shots/web.png" data-frame="phone">
+<figcaption>Project {{n}}.2: the release build in a browser, with the app’s name and icon.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>One command before every release</h3>
+<p class="project-goal">Write a script that checks, tests, builds and verifies, and stops at the first failure.</p>
+<p class="project-skills"><strong>You will practise:</strong> shell scripts, <code>set -e</code>, and putting the chapter’s routine in one place.</p>
+<ol class="steps">
+<li>Create <code>tool/release.sh</code> with <code>set -e</code> at the top: the script stops as soon as a command fails.</li>
+<li>Run, in order, <code>flutter analyze</code>, <code>flutter test</code>, <code>flutter build appbundle</code>, and <code>keytool -printcert</code> on the bundle, with a line before each step saying what it is.</li>
+<li>Run it with <code>sh tool/release.sh</code>, after setting <code>STORE_PASSWORD</code>.</li>
+<li>Break a test on purpose and run it again: no bundle should be built.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a script like this is the first step toward a build server, which runs the same steps on every change, with the key and its password kept in the server’s secrets.</p>
+<pre data-code="projects/release.sh" data-title="tool/release.sh"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/release-run.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Your app is at <code>2.3.0+41</code>. You fix a small bug. What should the next version be, and what must it at least be?</li>
+<li><span class="level">Easy</span> Run <code>flutter build appbundle</code> without setting <code>STORE_PASSWORD</code>. What happens, and why is that better than building silently with no signature?</li>
+<li><span class="level">Medium</span> Write the Data safety answers for Bit Notes: what does it collect, does it share anything, is anything sent off the phone? What would change if it backed notes up to a server?</li>
+<li><span class="level">Medium</span> Write the store’s short description of Bit Notes in English and Arabic, under 80 characters each. What makes a good one?</li>
+<li><span class="level">Challenge</span> Make <code>tool/release.sh</code> refuse to build if the build number in <code>pubspec.yaml</code> is not higher than the one in a file <code>last-build.txt</code>, and update that file after a successful build. Why is this check useful even though the store would refuse the upload anyway?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go next</p>
+<p>You started this book with an empty folder and a greeting on a screen. You finish it with an app in two languages, with its tests, its icon and its signature, ready for the stores. The next book in the series, <em>Senior Flutter Engineering</em>, goes where real apps go next: architecture for large apps, Riverpod and Bloc, real logins, offline sync, animations, performance, and the build servers that publish on every change.</p>
+</div>
+</section>

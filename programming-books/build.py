@@ -306,6 +306,9 @@ def fill_code(chapter, lang):
         target.parent.mkdir(parents=True, exist_ok=True)
         if not target.exists() or target.read_bytes() != src.read_bytes():
             target.write_bytes(src.read_bytes())
+        if 'data-frame="icon"' in attrs:
+            # An app's icon, small, as it is seen on a phone's home screen.
+            return f'<figure class="icon-shot"><img src="img/{name}" alt="">'
         if 'data-frame="phone"' in attrs or 'data-frame="tablet"' in attrs:
             # A phone app (Book 5): the screenshot in a phone's (or a tablet's) outline, with no browser bar.
             cls = "phone tablet" if 'data-frame="tablet"' in attrs else "phone"
