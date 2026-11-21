@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "Chapter 3: Classes, Null Safety and Collections"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "Chapter 4: Async Dart: Futures and Streams"; } }
+@page ch04:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -45,7 +47,7 @@
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">34</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p">58</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">80</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Setting Up Flutter</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Dart Basics</span><span class="toc-p">34</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Classes, Null Safety and Collections</span><span class="toc-p">58</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Async Dart: Futures and Streams</span><span class="toc-p">80</span></li><li class="toc-part">Part 2: Building Screens</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Everything Is a Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Layouts That Fit Every Screen</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Lists, Images and Themes</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Navigation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Forms and Input</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Real Apps</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">State with setState and Provider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Talking to an API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Saving Data on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Arabic, English and RTL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Project: A Complete Notes App</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Publishing to Google Play and the App Store</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">98</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2137,6 +2139,556 @@ largest: circle</pre></div>
 <p>So far every line of your programs runs immediately. But apps wait all the time: for the network, for a file, for the user. The next chapter teaches Dart to wait without freezing, with <code>Future</code>, <code>async</code> and <code>await</code>, and to handle values that keep arriving, with <code>Stream</code>.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b5/async/en">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">Chapter 4</p><h1>Async Dart: Futures and Streams</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain why an app must never stop and wait, and how Dart’s event loop avoids it</li>
+<li>work with values that arrive later, using <code>Future</code>, <code>async</code> and <code>await</code></li>
+<li>run several slow tasks at the same time, and give up on one that takes too long</li>
+<li>catch errors that happen while waiting</li>
+<li>handle values that keep arriving, using <code>Stream</code>, <code>await for</code> and <code>listen</code></li>
+<li>produce your own streams with <code>async*</code> and <code>StreamController</code></li>
+</ul>
+</div>
+
+<p class="lead">Every program in the book so far did its work at once, line after line. Real apps spend most of their life waiting: for a server to answer, for a file to load, for a photo to be taken, for the user to tap. A phone redraws its screen 60 times a second or more, so an app that stops to wait, even for half a second, freezes in the user’s hand. This chapter teaches Dart to wait without stopping. It is the last chapter of pure Dart: everything after it is Flutter.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Think of a good café. The barista takes your order, starts the machine, and takes the next order while the coffee runs. Nobody stands in front of the machine waiting for it. That is exactly what this chapter teaches your code to do.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>Later, not now</span></h2>
+
+<p>Start with three lines that do not print in the order you might expect:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">order.dart</div><pre class="code"><span class="k">void</span> main() {
+  print(<span class="s">&#x27;one&#x27;</span>);
+  <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>), () =&gt; print(<span class="s">&#x27;three&#x27;</span>));
+  print(<span class="s">&#x27;two&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run order.dart</span>
+one
+two
+three</pre></div>
+
+<p><code>Future.delayed</code> does not stop the program for 100 milliseconds. It asks Dart to run a function <em>later</em>, and returns at once, so <code>two</code> is printed before <code>three</code>. Dart runs your program on one <dfn>thread</dfn>, one line of work at a time, with an <dfn>event loop</dfn>: a queue of jobs to do later, such as “run this when 100 milliseconds have passed” or “run this when the server answers”. When the current code finishes, the loop takes the next job that is ready. Nothing ever blocks; things are just scheduled.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="The event loop: main runs first, then the loop takes ready jobs from the queue one by one">
+<g font-family="Inter" font-size="13" text-anchor="middle">
+<rect x="20" y="20" width="150" height="44" rx="10" fill="#f2f2f2" stroke="#2b2b2b" stroke-width="2"/>
+<text x="95" y="40" fill="#1a1a1a" font-weight="700">main runs</text><text x="95" y="56" fill="#1a1a1a">print one, print two</text>
+<rect x="200" y="20" width="300" height="44" rx="10" fill="#fff" stroke="#2b2b2b" stroke-width="2"/>
+<text x="350" y="40" fill="#111">queue of jobs for later</text>
+<g fill="#f5f5f5" stroke="#2b2b2b" stroke-width="1.5"><rect x="215" y="46" width="80" height="14" rx="4"/><rect x="305" y="46" width="80" height="14" rx="4"/><rect x="395" y="46" width="90" height="14" rx="4"/></g>
+<g font-size="10" fill="#2b2b2b"><text x="255" y="57">after 100 ms</text><text x="345" y="57">server answer</text><text x="440" y="57">user tapped</text></g>
+<rect x="160" y="96" width="200" height="40" rx="20" fill="#fff" stroke="#2b2b2b" stroke-width="2"/>
+<text x="260" y="121" fill="#2b2b2b" font-weight="700">event loop: next ready job</text>
+<g stroke="#111" stroke-width="1.8" fill="none"><path d="M95,64 Q95,116 156,116"/><path d="M350,64 L300,94"/></g>
+</g>
+</svg>
+<figcaption>Figure 4.1: Dart runs one thing at a time. Slow work is a job in a queue, picked up when it is ready.</figcaption>
+</figure>
+
+<p>In Flutter, the same loop also draws the screen. As long as your code returns quickly and leaves the waiting to the loop, the app stays smooth.</p>
+
+<h2><span class="sec">4.2</span> <span>Futures</span></h2>
+
+<p>A <dfn>Future</dfn> is a value that is not ready yet, but will be: a promise of a value. <code>Future&lt;String&gt;</code> is a string that will arrive later. Here the café brews a coffee, which takes 0.3 seconds. Every program in this chapter starts with a small <code>clock</code> that prints the seconds since <code>main</code> started, in tenths, so that you can see when each line runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">future.dart</div><pre class="code"><span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="c line-bidi">// A Future&lt;String&gt;: a String that will be ready later.</span>
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink) {
+  <span class="k">return</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>), () =&gt; <span class="s">&#x27;$drink ready&#x27;</span>);
+}
+
+<span class="k">void</span> main() {
+  watch.start();
+  print(<span class="s">&#x27;${clock()} order&#x27;</span>);
+  <span class="c line-bidi">// then: what to do with the value when it arrives.</span>
+  brew(<span class="s">&#x27;Latte&#x27;</span>).then((cup) =&gt; print(<span class="s">&#x27;${clock()} $cup&#x27;</span>));
+  <span class="c line-bidi">// main does not wait: its last line runs first.</span>
+  print(<span class="s">&#x27;${clock()} end of main&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run future.dart</span>
+0.0 s order
+0.0 s end of main
+0.3 s Latte ready</pre></div>
+
+<p><code>brew</code> returns a <code>Future&lt;String&gt;</code> at once. <code>then</code> registers what to do with the value when it arrives. And <code>main</code> carries on immediately: the last line of <code>main</code> prints at 0.0 seconds, and the coffee arrives at 0.3.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Look at the clock: <code>watch.start()</code> is the first line of every <code>main</code>. A top-level <code>final</code> in Dart is <em>lazy</em>: it is created the first time it is used, not when the program starts. Without that line, the stopwatch would start at the first call of <code>clock()</code>, which may come after the first wait, and every time would be wrong. Being lazy usually saves work; just remember it when the moment of creation matters.</p></aside>
+
+<h2><span class="sec">4.3</span> <span>async and await</span></h2>
+
+<p>Chains of <code>then</code> become hard to read quickly. Dart offers a better way to write the same thing: mark the function <code>async</code>, and <code>await</code> each future. The code then reads from top to bottom, like the programs of the earlier chapters:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">await.dart</div><pre class="code"><span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink) =&gt;
+    <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>), () =&gt; <span class="s">&#x27;$drink ready&#x27;</span>);
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="c line-bidi">// await waits for the value, without blocking anything else.</span>
+  <span class="k">var</span> cup = <span class="k">await</span> brew(<span class="s">&#x27;Latte&#x27;</span>);
+  print(<span class="s">&#x27;${clock()} $cup&#x27;</span>);
+
+  <span class="c line-bidi">// One after the other: the waits add up.</span>
+  <span class="k">var</span> a = <span class="k">await</span> brew(<span class="s">&#x27;Tea&#x27;</span>);
+  <span class="k">var</span> b = <span class="k">await</span> brew(<span class="s">&#x27;Latte&#x27;</span>);
+  print(<span class="s">&#x27;${clock()} $a, $b&#x27;</span>);
+
+  <span class="c line-bidi">// Both at once: Future.wait waits for all of them.</span>
+  <span class="k">var</span> both = <span class="k">await</span> <span class="k">Future</span>.wait([brew(<span class="s">&#x27;Tea&#x27;</span>), brew(<span class="s">&#x27;Latte&#x27;</span>)]);
+  print(<span class="s">&#x27;${clock()} $both&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run await.dart</span>
+0.3 s Latte ready
+0.9 s Tea ready, Latte ready
+1.2 s [Tea ready, Latte ready]</pre></div>
+
+<ul>
+<li>An <code>async</code> function always returns a <code>Future</code>. <code>main</code> becomes <code>Future&lt;void&gt; main() async</code>: a future with no value, done when <code>main</code> is done.</li>
+<li><code>await brew('Latte')</code> pauses <em>this function</em> until the coffee is ready, and gives the <code>String</code> inside the future. The rest of the app, and the screen, keep running in the meantime.</li>
+<li>Awaiting two brews one after the other takes 0.3 + 0.3 seconds: the clock goes from 0.3 to 0.9.</li>
+<li><code>Future.wait</code> starts both at once and waits for the slowest: 0.3 seconds for the two, from 0.9 to 1.2. It gives a list of the results, in the order of the futures.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>When several slow tasks do not depend on each other, such as loading a user’s profile and their messages, start them together with <code>Future.wait</code>. When one needs the result of another, await them in order. Asking “does this wait need the previous one?” is one of the simplest ways to make an app feel twice as fast.</p></aside>
+
+<h3>The forgotten await</h3>
+
+<p>One small word makes a big difference. Here the café forgets it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">forgot-await.dart</div><pre class="code"><span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; brew(<span class="k">String</span> drink) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>));
+  print(<span class="s">&#x27;${clock()} $drink ready&#x27;</span>);
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="c line-bidi">// No await: the order is printed before the coffee is ready.</span>
+  brew(<span class="s">&#x27;Latte&#x27;</span>);
+  print(<span class="s">&#x27;${clock()} served&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run forgot-await.dart</span>
+0.0 s served
+0.3 s Latte ready</pre></div>
+
+<p>Without <code>await</code>, <code>brew</code> starts, and <code>main</code> serves the customer at once, with no coffee. The program still compiles and runs: this bug is silent. Dart’s linter has a rule, <code>unawaited_futures</code>, that warns about futures that nobody waits for; many teams turn it on in <code>analysis_options.yaml</code> for exactly this reason.</p>
+
+<h2><span class="sec">4.4</span> <span>Errors while waiting</span></h2>
+
+<p>Waiting gives things time to go wrong: the network drops, the server refuses, the milk runs out. An error inside a future travels with it, and comes out at the <code>await</code>, so the familiar <code>try</code> and <code>catch</code> work exactly as they do for ordinary code:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.dart</div><pre class="code"><span class="c line-bidi">// Our own error, with a message for people.</span>
+<span class="k">class</span> OutOfMilk <span class="k">implements</span> Exception {
+  <span class="k">final</span> <span class="k">String</span> drink;
+  OutOfMilk(<span class="k">this</span>.drink);
+
+  @override
+  <span class="k">String</span> toString() =&gt; <span class="s">&#x27;No milk left ($drink)&#x27;</span>;
+}
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  <span class="k">if</span> (drink == <span class="s">&#x27;Latte&#x27;</span>) <span class="k">throw</span> OutOfMilk(drink);
+  <span class="k">return</span> <span class="s">&#x27;$drink ready&#x27;</span>;
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; serve(<span class="k">String</span> drink) <span class="k">async</span> {
+  <span class="c line-bidi">// An error in a future arrives at the await, so try catches it.</span>
+  <span class="k">try</span> {
+    <span class="k">var</span> cup = <span class="k">await</span> brew(drink);
+    print(cup);
+  } <span class="k">on</span> OutOfMilk <span class="k">catch</span> (e) {
+    print(<span class="s">&#x27;Sorry: $e&#x27;</span>);
+  } <span class="k">finally</span> {
+    <span class="c line-bidi">// finally runs either way: clean the machine.</span>
+    print(<span class="s">&#x27;  machine cleaned&#x27;</span>);
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="k">await</span> serve(<span class="s">&#x27;Tea&#x27;</span>);
+  <span class="k">await</span> serve(<span class="s">&#x27;Latte&#x27;</span>);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run errors.dart</span>
+Tea ready
+  machine cleaned
+Sorry: No milk left (Latte)
+  machine cleaned</pre></div>
+
+<ul>
+<li><code>OutOfMilk</code> is our own kind of error: a class that <code>implements Exception</code>, with a message that people can read.</li>
+<li><code>throw</code> stops <code>brew</code> and sends the error to whoever awaits it.</li>
+<li><code>on OutOfMilk catch (e)</code> catches only that kind of error; anything else would continue upwards. Catch what you can handle, and let the rest through.</li>
+<li><code>finally</code> runs in both cases, after success and after an error: the place for cleaning up.</li>
+</ul>
+
+<h3>Giving up: timeouts</h3>
+
+<p>A server that never answers is worse than one that fails, because the user waits for ever. <code>timeout</code> puts a limit on any future:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">timeout.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;dart:async&#x27;</span>;
+
+<span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink, <span class="k">int</span> ms) =&gt;
+    <span class="k">Future</span>.delayed(Duration(milliseconds: ms), () =&gt; <span class="s">&#x27;$drink ready&#x27;</span>);
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">for</span> (<span class="k">var</span> ms <span class="k">in</span> [<span class="n">200</span>, <span class="n">800</span>]) {
+    <span class="k">try</span> {
+      <span class="c line-bidi">// Wait at most 0.5 s, then give up.</span>
+      <span class="k">var</span> cup = <span class="k">await</span> brew(<span class="s">&#x27;Latte&#x27;</span>, ms).timeout(Duration(milliseconds: <span class="n">500</span>));
+      print(<span class="s">&#x27;${clock()} $cup&#x27;</span>);
+    } <span class="k">on</span> TimeoutException {
+      print(<span class="s">&#x27;${clock()} too slow, cancelled after 0.5 s&#x27;</span>);
+    }
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run timeout.dart</span>
+0.2 s Latte ready
+0.7 s too slow, cancelled after 0.5 s</pre></div>
+
+<p>The first coffee takes 0.2 seconds and arrives. The second would take 0.8, but after 0.5 the future fails with a <code>TimeoutException</code> (from <code>dart:async</code>, imported at the top), and the café tells the customer instead of leaving them waiting.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What type does an <code>async</code> function that returns an <code>int</code> really return?</li><li>Two futures take 0.4 and 0.6 seconds. How long do they take awaited one after the other, and with <code>Future.wait</code>?</li><li>Where does an error thrown inside a future come out?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>Streams</span></h2>
+
+<p>A future gives <em>one</em> value, later. A <dfn>Stream</dfn> gives <em>many</em> values, one after another, over time: the ticks of a clock, the messages of a chat, the positions of a finger moving on the screen, the orders arriving in a café.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">streams.dart</div><pre class="code"><span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="c line-bidi">// A Stream: a value every 0.2 s, and only the first 4.</span>
+  <span class="k">var</span> ticks = <span class="k">Stream</span>.periodic(
+    Duration(milliseconds: <span class="n">200</span>),
+    (i) =&gt; i + <span class="n">1</span>,
+  ).take(<span class="n">4</span>);
+
+  <span class="c line-bidi">// await for: a loop that waits for each value.</span>
+  <span class="k">await</span> <span class="k">for</span> (<span class="k">var</span> t <span class="k">in</span> ticks) {
+    print(<span class="s">&#x27;${clock()} tick $t&#x27;</span>);
+  }
+
+  <span class="c line-bidi">// Streams have where and map too, like lists.</span>
+  <span class="k">var</span> prices = <span class="k">Stream</span>.fromIterable([<span class="n">45</span>, <span class="n">15</span>, <span class="n">20</span>, <span class="n">60</span>]);
+  <span class="k">var</span> dear = <span class="k">await</span> prices.where((p) =&gt; p &gt; <span class="n">18</span>).map((p) =&gt; p * <span class="n">2</span>).toList();
+  print(dear);
+
+  <span class="c line-bidi">// listen: a function called for every value; the program goes on.</span>
+  <span class="k">Stream</span>.fromIterable([<span class="s">&#x27;Tea&#x27;</span>, <span class="s">&#x27;Cake&#x27;</span>]).listen((item) =&gt; print(<span class="s">&#x27;later: $item&#x27;</span>));
+  print(<span class="s">&#x27;now&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run streams.dart</span>
+0.2 s tick 1
+0.4 s tick 2
+0.6 s tick 3
+0.8 s tick 4
+[90, 40, 120]
+now
+later: Tea
+later: Cake</pre></div>
+
+<ul>
+<li><code>Stream.periodic</code> produces a value every 0.2 seconds, for ever; <code>take(4)</code> keeps the first four and then ends the stream.</li>
+<li><code>await for</code> is a loop that waits for each value, and ends when the stream ends. It works only inside an <code>async</code> function.</li>
+<li>Streams have <code>where</code>, <code>map</code> and <code>toList</code>, like lists, except that each one waits for the values to arrive. <code>toList</code> gives a future of the whole list.</li>
+<li><code>listen</code> is the other way to use a stream: it registers a function to call for every value, and returns at once. That is why <code>now</code> is printed before <code>later</code>.</li>
+</ul>
+
+<p>Use <code>await for</code> when your function should wait for the stream to finish, and <code>listen</code> when the stream runs alongside everything else, as most streams in an app do.</p>
+
+<h3>Making your own stream</h3>
+
+<p>Two tools let you create streams. The first, a <dfn>StreamController</dfn>, is a stream you feed by hand: whenever something happens, <code>add</code> it.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">controller.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;dart:async&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="c line-bidi">// A StreamController: the café decides when to send each value.</span>
+  <span class="c line-bidi">// broadcast: more than one listener may listen.</span>
+  <span class="k">var</span> orders = StreamController&lt;<span class="k">String</span>&gt;.broadcast();
+
+  orders.stream.listen((o) =&gt; print(<span class="s">&#x27;screen: $o&#x27;</span>));
+  orders.stream
+      .where((o) =&gt; o.contains(<span class="s">&#x27;Cake&#x27;</span>))
+      .listen((o) =&gt; print(<span class="s">&#x27;kitchen: $o&#x27;</span>));
+
+  orders.add(<span class="s">&#x27;table 1: Latte&#x27;</span>);
+  orders.add(<span class="s">&#x27;table 2: Cake&#x27;</span>);
+  orders.add(<span class="s">&#x27;table 3: Tea, Cake&#x27;</span>);
+  <span class="k">await</span> orders.close();
+  print(<span class="s">&#x27;closed&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run controller.dart</span>
+screen: table 1: Latte
+screen: table 2: Cake
+kitchen: table 2: Cake
+screen: table 3: Tea, Cake
+kitchen: table 3: Tea, Cake
+closed</pre></div>
+
+<p>A normal stream may have only one listener. <code>broadcast()</code> allows several: here the screen shows every order, and the kitchen listens only to orders with cake. When no more values will come, <code>close</code> the controller, so that listeners and <code>await for</code> loops know the stream has ended.</p>
+
+<p>The second tool is a <dfn>generator</dfn>: a function marked <code>async*</code> (with a star), which produces a stream. Each <code>yield</code> sends one value to the listener, and the function can <code>await</code> between them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">generator.dart</div><pre class="code"><span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="c line-bidi">// async*: a function that yields values over time, as a Stream.</span>
+<span class="k">Stream</span>&lt;<span class="k">int</span>&gt; countdown(<span class="k">int</span> from) <span class="k">async</span>* {
+  <span class="k">for</span> (<span class="k">var</span> i = from; i &gt; <span class="n">0</span>; i--) {
+    <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">200</span>));
+    <span class="c line-bidi">// yield sends one value to whoever is listening.</span>
+    <span class="k">yield</span> i;
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">await</span> <span class="k">for</span> (<span class="k">var</span> n <span class="k">in</span> countdown(<span class="n">3</span>)) {
+    print(<span class="s">&#x27;${clock()} boarding in $n&#x27;</span>);
+  }
+  print(<span class="s">&#x27;${clock()} done&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run generator.dart</span>
+0.2 s boarding in 3
+0.4 s boarding in 2
+0.6 s boarding in 1
+0.6 s done</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>In Flutter, streams are everywhere even when you do not see them: every tap, scroll and key press arrives as an event, and widgets such as <code>StreamBuilder</code> redraw part of the screen each time a stream gives a new value. Later chapters use them to show data that changes while the user watches.</p></aside>
+
+<h2><span class="sec">4.6</span> <span>Project: the café kitchen</span></h2>
+
+<p>Let us bring the chapter together. Orders arrive as a stream: two items, then one more order 0.1 seconds later, then a third. Each item takes its own time to prepare. The kitchen starts every order as soon as it arrives, prepares its items at the same time, and announces when each order is ready.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">kitchen.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;dart:async&#x27;</span>;
+
+<span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="c line-bidi">// Each item takes its own time to prepare.</span>
+<span class="k">const</span> prepTime = {<span class="s">&#x27;Latte&#x27;</span>: <span class="n">300</span>, <span class="s">&#x27;Tea&#x27;</span>: <span class="n">100</span>, <span class="s">&#x27;Cake&#x27;</span>: <span class="n">200</span>, <span class="s">&#x27;Cookie&#x27;</span>: <span class="n">100</span>};
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; prepare(<span class="k">String</span> item) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: prepTime[item] ?? <span class="n">100</span>));
+  <span class="k">return</span> item;
+}
+
+<span class="c line-bidi">// Orders arrive one by one, as a stream.</span>
+<span class="k">Stream</span>&lt;<span class="k">List</span>&lt;<span class="k">String</span>&gt;&gt; incoming() <span class="k">async</span>* {
+  <span class="k">yield</span> [<span class="s">&#x27;Latte&#x27;</span>, <span class="s">&#x27;Cake&#x27;</span>];
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  <span class="k">yield</span> [<span class="s">&#x27;Tea&#x27;</span>];
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  <span class="k">yield</span> [<span class="s">&#x27;Cookie&#x27;</span>, <span class="s">&#x27;Tea&#x27;</span>, <span class="s">&#x27;Latte&#x27;</span>];
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">var</span> n = <span class="n">0</span>;
+  <span class="k">var</span> kitchen = &lt;<span class="k">Future</span>&lt;<span class="k">void</span>&gt;&gt;[];
+  <span class="k">await</span> <span class="k">for</span> (<span class="k">var</span> items <span class="k">in</span> incoming()) {
+    <span class="k">var</span> number = ++n;
+    print(<span class="s">&#x27;${clock()} order $number arrives: ${items.join(&#x27;</span>, <span class="s">&#x27;)}&#x27;</span>);
+    <span class="c line-bidi">// The items of one order are prepared at the same time.</span>
+    kitchen.add(
+      <span class="k">Future</span>.wait(items.map(prepare))
+          .then((done) =&gt; print(<span class="s">&#x27;${clock()} order $number ready&#x27;</span>)),
+    );
+  }
+  <span class="k">await</span> <span class="k">Future</span>.wait(kitchen);
+  print(<span class="s">&#x27;${clock()} all ready&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run kitchen.dart</span>
+0.0 s order 1 arrives: Latte, Cake
+0.1 s order 2 arrives: Tea
+0.2 s order 2 ready
+0.2 s order 3 arrives: Cookie, Tea, Latte
+0.3 s order 1 ready
+0.5 s order 3 ready
+0.5 s all ready</pre></div>
+
+<p>Read the times. Order 1 (a latte, 0.3 seconds, and a cake, 0.2) arrives at 0.0 and is ready at 0.3, the time of its slowest item, because <code>Future.wait</code> prepares both at once. Order 2, one tea, arrives at 0.1 and is ready at 0.2: <em>before</em> order 1, because the kitchen does not make it wait in line. Order 3 arrives at 0.2 with a latte and is ready at 0.5. Everything is ready at 0.5 seconds; done one item at a time, it would have taken 1.1.</p>
+
+<p>Look at how the program is built. <code>incoming</code> is a generator that yields one order at a time. The <code>await for</code> loop takes each order, and <em>does not</em> await its preparation: it keeps the future in the list <code>kitchen</code> and goes back to the stream for the next order. At the end, <code>Future.wait(kitchen)</code> waits for every order still being prepared. This pattern, start now and collect later, is how real apps download many images, or send many messages, without one slow item holding up the others.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Make the kitchen prepare one order at a time: add <code>await</code> before the preparation and remove the list. Predict the new times before you run it. Then put it back, and give the cake a preparation time of 0.5 seconds. Which order is ready last now?</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting <code>await</code></td><td>The code goes on before the result is ready, silently</td><td>Await it; turn on the <code>unawaited_futures</code> rule</td></tr>
+<tr><td><code>await</code> in a function without <code>async</code></td><td>Compile error</td><td>Mark the function <code>async</code>, and return a <code>Future</code></td></tr>
+<tr><td>Printing a future instead of its value</td><td><code>Instance of 'Future&lt;String&gt;'</code></td><td><code>print(await fetchName())</code></td></tr>
+<tr><td>Awaiting independent tasks one by one</td><td>The waits add up; the app feels slow</td><td><code>Future.wait([...])</code></td></tr>
+<tr><td>No timeout on a network call</td><td>The user waits for ever when the server does not answer</td><td><code>.timeout(Duration(seconds: 10))</code>, then tell the user</td></tr>
+<tr><td>Two <code>listen</code> calls on a normal stream</td><td>Error: the stream has already been listened to</td><td>Use a <code>broadcast()</code> controller</td></tr>
+<tr><td>Never closing a controller</td><td><code>await for</code> never ends</td><td><code>close()</code> it when no more values will come</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Dart runs one thing at a time, with an <strong>event loop</strong>: slow work is scheduled, never waited for in place, so the app never freezes.</li>
+<li>A <strong>Future&lt;T&gt;</strong> is a value of type <code>T</code> that arrives later. <code>then</code> registers what to do with it.</li>
+<li>An <code>async</code> function returns a future, and <code>await</code> waits for one inside it, so the code reads top to bottom.</li>
+<li><code>Future.wait</code> runs independent tasks together; <code>timeout</code> gives up after a limit.</li>
+<li>Errors inside futures come out at the <code>await</code>: use <code>try</code>, <code>on … catch</code> and <code>finally</code>.</li>
+<li>A <strong>Stream&lt;T&gt;</strong> gives many values over time: read it with <code>await for</code> or <code>listen</code>, and shape it with <code>where</code> and <code>map</code>.</li>
+<li>Make streams with a <strong>StreamController</strong> (<code>broadcast()</code> for several listeners; <code>close()</code> at the end) or an <code>async*</code> generator with <code>yield</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>Future&lt;int&gt;</code>. 2. One after the other, 0.4 + 0.6 = 1 second; with <code>Future.wait</code>, 0.6 seconds, the time of the slowest. 3. At the <code>await</code> of that future, where a <code>try</code> around it can catch it.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project waits for something. Print the clock often while you work on them: seeing <em>when</em> each line runs is the fastest way to understand asynchronous code.</p>
+
+<div class="project">
+<p class="project-label">Project 4.1 · Easy</p>
+<h3>Countdown to lift-off</h3>
+<p class="project-goal">Count down from 5 to 1, one number per second, then print “Lift off!”.</p>
+<p class="project-skills"><strong>You will practise:</strong> an <code>async*</code> generator, <code>yield</code>, <code>Future.delayed</code> and <code>await for</code>.</p>
+<ol class="steps">
+<li>Write <code>Stream&lt;int&gt; countdown(int from) async*</code>.</li>
+<li>In a loop from <code>from</code> down to 1, <code>yield</code> the number, then wait one second with <code>await Future.delayed(Duration(seconds: 1))</code>.</li>
+<li>In <code>main</code>, which must be <code>async</code>, print each number with <code>await for</code>, then the final message.</li>
+<li>Change the order of <code>yield</code> and the wait. What changes in what you see, and when?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a generator does not run until someone listens to its stream. Call <code>countdown(5)</code> without listening, and nothing happens at all.</p>
+<p><strong>Your result should look like this</strong> (one line per second):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run countdown.dart</span>
+5
+4
+3
+2
+1
+Lift off!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 4.2 · Medium</p>
+<h3>Try again, patiently</h3>
+<p class="project-goal">Fetch the café’s menu from a server that is busy the first two times, by retrying with a wait that doubles after each failure.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>try</code> and <code>catch</code> around <code>await</code>, <code>rethrow</code>, a generic function, and passing a function as a value.</p>
+<ol class="steps">
+<li>Write <code>fetchMenu()</code>, which waits 0.1 seconds, counts its calls in a top-level variable, throws <code>Exception('server busy')</code> for the first two calls, and returns the menu on the third.</li>
+<li>Write <code>Future&lt;T&gt; retry&lt;T&gt;(Future&lt;T&gt; Function() task, {int attempts = 4, int waitMs = 200})</code>. The <code>&lt;T&gt;</code> makes it work for a task of any type.</li>
+<li>In a loop, <code>return await task()</code>. In the <code>catch</code>, print the failure; if this was the last attempt, <code>rethrow</code> the error; otherwise wait, then double <code>waitMs</code>.</li>
+<li>Call <code>retry(fetchMenu)</code>, passing the function itself, without brackets, and print the result with the clock.</li>
+<li>Set <code>attempts: 2</code> and see the error reach <code>main</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> doubling the wait is called <em>exponential backoff</em>. It gives a struggling server room to recover, instead of hammering it with requests. Real apps also add a little randomness to the wait, so that thousands of phones do not all retry at the same moment.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run retry.dart</span>
+0.1 s attempt 1 failed: Exception: server busy
+0.1 s waiting 0.2 s
+0.4 s attempt 2 failed: Exception: server busy
+0.4 s waiting 0.4 s
+0.9 s got: the menu of the day</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 4.3 · Challenge</p>
+<h3>A price ticker</h3>
+<p class="project-goal">Send prices through a broadcast stream to two listeners: one prints every price, the other keeps a running average and stops listening after five prices.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>StreamController.broadcast</code>, two listeners, <code>StreamSubscription</code> and <code>cancel</code>, and <code>late</code>.</p>
+<ol class="steps">
+<li>Create a <code>StreamController&lt;int&gt;.broadcast()</code>.</li>
+<li>Listen once to print every price.</li>
+<li>Listen a second time to keep a total and a count, and print the average with one digit after the point. <code>listen</code> returns a <code>StreamSubscription</code>; keep it in a variable.</li>
+<li>When the count reaches 5, call <code>cancel()</code> on that subscription. The variable is used inside the function given to <code>listen</code>, before it has a value, so declare it with <code>late</code>: “I promise to set it before it is used”.</li>
+<li>Add six prices, with <code>await Future.delayed(Duration.zero)</code> after each so that the listeners get each price before the next one is added, then close the controller. Check that the sixth price is printed but not averaged.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>late</code>, like <code>!</code>, is a promise checked only when the program runs. Here it is safe, because the function cannot run before <code>listen</code> has returned the subscription.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run ticker.dart</span>
+price: 45
+  average: 45.0
+price: 48
+  average: 46.5
+price: 44
+  average: 45.7
+price: 50
+  average: 46.8
+price: 52
+  average: 47.8
+price: 49</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Predict the order of the letters, then check: <code>print('A'); Future(() =&gt; print('B')); Future.delayed(Duration(milliseconds: 50), () =&gt; print('C')); print('D');</code> and then, after waiting 100 milliseconds, <code>print('E')</code>.</li>
+<li><span class="level">Easy</span> A colleague writes <code>var name = fetchName(); print(name);</code> where <code>fetchName</code> is <code>async</code>. What is printed, and how do you fix it?</li>
+<li><span class="level medium">Medium</span> From a stream of prices <code>[45, 15, 20, 60, 15]</code>, use <code>where</code>, <code>map</code> and <code>toList</code> to get the prices of at least 20, each plus a 5-pound service. Then add up a stream with <code>fold</code>.</li>
+<li><span class="level medium">Medium</span> Rewrite <code>price('latte').then(withService).then((total) =&gt; print(total))</code> with <code>async</code> and <code>await</code>, and check that both print the same result.</li>
+<li><span class="level hard">Challenge</span> The café has five coffees to brew and a machine that can make only two at a time, each taking 0.3 seconds. Brew them all as fast as possible, printing the clock when each starts and ends. (Hint: start two “workers” with <code>Future.wait</code>, each taking the next coffee from a shared list until it is empty.)</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 5</p>
+<p>You now know the language. Part II returns to the phone: the next chapter opens the box of widgets that every Flutter screen is made of, and builds your first real screens, piece by piece.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2314,6 +2866,108 @@ Saturday: weekend
 Sunday: workday
 Friday: weekend</pre></div>
 Add <code>monday('Monday')</code>, and everything still compiles and runs: the loop over <code>Day.values</code> picks the new day up, and <code>isWeekend</code> correctly says it is a workday. Had <code>isWeekend</code> been a switch listing every day, the compiler would have pointed to it: either way, nothing is forgotten silently.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 4</h2>
+<ol class="exercises">
+<li><code>A</code> and <code>D</code> come first, because <code>main</code> runs to its first <code>await</code> before anything scheduled. Then <code>B</code>, a job with no delay, then <code>C</code> after 50 milliseconds, and finally <code>E</code> after 100:
+<div class="listing" dir="ltr"><div class="listing-title">answers/order.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  print(<span class="s">&#x27;A&#x27;</span>);
+  <span class="k">Future</span>(() =&gt; print(<span class="s">&#x27;B&#x27;</span>));
+  <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">50</span>), () =&gt; print(<span class="s">&#x27;C&#x27;</span>));
+  print(<span class="s">&#x27;D&#x27;</span>);
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  print(<span class="s">&#x27;E&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run order.dart</span>
+A
+D
+B
+C
+E</pre></div></li>
+<li>It prints the future itself, not the name, because nobody waited for it. Mark the calling function <code>async</code> and <code>await</code> the call:
+<div class="listing" dir="ltr"><div class="listing-title">answers/instance.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">String</span>&gt; fetchName() <span class="k">async</span> =&gt; <span class="s">&#x27;Bit&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="k">var</span> name = fetchName();
+  print(name);
+  print(<span class="k">await</span> fetchName());
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run instance.dart</span>
+Instance of &#x27;Future&lt;String&gt;&#x27;
+Bit</pre></div></li>
+<li>Each operation waits for the stream’s values as they arrive; <code>toList</code> and <code>fold</code> give a future of the final result:
+<div class="listing" dir="ltr"><div class="listing-title">answers/stream_ops.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="k">var</span> orders = <span class="k">Stream</span>.fromIterable([<span class="n">45</span>, <span class="n">15</span>, <span class="n">20</span>, <span class="n">60</span>, <span class="n">15</span>]);
+  <span class="k">var</span> big = <span class="k">await</span> orders.where((p) =&gt; p &gt;= <span class="n">20</span>).map((p) =&gt; p + <span class="n">5</span>).toList();
+  print(big);
+  <span class="k">var</span> sum = <span class="k">await</span> <span class="k">Stream</span>.fromIterable([<span class="n">45</span>, <span class="n">15</span>, <span class="n">20</span>]).fold(<span class="n">0</span>, (s, p) =&gt; s + p);
+  print(sum);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run stream_ops.dart</span>
+[50, 25, 65]
+80</pre></div></li>
+<li>Each <code>then</code> becomes an <code>await</code> and a variable; the result is the same, and the code reads in order:
+<div class="listing" dir="ltr"><div class="listing-title">answers/then_chain.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">int</span>&gt; price(<span class="k">String</span> item) <span class="k">async</span> =&gt; item.length * <span class="n">10</span>;
+
+<span class="k">Future</span>&lt;<span class="k">int</span>&gt; withService(<span class="k">int</span> p) <span class="k">async</span> =&gt; p + p ~/ <span class="n">10</span>;
+
+<span class="k">void</span> withThen() {
+  price(<span class="s">&#x27;latte&#x27;</span>).then(withService).then((total) =&gt; print(<span class="s">&#x27;then: $total&#x27;</span>));
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; withAwait() <span class="k">async</span> {
+  <span class="k">var</span> p = <span class="k">await</span> price(<span class="s">&#x27;latte&#x27;</span>);
+  <span class="k">var</span> total = <span class="k">await</span> withService(p);
+  print(<span class="s">&#x27;await: $total&#x27;</span>);
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  withThen();
+  <span class="k">await</span> withAwait();
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run then_chain.dart</span>
+then: 55
+await: 55</pre></div></li>
+<li>Two workers share one queue. Each takes the next coffee, brews it, and comes back for another, so at most two coffees brew at any moment. Five coffees of 0.3 seconds take 0.9 seconds instead of 1.5:
+<div class="listing" dir="ltr"><div class="listing-title">answers/pool.dart</div><pre class="code"><span class="c line-bidi">// Seconds since main started, in tenths: the same on every machine.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} s&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; brew(<span class="k">int</span> n) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>));
+  print(<span class="s">&#x27;${clock()} #$n ready&#x27;</span>);
+}
+
+<span class="c line-bidi">// At most two coffees at a time: one machine slot per worker.</span>
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; worker(<span class="k">List</span>&lt;<span class="k">int</span>&gt; queue, <span class="k">String</span> name) <span class="k">async</span> {
+  <span class="k">while</span> (queue.isNotEmpty) {
+    <span class="k">var</span> n = queue.removeAt(<span class="n">0</span>);
+    print(<span class="s">&#x27;${clock()} machine $name: #$n&#x27;</span>);
+    <span class="k">await</span> brew(n);
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">var</span> queue = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>];
+  <span class="k">await</span> <span class="k">Future</span>.wait([worker(queue, <span class="s">&#x27;A&#x27;</span>), worker(queue, <span class="s">&#x27;B&#x27;</span>)]);
+  print(<span class="s">&#x27;${clock()} done&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run pool.dart</span>
+0.0 s machine A: #1
+0.0 s machine B: #2
+0.3 s #1 ready
+0.3 s machine A: #3
+0.3 s #2 ready
+0.3 s machine B: #4
+0.6 s #3 ready
+0.6 s machine A: #5
+0.6 s #4 ready
+0.9 s #5 ready
+0.9 s done</pre></div>
+Sharing the list is safe only because Dart runs one thing at a time: no two workers can take the same coffee, since <code>removeAt</code> runs completely before the other worker gets its turn.</li>
 </ol>
 
 </section>

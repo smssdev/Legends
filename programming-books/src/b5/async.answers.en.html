@@ -1,0 +1,18 @@
+<ol class="exercises">
+<li><code>A</code> and <code>D</code> come first, because <code>main</code> runs to its first <code>await</code> before anything scheduled. Then <code>B</code>, a job with no delay, then <code>C</code> after 50 milliseconds, and finally <code>E</code> after 100:
+<pre data-code="answers/order.dart" data-title="answers/order.dart"></pre>
+<pre data-term="answers/order.sh"></pre></li>
+<li>It prints the future itself, not the name, because nobody waited for it. Mark the calling function <code>async</code> and <code>await</code> the call:
+<pre data-code="answers/instance.dart" data-title="answers/instance.dart"></pre>
+<pre data-term="answers/instance.sh"></pre></li>
+<li>Each operation waits for the stream’s values as they arrive; <code>toList</code> and <code>fold</code> give a future of the final result:
+<pre data-code="answers/stream_ops.dart" data-title="answers/stream_ops.dart"></pre>
+<pre data-term="answers/stream_ops.sh"></pre></li>
+<li>Each <code>then</code> becomes an <code>await</code> and a variable; the result is the same, and the code reads in order:
+<pre data-code="answers/then_chain.dart" data-title="answers/then_chain.dart"></pre>
+<pre data-term="answers/then_chain.sh"></pre></li>
+<li>Two workers share one queue. Each takes the next coffee, brews it, and comes back for another, so at most two coffees brew at any moment. Five coffees of 0.3 seconds take 0.9 seconds instead of 1.5:
+<pre data-code="answers/pool.dart" data-title="answers/pool.dart"></pre>
+<pre data-term="answers/pool.sh"></pre>
+Sharing the list is safe only because Dart runs one thing at a time: no two workers can take the same coffee, since <code>removeAt</code> runs completely before the other worker gets its turn.</li>
+</ol>
