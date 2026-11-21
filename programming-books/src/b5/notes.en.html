@@ -1,0 +1,264 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/notes/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Project: A Complete Notes App</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>plan an app before writing it: its screens, its data and its files</li>
+<li>build it in layers: the data, the store, the model, then the screens</li>
+<li>use everything from the book together: forms, navigation, Provider, storage and two languages</li>
+<li>delete with a swipe and undo, search as you type, and show empty and loading states</li>
+<li>prove it works with a model test and a widget test that uses the app as a person would</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter so far built a small app to show one idea. Real apps are not built that way: they are built in layers, each layer knowing only the one below it, so that each can be tested alone and changed without breaking the others. This chapter builds one complete app, Bit Notes, file by file, in the order a professional would, with nothing new to learn and everything to put together.</p>
+
+<aside class="bit" data-mood="happy"><p>The screenshots of this chapter were taken by typing real notes into the app, letter by letter, in a browser whose language was set to the edition’s language. The app chose its own language from it.</p></aside>
+
+<h2>{{n}}.1 The plan</h2>
+
+<p>Before any code, write down what the app does, in sentences a person would say:</p>
+
+<ul>
+<li>I can write a note with a title and a text; a note without a title is refused.</li>
+<li>I see my notes, newest first, with the pinned ones on top; I can pin and unpin.</li>
+<li>I can open a note to change it, and swipe it away to delete it, with a way to undo.</li>
+<li>I can search my notes as I type.</li>
+<li>My notes are still there when I open the app again, in Arabic or English, as my phone is set.</li>
+</ul>
+
+<p>Two screens are enough: the list, and an editor that both adds and edits. The files follow the layers:</p>
+
+<pre class="plain" dir="ltr">lib/
+  notes_app.dart        the app: MaterialApp, languages, the model
+  delegates.dart        the translation delegates (Chapter {{n-1}})
+  l10n/app_en.arb       the texts
+  l10n/app_ar.arb
+  notes/
+    note.dart           the data: one note
+    store.dart          where notes are kept
+    model.dart          what the app can do with notes
+    list_page.dart      the list screen
+    edit_page.dart      the editor screen
+test/
+  model_test.dart       the rules, without any screen
+  app_test.dart         the app, tapped as a person would</pre>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Build from the bottom up: data, then storage, then the model, and the screens last. Each layer can be tested as soon as it is written, before anything above it exists. When a screen finally appears, the rules under it already work.</p></aside>
+
+<h2>{{n}}.2 The note</h2>
+
+<p>A note is plain data. It changes by making a new note with <code>copyWith</code>, never by changing a field, which keeps the old one intact for Undo. <code>toJson</code> and <code>fromJson</code> are the edge of Chapter {{n-3}}:</p>
+
+<pre data-code="lib/notes/note.dart" data-title="lib/notes/note.dart"></pre>
+
+<p>The time is saved as text in ISO 8601, <code>2026-11-05T00:00:00.000</code>: readable, sortable, and understood by every language and database.</p>
+
+<h2>{{n}}.3 The store</h2>
+
+<p>The model needs somewhere to keep notes, but should not care where. An <dfn>interface</dfn> says what any store must do, and the app chooses one:</p>
+
+<pre data-code="lib/notes/store.dart" data-from="^// " data-title="lib/notes/store.dart (part)"></pre>
+
+<ul>
+<li><code>abstract interface class</code> declares the two methods and nothing else. Any class that <code>implements</code> it can be given to the model.</li>
+<li><code>PrefsNotesStore</code> keeps all notes as one JSON value with a version, as in Project {{n-2}}.3. A few hundred notes fit easily, and it works on the web too.</li>
+<li><code>MemoryNotesStore</code> keeps them in a list: tests and examples get a store that starts exactly as they want, and touches no disk.</li>
+</ul>
+
+<h2>{{n}}.4 The model</h2>
+
+<p>The model is the only place that changes notes. Screens ask it, it changes the list, tells the screens, and saves:</p>
+
+<pre data-code="lib/notes/model.dart" data-from="^// " data-title="lib/notes/model.dart (part)"></pre>
+
+<ul>
+<li><code>visible</code> is computed, not stored: the search and the order are applied every time it is read. There is no second list to forget to update.</li>
+<li>The clock is a parameter, like the folder in Chapter {{n-2}}: the app uses the real time, the test chooses one.</li>
+<li><code>remove</code> returns the note’s position, and <code>restore</code> puts it back there: Undo needs nothing more.</li>
+<li>Every change ends in <code>_save</code>: notify first, so the screen answers at once, then write.</li>
+</ul>
+
+<p>The model can be tested completely before any screen exists. The test follows the plan’s sentences:</p>
+
+<pre data-code="test/model_test.dart" data-from="^void main" data-title="test/model_test.dart (part)"></pre>
+<pre data-term="model-test.sh"></pre>
+
+<h2>{{n}}.5 The list</h2>
+
+<p>The list page watches the model and shows one of four things: a spinner while the notes load, a message when there are none, another when the search finds nothing, or the notes:</p>
+
+<pre data-code="lib/notes/list_page.dart" data-from="            child: switch (model)" data-to="^            }," data-title="lib/notes/list_page.dart (part)"></pre>
+
+<p>A switch with <dfn>object patterns</dfn> reads like the sentences of the plan: <code>NotesModel(loading: true)</code> matches a model that is loading, <code>NotesModel(all: [])</code> one with no notes at all, and <code>_ when notes.isEmpty</code> one whose search found nothing. Each state has its own words, because each needs a different action from the person.</p>
+
+<div class="phones">
+<figure data-img="shots/empty.png" data-frame="phone">
+<figcaption>The first time: it says what to do</figcaption>
+</figure>
+<figure data-img="shots/list.png" data-frame="phone">
+<figcaption>Three notes, one pinned, after reopening</figcaption>
+</figure>
+</div>
+
+<p>Each note is a <code>Dismissible</code>: swiping it from end to start deletes it, and a snack bar offers to undo:</p>
+
+<pre data-code="lib/notes/list_page.dart" data-from="  Future<void> delete" data-to="^  }" data-title="lib/notes/list_page.dart (part)"></pre>
+
+<p>The model and the messenger are taken <em>before</em> the <code>await</code>: after it, the tile has left the screen, and its <code>context</code> can no longer be used. The snack bar’s action still has the model and the note it needs.</p>
+
+<figure data-img="shots/search.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: Searching as you type: the search looks in titles and texts.</figcaption>
+</figure>
+
+<h2>{{n}}.6 The editor</h2>
+
+<p>One page adds and edits: given a note, it starts with its title and text and updates it; without one, it creates a new note. Chapter 9’s form checks the title:</p>
+
+<pre data-code="lib/notes/edit_page.dart" data-from="  Future<void> save" data-to="^  }" data-title="lib/notes/edit_page.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/editor.png" data-frame="phone">
+<figcaption>Writing a new note</figcaption>
+</figure>
+<figure data-img="shots/invalid.png" data-frame="phone">
+<figcaption>Saving without a title</figcaption>
+</figure>
+</div>
+
+<h2>{{n}}.7 The app</h2>
+
+<p>The top file is short, because everything it needs already exists. It chooses the real store, starts loading, and puts the model above the app:</p>
+
+<pre data-code="lib/notes_app.dart" data-from="^void main" data-title="lib/notes_app.dart (part)"></pre>
+
+<p>The last test uses the whole app as a person would: it finds the empty message, tries to save without a title, writes a note, swipes it away, and brings it back:</p>
+
+<pre data-code="test/app_test.dart" data-from="    final model" data-to="^  });" data-title="test/app_test.dart (part)"></pre>
+<pre data-term="app-test.sh"></pre>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>The app test gives the app a <code>MemoryNotesStore</code> through the same <code>ChangeNotifierProvider</code> that <code>main</code> uses with the real one. Because the store is an interface, the test changes nothing in the app to run it without a disk.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why is <code>visible</code> a getter, and not a list the model keeps up to date?</li><li>Why does <code>delete</code> read the model and the messenger before its <code>await</code>?</li><li>What would change in the screens if notes moved to SQLite?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Before it goes to people</h2>
+
+<p>The app works. Before publishing it, which is the next chapter, a professional goes through a short list:</p>
+
+<table>
+<thead><tr><th>Check</th><th>How</th></tr></thead>
+<tbody>
+<tr><td>Every text translated</td><td><code>gen-l10n</code> reports no untranslated message</td></tr>
+<tr><td>Both directions look right</td><td>Run in Arabic and English; look for left and right in the code</td></tr>
+<tr><td>Empty, loading and error states</td><td>Uninstall and reinstall; open with nothing saved</td></tr>
+<tr><td>Large text</td><td>Set the phone’s font size to the largest: nothing cut, nothing overlapping</td></tr>
+<tr><td>Screen readers</td><td>Every icon button has a tooltip (here: pin, unpin)</td></tr>
+<tr><td>Dark mode</td><td><code>darkTheme</code> is set, and nothing uses a fixed colour</td></tr>
+<tr><td>Tests</td><td><code>flutter test</code> and <code>flutter analyze</code> pass</td></tr>
+</tbody>
+</table>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Starting with the screens</td><td>Rules tangled in widgets, nothing testable</td><td>Data, store, model, then screens</td></tr>
+<tr><td>Keeping a filtered copy of the list</td><td>The copy and the original disagree after a change</td><td>Compute what is shown in a getter</td></tr>
+<tr><td>Changing a note in place</td><td>Undo restores the changed note, not the old one</td><td>New notes with <code>copyWith</code></td></tr>
+<tr><td>Using <code>context</code> after an <code>await</code> in a tile</td><td>An error when the tile has left the screen</td><td>Read what you need before the <code>await</code></td></tr>
+<tr><td>One message for every empty state</td><td>“No notes” while the person is searching</td><td>A different message for each state</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Plan in sentences, then in screens and files.</li>
+<li>Build in layers, bottom up: the data, a store behind an interface, a model that alone changes the data, and screens that only watch and ask.</li>
+<li>Compute what is shown; keep only one list.</li>
+<li>Give every state its own screen: loading, empty, nothing found, and the notes.</li>
+<li>Test the model alone, then the whole app with a memory store.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that there is only one list: a kept copy would have to be updated after every add, edit, delete and search, and one forgotten update would show wrong notes. 2. Because after the <code>await</code> the tile has been removed from the screen, and its <code>context</code> is no longer valid; the model and the messenger read before it are still good. 3. Nothing: only a new class implementing <code>NotesStore</code>, and the one line in <code>main</code> that chooses it, as Project {{n}}.3 shows.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects extend Bit Notes without changing its files: each one imports the layers it needs. That is the reward for building in layers.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Statistics</h3>
+<p class="project-goal">A page that shows how many notes there are, how many are pinned, how many words they hold, and which is the longest.</p>
+<p class="project-skills"><strong>You will practise:</strong> computing from the model, <code>fold</code> and <code>reduce</code>, and records in a list.</p>
+<ol class="steps">
+<li>Watch the model and take <code>all</code>.</li>
+<li>Count words by splitting the title and text on spaces: <code>split(RegExp(r'\s+'))</code>, keeping the non-empty parts.</li>
+<li>Add them with <code>fold</code>, and find the longest note with <code>reduce</code>.</li>
+<li>Show each figure in a <code>ListTile</code>, from a list of records <code>(icon, label, value)</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> nothing here is stored: every figure is computed from the notes, so it is always right, after any change.</p>
+<p><strong>Your result should look like this</strong> (with four sample notes):</p>
+<figure data-img="shots/stats.png" data-frame="phone">
+<figcaption>Project {{n}}.1: everything from the model.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Sort the notes</h3>
+<p class="project-goal">Let people sort by newest, oldest, or alphabetically, from a menu.</p>
+<p class="project-skills"><strong>You will practise:</strong> an enum, a pure sorting function, <code>PopupMenuButton</code>, and a test of the function.</p>
+<ol class="steps">
+<li>An enum <code>Sort { newest, oldest, az }</code>.</li>
+<li>A function <code>sortNotes(notes, sort)</code> that copies the list, sorts the copy with a <code>switch</code>, and returns it: it never changes what it was given.</li>
+<li>A <code>PopupMenuButton&lt;Sort&gt;</code> in the bar sets the order; the list shows <code>sortNotes(model.all, sort)</code>.</li>
+<li>Test the three orders on the four sample notes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>compareTo</code> compares character codes. That is right for English after <code>toLowerCase</code>, but in Arabic it puts أ, إ and آ apart from ا, and ignores what a dictionary would do. For lists people read in Arabic, compare with the hamza forms turned into ا first, or use a collation package.</p>
+<p><strong>Your result should look like this</strong> (alphabetical):</p>
+<figure data-img="shots/sorted.png" data-frame="phone">
+<figcaption>Project {{n}}.2: A to Z.</figcaption>
+</figure>
+<pre data-term="projects/sorted-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Move the notes to SQLite</h3>
+<p class="project-goal">Write a <code>SqliteNotesStore</code> that implements <code>NotesStore</code>, and prove that the model works on it unchanged.</p>
+<p class="project-skills"><strong>You will practise:</strong> implementing an interface, <code>sqflite</code> from Chapter {{n-2}}, transactions, and testing a layer through the one above it.</p>
+<ol class="steps">
+<li>Create a table <code>notes</code> with the five fields; the id is the primary key, and <code>pinned</code> is 0 or 1.</li>
+<li><code>load</code> reads all rows and builds notes. <code>save</code> runs in a <code>transaction</code>: delete all rows, insert the new list. If anything fails, nothing changes.</li>
+<li>Reuse <code>toJson</code> for the row, replacing <code>pinned</code> with 1 or 0.</li>
+<li>Test through the model: save the samples, load them in a <code>NotesModel</code>, unpin one, and load again in a new model.</li>
+<li>In the app, the only change is the store given in <code>main</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> saving the whole list on every change is simple and safe for hundreds of notes. With thousands, change the interface to <code>add</code>, <code>update</code> and <code>remove</code> one note, as Chapter {{n-2}}’s <code>NotesDb</code> does; the screens still will not notice.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/sqlite-store-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Show the number of notes under the title in the bar, with the <code>count</code> plural from the ARB files.</li>
+<li><span class="level">Easy</span> Open a note, change its title, and save. Where does it move in the list, and which line of <code>model.dart</code> decides that?</li>
+<li><span class="level">Medium</span> Add a “Delete” button to the editor of an existing note, which asks for confirmation (Chapter 8) and goes back to the list. Can it reuse the list’s Undo?</li>
+<li><span class="level">Medium</span> Write a model test for editing: a note edited at a later time moves above a newer note that is not pinned.</li>
+<li><span class="level">Challenge</span> Make the search ignore Arabic diacritics and the hamza forms, so that “اكواب” finds “أكواب”. Where does the code go, and what must the test cover?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Bit Notes is finished, and it runs on your phone. The last chapter takes it to everyone else’s: the app’s name and icon, a signed release build, and the steps to publish on Google Play and the App Store.</p>
+</div>
+</section>

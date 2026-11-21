@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+  "appTitle": "Bit Notes",
+  "newNote": "New note",
+  "editNote": "Edit note",
+  "search": "Search notes",
+  "empty": "No notes yet. Tap New note to write one.",
+  "noMatch": "No note matches your search",
+  "title": "Title",
+  "body": "Note",
+  "save": "Save",
+  "titleNeeded": "A note needs a title",
+  "deleted": "Note deleted",
+  "undo": "Undo",
+  "pin": "Pin {title}",
+  "@pin": {"placeholders": {"title": {"type": "String"}}},
+  "unpin": "Unpin {title}",
+  "@unpin": {"placeholders": {"title": {"type": "String"}}},
+  "edited": "{day}",
+  "@edited": {"placeholders": {"day": {"type": "DateTime", "format": "yMMMd"}}},
+  "count": "{count, plural, =0{No notes} =1{1 note} other{{count} notes}}",
+  "@count": {"placeholders": {"count": {"type": "int"}}}
+}
