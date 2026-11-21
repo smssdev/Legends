@@ -94,6 +94,14 @@ STYLE = """
 
 # The code on each front cover: a few lines in the language of the book (Book 1's are its first example).
 CARDS = {
+    "b5": """void main() {
+  runApp(const HelloBit());
+}
+
+final grade = switch (score) {
+  >= 90 => 'A',
+  _ => 'B',
+};""",
     "b2-react": """function Cart({ items }: Props) {
   const total = useMemo(
     () => sum(items), [items]);
@@ -121,7 +129,7 @@ const total = computed(
     ),
 )->middleware('auth:sanctum');""",
 }
-KEYWORDS = ("const", "let", "if", "else", "function", "return", "async", "await", "fn", "new", "setup")
+KEYWORDS = ("void", "final", "switch", "const", "let", "if", "else", "function", "return", "async", "await", "fn", "new", "setup")
 
 
 def _highlight(code):

@@ -1,0 +1,15 @@
+<ol class="exercises">
+<li><code>10 ~/ 3</code> is <code>3</code> (an <code>int</code>), <code>10 % 3</code> is <code>1</code>, <code>10 / 4</code> is <code>2.5</code> (a <code>double</code>), <code>'ab' * 3</code> repeats the string, and <code>'Dart'.length</code> counts its four characters:
+<pre data-code="answers/predict.dart" data-title="answers/predict.dart"></pre>
+<pre data-term="answers/predict.sh"></pre></li>
+<li>The days in a week: <code>const</code>, because 7 is known before the program runs. The score in a running game: <code>var</code>, because it changes. The time the app was opened: <code>final</code>, because it is set once but only known when the app runs. The name the user typed: <code>final</code>, for the same reason (if the user can edit it later, the new name is a new value).</li>
+<li>The price becomes one switch expression; <code>&lt; 13 || &gt;= 65</code> combines two relational patterns:
+<pre data-code="answers/ticket_switch.dart" data-title="answers/ticket_switch.dart"></pre>
+<pre data-term="answers/ticket_switch.sh"></pre></li>
+<li>An empty default for <code>many</code> means “not given”, so the usual <code>s</code> is added:
+<pre data-code="answers/plural.dart" data-title="answers/plural.dart"></pre>
+<pre data-term="answers/plural.sh"></pre></li>
+<li>The inner loop builds one row in a <code>StringBuffer</code>, which collects pieces of text efficiently; <code>padLeft(4)</code> gives every number the same width, so the columns line up:
+<pre data-code="answers/table.dart" data-title="answers/table.dart"></pre>
+<pre data-term="answers/table.sh"></pre></li>
+</ol>

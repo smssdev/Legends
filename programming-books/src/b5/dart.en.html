@@ -1,0 +1,320 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/dart/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Dart Basics</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write and run a Dart program from the terminal</li>
+<li>store values in variables, and choose between <code>var</code>, <code>final</code> and <code>const</code></li>
+<li>work with Dart’s basic types: <code>int</code>, <code>double</code>, <code>String</code> and <code>bool</code></li>
+<li>make decisions with <code>if</code>, and with <code>switch</code> and its patterns</li>
+<li>repeat work with loops, and package it in functions with named parameters</li>
+<li>read the Dart compiler’s error messages, and let them help you</li>
+</ul>
+</div>
+
+<p class="lead">Every Flutter app is a Dart program, so before you build screens you need the language. The good news: if you know JavaScript, or any other language with variables, <code>if</code> and loops, Dart will feel familiar within an hour. The one big difference is that Dart knows the <dfn>type</dfn> of every value, and checks your program before it runs. That catches whole families of bugs before they reach a user’s phone. This chapter teaches the basics, one small program at a time, and ends with a receipt printer for Bit’s café.</p>
+
+<aside class="bit" data-mood="happy"><p>In this chapter we leave the phone for a while and talk to Dart directly, in the terminal. No screens, no emulator: just you, the language, and very fast answers.</p></aside>
+
+<h2>{{n}}.1 Your first Dart program</h2>
+
+<p>Flutter installed Dart for you. Create a folder for this chapter, open it in VS Code, and create a file called <code>hello.dart</code>:</p>
+
+<pre data-code="hello.dart" data-title="hello.dart"></pre>
+
+<p>Run it from the terminal:</p>
+
+<pre data-term="hello.sh"></pre>
+
+<p>Three rules are already visible in these three lines:</p>
+<ul>
+<li>Every Dart program starts in a function called <code>main</code>. Without it, there is nothing to run.</li>
+<li><code>print</code> writes a line in the terminal, like <code>console.log</code> in JavaScript.</li>
+<li>Every statement ends with a semicolon. In JavaScript you could sometimes leave it out; in Dart you cannot.</li>
+</ul>
+<p>Text can be written between single or double quotes. Most Dart code, including Flutter’s own, uses single quotes, and so does this book.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>For quick experiments, open <code>dartpad.dev</code> in a browser: it runs Dart (and even small Flutter apps) with nothing installed. It is perfect for trying a line you are not sure about.</p></aside>
+
+<h2>{{n}}.2 Variables and their types</h2>
+
+<p>A variable is a name for a value, exactly as in Book 1. Dart gives you several ways to create one:</p>
+
+<pre data-code="variables.dart" data-title="variables.dart"></pre>
+<pre data-term="variables.sh"></pre>
+
+<p>With <code>var</code>, Dart looks at the first value and decides the variable’s type: <code>score</code> starts as <code>0</code>, so it is an <code>int</code>, a whole number. This is called <dfn>type inference</dfn>. You can also write the type yourself, as with <code>String name</code>. Either way, the type is fixed for ever: a variable that holds numbers can never hold text. See what happens if you try:</p>
+
+<pre data-code="type-error.dart" data-title="type-error.dart"></pre>
+<pre data-term="type-error.sh" class="error"></pre>
+
+<p>The program did not run at all. Before running anything, Dart <dfn>compiles</dfn> the program: it reads it all and turns it into instructions for the computer, checking the types on the way. The error says where (line 3, column 11, marked with <code>^</code>) and why, in plain words. In JavaScript the same line would have run, and the bug would have appeared later, somewhere else, perhaps on a user’s phone.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>Since Dart 2, every Dart program has been <em>type safe</em>: a variable declared as <code>int</code> can never hold anything else while the program runs. Dart’s compiler uses that promise to make your app faster, too.</p></aside>
+
+<h3>final and const</h3>
+
+<p>Most values in a program never change after they are set. Dart has two words for them:</p>
+<ul>
+<li><code>final</code>: the value is set once, when the program reaches that line, and never changes after. It can come from a calculation, the clock, or the user.</li>
+<li><code>const</code>: the value is known <em>before</em> the program runs, written directly in the code, like <code>4</code> or <code>'Sara'</code>. Dart can then build it once and share it.</li>
+</ul>
+<p>In <code>variables.dart</code>, the year someone joined comes from the clock (<code>DateTime.now()</code>), so it can only be <code>final</code>. The maximum number of players is written in the code, so it can be <code>const</code>. Try to change a <code>final</code>:</p>
+
+<pre data-code="final-error.dart" data-title="final-error.dart"></pre>
+<pre data-term="final-error.sh" class="error"></pre>
+
+<table>
+<thead><tr><th>Dart</th><th>Meaning</th><th>Closest in JavaScript</th></tr></thead>
+<tbody>
+<tr><td><code>var</code></td><td>Can change; type decided by the first value</td><td><code>let</code></td></tr>
+<tr><td><code>final</code></td><td>Set once, while the program runs</td><td><code>const</code></td></tr>
+<tr><td><code>const</code></td><td>Known before the program runs</td><td>(none)</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Use <code>final</code> by default, <code>const</code> for values written in the code, and <code>var</code> only when the value must change. In Flutter, <code>const</code> matters even more: a <code>const</code> widget is built once and reused, which is why you saw <code>const Text(...)</code> in Chapter {{n-1}}. The analyzer reminds you when you forget.</p></aside>
+
+<h2>{{n}}.3 Numbers, text and truth</h2>
+
+<p>Dart has a small set of basic types that you will use in every program:</p>
+
+<pre data-code="numbers.dart" data-title="numbers.dart"></pre>
+<pre data-term="numbers.sh"></pre>
+
+<table>
+<thead><tr><th>Type</th><th>What it holds</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><code>int</code></td><td>Whole numbers</td><td><code>7</code>, <code>-3</code>, <code>2026</code></td></tr>
+<tr><td><code>double</code></td><td>Numbers with a decimal point</td><td><code>12.5</code>, <code>0.1</code></td></tr>
+<tr><td><code>num</code></td><td>Either of the two</td><td><code>3</code> or <code>3.5</code></td></tr>
+<tr><td><code>String</code></td><td>Text</td><td><code>'Cairo'</code></td></tr>
+<tr><td><code>bool</code></td><td><code>true</code> or <code>false</code>, nothing else</td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>JavaScript has one kind of number; Dart has two, and the difference shows in division. The operator <code>/</code> always gives a <code>double</code>: <code>7 / 2</code> is <code>3.5</code>. The operator <code>~/</code> divides and drops everything after the point, giving an <code>int</code>: <code>7 ~/ 2</code> is <code>3</code>. The remainder, <code>%</code>, works as you know it.</p>
+
+<p>Dart never turns text into a number, or a number into text, by itself. Text that contains a number, from a text box or a file, is turned into a number with <code>int.parse</code> or <code>double.parse</code>. A number becomes text with <code>toString()</code>, or with <code>toStringAsFixed(2)</code> to keep exactly two digits after the point, which is what you want for prices.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p><code>int.parse('12a')</code> stops the program with an error, because <code>'12a'</code> is not a number. When the text comes from a user, use <code>int.tryParse</code>, which gives <code>null</code> (no value) instead of stopping. Chapter {{n+1}} explains <code>null</code>, and Chapter 9 uses <code>tryParse</code> in real forms.</p></aside>
+
+<h2>{{n}}.4 Strings</h2>
+
+<p>Dart’s strings have one feature you will use in almost every line of a Flutter app: <dfn>interpolation</dfn>, putting values inside text.</p>
+
+<pre data-code="strings.dart" data-title="strings.dart"></pre>
+<pre data-term="strings.sh"></pre>
+
+<ul>
+<li><code>$name</code> inside a string puts the value of the variable <code>name</code> there.</li>
+<li><code>${items * price}</code>, with braces, puts the result of any expression there. Use the braces whenever there is more than a plain name, even <code>${price.toStringAsFixed(2)}</code>.</li>
+<li>Three quotes, <code>'''</code>, start a string that can run over several lines, keeping the line breaks and the spaces.</li>
+<li>Strings have useful methods: <code>trim()</code> removes spaces at both ends, <code>toUpperCase()</code> makes capitals, <code>contains</code> searches, <code>padLeft(3, '0')</code> fills on the left up to a length, and <code>length</code> counts the characters.</li>
+</ul>
+
+<p>Notice that none of these methods changed <code>raw</code> or <code>name</code>. Strings in Dart cannot be changed; every method returns a new string. That is why the result of <code>raw.trim()</code> must be used, or stored, to be useful.</p>
+
+<h2>{{n}}.5 Operators</h2>
+
+<p>The operators are almost the same as in JavaScript:</p>
+
+<pre data-code="operators.dart" data-title="operators.dart"></pre>
+<pre data-term="operators.sh"></pre>
+
+<p><code>+=</code>, <code>++</code>, the comparisons and the logical operators <code>&amp;&amp;</code>, <code>||</code> and <code>!</code> work as you know them. One thing is simpler: Dart has only <code>==</code>, no <code>===</code>, because it never converts types when comparing. <code>5 == 5.0</code> is <code>true</code> (both are the number five), but <code>'5' == 5</code> is <code>false</code>: text is never equal to a number.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What do <code>9 / 2</code> and <code>9 ~/ 2</code> give?</li><li>Which do you use for a value that comes from the clock: <code>final</code> or <code>const</code>?</li><li>How do you write the text <code>Total: 30</code> from a variable <code>total</code> that holds <code>30</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Decisions with if</h2>
+
+<p><code>if</code>, <code>else if</code> and <code>else</code> work exactly as in Book 1. Here is the cinema kiosk again, in Dart:</p>
+
+<pre data-code="ticket.dart" data-title="ticket.dart"></pre>
+<pre data-term="ticket.sh"></pre>
+
+<p>Two details are new. First, <code>int price;</code> declares a variable without a value. Dart then checks that every path through the <code>if</code> gives it one before it is used: remove the <code>else</code>, and the program does not compile. Second, a condition must be a real <code>bool</code>. In JavaScript, <code>if (count)</code> was true for any number but zero; in Dart, it is an error. Write what you mean: <code>if (count &gt; 0)</code>.</p>
+
+<p>The conditional operator, <code>condition ? a : b</code>, works as in JavaScript, and you will use it constantly in Flutter to choose between two widgets or two colours.</p>
+
+<h2>{{n}}.7 switch and patterns</h2>
+
+<p>Dart’s <code>switch</code> is one of its best features, and much more powerful than JavaScript’s:</p>
+
+<pre data-code="switch.dart" data-title="switch.dart"></pre>
+<pre data-term="switch.sh"></pre>
+
+<p>The first <code>switch</code> is a statement, like the one you know, with one improvement: there is no <code>break</code>. Each <code>case</code> ends where the next one starts, and Dart never runs into the next case by accident.</p>
+
+<p>The second and third are <dfn>switch expressions</dfn>: they produce a value, which goes straight into a variable. Each line has a <dfn>pattern</dfn> on the left of <code>=&gt;</code> and a result on the right, and the first pattern that matches wins:</p>
+<ul>
+<li>A plain value, such as <code>'friday'</code>, matches when the value is equal to it.</li>
+<li><code>||</code> between two patterns matches either of them.</li>
+<li><code>&gt;= 90</code> is a <em>relational pattern</em>: it matches any value that is at least 90. That makes grading one short, readable list.</li>
+<li><code>_</code>, the <em>wildcard</em>, matches anything. Put it last, for everyone else.</li>
+</ul>
+
+<p>A switch expression must cover every possible value. If you remove the <code>_</code> line from the grades, the program does not compile, because a score of 40 would have no grade. Dart calls this <dfn>exhaustiveness checking</dfn>, and in Chapter {{n+1}} you will see it catch real bugs.</p>
+
+<aside class="bit" data-mood="wow"><p>Look at the grades again: five lines, no <code>if</code>, no <code>else</code>, and you can read it aloud like the table on a teacher’s wall. That is why I love switch expressions.</p></aside>
+
+<h2>{{n}}.8 Loops</h2>
+
+<pre data-code="loops.dart" data-title="loops.dart"></pre>
+<pre data-term="loops.sh"></pre>
+
+<p>All of these are familiar. The classic <code>for</code> counts. <code>for (var drink in drinks)</code> visits each item of a list in order, like <code>for...of</code> in JavaScript. <code>while</code> repeats as long as its condition is true. <code>continue</code> skips the rest of one round, and <code>break</code> leaves the loop: the last loop skips even numbers and stops after 7.</p>
+
+<p>The square brackets, <code>['tea', 'coffee', 'juice']</code>, make a <dfn>list</dfn>, Dart’s name for an array. Chapter {{n+1}} covers lists fully, with maps and sets.</p>
+
+<h2>{{n}}.9 Functions</h2>
+
+<p>Functions in Dart declare the type of what they return, and the type of each parameter:</p>
+
+<pre data-code="functions.dart" data-title="functions.dart"></pre>
+<pre data-term="functions.sh"></pre>
+
+<ul>
+<li><code>int square(int n)</code> takes an <code>int</code> and returns an <code>int</code>. A function that returns nothing is declared <code>void</code>, like <code>main</code>.</li>
+<li>When the body is one expression, the arrow <code>=&gt;</code> replaces the braces and <code>return</code>, as in <code>cube</code>.</li>
+<li><dfn>Named parameters</dfn> are written in braces, <code>{...}</code>, and given by name when you call the function: <code>price(cups: 2)</code>. Their order does not matter, and the call reads like a sentence. <code>required</code> means it must be given; the others need a default value, such as <code>each = 12.5</code>.</li>
+<li><dfn>Optional positional parameters</dfn> go in square brackets, <code>[...]</code>, as in <code>greet</code>.</li>
+</ul>
+
+<p>Named parameters are everywhere in Flutter: every <code>Text(..., style: ...)</code> and <code>AppBar(title: ..., centerTitle: true)</code> you wrote in Chapter {{n-1}} was a call with named parameters. And when you forget a required one, Dart tells you before anything runs:</p>
+
+<pre data-code="named-error.dart" data-title="named-error.dart"></pre>
+<pre data-term="named-error.sh" class="error"></pre>
+
+<p>The second part of the message, <code>Context</code>, shows the function you were trying to call, so you can see what it expects.</p>
+
+<h3>Functions are values</h3>
+
+<pre data-code="values.dart" data-title="values.dart"></pre>
+<pre data-term="values.sh"></pre>
+
+<p>A function can be stored in a variable, like <code>change</code>, and passed to another function. <code>(p) =&gt; p &lt; 20</code> is an <dfn>anonymous function</dfn>, a function without a name, written right where it is needed. <code>where</code> keeps the items for which it returns <code>true</code>, <code>map</code> transforms every item, and <code>forEach</code> runs it for each item. If you read Book 1, these are <code>filter</code>, <code>map</code> and <code>forEach</code> under slightly different names. In Flutter, every button’s <code>onPressed</code> is an anonymous function: the code to run when it is pressed.</p>
+
+<h2>{{n}}.10 Project: the café receipt</h2>
+
+<p>Bit’s café needs a program that prints receipts. The rules:</p>
+<ol>
+<li>A latte costs 45 pounds, a cookie 20, a cake 60.</li>
+<li>On Fridays everything is 20% off, and on Saturdays 10% off.</li>
+<li>A 12% service charge is added after the discount, rounded to the nearest pound.</li>
+<li>The receipt lists only what was ordered, with names on the left and amounts on the right.</li>
+</ol>
+
+<pre data-code="receipt.dart" data-title="receipt.dart"></pre>
+<pre data-term="receipt.sh"></pre>
+
+<p>Follow Friday’s receipt as the computer does. Two lattes and three cookies make 150. Friday gives 20%, so the discount is <code>150 * 20 ~/ 100</code>, which is 30. The service is 12% of 120, which is 14.4, and <code>round()</code> makes it 14. The total is 150 − 30 + 14 = 134.</p>
+
+<p>Look at what each part of the program uses. The prices are <code>const</code>. The discount is a switch expression in an arrow function. <code>line</code> builds each line with <code>padRight</code> and <code>padLeft</code>, so the amounts line up. <code>printReceipt</code> uses named parameters with defaults, so a customer who only ordered a cake does not need to say “zero lattes”. And <code>'=' * width</code> repeats a string: another small Dart convenience.</p>
+
+<aside class="box try"><p class="box-title">Try it</p><p>Add tea, at 15 pounds, to the menu and to <code>printReceipt</code>. Then print a Saturday receipt for two teas and a cake, and check the total by hand before you run it.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting a semicolon</td><td>Compile error: <code>Expected ';' after this.</code></td><td>End every statement with <code>;</code></td></tr>
+<tr><td>Putting text into a number variable</td><td>Compile error: a <code>String</code> can’t be assigned to an <code>int</code></td><td>Convert with <code>int.parse</code>, or use another variable</td></tr>
+<tr><td>Using <code>/</code> when a whole number is needed</td><td>A <code>double</code> where an <code>int</code> is expected</td><td>Use <code>~/</code></td></tr>
+<tr><td><code>if (count)</code> with a number</td><td>Compile error: an <code>int</code> can’t be assigned to a <code>bool</code></td><td>Write the comparison: <code>count &gt; 0</code></td></tr>
+<tr><td><code>'Total: ' + total</code> with a number</td><td>Compile error: an <code>int</code> can’t be assigned to a <code>String</code></td><td>Use interpolation: <code>'Total: $total'</code></td></tr>
+<tr><td>Leaving out a <code>required</code> named argument</td><td>Compile error naming the missing parameter</td><td>Give it: <code>price(cups: 2)</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A Dart program starts in <code>main</code>, prints with <code>print</code>, ends statements with <code>;</code>, and runs with <code>dart run file.dart</code>.</li>
+<li>Every value has a <strong>type</strong>, checked before the program runs. <code>var</code> infers it from the first value; it never changes.</li>
+<li>Prefer <code>final</code> (set once) and <code>const</code> (known before running); use <code>var</code> only for values that change.</li>
+<li><code>int</code> and <code>double</code> are two kinds of number: <code>/</code> gives a <code>double</code>, <code>~/</code> an <code>int</code>. Convert text with <code>parse</code>, and numbers with <code>toString</code> or <code>toStringAsFixed</code>.</li>
+<li>Strings use <strong>interpolation</strong>: <code>$name</code> and <code>${expression}</code>.</li>
+<li>Conditions must be <code>bool</code>. <code>==</code> never converts types.</li>
+<li><code>switch</code> needs no <code>break</code>; <strong>switch expressions</strong> with patterns (<code>||</code>, <code>&gt;= 90</code>, <code>_</code>) produce values and must cover every case.</li>
+<li>Functions declare their types; <code>=&gt;</code> for one expression; <strong>named parameters</strong> in <code>{}</code>, with <code>required</code> or defaults. Functions are values.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>4.5</code> (a <code>double</code>) and <code>4</code> (an <code>int</code>). 2. <code>final</code>: the value is only known when the program runs. 3. <code>'Total: $total'</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Three small programs that each use most of the chapter. Write them in files of their own, run them often, and test the strange cases as well as the normal ones.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A temperature table</h3>
+<p class="project-goal">Print a table of temperatures from −10 to 40 degrees Celsius in steps of 10, with the same temperature in Fahrenheit and a word for how it feels.</p>
+<p class="project-skills"><strong>You will practise:</strong> a <code>for</code> loop with a step, <code>double</code> arithmetic, <code>toStringAsFixed</code>, <code>padLeft</code>, and a switch expression with relational patterns.</p>
+<ol class="steps">
+<li>Write a function <code>double toFahrenheit(double c)</code>: multiply by 9, divide by 5, add 32. Check it with 100 °C, which is 212 °F.</li>
+<li>Write <code>String feel(double c)</code> as a switch expression: below 10 is cold, below 20 mild, below 30 warm, and anything else hot.</li>
+<li>Loop with <code>c += 10</code>. The loop variable is an <code>int</code>; turn it into a <code>double</code> with <code>toDouble()</code> before calling the functions.</li>
+<li>Line the columns up with <code>padLeft</code>, and show one digit after the point.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the order of the patterns matters, as in an <code>else if</code> chain: <code>&lt; 10</code> must come before <code>&lt; 20</code>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/temperatures.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>How strong is this password?</h3>
+<p class="project-goal">Rate a password as weak, fair or strong by its length and the kinds of characters it contains.</p>
+<p class="project-skills"><strong>You will practise:</strong> looping over the characters of a string, counting, named parameters with a default, and a switch expression on a number.</p>
+<ol class="steps">
+<li>Write <code>String strength(String password, {int minLength = 8})</code>.</li>
+<li>Loop over the characters with <code>for (var ch in password.split(''))</code>, and count digits, capital letters, small letters and everything else.</li>
+<li>A character is a capital letter when <code>ch.toUpperCase() == ch</code> and <code>ch.toLowerCase() != ch</code>. Why is the second test needed? (Try it with <code>'#'</code>.)</li>
+<li>Give one point each for: the minimum length, at least one digit, both capital and small letters, and at least one other character. Four points is strong, two or three fair, less weak.</li>
+<li>Test five passwords, from <code>cairo</code> to <code>Cairo#2026</code>, and one short password with <code>minLength: 4</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in the switch expression, <code>2 || 3 =&gt; 'fair'</code> handles both values in one line.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/password.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>The change machine</h3>
+<p class="project-goal">Given a price and the amount paid, in whole pounds, give the change using as few notes and coins as possible, or say how much is missing.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>~/</code> and <code>%</code> together, a loop over a <code>const</code> list, building a list of results, and early <code>return</code>.</p>
+<ol class="steps">
+<li>Write the notes and coins as a <code>const</code> list from the largest down: 200, 100, 50, 20, 10, 5, 1.</li>
+<li>Write <code>String change({required int price, required int paid})</code>. First handle the special cases: paid less than the price, and paid exactly the price. Return early from each.</li>
+<li>For each note, <code>left ~/ note</code> is how many fit, and <code>left % note</code> is what is left for the smaller ones.</li>
+<li>Collect the parts in a list, <code>var parts = &lt;String&gt;[];</code>, adding only the notes that were used, and join them with <code>' + '</code>.</li>
+<li>Test four cases: 500 for a price of 137, 50 for 45, the exact amount, and too little.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this simple method, always taking the largest note that fits, is called a <em>greedy</em> algorithm. It gives the fewest notes for these values, but not for every possible set of coins. Can you find a set where it fails?</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/change.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Predict, then check with Dart: <code>10 ~/ 3</code>, <code>10 % 3</code>, <code>10 / 4</code>, <code>'ab' * 3</code>, <code>'Dart'.length</code>.</li>
+<li><span class="level">Easy</span> For each value, choose <code>var</code>, <code>final</code> or <code>const</code>, and say why: the number of days in a week; the score in a running game; the time the app was opened; the name the user typed.</li>
+<li><span class="level">Medium</span> Rewrite the ticket price in <code>ticket.dart</code> as a single switch expression on <code>age</code>, using relational patterns.</li>
+<li><span class="level">Medium</span> Write a function <code>String plural(int count, String word)</code> that gives <code>'1 cup'</code>, <code>'2 cups'</code> and <code>'0 cups'</code>. Then add an optional named parameter for irregular words, so that <code>plural(2, 'child', many: 'children')</code> works.</li>
+<li><span class="level">Challenge</span> Print a multiplication table from 1 to 9 as a grid, with every column lined up, using two nested <code>for</code> loops, <code>padLeft</code>, and a <code>StringBuffer</code> (look it up on <code>api.dart.dev</code>) to build each row before printing it.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The café’s prices are loose constants, and an order is a handful of parameters. In the next chapter you will give them shape with classes, meet <code>null</code> and Dart’s null safety, and store whole menus in lists, maps and sets.</p>
+</div>
+</section>
