@@ -1,0 +1,249 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/forms/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Forms and Input</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read what people type with <code>TextField</code> and a controller</li>
+<li>show the right keyboard for each kind of input, and hide passwords</li>
+<li>check a whole form before sending it, with clear messages beside each field</li>
+<li>offer choices with segmented buttons, checkboxes, switches, sliders and drop-down menus</li>
+<li>test forms by typing in tests</li>
+</ul>
+</div>
+
+<p class="lead">Every app that does something useful asks people for something: a name, a phone number, a password, a size, a note. Typing on a phone is slow and error-prone, so a good form asks for little, shows the right keyboard, explains mistakes kindly and immediately, and never loses what was typed. This chapter builds forms like that, and ends Part II with the café’s order form, every choice changing the price as the customer makes it.</p>
+
+<aside class="bit" data-mood="happy"><p>In this chapter the screenshots were typed for real: the book’s tools put the cursor in a field and pressed the keys one by one, as your fingers will.</p></aside>
+
+<h2>{{n}}.1 Text fields</h2>
+
+<pre data-code="lib/hello.dart" data-from="^class _HelloPageState" data-title="lib/hello.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/hello-empty.png" data-frame="phone">
+<figcaption>Empty</figcaption>
+</figure>
+<figure data-img="shots/hello-typed.png" data-frame="phone">
+<figcaption>After typing “Sara”</figcaption>
+</figure>
+</div>
+
+<ul>
+<li><code>TextField</code> is the box people type in. Its look comes from an <code>InputDecoration</code>: a <code>labelText</code> that moves up when the field has focus or text, a <code>hintText</code> shown while it is empty and focused, icons at either end, and a border.</li>
+<li>A <code>TextEditingController</code> holds the text. Read it with <code>name.text</code>; change it with <code>name.text = ...</code> or <code>name.clear()</code>. The clear button calls <code>setState(name.clear)</code>: clear the text, then rebuild.</li>
+<li><code>onChanged</code> runs after every key. Here it only calls <code>setState</code>, so <code>build</code> runs again and the greeting follows the text.</li>
+<li>A controller holds resources, so the State releases it in <code>dispose</code>, the method Flutter calls when the State is removed for good. Every controller you create, you dispose.</li>
+</ul>
+
+<h2>{{n}}.2 The right keyboard</h2>
+
+<p>A phone has no physical keyboard: the app chooses which one appears. Choosing well saves people a lot of taps:</p>
+
+<pre data-code="lib/keyboards.dart" data-from="children: [" data-to="^        ]," data-title="lib/keyboards.dart (part)"></pre>
+
+<figure data-img="shots/keyboards.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: After typing a password and tapping the eye to show it.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>Property</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>keyboardType</code></td><td><code>phone</code>: a dial pad; <code>emailAddress</code>: a keyboard with @ and .; <code>number</code>: digits only; <code>multiline</code>: Enter makes a new line</td></tr>
+<tr><td><code>textInputAction</code></td><td>The key in the corner of the keyboard: <code>next</code> moves to the next field, <code>done</code> closes the keyboard</td></tr>
+<tr><td><code>obscureText</code></td><td>Hides each character; the eye button flips it to let people check what they typed</td></tr>
+<tr><td><code>autocorrect: false</code></td><td>Stops the phone “correcting” email addresses and codes</td></tr>
+<tr><td><code>maxLength</code></td><td>Refuses more characters than the limit, and shows a counter</td></tr>
+</tbody>
+</table>
+
+<p>The screenshot comes from a browser, which shows no on-screen keyboard. On your emulator or phone, tap each field and watch the keyboard change.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Add <code>autofillHints: const [AutofillHints.email]</code> (or <code>.telephoneNumber</code>, <code>.password</code>, <code>.name</code>) to a field, and the phone offers to fill it from the user’s saved details. One line, and many people never type at all.</p></aside>
+
+<h2>{{n}}.3 Forms and validation</h2>
+
+<p>A form with several fields needs to check them all before sending, and say clearly what is wrong with each. Flutter’s <code>Form</code> does exactly that:</p>
+
+<pre data-code="lib/form.dart" data-from="^class _CallBackFormState" data-title="lib/form.dart (part)"></pre>
+
+<figure data-img="shots/form-errors.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: After tapping “Send” with every field empty.</figcaption>
+</figure>
+
+<ul>
+<li><code>TextFormField</code> is a <code>TextField</code> that belongs to the <code>Form</code> above it.</li>
+<li>Each field has a <code>validator</code>: a function that takes the value and returns an error message, or <code>null</code> when the value is fine. The message appears under the field, in red.</li>
+<li>The <code>GlobalKey&lt;FormState&gt;</code> gives the page a handle on the form. <code>formKey.currentState!.validate()</code> runs every validator, shows every message, and returns <code>true</code> only if all of them passed.</li>
+<li>The form checks nothing until the first “Send”: an error before people have finished typing is rude. After a failed try, <code>AutovalidateMode.onUserInteraction</code> rechecks each field as it changes, so the red message disappears the moment the mistake is fixed.</li>
+<li>The phone validator uses a <dfn>regular expression</dfn>, a pattern for text: <code>^[0-9]{11}$</code> means exactly eleven digits from start to end.</li>
+</ul>
+
+<p>Tests type with <code>tester.enterText</code>:</p>
+
+<pre data-code="test/form_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/form_test.dart (part)"></pre>
+<pre data-term="form-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Checking in the app is for people: fast, friendly messages. It is not protection. Anyone can send anything to your server without your app, so the server must check every value again. Chapter 11 talks to a server; this rule applies to every request you send.</p></aside>
+
+<h2>{{n}}.4 Choices</h2>
+
+<p>When the answer is one of a few known values, do not make people type it. Material has a widget for each kind of choice:</p>
+
+<pre data-code="lib/choices.dart" data-from="children: [" data-to="^        ]," data-title="lib/choices.dart (part)"></pre>
+
+<figure data-img="shots/choices.png" data-frame="phone">
+<figcaption>Figure {{n}}.3: A segmented button, two checkboxes, a slider and a drop-down menu.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>Widget</th><th>Choose it for</th></tr></thead>
+<tbody>
+<tr><td><code>SegmentedButton</code></td><td>One of two to five options, all visible: sizes, views</td></tr>
+<tr><td><code>CheckboxListTile</code></td><td>Independent yes/no items: extras, “remember me”</td></tr>
+<tr><td><code>SwitchListTile</code></td><td>A setting that takes effect at once: dark mode, notifications</td></tr>
+<tr><td><code>Slider</code></td><td>A number in a range, when the exact value matters less than the feel</td></tr>
+<tr><td><code>DropdownMenu</code></td><td>One of a longer list, hidden until needed</td></tr>
+</tbody>
+</table>
+
+<p>All of them follow the same pattern as the star rating of Chapter 5: they show a value they are given (<code>selected</code>, <code>value</code>, <code>initialSelection</code>), and report a new one through a callback (<code>onSelectionChanged</code>, <code>onChanged</code>, <code>onSelected</code>). The state keeps the value; <code>setState</code> stores the new one. The segmented button takes a <code>Set</code>, because it can also allow several selections.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What must a validator return when the value is correct?</li><li>Which property shows a keyboard with @ for an email field?</li><li>Why does the State call <code>dispose()</code> on its controllers?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Project: the café order form</h2>
+
+<p>The last project of Part II brings it together: a name that must be given, a size, an extra shot, a number of cups and a note, with the price on the button changing at every choice.</p>
+
+<pre data-code="lib/order_form.dart" data-from="^enum Size" data-to="^}#1" data-title="lib/order_form.dart (the sizes)"></pre>
+<pre data-code="lib/order_form.dart" data-from="int get total" data-to="^  }#1" data-title="lib/order_form.dart (the price and the summary)"></pre>
+
+<div class="phones">
+<figure data-img="shots/order-form.png" data-frame="phone">
+<figcaption>After typing “Mona” and choosing Large</figcaption>
+</figure>
+<figure data-img="shots/order-summary.png" data-frame="phone">
+<figcaption>After “Place order”</figcaption>
+</figure>
+</div>
+
+<ul>
+<li>The sizes are an enum that carries its price and its label, as in Chapter 3: adding a size is one line, and the compiler finds every switch that must change.</li>
+<li>The total is a getter, computed from the state every time <code>build</code> runs. It is never stored, so it can never disagree with the choices. Store what people choose; compute everything that follows from it.</li>
+<li><code>place</code> validates first and stops if the name is missing. Only then does it show the summary, in a dialog from Chapter 8.</li>
+<li>The note uses <code>maxLines: 3</code> for a taller field, and <code>alignLabelWithHint</code> keeps its label at the top.</li>
+</ul>
+
+<pre data-code="test/order_form_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/order_form_test.dart (part)"></pre>
+<pre data-term="order-form-test.sh"></pre>
+
+<p>The test checks the arithmetic through the screen: a large (55) with an extra shot (10), twice, is 130.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Creating a controller in <code>build</code></td><td>The text disappears at every rebuild</td><td>Create it once, as a field of the State</td></tr>
+<tr><td>Forgetting <code>dispose</code></td><td>A memory leak, reported in debug builds</td><td>Dispose every controller in <code>dispose()</code></td></tr>
+<tr><td>A validator that returns <code>''</code></td><td>The field counts as wrong, with an empty message</td><td>Return <code>null</code> for a correct value</td></tr>
+<tr><td>Showing errors before the first try</td><td>Red messages while people are still typing</td><td>Validate on submit, then <code>onUserInteraction</code></td></tr>
+<tr><td><code>int.parse</code> on what people type</td><td>A crash on “12a” or an empty field</td><td><code>int.tryParse(...) ?? 0</code></td></tr>
+<tr><td>Trusting the app’s checks</td><td>Bad data reaches the server from other clients</td><td>Check again on the server</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><code>TextField</code> with an <code>InputDecoration</code> takes text; a <code>TextEditingController</code> reads and changes it, and is disposed in <code>dispose()</code>.</li>
+<li>Choose the keyboard with <code>keyboardType</code>, the corner key with <code>textInputAction</code>; hide passwords with <code>obscureText</code>.</li>
+<li>A <code>Form</code> with a <code>GlobalKey&lt;FormState&gt;</code> checks every <code>TextFormField</code>’s <code>validator</code> with <code>validate()</code>; a validator returns a message or <code>null</code>.</li>
+<li>Validate on submit, then as people type; check again on the server.</li>
+<li><code>SegmentedButton</code>, <code>CheckboxListTile</code>, <code>SwitchListTile</code>, <code>Slider</code> and <code>DropdownMenu</code> offer choices: each shows a value and reports changes.</li>
+<li>Store what people choose; compute totals in getters. Tests type with <code>tester.enterText</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>null</code>. 2. <code>keyboardType: TextInputType.emailAddress</code>. 3. Because controllers hold resources and listeners; releasing them when the State is removed avoids memory leaks.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Try each form with real people’s mistakes: an empty field, a space at the end, a letter where a number belongs, a very long name.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Split the bill</h3>
+<p class="project-goal">Type the bill, choose a tip with a slider and the number of people with two buttons, and see what each person pays, updated at every change.</p>
+<p class="project-skills"><strong>You will practise:</strong> a numeric field, <code>double.tryParse</code>, a <code>Slider</code> with divisions, and values computed in <code>build</code>.</p>
+<ol class="steps">
+<li>A <code>TextField</code> with <code>TextInputType.numberWithOptions(decimal: true)</code> and <code>suffixText: 'EGP'</code>, calling <code>setState</code> in <code>onChanged</code>.</li>
+<li>A <code>Slider</code> from 0 to 25 with <code>divisions: 5</code>, so it stops at 0, 5, 10, 15, 20 and 25 per cent.</li>
+<li>Minus and plus buttons for the number of people, the minus disabled at 1.</li>
+<li>In <code>build</code>: <code>final amount = double.tryParse(bill.text) ?? 0;</code> then the share, shown with two digits after the point.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>tryParse</code> returns <code>null</code> for an empty field or a stray letter, and <code>?? 0</code> turns that into a bill of zero instead of a crash.</p>
+<p><strong>Your result should look like this</strong> (after typing 360):</p>
+<figure data-img="shots/tip.png" data-frame="phone">
+<figcaption>Project {{n}}.1: 360 with a 10% tip, for two people.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A sign-up form</h3>
+<p class="project-goal">Ask for an email, a password of at least eight characters, the same password again, and acceptance of the terms, and refuse to continue until everything is right.</p>
+<p class="project-skills"><strong>You will practise:</strong> validators that compare two fields, <code>FormField</code> for a checkbox, and testing with <code>enterText</code>.</p>
+<ol class="steps">
+<li>Give the password field a controller, so that the confirmation’s validator can compare: <code>v == password.text ? null : 'The passwords do not match'</code>.</li>
+<li>A checkbox has no validator of its own. Wrap it in <code>FormField&lt;bool&gt;</code>: its <code>validator</code> checks the value, and its <code>builder</code> draws a <code>CheckboxListTile</code> with <code>field.value</code>, <code>field.didChange</code>, and the error under it when <code>field.hasError</code>.</li>
+<li>On submit, <code>validate()</code>; on success, a snack bar.</li>
+<li>Test two passwords that differ, then the same ones with the box ticked.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in the test, the page title and the button have the same words. <code>find.widgetWithText(FilledButton, ...)</code> finds the button only.</p>
+<p><strong>Your result should look like this</strong> (after tapping the button with the form empty):</p>
+<figure data-img="shots/signup.png" data-frame="phone">
+<figcaption>Project {{n}}.2: every rule explained at once.</figcaption>
+</figure>
+<pre data-term="projects/signup-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Search as you type</h3>
+<p class="project-goal">Put a search field in the app bar that filters the menu as the customer types, ignores capitals, has a button to clear it, and says so when nothing matches.</p>
+<p class="project-skills"><strong>You will practise:</strong> a field in the app bar, collection <code>for</code> with <code>if</code>, a conditional suffix icon, an empty state, and counting widgets in a test.</p>
+<ol class="steps">
+<li>Put a <code>TextField</code> as the <code>AppBar</code>’s <code>title</code>, with <code>autofocus: true</code> and <code>border: InputBorder.none</code>.</li>
+<li>In <code>build</code>, compute the matches: <code>[for (final d in drinks) if (d.toLowerCase().contains(words)) d]</code>.</li>
+<li>Show the clear button only when there is text: <code>suffixIcon: query.text.isEmpty ? null : IconButton(...)</code>.</li>
+<li>When nothing matches, show a centred message instead of the list.</li>
+<li>Test: all drinks at first, two after typing “tea”, the message after typing “xyz”.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> for a menu of a thousand items, filtering on every key is still instant. For results from a server, wait until the customer stops typing for a moment before asking: Chapter 11 shows how.</p>
+<p><strong>Your result should look like this</strong> (after typing “tea”):</p>
+<figure data-img="shots/search.png" data-frame="phone">
+<figcaption>Project {{n}}.3: two teas found.</figcaption>
+</figure>
+<pre data-term="projects/search-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In <code>hello.dart</code>, greet people by their name in capitals, and ignore spaces typed before or after it.</li>
+<li><span class="level">Easy</span> Which <code>keyboardType</code> and <code>textInputAction</code> would you give to: a name, a phone number, an email address, a note of several lines, and the last field of a form?</li>
+<li><span class="level">Medium</span> Make the call-back form accept phone numbers typed with spaces, like <code>0100 123 4567</code>, by removing the spaces before checking.</li>
+<li><span class="level">Medium</span> Disable the order form’s button while the name is empty, instead of showing an error after the tap. Which approach is kinder to people, and when would you use each?</li>
+<li><span class="level">Challenge</span> Add a pick-up time to the order form with <code>showTimePicker</code>, refusing times outside the opening hours (8:00 to 22:00) with a message.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Part II is complete: you can build any screen and move between screens. But each screen keeps its own state, and the order placed on one page does not reach the basket on another. Part III begins with state that the whole app shares, with <code>setState</code> and with Provider.</p>
+</div>
+</section>
