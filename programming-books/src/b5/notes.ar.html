@@ -1,0 +1,264 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/notes/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>مشروع: تطبيق ملاحظات كامل</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تخطط لتطبيق قبل كتابته: شاشاته، وبياناته، وملفاته</li>
+<li>تبنيه طبقات: البيانات، ثم المخزن، ثم النموذج، ثم الشاشات</li>
+<li>تستخدم كل ما في الكتاب معاً: النماذج، والتنقل، وProvider، والتخزين، ولغتين</li>
+<li>تحذف بالسحب مع تراجع، وتبحث أثناء الكتابة، وتعرض حالات الفراغ والتحميل</li>
+<li>تثبت أنه يعمل باختبار للنموذج واختبار Widget يستخدم التطبيق كما يستخدمه الناس</li>
+</ul>
+</div>
+
+<p class="lead">كل فصل حتى الآن بنى تطبيقاً صغيراً ليعرض فكرة واحدة. والتطبيقات الحقيقية لا تُبنى هكذا: تُبنى طبقات، كل طبقة لا تعرف إلا التي تحتها، فتُختبر كل واحدة وحدها وتتغير دون أن تكسر غيرها. وهذا الفصل يبني تطبيقاً كاملاً واحداً، ملاحظات بِت، ملفاً ملفاً، بالترتيب الذي يتبعه المحترف، بلا جديد تتعلمه، وبكل شيء تجمعه.</p>
+
+<aside class="bit" data-mood="happy"><p>صور هذا الفصل التُقطت بكتابة ملاحظات حقيقية في التطبيق، حرفاً حرفاً، في متصفح لغته لغة النسخة. والتطبيق اختار لغته منه بنفسه.</p></aside>
+
+<h2>{{n}}.1 الخطة</h2>
+
+<p>قبل أي كود، اكتب ما يفعله التطبيق بجمل يقولها شخص:</p>
+
+<ul>
+<li>أستطيع كتابة ملاحظة بعنوان ونص؛ والملاحظة بلا عنوان تُرفض.</li>
+<li>أرى ملاحظاتي، الأحدث أولاً، والمثبّتة في الأعلى؛ وأستطيع التثبيت وإلغاءه.</li>
+<li>أستطيع فتح ملاحظة لتغييرها، وسحبها لحذفها، مع طريقة للتراجع.</li>
+<li>أستطيع البحث في ملاحظاتي وأنا أكتب.</li>
+<li>تبقى ملاحظاتي حين أفتح التطبيق من جديد، بالعربية أو الإنجليزية، كما ضُبط جوالي.</li>
+</ul>
+
+<p>تكفي شاشتان: القائمة، ومحرر يضيف ويعدّل معاً. والملفات تتبع الطبقات:</p>
+
+<pre class="plain" dir="ltr">lib/
+  notes_app.dart        التطبيق: MaterialApp واللغات والنموذج
+  delegates.dart        مندوبو الترجمة (الفصل {{n-1}})
+  l10n/app_en.arb       النصوص
+  l10n/app_ar.arb
+  notes/
+    note.dart           البيانات: ملاحظة واحدة
+    store.dart          مكان حفظ الملاحظات
+    model.dart          ما يستطيع التطبيق فعله بالملاحظات
+    list_page.dart      شاشة القائمة
+    edit_page.dart      شاشة المحرر
+test/
+  model_test.dart       القواعد، بلا أي شاشة
+  app_test.dart         التطبيق، يُلمس كما يلمسه الناس</pre>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>ابنِ من الأسفل إلى الأعلى: البيانات، ثم التخزين، ثم النموذج، والشاشات أخيراً. فكل طبقة تُختبر فور كتابتها، قبل أن يوجد شيء فوقها. وحين تظهر الشاشة أخيراً تكون القواعد تحتها تعمل من قبل.</p></aside>
+
+<h2>{{n}}.2 الملاحظة</h2>
+
+<p>الملاحظة بيانات بسيطة. تتغير بصنع ملاحظة جديدة بـ <code>copyWith</code>، لا بتغيير حقل أبداً، فتبقى القديمة سليمة من أجل «تراجع». و<code>toJson</code> و<code>fromJson</code> هما الحافة من الفصل {{n-3}}:</p>
+
+<pre data-code="lib/notes/note.dart" data-title="lib/notes/note.dart"></pre>
+
+<p>والوقت يُحفظ نصاً بصيغة ISO 8601، <code dir="ltr">2026-11-05T00:00:00.000</code>: مقروء، ويُرتَّب، وتفهمه كل لغة وكل قاعدة بيانات.</p>
+
+<h2>{{n}}.3 المخزن</h2>
+
+<p>يحتاج النموذج مكاناً يحفظ فيه الملاحظات، لكن لا يجب أن يهتم أين. و<dfn>الواجهة</dfn> (interface) تقول ما يجب أن يفعله أي مخزن، والتطبيق يختار واحداً:</p>
+
+<pre data-code="lib/notes/store.dart" data-from="^// " data-title="lib/notes/store.dart (جزء)"></pre>
+
+<ul>
+<li><code dir="ltr">abstract interface class</code> تعلن الدالتين ولا شيء غيرهما. وأي صنف يكتب <code>implements</code> لها يمكن أن يُعطى للنموذج.</li>
+<li><code>PrefsNotesStore</code> تحفظ كل الملاحظات كقيمة JSON واحدة لها إصدار، كما في المشروع {{n-2}}.3. ومئات الملاحظات تتسع بسهولة، وتعمل على الويب أيضاً.</li>
+<li><code>MemoryNotesStore</code> تحفظها في قائمة: فتأخذ الاختبارات والأمثلة مخزناً يبدأ كما تريد تماماً، ولا يلمس أي قرص.</li>
+</ul>
+
+<h2>{{n}}.4 النموذج</h2>
+
+<p>النموذج هو المكان الوحيد الذي يغيّر الملاحظات. تسأله الشاشات، فيغيّر القائمة، ويخبر الشاشات، ويحفظ:</p>
+
+<pre data-code="lib/notes/model.dart" data-from="^// " data-title="lib/notes/model.dart (جزء)"></pre>
+
+<ul>
+<li><code>visible</code> محسوبة لا محفوظة: يُطبَّق البحث والترتيب في كل مرة تُقرأ فيها. فلا قائمة ثانية تنسى تحديثها.</li>
+<li>الساعة معامل، مثل المجلد في الفصل {{n-2}}: التطبيق يستخدم الوقت الحقيقي، والاختبار يختار وقتاً.</li>
+<li><code>remove</code> تعيد موضع الملاحظة، و<code>restore</code> تعيدها إليه: ولا يحتاج «تراجع» أكثر من ذلك.</li>
+<li>كل تغيير ينتهي في <code>_save</code>: أبلغ أولاً فتستجيب الشاشة فوراً، ثم اكتب.</li>
+</ul>
+
+<p>ويمكن اختبار النموذج كاملاً قبل أن توجد أي شاشة. والاختبار يتبع جمل الخطة:</p>
+
+<pre data-code="test/model_test.dart" data-from="^void main" data-title="test/model_test.dart (جزء)"></pre>
+<pre data-term="model-test.sh"></pre>
+
+<h2>{{n}}.5 القائمة</h2>
+
+<p>صفحة القائمة تشاهد النموذج وتعرض واحداً من أربعة: مؤشراً دوّاراً أثناء تحميل الملاحظات، أو رسالة حين لا توجد ملاحظات، أو أخرى حين لا يجد البحث شيئاً، أو الملاحظات:</p>
+
+<pre data-code="lib/notes/list_page.dart" data-from="            child: switch (model)" data-to="^            }," data-title="lib/notes/list_page.dart (جزء)"></pre>
+
+<p>والـ switch مع <dfn>أنماط الكائنات</dfn> يُقرأ كجمل الخطة: <code dir="ltr">NotesModel(loading: true)</code> يطابق نموذجاً يحمّل، و<code dir="ltr">NotesModel(all: [])</code> نموذجاً بلا ملاحظات أبداً، و<code dir="ltr">_ when notes.isEmpty</code> نموذجاً لم يجد بحثه شيئاً. ولكل حالة كلماتها، لأن كل واحدة تحتاج من الشخص فعلاً مختلفاً.</p>
+
+<div class="phones">
+<figure data-img="shots/empty.png" data-frame="phone">
+<figcaption>المرة الأولى: تقول ماذا تفعل</figcaption>
+</figure>
+<figure data-img="shots/list.png" data-frame="phone">
+<figcaption>ثلاث ملاحظات، واحدة مثبّتة، بعد إعادة الفتح</figcaption>
+</figure>
+</div>
+
+<p>وكل ملاحظة <code>Dismissible</code>: سحبها من النهاية إلى البداية يحذفها، ويعرض شريط سفلي التراجع:</p>
+
+<pre data-code="lib/notes/list_page.dart" data-from="  Future<void> delete" data-to="^  }" data-title="lib/notes/list_page.dart (جزء)"></pre>
+
+<p>النموذج والـ messenger يؤخذان <em>قبل</em> <code>await</code>: فبعده تكون البطاقة قد غادرت الشاشة، ولا يمكن استخدام <code>context</code> الخاص بها. أما زر التراجع في الشريط فما زال معه النموذج والملاحظة اللذان يحتاجهما.</p>
+
+<figure data-img="shots/search.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: البحث أثناء الكتابة: يبحث في العناوين والنصوص.</figcaption>
+</figure>
+
+<h2>{{n}}.6 المحرر</h2>
+
+<p>صفحة واحدة تضيف وتعدّل: إن أُعطيت ملاحظة بدأت بعنوانها ونصها وحدّثتها؛ وإلا أنشأت ملاحظة جديدة. ونموذج الفصل 9 يتحقق من العنوان:</p>
+
+<pre data-code="lib/notes/edit_page.dart" data-from="  Future<void> save" data-to="^  }" data-title="lib/notes/edit_page.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/editor.png" data-frame="phone">
+<figcaption>كتابة ملاحظة جديدة</figcaption>
+</figure>
+<figure data-img="shots/invalid.png" data-frame="phone">
+<figcaption>الحفظ بلا عنوان</figcaption>
+</figure>
+</div>
+
+<h2>{{n}}.7 التطبيق</h2>
+
+<p>الملف الأعلى قصير، لأن كل ما يحتاجه موجود من قبل. يختار المخزن الحقيقي، ويبدأ التحميل، ويضع النموذج فوق التطبيق:</p>
+
+<pre data-code="lib/notes_app.dart" data-from="^void main" data-title="lib/notes_app.dart (جزء)"></pre>
+
+<p>والاختبار الأخير يستخدم التطبيق كله كما يستخدمه شخص: يجد رسالة الفراغ، ويحاول الحفظ بلا عنوان، ويكتب ملاحظة، ويسحبها، ويعيدها:</p>
+
+<pre data-code="test/app_test.dart" data-from="    final model" data-to="^  });" data-title="test/app_test.dart (جزء)"></pre>
+<pre data-term="app-test.sh"></pre>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>اختبار التطبيق يعطيه <code>MemoryNotesStore</code> عبر <code>ChangeNotifierProvider</code> نفسه الذي تستخدمه <code>main</code> مع المخزن الحقيقي. ولأن المخزن واجهة، لا يغيّر الاختبار شيئاً في التطبيق ليشغّله بلا قرص.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>لماذا <code>visible</code> خاصية محسوبة، لا قائمة يحدّثها النموذج؟</li><li>لماذا تقرأ <code>delete</code> النموذج والـ messenger قبل <code>await</code>؟</li><li>ماذا سيتغير في الشاشات لو انتقلت الملاحظات إلى SQLite؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>قبل أن يصل إلى الناس</h2>
+
+<p>التطبيق يعمل. وقبل نشره، وهو موضوع الفصل القادم، يمر المحترف على قائمة قصيرة:</p>
+
+<table>
+<thead><tr><th>الفحص</th><th>كيف</th></tr></thead>
+<tbody>
+<tr><td>كل نص مترجم</td><td><code>gen-l10n</code> لا تبلّغ عن رسالة غير مترجمة</td></tr>
+<tr><td>الاتجاهان صحيحان</td><td>شغّله بالعربية والإنجليزية؛ وابحث عن left وright في الكود</td></tr>
+<tr><td>حالات الفراغ والتحميل والخطأ</td><td>احذف التطبيق وثبّته من جديد؛ وافتحه بلا شيء محفوظ</td></tr>
+<tr><td>الخط الكبير</td><td>اجعل حجم خط الجوال أكبر ما يمكن: لا شيء مقطوع، ولا شيء متداخل</td></tr>
+<tr><td>قارئات الشاشة</td><td>كل زر أيقونة له تلميح (هنا: التثبيت وإلغاؤه)</td></tr>
+<tr><td>الوضع الليلي</td><td><code>darkTheme</code> مضبوط، ولا شيء يستخدم لوناً ثابتاً</td></tr>
+<tr><td>الاختبارات</td><td><code dir="ltr">flutter test</code> و<code dir="ltr">flutter analyze</code> تنجحان</td></tr>
+</tbody>
+</table>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>البدء بالشاشات</td><td>قواعد متشابكة مع العناصر، ولا شيء قابل للاختبار</td><td>البيانات، فالمخزن، فالنموذج، ثم الشاشات</td></tr>
+<tr><td>حفظ نسخة مصفّاة من القائمة</td><td>النسخة والأصل يختلفان بعد تغيير</td><td>احسب ما يُعرض في خاصية محسوبة</td></tr>
+<tr><td>تغيير الملاحظة في مكانها</td><td>«تراجع» يعيد الملاحظة المعدّلة لا القديمة</td><td>ملاحظات جديدة بـ <code>copyWith</code></td></tr>
+<tr><td>استخدام <code>context</code> بعد <code>await</code> في بطاقة</td><td>خطأ حين تكون البطاقة قد غادرت الشاشة</td><td>اقرأ ما تحتاجه قبل <code>await</code></td></tr>
+<tr><td>رسالة واحدة لكل حالات الفراغ</td><td>«لا ملاحظات» والشخص يبحث</td><td>رسالة مختلفة لكل حالة</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>خطّط بالجمل، ثم بالشاشات والملفات.</li>
+<li>ابنِ طبقات من الأسفل: البيانات، ومخزن خلف واجهة، ونموذج وحده يغيّر البيانات، وشاشات تشاهد وتسأل فقط.</li>
+<li>احسب ما يُعرض؛ واحفظ قائمة واحدة فقط.</li>
+<li>أعطِ كل حالة شاشتها: التحميل، والفراغ، ولا نتائج، والملاحظات.</li>
+<li>اختبر النموذج وحده، ثم التطبيق كله بمخزن في الذاكرة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لتكون هناك قائمة واحدة فقط: فالنسخة المحفوظة يجب تحديثها بعد كل إضافة وتعديل وحذف وبحث، وتحديث واحد منسي سيعرض ملاحظات خاطئة. 2. لأن البطاقة بعد <code>await</code> تكون قد أُزيلت من الشاشة، ولم يعد <code>context</code> الخاص بها صالحاً؛ أما النموذج والـ messenger المقروءان قبله فما زالا صالحين. 3. لا شيء: فقط صنف جديد يكتب <code>implements</code> لـ <code>NotesStore</code>، والسطر الواحد في <code>main</code> الذي يختاره، كما يُظهر المشروع {{n}}.3.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع توسّع ملاحظات بِت دون أن تغيّر ملفاتها: كل واحد يستورد الطبقات التي يحتاجها. وهذه مكافأة البناء طبقات.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>إحصاءات</h3>
+<p class="project-goal">صفحة تعرض عدد الملاحظات، وكم منها مثبّت، وكم كلمة فيها، وأيها الأطول.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الحساب من النموذج، و<code>fold</code> و<code>reduce</code>، والـ records في قائمة.</p>
+<ol class="steps">
+<li>شاهد النموذج وخذ <code>all</code>.</li>
+<li>عُدّ الكلمات بتقسيم العنوان والنص على المسافات: <code dir="ltr">split(RegExp(r'\s+'))</code>، مع إبقاء الأجزاء غير الفارغة.</li>
+<li>اجمعها بـ <code>fold</code>، وجِد أطول ملاحظة بـ <code>reduce</code>.</li>
+<li>اعرض كل رقم في <code>ListTile</code>، من قائمة records فيها <code dir="ltr">(icon, label, value)</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لا شيء هنا محفوظ: كل رقم محسوب من الملاحظات، فهو صحيح دائماً بعد أي تغيير.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (مع أربع ملاحظات للتجربة):</p>
+<figure data-img="shots/stats.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: كل شيء من النموذج.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>رتّب الملاحظات</h3>
+<p class="project-goal">دع الناس يرتّبون بالأحدث، أو بالأقدم، أو أبجدياً، من قائمة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> enum، ودالة ترتيب نقية، و<code>PopupMenuButton</code>، واختبار للدالة.</p>
+<ol class="steps">
+<li>enum اسمه <code dir="ltr">Sort { newest, oldest, az }</code>.</li>
+<li>دالة <code dir="ltr">sortNotes(notes, sort)</code> تنسخ القائمة، وترتّب النسخة بـ <code>switch</code>، وتعيدها: فهي لا تغيّر أبداً ما أُعطيته.</li>
+<li><code dir="ltr">PopupMenuButton&lt;Sort&gt;</code> في الشريط يضبط الترتيب؛ والقائمة تعرض <code dir="ltr">sortNotes(model.all, sort)</code>.</li>
+<li>اختبر الترتيبات الثلاثة على الملاحظات الأربع.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>compareTo</code> تقارن رموز الحروف. وهذا صحيح للإنجليزية بعد <code>toLowerCase</code>، لكنه في العربية يضع أ وإ وآ بعيداً عن ا، ولا يفعل ما يفعله المعجم. فللقوائم التي يقرؤها الناس بالعربية قارن بعد تحويل صور الهمزة إلى ا، أو استخدم حزمة ترتيب.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (أبجدياً):</p>
+<figure data-img="shots/sorted.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: أبجدياً.</figcaption>
+</figure>
+<pre data-term="projects/sorted-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>انقل الملاحظات إلى SQLite</h3>
+<p class="project-goal">اكتب <code>SqliteNotesStore</code> يكتب <code>implements</code> لـ <code>NotesStore</code>، وأثبت أن النموذج يعمل عليه كما هو.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تنفيذ واجهة، و<code>sqflite</code> من الفصل {{n-2}}، والمعاملات، واختبار طبقة عبر الطبقة التي فوقها.</p>
+<ol class="steps">
+<li>أنشئ جدول <code>notes</code> بالحقول الخمسة؛ والرقم مفتاح أساسي، و<code>pinned</code> صفر أو واحد.</li>
+<li><code>load</code> تقرأ كل الصفوف وتبني الملاحظات. و<code>save</code> تعمل داخل <code>transaction</code>: احذف كل الصفوف، وأدخل القائمة الجديدة. فإن فشل أي شيء لم يتغير شيء.</li>
+<li>أعد استخدام <code>toJson</code> للصف، مع وضع 1 أو 0 مكان <code>pinned</code>.</li>
+<li>اختبر عبر النموذج: احفظ الملاحظات الأربع، وحمّلها في <code>NotesModel</code>، وألغِ تثبيت واحدة، وحمّلها من جديد في نموذج جديد.</li>
+<li>وفي التطبيق، التغيير الوحيد هو المخزن المعطى في <code>main</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حفظ القائمة كلها مع كل تغيير بسيط وآمن لمئات الملاحظات. أما مع الآلاف فغيّر الواجهة إلى <code>add</code> و<code>update</code> و<code>remove</code> لملاحظة واحدة، كما يفعل <code>NotesDb</code> في الفصل {{n-2}}؛ ولن تلاحظ الشاشات شيئاً.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/sqlite-store-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اعرض عدد الملاحظات تحت العنوان في الشريط، برسالة الجمع <code>count</code> من ملفات ARB.</li>
+<li><span class="level">سهل</span> افتح ملاحظة، وغيّر عنوانها، واحفظ. أين تنتقل في القائمة، وأي سطر في <code>model.dart</code> يقرر ذلك؟</li>
+<li><span class="level">متوسط</span> أضف زر «احذف» إلى محرر الملاحظة الموجودة، يطلب التأكيد (الفصل 8) ويعود إلى القائمة. هل يستطيع أن يعيد استخدام «تراجع» في القائمة؟</li>
+<li><span class="level">متوسط</span> اكتب اختبار نموذج للتعديل: الملاحظة المعدّلة في وقت لاحق تصعد فوق ملاحظة أحدث منها غير مثبّتة.</li>
+<li><span class="level">تحدٍّ</span> اجعل البحث يتجاهل التشكيل وصور الهمزة، فيجد «اكواب» كلمة «أكواب». أين يوضع الكود، وما الذي يجب أن يغطيه الاختبار؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>انتهى تطبيق ملاحظات بِت، وهو يعمل على جوالك. والفصل الأخير يأخذه إلى جوالات الآخرين: اسم التطبيق وأيقونته، ونسخة إصدار موقّعة، وخطوات النشر على Google Play وApp Store.</p>
+</div>
+</section>
