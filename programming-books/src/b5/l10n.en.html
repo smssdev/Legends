@@ -1,0 +1,224 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/l10n/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Arabic, English and RTL</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>build layouts that are correct in both directions, with <em>start</em> and <em>end</em> instead of left and right</li>
+<li>keep every text of an app in translation files, one per language, and generate Dart code from them</li>
+<li>write plurals properly, including Arabic’s six forms</li>
+<li>format prices and dates for each language, and choose between Western and Eastern Arabic digits</li>
+<li>let people switch the language inside the app, and remember their choice</li>
+</ul>
+</div>
+
+<p class="lead">The Arabic apps in this book so far have been turned right to left by one line that the book promised to explain. That line forces a direction; it does not translate anything, does not change Material’s own buttons, and does not know how Arabic counts. This chapter builds the café app properly in two languages at once: all its texts in translation files, the direction following the language, plurals, prices and dates written as each language writes them, and a menu to switch.</p>
+
+<aside class="bit" data-mood="happy"><p>This chapter’s app is the same in both editions of the book, because it speaks both languages. Only the comments in the code are in the language of the edition you are reading.</p></aside>
+
+<h2>{{n}}.1 Start and end, not left and right</h2>
+
+<p>Arabic is written from right to left, and so is everything around it: the first item of a row is on the right, the back arrow points right, a list’s icon is on the right of its text. Flutter mirrors all of this by itself, from the <dfn>text direction</dfn>, as long as the code says <em>start</em> and <em>end</em> instead of left and right:</p>
+
+<pre data-code="lib/directions.dart" data-from="^            Directionality(" data-to="^                      ),#2" data-title="lib/directions.dart (part)"></pre>
+
+<figure data-img="shots/directions.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: The same two cards in both directions. Only the second is right in Arabic.</figcaption>
+</figure>
+
+<ul>
+<li><code>Directionality</code> sets the direction for everything under it. Usually you never write it: <code>MaterialApp</code> sets it from the language.</li>
+<li>The <code>Row</code> mirrors in both cards: the cup comes first, on the start side. The arrow <code>Icons.arrow_forward</code> mirrors too: Material marks the icons that have a direction.</li>
+<li><code>EdgeInsets.only(left: 48)</code> stays on the left in Arabic, where it is now the <em>end</em> of the row: the gap is on the wrong side. <code>EdgeInsetsDirectional.only(start: 48)</code> follows the direction.</li>
+<li>The same pairs exist everywhere: <code>Alignment.centerLeft</code> and <code>AlignmentDirectional.centerStart</code>, <code>BorderRadius</code> and <code>BorderRadiusDirectional</code>, <code>Positioned</code> and <code>PositionedDirectional</code>, <code>TextAlign.left</code> and <code>TextAlign.start</code>.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Write <em>start</em> and <em>end</em> from the first line of every app, even one that has only one language today. It costs nothing, and the day the app gets an Arabic, Hebrew, Persian or Urdu version, the layout is already right. Reserve left and right for what really is physical: a shadow’s direction, a picture that must not be flipped.</p></aside>
+
+<h2>{{n}}.2 Texts in translation files</h2>
+
+<p>Flutter’s own tool for translations is <code>gen-l10n</code> (“l10n” is short for “localization”: an l, ten letters, an n). It reads one <dfn>ARB</dfn> file per language, a JSON file of texts, and writes a Dart class with a method for each text. The packages: <code>flutter_localizations</code>, which comes with Flutter and holds the translations of its widgets, and <code>intl</code>, which formats numbers and dates:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>Two settings switch the tool on. In <code>pubspec.yaml</code>, under <code>flutter:</code>, the line <code>generate: true</code> regenerates the code at every <code>flutter run</code> and build. And a file <code>l10n.yaml</code> at the project’s root says where the files are:</p>
+
+<pre data-code="l10n.yaml" data-title="l10n.yaml"></pre>
+
+<p>The English file is the <dfn>template</dfn>: every text is there, with a description and its <dfn>placeholders</dfn>, the values that change:</p>
+
+<pre data-code="lib/l10n/app_en.arb" data-from="^{" data-to="pickUpOn" data-title="lib/l10n/app_en.arb (part)"></pre>
+
+<p>The Arabic file has the same keys and only the texts:</p>
+
+<pre data-code="lib/l10n/app_ar.arb" data-from="^{" data-to="pickUpOn" data-title="lib/l10n/app_ar.arb (part)"></pre>
+
+<pre data-term="gen-l10n.sh"></pre>
+
+<p>The tool wrote <code>lib/l10n/app_localizations.dart</code> and one file per language. Every key became a getter or a method: <code>l.appTitle</code>, <code>l.price(45)</code>, <code>l.pickUpOn(day)</code>. A missing key in Arabic, or a placeholder written wrong, is now an error when the app is built, not a blank on someone’s screen.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>The generated files are not yours: never edit them, because the next build writes them again. That is also why the project’s <code>analysis_options.yaml</code> excludes them from the analyzer: <code>lib/l10n/app_localizations*.dart</code>.</p></aside>
+
+<h2>{{n}}.3 Plurals: six forms in Arabic</h2>
+
+<p>English has two forms, one item and several items. Arabic has six: zero, one, two, a few (3 to 10), many (11 to 99) and the rest (100, 101…). A message that adds an “s” cannot be translated; a <dfn>plural message</dfn> in ICU form can:</p>
+
+<pre data-code="lib/l10n/app_ar.arb" data-from="items" data-to="items" data-title="lib/l10n/app_ar.arb (one line)"></pre>
+
+<p><code>=0</code>, <code>=1</code> and <code>=2</code> are exact numbers; <code>few</code>, <code>many</code> and <code>other</code> are the language’s own categories, and <code>intl</code> knows which numbers belong to which in every language. The test checks the forms, and the formatted prices and dates:</p>
+
+<pre data-code="test/l10n_test.dart" data-from="    final en" data-to="^  });" data-title="test/l10n_test.dart (part)"></pre>
+<pre data-term="l10n-test.sh"></pre>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>The number in a plural is written as it is, <code>1500</code>, while a placeholder with <code>"format": "decimalPattern"</code> is grouped, <code>1,500</code>. For prices and big counts, give the number its own placeholder with a format.</p></aside>
+
+<h2>{{n}}.4 The app in two languages</h2>
+
+<p>The app gives <code>MaterialApp</code> the languages it supports, the <dfn>delegates</dfn> that load each language’s texts, and the language to use:</p>
+
+<pre data-code="lib/delegates.dart" data-from="^// " data-title="lib/delegates.dart"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p><code>gen-l10n</code> also generates a ready list, <code>AppLocalizations.localizationsDelegates</code>, and many tutorials use it. In Flutter 3.50 it still names Material’s translations from <code>flutter_localizations</code>, from before Material moved to <code>material_ui</code>. With it, our own texts were translated, but Material’s were not: the date picker could not even open in Arabic, because it found no Arabic texts for its buttons. Flutter’s own warning in the test named the fix: our delegate, then <code>GlobalMaterialLocalizations.delegates</code> (plural) from <code>material_ui</code>, which brings Material’s texts, Cupertino’s, and the direction of the text.</p></aside>
+
+<pre data-code="lib/bilingual_app.dart" data-from="^class CafeApp" data-to="^}" data-title="lib/bilingual_app.dart (part)"></pre>
+
+<p>Inside the screens, <code>AppLocalizations.of(context)</code> gives the texts of the current language. Nothing in the page says “English” or “Arabic”:</p>
+
+<pre data-code="lib/bilingual_app.dart" data-from="    final l = " data-to="          for (final (name" data-title="lib/bilingual_app.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/english.png" data-frame="phone">
+<figcaption>English, after three taps and a day</figcaption>
+</figure>
+<figure data-img="shots/arabic.png" data-frame="phone">
+<figcaption>Arabic, the same taps</figcaption>
+</figure>
+</div>
+
+<p>Compare the two screens: the title, the welcome, the drinks and prices, the plural (3 items, 3 قطع), the date with its weekday, the direction of the whole page, the arrow, and even the position of the language button. One line in <code>MaterialApp</code> changed all of it. Material’s own widgets follow too:</p>
+
+<figure data-img="shots/picker.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: Material’s date picker, in Arabic, from right to left.</figcaption>
+</figure>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Look at the Arabic screen again: the price says 45 but the date says ٣ ديسمبر ٢٠٢٦. The test of Section {{n}}.3 got “3 ديسمبر 2026” from the same message. The difference is Material: when an app starts in Arabic, Material loads its own Arabic date data, which writes Eastern Arabic digits, and every date formatted after that uses it; numbers are not affected. If your app must use one kind of digits everywhere, decide it once: format with <code>ar_EG</code> for Eastern digits, or with a locale of Western digits for both, and test on the screen, not only with <code>lookupAppLocalizations</code>.</p></aside>
+
+<h2>{{n}}.5 Choosing the language</h2>
+
+<p>By default, <code>locale</code> is <code>null</code> and Flutter takes the phone’s language, if the app supports it, or the first supported one. Many people in Arabic-speaking countries use phones in English but want an app in Arabic, or the opposite: give them a choice, and remember it, as in Chapter {{n-1}}:</p>
+
+<pre data-code="lib/bilingual_app.dart" data-from="^class LanguageChoice" data-to="^}" data-title="lib/bilingual_app.dart (part)"></pre>
+
+<p>The menu writes each language in its own words, “English” and “العربية”, whatever the current language: someone who cannot read the current one must still find their own. The test chooses Arabic, then checks the translation, the direction and what was saved:</p>
+
+<pre data-code="test/bilingual_test.dart" data-from="    await tester.tap" data-to="^  });" data-title="test/bilingual_test.dart (part)"></pre>
+<pre data-term="bilingual-test.sh"></pre>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What is wrong with <code>EdgeInsets.only(left: 16)</code> in an app that has an Arabic version?</li><li>How many plural forms does Arabic have, and which number is “many”: 3, 11 or 100?</li><li>What does <code>locale: null</code> mean in <code>MaterialApp</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Left and right in padding and alignment</td><td>Gaps and corners on the wrong side in Arabic</td><td><code>EdgeInsetsDirectional</code>, <code>AlignmentDirectional</code>, start and end</td></tr>
+<tr><td>Texts written in the widgets</td><td>An app that cannot be translated without rewriting its screens</td><td>Every text in the ARB files</td></tr>
+<tr><td>Joining text for plurals or sentences</td><td>“1 items”, and Arabic word orders that cannot be built</td><td>One ICU message per sentence, with placeholders</td></tr>
+<tr><td>Forcing RTL with <code>Directionality</code> around the app</td><td>Material’s texts stay in English, dates are not translated</td><td><code>locale</code>, <code>supportedLocales</code> and the delegates</td></tr>
+<tr><td>Using the generated delegate list in Flutter 3.50</td><td>Material’s widgets find no translations; the date picker fails</td><td>Our delegate and <code>material_ui</code>’s <code>GlobalMaterialLocalizations.delegates</code></td></tr>
+<tr><td>Editing the generated files</td><td>Changes lost at the next build</td><td>Edit the ARB files</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Say start and end: <code>EdgeInsetsDirectional</code>, <code>AlignmentDirectional</code>, <code>BorderRadiusDirectional</code>; rows and directional icons mirror by themselves.</li>
+<li>Texts live in one ARB file per language; <code>gen-l10n</code>, switched on by <code>generate: true</code> and <code>l10n.yaml</code>, turns them into <code>AppLocalizations</code>.</li>
+<li>Placeholders carry values, with formats for numbers and dates; ICU plurals cover Arabic’s six forms.</li>
+<li><code>MaterialApp</code> takes <code>supportedLocales</code>, the delegates, and <code>locale</code> (<code>null</code> follows the phone); the direction comes from the language.</li>
+<li><code>intl</code> formats numbers and dates; for numbers, <code>ar</code> writes 0 to 9 and <code>ar_EG</code> writes ٠ to ٩; once Material is loaded in Arabic, dates use its Eastern digits.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. In Arabic the row starts on the right, so a gap on the left is at its end, the wrong side; <code>EdgeInsetsDirectional.only(start: 16)</code> follows the direction. 2. Six; 11 is “many” (11 to 99), 3 is “few”, 100 is “other”. 3. Follow the phone’s language, if the app supports it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The three projects use the same ARB files as the chapter’s app, and open in the language of the edition you are reading. Try each one in the other language too: change <code>locale</code> and run it again.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Cups, in every form</h3>
+<p class="project-goal">Count cups with a plural message that is right in both languages, from zero to a hundred and one.</p>
+<p class="project-skills"><strong>You will practise:</strong> ICU plurals with exact and category forms, and a test of every form.</p>
+<ol class="steps">
+<li>Add <code>cups</code> to <code>app_en.arb</code>: <code>{count, plural, =0{No cups yet} =1{1 cup} other{{count} cups}}</code>, with a placeholder <code>count</code> of type <code>int</code>.</li>
+<li>Add the Arabic with all six forms: <code>=0{لا أكواب بعد} =1{كوب واحد} =2{كوبان} few{{count} أكواب} many{{count} كوبًا} other{{count} كوب}</code>.</li>
+<li>Show <code>l.cups(cups)</code> in large text, with a button <code>oneMore</code> that adds one.</li>
+<li>Test with <code>lookupAppLocalizations</code>: 0, 1, 2, 11 in English; 0, 1, 2, 3, 10, 11, 99, 100, 101 in Arabic.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>lookupAppLocalizations(Locale('ar'))</code> gives the texts of one language without a widget or a context: the quickest way to test translations.</p>
+<p><strong>Your result should look like this</strong> (after eleven taps):</p>
+<figure data-img="shots/cups.png" data-frame="phone">
+<figcaption>Project {{n}}.1: eleven cups.</figcaption>
+</figure>
+<pre data-term="projects/cups-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>One receipt, three audiences</h3>
+<p class="project-goal">Format the same total and time for English readers, Arabic readers who use Western digits, and readers in Egypt who use Eastern Arabic digits.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>NumberFormat.currency</code>, <code>DateFormat</code> with a locale, and testing exact formatted strings.</p>
+<ol class="steps">
+<li>Write <code>totalIn(locale)</code> with <code>NumberFormat.currency(locale: locale, name: 'EGP', decimalDigits: 0)</code>, and <code>timeIn(locale)</code> with <code>DateFormat.yMMMd(locale).add_jm()</code>.</li>
+<li>Show a card for each of <code>en</code>, <code>ar</code> and <code>ar_EG</code>, with the total and the time.</li>
+<li>Test the exact strings. Look closely at what comes back: the English time has a narrow no-break space before AM, the Arabic totals start with an invisible right-to-left mark, and a no-break space keeps “EGP” on the same line as the number.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> which digits to use is a choice for your audience, not a rule of the language: in Egypt and the Gulf both are common, in North Africa Western digits are the norm. Many apps offer it as a setting.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/receipt.png" data-frame="phone">
+<figcaption>Project {{n}}.2: the same receipt, three ways.</figcaption>
+</figure>
+<pre data-term="projects/receipt-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Chat bubbles in both directions</h3>
+<p class="project-goal">Build a chat screen whose bubbles are on the correct side, with their small corner pointing to the writer, in both directions, and prove it with a test.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>AlignmentDirectional</code>, <code>EdgeInsetsDirectional</code>, <code>BorderRadiusDirectional</code>, and testing positions.</p>
+<ol class="steps">
+<li>A <code>Bubble</code> takes <code>text</code> and <code>mine</code>. Align it to <code>centerEnd</code> if it is mine, <code>centerStart</code> if not.</li>
+<li>Give it a wide margin on the other side, so that long messages do not reach across the screen.</li>
+<li>Round all corners except one: <code>bottomEnd</code> for mine, <code>bottomStart</code> for theirs.</li>
+<li>Test by pumping two bubbles in each direction and comparing <code>tester.getCenter(...).dx</code>: mine must be on the right in English and on the left in Arabic.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if your bubble needs no change at all to be right in the other direction, you have written it well. The test proves it, so it stays right after every later change.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/chat.png" data-frame="phone">
+<figcaption>Project {{n}}.3: the back arrow, the bubbles and the send icon all follow the direction.</figcaption>
+</figure>
+<pre data-term="projects/chat-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Remove the Arabic translation of <code>language</code> from <code>app_ar.arb</code> and run <code>flutter gen-l10n</code>. What does the tool say, and what would the Arabic app show?</li>
+<li><span class="level">Easy</span> In <code>directions.dart</code>, replace <code>Icons.arrow_forward</code> with <code>Icons.chevron_right</code> and then <code>Icons.coffee</code>. Which ones mirror in Arabic, and why should a cup not?</li>
+<li><span class="level">Medium</span> Add an <code>items</code> line to the bottom of the menu that also shows the total: “3 items · 145 EGP”. Write it as one message with two placeholders, not two messages joined in code, and explain why.</li>
+<li><span class="level">Medium</span> Add a third language of your choice to <code>supportedLocales</code> by adding its ARB file. What happens to the texts you did not translate yet?</li>
+<li><span class="level">Challenge</span> Show the date “3 December” as <em>today</em>, <em>tomorrow</em> or the date, in both languages, with a <code>select</code> message (<code>{when, select, today{…} tomorrow{…} other{…}}</code>). Which part decides “today”, and why must it not be the ARB file?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Everything is in place: widgets, layouts, lists, navigation, forms, state, an API, storage and two languages. The next chapter puts it all into one complete app, a notes app written file by file, with its tests, the way a real app is built.</p>
+</div>
+</section>

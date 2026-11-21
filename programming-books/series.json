@@ -1104,7 +1104,8 @@
             },
             {
               "en": "Arabic, English and RTL",
-              "ar": "العربية والإنجليزية والاتجاه من اليمين"
+              "ar": "العربية والإنجليزية والاتجاه من اليمين",
+              "src": "b5/l10n"
             },
             {
               "en": "Project: A Complete Notes App",

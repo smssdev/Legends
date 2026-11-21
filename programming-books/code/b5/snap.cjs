@@ -13,7 +13,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function browser() {
   // Flutter draws with WebGL; a machine without a graphics card draws it in software.
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const page = await b.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
+  // ?lang=ar in the address: the browser speaks Arabic, as a phone set to Arabic would.
+  const locale = (query.match(/[?&]lang=([\w-]+)/) || [])[1];
+  const page = await b.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2, ...(locale && { locale }) });
   return [b, page];
 }
 
