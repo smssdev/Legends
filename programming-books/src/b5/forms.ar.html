@@ -1,0 +1,249 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/forms/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>النماذج والإدخال</h1>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تقرأ ما يكتبه الناس بـ <code>TextField</code> ومتحكّم</li>
+<li>تعرض لوحة المفاتيح المناسبة لكل نوع من الإدخال، وتخفي كلمات المرور</li>
+<li>تفحص النموذج كله قبل إرساله، برسائل واضحة بجانب كل مربع</li>
+<li>تعرض الاختيارات بالأزرار المقسّمة ومربعات الاختيار والمفاتيح والمنزلقات والقوائم المنسدلة</li>
+<li>تختبر النماذج بالكتابة داخل الاختبارات</li>
+</ul>
+</div>
+
+<p class="lead">كل تطبيق يفعل شيئاً مفيداً يطلب من الناس شيئاً: اسماً، أو رقم هاتف، أو كلمة مرور، أو حجماً، أو ملاحظة. والكتابة على الجوال بطيئة وكثيرة الأخطاء، فالنموذج الجيد يطلب القليل، ويعرض لوحة المفاتيح المناسبة، ويشرح الأخطاء بلطف وفي الحال، ولا يضيّع ما كُتب أبداً. هذا الفصل يبني نماذج كهذه، ويختم الجزء الثاني بنموذج طلب المقهى، حيث يغيّر كل اختيار السعر لحظة يختاره الزبون.</p>
+
+<aside class="bit" data-mood="happy"><p>في هذا الفصل كُتبت صور الشاشات فعلاً: وضعت أدوات الكتاب المؤشر في المربع وضغطت المفاتيح واحداً بعد آخر، كما ستفعل أصابعك.</p></aside>
+
+<h2>{{n}}.1 مربعات النص</h2>
+
+<pre data-code="lib/hello.dart" data-from="^class _HelloPageState" data-title="lib/hello.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/hello-empty.png" data-frame="phone">
+<figcaption>فارغ</figcaption>
+</figure>
+<figure data-img="shots/hello-typed.png" data-frame="phone">
+<figcaption>بعد كتابة «سارة»</figcaption>
+</figure>
+</div>
+
+<ul>
+<li><code>TextField</code> هو المربع الذي يكتب فيه الناس. وشكله من <code>InputDecoration</code>: عنوان <code>labelText</code> يرتفع حين يكون في المربع تركيز أو نص، وتلميح <code>hintText</code> يظهر وهو فارغ ومركَّز، وأيقونات في الطرفين، وإطار.</li>
+<li>الـ <code>TextEditingController</code> يحمل النص. اقرأه بـ <code>name.text</code>، وغيّره بـ <code>name.text = ...</code> أو <code>name.clear()</code>. وزر المسح يستدعي <code>setState(name.clear)</code>: امسح النص، ثم أعد البناء.</li>
+<li><code>onChanged</code> تعمل بعد كل حرف. وهي هنا لا تستدعي إلا <code>setState</code>، فتعمل <code>build</code> من جديد وتتبع التحية النص.</li>
+<li>المتحكّم يحجز موارد، فيحرّره الـ State في <code>dispose</code>، الدالة التي يستدعيها Flutter حين يُزال الـ State نهائياً. وكل متحكّم تنشئه، تحرّره.</li>
+</ul>
+
+<h2>{{n}}.2 لوحة المفاتيح المناسبة</h2>
+
+<p>للجوال لوحة مفاتيح على الشاشة لا لوحة حقيقية: والتطبيق يختار أيها تظهر. والاختيار الجيد يوفّر على الناس ضغطات كثيرة:</p>
+
+<pre data-code="lib/keyboards.dart" data-from="children: [" data-to="^        ]," data-title="lib/keyboards.dart (جزء)"></pre>
+
+<figure data-img="shots/keyboards.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: بعد كتابة كلمة مرور وضغط العين لإظهارها.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>الخاصية</th><th>ما تفعله</th></tr></thead>
+<tbody>
+<tr><td><code>keyboardType</code></td><td><code>phone</code>: لوحة اتصال؛ <code>emailAddress</code>: لوحة فيها @ و.؛ <code>number</code>: أرقام فقط؛ <code>multiline</code>: Enter تصنع سطراً جديداً</td></tr>
+<tr><td><code>textInputAction</code></td><td>المفتاح في زاوية اللوحة: <code>next</code> ينتقل إلى المربع التالي، و<code>done</code> يغلق اللوحة</td></tr>
+<tr><td><code>obscureText</code></td><td>يخفي كل حرف؛ وزر العين يقلبه ليتأكد الناس مما كتبوا</td></tr>
+<tr><td><code>autocorrect: false</code></td><td>يمنع الجوال من «تصحيح» عناوين البريد والرموز</td></tr>
+<tr><td><code>maxLength</code></td><td>يرفض أحرفاً أكثر من الحد، ويعرض عدّاداً</td></tr>
+</tbody>
+</table>
+
+<p>الصورة من متصفح لا يعرض لوحة مفاتيح على الشاشة. أما على المحاكي أو الجوال، فاضغط كل مربع وانظر اللوحة تتغير.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>أضف <code>autofillHints: const [AutofillHints.email]</code> (أو <code>.telephoneNumber</code> أو <code>.password</code> أو <code>.name</code>) إلى المربع، فيعرض الجوال ملأه من بيانات المستخدم المحفوظة. سطر واحد، وكثير من الناس لا يكتبون شيئاً على الإطلاق.</p></aside>
+
+<h2>{{n}}.3 النماذج والتحقق</h2>
+
+<p>النموذج ذو المربعات الكثيرة يحتاج أن يفحصها كلها قبل الإرسال، وأن يقول بوضوح ما الخطأ في كل منها. والـ <code>Form</code> في Flutter يفعل ذلك بالضبط:</p>
+
+<pre data-code="lib/form.dart" data-from="^class _CallBackFormState" data-title="lib/form.dart (جزء)"></pre>
+
+<figure data-img="shots/form-errors.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: بعد ضغط «أرسل» وكل المربعات فارغة.</figcaption>
+</figure>
+
+<ul>
+<li><code>TextFormField</code> هو <code>TextField</code> ينتمي إلى الـ <code>Form</code> الذي فوقه.</li>
+<li>لكل مربع دالة تحقق <code>validator</code>: تأخذ القيمة وتُرجع رسالة خطأ، أو <code>null</code> حين تكون القيمة سليمة. وتظهر الرسالة تحت المربع باللون الأحمر.</li>
+<li>الـ <code>GlobalKey&lt;FormState&gt;</code> يعطي الصفحة مقبضاً على النموذج. و<code>formKey.currentState!.validate()</code> تشغّل كل دوال التحقق، وتعرض كل الرسائل، ولا تُرجع <code>true</code> إلا إذا نجحت كلها.</li>
+<li>النموذج لا يفحص شيئاً حتى أول ضغطة «أرسل»: فالخطأ قبل أن ينهي الناس الكتابة وقاحة. وبعد محاولة فاشلة، تعيد <code>AutovalidateMode.onUserInteraction</code> فحص كل مربع كلما تغيّر، فتختفي الرسالة الحمراء لحظة يُصلح الخطأ.</li>
+<li>دالة تحقق الهاتف تستخدم <dfn>تعبيراً نمطياً</dfn> (regular expression)، أي نمطاً للنص: <code>^[0-9]{11}$</code> تعني أحد عشر رقماً بالضبط من البداية إلى النهاية.</li>
+</ul>
+
+<p>والاختبارات تكتب بـ <code>tester.enterText</code>:</p>
+
+<pre data-code="test/form_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/form_test.dart (جزء)"></pre>
+<pre data-term="form-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>الفحص في التطبيق للناس: رسائل سريعة ودودة. وليس حماية. فأي أحد يستطيع أن يرسل أي شيء إلى خادمك دون تطبيقك، فيجب أن يفحص الخادم كل قيمة من جديد. والفصل 11 يتصل بخادم؛ وهذه القاعدة تنطبق على كل طلب ترسله.</p></aside>
+
+<h2>{{n}}.4 الاختيارات</h2>
+
+<p>حين تكون الإجابة واحدة من قيم قليلة معروفة، فلا تجعل الناس يكتبونها. ولدى Material Widget لكل نوع من الاختيارات:</p>
+
+<pre data-code="lib/choices.dart" data-from="children: [" data-to="^        ]," data-title="lib/choices.dart (جزء)"></pre>
+
+<figure data-img="shots/choices.png" data-frame="phone">
+<figcaption>الشكل {{n}}.3: زر مقسّم، ومربعا اختيار، ومنزلق، وقائمة منسدلة.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>الـ Widget</th><th>اختره لـ</th></tr></thead>
+<tbody>
+<tr><td><code>SegmentedButton</code></td><td>واحد من اثنين إلى خمسة خيارات، كلها ظاهرة: الأحجام، وطرق العرض</td></tr>
+<tr><td><code>CheckboxListTile</code></td><td>عناصر نعم أو لا مستقلة: الإضافات، و«تذكّرني»</td></tr>
+<tr><td><code>SwitchListTile</code></td><td>إعداد يعمل في الحال: الوضع الداكن، والإشعارات</td></tr>
+<tr><td><code>Slider</code></td><td>رقم ضمن مدى، حين يهم الإحساس أكثر من القيمة الدقيقة</td></tr>
+<tr><td><code>DropdownMenu</code></td><td>واحد من قائمة أطول، مخفية حتى يُحتاج إليها</td></tr>
+</tbody>
+</table>
+
+<p>كلها تتبع نمط التقييم بالنجوم في الفصل 5: تعرض قيمة تُعطى لها (<code>selected</code> و<code>value</code> و<code>initialSelection</code>)، وتبلّغ عن الجديدة عبر دالة (<code>onSelectionChanged</code> و<code>onChanged</code> و<code>onSelected</code>). والحالة تحفظ القيمة، و<code>setState</code> تخزّن الجديدة. والزر المقسّم يأخذ <code>Set</code>، لأنه يستطيع أيضاً السماح باختيارات متعددة.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ماذا يجب أن تُرجع دالة التحقق حين تكون القيمة صحيحة؟</li><li>أي خاصية تعرض لوحة فيها @ لمربع البريد؟</li><li>لماذا يستدعي الـ State الدالة <code>dispose()</code> على متحكّماته؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.5 مشروع: نموذج طلب المقهى</h2>
+
+<p>المشروع الأخير في الجزء الثاني يجمعه كله: اسم لا بد منه، وحجم، وجرعة إضافية، وعدد أكواب، وملاحظة، والسعر على الزر يتغير مع كل اختيار.</p>
+
+<pre data-code="lib/order_form.dart" data-from="^enum Size" data-to="^}#1" data-title="lib/order_form.dart (الأحجام)"></pre>
+<pre data-code="lib/order_form.dart" data-from="int get total" data-to="^  }#1" data-title="lib/order_form.dart (السعر والملخص)"></pre>
+
+<div class="phones">
+<figure data-img="shots/order-form.png" data-frame="phone">
+<figcaption>بعد كتابة «منى» واختيار «كبير»</figcaption>
+</figure>
+<figure data-img="shots/order-summary.png" data-frame="phone">
+<figcaption>بعد «أرسل الطلب»</figcaption>
+</figure>
+</div>
+
+<ul>
+<li>الأحجام enum يحمل سعره واسمه، كما في الفصل 3: إضافة حجم سطر واحد، والمترجم يجد كل switch يجب أن يتغير. ولاحظ أن الاسم في الملخص بالعربية، لأنه من الـ enum لا من اسمه في الكود.</li>
+<li>الإجمالي getter، يُحسب من الحالة في كل مرة تعمل <code>build</code>. ولا يُحفظ أبداً، فلا يمكن أن يختلف مع الاختيارات. احفظ ما يختاره الناس، واحسب كل ما ينتج عنه.</li>
+<li><code>place</code> تتحقق أولاً وتتوقف إن غاب الاسم. وبعدها فقط تعرض الملخص، في نافذة حوار من الفصل 8.</li>
+<li>الملاحظة تستخدم <code>maxLines: 3</code> لمربع أطول، و<code>alignLabelWithHint</code> تبقي عنوانها في الأعلى.</li>
+</ul>
+
+<pre data-code="test/order_form_test.dart" data-from="testWidgets" data-to="^  });" data-title="test/order_form_test.dart (جزء)"></pre>
+<pre data-term="order-form-test.sh"></pre>
+
+<p>والاختبار يفحص الحساب عبر الشاشة: كوب كبير (55) بجرعة إضافية (10)، مرتين، يساوي 130.</p>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>إنشاء متحكّم داخل <code>build</code></td><td>يختفي النص مع كل إعادة بناء</td><td>أنشئه مرة، حقلاً في الـ State</td></tr>
+<tr><td>نسيان <code>dispose</code></td><td>تسرّب في الذاكرة، يُبلَّغ عنه في نسخ التصحيح</td><td>حرّر كل متحكّم في <code>dispose()</code></td></tr>
+<tr><td>دالة تحقق تُرجع <code>''</code></td><td>يُعد المربع خاطئاً، برسالة فارغة</td><td>أرجع <code>null</code> للقيمة الصحيحة</td></tr>
+<tr><td>عرض الأخطاء قبل أول محاولة</td><td>رسائل حمراء والناس ما زالوا يكتبون</td><td>تحقق عند الإرسال، ثم <code>onUserInteraction</code></td></tr>
+<tr><td><code>int.parse</code> على ما يكتبه الناس</td><td>انهيار مع «12a» أو مربع فارغ</td><td><code>int.tryParse(...) ?? 0</code></td></tr>
+<tr><td>الثقة بفحص التطبيق</td><td>تصل بيانات سيئة إلى الخادم من عملاء آخرين</td><td>افحص من جديد على الخادم</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li><code>TextField</code> مع <code>InputDecoration</code> يأخذ النص؛ و<code>TextEditingController</code> يقرؤه ويغيّره، ويُحرَّر في <code>dispose()</code>.</li>
+<li>اختر لوحة المفاتيح بـ <code>keyboardType</code>، ومفتاح الزاوية بـ <code>textInputAction</code>؛ وأخفِ كلمات المرور بـ <code>obscureText</code>.</li>
+<li>الـ <code>Form</code> مع <code>GlobalKey&lt;FormState&gt;</code> يفحص دالة <code>validator</code> في كل <code>TextFormField</code> بـ <code>validate()</code>؛ ودالة التحقق تُرجع رسالة أو <code>null</code>.</li>
+<li>تحقق عند الإرسال، ثم والناس يكتبون؛ وافحص من جديد على الخادم.</li>
+<li><code>SegmentedButton</code> و<code>CheckboxListTile</code> و<code>SwitchListTile</code> و<code>Slider</code> و<code>DropdownMenu</code> تعرض الاختيارات: كل منها يعرض قيمة ويبلّغ عن التغيير.</li>
+<li>احفظ ما يختاره الناس، واحسب الإجماليات في getters. والاختبارات تكتب بـ <code>tester.enterText</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>null</code>. 2. <code>keyboardType: TextInputType.emailAddress</code>. 3. لأن المتحكّمات تحجز موارد ومستمعين؛ وتحريرها حين يُزال الـ State يمنع تسرّب الذاكرة.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">جرّب كل نموذج بأخطاء الناس الحقيقية: مربع فارغ، ومسافة في الآخر، وحرف مكان رقم، واسم طويل جداً.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>قسمة الحساب</h3>
+<p class="project-goal">اكتب الحساب، واختر البقشيش بمنزلق وعدد الأشخاص بزرين، وانظر ما يدفعه كل شخص، محدّثاً مع كل تغيير.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مربع أرقام، و<code>double.tryParse</code>، و<code>Slider</code> بأقسام، وقيم تُحسب في <code>build</code>.</p>
+<ol class="steps">
+<li><code>TextField</code> بـ <code>TextInputType.numberWithOptions(decimal: true)</code> و<code>suffixText: 'جنيه'</code>، يستدعي <code>setState</code> في <code>onChanged</code>.</li>
+<li><code>Slider</code> من 0 إلى 25 مع <code>divisions: 5</code>، فيتوقف عند 0 و5 و10 و15 و20 و25 بالمئة.</li>
+<li>زرا طرح وجمع لعدد الأشخاص، وزر الطرح مطفأ عند 1.</li>
+<li>في <code>build</code>: <code>final amount = double.tryParse(bill.text) ?? 0;</code> ثم الحصة، معروضة برقمين بعد الفاصلة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>tryParse</code> تُرجع <code>null</code> للمربع الفارغ أو للحرف الشارد، و<code>?? 0</code> تحوّل ذلك إلى حساب صفري بدلاً من انهيار.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد كتابة 360):</p>
+<figure data-img="shots/tip.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: 360 مع بقشيش 10%، لشخصين.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>نموذج تسجيل</h3>
+<p class="project-goal">اطلب بريداً، وكلمة مرور من ثمانية أحرف على الأقل، وكلمة المرور نفسها مرة أخرى، والموافقة على الشروط، وارفض المتابعة حتى يصح كل شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> دوال تحقق تقارن مربعين، و<code>FormField</code> لمربع اختيار، والاختبار بـ <code>enterText</code>.</p>
+<ol class="steps">
+<li>أعطِ مربع كلمة المرور متحكّماً، لتقارن دالة تحقق التأكيد: <code>v == password.text ? null : 'كلمتا المرور غير متطابقتين'</code>.</li>
+<li>مربع الاختيار ليست له دالة تحقق خاصة. فلُفّه بـ <code>FormField&lt;bool&gt;</code>: دالة <code>validator</code> فيه تفحص القيمة، و<code>builder</code> يرسم <code>CheckboxListTile</code> بـ <code>field.value</code> و<code>field.didChange</code>، والخطأ تحته حين يكون <code>field.hasError</code>.</li>
+<li>عند الإرسال <code>validate()</code>؛ وعند النجاح شريط سفلي.</li>
+<li>اختبر كلمتي مرور مختلفتين، ثم المتطابقتين مع وضع علامة في المربع.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الاختبار، عنوان الصفحة والزر بالكلمات نفسها. و<code>find.widgetWithText(FilledButton, ...)</code> تجد الزر وحده.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد ضغط الزر والنموذج فارغ):</p>
+<figure data-img="shots/signup.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: كل قاعدة مشروحة دفعة واحدة.</figcaption>
+</figure>
+<pre data-term="projects/signup-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>البحث مع الكتابة</h3>
+<p class="project-goal">ضع مربع بحث في شريط التطبيق يصفّي القائمة والزبون يكتب، ويتجاهل حالة الأحرف الإنجليزية، وفيه زر لمسحه، ويقول ذلك حين لا يطابق شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مربع في شريط التطبيق، وfor مع if داخل المجموعة، وأيقونة لاحقة مشروطة، وحالة فارغة، وعدّ الـ Widgets في اختبار.</p>
+<ol class="steps">
+<li>ضع <code>TextField</code> عنواناً <code>title</code> للـ <code>AppBar</code>، مع <code>autofocus: true</code> و<code>border: InputBorder.none</code>.</li>
+<li>في <code>build</code> احسب المطابقات: <code>[for (final d in drinks) if (d.toLowerCase().contains(words)) d]</code>.</li>
+<li>لا تعرض زر المسح إلا حين يوجد نص: <code>suffixIcon: query.text.isEmpty ? null : IconButton(...)</code>.</li>
+<li>حين لا يطابق شيء، اعرض رسالة في الوسط بدلاً من القائمة.</li>
+<li>اختبر: كل المشروبات في البداية، واثنان بعد كتابة «شاي»، والرسالة بعد كتابة «xyz».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لقائمة من ألف عنصر يبقى التصفية مع كل حرف فورياً. أما النتائج القادمة من خادم، فانتظر حتى يتوقف الزبون عن الكتابة لحظة قبل أن تسأل: والفصل 11 يبيّن كيف.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (بعد كتابة «شاي»):</p>
+<figure data-img="shots/search.png" data-frame="phone">
+<figcaption>المشروع {{n}}.3: وُجد نوعان من الشاي.</figcaption>
+</figure>
+<pre data-term="projects/search-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في <code>hello.dart</code> حيِّ الناس بأسمائهم وتجاهل المسافات المكتوبة قبل الاسم أو بعده.</li>
+<li><span class="level">سهل</span> أي <code>keyboardType</code> وأي <code>textInputAction</code> تعطي لـ: اسم، ورقم هاتف، وعنوان بريد، وملاحظة من عدة أسطر، وآخر مربع في النموذج؟</li>
+<li><span class="level">متوسط</span> اجعل نموذج الاتصال يقبل أرقام الهواتف المكتوبة بمسافات، مثل <code>0100 123 4567</code>، بحذف المسافات قبل الفحص.</li>
+<li><span class="level">متوسط</span> أطفئ زر نموذج الطلب ما دام الاسم فارغاً، بدلاً من عرض خطأ بعد الضغط. أي الطريقتين ألطف بالناس، ومتى تستخدم كلاً منهما؟</li>
+<li><span class="level">تحدٍّ</span> أضف إلى نموذج الطلب وقت استلام بـ <code>showTimePicker</code>، يرفض الأوقات خارج مواعيد العمل (من 8:00 إلى 22:00) برسالة.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>اكتمل الجزء الثاني: تستطيع أن تبني أي شاشة وأن تتنقل بين الشاشات. لكن كل شاشة تحفظ حالتها الخاصة، والطلب الذي يُرسل من صفحة لا يصل إلى السلة في صفحة أخرى. والجزء الثالث يبدأ بالحالة التي يتشاركها التطبيق كله، بـ <code>setState</code> وبـ Provider.</p>
+</div>
+</section>
