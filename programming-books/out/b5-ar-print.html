@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "الفصل 3: الأصناف والأمان من القيم الفارغة والمجموعات"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "الفصل 4: Dart غير المتزامنة: Future وStream"; } }
+@page ch04:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -45,7 +47,7 @@
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تجهيز Flutter</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">أساسيات Dart</span><span class="toc-p">39</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الأصناف والأمان من القيم الفارغة والمجموعات</span><span class="toc-p">66</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Dart غير المتزامنة: Future وStream</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: بناء الشاشات</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">كل شيء Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تخطيطات تناسب كل شاشة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">القوائم والصور والسمات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التنقل بين الشاشات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">النماذج والإدخال</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: تطبيقات حقيقية</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الحالة بـ setState وProvider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الاتصال بواجهة برمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">حفظ البيانات على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">العربية والإنجليزية والاتجاه من اليمين</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">مشروع: تطبيق ملاحظات كامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">النشر على Google Play وApp Store</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">93</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تجهيز Flutter</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">أساسيات Dart</span><span class="toc-p">39</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الأصناف والأمان من القيم الفارغة والمجموعات</span><span class="toc-p">66</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Dart غير المتزامنة: Future وStream</span><span class="toc-p">93</span></li><li class="toc-part">الجزء 2: بناء الشاشات</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">كل شيء Widget</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تخطيطات تناسب كل شاشة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">القوائم والصور والسمات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التنقل بين الشاشات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">النماذج والإدخال</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: تطبيقات حقيقية</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الحالة بـ setState وProvider</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الاتصال بواجهة برمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">حفظ البيانات على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">العربية والإنجليزية والاتجاه من اليمين</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">مشروع: تطبيق ملاحظات كامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">النشر على Google Play وApp Store</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">115</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2152,6 +2154,556 @@ true</pre></div>
 <p>حتى الآن يعمل كل سطر في برامجك في الحال. لكن التطبيقات تنتظر طوال الوقت: الشبكة، والملفات، والمستخدم. الفصل القادم يعلّم Dart أن تنتظر دون أن تتجمد، بـ <code>Future</code> و<code>async</code> و<code>await</code>، وأن تتعامل مع قيم تصل باستمرار، بـ <code>Stream</code>.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b5/async/ar">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">الفصل 4</p><h1>Dart غير المتزامنة: Future وStream</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تشرح لماذا يجب ألا يتوقف التطبيق لينتظر أبداً، وكيف تتجنب حلقة الأحداث في Dart ذلك</li>
+<li>تتعامل مع قيم تصل لاحقاً، بـ <code>Future</code> و<code>async</code> و<code>await</code></li>
+<li>تشغّل عدة مهام بطيئة في الوقت نفسه، وتستسلم لمهمة تطول أكثر من اللازم</li>
+<li>تلتقط الأخطاء التي تحدث أثناء الانتظار</li>
+<li>تتعامل مع قيم تصل باستمرار، بـ <code>Stream</code> و<code>await for</code> و<code>listen</code></li>
+<li>تصنع الـ Streams الخاصة بك بـ <code>async*</code> و<code>StreamController</code></li>
+</ul>
+</div>
+
+<p class="lead">كل برنامج في الكتاب حتى الآن أنجز عمله في الحال، سطراً بعد سطر. أما التطبيقات الحقيقية فتقضي معظم حياتها في الانتظار: أن يجيب الخادم، أن يُحمَّل ملف، أن تُلتقط صورة، أن يضغط المستخدم. والجوال يعيد رسم شاشته 60 مرة في الثانية أو أكثر، فالتطبيق الذي يتوقف لينتظر، ولو نصف ثانية، يتجمد في يد المستخدم. هذا الفصل يعلّم Dart أن تنتظر دون أن تتوقف. وهو آخر فصل في Dart الخالصة: كل ما بعده Flutter.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>تخيّل مقهى جيداً. يأخذ النادل طلبك، ويشغّل الآلة، ويأخذ الطلب التالي والقهوة تُحضَّر. لا أحد يقف أمام الآلة منتظراً. وهذا بالضبط ما يعلّمه هذا الفصل لكودك.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>لاحقاً، لا الآن</span></h2>
+
+<p>ابدأ بثلاثة أسطر لا تُطبع بالترتيب الذي قد تتوقعه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">order.dart</div><pre class="code"><span class="k">void</span> main() {
+  print(<span class="s">&#x27;واحد&#x27;</span>);
+  <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>), () =&gt; print(<span class="s">&#x27;ثلاثة&#x27;</span>));
+  print(<span class="s">&#x27;اثنان&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run order.dart</span>
+واحد
+اثنان
+ثلاثة</pre></div>
+
+<p><code>Future.delayed</code> لا توقف البرنامج 100 جزء من الثانية. بل تطلب من Dart أن تشغّل دالة <em>لاحقاً</em>، وتعود في الحال، فيُطبع «اثنان» قبل «ثلاثة». تشغّل Dart برنامجك على <dfn>خيط</dfn> (thread) واحد، عملاً واحداً في كل لحظة، مع <dfn>حلقة أحداث</dfn> (event loop): طابور من الأعمال المؤجلة، مثل «شغّل هذا بعد 100 جزء من الثانية» أو «شغّل هذا حين يجيب الخادم». وحين ينتهي الكود الحالي، تأخذ الحلقة العمل التالي الجاهز. لا شيء يتوقف أبداً؛ الأشياء تُجدوَل فقط.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="حلقة الأحداث: main تعمل أولاً، ثم تأخذ الحلقة الأعمال الجاهزة من الطابور واحداً بعد الآخر">
+<g font-family="Cairo" font-size="13" text-anchor="middle">
+<rect x="350" y="20" width="150" height="44" rx="10" fill="#f2f2f2" stroke="#2b2b2b" stroke-width="2"/>
+<text x="425" y="38" fill="#1a1a1a" font-weight="700">main تعمل</text><text x="425" y="56" fill="#1a1a1a">تطبع واحد، ثم اثنان</text>
+<rect x="20" y="20" width="300" height="44" rx="10" fill="#fff" stroke="#2b2b2b" stroke-width="2"/>
+<text x="170" y="38" fill="#111">طابور الأعمال المؤجلة</text>
+<g fill="#f5f5f5" stroke="#2b2b2b" stroke-width="1.5"><rect x="35" y="44" width="80" height="16" rx="4"/><rect x="125" y="44" width="80" height="16" rx="4"/><rect x="215" y="44" width="90" height="16" rx="4"/></g>
+<g font-size="10" fill="#2b2b2b"><text x="75" y="56">ضغط المستخدم</text><text x="165" y="56">رد الخادم</text><text x="260" y="56">بعد 100 جزء</text></g>
+<rect x="160" y="96" width="200" height="40" rx="20" fill="#fff" stroke="#2b2b2b" stroke-width="2"/>
+<text x="260" y="121" fill="#2b2b2b" font-weight="700">حلقة الأحداث: العمل الجاهز التالي</text>
+<g stroke="#111" stroke-width="1.8" fill="none"><path d="M425,64 Q425,116 364,116"/><path d="M170,64 L220,94"/></g>
+</g>
+</svg>
+<figcaption>الشكل 4.1: تشغّل Dart شيئاً واحداً في كل لحظة. والعمل البطيء مهمة في طابور، تُلتقط حين تجهز.</figcaption>
+</figure>
+
+<p>وفي Flutter ترسم الحلقة نفسها الشاشة أيضاً. فما دام كودك يعود بسرعة ويترك الانتظار للحلقة، يبقى التطبيق سلساً.</p>
+
+<h2><span class="sec">4.2</span> <span>الـ Future</span></h2>
+
+<p><dfn>الـ Future</dfn> قيمة ليست جاهزة بعد، لكنها ستكون: وعد بقيمة. <code>Future&lt;String&gt;</code> نص سيصل لاحقاً. وهنا يحضّر المقهى قهوة تستغرق 0.3 ثانية. وكل برنامج في هذا الفصل يبدأ بـ <code>clock</code> صغيرة تطبع الثواني منذ بداية <code>main</code>، بأعشار الثانية، لترى متى يعمل كل سطر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">future.dart</div><pre class="code"><span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="c line-bidi">// Future&lt;String&gt;: نص سيكون جاهزاً لاحقاً.</span>
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink) {
+  <span class="k">return</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>), () =&gt; <span class="s">&#x27;$drink جاهز&#x27;</span>);
+}
+
+<span class="k">void</span> main() {
+  watch.start();
+  print(<span class="s">&#x27;${clock()} طلب&#x27;</span>);
+  <span class="c line-bidi">// then: ماذا تفعل بالقيمة حين تصل.</span>
+  brew(<span class="s">&#x27;لاتيه&#x27;</span>).then((cup) =&gt; print(<span class="s">&#x27;${clock()} $cup&#x27;</span>));
+  <span class="c line-bidi">// main لا تنتظر: سطرها الأخير يعمل أولاً.</span>
+  print(<span class="s">&#x27;${clock()} نهاية main&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run future.dart</span>
+0.0 ث طلب
+0.0 ث نهاية main
+0.3 ث لاتيه جاهز</pre></div>
+
+<p>تُرجع <code>brew</code> قيمة <code>Future&lt;String&gt;</code> في الحال. وتسجّل <code>then</code> ماذا نفعل بالقيمة حين تصل. وتكمل <code>main</code> فوراً: يُطبع سطرها الأخير عند 0.0 ثانية، وتصل القهوة عند 0.3.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>انظر إلى الساعة: <code>watch.start()</code> أول سطر في كل <code>main</code>. فالمتغير <code>final</code> في أعلى الملف في Dart <em>كسول</em> (lazy): يُنشأ أول مرة يُستخدم، لا حين يبدأ البرنامج. ولولا هذا السطر لبدأت ساعة الإيقاف عند أول استدعاء لـ <code>clock()</code>، الذي قد يأتي بعد أول انتظار، ولخرجت كل الأوقات خاطئة. والكسل يوفّر العمل في الغالب؛ تذكّره فقط حين تهمّك لحظة الإنشاء.</p></aside>
+
+<h2><span class="sec">4.3</span> <span>async وawait</span></h2>
+
+<p>سلاسل <code>then</code> تصير صعبة القراءة بسرعة. وتقدّم Dart طريقة أفضل لكتابة الشيء نفسه: علّم الدالة بـ <code>async</code>، وانتظر كل Future بـ <code>await</code>. فيُقرأ الكود من الأعلى إلى الأسفل، كبرامج الفصول السابقة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">await.dart</div><pre class="code"><span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink) =&gt;
+    <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>), () =&gt; <span class="s">&#x27;$drink جاهز&#x27;</span>);
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="c line-bidi">// await تنتظر القيمة، دون أن توقف أي شيء آخر.</span>
+  <span class="k">var</span> cup = <span class="k">await</span> brew(<span class="s">&#x27;لاتيه&#x27;</span>);
+  print(<span class="s">&#x27;${clock()} $cup&#x27;</span>);
+
+  <span class="c line-bidi">// واحداً بعد الآخر: أوقات الانتظار تُجمع.</span>
+  <span class="k">var</span> a = <span class="k">await</span> brew(<span class="s">&#x27;شاي&#x27;</span>);
+  <span class="k">var</span> b = <span class="k">await</span> brew(<span class="s">&#x27;لاتيه&#x27;</span>);
+  print(<span class="s">&#x27;${clock()} $a، $b&#x27;</span>);
+
+  <span class="c line-bidi">// الاثنان معاً: Future.wait تنتظرها كلها.</span>
+  <span class="k">var</span> both = <span class="k">await</span> <span class="k">Future</span>.wait([brew(<span class="s">&#x27;شاي&#x27;</span>), brew(<span class="s">&#x27;لاتيه&#x27;</span>)]);
+  print(<span class="s">&#x27;${clock()} $both&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run await.dart</span>
+0.3 ث لاتيه جاهز
+0.9 ث شاي جاهز، لاتيه جاهز
+1.2 ث [شاي جاهز, لاتيه جاهز]</pre></div>
+
+<ul>
+<li>الدالة <code>async</code> تُرجع <code>Future</code> دائماً. فتصير <code>main</code> هكذا: <code>Future&lt;void&gt; main() async</code>، أي Future بلا قيمة، تنتهي حين تنتهي <code>main</code>.</li>
+<li><code>await brew('لاتيه')</code> توقف <em>هذه الدالة</em> حتى تجهز القهوة، وتعطي الـ <code>String</code> التي في الـ Future. أما بقية التطبيق، والشاشة، فتبقى تعمل أثناء ذلك.</li>
+<li>انتظار تحضيرين واحداً بعد الآخر يستغرق 0.3 + 0.3 ثانية: تنتقل الساعة من 0.3 إلى 0.9.</li>
+<li><code>Future.wait</code> تبدأ الاثنين معاً وتنتظر الأبطأ: 0.3 ثانية للاثنين، من 0.9 إلى 1.2. وتعطي قائمة بالنتائج، بترتيب الـ Futures.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>حين لا تعتمد مهام بطيئة بعضها على بعض، مثل تحميل ملف المستخدم الشخصي ورسائله، فابدأها معاً بـ <code>Future.wait</code>. وحين تحتاج إحداها نتيجة الأخرى، فانتظرها بالترتيب. وسؤالك «هل يحتاج هذا الانتظار سابقه؟» من أبسط الطرق لجعل التطبيق يبدو أسرع بمرتين.</p></aside>
+
+<h3>الـ await المنسية</h3>
+
+<p>كلمة صغيرة تصنع فرقاً كبيراً. وهنا ينساها المقهى:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">forgot-await.dart</div><pre class="code"><span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; brew(<span class="k">String</span> drink) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>));
+  print(<span class="s">&#x27;${clock()} $drink جاهز&#x27;</span>);
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="c line-bidi">// بلا await: يُطبع الطلب قبل أن تجهز القهوة.</span>
+  brew(<span class="s">&#x27;لاتيه&#x27;</span>);
+  print(<span class="s">&#x27;${clock()} قُدّم&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run forgot-await.dart</span>
+0.0 ث قُدّم
+0.3 ث لاتيه جاهز</pre></div>
+
+<p>بلا <code>await</code> تبدأ <code>brew</code>، وتقدّم <code>main</code> الطلب للزبون فوراً، بلا قهوة. والبرنامج يُترجم ويعمل: هذا الخطأ صامت. ولدى أداة الفحص في Dart قاعدة اسمها <code>unawaited_futures</code> تحذّر من الـ Futures التي لا ينتظرها أحد، وتفعّلها فرق كثيرة في <code>analysis_options.yaml</code> لهذا السبب بالضبط.</p>
+
+<h2><span class="sec">4.4</span> <span>الأخطاء أثناء الانتظار</span></h2>
+
+<p>الانتظار يعطي الأشياء وقتاً لتسوء: تنقطع الشبكة، أو يرفض الخادم، أو ينفد الحليب. والخطأ داخل الـ Future يسافر معه، ويخرج عند الـ <code>await</code>، فتعمل <code>try</code> و<code>catch</code> المألوفتان كما تعملان مع الكود العادي تماماً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.dart</div><pre class="code"><span class="c line-bidi">// خطأ من صنعنا، برسالة يفهمها الناس.</span>
+<span class="k">class</span> OutOfMilk <span class="k">implements</span> Exception {
+  <span class="k">final</span> <span class="k">String</span> drink;
+  OutOfMilk(<span class="k">this</span>.drink);
+
+  @override
+  <span class="k">String</span> toString() =&gt; <span class="s">&#x27;نفد الحليب ($drink)&#x27;</span>;
+}
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  <span class="k">if</span> (drink == <span class="s">&#x27;لاتيه&#x27;</span>) <span class="k">throw</span> OutOfMilk(drink);
+  <span class="k">return</span> <span class="s">&#x27;$drink جاهز&#x27;</span>;
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; serve(<span class="k">String</span> drink) <span class="k">async</span> {
+  <span class="c line-bidi">// الخطأ في الـ Future يصل عند await، فتلتقطه try.</span>
+  <span class="k">try</span> {
+    <span class="k">var</span> cup = <span class="k">await</span> brew(drink);
+    print(cup);
+  } <span class="k">on</span> OutOfMilk <span class="k">catch</span> (e) {
+    print(<span class="s">&#x27;نعتذر: $e&#x27;</span>);
+  } <span class="k">finally</span> {
+    <span class="c line-bidi">// finally تعمل في الحالتين: نظّف الآلة.</span>
+    print(<span class="s">&#x27;  نُظّفت الآلة&#x27;</span>);
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="k">await</span> serve(<span class="s">&#x27;شاي&#x27;</span>);
+  <span class="k">await</span> serve(<span class="s">&#x27;لاتيه&#x27;</span>);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run errors.dart</span>
+شاي جاهز
+  نُظّفت الآلة
+نعتذر: نفد الحليب (لاتيه)
+  نُظّفت الآلة</pre></div>
+
+<ul>
+<li><code>OutOfMilk</code> نوع خطأ من صنعنا: صنف <code>implements Exception</code>، برسالة يستطيع الناس قراءتها.</li>
+<li><code>throw</code> توقف <code>brew</code> وترسل الخطأ إلى من ينتظرها.</li>
+<li><code>on OutOfMilk catch (e)</code> تلتقط هذا النوع من الأخطاء وحده؛ وأي خطأ آخر يكمل صعوداً. التقط ما تستطيع معالجته، ودع الباقي يمر.</li>
+<li><code>finally</code> تعمل في الحالتين، بعد النجاح وبعد الخطأ: إنها مكان التنظيف.</li>
+</ul>
+
+<h3>الاستسلام: المهلة</h3>
+
+<p>الخادم الذي لا يجيب أبداً أسوأ من الذي يفشل، لأن المستخدم ينتظر إلى الأبد. و<code>timeout</code> تضع حداً لأي Future:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">timeout.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;dart:async&#x27;</span>;
+
+<span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; brew(<span class="k">String</span> drink, <span class="k">int</span> ms) =&gt;
+    <span class="k">Future</span>.delayed(Duration(milliseconds: ms), () =&gt; <span class="s">&#x27;$drink جاهز&#x27;</span>);
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">for</span> (<span class="k">var</span> ms <span class="k">in</span> [<span class="n">200</span>, <span class="n">800</span>]) {
+    <span class="k">try</span> {
+      <span class="c line-bidi">// انتظر 0.5 ث على الأكثر، ثم استسلم.</span>
+      <span class="k">var</span> cup = <span class="k">await</span> brew(<span class="s">&#x27;لاتيه&#x27;</span>, ms).timeout(Duration(milliseconds: <span class="n">500</span>));
+      print(<span class="s">&#x27;${clock()} $cup&#x27;</span>);
+    } <span class="k">on</span> TimeoutException {
+      print(<span class="s">&#x27;${clock()} بطيء جداً، أُلغي بعد 0.5 ث&#x27;</span>);
+    }
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run timeout.dart</span>
+0.2 ث لاتيه جاهز
+0.7 ث بطيء جداً، أُلغي بعد 0.5 ث</pre></div>
+
+<p>القهوة الأولى تستغرق 0.2 ثانية فتصل. والثانية كانت ستستغرق 0.8، لكن بعد 0.5 يفشل الـ Future بـ <code>TimeoutException</code> (من <code>dart:async</code>، المستوردة في الأعلى)، فيخبر المقهى الزبون بدلاً من أن يتركه ينتظر.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>ما النوع الذي تُرجعه فعلاً دالة <code>async</code> تُرجع <code>int</code>؟</li><li>Futureان يستغرقان 0.4 و0.6 ثانية. كم يستغرقان إن انتُظرا واحداً بعد الآخر، وكم مع <code>Future.wait</code>؟</li><li>أين يخرج الخطأ الذي يُرمى داخل Future؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>الـ Stream</span></h2>
+
+<p>الـ Future يعطي قيمة <em>واحدة</em>، لاحقاً. أما <dfn>الـ Stream</dfn> فيعطي قيماً <em>كثيرة</em>، واحدة بعد أخرى، عبر الوقت: نبضات ساعة، ورسائل محادثة، ومواضع إصبع يتحرك على الشاشة، والطلبات الواصلة إلى المقهى.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">streams.dart</div><pre class="code"><span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="c line-bidi">// Stream: قيمة كل 0.2 ث، والأربع الأولى فقط.</span>
+  <span class="k">var</span> ticks = <span class="k">Stream</span>.periodic(
+    Duration(milliseconds: <span class="n">200</span>),
+    (i) =&gt; i + <span class="n">1</span>,
+  ).take(<span class="n">4</span>);
+
+  <span class="c line-bidi">// await for: حلقة تنتظر كل قيمة.</span>
+  <span class="k">await</span> <span class="k">for</span> (<span class="k">var</span> t <span class="k">in</span> ticks) {
+    print(<span class="s">&#x27;${clock()} نبضة $t&#x27;</span>);
+  }
+
+  <span class="c line-bidi">// للـ Stream أيضاً where وmap، كالقوائم.</span>
+  <span class="k">var</span> prices = <span class="k">Stream</span>.fromIterable([<span class="n">45</span>, <span class="n">15</span>, <span class="n">20</span>, <span class="n">60</span>]);
+  <span class="k">var</span> dear = <span class="k">await</span> prices.where((p) =&gt; p &gt; <span class="n">18</span>).map((p) =&gt; p * <span class="n">2</span>).toList();
+  print(dear);
+
+  <span class="c line-bidi">// listen: دالة تُستدعى لكل قيمة؛ والبرنامج يكمل.</span>
+  <span class="k">Stream</span>.fromIterable([<span class="s">&#x27;شاي&#x27;</span>, <span class="s">&#x27;كيك&#x27;</span>]).listen((item) =&gt; print(<span class="s">&#x27;لاحقاً: $item&#x27;</span>));
+  print(<span class="s">&#x27;الآن&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run streams.dart</span>
+0.2 ث نبضة 1
+0.4 ث نبضة 2
+0.6 ث نبضة 3
+0.8 ث نبضة 4
+[90, 40, 120]
+الآن
+لاحقاً: شاي
+لاحقاً: كيك</pre></div>
+
+<ul>
+<li><code>Stream.periodic</code> تُنتج قيمة كل 0.2 ثانية إلى الأبد؛ و<code>take(4)</code> تحتفظ بالأربع الأولى ثم تنهي الـ Stream.</li>
+<li><code>await for</code> حلقة تنتظر كل قيمة، وتنتهي حين ينتهي الـ Stream. ولا تعمل إلا داخل دالة <code>async</code>.</li>
+<li>للـ Stream دوال <code>where</code> و<code>map</code> و<code>toList</code>، كالقوائم، إلا أن كلاً منها ينتظر وصول القيم. و<code>toList</code> تعطي Future بالقائمة كلها.</li>
+<li><code>listen</code> الطريقة الأخرى لاستخدام الـ Stream: تسجّل دالة تُستدعى لكل قيمة، وتعود فوراً. ولهذا تُطبع «الآن» قبل «لاحقاً».</li>
+</ul>
+
+<p>استخدم <code>await for</code> حين يجب أن تنتظر دالتك انتهاء الـ Stream، و<code>listen</code> حين يعمل الـ Stream بجانب كل شيء آخر، كما تفعل معظم الـ Streams في التطبيق.</p>
+
+<h3>اصنع Stream خاصاً بك</h3>
+
+<p>أداتان تتيحان لك صنع الـ Streams. الأولى، <dfn>StreamController</dfn>، Stream تغذّيه بيدك: كلما حدث شيء، أضفه بـ <code>add</code>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">controller.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;dart:async&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="c line-bidi">// StreamController: المقهى يقرر متى يرسل كل قيمة.</span>
+  <span class="c line-bidi">// broadcast: يمكن لأكثر من مستمع أن يستمع.</span>
+  <span class="k">var</span> orders = StreamController&lt;<span class="k">String</span>&gt;.broadcast();
+
+  orders.stream.listen((o) =&gt; print(<span class="s">&#x27;الشاشة: $o&#x27;</span>));
+  orders.stream
+      .where((o) =&gt; o.contains(<span class="s">&#x27;كيك&#x27;</span>))
+      .listen((o) =&gt; print(<span class="s">&#x27;المطبخ: $o&#x27;</span>));
+
+  orders.add(<span class="s">&#x27;طاولة 1: لاتيه&#x27;</span>);
+  orders.add(<span class="s">&#x27;طاولة 2: كيك&#x27;</span>);
+  orders.add(<span class="s">&#x27;طاولة 3: شاي، كيك&#x27;</span>);
+  <span class="k">await</span> orders.close();
+  print(<span class="s">&#x27;أُغلق&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run controller.dart</span>
+الشاشة: طاولة 1: لاتيه
+الشاشة: طاولة 2: كيك
+المطبخ: طاولة 2: كيك
+الشاشة: طاولة 3: شاي، كيك
+المطبخ: طاولة 3: شاي، كيك
+أُغلق</pre></div>
+
+<p>الـ Stream العادي لا يقبل إلا مستمعاً واحداً. و<code>broadcast()</code> تسمح بعدة مستمعين: هنا تعرض الشاشة كل طلب، ولا يستمع المطبخ إلا للطلبات التي فيها كيك. وحين لا تأتي قيم أخرى، أغلق الـ controller بـ <code>close</code>، ليعرف المستمعون وحلقات <code>await for</code> أن الـ Stream انتهى.</p>
+
+<p>والأداة الثانية <dfn>المولّد</dfn> (generator): دالة معلّمة بـ <code>async*</code> (بنجمة)، تُنتج Stream. كل <code>yield</code> ترسل قيمة واحدة إلى المستمع، ويمكن للدالة أن تنتظر بـ <code>await</code> بين القيم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">generator.dart</div><pre class="code"><span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="c line-bidi">// async*: دالة تُخرج قيماً عبر الوقت، على شكل Stream.</span>
+<span class="k">Stream</span>&lt;<span class="k">int</span>&gt; countdown(<span class="k">int</span> from) <span class="k">async</span>* {
+  <span class="k">for</span> (<span class="k">var</span> i = from; i &gt; <span class="n">0</span>; i--) {
+    <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">200</span>));
+    <span class="c line-bidi">// yield ترسل قيمة واحدة لمن يستمع.</span>
+    <span class="k">yield</span> i;
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">await</span> <span class="k">for</span> (<span class="k">var</span> n <span class="k">in</span> countdown(<span class="n">3</span>)) {
+    print(<span class="s">&#x27;${clock()} الصعود بعد $n&#x27;</span>);
+  }
+  print(<span class="s">&#x27;${clock()} انتهى&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run generator.dart</span>
+0.2 ث الصعود بعد 3
+0.4 ث الصعود بعد 2
+0.6 ث الصعود بعد 1
+0.6 ث انتهى</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>في Flutter الـ Streams في كل مكان حتى حين لا تراها: كل لمسة وتمرير وضغطة مفتاح تصل حدثاً، وWidgets مثل <code>StreamBuilder</code> تعيد رسم جزء من الشاشة كلما أعطى Stream قيمة جديدة. وستستخدمها الفصول القادمة لعرض بيانات تتغير والمستخدم ينظر.</p></aside>
+
+<h2><span class="sec">4.6</span> <span>مشروع: مطبخ المقهى</span></h2>
+
+<p>لنجمع الفصل كله. الطلبات تصل على شكل Stream: طلب بصنفين، ثم طلب آخر بعد 0.1 ثانية، ثم ثالث. لكل صنف وقت تحضير خاص به. ويبدأ المطبخ كل طلب فور وصوله، ويحضّر أصنافه في الوقت نفسه، ويعلن حين يجهز كل طلب.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">kitchen.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;dart:async&#x27;</span>;
+
+<span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="c line-bidi">// لكل صنف وقت تحضير خاص به.</span>
+<span class="k">const</span> prepTime = {<span class="s">&#x27;لاتيه&#x27;</span>: <span class="n">300</span>, <span class="s">&#x27;شاي&#x27;</span>: <span class="n">100</span>, <span class="s">&#x27;كيك&#x27;</span>: <span class="n">200</span>, <span class="s">&#x27;كوكيز&#x27;</span>: <span class="n">100</span>};
+
+<span class="k">Future</span>&lt;<span class="k">String</span>&gt; prepare(<span class="k">String</span> item) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: prepTime[item] ?? <span class="n">100</span>));
+  <span class="k">return</span> item;
+}
+
+<span class="c line-bidi">// الطلبات تصل واحداً بعد الآخر، على شكل Stream.</span>
+<span class="k">Stream</span>&lt;<span class="k">List</span>&lt;<span class="k">String</span>&gt;&gt; incoming() <span class="k">async</span>* {
+  <span class="k">yield</span> [<span class="s">&#x27;لاتيه&#x27;</span>, <span class="s">&#x27;كيك&#x27;</span>];
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  <span class="k">yield</span> [<span class="s">&#x27;شاي&#x27;</span>];
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  <span class="k">yield</span> [<span class="s">&#x27;كوكيز&#x27;</span>, <span class="s">&#x27;شاي&#x27;</span>, <span class="s">&#x27;لاتيه&#x27;</span>];
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">var</span> n = <span class="n">0</span>;
+  <span class="k">var</span> kitchen = &lt;<span class="k">Future</span>&lt;<span class="k">void</span>&gt;&gt;[];
+  <span class="k">await</span> <span class="k">for</span> (<span class="k">var</span> items <span class="k">in</span> incoming()) {
+    <span class="k">var</span> number = ++n;
+    print(<span class="s">&#x27;${clock()} طلب $number يصل: ${items.join(&#x27;</span>، <span class="s">&#x27;)}&#x27;</span>);
+    <span class="c line-bidi">// أصناف الطلب الواحد تُحضّر في الوقت نفسه.</span>
+    kitchen.add(
+      <span class="k">Future</span>.wait(items.map(prepare))
+          .then((done) =&gt; print(<span class="s">&#x27;${clock()} طلب $number جاهز&#x27;</span>)),
+    );
+  }
+  <span class="k">await</span> <span class="k">Future</span>.wait(kitchen);
+  print(<span class="s">&#x27;${clock()} كله جاهز&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run kitchen.dart</span>
+0.0 ث طلب 1 يصل: لاتيه، كيك
+0.1 ث طلب 2 يصل: شاي
+0.2 ث طلب 2 جاهز
+0.2 ث طلب 3 يصل: كوكيز، شاي، لاتيه
+0.3 ث طلب 1 جاهز
+0.5 ث طلب 3 جاهز
+0.5 ث كله جاهز</pre></div>
+
+<p>اقرأ الأوقات. الطلب 1 (لاتيه، 0.3 ثانية، وكيك، 0.2) يصل عند 0.0 ويجهز عند 0.3، وقت أبطأ أصنافه، لأن <code>Future.wait</code> تحضّر الاثنين معاً. والطلب 2، كوب شاي، يصل عند 0.1 ويجهز عند 0.2: <em>قبل</em> الطلب 1، لأن المطبخ لا يجعله ينتظر دوره. والطلب 3 يصل عند 0.2 ومعه لاتيه، فيجهز عند 0.5. كل شيء جاهز عند 0.5 ثانية؛ ولو حُضّر صنفاً بعد صنف لاستغرق 1.1.</p>
+
+<p>انظر كيف بُني البرنامج. <code>incoming</code> مولّد يُخرج طلباً واحداً في كل مرة. وحلقة <code>await for</code> تأخذ كل طلب، و<em>لا</em> تنتظر تحضيره: تحفظ الـ Future في القائمة <code>kitchen</code> وتعود إلى الـ Stream لتأخذ الطلب التالي. وفي النهاية تنتظر <code>Future.wait(kitchen)</code> كل طلب ما زال قيد التحضير. هذا النمط، ابدأ الآن واجمع لاحقاً، هو كيف تنزّل التطبيقات الحقيقية صوراً كثيرة، أو ترسل رسائل كثيرة، دون أن يعطّل عنصر بطيء البقية.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>اجعل المطبخ يحضّر طلباً واحداً في كل مرة: أضف <code>await</code> قبل التحضير واحذف القائمة. وتوقّع الأوقات الجديدة قبل أن تشغّل. ثم أعده كما كان، واجعل وقت تحضير الكيك 0.5 ثانية. أي طلب يجهز أخيراً الآن؟</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>await</code></td><td>يكمل الكود قبل أن تجهز النتيجة، بصمت</td><td>انتظرها؛ وفعّل قاعدة <code>unawaited_futures</code></td></tr>
+<tr><td><code>await</code> في دالة بلا <code>async</code></td><td>خطأ ترجمة</td><td>علّم الدالة بـ <code>async</code>، واجعلها تُرجع <code>Future</code></td></tr>
+<tr><td>طباعة الـ Future بدلاً من قيمته</td><td><code>Instance of 'Future&lt;String&gt;'</code></td><td><code>print(await fetchName())</code></td></tr>
+<tr><td>انتظار مهام مستقلة واحدة بعد أخرى</td><td>تُجمع أوقات الانتظار؛ ويبدو التطبيق بطيئاً</td><td><code>Future.wait([...])</code></td></tr>
+<tr><td>طلب شبكة بلا مهلة</td><td>ينتظر المستخدم إلى الأبد حين لا يجيب الخادم</td><td><code>.timeout(Duration(seconds: 10))</code>، ثم أخبر المستخدم</td></tr>
+<tr><td>استدعاءا <code>listen</code> على Stream عادي</td><td>خطأ: سبق الاستماع إلى الـ Stream</td><td>استخدم controller بـ <code>broadcast()</code></td></tr>
+<tr><td>عدم إغلاق الـ controller أبداً</td><td>لا تنتهي <code>await for</code> أبداً</td><td>أغلقه بـ <code>close()</code> حين لا تأتي قيم أخرى</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>تشغّل Dart شيئاً واحداً في كل لحظة، مع <strong>حلقة أحداث</strong>: العمل البطيء يُجدوَل ولا يُنتظر في مكانه، فلا يتجمد التطبيق أبداً.</li>
+<li><strong>Future&lt;T&gt;</strong> قيمة من النوع <code>T</code> تصل لاحقاً. و<code>then</code> تسجّل ماذا تفعل بها.</li>
+<li>الدالة <code>async</code> تُرجع Future، و<code>await</code> تنتظر واحداً داخلها، فيُقرأ الكود من الأعلى إلى الأسفل.</li>
+<li><code>Future.wait</code> تشغّل المهام المستقلة معاً، و<code>timeout</code> تستسلم بعد حد.</li>
+<li>الأخطاء داخل الـ Futures تخرج عند الـ <code>await</code>: استخدم <code>try</code> و<code>on … catch</code> و<code>finally</code>.</li>
+<li><strong>Stream&lt;T&gt;</strong> يعطي قيماً كثيرة عبر الوقت: اقرأه بـ <code>await for</code> أو <code>listen</code>، وشكّله بـ <code>where</code> و<code>map</code>.</li>
+<li>اصنع الـ Streams بـ <strong>StreamController</strong> (و<code>broadcast()</code> لعدة مستمعين، و<code>close()</code> في النهاية) أو بمولّد <code>async*</code> مع <code>yield</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>Future&lt;int&gt;</code>. 2. واحداً بعد الآخر: 0.4 + 0.6 = ثانية واحدة؛ ومع <code>Future.wait</code>: 0.6 ثانية، وقت الأبطأ. 3. عند الـ <code>await</code> الخاص بذلك الـ Future، حيث تستطيع <code>try</code> حوله أن تلتقطه.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع ينتظر شيئاً. اطبع الساعة كثيراً وأنت تعمل عليها: فرؤية <em>متى</em> يعمل كل سطر أسرع طريق لفهم الكود غير المتزامن.</p>
+
+<div class="project">
+<p class="project-label">المشروع 4.1 · سهل</p>
+<h3>العد التنازلي للانطلاق</h3>
+<p class="project-goal">عُدّ تنازلياً من 5 إلى 1، رقماً كل ثانية، ثم اطبع «انطلق!».</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مولّد <code>async*</code>، و<code>yield</code>، و<code>Future.delayed</code>، و<code>await for</code>.</p>
+<ol class="steps">
+<li>اكتب <code>Stream&lt;int&gt; countdown(int from) async*</code>.</li>
+<li>في حلقة من <code>from</code> نزولاً إلى 1، أخرج الرقم بـ <code>yield</code>، ثم انتظر ثانية بـ <code>await Future.delayed(Duration(seconds: 1))</code>.</li>
+<li>في <code>main</code>، التي يجب أن تكون <code>async</code>، اطبع كل رقم بـ <code>await for</code>، ثم الرسالة الأخيرة.</li>
+<li>بدّل ترتيب <code>yield</code> والانتظار. ما الذي يتغير فيما تراه، ومتى؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المولّد لا يعمل حتى يستمع أحد إلى الـ Stream الخاص به. استدعِ <code>countdown(5)</code> دون استماع، ولن يحدث شيء على الإطلاق.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (سطر كل ثانية):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run countdown.dart</span>
+5
+4
+3
+2
+1
+انطلق!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 4.2 · متوسط</p>
+<h3>حاول من جديد، بصبر</h3>
+<p class="project-goal">اجلب قائمة المقهى من خادم مشغول في أول مرتين، بإعادة المحاولة مع انتظار يتضاعف بعد كل فشل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>try</code> و<code>catch</code> حول <code>await</code>، و<code>rethrow</code>، والدالة العامة (generic)، وتمرير دالة قيمةً.</p>
+<ol class="steps">
+<li>اكتب <code>fetchMenu()</code>، التي تنتظر 0.1 ثانية، وتعدّ مرات استدعائها في متغير في أعلى الملف، وترمي <code>Exception('الخادم مشغول')</code> في أول استدعاءين، وتُرجع القائمة في الثالث.</li>
+<li>اكتب <code>Future&lt;T&gt; retry&lt;T&gt;(Future&lt;T&gt; Function() task, {int attempts = 4, int waitMs = 200})</code>. و<code>&lt;T&gt;</code> تجعلها تعمل لمهمة من أي نوع.</li>
+<li>في حلقة، <code>return await task()</code>. وفي الـ <code>catch</code> اطبع الفشل؛ وإن كانت هذه آخر محاولة فأعد رمي الخطأ بـ <code>rethrow</code>؛ وإلا فانتظر، ثم ضاعف <code>waitMs</code>.</li>
+<li>استدعِ <code>retry(fetchMenu)</code>، ممرراً الدالة نفسها بلا أقواس، واطبع النتيجة مع الساعة.</li>
+<li>اجعل <code>attempts: 2</code> وانظر الخطأ يصل إلى <code>main</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مضاعفة الانتظار تُسمّى <em>التراجع الأُسّي</em> (exponential backoff). إنها تعطي الخادم المتعثر فرصة ليتعافى، بدلاً من إغراقه بالطلبات. والتطبيقات الحقيقية تضيف أيضاً قليلاً من العشوائية إلى الانتظار، كي لا تعيد آلاف الجوالات المحاولة في اللحظة نفسها.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run retry.dart</span>
+0.1 ث المحاولة 1 فشلت: Exception: الخادم مشغول
+0.1 ث انتظار 0.2 ث
+0.4 ث المحاولة 2 فشلت: Exception: الخادم مشغول
+0.4 ث انتظار 0.4 ث
+0.9 ث وصل: قائمة اليوم</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 4.3 · تحدٍّ</p>
+<h3>شريط الأسعار</h3>
+<p class="project-goal">أرسل أسعاراً عبر Stream بث إلى مستمعين اثنين: الأول يطبع كل سعر، والثاني يحسب متوسطاً متراكماً ويتوقف عن الاستماع بعد خمسة أسعار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>StreamController.broadcast</code>، ومستمعَين، و<code>StreamSubscription</code> و<code>cancel</code>، و<code>late</code>.</p>
+<ol class="steps">
+<li>أنشئ <code>StreamController&lt;int&gt;.broadcast()</code>.</li>
+<li>استمع مرة لتطبع كل سعر.</li>
+<li>استمع مرة ثانية لتحتفظ بمجموع وعدد، واطبع المتوسط برقم واحد بعد الفاصلة. و<code>listen</code> تُرجع <code>StreamSubscription</code>؛ فاحفظها في متغير.</li>
+<li>حين يصل العدد إلى 5، استدعِ <code>cancel()</code> على ذلك الاشتراك. والمتغير يُستخدم داخل الدالة المعطاة لـ <code>listen</code> قبل أن تكون له قيمة، فعرّفه بـ <code>late</code>: «أعد أن أضبطه قبل أن يُستخدم».</li>
+<li>أضف ستة أسعار، مع <code>await Future.delayed(Duration.zero)</code> بعد كل منها ليأخذ المستمعان كل سعر قبل إضافة التالي، ثم أغلق الـ controller. وتأكد أن السعر السادس يُطبع لكنه لا يدخل المتوسط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>late</code>، مثل <code>!</code>، وعد لا يُفحص إلا حين يعمل البرنامج. وهو آمن هنا، لأن الدالة لا يمكن أن تعمل قبل أن تُرجع <code>listen</code> الاشتراك.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run ticker.dart</span>
+السعر: 45
+  المتوسط: 45.0
+السعر: 48
+  المتوسط: 46.5
+السعر: 44
+  المتوسط: 45.7
+السعر: 50
+  المتوسط: 46.8
+السعر: 52
+  المتوسط: 47.8
+السعر: 49</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> توقّع ترتيب الحروف، ثم تحقق: <code>print('A'); Future(() =&gt; print('B')); Future.delayed(Duration(milliseconds: 50), () =&gt; print('C')); print('D');</code> ثم، بعد انتظار 100 جزء من الثانية، <code>print('E')</code>.</li>
+<li><span class="level">سهل</span> كتب زميلك <code>var name = fetchName(); print(name);</code> و<code>fetchName</code> دالة <code>async</code>. ماذا يُطبع، وكيف تصلحه؟</li>
+<li><span class="level medium">متوسط</span> من Stream أسعار <code>[45, 15, 20, 60, 15]</code>، استخدم <code>where</code> و<code>map</code> و<code>toList</code> لتحصل على الأسعار التي لا تقل عن 20، مضافاً إلى كل منها خدمة 5 جنيهات. ثم اجمع Stream بـ <code>fold</code>.</li>
+<li><span class="level medium">متوسط</span> أعد كتابة <code>price('latte').then(withService).then((total) =&gt; print(total))</code> بـ <code>async</code> و<code>await</code>، وتأكد أن الاثنتين تطبعان النتيجة نفسها.</li>
+<li><span class="level hard">تحدٍّ</span> لدى المقهى خمس قهوات للتحضير وآلة لا تحضّر إلا اثنتين في وقت واحد، كل واحدة في 0.3 ثانية. حضّرها كلها بأسرع ما يمكن، مع طباعة الساعة عند بدء كل واحدة وانتهائها. (تلميح: ابدأ «عاملَين» بـ <code>Future.wait</code>، يأخذ كل منهما القهوة التالية من قائمة مشتركة حتى تفرغ.)</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 5</p>
+<p>أنت الآن تعرف اللغة. والجزء الثاني يعود إلى الجوال: الفصل القادم يفتح صندوق الـ Widgets التي تُصنع منها كل شاشة Flutter، ويبني أولى شاشاتك الحقيقية، قطعة بعد قطعة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2347,6 +2899,108 @@ Flutter</pre></div></li>
 الأحد: يوم عمل
 الجمعة: عطلة</pre></div>
 أضف <code>monday('الاثنين')</code>، فيبقى كل شيء يُترجم ويعمل: الحلقة على <code>Day.values</code> تلتقط اليوم الجديد، و<code>isWeekend</code> تقول بحق إنه يوم عمل. ولو كانت <code>isWeekend</code> switch يذكر كل الأيام، لأشار المترجم إليها: وفي الحالتين لا يُنسى شيء بصمت.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 4</h2>
+<ol class="exercises">
+<li><code>A</code> و<code>D</code> أولاً، لأن <code>main</code> تعمل حتى أول <code>await</code> فيها قبل أي شيء مجدوَل. ثم <code>B</code>، عمل بلا تأخير، ثم <code>C</code> بعد 50 جزءاً من الثانية، وأخيراً <code>E</code> بعد 100:
+<div class="listing" dir="ltr"><div class="listing-title">answers/order.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  print(<span class="s">&#x27;A&#x27;</span>);
+  <span class="k">Future</span>(() =&gt; print(<span class="s">&#x27;B&#x27;</span>));
+  <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">50</span>), () =&gt; print(<span class="s">&#x27;C&#x27;</span>));
+  print(<span class="s">&#x27;D&#x27;</span>);
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">100</span>));
+  print(<span class="s">&#x27;E&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run order.dart</span>
+A
+D
+B
+C
+E</pre></div></li>
+<li>يُطبع الـ Future نفسه لا الاسم، لأن أحداً لم ينتظره. علّم الدالة المستدعية بـ <code>async</code> وانتظر الاستدعاء بـ <code>await</code>:
+<div class="listing" dir="ltr"><div class="listing-title">answers/instance.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">String</span>&gt; fetchName() <span class="k">async</span> =&gt; <span class="s">&#x27;Bit&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="k">var</span> name = fetchName();
+  print(name);
+  print(<span class="k">await</span> fetchName());
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run instance.dart</span>
+Instance of &#x27;Future&lt;String&gt;&#x27;
+Bit</pre></div></li>
+<li>كل عملية تنتظر قيم الـ Stream كلما وصلت؛ و<code>toList</code> و<code>fold</code> تعطيان Future بالنتيجة النهائية:
+<div class="listing" dir="ltr"><div class="listing-title">answers/stream_ops.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  <span class="k">var</span> orders = <span class="k">Stream</span>.fromIterable([<span class="n">45</span>, <span class="n">15</span>, <span class="n">20</span>, <span class="n">60</span>, <span class="n">15</span>]);
+  <span class="k">var</span> big = <span class="k">await</span> orders.where((p) =&gt; p &gt;= <span class="n">20</span>).map((p) =&gt; p + <span class="n">5</span>).toList();
+  print(big);
+  <span class="k">var</span> sum = <span class="k">await</span> <span class="k">Stream</span>.fromIterable([<span class="n">45</span>, <span class="n">15</span>, <span class="n">20</span>]).fold(<span class="n">0</span>, (s, p) =&gt; s + p);
+  print(sum);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run stream_ops.dart</span>
+[50, 25, 65]
+80</pre></div></li>
+<li>كل <code>then</code> تصير <code>await</code> ومتغيراً؛ والنتيجة واحدة، والكود يُقرأ بالترتيب:
+<div class="listing" dir="ltr"><div class="listing-title">answers/then_chain.dart</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">int</span>&gt; price(<span class="k">String</span> item) <span class="k">async</span> =&gt; item.length * <span class="n">10</span>;
+
+<span class="k">Future</span>&lt;<span class="k">int</span>&gt; withService(<span class="k">int</span> p) <span class="k">async</span> =&gt; p + p ~/ <span class="n">10</span>;
+
+<span class="k">void</span> withThen() {
+  price(<span class="s">&#x27;latte&#x27;</span>).then(withService).then((total) =&gt; print(<span class="s">&#x27;then: $total&#x27;</span>));
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; withAwait() <span class="k">async</span> {
+  <span class="k">var</span> p = <span class="k">await</span> price(<span class="s">&#x27;latte&#x27;</span>);
+  <span class="k">var</span> total = <span class="k">await</span> withService(p);
+  print(<span class="s">&#x27;await: $total&#x27;</span>);
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  withThen();
+  <span class="k">await</span> withAwait();
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run then_chain.dart</span>
+then: 55
+await: 55</pre></div></li>
+<li>عاملان يتشاركان طابوراً واحداً. كل منهما يأخذ القهوة التالية، ويحضّرها، ويعود لأخرى، فلا تُحضَّر أكثر من قهوتين في أي لحظة. وخمس قهوات من 0.3 ثانية تستغرق 0.9 ثانية بدلاً من 1.5:
+<div class="listing" dir="ltr"><div class="listing-title">answers/pool.dart</div><pre class="code"><span class="c line-bidi">// الثواني منذ بداية main، بأعشار الثانية: النتيجة نفسها على كل جهاز.</span>
+<span class="k">final</span> watch = Stopwatch();
+<span class="k">String</span> clock() =&gt; <span class="s">&#x27;${(watch.elapsedMilliseconds / 1000).toStringAsFixed(1)} ث&#x27;</span>;
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; brew(<span class="k">int</span> n) <span class="k">async</span> {
+  <span class="k">await</span> <span class="k">Future</span>.delayed(Duration(milliseconds: <span class="n">300</span>));
+  print(<span class="s">&#x27;${clock()} #$n جاهز&#x27;</span>);
+}
+
+<span class="c line-bidi">// قهوتان على الأكثر في وقت واحد: مكان في الآلة لكل عامل.</span>
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; worker(<span class="k">List</span>&lt;<span class="k">int</span>&gt; queue, <span class="k">String</span> name) <span class="k">async</span> {
+  <span class="k">while</span> (queue.isNotEmpty) {
+    <span class="k">var</span> n = queue.removeAt(<span class="n">0</span>);
+    print(<span class="s">&#x27;${clock()} الآلة $name: #$n&#x27;</span>);
+    <span class="k">await</span> brew(n);
+  }
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; main() <span class="k">async</span> {
+  watch.start();
+  <span class="k">var</span> queue = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>];
+  <span class="k">await</span> <span class="k">Future</span>.wait([worker(queue, <span class="s">&#x27;A&#x27;</span>), worker(queue, <span class="s">&#x27;B&#x27;</span>)]);
+  print(<span class="s">&#x27;${clock()} انتهى&#x27;</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run pool.dart</span>
+0.0 ث الآلة A: #1
+0.0 ث الآلة B: #2
+0.3 ث #1 جاهز
+0.3 ث الآلة A: #3
+0.3 ث #2 جاهز
+0.3 ث الآلة B: #4
+0.6 ث #3 جاهز
+0.6 ث الآلة A: #5
+0.6 ث #4 جاهز
+0.9 ث #5 جاهز
+0.9 ث انتهى</pre></div>
+ومشاركة القائمة آمنة فقط لأن Dart تشغّل شيئاً واحداً في كل لحظة: فلا يمكن أن يأخذ العاملان القهوة نفسها، لأن <code>removeAt</code> تعمل كاملة قبل أن يأتي دور العامل الآخر.</li>
 </ol>
 
 </section>
