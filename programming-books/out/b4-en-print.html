@@ -31,6 +31,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "Chapter 12: Observability and Incidents"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "Chapter 13: Technical Leadership and Architecture Decisions"; } }
+@page ch13:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -61,7 +63,7 @@
           <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
           <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: End to End</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">From Idea to Specification</span><span class="toc-p">5</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">API Contracts Between Frontend and Backend</span><span class="toc-p">18</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Full Stack with Next.js</span><span class="toc-p">35</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Authentication Across the Stack</span><span class="toc-p">53</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Payments, Email and Files</span><span class="toc-p">68</span></li><li class="toc-part">Part 2: System Design</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">System Design Fundamentals</span><span class="toc-p">84</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Designing for Failure</span><span class="toc-p">96</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Data at Scale</span><span class="toc-p">109</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Six System Design Case Studies</span><span class="toc-p">120</span></li><li class="toc-part">Part 3: Delivery</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">CI/CD Pipelines</span><span class="toc-p">132</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Cloud and Infrastructure as Code</span><span class="toc-p">144</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Observability and Incidents</span><span class="toc-p">155</span></li><li class="toc-part">Part 4: Leadership</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Technical Leadership and Architecture Decisions</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Estimation, Planning and Working with Product</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Interviews and Growing Your Career</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Capstone: Ship a SaaS Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">172</span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b4/spec/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: End to End</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">From Idea to Specification</span><span class="toc-p">5</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">API Contracts Between Frontend and Backend</span><span class="toc-p">18</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Full Stack with Next.js</span><span class="toc-p">35</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Authentication Across the Stack</span><span class="toc-p">53</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Payments, Email and Files</span><span class="toc-p">68</span></li><li class="toc-part">Part 2: System Design</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">System Design Fundamentals</span><span class="toc-p">84</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Designing for Failure</span><span class="toc-p">96</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Data at Scale</span><span class="toc-p">109</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Six System Design Case Studies</span><span class="toc-p">120</span></li><li class="toc-part">Part 3: Delivery</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">CI/CD Pipelines</span><span class="toc-p">132</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Cloud and Infrastructure as Code</span><span class="toc-p">144</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Observability and Incidents</span><span class="toc-p">155</span></li><li class="toc-part">Part 4: Leadership</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Technical Leadership and Architecture Decisions</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Estimation, Planning and Working with Product</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Interviews and Growing Your Career</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Capstone: Ship a SaaS Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">185</span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b4/spec/en">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>From Idea to Specification</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -4453,6 +4455,364 @@ From 20:15 to 20:50, one booking request in four failed with &quot;Server error&
 <p>The product is designed, delivered and watched. The last part of the book is about the people around it: how a senior engineer leads technical decisions, writes them down, and helps a team choose well.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b4/leadership/en">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">Chapter 13</p><h1>Technical Leadership and Architecture Decisions</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>lead the technical direction of a team without managing anyone</li>
+<li>decide who makes a decision, and how much process it deserves</li>
+<li>keep architecture decisions as a log the whole team can read</li>
+<li>test whether a choice is robust, not just whether it wins</li>
+<li>run design reviews that end in a decision, even when people disagree</li>
+<li>turn architecture rules into checks the pipeline runs, and change a running system safely</li>
+</ul>
+</div>
+
+<p class="lead">Until now, the hard parts of this book were systems. From here, the hard part is people. A senior engineer is judged less by the code they write than by the decisions their team makes: whether they are good, whether they are made in time, whether anyone remembers why, and whether the code still follows them a year later. Book 2 introduced decision records and the weighted matrix for one front end. This chapter uses them across a whole product, with Bit Booking’s real decisions, and adds the parts that make them last.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>A useful question for a senior engineer at the end of a week is not “what did I build?” but “what is the team able to do now that it could not do on Monday?” A decision made, a doubt removed, a colleague unblocked: these often matter more than another pull request.</p></div></div>
+
+<h2><span class="sec">13.1</span> <span>Leading without managing</span></h2>
+
+<p>A <dfn>technical lead</dfn> (or a staff engineer, in larger companies) owns the technical direction of a team or an area, usually without anyone reporting to them. Their authority is borrowed: from being right often, from explaining clearly, and from listening. In practice the role is four habits:</p>
+<ul>
+<li><strong>Seeing the whole:</strong> knowing how the pieces fit, where the risks are, and which problems are coming in six months, not just this sprint.</li>
+<li><strong>Making decisions happen:</strong> noticing when a decision is needed, getting the right people to make it, writing it down, and moving on.</li>
+<li><strong>Raising the floor:</strong> reviews, pairing, examples and checks that make the whole team’s work better, not only their own.</li>
+<li><strong>Translating:</strong> explaining technical risk in terms of customers, time and money to product and management, and business goals in technical terms to the team.</li>
+</ul>
+
+<p>The trap is to keep doing only what made you senior: taking the hardest ticket and disappearing into it. Do some of that, to stay close to the code, but if the team waits for you on every decision, you have become its bottleneck.</p>
+
+<h2><span class="sec">13.2</span> <span>Who decides, and how much process</span></h2>
+
+<p>Book 2 sorted decisions into one-way doors, hard to undo, and two-way doors, cheap to undo. Across a product a second question matters as much: how far does the decision reach? Changing a library inside one module touches one team; changing how all modules talk to the database touches everyone, for years. Together they set the process:</p>
+
+<table>
+<thead><tr><th>Decision</th><th>Example</th><th>Process</th></tr></thead>
+<tbody>
+<tr><td>Easy to undo, local</td><td>A date library in one module</td><td>The person doing the work decides</td></tr>
+<tr><td>Hard to undo, local</td><td>A module’s data model</td><td>A short review, and a decision record</td></tr>
+<tr><td>Easy to undo, wide</td><td>A new lint rule for all code</td><td>Announce, try for two weeks, keep or drop</td></tr>
+<tr><td>Hard to undo, wide</td><td>One database or several; the job queue</td><td>A design doc, a review, a decision record</td></tr>
+</tbody>
+</table>
+
+<p>For the decisions that need a process, name the roles before the discussion starts. A common scheme is <dfn>DACI</dfn>: one <em>Driver</em> who runs the process and writes the documents; one <em>Approver</em> who makes the final call; <em>Contributors</em> who are consulted; and those <em>Informed</em> afterwards. One approver, not a committee: the commonest reason decisions take months is that nobody knew who could say yes.</p>
+
+<h2><span class="sec">13.3</span> <span>The decision log</span></h2>
+
+<p>Bit Booking keeps its architecture decision records in <code>docs/adr/</code>, one numbered file each, in the template every record follows:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/adr/template.md</div><pre class="code md"><b># TITLE</b>
+
+Status: Proposed
+Date: YYYY-MM-DD · Deciders: names
+
+<b>## Context</b>
+What forces us to decide now? Facts, numbers, constraints.
+
+<b>## Decision</b>
+What we will do, in one or two sentences.
+
+<b>## Options considered</b>
+Each option, with its main benefit and its main cost.
+
+<b>## Consequences</b>
+What becomes easier, what becomes harder, and what we will watch.</pre></div>
+
+<p>Over a product’s life the records become a log, and the log tells a story. Here is the decision that turned out wrong, and the one that replaced it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/adr/0004-jobs-in-postgresql.md</div><pre class="code md"><b># 4. Background jobs in PostgreSQL</b>
+
+Status: Accepted
+Date: 2026-09-02 · Deciders: Karim, Omar, Sara
+
+<b>## Context</b>
+The Redis queue lost jobs twice when Redis restarted (incidents 14 and 19).
+We run 9,000 jobs a day; load tests show PostgreSQL handles 200 a second.
+Supersedes 0002.
+
+<b>## Decision</b>
+Run background jobs from a PostgreSQL table, with SKIP LOCKED.
+
+<b>## Options considered</b>
+See the decision matrix in the design doc: PostgreSQL queue 4.55,
+Redis queue 3.45, cloud queue 3.15.
+
+<b>## Consequences</b>
+Jobs are created in the same transaction as the booking: none are lost.
+Redis remains for caching only. Revisit above 100 jobs a second.</pre></div>
+
+<p>Notice what the new record does not do: it does not delete or edit record 2. Record 2 stays, marked <em>Superseded by 0004</em>, because it explains what the team believed in March and why; somebody who later suggests “why not Redis for jobs?” finds the whole story in two files. A small tool lists the log and starts new records, so that writing one is never harder than skipping it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">adr.ts</div><pre class="code"><span class="k">const</span> [command, ...words] = process.argv.slice(<span class="n">2</span>);
+<span class="k">if</span> (command === <span class="s">&quot;new&quot;</span>) {
+  <span class="c line-bidi">// the next number: records are superseded, never deleted or renumbered</span>
+  <span class="k">const</span> number = String(files.length + <span class="n">1</span>).padStart(<span class="n">4</span>, <span class="s">&quot;0&quot;</span>);
+  <span class="k">const</span> title = words.join(<span class="s">&quot; &quot;</span>);
+  <span class="k">const</span> slug = <span class="s">`${number}-${title.toLowerCase().replaceAll(&quot; &quot;, &quot;-&quot;)}`</span>;
+  <span class="c line-bidi">// the template keeps every record short and in the same shape</span>
+  <span class="k">const</span> template = readFileSync(<span class="s">`${dir}/template.md`</span>, <span class="s">&quot;utf8&quot;</span>);
+  writeFileSync(
+    <span class="s">`${dir}/${slug}.md`</span>,
+    template.replace(<span class="s">&quot;TITLE&quot;</span>, <span class="s">`${number}. ${title}`</span>),
+  );
+  console.log(<span class="s">`${dir}/${slug}.md`</span>);
+} <span class="k">else</span> {
+  <span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files) {
+    <span class="k">const</span> { number, title, status } = read(file);
+    <span class="c line-bidi">// a superseded record stays: it explains what the team believed, and when</span>
+    console.log(<span class="s">`${number}  ${status.padEnd(26)} ${title.replace(/^\d+\. /, &quot;&quot;)}`</span>);
+  }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The decisions so far</span>
+<span class="c">$ </span><span class="k">node adr.ts</span>
+0001  Accepted                   One PostgreSQL database for the whole product
+0002  Superseded by 0004         Background jobs in a Redis queue
+0003  Accepted                   Money as whole piastres
+0004  Accepted                   Background jobs in PostgreSQL
+<span class="c line-bidi"># Record a new decision</span>
+<span class="c">$ </span><span class="k">node adr.ts new Keep job payloads small</span>
+docs/adr/0005-keep-job-payloads-small.md
+<span class="c">$ </span><span class="k">node adr.ts</span>
+0001  Accepted                   One PostgreSQL database for the whole product
+0002  Superseded by 0004         Background jobs in a Redis queue
+0003  Accepted                   Money as whole piastres
+0004  Accepted                   Background jobs in PostgreSQL
+0005  Proposed                   Keep job payloads small</pre></div>
+
+<p>Three habits keep the log useful. Records are short, a page at most; the long reasoning belongs in the design doc they link to. Records are reviewed in a pull request like code, and merged when the decision is made, so the status is always true. And each record says when to revisit it (“above 100 jobs a second”), which turns a future argument into a measurement.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why should a decision with a wide reach have exactly one approver?</li><li>Record 2 turned out to be wrong. Why is it kept rather than deleted or corrected?</li><li>What does the line “Revisit above 100 jobs a second” add to a decision record?</li></ol></aside>
+
+<h2><span class="sec">13.4</span> <span>Is the choice robust?</span></h2>
+
+<p>A weighted matrix, as in Book 2, turns a discussion into numbers: criteria, weights for what matters to this team now, and scores agreed in the review. Here it compares three ways of running Bit Booking’s background jobs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">matrix.ts</div><pre class="code"><span class="c line-bidi">// three ways to run Bit Booking&#x27;s background jobs (reminders, receipts, reports)</span>
+<span class="k">const</span> options = [<span class="s">&quot;PostgreSQL queue&quot;</span>, <span class="s">&quot;Redis queue&quot;</span>, <span class="s">&quot;cloud queue&quot;</span>];
+
+<span class="c line-bidi">// what matters to this team, now: weights add up to 100</span>
+<span class="k">const</span> criteria = [
+  <span class="c line-bidi">// 1 = poor, 5 = excellent, agreed in the design review, with a reason for each</span>
+  { name: <span class="s">&quot;operations&quot;</span>, weight: <span class="n">30</span>, scores: [<span class="n">5</span>, <span class="n">3</span>, <span class="n">4</span>] },
+  { name: <span class="s">&quot;team knows it&quot;</span>, weight: <span class="n">25</span>, scores: [<span class="n">5</span>, <span class="n">3</span>, <span class="n">2</span>] },
+  { name: <span class="s">&quot;cost&quot;</span>, weight: <span class="n">20</span>, scores: [<span class="n">5</span>, <span class="n">4</span>, <span class="n">3</span>] },
+  { name: <span class="s">&quot;scale headroom&quot;</span>, weight: <span class="n">15</span>, scores: [<span class="n">2</span>, <span class="n">4</span>, <span class="n">5</span>] },
+  { name: <span class="s">&quot;no lock-in&quot;</span>, weight: <span class="n">10</span>, scores: [<span class="n">5</span>, <span class="n">4</span>, <span class="n">1</span>] },
+];</pre></div>
+
+<p>A matrix has a weakness that experienced people know: the weights are opinions, and with enough adjustment any option can win. So the second half of the script asks the senior question, <em>would the decision change if we were somewhat wrong about what matters?</em> It halves each weight, then multiplies it by one and a half, one at a time, and reports any change of winner:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">matrix.ts</div><pre class="code"><span class="k">let</span> stable = <span class="k">true</span>;
+<span class="k">for</span> (<span class="k">const</span> [i, c] <span class="k">of</span> criteria.entries()) {
+  <span class="k">for</span> (<span class="k">const</span> factor <span class="k">of</span> [<span class="n">0.5</span>, <span class="n">1.5</span>]) {
+    <span class="k">const</span> changed = weights.map((w, j) =&gt; (j === i ? w * factor : w));
+    <span class="k">const</span> other = best(totals(changed));
+    <span class="k">if</span> (other !== winner) {
+      stable = <span class="k">false</span>;
+      console.log(<span class="s">`${c.name} ×${factor}: changes the winner to ${options[other]}`</span>);
+    }
+  }
+}
+<span class="k">if</span> (stable) console.log(<span class="s">&quot;stable: no single weight change alters the winner&quot;</span>);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Three options, five criteria</span>
+<span class="c">$ </span><span class="k">node matrix.ts</span>
+option              score
+PostgreSQL queue     4.55
+Redis queue          3.45
+cloud queue          3.15
+winner: PostgreSQL queue
+
+stable: no single weight change alters the winner</pre></div>
+
+<p>The PostgreSQL queue wins by more than a full point, and no single change of weight alters that: the decision is <dfn>robust</dfn>, and the meeting can be short. If a change had flipped the winner, say “scale headroom ×1.5 changes the winner to cloud queue”, the matrix would have done something more valuable than pick a winner: it would have shown exactly which disagreement to discuss. Is growth really a top concern for the next two years? That question, not the arithmetic, is the decision.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: buy information before deciding</p><p>When a score is a guess (“can PostgreSQL handle our job volume?”), replace it with a measurement before deciding: a load test, a spike of a day or two, a call with a team that uses it. Record 4 says “load tests show PostgreSQL handles 200 a second”; record 2 said “we were unsure”. The difference is half a day of work.</p></aside>
+
+<h2><span class="sec">13.5</span> <span>Design reviews that end in a decision</span></h2>
+
+<p>Chapter 6 described the design document. Its value comes from the review, and reviews fail in familiar ways: nobody reads the document before the meeting, the loudest person wins, or the discussion never ends. A process that works:</p>
+<ol>
+<li><strong>Write first, meet second.</strong> The driver shares the document with a date by which a decision is needed. Reviewers comment in writing, so quiet people and other time zones are heard.</li>
+<li><strong>Meet only for what is left.</strong> Settled points are not repeated; the meeting covers the disagreements, one by one.</li>
+<li><strong>Separate facts from preferences.</strong> A disagreement about a fact (“PostgreSQL cannot handle it”) is settled by measuring. A disagreement about values (“we care more about cost than headroom”) is settled by the approver.</li>
+<li><strong>Decide on the date.</strong> The approver decides, even with doubts left; the decision record notes the doubts and when to revisit.</li>
+</ol>
+
+<p>Then comes the part that makes teams fast: <dfn>disagree and commit</dfn>. People who argued for the other option say so in the review, and once the decision is made, they help it succeed rather than waiting for it to fail. That is only fair if the process was fair: everyone was heard, the reasons are written down, and the record says what evidence would reopen the question.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: write the strongest version of the other side</p><p>Before recommending an option, write the best argument for the one you are rejecting, well enough that its supporters would agree with your summary. If you cannot, you do not yet understand the decision. If you can, the others will trust your recommendation, because they can see you understood them.</p></aside>
+
+<h2><span class="sec">13.6</span> <span>Architecture that stays</span></h2>
+
+<p>A decision record says what the team agreed; it does not stop the code from drifting away from it. Record 1 says that modules use each other only through their code. Six months later, in a hurry, someone imports another module’s internals, the review misses it, and the boundary is gone. The answer is to turn the rule into a test, run by the pipeline on every pull request. Tests of this kind are called <dfn>fitness functions</dfn>: automated checks that the architecture still has a property the team chose.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">rules.ts</div><pre class="code"><span class="k">const</span> broken: string[] = [];
+<span class="c line-bidi">// every import with a relative path, and the module it lands in</span>
+<span class="k">const</span> imports = /<span class="k">from</span> <span class="s">&quot;(\.[^&quot;</span>]+)&quot;/g;
+<span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files) {
+  <span class="k">const</span> <span class="k">from</span> = moduleOf(file);
+  <span class="k">for</span> (<span class="k">const</span> [, path] <span class="k">of</span> readFileSync(file, <span class="s">&quot;utf8&quot;</span>).matchAll(imports)) {
+    <span class="k">const</span> target = normalize(join(dirname(file), path!));
+    <span class="k">const</span> to = moduleOf(target);
+    <span class="k">if</span> (to === <span class="k">from</span>) continue;
+    <span class="c line-bidi">// shared code depends on no module</span>
+    <span class="k">if</span> (<span class="k">from</span> === <span class="s">&quot;shared&quot;</span>)
+      broken.push(<span class="s">`${file} → ${to}\n    shared code must not import a module`</span>);
+    <span class="c line-bidi">// a module may use another module only through its index.ts</span>
+    <span class="k">else</span> <span class="k">if</span> (to !== <span class="s">&quot;shared&quot;</span> &amp;&amp; !target.endsWith(<span class="s">`${to}/index.ts`</span>))
+      broken.push(<span class="s">`${file} → ${path}\n    go through ${to}/index.ts`</span>);
+  }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The pipeline checks the architecture</span>
+<span class="c">$ </span><span class="k">node rules.ts; echo &quot;exit code: $?&quot;</span>
+architecture rules broken: 1
+  app/bookings/refund.ts → ../payments/provider.ts
+    go through payments/index.ts
+exit code: 1</pre></div>
+
+<p>The check found a real break: the refund code reaches into the payment module’s provider client, skipping the module’s public <code>index.ts</code>. The pipeline fails, the message says what to do, and the conversation happens on the pull request, while it is one line to fix. Other properties can be guarded the same way: no module reads another’s tables (search the SQL), no request handler is slower than its budget (the load test of Chapter 6), no dependency without a licence the company allows, no new service without a runbook. Write a fitness function for each decision that you would be upset to see quietly broken.</p>
+
+<h2><span class="sec">13.7</span> <span>Changing a running system</span></h2>
+
+<p>Most architecture work is not choosing a design for something new; it is moving something that customers use every day from one design to another, as record 4 moved the jobs. Big rewrites, where the old system is frozen while a new one is built, usually fail: the old system keeps changing, the new one takes longer than planned, and the switch-over is a single huge risk. The safer pattern has a name, the <dfn>strangler fig</dfn>, after a plant that grows around a tree until it can stand alone:</p>
+<ol>
+<li>Put a seam in front of the old thing: one place where every job is created.</li>
+<li>Send a small share of the work to the new path, behind a feature flag (Chapter 10).</li>
+<li>Compare the results, and watch the SLIs of Chapter 12.</li>
+<li>Move more work across, step by step, each step reversible.</li>
+<li>When nothing uses the old path, delete it, and supersede the decision record.</li>
+</ol>
+
+<p>Changes like this compete with features for the same people, which makes them a product conversation, not only a technical one. Make it in the product’s terms: “the Redis queue lost jobs twice this year; each time two salons complained; the move takes three weeks and removes one service we run”. A <dfn>technical debt</dfn> register (each item with its cost to customers or to the team, and an estimate to fix) lets the team and product choose together, every planning cycle, how much to repay. The next chapter is about that conversation.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>The lead takes every hard ticket</td><td>The team waits; the lead is the bottleneck</td><td>Spend time on decisions, reviews, unblocking</td></tr>
+<tr><td>Nobody knows who decides</td><td>Discussions last months</td><td>Name a driver and one approver first</td></tr>
+<tr><td>Heavy process for every choice</td><td>Small decisions get stuck</td><td>Match process to reversibility and reach</td></tr>
+<tr><td>Editing or deleting old records</td><td>The history of why is lost</td><td>Supersede, and keep the old record</td></tr>
+<tr><td>Trusting the matrix total</td><td>Weights tuned until the favourite wins</td><td>Check sensitivity; discuss the weight that flips it</td></tr>
+<tr><td>Scores that are guesses</td><td>Decisions on opinions</td><td>Measure or spike first</td></tr>
+<tr><td>Reviews without a decision date</td><td>Endless discussion</td><td>Comments first, then a meeting, then a decision</td></tr>
+<tr><td>Rules only in documents</td><td>The code drifts away from them</td><td>Fitness functions in the pipeline</td></tr>
+<tr><td>The big rewrite</td><td>Late, risky, a single switch-over</td><td>Strangle the old system step by step</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A technical lead <strong>sees the whole, makes decisions happen, raises the floor and translates</strong>, mostly without formal authority.</li>
+<li>Match the process to <strong>reversibility and reach</strong>; name a <strong>driver and one approver</strong> before discussing.</li>
+<li>Keep <strong>decision records</strong> as a log: short, reviewed, never deleted, <strong>superseded</strong> when they change, with a condition to revisit.</li>
+<li>Use the matrix as a summary, and check that the choice is <strong>robust</strong> to changes in the weights.</li>
+<li>Run reviews <strong>in writing first</strong>, settle facts by measuring and values by the approver, decide on the date, then <strong>disagree and commit</strong>.</li>
+<li>Turn important rules into <strong>fitness functions</strong> that the pipeline runs.</li>
+<li>Change running systems step by step, the <strong>strangler fig</strong> way, and discuss technical debt in product terms.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because with several approvers, any one of them can delay or block, and nobody can end the discussion; decisions that touch everyone then take months, and the product waits. One approver, named before the discussion, listens to everyone, and then decides on the date; if people disagree, the reasons go into the record instead of into a longer meeting. 2. Because it is the team’s memory of what it believed, and why, at the time. Deleting it hides the history; editing it rewrites it. Kept and marked “Superseded by 0004”, it shows the reasoning that failed (and the incidents that proved it), so nobody proposes the same thing again without new facts. 3. A condition that would make the decision wrong. It turns a future argument (“shouldn’t we move off PostgreSQL?”) into a measurement anyone can check, and it can become an alert on the job rate, so the team learns that the assumption has changed before customers do.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project extends the tools of this chapter and uses them on Bit Booking, or on a project of your own.</p>
+
+<div class="project">
+<p class="project-label">Project 13.1 · Easy</p>
+<h3>Supersede, properly</h3>
+<p class="project-goal">Teach the decision tool to supersede a record.</p>
+<p class="project-skills"><strong>You will practise:</strong> small tools, file formats, and keeping history.</p>
+<ol class="steps">
+<li>Add <code>node adr.ts supersede 0003 "Money as integer minor units"</code>: it creates the new record, with “Supersedes 0003” in its context.</li>
+<li>Change the old record’s status line to “Superseded by 0006”, and nothing else in it.</li>
+<li>Make the list show superseded records last, and add a check that fails if a record points to a number that does not exist.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> run the check in the pipeline too; a broken link between records is a small thing that makes the log hard to trust.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 13.2 · Medium</p>
+<h3>Where would the winner change?</h3>
+<p class="project-goal">Find, for each criterion, the exact weight at which the winner changes.</p>
+<p class="project-skills"><strong>You will practise:</strong> sensitivity analysis and explaining numbers.</p>
+<ol class="steps">
+<li>For each criterion, search the weights from 0 to 100 (keeping the others fixed) and print the first weight at which another option wins, or “never”.</li>
+<li>Add a score uncertainty: let each score move by one point up or down, and count in how many of the combinations each option wins.</li>
+<li>Write one paragraph, for a reader who never saw the script, saying how sure the team can be.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> five criteria and three options give 3<sup>15</sup> score combinations, about 14 million; that runs in seconds, but sample randomly if you add more.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 13.3 · Challenge</p>
+<h3>A rule for every decision</h3>
+<p class="project-goal">Make the architecture checks a small framework, with one fitness function per decision record.</p>
+<p class="project-skills"><strong>You will practise:</strong> fitness functions, static analysis, and linking documents to code.</p>
+<ol class="steps">
+<li>Give each record an optional line <code>Check: name</code>, and a folder of checks named the same way.</li>
+<li>Write checks for records 1 and 3: no module reads another module’s tables in its SQL strings; no <code>parseFloat</code> or <code>toFixed</code> on money outside formatting code.</li>
+<li>In the pipeline, run every check of an accepted record; when one fails, print the record’s title and its number, so the author can read why.</li>
+<li>Add a way to mark a known exception in code, with the record number and a reason, and list all exceptions in a weekly report.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a check that is wrong one time in ten will be switched off within a month. Start strict and narrow, and widen only what you can check reliably.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Place each decision in the table of section 13.2 and say what process it needs: renaming a function in one module; moving all dates to UTC; adding a column to one module’s table; choosing a new error tracker for the company.</li>
+<li><span class="level">Easy</span> Rewrite this decision record line so that it can be checked later: “We chose PostgreSQL because it scales well enough.”</li>
+<li><span class="level medium">Medium</span> In a review, two seniors disagree: one says the cloud queue is cheaper, the other says it is more expensive. Is this a disagreement of facts or of values, and how do you settle it?</li>
+<li><span class="level medium">Medium</span> The fitness function of section 13.6 fails on a pull request that must ship today to fix a customer problem. What do you do, today and next week?</li>
+<li><span class="level hard">Challenge</span> Plan the move from the Redis queue to the PostgreSQL queue as a strangler fig: the seam, the flag, how to compare the two paths, the SLIs to watch, how to roll back at each step, and when to delete the old path.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 14</p>
+<p>Decisions need time, and time is what product and management ask about first. The next chapter is about estimating honestly, planning work in slices, and working with product as a partner rather than a customer.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b4/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -4608,6 +4968,16 @@ export async function GET(request: Request) {
 <li>It fires when the failure rate is above 14.4 times the budget rate, in both windows. For 99.9% the budget rate is 0.1%, so the page fires above 1.44% failures. For 99.5% the budget rate is 0.5%, so it fires above 7.2%. A stricter objective makes every rule more sensitive: with an objective stricter than customers need, small, harmless problems page people, the budget is always spent, and the team either ignores the alerts or stops releasing. Choose the objective customers actually notice, not the highest number that sounds good.</li>
 <li>The commander keeps the priority on mitigation: if a safe action exists that stops the harm now (roll back, switch off the feature flag), it happens now, while that engineer keeps investigating in parallel. Ten minutes of a SEV-1 is a lot of failed customers, “I think I see the bug” is a guess, and a fix written under pressure and deployed without review is a common way to make an incident worse. Once customers are fine, the fix goes through the normal pipeline. If no mitigation exists, the commander gives the ten minutes, with a clear time to check in and a second person watching.</li>
 <li>“A query on <code>bookings</code> without an index reached production; review and tests did not show its cost, because test tables are small.” Action: run the slow-query check of Book 3’s performance chapter against a copy of production-sized data in the pipeline, and alert on queries over 100 ms. “A migration ran against production from a laptop, because production credentials were available there and the command looked the same for every environment.” Action: only the pipeline can reach the production database; remove production credentials from laptops, and make the target environment visible in the prompt. “The disk filled up without warning, because there was no alert on disk usage and the log volume had grown with traffic.” Action: alert when a disk is 80% full and on the rate it fills, and rotate and limit the logs.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 13</h2>
+<ol class="exercises">
+<li>Renaming a function in one module: easy to undo, local; the person doing the work decides, in a normal pull request. Moving all dates to UTC: hard to undo (stored data changes) and wide (every module, the API and the clients); a design doc, a review with a named approver, a decision record, and a careful migration. Adding a column to one module’s table: hard-ish to undo once data is in it, but local; a short review in the pull request, and a record only if it changes how the module models its data. Choosing a company error tracker: wide, and moderately hard to undo (every service is wired to it, and its history is lost on a switch); a short design doc with a matrix and a trial, an approver, and a record.</li>
+<li>For example: “We chose PostgreSQL for jobs because a load test on production-sized hardware ran 200 jobs a second with the job query under 20 ms, and we run 9,000 jobs a day (at most 2 a second at peak). Revisit above 100 jobs a second or if the job query exceeds 50 ms.” The numbers and the condition make it checkable; “scales well enough” cannot be proved wrong.</li>
+<li>It is a disagreement of facts, because the cost can be calculated. Settle it by measuring instead of arguing: take this month’s real job count and peak rate, price them with the cloud provider’s calculator, and add what each option costs the team to run (hours per month for upgrades, backups and monitoring, at a known rate). Put the calculation in the design doc, so both people can check it. If they still disagree afterwards, it is usually because they value something differently (time of people against money), and that the approver decides.</li>
+<li>Today: fix the customer problem in the smallest way that respects the rule if at all possible (often it is a matter of exporting one function through <code>index.ts</code>). If it truly is not possible today, merge with an explicit, visible exception (an allow-list entry with the reason, a ticket number and the approver’s name), never by switching the check off. Next week: remove the exception through a proper change, and ask why the rule was in the way: if it is often in the way of real needs, the rule or the module boundary may be wrong, and that deserves a review and possibly a new decision record.</li>
+<li>Seam: one function, <code>enqueue(job)</code>, through which all code creates jobs; first change every caller to use it, with the Redis queue behind it. Flag: a setting with the share of jobs that go to the PostgreSQL queue, by job type (start with receipts, the least risky). Compare: for two weeks write each job to both queues but let only one run it, and compare daily counts of created, run and failed jobs, and their delay; any difference is investigated before the next step. SLIs: jobs run within a minute of being due, jobs lost (created but never run), and the database’s query time. Roll back: at every step, set the flag back to 0% for that type; the Redis path still works. Then move 10%, 50%, 100% of each type, waiting a few days each time. Delete the old path only after a full week at 100% with no differences, and when the Redis queue is empty; then supersede the decision record and remove Redis’s job settings.</li>
 </ol>
 
 </section>

@@ -969,7 +969,8 @@
           "chapters": [
             {
               "en": "Technical Leadership and Architecture Decisions",
-              "ar": "القيادة التقنية وقرارات المعمارية"
+              "ar": "القيادة التقنية وقرارات المعمارية",
+              "src": "b4/leadership"
             },
             {
               "en": "Estimation, Planning and Working with Product",
