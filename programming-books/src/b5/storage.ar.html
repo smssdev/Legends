@@ -1,0 +1,219 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b5/storage/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>حفظ البيانات على الجهاز</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تختار مكان كل نوع من البيانات: التفضيلات، أو ملف، أو قاعدة بيانات، أو التخزين الآمن</li>
+<li>تحفظ الإعدادات والقوائم الصغيرة بـ <code>shared_preferences</code>، وتحمّلها قبل أول إطار</li>
+<li>تحفظ سجلاً في ملف JSON داخل مجلد التطبيق الخاص، بأمان</li>
+<li>تحفظ سجلات كثيرة في قاعدة بيانات SQLite بـ <code>sqflite</code>، وتبحث فيها</li>
+<li>تختبر كل نوع من التخزين بلا جوال</li>
+</ul>
+</div>
+
+<p class="lead">أغلق تطبيق المقهى وافتحه من جديد، فإذا كل شيء قد ضاع: الوضع الليلي الذي اخترته، والقلوب، والسلة. فكل ما في هذا الكتاب حتى الآن عاش في الذاكرة، والذاكرة تُفرَّغ كلما أُغلق التطبيق. والناس يتوقعون العكس: التطبيق يتذكر. وهذا الفصل يكتب البيانات في تخزين الجوال نفسه، بثلاث طرق لثلاثة أحجام من البيانات، وكل لقطة شاشة فيه أُخذت <em>بعد</em> إغلاق التطبيق وفتحه من جديد.</p>
+
+<aside class="bit" data-mood="happy"><p>لالتقاط صور هذا الفصل أعاد المتصفح فعلاً تحميل كل تطبيق بعد اللمسات، وهذا يفرّغ ذاكرته كلها. فكل ما تراه فيها عاد من التخزين.</p></aside>
+
+<h2>{{n}}.1 ماذا نحفظ، وأين</h2>
+
+<table>
+<thead><tr><th>البيانات</th><th>المكان</th><th>مثال</th></tr></thead>
+<tbody>
+<tr><td>قيم صغيرة قليلة</td><td><code>shared_preferences</code></td><td>الوضع الليلي، واللغة، وآخر اسم كُتب</td></tr>
+<tr><td>مستند واحد يُقرأ ويُكتب كاملاً</td><td>ملف (JSON)</td><td>سجل الطلبات، ومسودة، وملف تصدير</td></tr>
+<tr><td>سجلات كثيرة يُبحث فيها وتتغير واحداً واحداً</td><td>قاعدة بيانات (SQLite)</td><td>الملاحظات، والرسائل، وكتالوج منتجات</td></tr>
+<tr><td>الأسرار</td><td><code>flutter_secure_storage</code></td><td>توكن الدخول، وكلمة المرور</td></tr>
+<tr><td>نسخة مما أرسله الخادم</td><td>ملف أو قاعدة بيانات، كذاكرة مؤقتة</td><td>القائمة، لعرضها بلا إنترنت</td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>التفضيلات والملفات نص عادي على الجهاز: يستطيع قراءتها كل من يصل إلى الجوال أو إلى نسخته الاحتياطية. فلا تضع فيها كلمة مرور ولا توكن دخول أبداً؛ فـ <code>flutter_secure_storage</code> تحفظها في Keychain على iOS وفي مخزن مشفّر على أندرويد. ويستخدمها الكتاب السادس لتسجيل دخول حقيقي.</p></aside>
+
+<h2>{{n}}.2 القيم الصغيرة: <code>shared_preferences</code></h2>
+
+<p>حزمة <code>shared_preferences</code> تحفظ أزواج مفتاح وقيمة، من نصوص وأرقام وقيم منطقية وقوائم نصوص، في مكان كل منصة: ملف تفضيلات على أندرويد، و<code>NSUserDefaults</code> على iOS، والتخزين المحلي للمتصفح على الويب. ويضيفها الفصل مع باقي الحزم التي يستخدمها:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>نموذج الإعدادات من الفصل {{n-2}}، وقد صارت له ذاكرة:</p>
+
+<pre data-code="lib/settings_app.dart" data-from="^class Settings" data-to="^}#2" data-title="lib/settings_app.dart (جزء)"></pre>
+
+<figure data-img="shots/settings.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: المفتاحان مفعّلان، ثم أُغلق التطبيق وفُتح من جديد.</figcaption>
+</figure>
+
+<ul>
+<li><code>SharedPreferencesAsync</code> هي واجهة الحزمة الحالية: كل قراءة وكتابة <code>Future</code>، لأنها تذهب فعلاً إلى القرص. و<code>getBool</code> تعيد <code>null</code> لمفتاح لم يُحفظ قط، ومن هنا <code dir="ltr">?? false</code>.</li>
+<li>دوال التغيير تغيّر الحقل وتُبلغ <em>أولاً</em>، ثم تحفظ. فيتحرك المفتاح فوراً، ويلحق به القرص بعد لحظة.</li>
+<li><code>main</code> صارت <code>async</code>. و<code>WidgetsFlutterBinding.ensureInitialized()</code> تجهّز المحرك الذي تحتاجه الإضافات لتصل إلى المنصة، و<code dir="ltr">await settings.load()</code> تقرأ كل شيء قبل <code>runApp</code>: فيكون أول إطار ليلياً من البداية، بدل أن يومض نهارياً ثم يتبدل.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>التحميل قبل <code>runApp</code> صحيح لإعدادات قليلة تأخذ أجزاء من الثانية. أما البيانات الكبيرة فلا تحمّلها هناك أبداً: فسيحدّق الشخص في شاشة فارغة حتى تنتهي. البيانات الكبيرة تُحمَّل بعد أول إطار، بحالة تحميل، كما في الفصل {{n-1}}.</p></aside>
+
+<p>والتفضيلات تحفظ قوائم النصوص أيضاً، وهذا يكفي للمفضلة. احفظ أرقام المشروبات لا أسماءها: فالاسم قد يُصحَّح أو يُترجم، أما الرقم فيبقى:</p>
+
+<pre data-code="lib/favourites_app.dart" data-from="^class Favourites" data-to="^}" data-title="lib/favourites_app.dart (جزء)"></pre>
+
+<figure data-img="shots/favourites.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: قلبان، ما زالا هنا بعد فتح التطبيق من جديد.</figcaption>
+</figure>
+
+<p>ولاختبار التخزين أعطِ الحزمة قرصاً متخيَّلاً في الذاكرة، من حزمة واجهة المنصة الخاصة بها. فالنموذج الجديد الذي يقرأ ما حفظه الأول هو بالضبط «فتح التطبيق من جديد»:</p>
+
+<pre data-code="test/settings_test.dart" data-from="^void main" data-title="test/settings_test.dart"></pre>
+<pre data-term="settings-test.sh"></pre>
+
+<h2>{{n}}.3 الملفات: مستند واحد في كل مرة</h2>
+
+<p>سجل الطلبات يكبر، وله بنية: قائمة طلبات، لكل منها اسم ومجموع. إنه مستند واحد، يُقرأ حين تُفتح الشاشة ويُكتب حين يُضاف طلب: ملف JSON. ولكل تطبيق مجلد خاص لمثل هذه الملفات، تعطيه حزمة <code>path_provider</code>:</p>
+
+<pre data-code="lib/order_book.dart" data-from="^class Order {" data-title="lib/order_book.dart (جزء)"></pre>
+
+<ul>
+<li><code>getApplicationDocumentsDirectory()</code> تعيد مجلد مستندات التطبيق: خاص به، يبقى حتى يُحذف التطبيق، ويدخل في النسخ الاحتياطية للجوال. أما البيانات التي يمكن تنزيلها من جديد فمكانها <code>getApplicationCacheDirectory()</code>: فقد يفرّغه النظام حين تضيق المساحة.</li>
+<li>دالة المجلد معامل له قيمة افتراضية، تماماً مثل <code>http.Client</code> في الفصل {{n-1}}: فالتطبيق يأخذ المجلد الحقيقي، والاختبار يأخذ مجلداً مؤقتاً.</li>
+<li>الملف غير الموجود ليس خطأ: إنها المرة الأولى.</li>
+<li>الكتابة تذهب إلى ملف جديد أولاً، ثم تضعه <code>rename</code> في مكانه بخطوة واحدة. فإن نفدت البطارية في منتصف الكتابة بقي الملف القديم سليماً. أما الكتابة فوق الملف مباشرة فقد تترك نصفه، فيضيع السجل.</li>
+</ul>
+
+<p>والاختبار يستخدم مجلداً حقيقياً على القرص، بل ويتحقق من النص الدقيق في الملف:</p>
+
+<pre data-code="test/order_book_test.dart" data-from="  test(" data-to="^  });" data-title="test/order_book_test.dart (جزء)"></pre>
+<pre data-term="order-book-test.sh"></pre>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p><code>path_provider</code> وملفات <code>dart:io</code> لا تعمل على الويب: فصفحة الويب بلا مجلدات. ولهذا جاءت صور هذا الفصل من التفضيلات التي تعمل في المتصفح، وأُثبتت أمثلة الملفات وقاعدة البيانات بالاختبارات. فإن كان تطبيقك سيعمل على الويب أيضاً، فاختر التفضيلات، أو حزمة تدعمه، من البداية.</p></aside>
+
+<h2>{{n}}.4 قاعدة بيانات: <code>sqflite</code></h2>
+
+<p>الملف يُقرأ ويُكتب كاملاً. فمع ألف ملاحظة يعني تغيير علامة واحدة إعادة كتابتها كلها، ويعني إيجاد الملاحظات التي فيها كلمة قراءتها كلها. أما قاعدة البيانات فتفعل الاثنين مباشرة. وفي كل جوال <dfn>SQLite</dfn>، قاعدة بيانات صغيرة في ملف واحد، وحزمة <code>sqflite</code> تتيحها لـ Flutter بلغة SQL التي ربما عرفتها في الكتاب الثالث:</p>
+
+<pre data-code="lib/notes_db.dart" data-title="lib/notes_db.dart"></pre>
+
+<ul>
+<li><code>openDatabase</code> تفتح الملف أو تنشئه. و<code>onCreate</code> تُنفَّذ في المرة الأولى فقط، وتنشئ الجدول.</li>
+<li><code>version</code> رقم إصدار <em>تصميم الجداول</em>. فحين تحتاج نسخة لاحقة من التطبيق عموداً جديداً، ترفع الرقم إلى 2 وتضيف <code>onUpgrade</code> تنفّذ <code dir="ltr">ALTER TABLE</code>: فتبقى الملاحظات التي على جوالات الناس وتُحدَّث، ولا تضيع.</li>
+<li><code>insert</code> و<code>query</code> و<code>update</code> و<code>delete</code> تبني SQL عنك. و<code>insert</code> تعيد رقم الصف الجديد.</li>
+<li>كلمة البحث توضع في <code>whereArgs</code>، وفي SQL علامة <code>?</code> مكانها. ولا تبنِ SQL بوصل النصوص أبداً: فملاحظة فيها علامة اقتباس ستكسره، وفي خادم سيكون ذلك ثغرة أمنية.</li>
+<li>لا قيم منطقية في SQLite: فـ <code>toRow</code> و<code>fromRow</code> تترجمان بين <code>true</code> و1 عند الحافة، مثل <code>fromJson</code> في الفصل {{n-1}}.</li>
+</ul>
+
+<p>وعلى الكمبيوتر تصل الاختبارات إلى SQLite بحزمة <code>sqflite_common_ffi</code>، وتستطيع قاعدة البيانات أن تعيش في الذاكرة وحدها:</p>
+
+<pre data-code="test/notes_db_test.dart" data-from="^void main" data-title="test/notes_db_test.dart"></pre>
+<pre data-term="notes-db-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>اجعل التخزين خلف صنف صغير بدوال بسيطة: <code>load</code> و<code>add</code> و<code>search</code>. فلا ترى الشاشات SQL ولا مسارات ملفات ولا مفاتيح. وحين تكبر البيانات على التفضيلات، أو تنتقل إلى خادم، يتغير صنف واحد، وتبقى كل شاشة تعمل.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>أين تحفظ اللغة التي اختارها الشخص؟ وملاحظاته الخمسمئة؟ وتوكن دخوله؟</li><li>لماذا تغيّر دوال التغيير الحقل قبل الحفظ لا بعده؟</li><li>لماذا يكتب <code>OrderBook</code> في ملف جديد ثم يعيد تسميته؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>WidgetsFlutterBinding.ensureInitialized()</code></td><td>خطأ عن الـ binding حين تُستخدم إضافة قبل <code>runApp</code></td><td>استدعها أولاً في main من نوع <code>async</code></td></tr>
+<tr><td>عدم التعامل مع مفتاح أو ملف غير موجود</td><td>انهيار في أول مرة يُفتح فيها التطبيق</td><td><code dir="ltr">?? default</code>، و<code>exists()</code></td></tr>
+<tr><td>حفظ الأسماء بدل الأرقام</td><td>تختفي المفضلة حين يُصحَّح اسم أو يُترجم</td><td>احفظ أرقاماً ثابتة</td></tr>
+<tr><td>الكتابة فوق الملف القديم مباشرة</td><td>نصف ملف بعد انهيار، وبيانات ضائعة</td><td>اكتب ملفاً جديداً، ثم <code>rename</code></td></tr>
+<tr><td>بناء SQL بوصل النصوص</td><td>استعلامات مكسورة، وحقن SQL</td><td><code>?</code> و<code>whereArgs</code></td></tr>
+<tr><td>التوكن في التفضيلات</td><td>أسرار مقروءة على الجهاز وفي النسخ الاحتياطية</td><td><code>flutter_secure_storage</code></td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>الذاكرة تُفرَّغ حين يُغلق التطبيق؛ أما التخزين على الجهاز فيبقى.</li>
+<li><code>shared_preferences</code> لقيم صغيرة قليلة؛ وملف JSON لمستند واحد؛ وSQLite بـ <code>sqflite</code> لسجلات كثيرة؛ والتخزين الآمن للأسرار.</li>
+<li>حمّل الإعدادات قبل <code>runApp</code>، بعد <code>WidgetsFlutterBinding.ensureInitialized()</code>؛ وغيّر الشاشة أولاً، ثم احفظ.</li>
+<li>الملفات في مجلد التطبيق من <code>path_provider</code>؛ اكتب ملفاً جديداً، ثم أعد تسميته.</li>
+<li>لقاعدة البيانات إصدار و<code>onCreate</code>/<code>onUpgrade</code>؛ والقيم في <code>whereArgs</code>.</li>
+<li>اختبر بمخزن تفضيلات في الذاكرة، ومجلد مؤقت، وقاعدة بيانات في الذاكرة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. اللغة في <code>shared_preferences</code>، والملاحظات في قاعدة بيانات SQLite، والتوكن في <code>flutter_secure_storage</code>. 2. لتستجيب الشاشة فوراً؛ فالقرص أبطأ، ولا يجب أن ينتظره أحد ليرى مفتاحاً يتحرك. 3. ليترك الانهيار في منتصف الكتابة الملف القديم سليماً بدل نصف ملف جديد: فـ <code>rename</code> تستبدله بخطوة واحدة.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">لكل مشروع اختبار واحد هو الأهم: أغلق التطبيق وافتحه من جديد. في المتصفح أعد تحميل الصفحة؛ وفي الجوال أو المحاكي أوقف التطبيق تماماً، لا إعادة تشغيل سريعة فقط.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>أكواب اليوم، محفوظة</h3>
+<p class="project-goal">عدّاد الأكواب من الفصل {{n-2}}، محفوظاً على الجهاز: يبقى الرقم بعد إغلاق التطبيق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>getInt</code> و<code>setInt</code>، والتحميل في <code>initState</code>، و<code>mounted</code>، وقيمة null تعني «لم يُحمَّل بعد».</p>
+<ol class="steps">
+<li>احفظ في الـ State <code dir="ltr">final prefs = SharedPreferencesAsync();</code> و<code dir="ltr">int? cups;</code>: فـ <code>null</code> تعني «لم يُحمَّل بعد».</li>
+<li>في <code>initState</code> استدعِ <code>load()</code> التي تقرأ <code dir="ltr">getInt('cups') ?? 0</code>، ثم تضعها بـ <code>setState</code> إن كان <code>mounted</code>.</li>
+<li>«كوب آخر» و«صفّر» تستدعيان <code dir="ltr">change(value)</code> التي تضبط الحالة ثم تحفظ بـ <code>setInt</code>.</li>
+<li>ما دامت <code>cups</code> تساوي <code>null</code> فلا تعرض شيئاً: فصفر خاطئ يتحول إلى 3 أسوأ من لحظة فارغة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>initState</code> لا يمكن أن تكون <code>async</code>، فهي تبدأ الـ Future ولا تنتظره؛ و<code>load</code> تستدعي <code>setState</code> حين تصل القيمة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (ثلاثة أكواب، ثم أُغلق التطبيق وفُتح):</p>
+<figure data-img="shots/cups.png" data-frame="phone">
+<figcaption>المشروع {{n}}.1: ما زالت 3.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>عمليات البحث الأخيرة</h3>
+<p class="project-goal">تذكّر آخر خمس عمليات بحث، الأحدث أولاً وبلا تكرار، في شكل رقائق تعيد ملء الحقل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>getStringList</code>، وقواعد قائمة داخل نموذج، و<code>remove</code>، والرقائق، واختبار نموذج.</p>
+<ol class="steps">
+<li>نموذج <code>Recent</code> يحفظ <code>words</code>. ودالته <code>add</code> تقص المسافات من الكلمة، وتتجاهلها إن كانت فارغة، وتبني <code dir="ltr">[w, ...words.where((old) =&gt; old != w)].take(5).toList()</code>.</li>
+<li>احفظ بـ <code>setStringList</code> بعد كل تغيير؛ و<code>clear</code> تستخدم <code dir="ltr">prefs.remove('recent')</code>.</li>
+<li><code>onSubmitted</code> في الحقل تضيف الكلمة وتفرّغ الحقل. وكل كلمة <code>ActionChip</code> تعيدها إلى الحقل.</li>
+<li>اختبر القواعد: أضف a وb وc وd وe وf، ثم b مرة أخرى وكلمة فارغة؛ وتوقع <code dir="ltr">['b', 'f', 'e', 'd', 'c']</code>، والقائمة نفسها من نموذج جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البحث عن كلمة موجودة في القائمة ينقلها إلى المقدمة بدل إضافتها مرتين: فـ <code>where</code> تحذف القديمة قبل أن توضع الجديدة أولاً.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (بعد البحث عن شاي ثم كيك ثم لاتيه ثم شاي مرة أخرى، ثم فتح التطبيق من جديد):</p>
+<figure data-img="shots/recent.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: عاد «شاي» إلى المقدمة.</figcaption>
+</figure>
+<pre data-term="projects/recent-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>سلة تنجو من كل شيء</h3>
+<p class="project-goal">احفظ السلة كلها بصيغة JSON، واستعدها عند الفتح، ولا تنهَر أبداً أمام قيمة تالفة أو قيمة من نسخة أخرى من التطبيق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>jsonEncode</code> لخريطة، ورقم إصدار للصيغة، و<code>try</code>/<code>catch</code>، واختبارات البيانات السيئة.</p>
+<ol class="steps">
+<li>احفظ <code>counts</code>، وهي <code dir="ltr">Map&lt;int, int&gt;</code> من رقم المشروب إلى كميته. وبعد كل تغيير احفظ <code dir="ltr">{'version': 1, 'items': {...}}</code> بـ <code>setString</code>.</li>
+<li>مفاتيح JSON نصوص دائماً: فاكتب الأرقام هكذا <code dir="ltr">'${e.key}'</code>، واقرأها بـ <code>int.parse</code>.</li>
+<li>في <code>load</code> ارجع دون تغيير إن لم يكن الإصدار 1، وتخطَّ الأرقام التي لم تعد في القائمة.</li>
+<li>ضع القراءة داخل <code>try</code>؛ وفي <code>catch</code> فرّغ السلة واحذف القيمة التالفة، ليفتح التطبيق طبيعياً في المرة القادمة أيضاً.</li>
+<li>اختبر أربع قيم سيئة: <code dir="ltr">not json</code>، وقائمة، والإصدار 2، وكمية هي نص. وكل واحدة يجب أن تعطي سلة فارغة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> كل ما يُحفظ على جهاز ستقرؤه يوماً نسخة أحدث من تطبيقك، أو سيعود تالفاً. ورقم الإصدار يكلّف سطراً واحداً، ويعفيك من تخمين ما كانت تعنيه قيمة قديمة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (كوبا لاتيه وكيكة، ثم أُغلق التطبيق وفُتح):</p>
+<figure data-img="shots/saved-basket.png" data-frame="phone">
+<figcaption>المشروع {{n}}.3: عادت السلة.</figcaption>
+</figure>
+<pre data-term="projects/saved-basket-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى تطبيق الإعدادات إعداداً ثالثاً، «الأصوات»، مفعّلاً افتراضياً. ما القيمة التي يجب أن تستخدمها <code>load</code> حين لم يُحفظ المفتاح قط، ولماذا ليست <code>false</code> هذه المرة؟</li>
+<li><span class="level">سهل</span> افتح تطبيق الإعدادات في متصفح، وفعّل الوضع الليلي، وافتح أدوات المطور في المتصفح على Application ثم Local storage. ما المفتاح والقيمة اللذان تجدهما؟</li>
+<li><span class="level">متوسط</span> أضف إلى <code>OrderBook</code> الدالة <code>clear()</code> التي تحذف الملف، واختباراً يتأكد أن <code>load</code> تعيد قائمة فارغة بعدها، حتى لو استُدعيت مرتين.</li>
+<li><span class="level">متوسط</span> الإصدار 2 من قاعدة الملاحظات يحتاج عمود <code>created</code> فيه وقت كتابة كل ملاحظة. اكتب خيارات <code>openDatabase</code> الجديدة، مع <code>onUpgrade</code>، لتحتفظ قواعد الإصدار 1 على جوالات الناس بملاحظاتها.</li>
+<li><span class="level">تحدٍّ</span> اجعل قائمة الفصل {{n-1}} تعمل بلا إنترنت: بعد كل تحميل ناجح احفظ JSON في ملف داخل مجلد الذاكرة المؤقتة، وحين يفشل التحميل اعرض القائمة المحفوظة مع ملاحظة «معروضة من زيارتك الأخيرة». أي صنف يتغير، وأيها لا يتغير؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>التطبيقات العربية في هذا الكتاب قُلبت من اليمين إلى اليسار بسطر واحد، ولم تُلمس تواريخها وأرقامها. والفصل القادم يفعل ذلك كما يجب: تطبيق واحد بالعربية والإنجليزية، كل نصوصه في ملفات ترجمة، والاتجاه والتواريخ والأرقام تتبع اللغة، ومفتاح للتبديل بينهما.</p>
+</div>
+</section>

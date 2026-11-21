@@ -1099,7 +1099,8 @@
             },
             {
               "en": "Saving Data on the Device",
-              "ar": "حفظ البيانات على الجهاز"
+              "ar": "حفظ البيانات على الجهاز",
+              "src": "b5/storage"
             },
             {
               "en": "Arabic, English and RTL",

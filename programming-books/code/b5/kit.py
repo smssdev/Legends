@@ -140,7 +140,18 @@ def dart_examples(here, words_by_lang, sources, errors=(), keep=None):
         print("wrote", out)
 
 
-def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit_app", assets=None, packages=()):
+def short_pub(lines, packages):
+    """A long `flutter pub add` answer keeps the packages asked for, and says what it left out."""
+    if len(lines) <= 16:
+        return lines
+    names = {p.split(":")[-1].strip("'\"{}") if p.startswith("dev:") else p.strip("'").split(":")[0] for p in packages}
+    asked = [l for l in lines if l.startswith("+ ") and l.split()[1] in names]
+    rest = sum(1 for l in lines if l.startswith("+ ")) - len(asked)
+    return lines[:2] + asked + [f"  ... and {rest} packages they need"] + [l for l in lines if l.startswith("Changed ")]
+
+
+def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit_app", assets=None, packages=(),
+                    flutter_lines=(), setup=()):
     """A chapter of small Flutter apps (Chapter 5 on), in each language:
       files   {path: text or {lang: text}}: lib/*.dart are apps (each with its own main), test/*.dart tests,
               projects/<name>.dart and answers/<name>.dart are apps too, kept in those folders here
@@ -149,6 +160,10 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
       assets  a folder of files the apps use (images): copied to assets/ in the project, and listed in
               pubspec.yaml, as the chapter shows
       packages  packages to add with `flutter pub add`, recorded as pub-add.sh
+      flutter_lines  lines added to the flutter: section of pubspec.yaml (generate: true)
+      setup   [(transcript name, command)]: commands run after the files are in place, before the
+              analyzer (flutter gen-l10n), recorded
+      files named root/<name> go to the project's root (l10n.yaml)
       tests   [(transcript name, test path[, keep])]: `flutter test <path>`, recorded; with keep, the test
               is expected to fail and keep(lines) shortens what is printed
     One project per language; the apps are built for the web once, through a generated
@@ -174,9 +189,14 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
             write(out, {"pubspec.yaml": text})
         if packages:
             s = Session(project)
-            s.run("flutter pub add " + " ".join(packages))
+            s.run("flutter pub add " + " ".join(packages), keep=lambda lines: short_pub(lines, packages))
             s.save(out / "pub-add.sh")
             write(out, {"pubspec.yaml": (project / "pubspec.yaml").read_text()})
+        if flutter_lines:
+            pubspec = project / "pubspec.yaml"
+            pubspec.write_text(pubspec.read_text().replace(
+                "\nflutter:\n", "\nflutter:\n" + "".join(f"  {line}\n" for line in flutter_lines), 1))
+            write(out, {"pubspec.yaml": pubspec.read_text()})
         (project / "test").mkdir(exist_ok=True)
         for f in (project / "test").glob("*.dart"):
             f.unlink()
@@ -184,7 +204,10 @@ def flutter_gallery(here, words_by_lang, files, shots=(), tests=(), package="bit
         placed = {}
         for name, src in files.items():
             src = fill(src if isinstance(src, str) else src[lang], words)
-            target = name if name.startswith(("lib/", "test/")) else "lib/" + name.replace("/", "_")
+            if name.startswith("root/"):
+                target = name.removeprefix("root/")
+            else:
+                target = name if name.startswith(("lib/", "test/")) else "lib/" + name.replace("/", "_")
             placed[name] = target
             write(project, {target: src})
         # Apps are the files with a main(); other files in lib/ are code they share (a model, say).
@@ -203,6 +226,10 @@ void main() {{
   run();
 }}
 """})
+        for transcript, command in setup:
+            s = Session(project)
+            s.run(command)
+            s.save(out / transcript)
         text, code = sh("dart format . && flutter analyze", project)
         if code:
             raise RuntimeError(text)

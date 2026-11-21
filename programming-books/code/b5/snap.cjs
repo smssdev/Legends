@@ -46,11 +46,20 @@ async function serve() {
   // Flutter's accessibility tree (the same labels a screen reader reads), which is turned on first.
   const byLabel = a3.includes('=');
   // Only taps by label need the tree; at= and keys= work on the drawn screen, like a finger.
-  if (byLabel && a3.split('|').some((t) => !/^(at|keys|wait)=/.test(t))) {
+  const tree = async () => {
     await page.evaluate(() => document.querySelector('flt-semantics-placeholder')?.click());
     await sleep(800);
-  }
-  for (const t of a3.split(byLabel ? '|' : ' ').filter(Boolean)) {
+  };
+  const needsTree = (ts) => ts.some((t) => !/^(at|keys|wait|reload)=/.test(t));
+  const tokens = a3.split(byLabel ? '|' : ' ').filter(Boolean);
+  // The tree is turned on again after each reload, only if a later tap needs it.
+  const untilReload = (from) => {
+    const rest = tokens.slice(from);
+    const r = rest.findIndex((t) => t.startsWith('reload='));
+    return r < 0 ? rest : rest.slice(0, r);
+  };
+  if (byLabel && needsTree(untilReload(0))) await tree();
+  for (const [i, t] of tokens.entries()) {
     if (!byLabel) {
       const [x, y] = t.split(',').map(Number);
       await page.mouse.click(x, y);
@@ -58,6 +67,13 @@ async function serve() {
       const [kind, ...rest] = t.split('=');
       const name = rest.join('=');
       if (kind === 'wait') { await sleep(+name); continue; }
+      // reload=1: close the app and open it again, as a person would; what it saved must still be there.
+      if (kind === 'reload') {
+        await page.reload();
+        await sleep(+a4);
+        if (needsTree(untilReload(i + 1))) await tree();
+        continue;
+      }
       if (kind === 'at') { const [x, y] = name.split(',').map(Number); await page.mouse.click(x, y); await sleep(900); continue; }
       if (kind === 'keys') { await page.keyboard.type(name, { delay: 30 }); await sleep(500); continue; }
       if (kind === 'type') {

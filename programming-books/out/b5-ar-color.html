@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الاتصال بواجهة برمجية"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "الفصل 12: حفظ البيانات على الجهاز"; } }
+@page ch12:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -161,7 +163,7 @@ if (isMember && day === "Tuesday") {
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تجهيز Flutter</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">أساسيات Dart</span><span class="toc-p">40</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الأصناف والأمان من القيم الفارغة والمجموعات</span><span class="toc-p">67</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Dart غير المتزامنة: Future وStream</span><span class="toc-p">94</span></li><li class="toc-part">الجزء 2: بناء الشاشات</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">كل شيء Widget</span><span class="toc-p">116</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تخطيطات تناسب كل شاشة</span><span class="toc-p">149</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">القوائم والصور والسمات</span><span class="toc-p">178</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التنقل بين الشاشات</span><span class="toc-p">201</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">النماذج والإدخال</span><span class="toc-p">224</span></li><li class="toc-part">الجزء 3: تطبيقات حقيقية</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الحالة بـ setState وProvider</span><span class="toc-p">248</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الاتصال بواجهة برمجية</span><span class="toc-p">269</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">حفظ البيانات على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">العربية والإنجليزية والاتجاه من اليمين</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">مشروع: تطبيق ملاحظات كامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">النشر على Google Play وApp Store</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">295</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Dart</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تجهيز Flutter</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">أساسيات Dart</span><span class="toc-p">40</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الأصناف والأمان من القيم الفارغة والمجموعات</span><span class="toc-p">67</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Dart غير المتزامنة: Future وStream</span><span class="toc-p">94</span></li><li class="toc-part">الجزء 2: بناء الشاشات</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">كل شيء Widget</span><span class="toc-p">116</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تخطيطات تناسب كل شاشة</span><span class="toc-p">149</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">القوائم والصور والسمات</span><span class="toc-p">178</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التنقل بين الشاشات</span><span class="toc-p">201</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">النماذج والإدخال</span><span class="toc-p">224</span></li><li class="toc-part">الجزء 3: تطبيقات حقيقية</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الحالة بـ setState وProvider</span><span class="toc-p">248</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الاتصال بواجهة برمجية</span><span class="toc-p">269</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">حفظ البيانات على الجهاز</span><span class="toc-p">295</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">العربية والإنجليزية والاتجاه من اليمين</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">مشروع: تطبيق ملاحظات كامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">النشر على Google Play وApp Store</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">318</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b5/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -6745,6 +6747,510 @@ Try `flutter pub outdated` for more information.</pre></div>
 <p>أغلق تطبيق المقهى وافتحه من جديد، فإذا كل شيء قد ضاع: المفضلة، والسلة، والإعدادات. والفصل القادم يحفظ البيانات على الجوال نفسه: الإعدادات الصغيرة بـ <code>shared_preferences</code>، والبيانات الأكبر في ملفات وقاعدة بيانات محلية.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b5/storage/ar">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">الفصل 12</p><h1>حفظ البيانات على الجهاز</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تختار مكان كل نوع من البيانات: التفضيلات، أو ملف، أو قاعدة بيانات، أو التخزين الآمن</li>
+<li>تحفظ الإعدادات والقوائم الصغيرة بـ <code>shared_preferences</code>، وتحمّلها قبل أول إطار</li>
+<li>تحفظ سجلاً في ملف JSON داخل مجلد التطبيق الخاص، بأمان</li>
+<li>تحفظ سجلات كثيرة في قاعدة بيانات SQLite بـ <code>sqflite</code>، وتبحث فيها</li>
+<li>تختبر كل نوع من التخزين بلا جوال</li>
+</ul>
+</div>
+
+<p class="lead">أغلق تطبيق المقهى وافتحه من جديد، فإذا كل شيء قد ضاع: الوضع الليلي الذي اخترته، والقلوب، والسلة. فكل ما في هذا الكتاب حتى الآن عاش في الذاكرة، والذاكرة تُفرَّغ كلما أُغلق التطبيق. والناس يتوقعون العكس: التطبيق يتذكر. وهذا الفصل يكتب البيانات في تخزين الجوال نفسه، بثلاث طرق لثلاثة أحجام من البيانات، وكل لقطة شاشة فيه أُخذت <em>بعد</em> إغلاق التطبيق وفتحه من جديد.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>لالتقاط صور هذا الفصل أعاد المتصفح فعلاً تحميل كل تطبيق بعد اللمسات، وهذا يفرّغ ذاكرته كلها. فكل ما تراه فيها عاد من التخزين.</p></div></div>
+
+<h2><span class="sec">12.1</span> <span>ماذا نحفظ، وأين</span></h2>
+
+<table>
+<thead><tr><th>البيانات</th><th>المكان</th><th>مثال</th></tr></thead>
+<tbody>
+<tr><td>قيم صغيرة قليلة</td><td><code>shared_preferences</code></td><td>الوضع الليلي، واللغة، وآخر اسم كُتب</td></tr>
+<tr><td>مستند واحد يُقرأ ويُكتب كاملاً</td><td>ملف (JSON)</td><td>سجل الطلبات، ومسودة، وملف تصدير</td></tr>
+<tr><td>سجلات كثيرة يُبحث فيها وتتغير واحداً واحداً</td><td>قاعدة بيانات (SQLite)</td><td>الملاحظات، والرسائل، وكتالوج منتجات</td></tr>
+<tr><td>الأسرار</td><td><code>flutter_secure_storage</code></td><td>توكن الدخول، وكلمة المرور</td></tr>
+<tr><td>نسخة مما أرسله الخادم</td><td>ملف أو قاعدة بيانات، كذاكرة مؤقتة</td><td>القائمة، لعرضها بلا إنترنت</td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>التفضيلات والملفات نص عادي على الجهاز: يستطيع قراءتها كل من يصل إلى الجوال أو إلى نسخته الاحتياطية. فلا تضع فيها كلمة مرور ولا توكن دخول أبداً؛ فـ <code>flutter_secure_storage</code> تحفظها في Keychain على iOS وفي مخزن مشفّر على أندرويد. ويستخدمها الكتاب السادس لتسجيل دخول حقيقي.</p></aside>
+
+<h2><span class="sec">12.2</span> <span>القيم الصغيرة: <code>shared_preferences</code></span></h2>
+
+<p>حزمة <code>shared_preferences</code> تحفظ أزواج مفتاح وقيمة، من نصوص وأرقام وقيم منطقية وقوائم نصوص، في مكان كل منصة: ملف تفضيلات على أندرويد، و<code>NSUserDefaults</code> على iOS، والتخزين المحلي للمتصفح على الويب. ويضيفها الفصل مع باقي الحزم التي يستخدمها:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter pub add provider shared_preferences path_provider sqflite dev:sqflite_common_ffi dev:shared_preferences_platform_interface</span>
+Resolving dependencies...
+Downloading packages...
++ path_provider 2.1.6
++ provider 6.1.5+1
++ shared_preferences 2.5.6
++ shared_preferences_platform_interface 2.4.2
++ sqflite 2.4.6
++ sqflite_common_ffi 2.4.7
+  ... and 41 packages they need
+Changed 47 dependencies!</pre></div>
+
+<p>نموذج الإعدادات من الفصل 10، وقد صارت له ذاكرة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/settings_app.dart (جزء)</div><pre class="code"><span class="k">class</span> Settings <span class="k">extends</span> ChangeNotifier {
+  Settings(<span class="k">this</span>.prefs);
+
+  <span class="k">final</span> SharedPreferencesAsync prefs;
+  <span class="k">var</span> dark = <span class="k">false</span>;
+  <span class="k">var</span> big = <span class="k">false</span>;
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; load() <span class="k">async</span> {
+    dark = <span class="k">await</span> prefs.getBool(<span class="s">&#x27;dark&#x27;</span>) ?? <span class="k">false</span>;
+    big = <span class="k">await</span> prefs.getBool(<span class="s">&#x27;big&#x27;</span>) ?? <span class="k">false</span>;
+    notifyListeners();
+  }
+
+  <span class="c line-bidi">// غيّر الشاشة أولاً، ثم احفظ: فلا ينتظر أحد القرص.</span>
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; setDark(<span class="k">bool</span> value) <span class="k">async</span> {
+    dark = value;
+    notifyListeners();
+    <span class="k">await</span> prefs.setBool(<span class="s">&#x27;dark&#x27;</span>, value);
+  }
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; setBig(<span class="k">bool</span> value) <span class="k">async</span> {
+    big = value;
+    notifyListeners();
+    <span class="k">await</span> prefs.setBool(<span class="s">&#x27;big&#x27;</span>, value);
+  }
+}
+
+<span class="k">void</span> main() <span class="k">async</span> {
+  <span class="c line-bidi">// الإضافات تحتاج المحرك جاهزاً قبل runApp.</span>
+  WidgetsFlutterBinding.ensureInitialized();
+  <span class="k">final</span> settings = Settings(SharedPreferencesAsync());
+  <span class="c line-bidi">// اقرأ ما حُفظ قبل أول إطار: فلا يومض الثيم الخطأ.</span>
+  <span class="k">await</span> settings.load();
+  runApp(
+    ChangeNotifierProvider.value(value: settings, child: <span class="k">const</span> SettingsApp()),
+  );
+}</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-storage-ar-shots-settings.png" alt=""></div>
+<figcaption>الشكل 12.1: المفتاحان مفعّلان، ثم أُغلق التطبيق وفُتح من جديد.</figcaption>
+</figure>
+
+<ul>
+<li><code>SharedPreferencesAsync</code> هي واجهة الحزمة الحالية: كل قراءة وكتابة <code>Future</code>، لأنها تذهب فعلاً إلى القرص. و<code>getBool</code> تعيد <code>null</code> لمفتاح لم يُحفظ قط، ومن هنا <code dir="ltr">?? false</code>.</li>
+<li>دوال التغيير تغيّر الحقل وتُبلغ <em>أولاً</em>، ثم تحفظ. فيتحرك المفتاح فوراً، ويلحق به القرص بعد لحظة.</li>
+<li><code>main</code> صارت <code>async</code>. و<code>WidgetsFlutterBinding.ensureInitialized()</code> تجهّز المحرك الذي تحتاجه الإضافات لتصل إلى المنصة، و<code dir="ltr">await settings.load()</code> تقرأ كل شيء قبل <code>runApp</code>: فيكون أول إطار ليلياً من البداية، بدل أن يومض نهارياً ثم يتبدل.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>التحميل قبل <code>runApp</code> صحيح لإعدادات قليلة تأخذ أجزاء من الثانية. أما البيانات الكبيرة فلا تحمّلها هناك أبداً: فسيحدّق الشخص في شاشة فارغة حتى تنتهي. البيانات الكبيرة تُحمَّل بعد أول إطار، بحالة تحميل، كما في الفصل 11.</p></aside>
+
+<p>والتفضيلات تحفظ قوائم النصوص أيضاً، وهذا يكفي للمفضلة. احفظ أرقام المشروبات لا أسماءها: فالاسم قد يُصحَّح أو يُترجم، أما الرقم فيبقى:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/favourites_app.dart (جزء)</div><pre class="code"><span class="k">class</span> Favourites <span class="k">extends</span> ChangeNotifier {
+  Favourites(<span class="k">this</span>.prefs);
+
+  <span class="k">final</span> SharedPreferencesAsync prefs;
+  <span class="k">final</span> _ids = &lt;<span class="k">int</span>&gt;{};
+
+  <span class="k">bool</span> has(<span class="k">int</span> id) =&gt; _ids.contains(id);
+  <span class="k">int</span> <span class="k">get</span> count =&gt; _ids.length;
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; load() <span class="k">async</span> {
+    <span class="k">final</span> saved = <span class="k">await</span> prefs.getStringList(<span class="s">&#x27;favourites&#x27;</span>) ?? [];
+    _ids.addAll(saved.map(<span class="k">int</span>.parse));
+    notifyListeners();
+  }
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; toggle(<span class="k">int</span> id) <span class="k">async</span> {
+    <span class="k">if</span> (!_ids.remove(id)) {
+      _ids.add(id);
+    }
+    notifyListeners();
+    <span class="c line-bidi">// التفضيلات تحفظ قوائم نصوص: احفظ الأرقام، لا الأسماء.</span>
+    <span class="k">await</span> prefs.setStringList(<span class="s">&#x27;favourites&#x27;</span>, [<span class="k">for</span> (<span class="k">final</span> id <span class="k">in</span> _ids) <span class="s">&#x27;$id&#x27;</span>]);
+  }
+}</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b5-storage-ar-shots-favourites.png" alt=""></div>
+<figcaption>الشكل 12.2: قلبان، ما زالا هنا بعد فتح التطبيق من جديد.</figcaption>
+</figure>
+
+<p>ولاختبار التخزين أعطِ الحزمة قرصاً متخيَّلاً في الذاكرة، من حزمة واجهة المنصة الخاصة بها. فالنموذج الجديد الذي يقرأ ما حفظه الأول هو بالضبط «فتح التطبيق من جديد»:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/settings_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  setUp(() {
+    <span class="c line-bidi">// A pretend disk, in memory: every test starts with nothing saved.</span>
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+  });
+
+  test(<span class="s">&#x27;الإعداد يبقى بعد فتح التطبيق من جديد&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> first = Settings(SharedPreferencesAsync());
+    <span class="k">await</span> first.load();
+    expect(first.dark, isFalse);
+    <span class="k">await</span> first.setDark(<span class="k">true</span>);
+
+    <span class="c line-bidi">// A new Settings is the app opened again: it reads what the first one saved.</span>
+    <span class="k">final</span> again = Settings(SharedPreferencesAsync());
+    <span class="k">await</span> again.load();
+    expect(again.dark, isTrue);
+    expect(again.big, isFalse);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/settings_test.dart</span>
+00:00 +0: loading test/settings_test.dart
+00:00 +0: الإعداد يبقى بعد فتح التطبيق من جديد
+00:00 +1: All tests passed!</pre></div>
+
+<h2><span class="sec">12.3</span> <span>الملفات: مستند واحد في كل مرة</span></h2>
+
+<p>سجل الطلبات يكبر، وله بنية: قائمة طلبات، لكل منها اسم ومجموع. إنه مستند واحد، يُقرأ حين تُفتح الشاشة ويُكتب حين يُضاف طلب: ملف JSON. ولكل تطبيق مجلد خاص لمثل هذه الملفات، تعطيه حزمة <code>path_provider</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_book.dart (جزء)</div><pre class="code"><span class="k">class</span> Order {
+  <span class="k">const</span> Order(<span class="k">this</span>.name, <span class="k">this</span>.total);
+
+  <span class="k">factory</span> Order.fromJson(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt; json) =&gt;
+      Order(json[<span class="s">&#x27;name&#x27;</span>] <span class="k">as</span> <span class="k">String</span>, json[<span class="s">&#x27;total&#x27;</span>] <span class="k">as</span> <span class="k">int</span>);
+
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> total;
+
+  <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>&gt; toJson() =&gt; {<span class="s">&#x27;name&#x27;</span>: name, <span class="s">&#x27;total&#x27;</span>: total};
+}
+
+<span class="c line-bidi">// The order history, in one JSON file in the app&#x27;s own folder.</span>
+<span class="k">class</span> OrderBook {
+  <span class="c line-bidi">// المجلد يُعطى من الخارج، فتستطيع الاختبارات أن تعطي مجلداً مؤقتاً.</span>
+  OrderBook({<span class="k">Future</span>&lt;Directory&gt; <span class="k">Function</span>()? folder})
+    : folder = folder ?? getApplicationDocumentsDirectory;
+
+  <span class="k">final</span> <span class="k">Future</span>&lt;Directory&gt; <span class="k">Function</span>() folder;
+
+  <span class="k">Future</span>&lt;File&gt; <span class="k">get</span> _file <span class="k">async</span> =&gt; File(<span class="s">&#x27;${(await folder()).path}/orders.json&#x27;</span>);
+
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; load() <span class="k">async</span> {
+    <span class="k">final</span> file = <span class="k">await</span> _file;
+    <span class="c line-bidi">// في المرة الأولى لا ملف بعد: سجل فارغ، لا خطأ.</span>
+    <span class="k">if</span> (!<span class="k">await</span> file.exists()) {
+      <span class="k">return</span> [];
+    }
+    <span class="k">final</span> list = jsonDecode(<span class="k">await</span> file.readAsString()) <span class="k">as</span> <span class="k">List</span>&lt;<span class="k">dynamic</span>&gt;;
+    <span class="k">return</span> [
+      <span class="k">for</span> (<span class="k">final</span> item <span class="k">in</span> list) Order.fromJson(item <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;),
+    ];
+  }
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; add(Order order) <span class="k">async</span> {
+    <span class="k">final</span> all = [...<span class="k">await</span> load(), order];
+    <span class="k">final</span> file = <span class="k">await</span> _file;
+    <span class="c line-bidi">// اكتب ملفاً جديداً ثم ضعه مكان القديم: فالانهيار في المنتصف لا يترك نصف ملف أبداً.</span>
+    <span class="k">final</span> next = File(<span class="s">&#x27;${file.path}.new&#x27;</span>);
+    <span class="k">await</span> next.writeAsString(jsonEncode([<span class="k">for</span> (<span class="k">final</span> o <span class="k">in</span> all) o.toJson()]));
+    <span class="k">await</span> next.rename(file.path);
+  }
+}</pre></div>
+
+<ul>
+<li><code>getApplicationDocumentsDirectory()</code> تعيد مجلد مستندات التطبيق: خاص به، يبقى حتى يُحذف التطبيق، ويدخل في النسخ الاحتياطية للجوال. أما البيانات التي يمكن تنزيلها من جديد فمكانها <code>getApplicationCacheDirectory()</code>: فقد يفرّغه النظام حين تضيق المساحة.</li>
+<li>دالة المجلد معامل له قيمة افتراضية، تماماً مثل <code>http.Client</code> في الفصل 11: فالتطبيق يأخذ المجلد الحقيقي، والاختبار يأخذ مجلداً مؤقتاً.</li>
+<li>الملف غير الموجود ليس خطأ: إنها المرة الأولى.</li>
+<li>الكتابة تذهب إلى ملف جديد أولاً، ثم تضعه <code>rename</code> في مكانه بخطوة واحدة. فإن نفدت البطارية في منتصف الكتابة بقي الملف القديم سليماً. أما الكتابة فوق الملف مباشرة فقد تترك نصفه، فيضيع السجل.</li>
+</ul>
+
+<p>والاختبار يستخدم مجلداً حقيقياً على القرص، بل ويتحقق من النص الدقيق في الملف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/order_book_test.dart (جزء)</div><pre class="code">  test(<span class="s">&#x27;السجل يُكتب في ملف ويُقرأ من جديد&#x27;</span>, () <span class="k">async</span> {
+    <span class="c line-bidi">// A real folder on the disk, made for this test and removed after it.</span>
+    <span class="k">final</span> dir = <span class="k">await</span> Directory.systemTemp.createTemp(<span class="s">&#x27;orders&#x27;</span>);
+    addTearDown(() =&gt; dir.delete(recursive: <span class="k">true</span>));
+
+    <span class="k">final</span> book = OrderBook(folder: () <span class="k">async</span> =&gt; dir);
+    expect(<span class="k">await</span> book.load(), isEmpty);
+    <span class="k">await</span> book.add(<span class="k">const</span> Order(<span class="s">&#x27;سارة&#x27;</span>, <span class="n">105</span>));
+    <span class="k">await</span> book.add(<span class="k">const</span> Order(<span class="s">&#x27;عمر&#x27;</span>, <span class="n">40</span>));
+
+    <span class="k">final</span> again = OrderBook(folder: () <span class="k">async</span> =&gt; dir);
+    expect([<span class="k">for</span> (<span class="k">final</span> o <span class="k">in</span> <span class="k">await</span> again.load()) o.name], [<span class="s">&#x27;سارة&#x27;</span>, <span class="s">&#x27;عمر&#x27;</span>]);
+    expect(
+      File(<span class="s">&#x27;${dir.path}/orders.json&#x27;</span>).readAsStringSync(),
+      <span class="s">&#x27;[{&quot;name&quot;:&quot;سارة&quot;,&quot;total&quot;:105},{&quot;name&quot;:&quot;عمر&quot;,&quot;total&quot;:40}]&#x27;</span>,
+    );
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/order_book_test.dart</span>
+00:00 +0: loading test/order_book_test.dart
+00:00 +0: السجل يُكتب في ملف ويُقرأ من جديد
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p><code>path_provider</code> وملفات <code>dart:io</code> لا تعمل على الويب: فصفحة الويب بلا مجلدات. ولهذا جاءت صور هذا الفصل من التفضيلات التي تعمل في المتصفح، وأُثبتت أمثلة الملفات وقاعدة البيانات بالاختبارات. فإن كان تطبيقك سيعمل على الويب أيضاً، فاختر التفضيلات، أو حزمة تدعمه، من البداية.</p></aside>
+
+<h2><span class="sec">12.4</span> <span>قاعدة بيانات: <code>sqflite</code></span></h2>
+
+<p>الملف يُقرأ ويُكتب كاملاً. فمع ألف ملاحظة يعني تغيير علامة واحدة إعادة كتابتها كلها، ويعني إيجاد الملاحظات التي فيها كلمة قراءتها كلها. أما قاعدة البيانات فتفعل الاثنين مباشرة. وفي كل جوال <dfn>SQLite</dfn>، قاعدة بيانات صغيرة في ملف واحد، وحزمة <code>sqflite</code> تتيحها لـ Flutter بلغة SQL التي ربما عرفتها في الكتاب الثالث:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/notes_db.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:sqflite/sqflite.dart&#x27;</span>;
+
+<span class="k">class</span> Note {
+  <span class="k">const</span> Note({<span class="k">this</span>.id, <span class="k">required</span> <span class="k">this</span>.text, <span class="k">this</span>.done = <span class="k">false</span>});
+
+  <span class="k">factory</span> Note.fromRow(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt; row) =&gt; Note(
+    id: row[<span class="s">&#x27;id&#x27;</span>] <span class="k">as</span> <span class="k">int</span>,
+    text: row[<span class="s">&#x27;text&#x27;</span>] <span class="k">as</span> <span class="k">String</span>,
+    done: row[<span class="s">&#x27;done&#x27;</span>] == <span class="n">1</span>,
+  );
+
+  <span class="k">final</span> <span class="k">int</span>? id;
+  <span class="k">final</span> <span class="k">String</span> text;
+  <span class="k">final</span> <span class="k">bool</span> done;
+
+  <span class="c line-bidi">// SQLite has no true or false: 1 and 0.</span>
+  <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt; toRow() =&gt; {
+    <span class="s">&#x27;id&#x27;</span>: id,
+    <span class="s">&#x27;text&#x27;</span>: text,
+    <span class="s">&#x27;done&#x27;</span>: done ? <span class="n">1</span> : <span class="n">0</span>,
+  };
+}
+
+<span class="k">class</span> NotesDb {
+  NotesDb._(<span class="k">this</span>.db);
+
+  <span class="k">final</span> Database db;
+
+  <span class="k">static</span> <span class="k">Future</span>&lt;NotesDb&gt; open(<span class="k">String</span> path, {DatabaseFactory? <span class="k">factory</span>}) <span class="k">async</span> {
+    <span class="k">final</span> db = <span class="k">await</span> (<span class="k">factory</span> ?? databaseFactory).openDatabase(
+      path,
+      options: OpenDatabaseOptions(
+        version: <span class="n">1</span>,
+        <span class="c line-bidi">// الجدول يُنشأ مرة واحدة، أول مرة تُفتح فيها قاعدة البيانات.</span>
+        onCreate: (db, version) =&gt; db.execute(
+          <span class="s">&#x27;CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, done INTEGER NOT NULL)&#x27;</span>,
+        ),
+      ),
+    );
+    <span class="k">return</span> NotesDb._(db);
+  }
+
+  <span class="k">Future</span>&lt;<span class="k">int</span>&gt; add(<span class="k">String</span> text) =&gt; db.insert(<span class="s">&#x27;notes&#x27;</span>, Note(text: text).toRow());
+
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Note&gt;&gt; all() <span class="k">async</span> =&gt; [
+    <span class="k">for</span> (<span class="k">final</span> row <span class="k">in</span> <span class="k">await</span> db.query(<span class="s">&#x27;notes&#x27;</span>, orderBy: <span class="s">&#x27;id&#x27;</span>)) Note.fromRow(row),
+  ];
+
+  <span class="c line-bidi">// القيم توضع في whereArgs، لا داخل نص SQL أبداً.</span>
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Note&gt;&gt; search(<span class="k">String</span> word) <span class="k">async</span> =&gt; [
+    <span class="k">for</span> (<span class="k">final</span> row <span class="k">in</span> <span class="k">await</span> db.query(
+      <span class="s">&#x27;notes&#x27;</span>,
+      where: <span class="s">&#x27;text LIKE ?&#x27;</span>,
+      whereArgs: [<span class="s">&#x27;%$word%&#x27;</span>],
+    ))
+      Note.fromRow(row),
+  ];
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; setDone(<span class="k">int</span> id, <span class="k">bool</span> done) =&gt; db.update(
+    <span class="s">&#x27;notes&#x27;</span>,
+    {<span class="s">&#x27;done&#x27;</span>: done ? <span class="n">1</span> : <span class="n">0</span>},
+    where: <span class="s">&#x27;id = ?&#x27;</span>,
+    whereArgs: [id],
+  );
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; remove(<span class="k">int</span> id) =&gt;
+      db.delete(<span class="s">&#x27;notes&#x27;</span>, where: <span class="s">&#x27;id = ?&#x27;</span>, whereArgs: [id]);
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; close() =&gt; db.close();
+}</pre></div>
+
+<ul>
+<li><code>openDatabase</code> تفتح الملف أو تنشئه. و<code>onCreate</code> تُنفَّذ في المرة الأولى فقط، وتنشئ الجدول.</li>
+<li><code>version</code> رقم إصدار <em>تصميم الجداول</em>. فحين تحتاج نسخة لاحقة من التطبيق عموداً جديداً، ترفع الرقم إلى 2 وتضيف <code>onUpgrade</code> تنفّذ <code dir="ltr">ALTER TABLE</code>: فتبقى الملاحظات التي على جوالات الناس وتُحدَّث، ولا تضيع.</li>
+<li><code>insert</code> و<code>query</code> و<code>update</code> و<code>delete</code> تبني SQL عنك. و<code>insert</code> تعيد رقم الصف الجديد.</li>
+<li>كلمة البحث توضع في <code>whereArgs</code>، وفي SQL علامة <code>?</code> مكانها. ولا تبنِ SQL بوصل النصوص أبداً: فملاحظة فيها علامة اقتباس ستكسره، وفي خادم سيكون ذلك ثغرة أمنية.</li>
+<li>لا قيم منطقية في SQLite: فـ <code>toRow</code> و<code>fromRow</code> تترجمان بين <code>true</code> و1 عند الحافة، مثل <code>fromJson</code> في الفصل 11.</li>
+</ul>
+
+<p>وعلى الكمبيوتر تصل الاختبارات إلى SQLite بحزمة <code>sqflite_common_ffi</code>، وتستطيع قاعدة البيانات أن تعيش في الذاكرة وحدها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/notes_db_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="c line-bidi">// On a computer, tests reach SQLite through FFI; on a phone, sqflite uses the system&#x27;s own SQLite.</span>
+  setUpAll(sqfliteFfiInit);
+
+  test(<span class="s">&#x27;الملاحظات تُضاف وتُبحث وتُعلَّم وتُحذف&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> notes = <span class="k">await</span> NotesDb.open(
+      inMemoryDatabasePath,
+      <span class="k">factory</span>: databaseFactoryFfi,
+    );
+    addTearDown(notes.close);
+
+    <span class="k">final</span> milk = <span class="k">await</span> notes.add(<span class="s">&#x27;اشترِ حليباً&#x27;</span>);
+    <span class="k">await</span> notes.add(<span class="s">&#x27;اتصل بالمخبز&#x27;</span>);
+    <span class="k">await</span> notes.add(<span class="s">&#x27;اشترِ أكواباً&#x27;</span>);
+    expect(milk, <span class="n">1</span>);
+
+    expect(
+      [<span class="k">for</span> (<span class="k">final</span> n <span class="k">in</span> <span class="k">await</span> notes.search(<span class="s">&#x27;اشترِ&#x27;</span>)) n.text],
+      [<span class="s">&#x27;اشترِ حليباً&#x27;</span>, <span class="s">&#x27;اشترِ أكواباً&#x27;</span>],
+    );
+
+    <span class="k">await</span> notes.setDone(milk, <span class="k">true</span>);
+    <span class="k">await</span> notes.remove(<span class="n">2</span>);
+    <span class="k">final</span> all = <span class="k">await</span> notes.all();
+    expect([<span class="k">for</span> (<span class="k">final</span> n <span class="k">in</span> all) n.text], [<span class="s">&#x27;اشترِ حليباً&#x27;</span>, <span class="s">&#x27;اشترِ أكواباً&#x27;</span>]);
+    expect(all.first.done, isTrue);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/notes_db_test.dart</span>
+00:00 +0: loading test/notes_db_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: الملاحظات تُضاف وتُبحث وتُعلَّم وتُحذف
+00:00 +1: (tearDownAll)
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>اجعل التخزين خلف صنف صغير بدوال بسيطة: <code>load</code> و<code>add</code> و<code>search</code>. فلا ترى الشاشات SQL ولا مسارات ملفات ولا مفاتيح. وحين تكبر البيانات على التفضيلات، أو تنتقل إلى خادم، يتغير صنف واحد، وتبقى كل شاشة تعمل.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أين تحفظ اللغة التي اختارها الشخص؟ وملاحظاته الخمسمئة؟ وتوكن دخوله؟</li><li>لماذا تغيّر دوال التغيير الحقل قبل الحفظ لا بعده؟</li><li>لماذا يكتب <code>OrderBook</code> في ملف جديد ثم يعيد تسميته؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>WidgetsFlutterBinding.ensureInitialized()</code></td><td>خطأ عن الـ binding حين تُستخدم إضافة قبل <code>runApp</code></td><td>استدعها أولاً في main من نوع <code>async</code></td></tr>
+<tr><td>عدم التعامل مع مفتاح أو ملف غير موجود</td><td>انهيار في أول مرة يُفتح فيها التطبيق</td><td><code dir="ltr">?? default</code>، و<code>exists()</code></td></tr>
+<tr><td>حفظ الأسماء بدل الأرقام</td><td>تختفي المفضلة حين يُصحَّح اسم أو يُترجم</td><td>احفظ أرقاماً ثابتة</td></tr>
+<tr><td>الكتابة فوق الملف القديم مباشرة</td><td>نصف ملف بعد انهيار، وبيانات ضائعة</td><td>اكتب ملفاً جديداً، ثم <code>rename</code></td></tr>
+<tr><td>بناء SQL بوصل النصوص</td><td>استعلامات مكسورة، وحقن SQL</td><td><code>?</code> و<code>whereArgs</code></td></tr>
+<tr><td>التوكن في التفضيلات</td><td>أسرار مقروءة على الجهاز وفي النسخ الاحتياطية</td><td><code>flutter_secure_storage</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الذاكرة تُفرَّغ حين يُغلق التطبيق؛ أما التخزين على الجهاز فيبقى.</li>
+<li><code>shared_preferences</code> لقيم صغيرة قليلة؛ وملف JSON لمستند واحد؛ وSQLite بـ <code>sqflite</code> لسجلات كثيرة؛ والتخزين الآمن للأسرار.</li>
+<li>حمّل الإعدادات قبل <code>runApp</code>، بعد <code>WidgetsFlutterBinding.ensureInitialized()</code>؛ وغيّر الشاشة أولاً، ثم احفظ.</li>
+<li>الملفات في مجلد التطبيق من <code>path_provider</code>؛ اكتب ملفاً جديداً، ثم أعد تسميته.</li>
+<li>لقاعدة البيانات إصدار و<code>onCreate</code>/<code>onUpgrade</code>؛ والقيم في <code>whereArgs</code>.</li>
+<li>اختبر بمخزن تفضيلات في الذاكرة، ومجلد مؤقت، وقاعدة بيانات في الذاكرة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. اللغة في <code>shared_preferences</code>، والملاحظات في قاعدة بيانات SQLite، والتوكن في <code>flutter_secure_storage</code>. 2. لتستجيب الشاشة فوراً؛ فالقرص أبطأ، ولا يجب أن ينتظره أحد ليرى مفتاحاً يتحرك. 3. ليترك الانهيار في منتصف الكتابة الملف القديم سليماً بدل نصف ملف جديد: فـ <code>rename</code> تستبدله بخطوة واحدة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">لكل مشروع اختبار واحد هو الأهم: أغلق التطبيق وافتحه من جديد. في المتصفح أعد تحميل الصفحة؛ وفي الجوال أو المحاكي أوقف التطبيق تماماً، لا إعادة تشغيل سريعة فقط.</p>
+
+<div class="project">
+<p class="project-label">المشروع 12.1 · سهل</p>
+<h3>أكواب اليوم، محفوظة</h3>
+<p class="project-goal">عدّاد الأكواب من الفصل 10، محفوظاً على الجهاز: يبقى الرقم بعد إغلاق التطبيق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>getInt</code> و<code>setInt</code>، والتحميل في <code>initState</code>، و<code>mounted</code>، وقيمة null تعني «لم يُحمَّل بعد».</p>
+<ol class="steps">
+<li>احفظ في الـ State <code dir="ltr">final prefs = SharedPreferencesAsync();</code> و<code dir="ltr">int? cups;</code>: فـ <code>null</code> تعني «لم يُحمَّل بعد».</li>
+<li>في <code>initState</code> استدعِ <code>load()</code> التي تقرأ <code dir="ltr">getInt('cups') ?? 0</code>، ثم تضعها بـ <code>setState</code> إن كان <code>mounted</code>.</li>
+<li>«كوب آخر» و«صفّر» تستدعيان <code dir="ltr">change(value)</code> التي تضبط الحالة ثم تحفظ بـ <code>setInt</code>.</li>
+<li>ما دامت <code>cups</code> تساوي <code>null</code> فلا تعرض شيئاً: فصفر خاطئ يتحول إلى 3 أسوأ من لحظة فارغة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>initState</code> لا يمكن أن تكون <code>async</code>، فهي تبدأ الـ Future ولا تنتظره؛ و<code>load</code> تستدعي <code>setState</code> حين تصل القيمة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (ثلاثة أكواب، ثم أُغلق التطبيق وفُتح):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-storage-ar-shots-cups.png" alt=""></div>
+<figcaption>المشروع 12.1: ما زالت 3.</figcaption>
+</figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 12.2 · متوسط</p>
+<h3>عمليات البحث الأخيرة</h3>
+<p class="project-goal">تذكّر آخر خمس عمليات بحث، الأحدث أولاً وبلا تكرار، في شكل رقائق تعيد ملء الحقل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>getStringList</code>، وقواعد قائمة داخل نموذج، و<code>remove</code>، والرقائق، واختبار نموذج.</p>
+<ol class="steps">
+<li>نموذج <code>Recent</code> يحفظ <code>words</code>. ودالته <code>add</code> تقص المسافات من الكلمة، وتتجاهلها إن كانت فارغة، وتبني <code dir="ltr">[w, ...words.where((old) =&gt; old != w)].take(5).toList()</code>.</li>
+<li>احفظ بـ <code>setStringList</code> بعد كل تغيير؛ و<code>clear</code> تستخدم <code dir="ltr">prefs.remove('recent')</code>.</li>
+<li><code>onSubmitted</code> في الحقل تضيف الكلمة وتفرّغ الحقل. وكل كلمة <code>ActionChip</code> تعيدها إلى الحقل.</li>
+<li>اختبر القواعد: أضف a وb وc وd وe وf، ثم b مرة أخرى وكلمة فارغة؛ وتوقع <code dir="ltr">['b', 'f', 'e', 'd', 'c']</code>، والقائمة نفسها من نموذج جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البحث عن كلمة موجودة في القائمة ينقلها إلى المقدمة بدل إضافتها مرتين: فـ <code>where</code> تحذف القديمة قبل أن توضع الجديدة أولاً.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (بعد البحث عن شاي ثم كيك ثم لاتيه ثم شاي مرة أخرى، ثم فتح التطبيق من جديد):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-storage-ar-shots-recent.png" alt=""></div>
+<figcaption>المشروع 12.2: عاد «شاي» إلى المقدمة.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/recent_test.dart</span>
+00:00 +0: loading test/recent_test.dart
+00:00 +0: الأحدث أولاً، بلا تكرار، وخمسة على الأكثر
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 12.3 · تحدٍّ</p>
+<h3>سلة تنجو من كل شيء</h3>
+<p class="project-goal">احفظ السلة كلها بصيغة JSON، واستعدها عند الفتح، ولا تنهَر أبداً أمام قيمة تالفة أو قيمة من نسخة أخرى من التطبيق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>jsonEncode</code> لخريطة، ورقم إصدار للصيغة، و<code>try</code>/<code>catch</code>، واختبارات البيانات السيئة.</p>
+<ol class="steps">
+<li>احفظ <code>counts</code>، وهي <code dir="ltr">Map&lt;int, int&gt;</code> من رقم المشروب إلى كميته. وبعد كل تغيير احفظ <code dir="ltr">{'version': 1, 'items': {...}}</code> بـ <code>setString</code>.</li>
+<li>مفاتيح JSON نصوص دائماً: فاكتب الأرقام هكذا <code dir="ltr">'${e.key}'</code>، واقرأها بـ <code>int.parse</code>.</li>
+<li>في <code>load</code> ارجع دون تغيير إن لم يكن الإصدار 1، وتخطَّ الأرقام التي لم تعد في القائمة.</li>
+<li>ضع القراءة داخل <code>try</code>؛ وفي <code>catch</code> فرّغ السلة واحذف القيمة التالفة، ليفتح التطبيق طبيعياً في المرة القادمة أيضاً.</li>
+<li>اختبر أربع قيم سيئة: <code dir="ltr">not json</code>، وقائمة، والإصدار 2، وكمية هي نص. وكل واحدة يجب أن تعطي سلة فارغة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> كل ما يُحفظ على جهاز ستقرؤه يوماً نسخة أحدث من تطبيقك، أو سيعود تالفاً. ورقم الإصدار يكلّف سطراً واحداً، ويعفيك من تخمين ما كانت تعنيه قيمة قديمة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (كوبا لاتيه وكيكة، ثم أُغلق التطبيق وفُتح):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b5-storage-ar-shots-saved-basket.png" alt=""></div>
+<figcaption>المشروع 12.3: عادت السلة.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/saved_basket_test.dart</span>
+00:00 +0: loading test/saved_basket_test.dart
+00:00 +0: السلة تبقى، والقيمة التالفة لا تُسقط التطبيق
+00:00 +1: a damaged value, or one from another version, gives an empty basket
+00:00 +2: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى تطبيق الإعدادات إعداداً ثالثاً، «الأصوات»، مفعّلاً افتراضياً. ما القيمة التي يجب أن تستخدمها <code>load</code> حين لم يُحفظ المفتاح قط، ولماذا ليست <code>false</code> هذه المرة؟</li>
+<li><span class="level">سهل</span> افتح تطبيق الإعدادات في متصفح، وفعّل الوضع الليلي، وافتح أدوات المطور في المتصفح على Application ثم Local storage. ما المفتاح والقيمة اللذان تجدهما؟</li>
+<li><span class="level medium">متوسط</span> أضف إلى <code>OrderBook</code> الدالة <code>clear()</code> التي تحذف الملف، واختباراً يتأكد أن <code>load</code> تعيد قائمة فارغة بعدها، حتى لو استُدعيت مرتين.</li>
+<li><span class="level medium">متوسط</span> الإصدار 2 من قاعدة الملاحظات يحتاج عمود <code>created</code> فيه وقت كتابة كل ملاحظة. اكتب خيارات <code>openDatabase</code> الجديدة، مع <code>onUpgrade</code>، لتحتفظ قواعد الإصدار 1 على جوالات الناس بملاحظاتها.</li>
+<li><span class="level hard">تحدٍّ</span> اجعل قائمة الفصل 11 تعمل بلا إنترنت: بعد كل تحميل ناجح احفظ JSON في ملف داخل مجلد الذاكرة المؤقتة، وحين يفشل التحميل اعرض القائمة المحفوظة مع ملاحظة «معروضة من زيارتك الأخيرة». أي صنف يتغير، وأيها لا يتغير؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 13</p>
+<p>التطبيقات العربية في هذا الكتاب قُلبت من اليمين إلى اليسار بسطر واحد، ولم تُلمس تواريخها وأرقامها. والفصل القادم يفعل ذلك كما يجب: تطبيق واحد بالعربية والإنجليزية، كل نصوصه في ملفات ترجمة، والاتجاه والتواريخ والأرقام تتبع اللغة، ومفتاح للتبديل بينهما.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b5/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -7112,6 +7618,16 @@ await: 55</pre></div></li>
 <li><code dir="ltr">Map&lt;String, dynamic&gt; toJson() =&gt; {'id': id, 'name': name, 'price': price, 'image': image};</code>. والاختبار: <code dir="ltr">final d = Drink(id: 1, name: 'لاتيه', price: 45, image: 'latte'); final back = Drink.fromJson(d.toJson());</code> ثم <code>expect</code> لكل حقل من <code>back</code> أن يساوي حقل <code>d</code>. ولتقارن الكائنين كاملين بـ <code>expect</code> واحدة، أعطِ <code>Drink</code> المعامل <code dir="ltr">operator ==</code> و<code>hashCode</code>؛ ويعرض الكتاب السادس حزماً تكتبهما عنك.</li>
 <li>في <code>handle</code>، قبل <code>else</code> الأخيرة: <code dir="ltr">} else if (request.method == 'GET' &amp;&amp; path == '/hours') { await send(response, 200, {'open': '8:00', 'close': '22:00'}); }</code>. وجرّبه بـ <code dir="ltr">curl -s localhost:8080/hours</code>. وفي التطبيق أضف إلى <code>CafeApi</code> الدالة <code dir="ltr">Future&lt;(String, String)&gt; hours()</code> التي تعيد record، وحمّلها مرة واحدة في State الصفحة، واعرضها بـ <code>FutureBuilder</code> تحت القائمة كما في القسم 11.2؛ أو احفظها في <code>MenuModel</code> وحمّل الاثنين معاً بـ <code>Future.wait</code> (الفصل 4).</li>
 <li>في <code>load</code> لا تُفرغ <code>drinks</code>؛ وعند الفشل اجعل <code>status</code> يساوي <code>failed</code> فقط إن كانت <code>drinks</code> فارغة، وإلا فأبقِ <code>ready</code> وفعّل علامة <code dir="ltr">stale = true</code> تعرضها الصفحة <code>MaterialBanner</code> صغيراً فوق القائمة. وهذا أفضل للناس حين تبقى البيانات القديمة مفيدة: قائمة تتغير مرة في اليوم، أو أخبار، أو قائمة طلبات أُرسلت فعلاً. وهو خطير حين قد تقود البيانات القديمة إلى قرار خاطئ: سعر ربما تغيّر قبل الدفع، أو كمية في المخزن، أو رصيد. وحينها يجب أن يقول التطبيق بوضوح إن البيانات قديمة، ويرفض الفعل حتى تتجدد.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 12</h2>
+<ol class="exercises">
+<li><code dir="ltr">sounds = await prefs.getBool('sounds') ?? true;</code>. فالقيمة الافتراضية تجيب عن سؤال «ماذا يجب أن يأخذ من لم يلمس هذا المفتاح قط؟»، وإعداد أصوات مفعّل افتراضياً يجب أن يقرأ <code>true</code> حين لم يُحفظ شيء. أما <code>false</code> فستطفئ الأصوات بصمت لكل شخص في زيارته الأولى.</li>
+<li>المفتاح <code>dark</code> والقيمة <code>true</code>: فعلى الويب تكتب <code>SharedPreferencesAsync</code> كل مفتاح في التخزين المحلي للمتصفح، وقيمته مرمّزة نصاً بصيغة JSON. (والواجهة الأقدم <code>SharedPreferences</code> تضيف <code dir="ltr">flutter.</code> قبل كل مفتاح.) وهذا أيضاً تذكير جيد بتحذير القسم 12.1: يستطيع كل من معه الجهاز أن يقرأها ويغيّرها.</li>
+<li><code dir="ltr">Future&lt;void&gt; clear() async { final file = await _file; if (await file.exists()) { await file.delete(); } }</code>. والاختبار يضيف طلباً، ويستدعي <code>clear()</code> مرتين، ويتوقع أن تكون <code>load()</code> فارغة. وفحص <code>exists</code> هو ما يجعل الاستدعاء الثاني آمناً: فحذف ملف غير موجود يرمي خطأ.</li>
+<li><code dir="ltr">OpenDatabaseOptions(version: 2, onCreate: (db, v) =&gt; db.execute('CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, done INTEGER NOT NULL, created INTEGER NOT NULL DEFAULT 0)'), onUpgrade: (db, from, to) async { if (from &lt; 2) { await db.execute('ALTER TABLE notes ADD COLUMN created INTEGER NOT NULL DEFAULT 0'); } })</code>. فـ <code>onCreate</code> تبني أحدث تصميم للتثبيتات الجديدة، و<code>onUpgrade</code> ترفع القديمة إليه خطوة خطوة، و<code dir="ltr">if (from &lt; 2)</code> تترك مكاناً لـ <code dir="ltr">if (from &lt; 3)</code> في المستقبل. والملاحظات القديمة تأخذ 0، فيعرضها التطبيق «تاريخ غير معروف».</li>
+<li>لا يتغير إلا <code>CafeApi</code> (أو صنف ذاكرة مؤقتة صغير يستخدمه) و<code>MenuModel</code>. فـ <code>CafeApi.menu</code> تكتب الجسم في <code>menu.json</code> داخل <code>getApplicationCacheDirectory()</code> بعد كل نجاح؛ و<code>MenuModel.load</code> تقرأ هذا الملف عند الفشل، وإن وُجد تجعل <code>status</code> تساوي <code>ready</code> مع علامة <code dir="ltr">fromCache = true</code> تظهر ملاحظة صغيرة فوق القائمة. ولا يتغير <code>Drink</code> ولا الصور ولا القائمة نفسها. وهذه «عادة المحترفين» في الفصل وهي تعمل: التخزين والشبكة خلف أصناف صغيرة، فميزة كهذه تلمس اثنين منها ولا تلمس منطق أي شاشة.</li>
 </ol>
 
 </section>
