@@ -1193,7 +1193,8 @@
             },
             {
               "en": "Clean Architecture for Flutter",
-              "ar": "المعمارية النظيفة في Flutter"
+              "ar": "المعمارية النظيفة في Flutter",
+              "src": "b6/architecture"
             },
             {
               "en": "State Management with Riverpod",
