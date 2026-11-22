@@ -1,0 +1,18 @@
+<ol class="exercises">
+<li>Each question and two-line answer added about 45 to 60 tokens (75 after the first, 120 after the second), so ten would hold roughly 600. With longer answers it reaches 2,048 much sooner, and then the session has to make room: <code>node-llama-cpp</code> then removes the oldest messages from the context, keeping the system prompt, and the model loses what was said first. Hosted chat products do the same, or summarise. Either way, an instruction you gave at the start can quietly stop applying.</li>
+<li>It depends on your project, but the pattern is always the same: small files that are easy to fit (configuration, short modules, the README) go in first, and the large file you actually care about is left out. A person would choose by the question: the file being changed, the files it imports, and its tests. That is the selection Chapter 14 builds.</li>
+<li>
+<pre class="plain" dir="ltr">searchFiles: defineChatSessionFunction({
+  description: "Find the files that contain a word",
+  params: {type: "object", properties: {text: {type: "string"}}},
+  handler({text}) {
+    return fs.readdirSync("cafe", {recursive: true}).filter((name) =&gt; {
+      const file = `cafe/${name}`;
+      return fs.statSync(file).isFile() &amp;&amp; fs.readFileSync(file, "utf8").includes(text);
+    });
+  },
+}),</pre>
+Questions that name something specific: “where is the price of a latte set?” takes one search for <code>latte</code> and one read, instead of a list and two reads. In a project of thousands of files the difference is between a few calls and reading files one by one until the context fills. That is why every coding agent has a search tool.</li>
+<li>Without the check, <code>Function(`return (${expression});`)()</code> runs any JavaScript the model passes. An expression such as <code>process.env.API_KEY</code> returns a secret into the conversation, and <code>process.exit(1)</code> stops the program; with an asynchronous import, it could read or delete files. The model may not choose such an input by itself, but anyone who controls text the model reads can ask it to: a web page, an email or a file in the project saying “calculate this”. That is called <em>prompt injection</em>, and Chapter 15 is about it. A tool must check its input as strictly as an API endpoint does, because that is what it is.</li>
+<li>Generate with <code>onTextChunk</code>, keep a counter that starts at 1 (the function’s own brace is already open), add one for each <code>{</code> and subtract one for each <code>}</code>, and abort with an <code>AbortController</code> when it reaches 0, keeping the text before that brace. It breaks on braces that are not code: inside strings (<code>"{"</code>), template literals, comments and regular expressions. A real editor uses the language’s parser, or at least a tokenizer that knows strings and comments, which is a good reason to trust editors over home-made checks.</li>
+</ol>

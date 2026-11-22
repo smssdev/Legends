@@ -1,0 +1,1196 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>الذكاء الاصطناعي للمطورين</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "الذكاء الاصطناعي للمطورين"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: كيف تعمل النماذج اللغوية الكبيرة"; } }
+@page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "الفصل 2: صندوق أدوات الذكاء الاصطناعي للمطورين"; } }
+@page ch02:first { @top-center { content: none; } }
+@page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">من الصفر إلى الاحتراف · الكتاب السابع</p>
+  <h1 class="cv-title">الذكاء الاصطناعي للمطورين</h1>
+  <p class="cv-sub">العمل أسرع وأفضل بأدوات الذكاء الاصطناعي، من الكود إلى مهام العمل اليومية</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="s"></span><span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+  contextSequence: context.getSequence(),
+});
+
+<span class="k">const</span> answer = <span class="k">await</span> session.prompt(
+  <span class="s">&quot;Explain this error in one line.&quot;</span>,
+  {temperature: <span class="n">0</span>});</pre></div><div class="cv-tracks"><span>AI</span><span>Prompts</span><span>Agents</span><span>Automation</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">كل المستويات</span><span class="cv-author">سليمان ماجد سعيد صلاح</span></div>
+</div></section><section class="front half-title"><p class="ht">الذكاء الاصطناعي للمطورين</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب السابع</p>
+          <h1 class="tp-title">الذكاء الاصطناعي للمطورين</h1>
+          <p class="tp-sub">العمل أسرع وأفضل بأدوات الذكاء الاصطناعي، من الكود إلى مهام العمل اليومية</p>
+          <p class="tp-level">كل المستويات</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>الذكاء الاصطناعي للمطورين</strong><br>العمل أسرع وأفضل بأدوات الذكاء الاصطناعي، من الكود إلى مهام العمل اليومية</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 وnode-llama-cpp 3.22.3، ويتحدث مع النموذج المفتوح Qwen3-4B-Instruct-2507 (برخصة Apache 2.0) يعمل على حاسوب المؤلف. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>Qwen علامة تجارية لـ Alibaba Cloud، وChatGPT وOpenAI علامتان تجاريتان لـ OpenAI، وClaude وAnthropic علامتان تجاريتان لـ Anthropic، وGitHub Copilot علامة تجارية لـ GitHub, Inc.، وGemini علامة تجارية لـ Google LLC، وLlama علامة تجارية لـ Meta Platforms, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: فهم الذكاء الاصطناعي</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل النماذج اللغوية الكبيرة</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">صندوق أدوات الذكاء الاصطناعي للمطورين</span><span class="toc-p">27</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">كتابة أوامر تنجح</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الذكاء الاصطناعي في كودك</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">البرمجة الثنائية مع الذكاء الاصطناعي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">قراءة الكود الغريب وشرحه</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تتبّع الأخطاء مع الذكاء الاصطناعي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">الاختبارات وإعادة الهيكلة ومراجعة الكود</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التوثيق ورسائل الحفظ</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الذكاء الاصطناعي في عملك</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من الفكرة إلى المواصفات والمهام</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاجتماعات والرسائل والتقارير</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">أتمتة العمل المتكرر</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">وكلاء الذكاء الاصطناعي للمهام متعددة الخطوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 4: البناء بالذكاء الاصطناعي</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">استدعاء نماذج الذكاء الاصطناعي من تطبيقاتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الاسترجاع: ذكاء اصطناعي يعرف بياناتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">الأمان والخصوصية والتراخيص</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الحكمة: متى لا تثق بالذكاء الاصطناعي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: مساعد ذكي لفريقك</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">47</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">أدوات الذكاء الاصطناعي صارت جزءاً من صناعة البرمجيات: تكتب المسودات الأولى للكود، وتشرح برامج لا يتذكرها أحد، وتجد الأخطاء، وتلخص الاجتماعات، وتجيب عن الأسئلة في الثالثة فجراً. وهي أيضاً تخطئ بثقة، بطرق تكلّف ساعات حين لا يتحقق أحد. وهذا الكتاب يعلّم النصفين: كيف تحصل من هذه الأدوات على عمل حقيقي، وكيف تعرف متى لا تثق بها. وهو مكتوب للمطورين الذين أنهوا «البرمجة من الصفر»، الكتاب الأول في هذه السلسلة، ولكل من يعمل في فريق برمجيات.</p>
+
+<h2 class="plain-h">ما تحتاجه</h2>
+<ul>
+<li>Node.js 22، كما في الكتاب الأول، ومحرر كود.</li>
+<li>حاسوباً بذاكرة 8 GB ومساحة فارغة 4 GB. وهذا يكفي لتشغيل نموذج الذكاء الاصطناعي الخاص بالكتاب على جهازك: بلا بطاقة رسوميات، وبلا حساب، وبلا اشتراك.</li>
+<li>واختيارياً، أدوات الذكاء الاصطناعي التي تستخدمها أصلاً (مساعد محادثة، أو مساعد في محررك، أو وكيل برمجة). وكل أسلوب في الكتاب ينطبق عليها، والفصول تقول أين تختلف.</li>
+</ul>
+
+<h2 class="plain-h">لماذا نموذج على حاسوبك</h2>
+<p>كل مثال في هذا الكتاب يتحدث مع نموذج مفتوح، Qwen3-4B-Instruct، عبر حزمة <code>node-llama-cpp</code> المجانية. يُنزَّل مرة (2.5 GB) ثم يعمل دون اتصال. ولهذا الاختيار أربعة أسباب. إنه مجاني، فتشغّل كل مثال كما تشاء. وهو خاص: لا يغادر حاسوبك شيء مما تكتبه. ويتيح لك النظر إلى الداخل، إلى الرموز والاحتمالات التي تخفيها الخدمات المستضافة. وهو صغير، فيخطئ بما يكفي ليعلّمك اكتشاف أخطائه. والنماذج الكبيرة المستضافة أقوى، لكنها تعمل بالطريقة نفسها وتخطئ بالطرق نفسها، وإن قلّ ذلك، وهذا ما يجعل أخطاءها أصعب ملاحظة.</p>
+
+<h2 class="plain-h">كيف نُظّم الكتاب</h2>
+<p>الفصول السبعة عشر موزعة على أربعة أجزاء. اقرأ الجزء الأول أولاً؛ والبقية تُقرأ بأي ترتيب بعده.</p>
+<ul>
+<li><strong>فهم الذكاء الاصطناعي</strong> يشرح ما يفعله النموذج اللغوي حقاً، وأنواع الأدوات المبنية عليه، وكيف تكتب تعليمات تنجح.</li>
+<li><strong>الذكاء الاصطناعي في كودك</strong> يغطي العمل اليومي للمطور: كتابة الكود مع مساعد، وقراءة الكود الغريب، وتتبّع الأخطاء، والاختبارات وإعادة الهيكلة والمراجعة، والتوثيق ورسائل الحفظ.</li>
+<li><strong>الذكاء الاصطناعي في عملك</strong> يتجاوز الكود: تحويل الأفكار إلى مواصفات ومهام، والاجتماعات والتقارير، وأتمتة العمل المتكرر، والوكلاء الذين ينفذون خطوات متعددة.</li>
+<li><strong>البناء بالذكاء الاصطناعي</strong> يضع نموذجاً داخل برامجك: استدعاء النماذج، وإعطاؤها بياناتك، والأمان والخصوصية والتراخيص، والحكمة، ومساعد ختامي لفريقك.</li>
+</ul>
+
+<h2 class="plain-h">كل فصل</h2>
+<p>كل فصل يتبع نمط السلسلة: ما ستتعلمه؛ وشروح مبنية على أمثلة حقيقية؛ و«اختبر نفسك»؛ وصناديق للنصائح والفخاخ وعادات المحترفين؛ وأخطاء شائعة؛ وملخص؛ وثلاثة مشاريع للتدريب (سهل ومتوسط وتحدٍّ)؛ وتمارين حلولها في آخر الكتاب.</p>
+
+<h2 class="plain-h">كود حقيقي، وأجوبة حقيقية</h2>
+<p>كل مثال ملف حقيقي، وكل جواب يعطيه النموذج في هذا الكتاب هو الجواب الذي أعطاه فعلاً، سُجّل أثناء إعداد الكتاب، بأخطائه. ومعظم الأمثلة تستخدم درجة الحرارة 0، فيختار النموذج جوابه الأرجح، ويجب أن ترى النص نفسه بالإصدارات نفسها:</p>
+<table>
+<thead><tr><th>الأداة</th><th>الإصدار</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>node-llama-cpp</td><td>3.22.3</td></tr>
+<tr><td>النموذج</td><td>Qwen3-4B-Instruct-2507، بـ 4 بتات (Q4_K_M)، برخصة Apache 2.0</td></tr>
+</tbody>
+</table>
+<p>وعلى معالج مختلف قد يختلف جواب طويل في كلمة أو اثنتين عن جواب الكتاب؛ أما الدروس فلا.</p>
+
+<h2 class="plain-h">قراءة الأمثلة</h2>
+<ul>
+<li>اللسان الداكن فوق المثال يعطي مسار الملف في المشروع.</li>
+<li>الصندوق ذو النقاط الملونة الثلاث طرفية: السطر الذي يبدأ بـ <code>$</code> أمر، والأسطر تحته جوابه.</li>
+<li>كل مثال يستورد <code>loadModel</code> من <code>lib/model.mjs</code>، الأسطر العشرة نفسها في كل فصل، ويعرضها الفصل الأول.</li>
+<li>كل مثال ومشروع وحل تمرين في مستودع الكود الخاص بالكتاب، مع السكربت الذي أنتج مخرجاته.</li>
+</ul>
+
+<h2 class="plain-h">كلمة من المؤلف</h2>
+<p>لن يحل الذكاء الاصطناعي محل المطورين الذين يفهمون عملهم. سيجعلهم أسرع بكثير، ويجعل من يتوقف عن التفكير أخطر بكثير. وهذا الكتاب عن أن تكون من النوع الأول. و«بِت»، الروبوت البنفسجي، له زميل جديد في هذه الصفحات: نموذج يتكلم جيداً ويخطئ أحياناً. تعلّم العمل معه كما تعمل مع أي زميل ذكي مفرط الثقة: أعطه مهام واضحة، وتحقق من عمله، واحتفظ بالقرارات لنفسك.</p>
+
+<p><strong>سليمان ماجد سعيد صلاح</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b7/llm/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>كيف تعمل النماذج اللغوية الكبيرة</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تشغّل نموذجاً لغوياً حقيقياً على حاسوبك من JavaScript</li>
+<li>ترى ما يحسبه النموذج فعلاً: احتمالاً لكل رمز ممكن بعد النص</li>
+<li>تعدّ الرموز، وتعرف لماذا تكلّف الجملة نفسها بالعربية أكثر منها بالإنجليزية</li>
+<li>تتحكم في العشوائية بدرجة الحرارة والبذرة</li>
+<li>تقرأ ما يحويه ملف النموذج: المعاملات والمفردات ونافذة السياق</li>
+<li>تميّز الجواب المختلَق، وتعرف لماذا تختلق النماذج</li>
+</ul>
+</div>
+
+<p class="lead">مساعد المحادثة يبدو كشخص قرأ كل شيء. وهو ليس كذلك، والفرق مهم في كل مرة تستخدمه. فتحت المحادثة عملية واحدة بسيطة تتكرر بسرعة كبيرة: انظر إلى النص حتى الآن، وأعطِ درجة لكل قطعة نص ممكنة بعده. كل ما هو جيد في هذه الأدوات يأتي من هذه العملية، وكذلك كل ما يسوء. وهذا الفصل يشغّل نموذجاً حقيقياً، وينظر في أرقامه، ويبني الحدس الذي يعتمد عليه باقي الكتاب.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل جواب في هذا الفصل أنتجه نموذج الكتاب، على معالج عادي بأربع أنوية وبلا بطاقة رسوميات، أثناء إعداد الكتاب. لم يُعدَّل شيء، ومنه الجواب في القسم 1.6 الذي تمنيت لو لم يعطه النموذج.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>نموذج على حاسوبك</span></h2>
+
+<p>أنشئ مجلداً، وثبّت حزمة واحدة:</p>
+
+<pre class="plain" dir="ltr">npm init -y
+npm pkg set type=module
+npm install node-llama-cpp@3.22.3</pre>
+
+<p>تشغّل <code>node-llama-cpp</code> النماذج المفتوحة بـ <em>llama.cpp</em>، وهو محرك سريع مكتوب بـ C++، وتعطيها واجهة JavaScript. وكل مثال في الكتاب يحمّل نموذجه عبر هذا الملف الصغير نفسه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/model.mjs</div><pre class="code"><span class="c line-bidi">// نموذج الكتاب: Qwen3 4B Instruct (2507)، نموذج مفتوح برخصة Apache 2.0،</span>
+<span class="c line-bidi">// ضغطته Unsloth إلى 4 بتات (2.5 GB). يُنزَّل مرة، أول مرة يعمل فيها مثال،</span>
+<span class="c line-bidi">// في ~/.node-llama-cpp/models؛ ثم يعمل كل شيء على حاسوبك، دون اتصال.</span>
+<span class="k">import</span> {getLlama, LlamaLogLevel, resolveModelFile} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> MODEL = <span class="s">&quot;hf:unsloth/Qwen3-4B-Instruct-2507-GGUF:Q4_K_M&quot;</span>;
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> loadModel() {
+  <span class="k">const</span> llama = <span class="k">await</span> getLlama({gpu: <span class="k">false</span>, logLevel: LlamaLogLevel.error});
+  <span class="k">return</span> llama.loadModel({modelPath: <span class="k">await</span> resolveModelFile(MODEL)});
+}</pre></div>
+
+<p>تنزّل <code>resolveModelFile</code> النموذج من Hugging Face، وهي مكتبة عامة للنماذج المفتوحة، في المرة الأولى، وتجده على القرص بعد ذلك. و<code dir="ltr">gpu: false</code> تشغّله على المعالج، فلا تتوقف أرقام الكتاب على بطاقة رسوميات؛ وإن كانت لديك واحدة، فحذف هذا الخيار يجعل كل شيء أسرع ولا يغيّر شيئاً آخر.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>«النموذج المفتوح» يعني أن الأرقام المدرَّبة منشورة ويحق لك تشغيلها بنفسك. ولكل نموذج رخصة، وليست كلها سواء: بعضها يمنع الاستخدام التجاري، وبعضها يقيّد الشركات الكبيرة، وبعضها، مثل Apache 2.0، يسمح بكل شيء تقريباً. وقد اختير نموذج الكتاب لرخصته. اقرأها قبل أن تضع أي نموذج في منتج.</p></aside>
+
+<h2><span class="sec">1.2</span> <span>الشيء الوحيد الذي يفعله النموذج</span></h2>
+
+<p>أعطِ النموذج نصاً فيعيد شيئاً واحداً: لكل رمز يعرفه، احتمال أن يأتي بعده. وهذا البرنامج يطلب تلك الاحتمالات بعد جملة لم تكتمل ويطبع أعلى ثمانية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">next.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">512</span>});
+<span class="k">const</span> sequence = context.getSequence();
+
+<span class="c line-bidi">// كل ما يفعله النموذج هو هذا: بعد الرموز حتى الآن، احتمال لكل رمز ممكن</span>
+<span class="c line-bidi">// بعدها.</span>
+<span class="k">const</span> prompt = <span class="s">&quot;المقهى يبيع القهوة و&quot;</span>;
+<span class="k">const</span> tokens = model.tokenize(prompt);
+<span class="k">const</span> options = {probabilities: <span class="k">true</span>};
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> output <span class="k">of</span> sequence.evaluateWithMetadata(tokens, options)) {
+  <span class="k">const</span> {probabilities} = output;
+  console.log(<span class="s">`&quot;${prompt}&quot; ... 8 likely tokens, of ${probabilities.size}:`</span>);
+  <span class="k">for</span> (<span class="k">const</span> [token, probability] <span class="k">of</span> [...probabilities].slice(<span class="n">0</span>, <span class="n">8</span>)) {
+    <span class="k">const</span> piece = JSON.stringify(model.detokenize([token])).padEnd(<span class="n">14</span>);
+    <span class="k">const</span> percent = (probability * <span class="n">100</span>).toFixed(<span class="n">1</span>).padStart(<span class="n">5</span>);
+    <span class="k">const</span> bar = <span class="s">&quot;#&quot;</span>.repeat(Math.round(probability * <span class="n">40</span>));
+    console.log(<span class="s">`  ${piece} ${percent}%  ${bar}`</span>);
+  }
+  <span class="k">break</span>;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node next.mjs</span>
+&quot;المقهى يبيع القهوة و&quot; ... 8 likely tokens, of 151936:
+  &quot; ي&quot;             7.3%  ###
+  &quot;يع&quot;             6.5%  ###
+  &quot;له&quot;             3.5%  #
+  &quot; &quot;              3.4%  #
+  &quot;يش&quot;             2.5%  #
+  &quot;ح&quot;              2.4%  #
+  &quot;س&quot;              2.3%  #
+  &quot;ين&quot;             2.2%  #</pre></div>
+
+<p>اقرأ الجدول ببطء؛ فمعظم هذا الكتاب فيه. أعلى احتمال 7.3% فقط، ولا واحد منها كلمة كاملة: « ي» و«يع» و«له» قطع من كلمات. فالنموذج لا يعطي درجات لكلمات بل لقطع منها، ولكل الـ 151,936 قطعة في كل مرة. والقطعة الأولى « ي» بداية «يبيع» أو «يقدّم»: بعد «القهوة و» تأتي في النصوص العربية كلمات كثيرة ممكنة، فتتوزع الاحتمالات عليها. وحين طُرح السؤال نفسه بالإنجليزية في النسخة الإنجليزية من الكتاب، أخذ « tea» (الشاي) وحده 40% لأنه كلمة واحدة في مفردات النموذج. والنموذج لا يعرف ما يبيعه هذا المقهى. لقد رأى قدراً هائلاً من النصوص، ولا شيء في الجدول حقيقة عن المقهى؛ إنه حقيقة عن النصوص.</p>
+
+<p>ومساعد المحادثة هو هذا، في حلقة. يختار رمزاً، ويضيفه، ويطلب الاحتمالات من جديد، ويتوقف حين يختار رمزاً خاصاً معناه «انتهى». والجواب في عشرة أسطر بضع مئات من هذه الخطوات. والطلاقة تأتي من إتقان هذه الخطوة الواحدة؛ والأخطاء تأتي من المكان نفسه، لأن التكملة الطليقة والتكملة الصحيحة ليستا الشيء نفسه.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>حين يعطيك مساعد جواباً لم تتوقعه، اسأل نفسك: «ما النص الذي يأتي عادة بعد سؤال مثل سؤالي؟» السؤال الغامض يأتي بعده، في نصوص العالم، جواب عام. والسؤال الذي فيه كودك الحقيقي وخطؤك وقيودك يأتي بعده شيء محدد. والفصل 3 مبني على هذه الفكرة.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>الرموز</span></h2>
+
+<p>النموذج لا يقرأ حروفاً ولا كلمات. فمُرمِّزه يقطّع النص إلى رموز من مفردات ثابتة: الكلمات الشائعة رمز واحد، والنادرة عدة رموز، وأي شيء يمكن دائماً تهجئته قطعة قطعة. وهذا البرنامج يقطّع الجملة نفسها بالإنجليزية وبالعربية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tokens.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+
+<span class="c line-bidi">// الجملة نفسها بلغتين، وكيف يقطّع النموذج كلاً منهما إلى رموز.</span>
+<span class="k">const</span> sentences = [
+  <span class="s">&quot;The café opens at 8:30 and closes at 22:00.&quot;</span>,
+  <span class="s">&quot;يفتح المقهى في 8:30 ويغلق في 22:00.&quot;</span>,
+];
+<span class="k">for</span> (<span class="k">const</span> sentence <span class="k">of</span> sentences) {
+  <span class="k">const</span> tokens = model.tokenize(sentence);
+  <span class="k">const</span> pieces = tokens.map((token) =&gt; model.detokenize([token]));
+  <span class="k">const</span> words = sentence.split(<span class="s">&quot; &quot;</span>).length;
+  <span class="k">const</span> size = <span class="s">`${sentence.length} characters, ${tokens.length} tokens`</span>;
+  console.log(<span class="s">`${words} words, ${size}`</span>);
+  console.log(<span class="s">&quot;  &quot;</span> + pieces.map((piece) =&gt; <span class="s">`[${piece}]`</span>).join(<span class="s">&quot;&quot;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node tokens.mjs</span>
+9 words, 43 characters, 19 tokens
+  [The][ café][ opens][ at][ ][8][:][3][0][ and][ closes][ at][ ][2][2][:][0][0][.]
+7 words, 35 characters, 22 tokens
+  [يف][تح][ الم][قه][ى][ في][ ][8][:][3][0][ وي][غل][ق][ في][ ][2][2][:][0][0][.]</pre></div>
+
+<p>ثلاثة أشياء تستحق النظر. معظم الكلمات الإنجليزية رمز واحد مع المسافة التي قبلها. والأرقام تُقطَّع إلى خانات مفردة: فعند هذا النموذج، 22:00 خمسة رموز. والجملة العربية، وهي أقصر بكلمتين، تأخذ رموزاً أكثر: «يفتح» قطعتان، و«المقهى» ثلاث. فالمفردات بُنيت من نصوص معظمها إنجليزي وصيني، فقلّما تكون الكلمات العربية مدخلاً كاملاً فيها.</p>
+
+<p>وهذا مهم لأن الرموز وحدة كل شيء. فالنماذج المستضافة تُسعَّر بالرمز؛ ونافذة السياق، أي مقدار النص الذي يستطيع النموذج النظر فيه دفعة واحدة، تُقاس بالرموز؛ والسرعة رموز في الثانية. والمشروع 1.1 يقيس الفرق على جملة كاملة: 1.18 رمز لكل كلمة إنجليزية، و2.63 لكل كلمة عربية. فالمحادثة نفسها بالعربية تكلّف أكثر، وتملأ النافذة أسرع، وتأخذ وقتاً أطول، مع هذا النموذج. ولنماذج أخرى مفردات أخرى، فقِس ما تستخدمه.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>عدّ الحروف، وقلب الكلمات، والحساب على الأرقام الطويلة صعبة على النماذج للسبب الذي رأيته للتو: النموذج لا يرى الحروف أبداً، بل القطع فقط. وحين تحتاج عدّاً دقيقاً أو ترتيباً أو مجموعاً، اطلب من النموذج أن يكتب كوداً يفعل ذلك، وشغّل الكود.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا أعلى احتمال في الجدول العربي 7.3% فقط، بينما هو 40% في الإنجليزي؟</li><li>نص فيه 1,000 كلمة إنجليزية. كم رمزاً تقريباً عند هذا النموذج، وكم لو كان 1,000 كلمة عربية؟</li><li>لماذا سؤال «كم حرفاً في هذه الكلمة؟» أصعب على النموذج من «ما معنى هذه الكلمة؟»</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">1.4</span> <span>درجة الحرارة</span></h2>
+
+<p>الاحتمالات ثابتة؛ أما كيف يُختار الرمز التالي منها فقرارك. في درجة الحرارة 0 يفوز الرمز الأرجح دائماً. والدرجات الأعلى تسطّح الاحتمالات ثم تسحب عشوائياً، فتأخذ الرموز الأقل احتمالاً فرصة. والبذرة تثبّت السحب العشوائي، فالبذرة نفسها تكرر الاختيارات نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">temperature.mjs</div><pre class="code"><span class="k">import</span> {LlamaCompletion} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">512</span>});
+<span class="k">const</span> completion = <span class="k">new</span> LlamaCompletion({
+  contextSequence: context.getSequence(),
+});
+
+<span class="c line-bidi">// درجة الحرارة 0 تأخذ دائماً الرمز الأرجح؛ والدرجات الأعلى تسحب عشوائياً،</span>
+<span class="c line-bidi">// فيتغير الجواب مع البذرة.</span>
+<span class="k">const</span> request = <span class="s">&quot;اسم قصير ولطيف لمقهى جديد:&quot;</span>;
+<span class="k">for</span> (<span class="k">const</span> temperature <span class="k">of</span> [<span class="n">0</span>, <span class="n">1.2</span>]) {
+  console.log(<span class="s">`temperature ${temperature}:`</span>);
+  <span class="k">for</span> (<span class="k">const</span> seed <span class="k">of</span> [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>]) {
+    <span class="k">const</span> text = <span class="k">await</span> completion.generateCompletion(request, {
+      temperature,
+      seed,
+      maxTokens: <span class="n">12</span>,
+    });
+    console.log(<span class="s">`  seed ${seed}: ${text.trim().split(&quot;\n&quot;)[0]}`</span>);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node temperature.mjs</span>
+temperature 0:
+  seed 1: &quot;مُلَمَّس&quot;
+  seed 2: &quot;مُلَمَّس&quot;
+  seed 3: &quot;مُلَمَّس&quot;
+temperature 1.2:
+  seed 1: لحم الحمام
+  seed 2: &quot;روك&quot;
+  seed 3: &quot;في كل خطوة&quot;</pre></div>
+
+<p>في 0، ثلاث بذور تعطي اسماً واحداً: لا شيء تقرره البذرة. وهو اسم غريب لمقهى، «مُلَمَّس»، لكنه الأرجح عند النموذج، والأرجح ليس الأفضل دائماً. وفي 1.2 تعطي كل بذرة اسماً مختلفاً، وأحدها «لحم الحمام»، وهو أبعد ما يكون عن اسم لطيف لمقهى. وهذه هي المقايضة في شاشة واحدة. الحرارة المنخفضة قابلة للتكرار وآمنة؛ والعالية متنوعة وغريبة أحياناً. وللكود واستخراج البيانات وأي شيء سيقرؤه برنامج، استخدم 0 أو ما يقاربها. وللأسماء والشعارات والأفكار الأولى، تعطيك حرارة أعلى خيارات أكثر تختار منها، وأنت من يختار.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>حين تكون ميزة الذكاء الاصطناعي جزءاً من منتجك، سجّل مع كل نتيجة تحتفظ بها: النموذج وإصداره ودرجة الحرارة والأمر. فحين يبلّغ مستخدم عن جواب غريب، هذه الأربعة هي الفرق بين إعادة إنتاجه في دقيقة والتخمين يوماً كاملاً.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>ما في داخل الملف</span></h2>
+
+<p>يحمل ملف النموذج وصفاً لنفسه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">model-info.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+
+<span class="c line-bidi">// ما يقوله ملف النموذج عن نفسه.</span>
+<span class="k">const</span> {general, tokenizer} = model.fileInfo.metadata;
+console.log(<span class="s">`name:            ${general.name}`</span>);
+console.log(<span class="s">`size label:      ${general.size_label} parameters`</span>);
+<span class="k">const</span> gigabytes = (model.size / 1e9).toFixed(<span class="n">2</span>);
+console.log(<span class="s">`file:            ${gigabytes} GB (4-bit quantized)`</span>);
+console.log(<span class="s">`vocabulary:      ${tokenizer.ggml.tokens.length} tokens`</span>);
+console.log(<span class="s">`context window:  ${model.trainContextSize} tokens`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node model-info.mjs</span>
+name:            Qwen3-4B-Instruct-2507
+size label:      4B parameters
+file:            2.49 GB (4-bit quantized)
+vocabulary:      151936 tokens
+context window:  262144 tokens</pre></div>
+
+<ul>
+<li><strong>المعاملات</strong> هي الأرقام المتعلَّمة في التدريب: هنا نحو أربعة مليارات. فقد عُرض على النموذج في التدريب تريليونات الرموز من النصوص، وعُدّلت تلك الأرقام مرة بعد مرة لتتحسن تنبؤاته بالرمز التالي. وكل ما «يعرفه» النموذج فيها، على هيئة أنماط، لا قائمة حقائق يبحث فيها.</li>
+<li><strong>الضغط إلى 4 بتات</strong> يعني أن كل رقم يُخزَّن في نحو أربع بتات بدل ست عشرة. فالملف أصغر بأربع مرات وأسرع بكثير، وأقل دقة قليلاً. ولهذا يتسع نموذج بأربعة مليارات معامل لـ 2.5 GB.</li>
+<li><strong>المفردات</strong> قائمة المُرمِّز: 151,936 قطعة، الرقم نفسه الذي رأيته في القسم 1.2.</li>
+<li><strong>نافذة السياق</strong> أكبر عدد من الرموز يستطيع النموذج النظر فيه دفعة واحدة: التعليمات والمحادثة وأي مستندات تلصقها والجواب، معاً. وما يقع خارجها غير موجود عند النموذج. وأمثلتنا تستخدم نوافذ صغيرة (512 أو 2,048 رمزاً) لأن الذاكرة تكبر مع النافذة.</li>
+</ul>
+
+<p>ويتبع التدريبَ أمران آخران. معرفة النموذج تتوقف عند تاريخ جمع نصوص تدريبه: فقد يتكلم بطلاقة عن إصدار قديم من مكتبة ولا يعرف شيئاً عن الحالي. والنموذج بلا ذاكرة بين المحادثات: فمساعد المحادثة يبدو كأنه يتذكر لأن التطبيق يرسل الرسائل السابقة من جديد، داخل نافذة السياق، في كل مرة.</p>
+
+<h2><span class="sec">1.6</span> <span>واثق ومخطئ</span></h2>
+
+<p>بحث «تخمير الرموز» لليلى حسن غير موجود؛ اختُلق لهذا القسم. وهذا البرنامج يطلب من النموذج تلخيصه، مرة بسؤال عادي، ومرة مع السماح له بأن يقول إنه غير متأكد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">invent.mjs</div><pre class="code"><span class="k">import</span> {LlamaChatSession} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">2048</span>});
+
+<span class="k">const</span> ask =
+  <span class="s">&quot;لخّص في جملتين بحث «تخمير الرموز» &quot;</span> +
+  <span class="s">&quot;الذي نشرته ليلى حسن عام 2019.&quot;</span>;
+<span class="k">const</span> doubt = <span class="s">&quot;وإن لم تكن متأكداً من وجود البحث، فقل ذلك.&quot;</span>;
+<span class="k">const</span> questions = [ask, <span class="s">`${ask} ${doubt}`</span>];
+<span class="k">for</span> (<span class="k">const</span> question <span class="k">of</span> questions) {
+  <span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+    contextSequence: context.getSequence(),
+    autoDisposeSequence: <span class="k">true</span>,
+  });
+  <span class="k">const</span> answer = <span class="k">await</span> session.prompt(question, {
+    temperature: <span class="n">0</span>,
+    maxTokens: <span class="n">120</span>,
+  });
+  console.log(<span class="s">`&gt; ${question}\n${answer}\n`</span>);
+  session.dispose();
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node invent.mjs</span>
+<span class="c">&gt; </span><span class="k">لخّص في جملتين بحث «تخمير الرموز» الذي نشرته ليلى حسن عام 2019.</span>
+بحث ليلى حسن عام 2019 عن &quot;تخمير الرموز&quot; يُبرز كيف تُستخدم الرموز في النصوص لنقل المعاني والقيم، ويشير إلى أن هذه الرموز لا تُفهم ببساطة، بل تُخَمَّر عبر السياق والتجربة الشخصية. ويُظهر البحث أن التخمير يُسهم في تشكيل الهوية والوعي في النصوص، خصوصًا في السياقات السياسية والاجتماعية.
+
+<span class="c">&gt; </span><span class="k">لخّص في جملتين بحث «تخمير الرموز» الذي نشرته ليلى حسن عام 2019. وإن لم تكن متأكداً من وجود البحث، فقل ذلك.</span>
+لا يوجد سجل يُشير إلى بحث بعنوان &quot;تخمير الرموز&quot; نشره ليلى حسن في عام 2019. لذا، لا يمكن تلخيصه بدلاً من ذلك.</pre></div>
+
+<p>في المرة الأولى كتب النموذج ملخصاً طليقاً في جملتين لنتائج بحث لا وجود له، عن كيف «تُخمَّر» الرموز عبر السياق والتجربة الشخصية، ولا شيء فيه يدل على أنه مختلَق. وفي المرة الثانية، حين سُمح له بالشك، قال الحقيقة. وفي النسخة الإنجليزية من الكتاب، طُرح السؤال نفسه بالإنجليزية على النموذج نفسه بالدرجة نفسها، فرفض في المرتين: «لا يوجد بحث معروف بهذا العنوان».</p>
+
+<p>هذا ما يسميه الناس <em>الهلوسة</em>، وقد شرحه القسم 1.2 من قبل. فالنموذج لا يبحث عن شيء. إنه ينتج التكملة الأرجح للنص، والتكملة الأرجح لـ «لخّص هذا البحث» ملخص. وهل يرفض أم لا يتوقف على ما إذا كان الرفض شائعاً، في تدريبه، بعد نص يشبه نصك: بالإنجليزية، حيث رأى أمثلة أكثر على «لا يوجد بحث كهذا»، رفض؛ وبالعربية لم يرفض. ولم يعطِ النموذج أي علامة على أي الجوابين صحيح. ولا يعطي أبداً: فالجواب الخاطئ يخرج بالطلاقة نفسها التي يخرج بها الصحيح.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>أخطر الاختلاقات المعقولة منها: دالة يبدو أنها تنتمي إلى مكتبة، وخيار إعدادات بأسلوب التسمية الصحيح، ومرجع لمصدر يبدو حقيقياً. وقبل أن تعتمد على أي اسم أو رقم أو اقتباس أو رابط من نموذج، تحقق منه حيث يُعرَّف: التوثيق، أو الكود، أو المصدر نفسه. وتحقق مرتين حين تسأل بالعربية: فقد رأيت للتو أن النموذج نفسه أصدق بالإنجليزية.</p></aside>
+
+<p>والنماذج المستضافة الأكبر تختلق أقل، وكثير منها يستطيع اليوم البحث في الويب أو قراءة ملفاتك، وهذا يساعد كثيراً. لكن لا شيء من ذلك يغيّر الآلية. وفي هذا الكتاب كله ستستخدم ثلاثة دفاعات، وقد أظهر هذا القسم اثنين منها: أعطِ النموذج الحقائق بدل أن تطلب منه تذكّرها (الفصل 14)، واسمح بـ «لا أعرف» واطلبها (الفصل 3)، وتحقق مما يهم (كل فصل).</p>
+
+<h2><span class="sec">1.7</span> <span>ماذا يعني هذا للمطور</span></h2>
+
+<table>
+<thead><tr><th>لأن النموذج…</th><th>…فعليك أن</th></tr></thead>
+<tbody>
+<tr><td>يكمل النص كما يكتمل النص عادة</td><td>تعطيه نصاً محدداً يكمله: كودك، وخطأك، وقيودك</td></tr>
+<tr><td>يرى رموزاً لا حروفاً</td><td>تطلب كوداً للعد والترتيب والحساب، وتشغّل ذلك الكود</td></tr>
+<tr><td>لا يعرف إلا ما في تدريبه وسياقه</td><td>تلصق التوثيق والكود الحاليين؛ ولا تثق بذاكرته عن الإصدارات</td></tr>
+<tr><td>بلا ذاكرة بين المحادثات</td><td>تضع كل ما يحتاجه في المحادثة، في كل مرة</td></tr>
+<tr><td>يسحب عشوائياً فوق درجة الحرارة 0</td><td>تستخدم 0 لأي شيء يقرؤه برنامج، وتسجل إعداداتك</td></tr>
+<tr><td>يبدو واثقاً بالقدر نفسه حين يخطئ</td><td>تتحقق من الأسماء والأرقام والادعاءات في مصدرها</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>معاملة النموذج كقاعدة بيانات</td><td>حقائق وإصدارات ومراجع مختلقة</td><td>أعطه الحقائق في الأمر، وتحقق مما يعيده</td></tr>
+<tr><td>تقدير الكلفة بالكلمات</td><td>النص العربي يكلّف ضعف ما خططت له</td><td>عُدّ الرموز بمُرمِّز النموذج نفسه</td></tr>
+<tr><td>طلب العد أو الحساب من النموذج</td><td>أجوبة قريبة لكنها خاطئة</td><td>اطلب كوداً، وشغّله</td></tr>
+<tr><td>حرارة عالية لمخرجات منظمة</td><td>مخرجات تكسر المحلل مرة في كل عشر</td><td>الحرارة 0، ومخطط (الفصل 13)</td></tr>
+<tr><td>افتراض أن النموذج يتذكر الأمس</td><td>تعليمات تختفي بصمت</td><td>أعد إرسال ما يهم؛ واحفظه في ملف تلصقه</td></tr>
+<tr><td>تجاهل رخصة النموذج</td><td>منتج مبني على نموذج لا يحق لك بيعه</td><td>اقرأ الرخصة قبل أن تختار نموذجاً</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>النموذج اللغوي يفعل شيئاً واحداً: بعد الرموز حتى الآن، يعطي احتمالاً لكل رمز ممكن بعدها. والتوليد يكرر ذلك، رمزاً رمزاً.</li>
+<li>الرموز قطع من كلمات من مفردات ثابتة. وهي وحدة السعر والسياق والسرعة، والنص نفسه قد يحتاج أعداداً مختلفة جداً منها في لغات مختلفة.</li>
+<li>درجة الحرارة تقرر كيف يُختار الرمز التالي: 0 للأرجح، وأعلى للتنوع. والبذرة تجعل الاختيارات العشوائية قابلة للتكرار.</li>
+<li>المعاملات تحمل ما تعلّمه النموذج، على هيئة أنماط. ومعرفته تتوقف عند تاريخ تدريبه، ولا يتذكر شيئاً بين المحادثات.</li>
+<li>النماذج تختلق أجوبة طليقة حين لا تكون التكملة الأرجح هي الصحيحة. أعطها الحقائق، واسمح لها بقول «لا أعرف»، وتحقق مما يهم.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن الكلمات العربية بعد «و» تُقطَّع إلى قطع، وقطع كثيرة ممكنة تبدأ كلمات كثيرة ممكنة، فيتوزع الاحتمال عليها؛ أما « tea» فكلمة كاملة في رمز واحد يأخذ الاحتمال كله. 2. نحو 1,180 رمزاً للإنجليزية (1.18 لكل كلمة) ونحو 2,630 للعربية (2.63 لكل كلمة)، مع هذا النموذج؛ والنماذج الأخرى تختلف. 3. النموذج لا يرى الحروف أبداً، بل رموزاً قد يحمل كل منها عدة حروف؛ أما المعنى فهو بالضبط ما تعلّمه من رؤية الكلمات في سياقها.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع الثلاثة تقيس الرموز، وتراقب التوليد خطوة خطوة، وتبني نموذجاً لغوياً صغيراً بلا شبكة عصبية على الإطلاق.</p>
+
+<div class="project">
+<p class="project-label">المشروع 1.1 · سهل</p>
+<h3>عدّاد الرموز</h3>
+<p class="project-goal">أمر يخبرك كم رمزاً في نص، ولكل كلمة، وكم سيكلّف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المُرمِّز، ومعاملات سطر الأوامر، وسعر الأمر.</p>
+<ol class="steps">
+<li>اجمع معاملات الأمر في نص واحد ورمّزه بالنموذج.</li>
+<li>اطبع الكلمات والرموز والنسبة، وسعراً بمعدل مثالي.</li>
+<li>شغّله على الجملة نفسها بالإنجليزية وبالعربية.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">count.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+
+<span class="c line-bidi">// سعر مثالي لكل مليون رمز مُدخل، للمقارنة؛ والأسعار الحقيقية تختلف بين</span>
+<span class="c line-bidi">// المزوّدين والنماذج.</span>
+<span class="k">const</span> dollarsPerMillion = <span class="n">3</span>;
+
+<span class="c line-bidi">// الرموز هي ما تدفع ثمنه وما يملأ السياق: عُدّها قبل أن ترسل.</span>
+<span class="k">const</span> text = process.argv.slice(<span class="n">2</span>).join(<span class="s">&quot; &quot;</span>);
+<span class="k">const</span> tokens = model.tokenize(text).length;
+<span class="k">const</span> words = text.trim().split(/\s+/).length;
+<span class="k">const</span> perWord = (tokens / words).toFixed(<span class="n">2</span>);
+<span class="k">const</span> price = ((tokens * dollarsPerMillion) / 1e6).toFixed(<span class="n">6</span>);
+console.log(<span class="s">`${words} words -&gt; ${tokens} tokens (${perWord} per word)`</span>);
+console.log(<span class="s">`at $${dollarsPerMillion} per million tokens: $${price}`</span>);</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node count.mjs &quot;The café opens at eight and sells coffee, tea and cake.&quot; &amp;&amp; node count.mjs &quot;يفتح المقهى في الثامنة ويبيع القهوة والشاي والكيك.&quot;</span>
+11 words -&gt; 13 tokens (1.18 per word)
+at $3 per million tokens: $0.000039
+8 words -&gt; 21 tokens (2.63 per word)
+at $3 per million tokens: $0.000063</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 1.2 · متوسط</p>
+<h3>راقب الحلقة</h3>
+<p class="project-goal">دع النموذج يكمل جملة ثمانية رموز، واطبع كل اختيار مع الاحتمال الذي كان له.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تقييم تسلسل رمزاً رمزاً، وقراءة ثقة النموذج.</p>
+<ol class="steps">
+<li>رمّز الأمر ومرّره إلى <code>evaluateWithMetadata</code> مع <code dir="ltr">confidence: true</code>.</li>
+<li>كل قيمة تعطيك إياها الحلقة هي الرمز المختار التالي؛ اطبعه واطبع احتماله.</li>
+<li>توقف بعد ثماني خطوات.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">generate.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">512</span>});
+<span class="k">const</span> sequence = context.getSequence();
+
+<span class="c line-bidi">// التوليد حلقة: تنبّأ، واختر، وأضف، وكرر. وهنا يُعرض كل اختيار مع</span>
+<span class="c line-bidi">// احتماله.</span>
+<span class="k">const</span> prompt = model.tokenize(<span class="s">&quot;المقهى يبيع القهوة و&quot;</span>);
+<span class="k">let</span> step = <span class="n">0</span>;
+<span class="k">const</span> options = {confidence: <span class="k">true</span>};
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> output <span class="k">of</span> sequence.evaluateWithMetadata(prompt, options)) {
+  <span class="k">const</span> piece = JSON.stringify(model.detokenize([output.token])).padEnd(<span class="n">14</span>);
+  <span class="k">const</span> percent = (output.confidence * <span class="n">100</span>).toFixed(<span class="n">1</span>);
+  console.log(<span class="s">`step ${++step}: ${piece} ${percent}%`</span>);
+  <span class="k">if</span> (step === <span class="n">8</span>) {
+    <span class="k">break</span>;
+  }
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node generate.mjs</span>
+step 1: &quot; ي&quot;           7.3%
+step 2: &quot;بيع&quot;          22.9%
+step 3: &quot; الأ&quot;         9.1%
+step 4: &quot;ط&quot;            23.7%
+step 5: &quot;ع&quot;            99.6%
+step 6: &quot;مة&quot;           99.9%
+step 7: &quot;\n\n&quot;         16.9%
+step 8: &quot;ال&quot;           19.2%</pre></div>
+<p class="hint"><strong>تلميح:</strong> انظر إلى الاحتمالات. الخطوات الخمس الأولى تكتب «يبيع الأطعمة» قطعة قطعة. « ي» اختيرت بـ 7.3%، وهو اختيار مفتوح تماماً؛ لكن «ع» ثم «مة» بعد «الأط» كانتا 99.6% و99.9%: فحين تبدأ الكلمة لا يبقى اختيار تقريباً. والنموذج أكثر عرضة للخطأ في الخطوات منخفضة الاحتمال، وهناك تغيّر درجة حرارة مختلفة الجواب.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 1.3 · تحدٍّ</p>
+<h3>نموذج لغوي في ثلاثين سطراً</h3>
+<p class="project-goal">عُدّ أي كلمة تتبع أي كلمة في نص صغير، ثم ولّد جملاً باختيار كل كلمة تالية من تلك الأعداد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> خرائط الأعداد، والاختيار العشوائي الموزون، ومولّد عشوائي ببذرة.</p>
+<ol class="steps">
+<li>قسّم النص إلى كلمات؛ ولكل كلمة، عُدّ الكلمات التي تتبعها.</li>
+<li>اطبع ما يتبع كلمة البداية بالنسب المئوية: هذا «جدول الرمز التالي» لنموذجك.</li>
+<li>ولّد ثلاث جمل، باختيار كل كلمة بنسبة عددها، حتى النقطة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">bigram.mjs (جزء)</div><pre class="code"><span class="k">const</span> next = <span class="k">new</span> Map();
+<span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; words.length - <span class="n">1</span>; i++) {
+  <span class="k">const</span> followers = next.get(words[i]) ?? <span class="k">new</span> Map();
+  followers.set(words[i + <span class="n">1</span>], (followers.get(words[i + <span class="n">1</span>]) ?? <span class="n">0</span>) + <span class="n">1</span>);
+  next.set(words[i], followers);
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node bigram.mjs</span>
+after &quot;المقهى&quot;: في 33%, القهوة 33%, الكيك 33%
+المقهى القهوة والشاي .
+المقهى القهوة والشاي .
+المقهى الكيك .</pre></div>
+<p class="hint"><strong>تلميح:</strong> «المقهى القهوة والشاي» ليست جملة: حذف نموذجك الفعل لأنه لا يرى إلا الكلمة السابقة، و«المقهى» في النص تأتي بعد «يبيع» لا قبلها. فنموذج الثلاثين سطراً يخطئ لأنه ينظر إلى كلمة واحدة. والنموذج الحقيقي ينظر إلى آلاف الرموز، ولهذا تكون أخطاؤه، كبحث القسم 1.6، أكثر إقناعاً بكثير.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> غيّر الأمر في <code>next.mjs</code> إلى «يبيع المقهى القهوة والشاي، ويفتح في الساعة». وقبل أن تشغّله، اكتب الرموز الثلاثة التي تتوقعها في الأعلى.</li>
+<li><span class="level">سهل</span> شغّل <code>count.mjs</code> على دالة من كودك. هل الكود أرخص أم أغلى لكل كلمة من النثر الإنجليزي، ولماذا؟</li>
+<li><span class="level medium">متوسط</span> في <code>temperature.mjs</code>، جرّب الدرجتين 0.3 و0.7 بالبذور الثلاث نفسها. عند أي درجة تبدأ الأسماء بالاختلاف؟</li>
+<li><span class="level medium">متوسط</span> اسأل النموذج، بدرجة الحرارة 0، عن المنفذ الافتراضي لأداة معروفة تستخدمها، وعن المنفذ الافتراضي لأداة مختلقة. قارن الجوابين. ما الذي يجعلك تعرف أيهما حقيقي دون أن تعرف مسبقاً؟</li>
+<li><span class="level hard">تحدٍّ</span> غيّر <code>bigram.mjs</code> لتستخدم الكلمتين السابقتين بدل كلمة واحدة. ماذا يحدث للجمل، وماذا يخبرك ذلك عن سبب نظر النماذج الحقيقية إلى سياق كبير؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+<p>أنت تعرف ما في داخل كل أداة ذكاء اصطناعي. والفصل التالي يستعرض الأدوات نفسها، من مساعدات المحادثة إلى إكمال الكود في المحرر إلى الوكلاء الذين يشغّلون الأوامر، ويبيّن ما تجيده كل واحدة، وكم تكلّف، وما تراه من كودك.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b7/tools/ar">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">الفصل 2</p><h1>صندوق أدوات الذكاء الاصطناعي للمطورين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تميّز الأشكال الثلاثة التي تأخذها كل أداة ذكاء اصطناعي: المحادثة، والإكمال في محررك، والوكيل</li>
+<li>ترى ما ترسله المحادثة فعلاً في كل مرة، ولماذا تنسى المحادثة الجديدة كل شيء</li>
+<li>تبني إكمالاً «يملأ الوسط»، كما يفعل مساعد المحرر</li>
+<li>تعطي النموذج أدوات، وتراقبه وهو يقرر متى يستخدمها</li>
+<li>تقيس السرعة والحجم: الوقت حتى أول رمز، والرموز في الثانية، وكم كوداً يتسع</li>
+<li>تختار الأداة المناسبة للمهمة، وتعرف ما ترسله كل واحدة خارج حاسوبك</li>
+</ul>
+</div>
+
+<p class="lead">هناك مئات من منتجات الذكاء الاصطناعي للمطورين، وجديد منها كل شهر. وأسماؤها تتغير أسرع من أي كتاب. أما ما لا يتغير فطريقة بنائها: كل واحد منها نموذج لغوي، كالذي في الفصل 1، ملفوف في واحد من ثلاثة أشكال. تعلّم الأشكال، وستحكم على أي أداة جديدة في عصر يوم واحد: فيمَ تُجيد، وكم تكلّف، وماذا ترى. وهذا الفصل يبني نسخة صغيرة من كل شكل بنموذج الكتاب، حتى لا يبقى فيها شيء سحري.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الوكيل في هذا الفصل فشل في أول تشغيل، فشلاً مفيداً، والنموذج أخطأ في عملية ضرب بلغة وأصاب بأخرى. والتشغيلان كلاهما في الفصل، بلا تعديل.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>ثلاثة أشكال</span></h2>
+
+<table>
+<thead><tr><th>الشكل</th><th>ما تعطيه</th><th>ما يعيده</th><th>أمثلة</th></tr></thead>
+<tbody>
+<tr><td>المحادثة</td><td>محادثة</td><td>الرسالة التالية</td><td>ChatGPT وClaude وGemini</td></tr>
+<tr><td>الإكمال</td><td>الكود حول المؤشر</td><td>الكود الذي مكانه هناك</td><td>الاقتراحات في محررك، كما في GitHub Copilot</td></tr>
+<tr><td>الوكيل</td><td>هدفاً وأدوات</td><td>أفعالاً، ثم جواباً</td><td>Claude Code، ووكلاء البرمجة في المحررات وسطر الأوامر</td></tr>
+</tbody>
+</table>
+
+<p>منتجات كثيرة تقدّم اثنين أو الثلاثة معاً: لوحة محادثة، وإكمالاً أثناء الكتابة، ووضع وكيل. وفي الأسفل، كل منها الحلقة نفسها من الفصل 1، تتنبأ برمز واحد في كل مرة. والذي يختلف هو ما يوضع في السياق، وما يُفعل بالجواب.</p>
+
+<h2><span class="sec">2.2</span> <span>المحادثة: المحادثة كلها، في كل مرة</span></h2>
+
+<p>جلسة المحادثة في <code>node-llama-cpp</code> تحفظ المحادثة لك. وهذا البرنامج يسأل سؤالين في جلسة واحدة، ويطبع كم رمزاً في السياق بعد كل جواب، ثم يسأل السؤال الثاني من جديد في جلسة جديدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">chat.mjs</div><pre class="code"><span class="k">import</span> {LlamaChatSession} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">2048</span>});
+<span class="k">const</span> options = {temperature: <span class="n">0</span>, maxTokens: <span class="n">120</span>};
+<span class="k">const</span> systemPrompt = <span class="s">&quot;أنت مساعد موجز لمطوري JavaScript. أجب في سطرين على الأكثر.&quot;</span>;
+
+<span class="c line-bidi">// النموذج لا يتذكر شيئاً: في كل دور تُرسل المحادثة كلها من جديد.</span>
+<span class="k">const</span> sequence = context.getSequence();
+<span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({contextSequence: sequence, systemPrompt});
+<span class="k">for</span> (<span class="k">const</span> question <span class="k">of</span> [<span class="s">&quot;كيف أقرأ ملف JSON في Node؟&quot;</span>, <span class="s">&quot;وكيف أكتب واحداً؟&quot;</span>]) {
+  <span class="k">const</span> answer = <span class="k">await</span> session.prompt(question, options);
+  <span class="c line-bidi">// كم رمزاً تأخذ المحادثة الآن في السياق.</span>
+  console.log(<span class="s">`&gt; ${question}\n${answer}\n[${sequence.nextTokenIndex} tokens]\n`</span>);
+}
+
+sequence.dispose();
+console.log(<span class="s">&quot;محادثة جديدة، سُئلت السؤال الثاني وحده:&quot;</span>);
+<span class="k">const</span> fresh = <span class="k">new</span> LlamaChatSession({
+  contextSequence: context.getSequence(),
+  systemPrompt,
+});
+console.log(<span class="s">`&gt; وكيف أكتب واحداً؟\n${await fresh.prompt(&quot;وكيف أكتب واحداً؟&quot;, options)}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node chat.mjs</span>
+<span class="c">&gt; </span><span class="k">كيف أقرأ ملف JSON في Node؟</span>
+استخدم `fs.readFileSync()` لقراءة الملف، ثم استخدم `JSON.parse()` لتحليله.  
+مثلاً: `const data = JSON.parse(fs.readFileSync(&#x27;file.json&#x27;, &#x27;utf8&#x27;));`
+[88 tokens]
+
+<span class="c">&gt; </span><span class="k">وكيف أكتب واحداً؟</span>
+استخدم `fs.writeFileSync()` لكتابة البيانات، ثم أرسلها كمصفوفة أو خاصية JSON.  
+مثلاً: `fs.writeFileSync(&#x27;file.json&#x27;, JSON.stringify(data));`
+[149 tokens]
+
+محادثة جديدة، سُئلت السؤال الثاني وحده:
+<span class="c">&gt; </span><span class="k">وكيف أكتب واحداً؟</span>
+أكتب `const x = 5;` لتعريف متغير بقيمة.</pre></div>
+
+<p>«وكيف أكتب واحداً؟» لا معنى لها إلا بعد السؤال الأول، وفي الجلسة الأولى فهمها النموذج: كتابة ملف JSON. فقد كبر السياق من 88 إلى 149 رمزاً، لأن أمر النظام والسؤال الأول والجواب الأول والسؤال الثاني كلها فيه. وفي الجلسة الجديدة لم تعنِ الكلمات الثلاث نفسها شيئاً محدداً، فأجاب النموذج بثقة عن سؤال آخر: كيف تكتب متغيراً.</p>
+
+<p>كل منتجات المحادثة تعمل هكذا. النموذج لا يتذكر شيئاً؛ والتطبيق يرسل المحادثة من جديد مع كل رسالة. وتتبع ذلك ثلاث قواعد عملية:</p>
+<ul>
+<li>المحادثة الطويلة تبطؤ، ومع النماذج المستضافة تغلو، مع كل رسالة، لأن كل رسالة تعيد إرسال كل ما قبلها.</li>
+<li>حين تتجاوز المحادثة نافذة السياق، يضطر التطبيق إلى حذف أقدم الرسائل أو تلخيصها، فينسى النموذج ما قلته في البداية.</li>
+<li>حين يبدأ المساعد بخلط مهمة قديمة بجديدة، ابدأ محادثة جديدة. ليس هذا قلة ذوق؛ إنه سياق نظيف.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p><em>أمر النظام</em> هو التعليمات الموضوعة قبل المحادثة: هنا «مساعد موجز لمطوري JavaScript، في سطرين على الأكثر». ومنتجات المحادثة تتيح لك ضبطه، وكثيراً ما يسمى «تعليمات مخصصة» أو «أمر المشروع». ضع فيه ما يصدق على كل سؤال: لغتك، وإطار عملك وإصداراته، وطول الأجوبة. فلا تكرره في كل رسالة.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>الإكمال: الكود حول مؤشرك</span></h2>
+
+<p>مساعد المحرر لا يحاور. فأثناء كتابتك، يرسل الكود الذي قبل المؤشر والكود الذي بعده، ويطلب من النموذج القطعة التي بينهما. وهذا يسمى <em>ملء الوسط</em>، وبعض النماذج، ومنها نموذج الكتاب، دُرّبت عليه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">complete.mjs</div><pre class="code"><span class="k">import</span> {LlamaCompletion} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">1024</span>});
+<span class="k">const</span> completion = <span class="k">new</span> LlamaCompletion({
+  contextSequence: context.getSequence(),
+});
+
+<span class="c line-bidi">// المحرر يرسل الكود قبل المؤشر وبعده، ويطلب ما بينهما.</span>
+<span class="k">const</span> before = <span class="s">`// Total price of an order, with tax.
+export function total(items, taxRate) {
+`</span>;
+<span class="k">const</span> after = <span class="s">`
+}
+
+export const TAX_RATE = 0.14;
+`</span>;
+
+<span class="c line-bidi">// بلا قيد، يستمر النموذج في الكتابة بعد الدالة؛ والمحرر يتوقف عند نهاية</span>
+<span class="c line-bidi">// الكتلة.</span>
+<span class="k">for</span> (<span class="k">const</span> stop <span class="k">of</span> [[], [<span class="s">&quot;\n}&quot;</span>]]) {
+  <span class="k">const</span> middle = <span class="k">await</span> completion.generateInfillCompletion(before, after, {
+    temperature: <span class="n">0</span>,
+    maxTokens: <span class="n">60</span>,
+    customStopTriggers: stop,
+  });
+  console.log(stop.length ? <span class="s">&quot;--- stopped at the block&#x27;s end:&quot;</span> : <span class="s">&quot;--- raw:&quot;</span>);
+  console.log(middle.replace(/^\n/, <span class="s">&quot;&quot;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node complete.mjs</span>
+--- raw:
+  let total = 0;
+  for (const item of items) {
+    total += item.price * item.quantity;
+  }
+  return total * (1 + taxRate);
+}
+
+--- stopped at the block&#x27;s end:
+  let total = 0;
+  for (const item of items) {
+    total += item.price * item.quantity;
+  }
+  return total * (1 + taxRate);</pre></div>
+
+<p>الوسط كود معقول، لكن انظر إلى آخر الجواب الخام: قوس إغلاق. والكود بعد المؤشر فيه قوس أصلاً، فقبول النص الخام يترك قوسين ويكسر الملف. والتشغيل الثاني يتوقف حين يكتب النموذج سطراً جديداً يبدأ بقوس، وهذا ما يفعله المحرر بطريقته: يقص، ويفحص الأقواس، ولا يعرض إلا ما يناسب.</p>
+
+<p>ولاحظ أيضاً ما افترضه النموذج. التعليق يقول «مجموع سعر الطلب» لا أكثر، فاخترع شكل العنصر: <code>item.price</code> و<code>item.quantity</code>. فإن كان في عناصرك <code>count</code>، فالاقتراح خاطئ، وهو يبدو تماماً كالكود الصحيح. فالإكمال لا يعرف إلا ما قرب المؤشر، وما اختار المحرر إرساله من ملفات أخرى. افتح الملفات التي يجب أن يعرفها، وسمِّ الأشياء بوضوح: كلما وضح الكود حول المؤشر، تحسّن الاقتراح.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>الإكمالات تصل على بُعد ضغطة Tab، مرات كثيرة في الساعة. وهذا ما يجعلها مفيدة، وما يجعل قبولها دون قراءة سهلاً. اقرأ كل واحد كما تقرأ كود زميل في المراجعة: الأسماء، والحالات الطرفية، والوحدات. اسم حقل خاطئ قُبل في الرابعة عصراً بلاغ عن خطأ في التاسعة صباحاً.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا أجابت الجلسة الجديدة عن سؤال آخر؟</li><li>لماذا قد تغلو المحادثة مع نموذج مستضاف مع كل رسالة؟</li><li>ما قطعتا النص اللتان يرسلهما المحرر للإكمال؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>الوكلاء: نموذج يستخدم الأدوات</span></h2>
+
+<p>الوكيل نموذج يستطيع أن يطلب من برنامجك أن يفعل أشياء. تصف بعض الدوال؛ فقد يجيب النموذج باستدعاء بدل النص؛ فيشغّل برنامجك الاستدعاء ويعيد إليه النتيجة؛ فيكمل النموذج، حتى يجيب. وهنا يستطيع الوكيل أن يسرد ملفات مشروع صغير ويقرأها، وكل استدعاء يُطبع:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">agent.mjs (جزء)</div><pre class="code"><span class="k">const</span> functions = {
+  listFiles: defineChatSessionFunction({
+    description: <span class="s">&quot;List the files of the project&quot;</span>,
+    handler() {
+      <span class="k">return</span> show(<span class="s">&quot;listFiles&quot;</span>, {}, fs.readdirSync(<span class="s">&quot;cafe&quot;</span>, {recursive: <span class="k">true</span>}));
+    },
+  }),
+  readFile: defineChatSessionFunction({
+    description: <span class="s">&quot;Read one file of the project&quot;</span>,
+    params: {<span class="k">type</span>: <span class="s">&quot;object&quot;</span>, properties: {path: {<span class="k">type</span>: <span class="s">&quot;string&quot;</span>}}},
+    handler({path}) {
+      <span class="k">return</span> show(<span class="s">&quot;readFile&quot;</span>, {path}, fs.readFileSync(<span class="s">`cafe/${path}`</span>, <span class="s">&quot;utf8&quot;</span>));
+    },
+  }),
+};
+
+<span class="c line-bidi">// اعرض كل استدعاء، لنرى ما فعله الوكيل، لا ما قاله فقط.</span>
+<span class="k">function</span> show(name, params, result) {
+  console.log(<span class="s">`[tool] ${name}(${JSON.stringify(params)})`</span>);
+  <span class="k">return</span> result;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">agent.mjs (جزء)</div><pre class="code"><span class="k">const</span> tries = [
+  [<span class="k">undefined</span>, <span class="s">&quot;كم سعر اللاتيه الكبير، وأي ملف يحدد هذا السعر؟&quot;</span>],
+  [<span class="s">&quot;أنت تعمل داخل مشروع برمجي. استخدم الأدوات لتنظر في ملفاته قبل أن تجيب.&quot;</span>, <span class="s">&quot;في هذا المشروع، كم سعر اللاتيه الكبير، وأي ملف يحدد هذا السعر؟&quot;</span>],
+];
+<span class="k">for</span> (<span class="k">const</span> [systemPrompt, question] <span class="k">of</span> tries) {
+  <span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+    contextSequence: context.getSequence(),
+    autoDisposeSequence: <span class="k">true</span>,
+    systemPrompt,
+  });
+  console.log(<span class="s">`--- system prompt: ${systemPrompt ?? &quot;(default)&quot;}`</span>);
+  console.log(<span class="s">`&gt; ${question}`</span>);
+  console.log(<span class="k">await</span> session.prompt(question, {functions, temperature: <span class="n">0</span>}));
+  session.dispose();
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node agent.mjs</span>
+--- system prompt: (default)
+<span class="c">&gt; </span><span class="k">كم سعر اللاتيه الكبير، وأي ملف يحدد هذا السعر؟</span>
+لا يمكنني تحديد سعر &quot;اللاتيه الكبير&quot; أو أي ملف يحدد هذا السعر لأن السؤال لا يحتوي على معلومات كافية أو مرتبط بمشروع أو ملفات محددة. إذا كنت تشير إلى سعر في سياق معين (مثلاً في مشروع تجاري أو معلومات محددة)، يرجى تزويدي بتفاصيل إضافية لمساعدتك بشكل دقيق.
+--- system prompt: أنت تعمل داخل مشروع برمجي. استخدم الأدوات لتنظر في ملفاته قبل أن تجيب.
+<span class="c">&gt; </span><span class="k">في هذا المشروع، كم سعر اللاتيه الكبير، وأي ملف يحدد هذا السعر؟</span>
+[tool] listFiles({})
+[tool] readFile({&quot;path&quot;:&quot;menu.json&quot;})
+[tool] readFile({&quot;path&quot;:&quot;src/prices.mjs&quot;})
+سعر اللاتيه الكبير هو 4.5 دولارًا، ويُحدد هذا السعر في ملف `src/prices.mjs`.</pre></div>
+
+<p>المحاولة الأولى هي الفشل المفيد. الأدوات كانت هناك، ولم يستخدمها النموذج: لا شيء في السؤال يقول إنه عن مشروع، فكان الجواب الأرجح «لا أملك بيانات». والمحاولة الثانية غيّرت شيئين، أمر نظام يقول ما الغرض من الأدوات، وسؤالاً يقول «في هذا المشروع»، فبدأ النموذج العمل: سرد الملفات، وقرأ <code>menu.json</code> لأنه بدا واعداً، فلم يجد فيه أسعاراً، فقرأ <code>src/prices.mjs</code>، وأجاب صحيحاً، وسمّى الملف.</p>
+
+<p>هذه فكرة كل وكيل برمجة، من الصغير هنا إلى المنتجات التي تعدّل مستودعات كاملة. النموذج يخطط؛ وبرنامجك ينفّذ؛ والنتائج تعود إلى السياق. وثلاث نتائج أهم من أي قائمة مزايا:</p>
+<ul>
+<li><strong>الوكيل لا يكون أفضل من تعليماته وأدواته.</strong> النموذج نفسه فشل ونجح بالأدوات نفسها؛ ولم يتغير إلا الكلام. والفصل 3 عن هذا الكلام.</li>
+<li><strong>الأدوات صلاحيات.</strong> هذا الوكيل لا يستطيع إلا القراءة، داخل مجلد واحد. والوكيل الذي يستطيع كتابة الملفات أو تشغيل الأوامر أو استدعاء الخدمات قد يُحدث ضرراً حين يخطئ. أعطه أقل ما يحتاج، وراجع ما فعل. والفصل 12 يذهب أبعد.</li>
+<li><strong>أظهر الاستدعاءات.</strong> أسطر <code>[tool]</code> هي ما يخبرك أن الجواب جاء من الملف، لا من خيال النموذج. والمنتجات الجيدة للوكلاء تعرض كل خطوة للسبب نفسه.</li>
+</ul>
+
+<h2><span class="sec">2.5</span> <span>السرعة</span></h2>
+
+<p>رقمان يصفان كم يبدو النموذج سريعاً: الوقت حتى يظهر أول رمز، وكم رمزاً يتبعه في الثانية.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">speed.mjs (جزء)</div><pre class="code"><span class="k">const</span> start = performance.now();
+<span class="k">let</span> first = <span class="n">0</span>;
+<span class="k">let</span> tokens = <span class="n">0</span>;
+<span class="k">await</span> completion.generateCompletion(<span class="s">&quot;A short story about a café robot:&quot;</span>, {
+  temperature: <span class="n">0</span>,
+  maxTokens: <span class="n">64</span>,
+  onToken(chunk) {
+    first ||= performance.now();
+    tokens += chunk.length;
+  },
+});
+<span class="k">const</span> seconds = (performance.now() - first) / <span class="n">1000</span>;
+console.log(<span class="s">`first token after ${Math.round(first - start)} ms`</span>);
+console.log(<span class="s">`${tokens} tokens at ${(tokens / seconds).toFixed(1)} tokens/s`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node speed.mjs</span>
+first token after 240 ms
+64 tokens at 8.3 tokens/s</pre></div>
+
+<p>على حاسوب الكتاب، معالج بأربع أنوية بلا بطاقة رسوميات، يأتي أول رمز في نحو ربع ثانية، ثم تتبعه ثمانية رموز في الثانية: جواب من سطرين في ثوانٍ، وصفحة كاملة في دقيقتين تقريباً. وهذا يكفي للتعلم ولتشغيل المهام الصغيرة، ولهذا تطلب أمثلة الكتاب أجوبة قصيرة. والنماذج المستضافة تعمل على صفوف من المسرّعات، وهي عادة أسرع بأضعاف، وبطاقة الرسوميات تسرّع النموذج المحلي كثيراً. وفي إكمال المحرر السرعة كل شيء: الاقتراح الذي يصل بعد أن كتبت السطر بلا فائدة، ولهذا تستخدم أدوات المحرر نماذج صغيرة سريعة وسياقاً قليلاً.</p>
+
+<h2><span class="sec">2.6</span> <span>ما تستطيع الأداة رؤيته</span></h2>
+
+<p>المساعد لا يستطيع أن يستخدم إلا ما في سياقه. فكم هذا، مقابل قاعدة كود حقيقية؟ وهذا البرنامج يعدّ الرموز في مكتبة واحدة، <code>node-llama-cpp</code> نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">context.mjs (جزء)</div><pre class="code"><span class="c line-bidi">// كم نصاً في مكتبة حقيقية، مقابل حجم نافذة السياق.</span>
+<span class="k">const</span> folder = <span class="s">&quot;node_modules/node-llama-cpp/dist&quot;</span>;
+<span class="k">let</span> files = <span class="n">0</span>;
+<span class="k">let</span> tokens = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> name <span class="k">of</span> fs.readdirSync(folder, {recursive: <span class="k">true</span>})) {
+  <span class="k">if</span> (name.endsWith(<span class="s">&quot;.js&quot;</span>)) {
+    <span class="k">const</span> text = fs.readFileSync(path.join(folder, name), <span class="s">&quot;utf8&quot;</span>);
+    files++;
+    tokens += model.tokenize(text).length;
+  }
+}
+console.log(<span class="s">`node-llama-cpp: ${files} JavaScript files, ${tokens} tokens`</span>);
+<span class="k">for</span> (<span class="k">const</span> window <span class="k">of</span> [8_192, 128_000, 1_000_000]) {
+  <span class="k">const</span> share = Math.min(<span class="n">100</span>, (<span class="n">100</span> * window) / tokens).toFixed(<span class="n">0</span>);
+  console.log(<span class="s">`a ${window}-token window holds ${share}% of it`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node context.mjs</span>
+node-llama-cpp: 290 JavaScript files, 410493 tokens
+a 8192-token window holds 2% of it
+a 128000-token window holds 31% of it
+a 1000000-token window holds 100% of it</pre></div>
+
+<p>مكتبة واحدة متوسطة الحجم نحو 410,000 رمز. نافذة من 8,000 رمز تتسع لـ 2% منها؛ وحتى نافذة من 128,000، وهي شائعة في النماذج المستضافة، تتسع لأقل من الثلث. وتطبيقك، مع اعتمادياته، أكبر بكثير. فكل أداة تعمل بالكود يجب أن <em>تختار</em> ما ترسله: الملفات المفتوحة، والملفات ذات الأسماء المشابهة، ونتائج بحث، والملفات التي قرر الوكيل قراءتها. وحين يخطئ مساعد في كودك، فالسؤال الأول ليس «هل النموذج ذكي بما يكفي؟» بل «هل رأى الملفات الصحيحة؟»</p>
+
+<p>وكل ما ترسله أداة مستضافة يغادر حاسوبك. وقبل أن تستخدم واحدة في العمل، اعرف ثلاثة أشياء: ما الذي ترسله (الملف الحالي، أم الملفات المفتوحة، أم المستودع كله)، وإلى أين يذهب وهل يُحفظ، وهل تسمح به شركتك. والفصل 15 يفصّل ذلك؛ والقاعدة المختصرة أن السر في ملف سرٌّ مُرسَل إلى الأداة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>أبقِ الأسرار خارج الملفات التي يستطيع المساعد رؤيتها: في متغيرات البيئة أو مدير أسرار، لا في الكود أبداً، ولا في ملف تلصقه في محادثة. ومعظم الأدوات تتيح أيضاً استثناء ملفات أو مجلدات؛ فاستثنِ كل ما فيه مفاتيح أو بيانات عملاء أو إعدادات بيئة الإنتاج.</p></aside>
+
+<h2><span class="sec">2.7</span> <span>اختيار الأداة</span></h2>
+
+<table>
+<thead><tr><th>المهمة</th><th>الشكل الأنسب</th><th>لماذا</th></tr></thead>
+<tbody>
+<tr><td>كتابة الأسطر القليلة التالية</td><td>الإكمال</td><td>يرى الكود حول المؤشر ويجيب فوراً</td></tr>
+<tr><td>فهم خطأ أو فكرة</td><td>المحادثة</td><td>تسأل، وتقرأ، وتسأل من جديد</td></tr>
+<tr><td>تغيير عبر عدة ملفات</td><td>الوكيل</td><td>يجد الملفات ويقرؤها بنفسه، ويُجري التعديلات</td></tr>
+<tr><td>سؤال عن مشروعك أنت</td><td>الوكيل، أو المحادثة مع لصق الملفات</td><td>الجواب في ملفاتك، لا في تدريب النموذج</td></tr>
+<tr><td>حساب دقيق، أو عدّ، أو ترتيب</td><td>أداة يستدعيها النموذج، أو كود تشغّله</td><td>النماذج تتنبأ بالنص؛ والبرامج تحسب (المشروع 2.3)</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>محادثة واحدة لا تنتهي لكل مهمة</td><td>أجوبة بطيئة مكلفة تختلط بمهام قديمة</td><td>محادثة جديدة لكل مهمة جديدة</td></tr>
+<tr><td>سؤال متابعة في محادثة جديدة</td><td>جواب عن سؤال آخر</td><td>اكتب السؤال كاملاً، أو أكمل المحادثة القديمة</td></tr>
+<tr><td>قبول الإكمالات دون قراءة</td><td>أسماء حقول ووحدات خاطئة تبدو صحيحة</td><td>اقرأ كل اقتراح كالكود في المراجعة</td></tr>
+<tr><td>أدوات بلا تعليمات</td><td>وكيل لا يستخدمها أبداً</td><td>قل ما الغرض من الأدوات، وعمّ السؤال</td></tr>
+<tr><td>إعطاء الوكيل كل الصلاحيات</td><td>ضرر حين يخطئ النموذج</td><td>أقل الأدوات التي يحتاجها؛ وراجع أفعاله</td></tr>
+<tr><td>افتراض أن الأداة ترى مشروعك</td><td>أجوبة عن كود لم تقرأه</td><td>افتح الملفات المعنية أو الصقها؛ واسأل ماذا قرأت</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>كل أداة ذكاء اصطناعي نموذج في واحد من ثلاثة أشكال: محادثة، أو إكمال، أو وكيل بأدوات.</li>
+<li>المحادثة تعيد إرسال المحادثة كلها في كل مرة؛ والنموذج لا يتذكر شيئاً، فالمحادثة الجديدة تبدأ من الصفر.</li>
+<li>إكمال المحرر يملأ الوسط بين الكود قبل المؤشر وبعده، ويجب أن يُقص ويُقرأ.</li>
+<li>الوكيل يستدعي دوالاً يشغّلها برنامجك، ونتائجها تعود إلى السياق. وتعليماته تقرر هل يستخدم أدواته؛ وأدواته تقرر ماذا يستطيع أن يكسر.</li>
+<li>السرعة هي الوقت حتى أول رمز والرموز في الثانية. والسياق محدود، فكل أداة تختار ما ترسله، وما ترسله إلى نموذج مستضاف يغادر حاسوبك.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. سياق الجلسة الجديدة لم يحمل إلا أمر النظام و«وكيف أكتب واحداً؟»؛ وبلا السؤال السابق عن JSON، قد تعني «واحداً» أي شيء، فاختار النموذج معنى محتملاً. 2. كل رسالة تعيد إرسال كل ما قبلها، والنماذج المستضافة تحاسب على كل رمز يُرسَل. 3. الكود قبل المؤشر والكود بعده.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تبني قطعة صغيرة من كل شكل: محادثة في الطرفية، واختيار السياق الذي يقوم به المساعد، وأداة تجعل النموذج دقيقاً.</p>
+
+<div class="project">
+<p class="project-label">المشروع 2.1 · سهل</p>
+<h3>محادثة في الطرفية</h3>
+<p class="project-goal">برنامج يقرأ الأسئلة سطراً سطراً، ويجيب عنها في محادثة واحدة، ويبدأ من جديد عند <code>/reset</code>.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> جلسات المحادثة، وسجل المحادثة، وقراءة المدخل القياسي.</p>
+<ol class="steps">
+<li>أنشئ جلسة واحدة واحفظ سجلها قبل السؤال الأول.</li>
+<li>لكل سطر، اطبعه ثم الجواب؛ وعند <code>/reset</code> أعد السجل المحفوظ.</li>
+<li>اسأل سؤالاً، ثم متابعة، ثم أعد البدء، ثم المتابعة نفسها.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">repl.mjs (جزء)</div><pre class="code"><span class="k">const</span> lines = readline.createInterface({input: process.stdin});
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> line <span class="k">of</span> lines) {
+  console.log(<span class="s">`&gt; ${line}`</span>);
+  <span class="k">if</span> (line === <span class="s">&quot;/reset&quot;</span>) {
+    session.setChatHistory(initial);
+    console.log(<span class="s">&quot;(بدأت المحادثة من جديد)\n&quot;</span>);
+    continue;
+  }
+  <span class="k">const</span> answer = <span class="k">await</span> session.prompt(line, {temperature: <span class="n">0</span>, maxTokens: <span class="n">160</span>});
+  console.log(<span class="s">`${answer}\n`</span>);
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">printf &#x27;كيف أقرأ ملفاً سطراً سطراً في Node؟\nوبالترتيب المعكوس؟\n/reset\nوبالترتيب المعكوس؟\n&#x27; | node repl.mjs</span>
+<span class="c">&gt; </span><span class="k">كيف أقرأ ملفاً سطراً سطراً في Node؟</span>
+استخدم `fs.createReadStream()` واقرأه بحلقة `for await` أو `on(&#x27;data&#x27;)`.
+
+<span class="c">&gt; </span><span class="k">وبالترتيب المعكوس؟</span>
+استخدم `fs.createReadStream()` ثم احفظ كل سطر في مصفوفة، ثم أعد ترتيبها بـ `.reverse()` قبل طباعتها.
+
+<span class="c">&gt; </span><span class="k">/reset</span>
+(بدأت المحادثة من جديد)
+
+<span class="c">&gt; </span><span class="k">وبالترتيب المعكوس؟</span>
+أرجو توضيح ما المقصود بـ &quot;الترتيب المعكوس&quot; في سياقك. هل تقصد ترتيبًا لعناصر مصفوفة أو سلسلة نصية؟</pre></div>
+<p class="hint"><strong>تلميح:</strong> الجواب الأول ناقص قليلاً: <code>on('data')</code> يعطي قطعاً من الملف لا أسطراً، والطريقة الصحيحة <code>readline</code>، كما يفعل هذا البرنامج مع المدخل القياسي. والجواب الثاني جيد لأن المحادثة كانت موجودة. وبعد <code>/reset</code> فعلت الكلمات نفسها الصواب هذه المرة: سأل النموذج عن المقصود بدل أن يخمّن. وفي النسخة الإنجليزية أجاب عن عكس المصفوفات.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 2.2 · متوسط</p>
+<h3>ميزانية السياق</h3>
+<p class="project-goal">بمعلومية مجلد وعدد من الرموز، قرّر أي الملفات تتسع، وقل أيها بقي خارجاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على مجلد، وعدّ رموز كل ملف، وسياسة اختيار بسيطة.</p>
+<ol class="steps">
+<li>اسرد كل ملف في المجلد وعُدّ رموزه بمُرمِّز النموذج.</li>
+<li>رتّب بالحجم وخذ الملفات ما دامت تتسع للميزانية.</li>
+<li>اطبع كل ملف داخلاً أو خارجاً، والمجموع المستخدم.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">budget.mjs (جزء)</div><pre class="code"><span class="k">const</span> count = (file) =&gt; model.tokenize(fs.readFileSync(file, <span class="s">&quot;utf8&quot;</span>)).length;
+
+<span class="c line-bidi">// اختر الملفات التي تتسع لميزانية من الرموز: الأصغر أولاً، وقل ما بقي</span>
+<span class="c line-bidi">// خارجها.</span>
+<span class="k">const</span> files = fs
+  .readdirSync(folder, {recursive: <span class="k">true</span>})
+  .map((name) =&gt; path.join(folder, name))
+  .filter((file) =&gt; fs.statSync(file).isFile())
+  .map((file) =&gt; ({file, tokens: count(file)}))
+  .sort((a, b) =&gt; a.tokens - b.tokens);
+
+<span class="k">let</span> used = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> {file, tokens} <span class="k">of</span> files) {
+  <span class="k">const</span> fits = used + tokens &lt;= budget;
+  used += fits ? tokens : <span class="n">0</span>;
+  console.log(<span class="s">`${fits ? &quot;in &quot; : &quot;out&quot;} ${String(tokens).padStart(6)}  ${file}`</span>);
+}
+console.log(<span class="s">`${used} of ${budget} tokens used`</span>);</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node budget.mjs cafe 120 &amp;&amp; node budget.mjs cafe 60</span>
+in      21  cafe/README.md
+in      28  cafe/menu.json
+in      63  cafe/src/prices.mjs
+112 of 120 tokens used
+in      21  cafe/README.md
+in      28  cafe/menu.json
+out     63  cafe/src/prices.mjs
+49 of 60 tokens used</pre></div>
+<p class="hint"><strong>تلميح:</strong> بـ 60 رمزاً، أبقت السياسة الـ README والقائمة، وأخرجت <code>prices.mjs</code>، الملف الوحيد الذي يجيب عن أسئلة الأسعار. فالأصغر أولاً بسيط، لا ذكي. والأدوات الحقيقية ترتّب الملفات بصلتها بالسؤال، وهذا موضوع الفصل 14.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 2.3 · تحدٍّ</p>
+<h3>نموذج لا يخطئ في الحساب</h3>
+<p class="project-goal">أعطِ النموذج أداة آلة حاسبة، وقارن جوابه عن مسألة بها وبدونها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تعريف دالة للنموذج، والتحقق مما يمرّره النموذج، والمقارنة بنتيجة دقيقة.</p>
+<ol class="steps">
+<li>عرّف <code>calculate</code>، التي لا تقبل إلا الأرقام والمسافات و<code dir="ltr">+ - * / ( ) .</code>، وتعيد النتيجة.</li>
+<li>اطرح السؤال نفسه في جلسة بلا دوال وفي أخرى معها الآلة الحاسبة.</li>
+<li>اطبع الجواب الدقيق، محسوباً بـ JavaScript، للمقارنة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">calc.mjs (جزء)</div><pre class="code"><span class="k">const</span> calculate = defineChatSessionFunction({
+  description: <span class="s">&quot;Evaluate an arithmetic expression, such as (2 + 3) * 4&quot;</span>,
+  params: {<span class="k">type</span>: <span class="s">&quot;object&quot;</span>, properties: {expression: {<span class="k">type</span>: <span class="s">&quot;string&quot;</span>}}},
+  handler({expression}) {
+    <span class="k">if</span> (!/^[\d\s.+\-*/()]+$/.test(expression)) {
+      <span class="k">return</span> <span class="s">&quot;error: only numbers and + - * / ( )&quot;</span>;
+    }
+    <span class="k">const</span> result = Function(<span class="s">`return (${expression});`</span>)();
+    console.log(<span class="s">`[tool] calculate(${expression}) = ${result}`</span>);
+    <span class="k">return</span> result;
+  },
+});</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node calc.mjs</span>
+--- alone:
+لحساب المجموع الكلي لشراء 48213 كوبًا بسعر 7.35 للكوب، مع ضريبة 14%، نتبع الخطوات التالية:
+
+---
+
+<span class="c line-bidi">### 1. حساب السعر قبل الضريبة:</span>
+\[
+\text{السعر قبل الضريبة} = 48213 \times 7.35
+\]
+
+نحسب:
+
+\[
+48213 \times 7.35 = 48213 \times (7 + 0.35) = 48213 \times 7 + 48213 \times 0.35
+\]
+
+- \(48213 \times 7 = 337491\)
+- \(48213 \times 0.35 = 168745.5\)
+
+إذًا:
+
+\[
+337491 + 168745.5 = 506236.5
+\]
+
+إذًا السعر قبل الضريبة هو **506,236.50** (بالريالات أو المبلغ المطلوب).
+
+---
+
+<span class="c line-bidi">### 2. إضافة الضريبة (14%):</span>
+
+\[
+\text{الضريبة} = 506236.5 \times 0.14 = 70873.11
+\]
+
+---
+
+<span class="c line-bidi">### 3. المجموع الكلي:</span>
+
+\[
+\text{المجموع} = 506236.5 + 70873.11 = 577109.61
+\]
+
+---
+
+<span class="c line-bidi">### ✅ الإجابة النهائية:</span>
+\[
+\boxed{577109.61}
+\]
+
+إذًا، المجموع الكلي هو **577,109.61** (مثلاً بالريالات أو المبلغ المطلوب).
+--- with a calculator:
+[tool] calculate((48213 * 7.35) * (1 + 0.14)) = 403976.727
+المجموع الكلي لشراء 48,213 كوبًا بسعر 7.35 للكوب، مع ضريبة 14%، هو **403,976.73**.
+--- exact: 403976.73</pre></div>
+<p class="hint"><strong>تلميح:</strong> وحده، حسب النموذج خطوة خطوة، وأخطأ في خطوة واحدة: 48213 × 0.35 = 168,745.5، أي عشرة أضعاف الصواب (16,874.55)، ثم بنى على الخطأ بالثقة نفسها حتى 577,109.61. وفي النسخة الإنجليزية، سُئل النموذج نفسه السؤال نفسه بالإنجليزية، فحسب صفحة كاملة ووصل إلى الصواب. ومع الآلة الحاسبة، أخذت اللغتان استدعاءً واحداً وأعطتا 403,976.73. فالحساب الطويل الذي يبدو متأنياً ليس دليلاً. وفحص التعبير مهم بقدر الأداة نفسها: هو ما يمنع النموذج، أو من يتحكم في مدخلاته، من تشغيل أي JavaScript يشاء.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في <code>chat.mjs</code>، كبر السياق من 88 إلى 149 رمزاً. قدّر كم رمزاً سيحمل بعد عشرة أسئلة كهذه، وماذا يحدث حين يبلغ الـ 2,048 التي في <code>contextSize</code>.</li>
+<li><span class="level">سهل</span> شغّل <code>budget.mjs</code> على مشروع لك بميزانية 8,192. أي الملفات بقيت خارجاً، وهل كنت ستختار غيرها؟</li>
+<li><span class="level medium">متوسط</span> أضف أداة ثالثة للوكيل، <code dir="ltr">searchFiles(text)</code>، تعيد مسارات الملفات التي فيها كلمة. أي الأسئلة تجيب عنها باستدعاءات أقل من <code>listFiles</code> و<code>readFile</code>؟</li>
+<li><span class="level medium">متوسط</span> احذف التعبير النمطي من <code>calculate</code>. اشرح، بمدخل مثالي، لماذا يحوّل ذلك الآلة الحاسبة إلى شيء خطر.</li>
+<li><span class="level hard">تحدٍّ</span> اجعل <code>complete.mjs</code> تتوقف عند نهاية الدالة دون <code>customStopTriggers</code>، بعدّ الأقواس في النص أثناء وصوله. أي المدخلات تكسر العدّ البسيط للأقواس؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 3</p>
+<p>مرتين في هذا الفصل، قررت كلمات قليلة هل ينجح النموذج. والفصل التالي عن هذه الكلمات: كيف تكتب التعليمات، وتعطي الأمثلة والقيود، وتطلب صيغة محددة، وتترك مكاناً لـ «لا أعرف»، مقيساً على النموذج نفسه.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">حاول حل كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف حلك عن هذا فليس بالضرورة خطأ: معظم المسائل لها حلول جيدة كثيرة. إن كان حلك يعالج الحالات العادية وغير العادية، وتستطيع أن تشرح اختياراتك، فهو حل جيد. والكود الكامل المختبر لكل حل موجود في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li>أعطى تشغيل الكتاب <code>" "</code> (مسافة) بـ 97.4%، ثم « الساد» و« الت» بنحو 0.5% لكل منهما. فإن كتبت «الثامنة» و«التاسعة» و«العاشرة» فقد فكّرت بالكلمات؛ أما النموذج فيفكر بالرموز، وهذا المُرمِّز يكتب المسافة وحدها قبل الرقم أحياناً، فالرمز التالي شبه المؤكد مسافة، والساعة تأتي بعد خطوة. و« الساد» بداية «السادسة»: الكلمة نفسها مقطّعة. والتنبؤ يكون لكل رمز، ولهذا بالضبط قد يفاجئك.</li>
+<li>أغلى. دالة صغيرة، <code dir="ltr">export function total(items) { return items.reduce((sum, item) =&gt; sum + item.price * item.count, 0); }</code>، كانت 15 «كلمة» و28 رمزاً، أي 1.87 لكل كلمة مقابل 1.18 للنثر الإنجليزي: فالأقواس والنقاط والعمليات والأسماء مثل <code>item.price</code> تُقطَّع إلى رموز منفصلة. وملفات الكود الطويلة تملأ نافذة السياق أسرع مما يوحي به عدد أسطرها.</li>
+<li>بالعربية اختلفت الأسماء من الدرجة 0.3: «يُستخدم للاحتفاظ بذكريات» و«كُلّ لحظة» و«أنا أحبك»، وليس فيها اسم مقهى حقاً، لأن احتمالات العربية مسطحة أصلاً (القسم 1.3): فحين لا يفوز رمز بوضوح، تغيّر عشوائية قليلة الجواب. أما بالإنجليزية فبقيت 0.3 تعطي «Brew &amp; Co.» للبذور الثلاث، ولم تختلف إلا عند 0.7. فلا عتبة عامة؛ الأمر يتوقف على مدى ثقة النموذج.</li>
+<li>عن PostgreSQL أجاب النموذج <code>5432</code>، وهو صحيح. وعن «Brewlytics Server» المختلقة قال بالعربية إنه لا يوجد منفذ معروف لها لأنها ليست خدمة معروفة، ثم كتب «الإجابة:» وتركها فارغة. وبالإنجليزية فعل ما هو أسوأ: شرح أنه لا يعرفها، ثم، لأن السؤال طلب رقماً فقط، ختم بـ «Answer: 0». والبرنامج الذي يقرأ السطر الأخير وحده كان سيحفظ المنفذ 0. ولا شيء في شكل الجواب يخبرك هل هو صحيح؛ الذي يخبرك مصدر: توثيق الأداة، أو ملف إعداداتها، أو تشغيلها ورؤية المنفذ الذي تستمع عليه. ولا تُجبر النموذج أبداً على جواب بصيغة لا تترك مكاناً لـ «لا أعرف».</li>
+<li>بالكلمتين السابقتين مفتاحاً، صارت الجمل الثلاث «يبيع المقهى القهوة والشاي .» و«يبيع المقهى الكيك .» و«يبيع المقهى القهوة والشاي .» (بالبداية «يبيع المقهى»): كلها جمل من النص. فالسياق الأكبر أزال الاختلاق، لكنه أزال التنوع أيضاً: مع نص قليل كهذا، لكل زوج كلمات تابع أو اثنان فقط، فلا يستطيع النموذج إلا النسخ. والنماذج الحقيقية تنظر إلى آلاف الرموز ودُرّبت على تريليونات، وهذا ما يجعلها متماسكة وجديدة معاً، وهو أيضاً سبب أن اختلاقاتها مقنعة إلى هذا الحد.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 2</h2>
+<ol class="exercises">
+<li>كل سؤال وجواب من سطرين أضاف نحو 55 إلى 65 رمزاً (88 بعد الأول، و149 بعد الثاني)، فعشرة ستحمل نحو 650. ومع أجوبة أطول تقترب من 2,048 أسرع بكثير، وحينها يجب أن تفسح الجلسة مكاناً: فتحذف <code>node-llama-cpp</code> أقدم الرسائل من السياق، مبقيةً أمر النظام، فيفقد النموذج ما قيل أولاً. ومنتجات المحادثة المستضافة تفعل الشيء نفسه، أو تلخّص. وفي الحالتين، قد تتوقف تعليمة أعطيتها في البداية عن العمل بصمت.</li>
+<li>يتوقف ذلك على مشروعك، لكن النمط دائماً واحد: الملفات الصغيرة السهلة (الإعدادات، والوحدات القصيرة، والـ README) تدخل أولاً، والملف الكبير الذي يهمك فعلاً يبقى خارجاً. والإنسان يختار بحسب السؤال: الملف الذي سيتغير، والملفات التي يستوردها، واختباراته. وهذا الاختيار يبنيه الفصل 14.</li>
+<li>
+<pre class="plain" dir="ltr">searchFiles: defineChatSessionFunction({
+  description: "Find the files that contain a word",
+  params: {type: "object", properties: {text: {type: "string"}}},
+  handler({text}) {
+    return fs.readdirSync("cafe", {recursive: true}).filter((name) =&gt; {
+      const file = `cafe/${name}`;
+      return fs.statSync(file).isFile() &amp;&amp; fs.readFileSync(file, "utf8").includes(text);
+    });
+  },
+}),</pre>
+الأسئلة التي تسمّي شيئاً محدداً: «أين يُحدَّد سعر اللاتيه؟» تأخذ بحثاً واحداً عن <code>latte</code> وقراءة واحدة، بدل السرد وقراءتين. وفي مشروع من آلاف الملفات، الفرق بين بضعة استدعاءات وقراءة الملفات واحداً واحداً حتى يمتلئ السياق. ولهذا في كل وكيل برمجة أداة بحث.</li>
+<li>بلا الفحص، تشغّل <code dir="ltr">Function(`return (${expression});`)()</code> أي JavaScript يمرّره النموذج. فتعبير مثل <code dir="ltr">process.env.API_KEY</code> يعيد سراً إلى المحادثة، و<code dir="ltr">process.exit(1)</code> يوقف البرنامج؛ ومع استيراد غير متزامن قد يقرأ ملفات أو يحذفها. وقد لا يختار النموذج مدخلاً كهذا من تلقاء نفسه، لكن كل من يتحكم في نص يقرؤه النموذج يستطيع أن يطلبه: صفحة ويب، أو رسالة بريد، أو ملف في المشروع يقول «احسب هذا». وهذا يسمى <em>حقن الأوامر</em>، والفصل 15 عنه. ويجب أن تفحص الأداة مدخلاتها بصرامة نقطة نهاية في واجهة برمجية، لأنها كذلك فعلاً.</li>
+<li>ولّد مع <code>onTextChunk</code>، واحتفظ بعدّاد يبدأ من 1 (قوس الدالة نفسها مفتوح أصلاً)، وأضف واحداً لكل <code>{</code> واطرح واحداً لكل <code>}</code>، وأوقف التوليد بـ <code>AbortController</code> حين يبلغ 0، محتفظاً بالنص الذي قبل ذلك القوس. وهو ينكسر بالأقواس التي ليست كوداً: داخل النصوص (<code>"{"</code>)، والقوالب النصية، والتعليقات، والتعابير النمطية. والمحرر الحقيقي يستخدم محلل اللغة، أو على الأقل مقطّعاً يعرف النصوص والتعليقات، وهذا سبب جيد للثقة بالمحررات أكثر من الفحوص المنزلية.</li>
+</ol>
+
+</section>
+</body></html>
