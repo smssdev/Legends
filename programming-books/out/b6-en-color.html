@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: Clean Architecture for Flutter"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: State Management with Riverpod"; } }
+@page ch03:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -143,7 +145,7 @@ Widget build(context, ref) =&gt;
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">42</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">57</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -1110,6 +1112,429 @@ repainted: {header: 31, chart: 31, footer: 31}</pre></div>
 <p>This chapter wired everything by hand in <code>main</code>, and passed the controller down with Provider. The next chapter replaces both with Riverpod: providers that build each other, state that can be loading, ready or failed, and every dependency replaceable in tests with one line.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b6/riverpod/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>State Management with Riverpod</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>declare dependencies and state as providers, and let them build each other</li>
+<li>hold changing state in a <code>Notifier</code>, as immutable values</li>
+<li>load data with <code>FutureProvider</code>, and show every state of an <code>AsyncValue</code></li>
+<li>run actions with an <code>AsyncNotifier</code>, and refresh what they made stale</li>
+<li>rebuild only what changed with <code>select</code>, and know when Riverpod retries for you</li>
+<li>replace any dependency, in tests and in different builds, with one override</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 2 wired the orders feature by hand in <code>main</code> and handed a <code>ChangeNotifier</code> to the screen with Provider. It works, and it has three weak points that grow with the app: dependencies are passed by hand through constructors, a missing provider is found only when the screen opens, and every loading or error state is written by hand. Riverpod answers all three. This chapter keeps Chapter 2’s domain and data layers exactly as they were, and rewrites only the presentation.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The domain and data files of this chapter are copied unchanged from Chapter 2 by the script that builds the examples. If Riverpod had needed a change in them, the layers of Chapter 2 would have been wrong.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>Providers</span></h2>
+
+<p>A <dfn>provider</dfn> is a declaration: “here is how to make this value”. It is a top-level constant, so any code can name it, and the compiler checks the name and the type. The values themselves do not live in the providers; they live in a <dfn>container</dfn>, which creates each one the first time it is asked for, and keeps it. In an app the container is a <code>ProviderScope</code> at the root; in a test, a <code>ProviderContainer</code>.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter pub add flutter_riverpod collection</span>
+Resolving dependencies...
+Downloading packages...
+  collection 1.19.1 (from transitive dependency to direct dependency)
++ crypto 3.0.8
++ fixnum 1.1.1
++ flutter_riverpod 3.5.0
+  material_color_utilities 0.13.0 (0.13.1 available)
++ riverpod 3.5.0
++ state_notifier 1.0.0
+  test_api 0.7.14 (0.7.15 available)
++ uuid 4.6.0
+  vector_math 2.4.3 (2.4.4 available)
+Changed 7 dependencies!
+3 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.</pre></div>
+
+<p>The feature’s dependencies become providers too. Each one builds itself from the others with <code>ref.watch</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/providers.dart (part)</div><pre class="code"><span class="c line-bidi">// The feature&#x27;s wiring: the only file of the feature that knows the data layer.</span>
+
+<span class="c line-bidi">// Dependencies are providers too: the app reads them, tests replace them.</span>
+<span class="k">final</span> clockProvider = Provider&lt;DateTime <span class="k">Function</span>()&gt;((ref) =&gt; DateTime.now);
+<span class="k">final</span> ordersSourceProvider = Provider&lt;OrdersSource&gt;(
+  (ref) =&gt; FakeOrdersSource(),
+);
+
+<span class="c line-bidi">// Providers build each other: change the source, and everything above it is rebuilt.</span>
+<span class="k">final</span> ordersRepositoryProvider = Provider&lt;OrdersRepository&gt;(
+  (ref) =&gt; OrdersRepositoryImpl(ref.watch(ordersSourceProvider)),
+);
+<span class="k">final</span> placeOrderProvider = Provider&lt;PlaceOrder&gt;(
+  (ref) =&gt; PlaceOrder(
+    ref.watch(ordersRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
+<span class="c line-bidi">// Loading, ready or failed: FutureProvider gives the screen an AsyncValue.</span>
+<span class="k">final</span> historyProvider = FutureProvider&lt;<span class="k">List</span>&lt;Order&gt;&gt;(
+  (ref) =&gt; ref.watch(ordersRepositoryProvider).history(),
+);</pre></div>
+
+<ul>
+<li>This file replaces the hand wiring of Chapter 2’s <code>main</code>. It is the only file of the feature that knows the data layer; the screens see providers that give domain types.</li>
+<li><code>ref.watch</code> records a dependency. If <code>ordersSourceProvider</code> is replaced, the repository, the use case and the history above it are rebuilt automatically.</li>
+<li>Nothing is created until someone asks: a screen that never shows the history never loads it.</li>
+</ul>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>Riverpod is an anagram of Provider, and is written by the same author, Remi Rousselet, as its successor. Riverpod can also generate providers from annotated functions and classes (<code>@riverpod</code>, with the <code>riverpod_generator</code> package). This book writes them by hand, which shows exactly what exists; generated providers are the same objects underneath.</p></aside>
+
+<h2><span class="sec">3.2</span> <span>State that changes: Notifier</span></h2>
+
+<p>The basket changes as the person taps. A <code>Notifier</code> holds it, with the methods that change it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/presentation/basket.dart (part)</div><pre class="code"><span class="k">class</span> BasketNotifier <span class="k">extends</span> Notifier&lt;<span class="k">Map</span>&lt;MenuItem, <span class="k">int</span>&gt;&gt; {
+  @override
+  <span class="k">Map</span>&lt;MenuItem, <span class="k">int</span>&gt; build() =&gt; <span class="k">const</span> {};
+
+  <span class="c line-bidi">// A new map every time: Riverpod notifies when state is a different object.</span>
+  <span class="k">void</span> add(MenuItem item) =&gt; state = {...state, item: (state[item] ?? <span class="n">0</span>) + <span class="n">1</span>};
+
+  <span class="k">void</span> clear() =&gt; state = <span class="k">const</span> {};
+}
+
+<span class="k">final</span> basketProvider = NotifierProvider&lt;BasketNotifier, <span class="k">Map</span>&lt;MenuItem, <span class="k">int</span>&gt;&gt;(
+  BasketNotifier.<span class="k">new</span>,
+);
+
+<span class="c line-bidi">// Derived state: recomputed only when the basket changes.</span>
+<span class="k">final</span> basketCountProvider = Provider&lt;<span class="k">int</span>&gt;(
+  (ref) =&gt; ref.watch(basketProvider).values.fold(<span class="n">0</span>, (a, b) =&gt; a + b),
+);</pre></div>
+
+<ul>
+<li><code>build</code> returns the first state. <code>state = …</code> replaces it and notifies everything that watches it.</li>
+<li>The state is never changed in place. <code>add</code> builds a <em>new</em> map; writing <code>state[item] = 1</code> would change the old map, and Riverpod, comparing the old state with the “new” one, would see the same object and tell nobody.</li>
+<li><code>basketCountProvider</code> is <dfn>derived</dfn> state: a provider that watches another and computes from it. It is recomputed only when the basket changes, and the screens that need only the count watch only the count.</li>
+</ul>
+
+<h2><span class="sec">3.3</span> <span>Data that loads: AsyncValue</span></h2>
+
+<p><code>historyProvider</code> is a <code>FutureProvider</code>. Whoever watches it receives an <dfn>AsyncValue</dfn>: loading, data, or an error, and sometimes both at once, such as old data while new data loads. A switch with patterns covers every case, and the compiler checks that it does:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/presentation/orders_page.dart (part)</div><pre class="code">          <span class="c line-bidi">// Every state of the history, in one switch.</span>
+          ...<span class="k">switch</span> (history) {
+            AsyncValue(:<span class="k">final</span> value?) <span class="k">when</span> value.isEmpty =&gt; [
+              <span class="k">const</span> ListTile(title: Text(<span class="s">&#x27;Nothing ordered yet&#x27;</span>)),
+            ],
+            AsyncValue(:<span class="k">final</span> value?) =&gt; [
+              <span class="k">for</span> (<span class="k">final</span> order <span class="k">in</span> value)
+                ListTile(
+                  leading: <span class="k">const</span> Icon(Icons.receipt_long),
+                  title: Text(<span class="s">&#x27;Order ${order.id} · ${order.total.pounds} EGP&#x27;</span>),
+                  subtitle: Text(
+                    <span class="s">&#x27;Items: ${order.items} · ${statusNames[order.status]}&#x27;</span>,
+                  ),
+                ),
+            ],
+            AsyncValue(hasError: <span class="k">true</span>) =&gt; [
+              ListTile(
+                leading: <span class="k">const</span> Icon(Icons.cloud_off),
+                title: <span class="k">const</span> Text(<span class="s">&#x27;Could not load your orders&#x27;</span>),
+                trailing: TextButton(
+                  onPressed: () =&gt; ref.invalidate(historyProvider),
+                  child: <span class="k">const</span> Text(<span class="s">&#x27;Retry&#x27;</span>),
+                ),
+              ),
+            ],
+            _ =&gt; [
+              <span class="k">const</span> Padding(
+                padding: EdgeInsets.all(<span class="n">16</span>),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ],
+          },</pre></div>
+
+<p>The order of the cases matters. Data first: if there is any, show it, even while a refresh is running. Then the error. The spinner only when there is nothing else to show.</p>
+
+<p>Riverpod 3 also <dfn>retries</dfn> a provider that fails, waiting a little longer each time. While it retries, the value is still loading, but carries the error. The test shows both behaviours with a source that always fails:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/retry_test.dart (part)</div><pre class="code">  test(<span class="s">&#x27;a failing provider is retried, unless retries are turned off&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> offline = ordersSourceProvider.overrideWithValue(
+      FakeOrdersSource(fails: <span class="k">true</span>),
+    );
+
+    <span class="k">final</span> retrying = ProviderContainer.test(overrides: [offline]);
+    debugPrint(
+      <span class="s">&#x27;default:    ${await historyAfter(retrying, const Duration(milliseconds: 600))}&#x27;</span>,
+    );
+
+    <span class="k">final</span> once = ProviderContainer.test(
+      overrides: [offline],
+      retry: (count, error) =&gt; <span class="k">null</span>,
+    );
+    debugPrint(
+      <span class="s">&#x27;no retries: ${await historyAfter(once, const Duration(milliseconds: 600))}&#x27;</span>,
+    );
+    expect(once.read(historyProvider).isLoading, isFalse);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/retry_test.dart</span>
+00:00 +0: loading test/retry_test.dart
+00:00 +0: a failing provider is retried, unless retries are turned off
+default:    error: Exception: connection refused, still loading: true
+no retries: error: Exception: connection refused, still loading: false
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Automatic retries are good for a phone on a bad connection and confusing in tests, where a failing provider never settles into an error. Turn them off in tests that check errors, with <code>retry: (count, error) =&gt; null</code> on the container, or for one provider with its own <code>retry</code> parameter. And never show only a spinner when <code>hasError</code> is true: the person deserves to know something is wrong, and to have a Retry button.</p></aside>
+
+<h2><span class="sec">3.4</span> <span>Actions: AsyncNotifier</span></h2>
+
+<p>Placing an order takes time and can fail. An <code>AsyncNotifier</code> holds its state, loading or a result, and the method that runs it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/presentation/place_controller.dart (part)</div><pre class="code"><span class="c line-bidi">// Placing an order: loading while it runs, then the result.</span>
+<span class="k">class</span> PlaceController <span class="k">extends</span> AsyncNotifier&lt;Outcome?&gt; {
+  @override
+  <span class="k">Future</span>&lt;Outcome?&gt; build() <span class="k">async</span> =&gt; <span class="k">null</span>;
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; place() <span class="k">async</span> {
+    state = <span class="k">const</span> AsyncLoading();
+    <span class="k">final</span> lines = [
+      <span class="k">for</span> (<span class="k">final</span> e <span class="k">in</span> ref.read(basketProvider).entries)
+        OrderLine(e.key, e.value),
+    ];
+    <span class="k">final</span> result = <span class="k">await</span> ref.read(placeOrderProvider)(lines);
+    <span class="c line-bidi">// The screen may have closed while waiting.</span>
+    <span class="k">if</span> (!ref.mounted) {
+      <span class="k">return</span>;
+    }
+    <span class="k">if</span> (result <span class="k">is</span> Ok) {
+      ref.read(basketProvider.notifier).clear();
+      <span class="c line-bidi">// The history is stale now: throw it away, and it loads again for whoever watches it.</span>
+      ref.invalidate(historyProvider);
+    }
+    state = AsyncData(result);
+  }
+}
+
+<span class="k">final</span> placeControllerProvider =
+    AsyncNotifierProvider&lt;PlaceController, Outcome?&gt;(PlaceController.<span class="k">new</span>);</pre></div>
+
+<ul>
+<li>Inside methods, <code>ref.read</code> takes a value once. <code>ref.watch</code> belongs in <code>build</code>, where a change should rebuild.</li>
+<li>After the <code>await</code>, <code>ref.mounted</code> says whether the provider is still alive; if the screen was closed meanwhile, there is nobody to tell.</li>
+<li><code>ref.invalidate(historyProvider)</code> throws the history away. Whoever watches it receives a loading state, then the new list with the order just placed. No screen had to be told to refresh.</li>
+</ul>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-en-shots-placed.png" alt=""></div>
+<figcaption>Placed: the history reloaded by itself</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-en-shots-closed.png" alt=""></div>
+<figcaption>One override: 23:00</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-en-shots-offline.png" alt=""></div>
+<figcaption>One override: offline</figcaption>
+</figure>
+</div>
+
+<h2><span class="sec">3.5</span> <span>Rebuild only what changed</span></h2>
+
+<p>A widget that watches the whole basket rebuilds whenever anything in it changes. Often it needs much less: the Place button only needs to know whether the basket is empty. <code>select</code> watches one value computed from a provider, and rebuilds only when <em>that</em> value changes. The test adds three items and counts the builds of two widgets:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/select_test.dart (part)</div><pre class="code">              Consumer(
+                builder: (context, ref, _) {
+                  ref.watch(basketProvider.select((b) =&gt; b.isEmpty));
+                  builds[<span class="s">&#x27;select isEmpty&#x27;</span>] = builds[<span class="s">&#x27;select isEmpty&#x27;</span>]! + <span class="n">1</span>;
+                  <span class="k">return</span> <span class="k">const</span> SizedBox();
+                },
+              ),</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/select_test.dart</span>
+00:00 +0: loading test/select_test.dart
+00:00 +0: select rebuilds only when the selected value changes
+{whole basket: 4, select isEmpty: 2}
+00:00 +1: All tests passed!</pre></div>
+
+<p>Four builds for the whole basket, once at the start and once per item. Two for <code>isEmpty</code>: at the start, and when the basket stopped being empty. The basket badge in the bar does the same with a provider: it watches <code>basketCountProvider</code>, not the basket.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Where do you use <code>ref.watch</code>, and where <code>ref.read</code>?</li><li>Why does <code>add</code> build a new map instead of changing <code>state</code>?</li><li>What does the history show while Riverpod retries a failing request?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">3.6</span> <span>One override</span></h2>
+
+<p>Because every dependency is a provider, any of them can be replaced at the root of a container, with <dfn>overrides</dfn>. The three screens above are the same app, and differ only in this:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/orders_closed.dart (part)</div><pre class="code"><span class="k">void</span> main() {
+  runApp(
+    ProviderScope(
+      <span class="c line-bidi">// One override: the clock says 23:00.</span>
+      overrides: [
+        clockProvider.overrideWithValue(() =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">22</span>, <span class="n">23</span>)),
+      ],
+      child: <span class="k">const</span> OrdersApp(),
+    ),
+  );
+}</pre></div>
+
+<p>In a test, the same line runs the rules without a network. The source counts what reached it: nothing, because the café was closed, and the basket was kept for later:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/override_test.dart (part)</div><pre class="code">    <span class="k">final</span> container = ProviderContainer.test(
+      overrides: [
+        clockProvider.overrideWithValue(() =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">22</span>, <span class="n">23</span>)),
+        ordersSourceProvider.overrideWithValue(source),
+      ],
+    );
+    container.read(basketProvider.notifier).add(menu.first);
+    <span class="k">await</span> container.read(placeControllerProvider.notifier).place();
+
+    <span class="k">final</span> outcome = container.read(placeControllerProvider).value;
+    expect((outcome! <span class="k">as</span> Err).failure, isA&lt;Closed&gt;());
+    expect(source.posts, <span class="n">0</span>);
+    expect(container.read(basketCountProvider), <span class="n">1</span>);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/override_test.dart</span>
+00:00 +0: loading test/override_test.dart
+00:00 +0: one override, and the rules run without the network
+00:00 +1: All tests passed!</pre></div>
+
+<p>And the whole screen, tapped as a person would, with the history refreshing itself after the order:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/page_test.dart</span>
+00:00 +0: loading test/page_test.dart
+00:00 +0: adding, placing, and the history refreshed
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Make everything that touches the outside world a provider: the clock, the network client, storage, the device’s locale, a random number generator. Then every test starts from a container with exactly the world it needs, and every build (demo, staging, production) is a different list of overrides, not a different app.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>ref.read</code> in <code>build</code></td><td>The widget never updates</td><td><code>ref.watch</code> in <code>build</code>; <code>read</code> in callbacks</td></tr>
+<tr><td><code>ref.watch</code> in a callback</td><td>Rebuilds and subscriptions in the wrong place</td><td><code>ref.read</code> in callbacks and methods</td></tr>
+<tr><td>Changing state in place</td><td>Nobody is notified</td><td>Assign a new value to <code>state</code></td></tr>
+<tr><td>Only a spinner while <code>hasError</code></td><td>The person waits forever during retries</td><td>Show the error and a Retry button</td></tr>
+<tr><td>Refreshing screens by hand after an action</td><td>Forgotten screens show stale data</td><td><code>ref.invalidate</code> the provider that became stale</td></tr>
+<tr><td>A provider created inside <code>build</code></td><td>A new provider, and lost state, on every build</td><td>Top-level providers; <code>family</code> for parameters</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Providers are top-level declarations; values live in a container (<code>ProviderScope</code>, <code>ProviderContainer</code>) and are created on first use.</li>
+<li>Dependencies are providers that <code>ref.watch</code> each other; one file per feature wires them.</li>
+<li><code>Notifier</code> holds changing state as immutable values; derived providers compute from it.</li>
+<li><code>FutureProvider</code> and <code>AsyncNotifier</code> give <code>AsyncValue</code>: switch on data, error and loading, in that order. Riverpod retries failures unless told not to.</li>
+<li><code>select</code> and derived providers rebuild only what changed; <code>ref.invalidate</code> refreshes what an action made stale.</li>
+<li>Overrides replace any dependency, in one line, for tests and for different builds.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>ref.watch</code> in <code>build</code> methods (of widgets and providers), where a change should rebuild; <code>ref.read</code> in callbacks and notifier methods, to use a value once. 2. Because Riverpod notifies when <code>state</code> becomes a different object; changing the same map in place leaves it the same object, so nobody would be told. 3. A value that is still loading but carries the error, so the screen can show the error and a Retry button instead of a spinner.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project adds a Riverpod tool the chapter only mentioned. The tests are the point: each one proves the behaviour the tool promises.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>One provider per order</h3>
+<p class="project-goal">A provider that gives one order by its id, built from the history, and cached per id.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>FutureProvider.family</code>, <code>ref.watch</code> of another provider’s <code>future</code>, and caching.</p>
+<ol class="steps">
+<li>Declare <code>orderProvider = FutureProvider.family&lt;Order?, int&gt;((ref, id) async {…})</code>.</li>
+<li>Inside, await <code>ref.watch(historyProvider.future)</code> and return the order with that id, or <code>null</code> (<code>firstWhereOrNull</code> from the <code>collection</code> package).</li>
+<li>In a test, place two orders, read <code>orderProvider(1)</code> and <code>orderProvider(2)</code>, check their totals, check that id 3 gives <code>null</code>, and that reading id 1 again gives the very same object.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because <code>orderProvider</code> watches the history, invalidating the history after a new order refreshes every order provider too. Nothing has to remember to update them.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/family_test.dart</span>
+00:00 +0: loading test/family_test.dart
+00:00 +0: each order id has its own provider, cached
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.2 · Medium</p>
+<h3>A search that cancels itself</h3>
+<p class="project-goal">Search the menu as the person types, without searching for every letter.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>autoDispose</code>, <code>family</code>, <code>ref.onDispose</code>, and a debounce without a timer.</p>
+<ol class="steps">
+<li>A <code>Notifier</code> holds the query; the text field’s <code>onChanged</code> sets it.</li>
+<li><code>searchProvider</code> is <code>FutureProvider.autoDispose.family</code> on the query. It registers <code>ref.onDispose</code>, waits 300 milliseconds, and searches only if it was not disposed meanwhile.</li>
+<li>Typing a new letter makes the page watch a new query: the old one has no watcher left, is disposed, and never searches.</li>
+<li>Test by typing three letters 100 milliseconds apart, and check that only the empty query and the last one were searched.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is Book 5’s debounce without a <code>Timer</code> to cancel: <code>autoDispose</code> does the cancelling. For a real network request, also cancel the request in <code>onDispose</code>, so that it does not finish uselessly.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-en-shots-search.png" alt=""></div>
+<figcaption>Project 3.2: one search, for the last text.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/search_test.dart</span>
+00:00 +0: loading test/search_test.dart
+00:00 +0: only the last query is searched
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 3.3 · Challenge</p>
+<h3>Undo, for free</h3>
+<p class="project-goal">A basket that can undo any number of changes, one at a time.</p>
+<p class="project-skills"><strong>You will practise:</strong> immutable state, a history of states in a notifier, and <code>container.listen</code> in tests.</p>
+<ol class="steps">
+<li>Every change goes through one private method that pushes the current state onto a list, then sets the new one.</li>
+<li><code>undo</code> pops the last state back; <code>canUndo</code> says whether there is one.</li>
+<li>Test a sequence: add, add, add, remove; then undo four times, checking the basket after each, and that eight states were announced.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this only works because states are never changed in place: each old map is still exactly what it was. With a mutable basket, the “history” would be four references to the same, latest map.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/undo_test.dart</span>
+00:00 +0: loading test/undo_test.dart
+00:00 +0: undo goes back one state at a time
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>BasketNotifier.add</code> to change the map in place (<code>state[item] = …</code>). Which tests fail, and what does the screen do when you tap?</li>
+<li><span class="level">Easy</span> Remove <code>ref.invalidate(historyProvider)</code> from <code>place</code>. What does the page show after an order, and when does it catch up?</li>
+<li><span class="level medium">Medium</span> Show a snack bar when an order is placed, using <code>ref.listen</code> in the page’s <code>build</code>. Why <code>listen</code> and not <code>watch</code>?</li>
+<li><span class="level medium">Medium</span> Turn off retries for <code>historyProvider</code> only, with its <code>retry</code> parameter, and check the offline screen. When would you choose that in a real app?</li>
+<li><span class="level hard">Challenge</span> Write a fourth composition root that overrides <code>historyProvider</code> itself with three fixed orders. What does that skip that overriding the source does not?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>The orders feature lives on one screen. A real app has dozens, with links into them from notifications and the web, a back button that must make sense, and screens that only signed-in people may open. The next chapter does it with go_router.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1145,6 +1570,16 @@ repainted: {header: 31, chart: 31, footer: 31}</pre></div>
 <li>Give <code>FakeOrdersSource</code> an optional starting list, <code>FakeOrdersSource({this.fails = false, List&lt;Map&lt;String, dynamic&gt;&gt; orders = const []})</code>, copying it into <code>_orders</code>; the demo root passes three orders in JSON shape and the 10:00 clock. Nothing else changes, and the page shows the history at once after the first refresh. Keep demo data in the composition root or a demo file, never in the domain.</li>
 <li>Store <code>piastres</code> in <code>Money</code>, keep a getter <code>int get pounds =&gt; piastres ~/ 100</code>, and write the menu as <code>Money(4500)</code>; <code>+</code>, <code>*</code>, <code>==</code> and <code>compareTo</code> work as before. Only <code>money.dart</code> and <code>order.dart</code> change. Few files change because only the domain knows what money is: the data layer never carries prices (the server computes nothing here), and the presentation only reads <code>pounds</code>. That is the point of a value object.</li>
 <li>It is allowed: the dependency rule is about the domain, and the presentation is Flutter’s layer by nature. But a controller in plain Dart, with its state as an immutable value and no <code>BuildContext</code>, can be tested without pumping widgets, reused by another screen or a desktop app, and replaced in tests more easily. You lose the convenience of <code>ChangeNotifier</code>’s listeners and need another way to tell the screen something changed, which is exactly what Riverpod’s <code>Notifier</code>, a plain Dart class, gives you in the next chapter.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 3</h2>
+<ol class="exercises">
+<li>The first tap throws: <code>build</code> returns <code>const {}</code>, and a constant map cannot be changed, so <code>state[item] = …</code> fails with an <code>UnsupportedError</code> and every test that adds to the basket fails with it. Make the first state a plain <code>{}</code> and the error disappears, which is worse: the map now changes, but <code>state</code> is the same object, so nothing is notified, the circles on the screen keep showing 0, and the select test counts one build each. Constant first states are a cheap guard against this mistake.</li>
+<li>The order is placed and the basket empties, but “Your orders” still says “Nothing ordered yet”: the history was loaded once and nothing told it that it was stale. It catches up only when something rebuilds it from scratch: the Retry button, leaving and reopening a screen whose provider was disposed, or restarting the app. Invalidating at the place where data changes is what keeps every screen right without knowing about each other.</li>
+<li><code>ref.listen(placeControllerProvider, (previous, next) { if (next.value case Ok(:final value)) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('… ${value.id}'))); } });</code> at the start of <code>build</code>. <code>listen</code> runs a callback once per change, which is what a side effect needs: a snack bar, a navigation, a sound. <code>watch</code> only rebuilds, and showing a snack bar from <code>build</code> would show it again on every rebuild, even when nothing new happened.</li>
+<li><code>FutureProvider(…, retry: (count, error) =&gt; null)</code>. The offline screen then shows the error at once instead of a value that stays loading while retrying; the Retry button still works, because it invalidates. Choose it when a retry cannot help (a 403, a validation error, a missing record), or when the person should decide, for example on metered data; keep automatic retries for transient failures such as timeouts.</li>
+<li><code>historyProvider.overrideWith((ref) async =&gt; [order1, order2, order3])</code>. It skips the source, the DTOs and the repository’s mapping: good for screenshots and for testing how the page draws a known list, but it no longer tests that the data layer produces that list, and new orders never appear, because invalidating the history runs the override again and returns the same three. Overriding the source keeps every layer in play.</li>
 </ol>
 
 </section>

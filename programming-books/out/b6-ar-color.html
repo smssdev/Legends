@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "الفصل 2: المعمارية النظيفة في Flutter"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "الفصل 3: إدارة الحالة بـ Riverpod"; } }
+@page ch03:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -143,7 +145,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">48</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">65</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -1114,6 +1116,429 @@ repainted: {header: 31, chart: 31, footer: 31}</pre></div>
 <p>وصل هذا الفصل كل شيء باليد في <code>main</code>، ومرّر المتحكم إلى الأسفل بـ Provider. والفصل القادم يستبدل الاثنين بـ Riverpod: providers يبني بعضها بعضاً، وحالة يمكن أن تكون تحميلاً أو جاهزة أو فاشلة، وكل اعتماد يُستبدل في الاختبارات بسطر واحد.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b6/riverpod/ar">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">الفصل 3</p><h1>إدارة الحالة بـ Riverpod</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تعلن الاعتماديات والحالة في صورة providers، وتدعها يبني بعضها بعضاً</li>
+<li>تحفظ الحالة المتغيرة في <code>Notifier</code>، قيماً لا تتغير</li>
+<li>تحمّل البيانات بـ <code>FutureProvider</code>، وتعرض كل حالات <code>AsyncValue</code></li>
+<li>تنفّذ الأفعال بـ <code>AsyncNotifier</code>، وتحدّث ما جعلته قديماً</li>
+<li>تعيد بناء ما تغيّر وحده بـ <code>select</code>، وتعرف متى يعيد Riverpod المحاولة عنك</li>
+<li>تستبدل أي اعتماد، في الاختبارات وفي النسخ المختلفة، باستبدال واحد</li>
+</ul>
+</div>
+
+<p class="lead">وصل الفصل 2 ميزة الطلبات باليد في <code>main</code>، وسلّم الشاشة <code>ChangeNotifier</code> بـ Provider. وهذا يعمل، وفيه ثلاث نقاط ضعف تكبر مع التطبيق: الاعتماديات تمرَّر باليد عبر المُنشئات، والـ provider الناقص لا يُكتشف إلا حين تُفتح الشاشة، وكل حالة تحميل أو خطأ تُكتب باليد. وRiverpod يجيب عن الثلاث. ويُبقي هذا الفصل طبقتي المجال والبيانات من الفصل 2 كما كانتا بالضبط، ويعيد كتابة العرض وحده.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>ملفات المجال والبيانات في هذا الفصل منسوخة من الفصل 2 دون تغيير، بالسكربت الذي يبني الأمثلة. ولو احتاج Riverpod تغييراً فيها لكانت طبقات الفصل 2 خاطئة.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>الـ Providers</span></h2>
+
+<p>الـ <dfn>provider</dfn> إعلان: «هكذا تُصنع هذه القيمة». وهو ثابت في أعلى الملف، فيستطيع أي كود أن يسمّيه، ويتحقق المترجم من الاسم والنوع. والقيم نفسها لا تعيش في الـ providers؛ بل في <dfn>حاوية</dfn> (container) تنشئ كل قيمة أول مرة تُطلب، وتحتفظ بها. وفي التطبيق تكون الحاوية <code>ProviderScope</code> في الجذر؛ وفي الاختبار <code>ProviderContainer</code>.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter pub add flutter_riverpod collection</span>
+Resolving dependencies...
+Downloading packages...
+  collection 1.19.1 (from transitive dependency to direct dependency)
++ crypto 3.0.8
++ fixnum 1.1.1
++ flutter_riverpod 3.5.0
+  material_color_utilities 0.13.0 (0.13.1 available)
++ riverpod 3.5.0
++ state_notifier 1.0.0
+  test_api 0.7.14 (0.7.15 available)
++ uuid 4.6.0
+  vector_math 2.4.3 (2.4.4 available)
+Changed 7 dependencies!
+3 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.</pre></div>
+
+<p>واعتماديات الميزة تصير providers أيضاً. وكل واحد يبني نفسه من غيره بـ <code>ref.watch</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/providers.dart (جزء)</div><pre class="code"><span class="c line-bidi">// توصيل الميزة: الملف الوحيد في الميزة الذي يعرف طبقة البيانات.</span>
+
+<span class="c line-bidi">// الاعتماديات providers أيضاً: التطبيق يقرؤها، والاختبارات تستبدلها.</span>
+<span class="k">final</span> clockProvider = Provider&lt;DateTime <span class="k">Function</span>()&gt;((ref) =&gt; DateTime.now);
+<span class="k">final</span> ordersSourceProvider = Provider&lt;OrdersSource&gt;(
+  (ref) =&gt; FakeOrdersSource(),
+);
+
+<span class="c line-bidi">// الـ providers يبني بعضها بعضاً: غيّر المصدر، فيُعاد بناء كل ما فوقه.</span>
+<span class="k">final</span> ordersRepositoryProvider = Provider&lt;OrdersRepository&gt;(
+  (ref) =&gt; OrdersRepositoryImpl(ref.watch(ordersSourceProvider)),
+);
+<span class="k">final</span> placeOrderProvider = Provider&lt;PlaceOrder&gt;(
+  (ref) =&gt; PlaceOrder(
+    ref.watch(ordersRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
+<span class="c line-bidi">// تحميل أو جاهز أو فاشل: FutureProvider تعطي الشاشة AsyncValue.</span>
+<span class="k">final</span> historyProvider = FutureProvider&lt;<span class="k">List</span>&lt;Order&gt;&gt;(
+  (ref) =&gt; ref.watch(ordersRepositoryProvider).history(),
+);</pre></div>
+
+<ul>
+<li>هذا الملف يحل محل التوصيل باليد في <code>main</code> في الفصل 2. وهو الملف الوحيد في الميزة الذي يعرف طبقة البيانات؛ أما الشاشات فترى providers تعطي أنواع المجال.</li>
+<li><code>ref.watch</code> تسجّل اعتماداً. فإن استُبدل <code>ordersSourceProvider</code> أُعيد بناء المستودع وحالة الاستخدام والسجل فوقه تلقائياً.</li>
+<li>ولا يُنشأ شيء حتى يطلبه أحد: فالشاشة التي لا تعرض السجل أبداً لا تحمّله أبداً.</li>
+</ul>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>اسم Riverpod مكوّن من حروف كلمة Provider نفسها بترتيب آخر، وكتبه مؤلفها نفسه، ريمي روسليه، ليخلفها. ويستطيع Riverpod أيضاً توليد الـ providers من دوال وأصناف عليها تعليق (<code>@riverpod</code>، بحزمة <code>riverpod_generator</code>). ويكتبها هذا الكتاب باليد، فيظهر بالضبط ما الموجود؛ والـ providers المولَّدة هي الكائنات نفسها في الداخل.</p></aside>
+
+<h2><span class="sec">3.2</span> <span>حالة تتغير: Notifier</span></h2>
+
+<p>السلة تتغير والشخص يلمس. ويحملها <code>Notifier</code> مع الدوال التي تغيّرها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/presentation/basket.dart (جزء)</div><pre class="code"><span class="k">class</span> BasketNotifier <span class="k">extends</span> Notifier&lt;<span class="k">Map</span>&lt;MenuItem, <span class="k">int</span>&gt;&gt; {
+  @override
+  <span class="k">Map</span>&lt;MenuItem, <span class="k">int</span>&gt; build() =&gt; <span class="k">const</span> {};
+
+  <span class="c line-bidi">// خريطة جديدة في كل مرة: يبلّغ Riverpod حين تكون الحالة كائناً مختلفاً.</span>
+  <span class="k">void</span> add(MenuItem item) =&gt; state = {...state, item: (state[item] ?? <span class="n">0</span>) + <span class="n">1</span>};
+
+  <span class="k">void</span> clear() =&gt; state = <span class="k">const</span> {};
+}
+
+<span class="k">final</span> basketProvider = NotifierProvider&lt;BasketNotifier, <span class="k">Map</span>&lt;MenuItem, <span class="k">int</span>&gt;&gt;(
+  BasketNotifier.<span class="k">new</span>,
+);
+
+<span class="c line-bidi">// حالة مشتقة: تُحسب من جديد فقط حين تتغير السلة.</span>
+<span class="k">final</span> basketCountProvider = Provider&lt;<span class="k">int</span>&gt;(
+  (ref) =&gt; ref.watch(basketProvider).values.fold(<span class="n">0</span>, (a, b) =&gt; a + b),
+);</pre></div>
+
+<ul>
+<li><code>build</code> تعيد الحالة الأولى. و<code dir="ltr">state = …</code> تستبدلها وتبلّغ كل من يشاهدها.</li>
+<li>والحالة لا تُغيَّر في مكانها أبداً. فـ <code>add</code> تبني خريطة <em>جديدة</em>؛ ولو كتبت <code dir="ltr">state[item] = 1</code> لتغيّرت الخريطة القديمة، ولرأى Riverpod، وهو يقارن الحالة القديمة بـ«الجديدة»، الكائن نفسه، فلا يخبر أحداً.</li>
+<li>و<code>basketCountProvider</code> حالة <dfn>مشتقة</dfn>: provider يشاهد غيره ويحسب منه. ولا يُحسب من جديد إلا حين تتغير السلة، والشاشات التي لا تحتاج إلا العدد تشاهد العدد وحده.</li>
+</ul>
+
+<h2><span class="sec">3.3</span> <span>بيانات تُحمَّل: AsyncValue</span></h2>
+
+<p><code>historyProvider</code> من نوع <code>FutureProvider</code>. ومن يشاهده يتلقى <dfn>AsyncValue</dfn>: تحميلاً أو بيانات أو خطأ، وأحياناً اثنين معاً، مثل بيانات قديمة وجديدة تُحمَّل. وswitch بالأنماط يغطي كل حالة، ويتحقق المترجم من ذلك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/presentation/orders_page.dart (جزء)</div><pre class="code">          <span class="c line-bidi">// كل حالات السجل، في switch واحد.</span>
+          ...<span class="k">switch</span> (history) {
+            AsyncValue(:<span class="k">final</span> value?) <span class="k">when</span> value.isEmpty =&gt; [
+              <span class="k">const</span> ListTile(title: Text(<span class="s">&#x27;لم تطلب شيئاً بعد&#x27;</span>)),
+            ],
+            AsyncValue(:<span class="k">final</span> value?) =&gt; [
+              <span class="k">for</span> (<span class="k">final</span> order <span class="k">in</span> value)
+                ListTile(
+                  leading: <span class="k">const</span> Icon(Icons.receipt_long),
+                  title: Text(<span class="s">&#x27;الطلب ${order.id} · ${order.total.pounds} جنيه&#x27;</span>),
+                  subtitle: Text(
+                    <span class="s">&#x27;القطع: ${order.items} · ${statusNames[order.status]}&#x27;</span>,
+                  ),
+                ),
+            ],
+            AsyncValue(hasError: <span class="k">true</span>) =&gt; [
+              ListTile(
+                leading: <span class="k">const</span> Icon(Icons.cloud_off),
+                title: <span class="k">const</span> Text(<span class="s">&#x27;تعذّر تحميل طلباتك&#x27;</span>),
+                trailing: TextButton(
+                  onPressed: () =&gt; ref.invalidate(historyProvider),
+                  child: <span class="k">const</span> Text(<span class="s">&#x27;أعد المحاولة&#x27;</span>),
+                ),
+              ),
+            ],
+            _ =&gt; [
+              <span class="k">const</span> Padding(
+                padding: EdgeInsets.all(<span class="n">16</span>),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ],
+          },</pre></div>
+
+<p>وترتيب الحالات مهم. البيانات أولاً: إن وُجد شيء فاعرضه، حتى أثناء التحديث. ثم الخطأ. والمؤشر الدوّار فقط حين لا يوجد شيء آخر يُعرض.</p>
+
+<p>ويعيد Riverpod 3 أيضاً <dfn>المحاولة</dfn> مع الـ provider الذي يفشل، منتظراً أطول قليلاً في كل مرة. وأثناء إعادة المحاولة تبقى القيمة في حالة تحميل، لكنها تحمل الخطأ. والاختبار يُظهر السلوكين بمصدر يفشل دائماً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/retry_test.dart (جزء)</div><pre class="code">  test(<span class="s">&#x27;الـ provider الفاشل يُعاد، ما لم تُطفأ إعادة المحاولة&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> offline = ordersSourceProvider.overrideWithValue(
+      FakeOrdersSource(fails: <span class="k">true</span>),
+    );
+
+    <span class="k">final</span> retrying = ProviderContainer.test(overrides: [offline]);
+    debugPrint(
+      <span class="s">&#x27;default:    ${await historyAfter(retrying, const Duration(milliseconds: 600))}&#x27;</span>,
+    );
+
+    <span class="k">final</span> once = ProviderContainer.test(
+      overrides: [offline],
+      retry: (count, error) =&gt; <span class="k">null</span>,
+    );
+    debugPrint(
+      <span class="s">&#x27;no retries: ${await historyAfter(once, const Duration(milliseconds: 600))}&#x27;</span>,
+    );
+    expect(once.read(historyProvider).isLoading, isFalse);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/retry_test.dart</span>
+00:00 +0: loading test/retry_test.dart
+00:00 +0: الـ provider الفاشل يُعاد، ما لم تُطفأ إعادة المحاولة
+default:    error: Exception: connection refused, still loading: true
+no retries: error: Exception: connection refused, still loading: false
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>إعادة المحاولة التلقائية جيدة لجوال على اتصال سيئ، ومربكة في الاختبارات، حيث لا يستقر الـ provider الفاشل على خطأ أبداً. أطفئها في الاختبارات التي تفحص الأخطاء، بـ <code dir="ltr">retry: (count, error) =&gt; null</code> على الحاوية، أو لـ provider واحد بمعامله <code>retry</code>. ولا تعرض مؤشراً دوّاراً وحده أبداً حين تكون <code>hasError</code> صحيحة: فالشخص يستحق أن يعرف أن شيئاً خاطئ، وأن يكون أمامه زر «أعد المحاولة».</p></aside>
+
+<h2><span class="sec">3.4</span> <span>الأفعال: AsyncNotifier</span></h2>
+
+<p>إرسال الطلب يأخذ وقتاً وقد يفشل. و<code>AsyncNotifier</code> يحمل حالته، تحميلاً أو نتيجة، والدالة التي تنفّذه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/presentation/place_controller.dart (جزء)</div><pre class="code"><span class="c line-bidi">// إرسال الطلب: تحميل أثناء العمل، ثم النتيجة.</span>
+<span class="k">class</span> PlaceController <span class="k">extends</span> AsyncNotifier&lt;Outcome?&gt; {
+  @override
+  <span class="k">Future</span>&lt;Outcome?&gt; build() <span class="k">async</span> =&gt; <span class="k">null</span>;
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; place() <span class="k">async</span> {
+    state = <span class="k">const</span> AsyncLoading();
+    <span class="k">final</span> lines = [
+      <span class="k">for</span> (<span class="k">final</span> e <span class="k">in</span> ref.read(basketProvider).entries)
+        OrderLine(e.key, e.value),
+    ];
+    <span class="k">final</span> result = <span class="k">await</span> ref.read(placeOrderProvider)(lines);
+    <span class="c line-bidi">// ربما أُغلقت الشاشة أثناء الانتظار.</span>
+    <span class="k">if</span> (!ref.mounted) {
+      <span class="k">return</span>;
+    }
+    <span class="k">if</span> (result <span class="k">is</span> Ok) {
+      ref.read(basketProvider.notifier).clear();
+      <span class="c line-bidi">// السجل قديم الآن: ارمه، فيُحمَّل من جديد لمن يشاهده.</span>
+      ref.invalidate(historyProvider);
+    }
+    state = AsyncData(result);
+  }
+}
+
+<span class="k">final</span> placeControllerProvider =
+    AsyncNotifierProvider&lt;PlaceController, Outcome?&gt;(PlaceController.<span class="k">new</span>);</pre></div>
+
+<ul>
+<li>داخل الدوال تأخذ <code>ref.read</code> القيمة مرة واحدة. ومكان <code>ref.watch</code> هو <code>build</code>، حيث يجب أن يعيد التغيير البناء.</li>
+<li>وبعد <code>await</code> تقول <code>ref.mounted</code> هل ما زال الـ provider حياً؛ فإن أُغلقت الشاشة في هذه الأثناء فلا أحد لنخبره.</li>
+<li>و<code dir="ltr">ref.invalidate(historyProvider)</code> ترمي السجل. فيتلقى من يشاهده حالة تحميل، ثم القائمة الجديدة بالطلب المرسل للتو. ولم تحتج أي شاشة أن يُقال لها «حدِّثي».</li>
+</ul>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-ar-shots-placed.png" alt=""></div>
+<figcaption>أُرسل: والسجل حُدِّث وحده</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-ar-shots-closed.png" alt=""></div>
+<figcaption>استبدال واحد: 23:00</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-ar-shots-offline.png" alt=""></div>
+<figcaption>استبدال واحد: بلا اتصال</figcaption>
+</figure>
+</div>
+
+<h2><span class="sec">3.5</span> <span>أعد بناء ما تغيّر وحده</span></h2>
+
+<p>الـ Widget الذي يشاهد السلة كلها يُعاد بناؤه كلما تغيّر فيها أي شيء. وكثيراً ما يحتاج أقل بكثير: فزر الإرسال لا يحتاج إلا أن يعرف هل السلة فارغة. و<code>select</code> تشاهد قيمة واحدة محسوبة من provider، ولا تعيد البناء إلا حين تتغير <em>تلك</em> القيمة. والاختبار يضيف ثلاث قطع ويعدّ مرات بناء Widgetين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/select_test.dart (جزء)</div><pre class="code">              Consumer(
+                builder: (context, ref, _) {
+                  ref.watch(basketProvider.select((b) =&gt; b.isEmpty));
+                  builds[<span class="s">&#x27;select isEmpty&#x27;</span>] = builds[<span class="s">&#x27;select isEmpty&#x27;</span>]! + <span class="n">1</span>;
+                  <span class="k">return</span> <span class="k">const</span> SizedBox();
+                },
+              ),</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/select_test.dart</span>
+00:00 +0: loading test/select_test.dart
+00:00 +0: select تعيد البناء فقط حين تتغير القيمة المختارة
+{whole basket: 4, select isEmpty: 2}
+00:00 +1: All tests passed!</pre></div>
+
+<p>أربع مرات للسلة كلها، مرة في البداية ومرة لكل قطعة. ومرتان لـ <code>isEmpty</code>: في البداية، وحين كفّت السلة عن أن تكون فارغة. وشارة السلة في الشريط تفعل الشيء نفسه بـ provider: تشاهد <code>basketCountProvider</code>، لا السلة.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أين تستخدم <code>ref.watch</code>، وأين <code>ref.read</code>؟</li><li>لماذا تبني <code>add</code> خريطة جديدة بدل تغيير <code>state</code>؟</li><li>ماذا يعرض السجل بينما يعيد Riverpod محاولة طلب فاشل؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">3.6</span> <span>استبدال واحد</span></h2>
+
+<p>ولأن كل اعتماد provider، يمكن استبدال أي منها في جذر الحاوية، بـ <dfn>الاستبدالات</dfn> (overrides). والشاشات الثلاث أعلاه التطبيق نفسه، ولا تختلف إلا في هذا:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/orders_closed.dart (جزء)</div><pre class="code"><span class="k">void</span> main() {
+  runApp(
+    ProviderScope(
+      <span class="c line-bidi">// استبدال واحد: الساعة تقول 23:00.</span>
+      overrides: [
+        clockProvider.overrideWithValue(() =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">22</span>, <span class="n">23</span>)),
+      ],
+      child: <span class="k">const</span> OrdersApp(),
+    ),
+  );
+}</pre></div>
+
+<p>وفي الاختبار يشغّل السطر نفسه القواعد بلا شبكة. والمصدر يعدّ ما وصله: لا شيء، لأن المقهى كان مغلقاً، وبقيت السلة لوقت لاحق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/override_test.dart (جزء)</div><pre class="code">    <span class="k">final</span> container = ProviderContainer.test(
+      overrides: [
+        clockProvider.overrideWithValue(() =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">22</span>, <span class="n">23</span>)),
+        ordersSourceProvider.overrideWithValue(source),
+      ],
+    );
+    container.read(basketProvider.notifier).add(menu.first);
+    <span class="k">await</span> container.read(placeControllerProvider.notifier).place();
+
+    <span class="k">final</span> outcome = container.read(placeControllerProvider).value;
+    expect((outcome! <span class="k">as</span> Err).failure, isA&lt;Closed&gt;());
+    expect(source.posts, <span class="n">0</span>);
+    expect(container.read(basketCountProvider), <span class="n">1</span>);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/override_test.dart</span>
+00:00 +0: loading test/override_test.dart
+00:00 +0: استبدال واحد، والقواعد تعمل بلا شبكة
+00:00 +1: All tests passed!</pre></div>
+
+<p>والشاشة كلها، تُلمس كما يلمسها شخص، والسجل يحدّث نفسه بعد الطلب:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/page_test.dart</span>
+00:00 +0: loading test/page_test.dart
+00:00 +0: الإضافة والإرسال وتحديث السجل
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>اجعل كل ما يلمس العالم الخارجي provider: الساعة، وعميل الشبكة، والتخزين، ولغة الجهاز، ومولّد الأرقام العشوائية. فيبدأ كل اختبار من حاوية فيها العالم الذي يحتاجه بالضبط، وتكون كل نسخة (عرض، وتجريب، وإنتاج) قائمة استبدالات مختلفة، لا تطبيقاً مختلفاً.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td><code>ref.read</code> في <code>build</code></td><td>لا يتحدث الـ Widget أبداً</td><td><code>ref.watch</code> في <code>build</code>؛ و<code>read</code> في الدوال المستدعاة</td></tr>
+<tr><td><code>ref.watch</code> في دالة مستدعاة</td><td>إعادة بناء واشتراكات في المكان الخطأ</td><td><code>ref.read</code> في الدوال المستدعاة ودوال الـ notifier</td></tr>
+<tr><td>تغيير الحالة في مكانها</td><td>لا يُبلَّغ أحد</td><td>أسند قيمة جديدة إلى <code>state</code></td></tr>
+<tr><td>مؤشر دوّار وحده مع <code>hasError</code></td><td>ينتظر الشخص إلى الأبد أثناء إعادة المحاولة</td><td>اعرض الخطأ وزر «أعد المحاولة»</td></tr>
+<tr><td>تحديث الشاشات باليد بعد فعل</td><td>الشاشات المنسية تعرض بيانات قديمة</td><td><code>ref.invalidate</code> للـ provider الذي صار قديماً</td></tr>
+<tr><td>provider يُنشأ داخل <code>build</code></td><td>provider جديد، وحالة ضائعة، مع كل بناء</td><td>providers في أعلى الملف؛ و<code>family</code> للمعاملات</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الـ providers إعلانات في أعلى الملفات؛ والقيم تعيش في حاوية (<code>ProviderScope</code>، <code>ProviderContainer</code>) وتُنشأ عند أول استخدام.</li>
+<li>الاعتماديات providers يشاهد بعضها بعضاً بـ <code>ref.watch</code>؛ وملف واحد لكل ميزة يصلها.</li>
+<li><code>Notifier</code> يحمل الحالة المتغيرة قيماً لا تتغير؛ والـ providers المشتقة تحسب منها.</li>
+<li><code>FutureProvider</code> و<code>AsyncNotifier</code> يعطيان <code>AsyncValue</code>: اعمل switch على البيانات ثم الخطأ ثم التحميل، بهذا الترتيب. ويعيد Riverpod محاولة الفشل ما لم يُطلب منه غير ذلك.</li>
+<li><code>select</code> والـ providers المشتقة تعيد بناء ما تغيّر وحده؛ و<code>ref.invalidate</code> تحدّث ما جعله فعلٌ قديماً.</li>
+<li>الاستبدالات تبدّل أي اعتماد، بسطر واحد، للاختبارات وللنسخ المختلفة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>ref.watch</code> في دوال <code>build</code> (للـ Widgets والـ providers)، حيث يجب أن يعيد التغيير البناء؛ و<code>ref.read</code> في الدوال المستدعاة ودوال الـ notifier، لاستخدام القيمة مرة. 2. لأن Riverpod يبلّغ حين تصير <code>state</code> كائناً مختلفاً؛ وتغيير الخريطة نفسها في مكانها يُبقيها الكائن نفسه، فلا يُخبَر أحد. 3. قيمة ما زالت في حالة تحميل لكنها تحمل الخطأ، فتستطيع الشاشة أن تعرض الخطأ وزر «أعد المحاولة» بدل مؤشر دوّار.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">كل مشروع يضيف أداة من أدوات Riverpod لم يزد الفصل على ذكرها. والاختبارات هي المقصود: كل واحد يثبت السلوك الذي تعد به الأداة.</p>
+
+<div class="project">
+<p class="project-label">المشروع 3.1 · سهل</p>
+<h3>provider لكل طلب</h3>
+<p class="project-goal">provider يعطي طلباً واحداً برقمه، مبنياً من السجل، ومحفوظاً لكل رقم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>FutureProvider.family</code>، و<code>ref.watch</code> لـ <code>future</code> الخاص بـ provider آخر، والحفظ المؤقت.</p>
+<ol class="steps">
+<li>أعلن <code dir="ltr">orderProvider = FutureProvider.family&lt;Order?, int&gt;((ref, id) async {…})</code>.</li>
+<li>وفي داخله انتظر <code dir="ltr">ref.watch(historyProvider.future)</code> وأعد الطلب الذي له هذا الرقم، أو <code>null</code> (<code>firstWhereOrNull</code> من حزمة <code>collection</code>).</li>
+<li>وفي اختبار أرسل طلبين، واقرأ <code dir="ltr">orderProvider(1)</code> و<code dir="ltr">orderProvider(2)</code>، وتحقق من مجموعيهما، وأن الرقم 3 يعطي <code>null</code>، وأن قراءة الرقم 1 من جديد تعطي الكائن نفسه تماماً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأن <code>orderProvider</code> يشاهد السجل، فإبطال السجل بعد طلب جديد يحدّث كل providers الطلبات أيضاً. ولا شيء يجب أن يتذكر تحديثها.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/family_test.dart</span>
+00:00 +0: loading test/family_test.dart
+00:00 +0: لكل رقم طلب provider خاص به، محفوظ
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 3.2 · متوسط</p>
+<h3>بحث يلغي نفسه</h3>
+<p class="project-goal">ابحث في القائمة والشخص يكتب، دون البحث عن كل حرف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>autoDispose</code>، و<code>family</code>، و<code>ref.onDispose</code>، وتأخير البحث بلا مؤقت.</p>
+<ol class="steps">
+<li><code>Notifier</code> يحمل نص البحث؛ و<code>onChanged</code> في حقل النص تضبطه.</li>
+<li><code>searchProvider</code> من نوع <code>FutureProvider.autoDispose.family</code> على نص البحث. يسجّل <code>ref.onDispose</code>، وينتظر 300 جزء من الثانية، ولا يبحث إلا إن لم يُرمَ في هذه الأثناء.</li>
+<li>كتابة حرف جديد تجعل الصفحة تشاهد بحثاً جديداً: فلا يبقى للقديم مشاهد، فيُرمى، ولا يبحث أبداً.</li>
+<li>اختبر بكتابة ثلاثة أحرف بفاصل 100 جزء من الثانية، وتأكد أن البحث لم يُنفَّذ إلا للنص الفارغ وللأخير.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذا تأخير البحث من الكتاب الخامس بلا <code>Timer</code> يُلغى: فـ <code>autoDispose</code> تتولى الإلغاء. ولطلب شبكة حقيقي ألغِ الطلب أيضاً في <code>onDispose</code>، فلا يكتمل بلا فائدة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-riverpod-ar-shots-search.png" alt=""></div>
+<figcaption>المشروع 3.2: بحث واحد، للنص الأخير.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/search_test.dart</span>
+00:00 +0: loading test/search_test.dart
+00:00 +0: آخر بحث وحده يُنفَّذ
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 3.3 · تحدٍّ</p>
+<h3>تراجع، مجاناً</h3>
+<p class="project-goal">سلة تستطيع التراجع عن أي عدد من التغييرات، واحداً في كل مرة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الحالة التي لا تتغير، وسجل للحالات داخل notifier، و<code>container.listen</code> في الاختبارات.</p>
+<ol class="steps">
+<li>كل تغيير يمر بدالة خاصة واحدة تضع الحالة الحالية في قائمة، ثم تضبط الجديدة.</li>
+<li><code>undo</code> تُرجع آخر حالة؛ و<code>canUndo</code> تقول هل توجد واحدة.</li>
+<li>اختبر تسلسلاً: إضافة، وإضافة، وإضافة، وحذف؛ ثم تراجع أربع مرات، متحققاً من السلة بعد كل مرة، ومن أن ثماني حالات أُعلنت.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذا لا يعمل إلا لأن الحالات لا تُغيَّر في مكانها أبداً: فكل خريطة قديمة ما زالت بالضبط كما كانت. ومع سلة متغيرة يكون «السجل» أربع إشارات إلى الخريطة نفسها، الأخيرة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/undo_test.dart</span>
+00:00 +0: loading test/undo_test.dart
+00:00 +0: التراجع يعود حالة واحدة في كل مرة
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> غيّر <code>BasketNotifier.add</code> لتغيّر الخريطة في مكانها (<code dir="ltr">state[item] = …</code>). أي الاختبارات يفشل، وماذا تفعل الشاشة حين تلمس؟</li>
+<li><span class="level">سهل</span> احذف <code dir="ltr">ref.invalidate(historyProvider)</code> من <code>place</code>. ماذا تعرض الصفحة بعد الطلب، ومتى تلحق؟</li>
+<li><span class="level medium">متوسط</span> اعرض شريطاً سفلياً حين يُرسل الطلب، بـ <code>ref.listen</code> داخل <code>build</code> في الصفحة. لماذا <code>listen</code> لا <code>watch</code>؟</li>
+<li><span class="level medium">متوسط</span> أطفئ إعادة المحاولة لـ <code>historyProvider</code> وحده، بمعامله <code>retry</code>، وانظر إلى شاشة انقطاع الاتصال. متى تختار ذلك في تطبيق حقيقي؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب جذر تركيب رابعاً يستبدل <code>historyProvider</code> نفسه بثلاثة طلبات ثابتة. ماذا يتخطى ذلك مما لا يتخطاه استبدال المصدر؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 4</p>
+<p>ميزة الطلبات تعيش في شاشة واحدة. والتطبيق الحقيقي فيه عشرات، وروابط تدخلها من الإشعارات والويب، وزر رجوع يجب أن يكون منطقياً، وشاشات لا يفتحها إلا من سجّل دخوله. والفصل القادم يفعل ذلك بـ go_router.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1149,6 +1574,16 @@ repainted: {header: 31, chart: 31, footer: 31}</pre></div>
 <li>أعطِ <code>FakeOrdersSource</code> قائمة بداية اختيارية، <code dir="ltr">FakeOrdersSource({this.fails = false, List&lt;Map&lt;String, dynamic&gt;&gt; orders = const []})</code>، تُنسخ إلى <code>_orders</code>؛ ويمرر جذر العرض ثلاثة طلبات بشكل JSON وساعة 10:00. ولا يتغير شيء آخر، وتعرض الصفحة السجل فور أول تحديث. واحفظ بيانات العرض في جذر التركيب أو في ملف عرض، لا في المجال أبداً.</li>
 <li>احفظ <code>piastres</code> في <code>Money</code>، وأبقِ خاصية <code dir="ltr">int get pounds =&gt; piastres ~/ 100</code>، واكتب القائمة <code dir="ltr">Money(4500)</code>؛ فتعمل <code>+</code> و<code>*</code> و<code>==</code> و<code>compareTo</code> كما كانت. ولا يتغير إلا <code>money.dart</code> و<code>order.dart</code>. والملفات قليلة لأن المجال وحده يعرف ما المال: فطبقة البيانات لا تحمل أسعاراً أبداً (الخادم لا يحسب شيئاً هنا)، والعرض لا يقرأ إلا <code>pounds</code>. وهذه فائدة كائن القيمة.</li>
 <li>هذا مسموح: فقاعدة الاعتماد تخص المجال، والعرض طبقة Flutter بطبيعته. لكن المتحكم المكتوب بـ Dart خالصة، بحالته قيمةً لا تتغير وبلا <code>BuildContext</code>، يُختبر دون رسم أي Widget، ويُعاد استخدامه في شاشة أخرى أو تطبيق سطح مكتب، ويُستبدل في الاختبارات بسهولة أكبر. وتخسر راحة مستمعي <code>ChangeNotifier</code>، وتحتاج طريقة أخرى لتخبر الشاشة أن شيئاً تغيّر، وهذا بالضبط ما يعطيك إياه <code>Notifier</code> في Riverpod، وهو صنف Dart خالصة، في الفصل القادم.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 3</h2>
+<ol class="exercises">
+<li>أول لمسة ترمي خطأً: فـ <code>build</code> تعيد <code dir="ltr">const {}</code>، والخريطة الثابتة لا تتغير، فتفشل <code dir="ltr">state[item] = …</code> بـ <code>UnsupportedError</code>، ويفشل معها كل اختبار يضيف إلى السلة. واجعل الحالة الأولى <code>{}</code> عادية فيختفي الخطأ، وهذا أسوأ: فالخريطة تتغير الآن، لكن <code>state</code> هو الكائن نفسه، فلا يُبلَّغ أحد، وتبقى الدوائر على الشاشة تعرض 0، ويعدّ اختبار select مرة بناء واحدة لكل منهما. والحالات الأولى الثابتة حارس رخيص من هذا الخطأ.</li>
+<li>يُرسل الطلب وتُفرَّغ السلة، لكن «طلباتك» تبقى تقول «لم تطلب شيئاً بعد»: فالسجل حُمِّل مرة ولم يخبره شيء أنه صار قديماً. ولا يلحق إلا حين يعيد بناءه شيء من الصفر: زر «أعد المحاولة»، أو مغادرة شاشة رُمي الـ provider الخاص بها ثم فتحها، أو إعادة تشغيل التطبيق. والإبطال في المكان الذي تتغير فيه البيانات هو ما يُبقي كل شاشة صحيحة دون أن تعرف الشاشات بعضها.</li>
+<li><code dir="ltr">ref.listen(placeControllerProvider, (previous, next) { if (next.value case Ok(:final value)) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('… ${value.id}'))); } });</code> في بداية <code>build</code>. فـ <code>listen</code> تشغّل دالة مرة واحدة لكل تغيير، وهذا ما يحتاجه الأثر الجانبي: شريط سفلي، أو انتقال، أو صوت. أما <code>watch</code> فتعيد البناء فقط، وعرض الشريط من <code>build</code> سيعرضه من جديد مع كل إعادة بناء، حتى حين لا يحدث جديد.</li>
+<li><code dir="ltr">FutureProvider(…, retry: (count, error) =&gt; null)</code>. فتعرض شاشة انقطاع الاتصال الخطأ فوراً بدل قيمة تبقى في التحميل أثناء إعادة المحاولة؛ ويبقى زر «أعد المحاولة» يعمل لأنه يُبطل. واختر ذلك حين لا تفيد إعادة المحاولة (403، أو خطأ تحقق، أو سجل غير موجود)، أو حين يجب أن يقرر الشخص، مثلاً على باقة بيانات محدودة؛ وأبقِ إعادة المحاولة التلقائية للأخطاء العابرة مثل انتهاء المهلة.</li>
+<li><code dir="ltr">historyProvider.overrideWith((ref) async =&gt; [order1, order2, order3])</code>. وهذا يتخطى المصدر والـ DTO وتحويل المستودع: جيد لصور الشاشات ولاختبار كيف ترسم الصفحة قائمة معروفة، لكنه لم يعد يختبر أن طبقة البيانات تنتج هذه القائمة، ولا تظهر الطلبات الجديدة أبداً، لأن إبطال السجل يشغّل الاستبدال من جديد فيعيد الثلاثة نفسها. أما استبدال المصدر فيُبقي كل الطبقات تعمل.</li>
 </ol>
 
 </section>
