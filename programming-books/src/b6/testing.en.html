@@ -1,0 +1,230 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/testing/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Testing: Unit, Widget, Golden and Integration</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>choose the right kind of test: unit, widget, golden or integration, and how many of each</li>
+<li>make code testable by passing in what it depends on: a repository, an HTTP client, a clock</li>
+<li>replace the network with fakes that behave like the real thing, under the test’s control</li>
+<li>protect the look of a widget with golden images, and read a golden failure</li>
+<li>run the real app end to end with <code>integration_test</code>, and measure coverage</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter of this book has proved its claims with tests. This one is about the tests themselves: which kinds exist, what each one is good at, and how to write code that is easy to test in the first place. The app is small, a menu that may fail to load and an order with a happy hour, but it has the parts of every real app: logic, a server, a screen, and a look that should not change by accident.</p>
+
+<aside class="bit" data-mood="wow"><p>The integration test in this chapter found a real bug on its first run, one that the screenshots of the same app did not show. Section {{n}}.6 tells the story.</p></aside>
+
+<h2>{{n}}.1 Four kinds of test</h2>
+
+<table>
+<thead><tr><th>Kind</th><th>What it runs</th><th>Speed</th><th>Good for</th></tr></thead>
+<tbody>
+<tr><td>Unit</td><td>A function or a class, in plain Dart</td><td>Milliseconds</td><td>Rules: prices, dates, parsing</td></tr>
+<tr><td>Widget</td><td>Widgets in a test environment, without a device</td><td>Tens of milliseconds</td><td>Screens: states, taps, text</td></tr>
+<tr><td>Golden</td><td>A widget, compared pixel by pixel with an approved image</td><td>Tens of milliseconds</td><td>The look of components</td></tr>
+<tr><td>Integration</td><td>The real app, built and launched on a device</td><td>Seconds to minutes</td><td>Whole journeys, platform code</td></tr>
+</tbody>
+</table>
+
+<p>A healthy suite is shaped like a pyramid: many unit tests, a good number of widget tests, a few goldens for the components that matter, and a handful of integration tests for the journeys that pay the bills. Each kind catches what the cheaper ones cannot, and costs more to run and to keep.</p>
+
+<h2>{{n}}.2 Unit tests</h2>
+
+<p>The rules of the café are plain Dart, with no Flutter in sight:</p>
+
+<pre data-code="lib/domain/pricing.dart" data-title="lib/domain/pricing.dart"></pre>
+
+<p>Note what <code>total</code> takes: the time. It does not call <code>DateTime.now()</code> itself, so a test can ask about 10:00 and 15:30 on any day, at any hour the tests happen to run:</p>
+
+<pre data-code="test/pricing_test.dart" data-from="^void main" data-title="test/pricing_test.dart"></pre>
+<pre data-term="pricing-test.sh"></pre>
+
+<p>This is the whole secret of testable code: <strong>pass in what you depend on</strong>. A function that reads the clock, the network or a file by itself can only be tested by controlling the clock, the network or the file. A function that is given them can be tested with anything.</p>
+
+<h2>{{n}}.3 Fakes at the edge</h2>
+
+<p>The screen needs a menu. It should not care where the menu comes from, so it depends on a small interface, and the real implementation talks HTTP:</p>
+
+<pre data-code="lib/data/menu.dart" data-from="^abstract interface" data-title="lib/data/menu.dart (part)"></pre>
+
+<p>The API class is tested with a fake HTTP client. <code>package:http</code> ships one, <code>MockClient</code>: it receives each request, so the test can check it, and returns whatever response the test chooses:</p>
+
+<pre data-code="test/menu_api_test.dart" data-from="^void main" data-title="test/menu_api_test.dart"></pre>
+<pre data-term="api-test.sh"></pre>
+
+<p>Two words are often mixed up. A <dfn>fake</dfn> is a working implementation that takes a shortcut: an in-memory repository, a client that answers from a function. A <dfn>mock</dfn> is an object that records calls so the test can verify them, usually made with a package such as <code>mocktail</code>. Fakes test behaviour (“the screen shows the menu”), mocks test interaction (“the screen called <code>menu()</code> once”). Prefer fakes; reach for a mock when the interaction itself is the point, and even then a fake with a counter often does the job, as Project {{n}}.2 shows.</p>
+
+<h2>{{n}}.4 Widget tests</h2>
+
+<p>The screen takes its repository and its clock as parameters, for the same reason as <code>total</code>:</p>
+
+<pre data-code="lib/ui/menu_screen.dart" data-from="class MenuScreen extends" data-to="final DateTime Function() now;" data-title="lib/ui/menu_screen.dart (part)"></pre>
+
+<p>The test gives it a fake whose menu arrives only when the test says so, through a <code>Completer</code>. That makes the loading state testable: it lasts exactly as long as the test wants.</p>
+
+<pre data-code="test/menu_screen_test.dart" data-from="^class FakeMenu" data-to="expect(find.byType(CircularProgressIndicator), findsNothing)" data-title="test/menu_screen_test.dart (part)"></pre>
+<pre data-term="screen-test.sh"></pre>
+
+<p>The second test taps two lattes and a cake and expects 145 EGP. Its clock says 10:00, so happy hour never makes the test pass in the morning and fail in the afternoon. A test that depends on when it runs is the most common kind of <dfn>flaky</dfn> test: green on your machine, red in CI at 15:05.</p>
+
+<div class="phones">
+<figure data-img="shots/error.png" data-frame="phone">
+<figcaption>The demo app’s first visit fails</figcaption>
+</figure>
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>After “Try again”, and an order</figcaption>
+</figure>
+</div>
+
+<h2>{{n}}.5 Golden tests</h2>
+
+<p>A widget test checks what a screen says. A <dfn>golden test</dfn> checks how it looks: it draws a widget, and compares the pixels with an approved image, the golden, kept in the repository.</p>
+
+<pre data-code="test/golden_test.dart" data-from="^void main" data-title="test/golden_test.dart (part)"></pre>
+
+<p>The first time, there is no golden to compare with, so you create it, look at it, and commit it:</p>
+
+<pre data-term="golden-update.sh"></pre>
+<pre data-term="golden-test.sh"></pre>
+
+<p>Then a teammate changes the theme’s seed colour from brown to teal, for an unrelated screen, and the golden test fails:</p>
+
+<pre data-term="golden-fail.sh"></pre>
+
+<figure data-img="shots/golden-compare.png">
+<figcaption>Left to right: the approved golden, what the test drew, and the difference Flutter saved in test/failures. Every pixel changed, because the seed colour also tints the background.</figcaption>
+</figure>
+
+<p>Two things in those pictures surprise everyone the first time. The text is drawn as boxes: Flutter tests use a test font in which every letter is a square, so that goldens are identical on every machine, whatever fonts it has installed. And the icons are squares too, for the same reason. Goldens protect layout, colour and spacing; the words are checked by widget tests.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Goldens are sensitive to everything that draws: the Flutter version, the operating system’s image libraries, even the GPU on some setups. Generate and compare them in one place, usually the CI machine, and update them with <code>--update-goldens</code> only after looking at the difference. A golden updated without looking protects nothing.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does <code>total</code> take the time as a parameter?</li><li>What is the difference between a fake and a mock?</li><li>Why is the text in a golden image drawn as boxes?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Integration tests</h2>
+
+<p>Everything so far ran in a test environment: no real window, no real engine, no platform. An <dfn>integration test</dfn> builds the real app and runs it on a device, here a Linux desktop, the device this book’s machine has, on a virtual screen. The same test runs unchanged on an Android emulator or a phone with <code>-d</code> and the device’s id.</p>
+
+<pre data-code="integration_test/order_flow_test.dart" data-from="^void main" data-title="integration_test/order_flow_test.dart"></pre>
+<pre data-term="integration-test.sh"></pre>
+
+<p>The package is part of the Flutter SDK, added as a development dependency:</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>On its first run, this test failed. The “Try again” button was written as <code>onPressed: () =&gt; setState(() =&gt; drinks = widget.repository.menu())</code>. The inner arrow returns the value of the assignment, a <code>Future</code>, and <code>setState</code> asserts that its callback returns nothing, because an <code>async</code> callback would update the state too late. The integration test runs a debug build, where assertions are on, and stopped with “setState() callback argument returned a Future”. The screenshots of the same app came from a release build, where assertions are removed, so the button seemed to work there. The fix is a block body: <code>setState(() { drinks = widget.repository.menu(); })</code>.</p>
+
+<p>That is the value of running the real thing: it found a mistake in a path no widget test had walked yet.</p>
+
+<h2>{{n}}.7 Coverage</h2>
+
+<p><code>flutter test --coverage</code> records which lines the tests ran, in <code>coverage/lcov.info</code>. A short script in the project, <code>tool/coverage.dart</code>, prints it per file:</p>
+
+<pre data-term="coverage.sh"></pre>
+
+<p>Read coverage as a map of what no test has touched, not as a score. The missing lines here are <code>MenuException.toString</code> and the error branch of the screen, with its “Try again” button: exactly the path where section {{n}}.6 found its bug. (Project {{n}}.2 covers it; this run did not include it.) And notice what is not in the list at all: the demo repository. A file that no test imports does not appear in the report, so it cannot even lower the percentage. 100% coverage does not mean the code is right; 40% means that most of it has never run in a test at all.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>When a bug is reported, write the test that shows it before fixing it, and watch it fail. Then fix the code and watch it pass. The test proves you understood the bug, proves the fix, and guards against its return, and over the years such tests become the most valuable part of the suite: each one stands for something that really went wrong.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>DateTime.now()</code> inside logic</td><td>Tests that fail at certain hours</td><td>Pass the clock in</td></tr>
+<tr><td>Real network in tests</td><td>Slow, flaky tests that need the server up</td><td>A fake repository, or <code>MockClient</code></td></tr>
+<tr><td>Mocking everything</td><td>Tests that break on every refactor</td><td>Fakes that behave; mocks only for interactions</td></tr>
+<tr><td>Updating goldens without looking</td><td>A broken look, approved</td><td>Look at the diff first</td></tr>
+<tr><td>Only testing in release builds</td><td>Assertions never run</td><td>Widget and integration tests in debug</td></tr>
+<tr><td>Chasing 100% coverage</td><td>Tests that run lines without checking anything</td><td>Use coverage to find untested paths</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Unit tests for rules, widget tests for screens, goldens for looks, integration tests for journeys, in that proportion.</li>
+<li>Code is testable when it is given what it depends on: a repository, an HTTP client, a clock.</li>
+<li>Fakes behave like the real thing without the network; a <code>Completer</code> controls when they answer.</li>
+<li>Goldens compare pixels with an approved image; text is drawn as boxes so that they match everywhere.</li>
+<li>Integration tests run the real app on a device, with assertions on, and find what the others cannot.</li>
+<li>Coverage shows what has never run in a test; it is a map, not a score.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that a test can choose the time: a function that called <code>DateTime.now()</code> itself would give different answers depending on when the test ran, and happy hour could only be tested between 15:00 and 17:00. 2. A fake is a simpler working implementation (an in-memory repository, a client that answers from a function); a mock records the calls made to it so the test can verify them. Fakes test behaviour, mocks test interaction. 3. Flutter tests draw text with a test font in which every letter is a box, so that goldens are identical on every machine regardless of the fonts installed; the words themselves are checked by widget tests.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects test the edges of a rule, a failure path, and the look of a component in a language and a theme the golden above does not cover.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Happy hour at its edges</h3>
+<p class="project-goal">Bugs live at boundaries. Test happy hour at 14:59, 15:00, 16:59, 17:00 and in the middle of the night, with one table of cases.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>group</code>, table-driven tests, and test names built from data.</p>
+<ol class="steps">
+<li>Write a map from times to the expected answer.</li>
+<li>Loop over it, creating one <code>test</code> per case, named from the time, so a failure says which time is wrong.</li>
+<li>Change <code>&lt; 17</code> to <code>&lt;= 17</code> in <code>isHappyHour</code> and see exactly one case fail.</li>
+</ol>
+<pre data-code="test/edges_test.dart" data-from="^  group(" data-to="^  });" data-title="test/edges_test.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/edges-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Try again, really</h3>
+<p class="project-goal">Test the failure path of the screen: the first call fails, the error and the button appear, and the button asks the repository again, which now answers.</p>
+<p class="project-skills"><strong>You will practise:</strong> fakes with state, counting calls without a mocking library, and <code>pumpAndSettle</code>.</p>
+<ol class="steps">
+<li>Write <code>FlakyMenu</code>, which throws on its first call and returns a menu after that, and counts its calls.</li>
+<li>Pump the screen, and expect the error text and one call.</li>
+<li>Tap “Try again”, settle, and expect two calls and the menu.</li>
+</ol>
+<pre data-code="test/retry_test.dart" data-from="^class FlakyMenu" data-to="^}" data-title="test/retry_test.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/retry-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> after the tap, one <code>pump</code> is not enough: the first frame shows the new <code>Future</code> as loading, and the menu needs another frame after it completes. <code>pumpAndSettle</code> pumps until nothing is scheduled. This test would also have caught the <code>setState</code> bug of section {{n}}.6, had it been written first.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A golden in Arabic and in the dark</h3>
+<p class="project-goal">Add a golden of the drink tile with right-to-left text and the dark theme, so that a change that breaks either one is caught.</p>
+<p class="project-skills"><strong>You will practise:</strong> golden tests with a fixed view size, <code>Directionality</code>, and dark themes.</p>
+<ol class="steps">
+<li>Set the test view to 320 × 120 at a pixel ratio of 1, so the image is the same everywhere, and reset it at the end.</li>
+<li>Pump the tile inside a dark theme and a right-to-left <code>Directionality</code>.</li>
+<li>Create the golden with <code>--update-goldens</code>, look at it, and run the test.</li>
+</ol>
+<pre data-code="test/golden_rtl_test.dart" data-from="await tester.pumpWidget(" data-to="matchesGoldenFile" data-title="test/golden_rtl_test.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/golden-rtl-dark.png">
+<figcaption>Project {{n}}.3: the golden, mirrored and dark. The count is now on the right, the button on the left.</figcaption>
+</figure>
+<pre data-term="projects/golden-rtl-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a unit test for a drink ordered three times during happy hour, priced 45. What is the total, and why not 108.0?</li>
+<li><span class="level">Easy</span> The API test checks the request’s address. Add a check that the request is a <code>GET</code>.</li>
+<li><span class="level">Medium</span> Write a widget test that fails if the total is shown before the menu has loaded.</li>
+<li><span class="level">Medium</span> Make goldens use a real font, so that the images show actual words. What do you gain, and what do you risk?</li>
+<li><span class="level">Challenge</span> Turn the integration test into a check that runs on every pull request. Which machine runs it, what does it need installed, and how long can you afford it to take?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The app passes its tests. Does it work for someone who cannot see the screen, who uses large text, or who navigates with a switch? The next chapter makes the app accessible, and proves it, with the same tools: semantics, tests and real screen readers.</p>
+</div>
+</section>

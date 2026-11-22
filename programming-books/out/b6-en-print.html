@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "Chapter 9: Performance: Jank, Memory and Startup"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "Chapter 10: Testing: Unit, Widget, Golden and Integration"; } }
+@page ch10:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -57,7 +59,7 @@
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">8</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">41</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">150</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">8</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">41</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">167</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -4069,6 +4071,510 @@ chart painted in 60 frames: without a boundary 60, with one 0
 <p>Every chapter so far has proved its claims with tests. The next one is about the tests themselves: unit, widget and integration tests, golden images, fakes and mocks, and a test suite that a team trusts enough to ship on a green build.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b6/testing/en">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>Testing: Unit, Widget, Golden and Integration</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>choose the right kind of test: unit, widget, golden or integration, and how many of each</li>
+<li>make code testable by passing in what it depends on: a repository, an HTTP client, a clock</li>
+<li>replace the network with fakes that behave like the real thing, under the test’s control</li>
+<li>protect the look of a widget with golden images, and read a golden failure</li>
+<li>run the real app end to end with <code>integration_test</code>, and measure coverage</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter of this book has proved its claims with tests. This one is about the tests themselves: which kinds exist, what each one is good at, and how to write code that is easy to test in the first place. The app is small, a menu that may fail to load and an order with a happy hour, but it has the parts of every real app: logic, a server, a screen, and a look that should not change by accident.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The integration test in this chapter found a real bug on its first run, one that the screenshots of the same app did not show. Section 10.6 tells the story.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>Four kinds of test</span></h2>
+
+<table>
+<thead><tr><th>Kind</th><th>What it runs</th><th>Speed</th><th>Good for</th></tr></thead>
+<tbody>
+<tr><td>Unit</td><td>A function or a class, in plain Dart</td><td>Milliseconds</td><td>Rules: prices, dates, parsing</td></tr>
+<tr><td>Widget</td><td>Widgets in a test environment, without a device</td><td>Tens of milliseconds</td><td>Screens: states, taps, text</td></tr>
+<tr><td>Golden</td><td>A widget, compared pixel by pixel with an approved image</td><td>Tens of milliseconds</td><td>The look of components</td></tr>
+<tr><td>Integration</td><td>The real app, built and launched on a device</td><td>Seconds to minutes</td><td>Whole journeys, platform code</td></tr>
+</tbody>
+</table>
+
+<p>A healthy suite is shaped like a pyramid: many unit tests, a good number of widget tests, a few goldens for the components that matter, and a handful of integration tests for the journeys that pay the bills. Each kind catches what the cheaper ones cannot, and costs more to run and to keep.</p>
+
+<h2><span class="sec">10.2</span> <span>Unit tests</span></h2>
+
+<p>The rules of the café are plain Dart, with no Flutter in sight:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/domain/pricing.dart</div><pre class="code"><span class="k">class</span> Line {
+  <span class="k">const</span> Line(<span class="k">this</span>.name, <span class="k">this</span>.price, <span class="k">this</span>.quantity);
+
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> price;
+  <span class="k">final</span> <span class="k">int</span> quantity;
+}
+
+<span class="c line-bidi">// Happy hour: 20% off between 15:00 and 17:00 (17:00 itself is not included).</span>
+<span class="k">bool</span> isHappyHour(DateTime time) =&gt; time.hour &gt;= <span class="n">15</span> &amp;&amp; time.hour &lt; <span class="n">17</span>;
+
+<span class="k">int</span> total(<span class="k">List</span>&lt;Line&gt; lines, DateTime at) {
+  <span class="k">final</span> subtotal = lines.fold(
+    <span class="n">0</span>,
+    (sum, line) =&gt; sum + line.price * line.quantity,
+  );
+  <span class="k">return</span> isHappyHour(at) ? subtotal - subtotal * <span class="n">20</span> ~/ <span class="n">100</span> : subtotal;
+}</pre></div>
+
+<p>Note what <code>total</code> takes: the time. It does not call <code>DateTime.now()</code> itself, so a test can ask about 10:00 and 15:30 on any day, at any hour the tests happen to run:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/pricing_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">final</span> morning = DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">10</span>);
+  <span class="k">final</span> afternoon = DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">15</span>, <span class="n">30</span>);
+  <span class="k">const</span> order = [Line(<span class="s">&#x27;latte&#x27;</span>, <span class="n">45</span>, <span class="n">2</span>), Line(<span class="s">&#x27;cake&#x27;</span>, <span class="n">55</span>, <span class="n">1</span>)];
+
+  test(<span class="s">&#x27;the total of an order&#x27;</span>, () {
+    expect(total(order, morning), <span class="n">145</span>);
+  });
+
+  test(<span class="s">&#x27;happy hour takes 20% off&#x27;</span>, () {
+    expect(total(order, afternoon), <span class="n">116</span>);
+  });
+
+  test(<span class="s">&#x27;an empty order costs nothing&#x27;</span>, () {
+    expect(total(<span class="k">const</span> [], afternoon), <span class="n">0</span>);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/pricing_test.dart</span>
+00:00 +0: loading test/pricing_test.dart
+00:00 +0: the total of an order
+00:00 +1: happy hour takes 20% off
+00:00 +2: an empty order costs nothing
+00:00 +3: All tests passed!</pre></div>
+
+<p>This is the whole secret of testable code: <strong>pass in what you depend on</strong>. A function that reads the clock, the network or a file by itself can only be tested by controlling the clock, the network or the file. A function that is given them can be tested with anything.</p>
+
+<h2><span class="sec">10.3</span> <span>Fakes at the edge</span></h2>
+
+<p>The screen needs a menu. It should not care where the menu comes from, so it depends on a small interface, and the real implementation talks HTTP:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/data/menu.dart (part)</div><pre class="code"><span class="k">abstract</span> <span class="k">interface</span> <span class="k">class</span> MenuRepository {
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu();
+}
+
+<span class="k">class</span> MenuApi <span class="k">implements</span> MenuRepository {
+  MenuApi(<span class="k">this</span>.client, {<span class="k">this</span>.<span class="k">base</span> = <span class="s">&#x27;https://api.bitcafe.online&#x27;</span>});
+
+  <span class="k">final</span> http.Client client;
+  <span class="k">final</span> <span class="k">String</span> <span class="k">base</span>;
+
+  @override
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu() <span class="k">async</span> {
+    <span class="k">final</span> response = <span class="k">await</span> client.<span class="k">get</span>(Uri.parse(<span class="s">&#x27;$base/menu&#x27;</span>));
+    <span class="c line-bidi">// Anything but 200 is a failure the screen can show.</span>
+    <span class="k">if</span> (response.statusCode != <span class="n">200</span>) {
+      <span class="k">throw</span> MenuException(<span class="s">&#x27;status ${response.statusCode}&#x27;</span>);
+    }
+    <span class="k">final</span> items = jsonDecode(response.body) <span class="k">as</span> <span class="k">List</span>&lt;<span class="k">dynamic</span>&gt;;
+    <span class="k">return</span> [
+      <span class="k">for</span> (<span class="k">final</span> item <span class="k">in</span> items) Drink.fromJson(item <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;),
+    ];
+  }
+}</pre></div>
+
+<p>The API class is tested with a fake HTTP client. <code>package:http</code> ships one, <code>MockClient</code>: it receives each request, so the test can check it, and returns whatever response the test chooses:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/menu_api_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  test(<span class="s">&#x27;reads the menu from the server&#x27;</span>, () <span class="k">async</span> {
+    <span class="c line-bidi">// A fake HTTP client from package:http: it answers like a server, and checks the request.</span>
+    <span class="k">final</span> client = MockClient((request) <span class="k">async</span> {
+      expect(request.url.toString(), <span class="s">&#x27;https://api.bitcafe.online/menu&#x27;</span>);
+      <span class="k">return</span> http.Response(
+        jsonEncode([
+          {<span class="s">&#x27;id&#x27;</span>: <span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Latte&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">45</span>},
+        ]),
+        <span class="n">200</span>,
+      );
+    });
+    <span class="k">final</span> menu = <span class="k">await</span> MenuApi(client).menu();
+    expect(menu.single.name, <span class="s">&#x27;Latte&#x27;</span>);
+    expect(menu.single.price, <span class="n">45</span>);
+  });
+
+  test(<span class="s">&#x27;a server error becomes a MenuException&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> client = MockClient((request) <span class="k">async</span> =&gt; http.Response(<span class="s">&#x27;oops&#x27;</span>, <span class="n">500</span>));
+    expect(
+      MenuApi(client).menu(),
+      throwsA(
+        isA&lt;MenuException&gt;().having((e) =&gt; e.reason, <span class="s">&#x27;reason&#x27;</span>, <span class="s">&#x27;status 500&#x27;</span>),
+      ),
+    );
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/menu_api_test.dart</span>
+00:00 +0: loading test/menu_api_test.dart
+00:00 +0: reads the menu from the server
+00:00 +1: a server error becomes a MenuException
+00:00 +2: All tests passed!</pre></div>
+
+<p>Two words are often mixed up. A <dfn>fake</dfn> is a working implementation that takes a shortcut: an in-memory repository, a client that answers from a function. A <dfn>mock</dfn> is an object that records calls so the test can verify them, usually made with a package such as <code>mocktail</code>. Fakes test behaviour (“the screen shows the menu”), mocks test interaction (“the screen called <code>menu()</code> once”). Prefer fakes; reach for a mock when the interaction itself is the point, and even then a fake with a counter often does the job, as Project 10.2 shows.</p>
+
+<h2><span class="sec">10.4</span> <span>Widget tests</span></h2>
+
+<p>The screen takes its repository and its clock as parameters, for the same reason as <code>total</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/ui/menu_screen.dart (part)</div><pre class="code"><span class="k">class</span> MenuScreen <span class="k">extends</span> StatefulWidget {
+  <span class="c line-bidi">// The clock is a parameter, so a test can choose the time.</span>
+  <span class="k">const</span> MenuScreen({
+    <span class="k">super</span>.key,
+    <span class="k">required</span> <span class="k">this</span>.repository,
+    <span class="k">this</span>.now = DateTime.now,
+  });
+
+  <span class="k">final</span> MenuRepository repository;
+  <span class="k">final</span> DateTime <span class="k">Function</span>() now;</pre></div>
+
+<p>The test gives it a fake whose menu arrives only when the test says so, through a <code>Completer</code>. That makes the loading state testable: it lasts exactly as long as the test wants.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/menu_screen_test.dart (part)</div><pre class="code"><span class="k">class</span> FakeMenu <span class="k">implements</span> MenuRepository {
+  <span class="k">final</span> arrives = Completer&lt;<span class="k">List</span>&lt;Drink&gt;&gt;();
+
+  @override
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu() =&gt; arrives.future;
+}
+
+<span class="k">const</span> drinks = [Drink(<span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>), Drink(<span class="s">&#x27;cake&#x27;</span>, <span class="s">&#x27;Cherry cake&#x27;</span>, <span class="n">55</span>)];
+
+Widget screen(MenuRepository repository) =&gt; MaterialApp(
+  <span class="c line-bidi">// 10:00 on a weekday: no happy hour, so the total is predictable.</span>
+  home: MenuScreen(
+    repository: repository,
+    now: () =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">10</span>),
+  ),
+);
+
+<span class="k">void</span> main() {
+  testWidgets(<span class="s">&#x27;shows a spinner, then the menu&#x27;</span>, (tester) <span class="k">async</span> {
+    <span class="k">final</span> fake = FakeMenu();
+    <span class="k">await</span> tester.pumpWidget(screen(fake));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    fake.arrives.complete(drinks);
+    <span class="k">await</span> tester.pump();
+    expect(find.text(<span class="s">&#x27;Latte&#x27;</span>), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/menu_screen_test.dart</span>
+00:00 +0: loading test/menu_screen_test.dart
+00:00 +0: shows a spinner, then the menu
+00:00 +1: tapping a drink adds it to the total
+00:00 +2: All tests passed!</pre></div>
+
+<p>The second test taps two lattes and a cake and expects 145 EGP. Its clock says 10:00, so happy hour never makes the test pass in the morning and fail in the afternoon. A test that depends on when it runs is the most common kind of <dfn>flaky</dfn> test: green on your machine, red in CI at 15:05.</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-testing-en-shots-error.png" alt=""></div>
+<figcaption>The demo app’s first visit fails</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-testing-en-shots-menu.png" alt=""></div>
+<figcaption>After “Try again”, and an order</figcaption>
+</figure>
+</div>
+
+<h2><span class="sec">10.5</span> <span>Golden tests</span></h2>
+
+<p>A widget test checks what a screen says. A <dfn>golden test</dfn> checks how it looks: it draws a widget, and compares the pixels with an approved image, the golden, kept in the repository.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/golden_test.dart (part)</div><pre class="code"><span class="k">void</span> main() {
+  testWidgets(<span class="s">&#x27;a drink tile looks as approved&#x27;</span>, (tester) <span class="k">async</span> {
+    tester.view.physicalSize = <span class="k">const</span> Size(<span class="n">320</span>, <span class="n">120</span>);
+    tester.view.devicePixelRatio = <span class="n">1</span>;
+    addTearDown(tester.view.reset);
+    <span class="k">await</span> tester.pumpWidget(tile(ThemeData(colorSchemeSeed: Colors.brown)));
+    <span class="k">await</span> expectLater(
+      find.byType(DrinkTile),
+      matchesGoldenFile(<span class="s">&#x27;goldens/drink_tile.png&#x27;</span>),
+    );
+  });
+}</pre></div>
+
+<p>The first time, there is no golden to compare with, so you create it, look at it, and commit it:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test --update-goldens test/golden_test.dart test/golden_rtl_test.dart</span>
+00:00 +0: loading test/golden_test.dart
+00:00 +0: test/golden_test.dart: a drink tile looks as approved
+00:00 +1: test/golden_rtl_test.dart: a drink tile in Arabic and in dark mode
+00:00 +2: All tests passed!</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/golden_test.dart</span>
+00:00 +0: loading test/golden_test.dart
+00:00 +0: a drink tile looks as approved
+00:00 +1: All tests passed!</pre></div>
+
+<p>Then a teammate changes the theme’s seed colour from brown to teal, for an unrelated screen, and the golden test fails:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/golden_change_test.dart</span>
+Golden &quot;goldens/drink_tile.png&quot;: Pixel test failed, 100.00%, 38400px diff detected.
+Failure feedback can be found at test/failures
+00:00 +0 -1: a drink tile looks as approved [E]
+00:00 +0 -1: Some tests failed.</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/golden-compare.png</span><b>560px</b></div><img src="img/b6-testing-en-shots-golden-compare.png" alt="">
+<figcaption>Left to right: the approved golden, what the test drew, and the difference Flutter saved in test/failures. Every pixel changed, because the seed colour also tints the background.</figcaption>
+</figure>
+
+<p>Two things in those pictures surprise everyone the first time. The text is drawn as boxes: Flutter tests use a test font in which every letter is a square, so that goldens are identical on every machine, whatever fonts it has installed. And the icons are squares too, for the same reason. Goldens protect layout, colour and spacing; the words are checked by widget tests.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Goldens are sensitive to everything that draws: the Flutter version, the operating system’s image libraries, even the GPU on some setups. Generate and compare them in one place, usually the CI machine, and update them with <code>--update-goldens</code> only after looking at the difference. A golden updated without looking protects nothing.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does <code>total</code> take the time as a parameter?</li><li>What is the difference between a fake and a mock?</li><li>Why is the text in a golden image drawn as boxes?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">10.6</span> <span>Integration tests</span></h2>
+
+<p>Everything so far ran in a test environment: no real window, no real engine, no platform. An <dfn>integration test</dfn> builds the real app and runs it on a device, here a Linux desktop, the device this book’s machine has, on a virtual screen. The same test runs unchanged on an Android emulator or a phone with <code>-d</code> and the device’s id.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">integration_test/order_flow_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets(<span class="s">&#x27;from a failed start to an order&#x27;</span>, (tester) <span class="k">async</span> {
+    <span class="k">await</span> tester.pumpWidget(
+      BitApp(repository: DemoMenu(), now: () =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">10</span>)),
+    );
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;The menu could not be loaded.&#x27;</span>), findsOneWidget);
+
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;Try again&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;Latte&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;Latte&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;Cherry cake&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;Total: 145 EGP&#x27;</span>), findsOneWidget);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test integration_test/order_flow_test.dart -d linux</span>
+00:00 +0: loading integration_test/order_flow_test.dart
+Building Linux application...                                   
+✓ Built build/linux/x64/debug/bundle/bit_app
+00:00 +0: from a failed start to an order
+00:02 +1: (tearDownAll)
+00:02 +1: All tests passed!</pre></div>
+
+<p>The package is part of the Flutter SDK, added as a development dependency:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter pub add http &#x27;dev:integration_test:{&quot;sdk&quot;:&quot;flutter&quot;}&#x27;</span>
+Resolving dependencies...
+Downloading packages...
++ http 1.6.0
+  ... and 11 packages they need
+Changed 12 dependencies!</pre></div>
+
+<p>On its first run, this test failed. The “Try again” button was written as <code>onPressed: () =&gt; setState(() =&gt; drinks = widget.repository.menu())</code>. The inner arrow returns the value of the assignment, a <code>Future</code>, and <code>setState</code> asserts that its callback returns nothing, because an <code>async</code> callback would update the state too late. The integration test runs a debug build, where assertions are on, and stopped with “setState() callback argument returned a Future”. The screenshots of the same app came from a release build, where assertions are removed, so the button seemed to work there. The fix is a block body: <code>setState(() { drinks = widget.repository.menu(); })</code>.</p>
+
+<p>That is the value of running the real thing: it found a mistake in a path no widget test had walked yet.</p>
+
+<h2><span class="sec">10.7</span> <span>Coverage</span></h2>
+
+<p><code>flutter test --coverage</code> records which lines the tests ran, in <code>coverage/lcov.info</code>. A short script in the project, <code>tool/coverage.dart</code>, prints it per file:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart run tool/coverage.dart</span>
+lib/domain/pricing.dart          5/5  100%
+lib/data/menu.dart             10/12   83%
+lib/ui/menu_screen.dart        41/47   87%
+all                            56/64   88%</pre></div>
+
+<p>Read coverage as a map of what no test has touched, not as a score. The missing lines here are <code>MenuException.toString</code> and the error branch of the screen, with its “Try again” button: exactly the path where section 10.6 found its bug. (Project 10.2 covers it; this run did not include it.) And notice what is not in the list at all: the demo repository. A file that no test imports does not appear in the report, so it cannot even lower the percentage. 100% coverage does not mean the code is right; 40% means that most of it has never run in a test at all.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>When a bug is reported, write the test that shows it before fixing it, and watch it fail. Then fix the code and watch it pass. The test proves you understood the bug, proves the fix, and guards against its return, and over the years such tests become the most valuable part of the suite: each one stands for something that really went wrong.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>DateTime.now()</code> inside logic</td><td>Tests that fail at certain hours</td><td>Pass the clock in</td></tr>
+<tr><td>Real network in tests</td><td>Slow, flaky tests that need the server up</td><td>A fake repository, or <code>MockClient</code></td></tr>
+<tr><td>Mocking everything</td><td>Tests that break on every refactor</td><td>Fakes that behave; mocks only for interactions</td></tr>
+<tr><td>Updating goldens without looking</td><td>A broken look, approved</td><td>Look at the diff first</td></tr>
+<tr><td>Only testing in release builds</td><td>Assertions never run</td><td>Widget and integration tests in debug</td></tr>
+<tr><td>Chasing 100% coverage</td><td>Tests that run lines without checking anything</td><td>Use coverage to find untested paths</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Unit tests for rules, widget tests for screens, goldens for looks, integration tests for journeys, in that proportion.</li>
+<li>Code is testable when it is given what it depends on: a repository, an HTTP client, a clock.</li>
+<li>Fakes behave like the real thing without the network; a <code>Completer</code> controls when they answer.</li>
+<li>Goldens compare pixels with an approved image; text is drawn as boxes so that they match everywhere.</li>
+<li>Integration tests run the real app on a device, with assertions on, and find what the others cannot.</li>
+<li>Coverage shows what has never run in a test; it is a map, not a score.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that a test can choose the time: a function that called <code>DateTime.now()</code> itself would give different answers depending on when the test ran, and happy hour could only be tested between 15:00 and 17:00. 2. A fake is a simpler working implementation (an in-memory repository, a client that answers from a function); a mock records the calls made to it so the test can verify them. Fakes test behaviour, mocks test interaction. 3. Flutter tests draw text with a test font in which every letter is a box, so that goldens are identical on every machine regardless of the fonts installed; the words themselves are checked by widget tests.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects test the edges of a rule, a failure path, and the look of a component in a language and a theme the golden above does not cover.</p>
+
+<div class="project">
+<p class="project-label">Project 10.1 · Easy</p>
+<h3>Happy hour at its edges</h3>
+<p class="project-goal">Bugs live at boundaries. Test happy hour at 14:59, 15:00, 16:59, 17:00 and in the middle of the night, with one table of cases.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>group</code>, table-driven tests, and test names built from data.</p>
+<ol class="steps">
+<li>Write a map from times to the expected answer.</li>
+<li>Loop over it, creating one <code>test</code> per case, named from the time, so a failure says which time is wrong.</li>
+<li>Change <code>&lt; 17</code> to <code>&lt;= 17</code> in <code>isHappyHour</code> and see exactly one case fail.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/edges_test.dart (part)</div><pre class="code">  group(<span class="s">&#x27;happy hour at its edges&#x27;</span>, () {
+    <span class="k">final</span> cases = {
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">14</span>, <span class="n">59</span>): <span class="k">false</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">15</span>): <span class="k">true</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">16</span>, <span class="n">59</span>, <span class="n">59</span>): <span class="k">true</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">17</span>): <span class="k">false</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">3</span>, <span class="n">30</span>): <span class="k">false</span>,
+    };
+    cases.forEach((time, expected) {
+      <span class="k">final</span> hhmm =
+          <span class="s">&#x27;${time.hour.toString().padLeft(2, &#x27;</span><span class="n">0</span><span class="s">&#x27;)}:${time.minute.toString().padLeft(2, &#x27;</span><span class="n">0</span><span class="s">&#x27;)}&#x27;</span>;
+      test(
+        <span class="s">&#x27;$hhmm is ${expected ? &#x27;</span><span class="s">&#x27; : &#x27;</span>not <span class="s">&#x27;}happy hour&#x27;</span>,
+        () =&gt; expect(isHappyHour(time), expected),
+      );
+    });
+  });</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/edges_test.dart</span>
+00:00 +0: loading test/edges_test.dart
+00:00 +0: happy hour at its edges 14:59 is not happy hour
+00:00 +1: happy hour at its edges 15:00 is happy hour
+00:00 +2: happy hour at its edges 16:59 is happy hour
+00:00 +3: happy hour at its edges 17:00 is not happy hour
+00:00 +4: happy hour at its edges 03:30 is not happy hour
+00:00 +5: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 10.2 · Medium</p>
+<h3>Try again, really</h3>
+<p class="project-goal">Test the failure path of the screen: the first call fails, the error and the button appear, and the button asks the repository again, which now answers.</p>
+<p class="project-skills"><strong>You will practise:</strong> fakes with state, counting calls without a mocking library, and <code>pumpAndSettle</code>.</p>
+<ol class="steps">
+<li>Write <code>FlakyMenu</code>, which throws on its first call and returns a menu after that, and counts its calls.</li>
+<li>Pump the screen, and expect the error text and one call.</li>
+<li>Tap “Try again”, settle, and expect two calls and the menu.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/retry_test.dart (part)</div><pre class="code"><span class="k">class</span> FlakyMenu <span class="k">implements</span> MenuRepository {
+  <span class="k">var</span> calls = <span class="n">0</span>;
+
+  @override
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu() <span class="k">async</span> {
+    calls++;
+    <span class="k">if</span> (calls == <span class="n">1</span>) {
+      <span class="k">throw</span> <span class="k">const</span> MenuException(<span class="s">&#x27;timeout&#x27;</span>);
+    }
+    <span class="k">return</span> <span class="k">const</span> [Drink(<span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>)];
+  }
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/retry_test.dart</span>
+00:00 +0: loading test/retry_test.dart
+00:00 +0: Try again asks the repository again
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> after the tap, one <code>pump</code> is not enough: the first frame shows the new <code>Future</code> as loading, and the menu needs another frame after it completes. <code>pumpAndSettle</code> pumps until nothing is scheduled. This test would also have caught the <code>setState</code> bug of section 10.6, had it been written first.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 10.3 · Challenge</p>
+<h3>A golden in Arabic and in the dark</h3>
+<p class="project-goal">Add a golden of the drink tile with right-to-left text and the dark theme, so that a change that breaks either one is caught.</p>
+<p class="project-skills"><strong>You will practise:</strong> golden tests with a fixed view size, <code>Directionality</code>, and dark themes.</p>
+<ol class="steps">
+<li>Set the test view to 320 × 120 at a pixel ratio of 1, so the image is the same everywhere, and reset it at the end.</li>
+<li>Pump the tile inside a dark theme and a right-to-left <code>Directionality</code>.</li>
+<li>Create the golden with <code>--update-goldens</code>, look at it, and run the test.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/golden_rtl_test.dart (part)</div><pre class="code">    <span class="k">await</span> tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: <span class="k">false</span>,
+        theme: ThemeData(
+          colorSchemeSeed: Colors.brown,
+          brightness: Brightness.dark,
+        ),
+        home: <span class="k">const</span> Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: <span class="n">320</span>,
+                child: DrinkTile(
+                  drink: Drink(<span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;لاتيه&#x27;</span>, <span class="n">45</span>),
+                  quantity: <span class="n">2</span>,
+                  onAdd: _nothing,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    <span class="k">await</span> expectLater(
+      find.byType(DrinkTile),
+      matchesGoldenFile(<span class="s">&#x27;goldens/drink_tile_rtl_dark.png&#x27;</span>),</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/golden-rtl-dark.png</span><b>560px</b></div><img src="img/b6-testing-en-shots-golden-rtl-dark.png" alt="">
+<figcaption>Project 10.3: the golden, mirrored and dark. The count is now on the right, the button on the left.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/golden_rtl_test.dart</span>
+00:00 +0: loading test/golden_rtl_test.dart
+00:00 +0: a drink tile in Arabic and in dark mode
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a unit test for a drink ordered three times during happy hour, priced 45. What is the total, and why not 108.0?</li>
+<li><span class="level">Easy</span> The API test checks the request’s address. Add a check that the request is a <code>GET</code>.</li>
+<li><span class="level medium">Medium</span> Write a widget test that fails if the total is shown before the menu has loaded.</li>
+<li><span class="level medium">Medium</span> Make goldens use a real font, so that the images show actual words. What do you gain, and what do you risk?</li>
+<li><span class="level hard">Challenge</span> Turn the integration test into a check that runs on every pull request. Which machine runs it, what does it need installed, and how long can you afford it to take?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 11</p>
+<p>The app passes its tests. Does it work for someone who cannot see the screen, who uses large text, or who navigates with a switch? The next chapter makes the app accessible, and proves it, with the same tools: semantics, tests and real screen readers.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -4174,6 +4680,16 @@ chart painted in 60 frames: without a boundary 60, with one 0
 <li>Once. Every row uses the same provider, an <code>AssetImage</code> of the same file wrapped in a <code>ResizeImage</code> of the same width, so they share one key in Flutter’s <code>ImageCache</code>: the first row decodes the photo, and the 999 others reuse the decoded image. It would be decoded again only if the cache evicted it, which happens after 1000 images or 100 MB by default (<code>PaintingBinding.instance.imageCache.maximumSize</code> and <code>maximumSizeBytes</code>).</li>
 <li><code>Future&lt;void&gt; startTogether() =&gt; Future.wait([readSettings().then((settings) =&gt; fetchMenu(settings.language)), openDatabase()]).then((_) {});</code>. The menu still waits for the settings, 300 + 400 = 700 ms, but the database opens at the same time, so the whole startup takes about 700 ms instead of 900.</li>
 <li>Keep a map of builds per widget type (each counted widget adds its <code>runtimeType</code>), reset it after the first frame, tap once, and <code>expect(rowBuilds, 0)</code>, printing the map sorted by count when it fails so the message names the culprit. In CI a count is deterministic: the same code gives the same number on a laptop, a CI machine under load and a fast desktop, so the test fails exactly when the code gets worse. A test of milliseconds measures the machine as much as the code: it either flakes or is given so much slack that it catches nothing.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 10</h2>
+<ol class="exercises">
+<li><code>expect(total(const [Line('latte', 45, 3)], DateTime(2026, 11, 23, 16)), 108);</code>. The subtotal is 135, and 20% of it, computed as <code>135 * 20 ~/ 100</code>, is 27, so the total is 108. It is an <code>int</code>, never <code>108.0</code>, because prices are kept in whole pounds and <code>~/</code> divides without leaving integers: money in floating point collects rounding errors.</li>
+<li>Inside the <code>MockClient</code> callback, add <code>expect(request.method, 'GET');</code>. An <code>expect</code> that fails inside the callback fails the test, because the error travels back through the <code>Future</code> that <code>menu()</code> returns.</li>
+<li>Pump the screen with a <code>FakeMenu</code> whose <code>Completer</code> is never completed, then <code>expect(find.textContaining('Total'), findsNothing)</code> and <code>expect(find.byType(CircularProgressIndicator), findsOneWidget)</code>. It passes today because the total is built inside the data branch; the test makes sure nobody moves it out of there without noticing.</li>
+<li>Load a font file before the test draws, and use it in the theme: <code>final loader = FontLoader('Roboto')..addFont(rootBundle.load('assets/fonts/Roboto-Regular.ttf')); await loader.load();</code>, with <code>ThemeData(fontFamily: 'Roboto')</code>, and the same for the icon font. You gain images a designer can review, and catch problems like text that overflows or wraps. You risk goldens that differ between machines, because real fonts are drawn with anti-aliasing that depends on the platform: generate and compare such goldens on one kind of machine only, usually the CI runner.</li>
+<li>A Linux CI runner can run it as this chapter did: it needs Flutter, the Linux desktop tools (<code>clang</code>, <code>cmake</code>, <code>ninja-build</code>, <code>pkg-config</code>, <code>libgtk-3-dev</code>) and a virtual screen, then <code>xvfb-run flutter test integration_test -d linux</code>. The first build takes a minute or two and each journey a few seconds; keep the pull-request suite under about ten minutes, and run longer journeys, or the same tests on an Android emulator, after merging or every night.</li>
 </ol>
 
 </section>

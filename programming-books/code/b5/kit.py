@@ -31,6 +31,9 @@ def env():
         if os.environ.get(k):
             e[k] = os.environ[k]
     e["NO_PROXY"] = "localhost,127.0.0.1"
+    # A virtual screen, for integration tests that run the app as a Linux desktop program.
+    if os.environ.get("DISPLAY"):
+        e["DISPLAY"] = os.environ["DISPLAY"]
     # The Android SDK, for the release builds of the last chapter.
     if Path("/opt/android-sdk").exists():
         e["ANDROID_HOME"] = "/opt/android-sdk"

@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "الفصل 9: الأداء: التقطّع والذاكرة وسرعة الفتح"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "الفصل 10: الاختبار: الوحدات والـ Widget واللقطات والتكامل"; } }
+@page ch10:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -157,7 +159,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">173</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">193</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -4174,6 +4176,510 @@ chart painted in 60 frames: without a boundary 60, with one 0
 <p>كل فصل حتى الآن أثبت ادعاءاته باختبارات. والفصل القادم عن الاختبارات نفسها: اختبارات الوحدة والـ Widgets والتكامل، والصور الذهبية، والبدائل المزيفة والمحاكية، ومجموعة اختبارات يثق بها الفريق بما يكفي لينشر على بناء أخضر.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b6/testing/ar">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">الفصل 10</p><h1>الاختبار: الوحدات والـ Widget واللقطات والتكامل</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تختار نوع الاختبار المناسب: الوحدة، أو الـ Widget، أو اللقطة الذهبية، أو التكامل، وكم من كل نوع</li>
+<li>تجعل الكود قابلاً للاختبار بتمرير ما يعتمد عليه: مستودعاً، وعميل HTTP، وساعة</li>
+<li>تستبدل الشبكة ببدائل مزيّفة تتصرف كالحقيقية، تحت سيطرة الاختبار</li>
+<li>تحمي شكل الـ Widget بلقطات ذهبية، وتقرأ فشلها</li>
+<li>تشغّل التطبيق الحقيقي من أوله إلى آخره بـ <code>integration_test</code>، وتقيس التغطية</li>
+</ul>
+</div>
+
+<p class="lead">كل فصل في هذا الكتاب أثبت ادعاءاته باختبارات. وهذا الفصل عن الاختبارات نفسها: ما أنواعها، وفيمَ يُجيد كل نوع، وكيف تكتب كوداً سهل الاختبار من البداية. التطبيق صغير، قائمة قد يفشل تحميلها وطلب فيه ساعة سعادة، لكن فيه أجزاء كل تطبيق حقيقي: منطق، وخادم، وشاشة، وشكل يجب ألا يتغير مصادفة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>اختبار التكامل في هذا الفصل وجد خطأً حقيقياً في أول تشغيل له، خطأً لم تُظهره لقطات الشاشة للتطبيق نفسه. ويحكي القسم 10.6 القصة.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>أربعة أنواع من الاختبار</span></h2>
+
+<table>
+<thead><tr><th>النوع</th><th>ما يشغّله</th><th>السرعة</th><th>يصلح لـ</th></tr></thead>
+<tbody>
+<tr><td>الوحدة</td><td>دالة أو صنف، بـ Dart خالصة</td><td>ميلي ثوانٍ</td><td>القواعد: الأسعار والتواريخ والتحليل</td></tr>
+<tr><td>الـ Widget</td><td>Widgets في بيئة اختبار، بلا جهاز</td><td>عشرات الميلي ثواني</td><td>الشاشات: الحالات والضغطات والنصوص</td></tr>
+<tr><td>اللقطة الذهبية</td><td>Widget يُقارن بكسلاً ببكسل بصورة معتمدة</td><td>عشرات الميلي ثواني</td><td>شكل المكونات</td></tr>
+<tr><td>التكامل</td><td>التطبيق الحقيقي، مبنياً ومشغّلاً على جهاز</td><td>ثوانٍ إلى دقائق</td><td>الرحلات الكاملة، وكود المنصة</td></tr>
+</tbody>
+</table>
+
+<p>المجموعة السليمة على شكل هرم: اختبارات وحدة كثيرة، وعدد جيد من اختبارات الـ Widget، وقليل من اللقطات الذهبية للمكونات المهمة، وحفنة من اختبارات التكامل للرحلات التي يقوم عليها العمل. وكل نوع يكشف ما لا يكشفه الأرخص منه، ويكلّف أكثر في تشغيله وصيانته.</p>
+
+<h2><span class="sec">10.2</span> <span>اختبارات الوحدة</span></h2>
+
+<p>قواعد المقهى Dart خالصة، بلا Flutter في الأفق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/domain/pricing.dart</div><pre class="code"><span class="k">class</span> Line {
+  <span class="k">const</span> Line(<span class="k">this</span>.name, <span class="k">this</span>.price, <span class="k">this</span>.quantity);
+
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">int</span> price;
+  <span class="k">final</span> <span class="k">int</span> quantity;
+}
+
+<span class="c line-bidi">// ساعة السعادة: خصم 20% بين 15:00 و17:00 (والساعة 17:00 نفسها خارجها).</span>
+<span class="k">bool</span> isHappyHour(DateTime time) =&gt; time.hour &gt;= <span class="n">15</span> &amp;&amp; time.hour &lt; <span class="n">17</span>;
+
+<span class="k">int</span> total(<span class="k">List</span>&lt;Line&gt; lines, DateTime at) {
+  <span class="k">final</span> subtotal = lines.fold(
+    <span class="n">0</span>,
+    (sum, line) =&gt; sum + line.price * line.quantity,
+  );
+  <span class="k">return</span> isHappyHour(at) ? subtotal - subtotal * <span class="n">20</span> ~/ <span class="n">100</span> : subtotal;
+}</pre></div>
+
+<p>لاحظ ما تأخذه <code>total</code>: الوقت. إنها لا تنادي <code>DateTime.now()</code> بنفسها، فيستطيع الاختبار أن يسأل عن العاشرة صباحاً والثالثة والنصف عصراً في أي يوم، أياً كانت ساعة تشغيل الاختبارات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/pricing_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  <span class="k">final</span> morning = DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">10</span>);
+  <span class="k">final</span> afternoon = DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">15</span>, <span class="n">30</span>);
+  <span class="k">const</span> order = [Line(<span class="s">&#x27;latte&#x27;</span>, <span class="n">45</span>, <span class="n">2</span>), Line(<span class="s">&#x27;cake&#x27;</span>, <span class="n">55</span>, <span class="n">1</span>)];
+
+  test(<span class="s">&#x27;مجموع طلب&#x27;</span>, () {
+    expect(total(order, morning), <span class="n">145</span>);
+  });
+
+  test(<span class="s">&#x27;ساعة السعادة تخصم 20%&#x27;</span>, () {
+    expect(total(order, afternoon), <span class="n">116</span>);
+  });
+
+  test(<span class="s">&#x27;الطلب الفارغ لا يكلّف شيئاً&#x27;</span>, () {
+    expect(total(<span class="k">const</span> [], afternoon), <span class="n">0</span>);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/pricing_test.dart</span>
+00:00 +0: loading test/pricing_test.dart
+00:00 +0: مجموع طلب
+00:00 +1: ساعة السعادة تخصم 20%
+00:00 +2: الطلب الفارغ لا يكلّف شيئاً
+00:00 +3: All tests passed!</pre></div>
+
+<p>وهذا كل سر الكود القابل للاختبار: <strong>مرّر ما تعتمد عليه</strong>. الدالة التي تقرأ الساعة أو الشبكة أو ملفاً بنفسها لا تُختبر إلا بالسيطرة على الساعة أو الشبكة أو الملف. أما الدالة التي تُعطاها فتُختبر بأي شيء.</p>
+
+<h2><span class="sec">10.3</span> <span>بدائل مزيّفة عند الأطراف</span></h2>
+
+<p>الشاشة تحتاج قائمة. ولا يهمها من أين تأتي، فتعتمد على واجهة صغيرة، والتنفيذ الحقيقي يتحدث HTTP:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/data/menu.dart (جزء)</div><pre class="code"><span class="k">abstract</span> <span class="k">interface</span> <span class="k">class</span> MenuRepository {
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu();
+}
+
+<span class="k">class</span> MenuApi <span class="k">implements</span> MenuRepository {
+  MenuApi(<span class="k">this</span>.client, {<span class="k">this</span>.<span class="k">base</span> = <span class="s">&#x27;https://api.bitcafe.online&#x27;</span>});
+
+  <span class="k">final</span> http.Client client;
+  <span class="k">final</span> <span class="k">String</span> <span class="k">base</span>;
+
+  @override
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu() <span class="k">async</span> {
+    <span class="k">final</span> response = <span class="k">await</span> client.<span class="k">get</span>(Uri.parse(<span class="s">&#x27;$base/menu&#x27;</span>));
+    <span class="c line-bidi">// أي شيء غير 200 فشل تستطيع الشاشة عرضه.</span>
+    <span class="k">if</span> (response.statusCode != <span class="n">200</span>) {
+      <span class="k">throw</span> MenuException(<span class="s">&#x27;status ${response.statusCode}&#x27;</span>);
+    }
+    <span class="k">final</span> items = jsonDecode(response.body) <span class="k">as</span> <span class="k">List</span>&lt;<span class="k">dynamic</span>&gt;;
+    <span class="k">return</span> [
+      <span class="k">for</span> (<span class="k">final</span> item <span class="k">in</span> items) Drink.fromJson(item <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;),
+    ];
+  }
+}</pre></div>
+
+<p>ويُختبر صنف الـ API بعميل HTTP مزيّف. و<code>package:http</code> تأتي بواحد، <code>MockClient</code>: يستقبل كل طلب، فيفحصه الاختبار، ويعيد أي رد يختاره الاختبار:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/menu_api_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  test(<span class="s">&#x27;يقرأ القائمة من الخادم&#x27;</span>, () <span class="k">async</span> {
+    <span class="c line-bidi">// عميل HTTP مزيّف من package:http: يرد كما يرد الخادم، ويفحص الطلب.</span>
+    <span class="k">final</span> client = MockClient((request) <span class="k">async</span> {
+      expect(request.url.toString(), <span class="s">&#x27;https://api.bitcafe.online/menu&#x27;</span>);
+      <span class="k">return</span> http.Response(
+        jsonEncode([
+          {<span class="s">&#x27;id&#x27;</span>: <span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Latte&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">45</span>},
+        ]),
+        <span class="n">200</span>,
+      );
+    });
+    <span class="k">final</span> menu = <span class="k">await</span> MenuApi(client).menu();
+    expect(menu.single.name, <span class="s">&#x27;Latte&#x27;</span>);
+    expect(menu.single.price, <span class="n">45</span>);
+  });
+
+  test(<span class="s">&#x27;خطأ الخادم يصير MenuException&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> client = MockClient((request) <span class="k">async</span> =&gt; http.Response(<span class="s">&#x27;oops&#x27;</span>, <span class="n">500</span>));
+    expect(
+      MenuApi(client).menu(),
+      throwsA(
+        isA&lt;MenuException&gt;().having((e) =&gt; e.reason, <span class="s">&#x27;reason&#x27;</span>, <span class="s">&#x27;status 500&#x27;</span>),
+      ),
+    );
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/menu_api_test.dart</span>
+00:00 +0: loading test/menu_api_test.dart
+00:00 +0: يقرأ القائمة من الخادم
+00:00 +1: خطأ الخادم يصير MenuException
+00:00 +2: All tests passed!</pre></div>
+
+<p>كلمتان تختلطان كثيراً. <dfn>البديل المزيّف</dfn> (fake) تنفيذ يعمل لكنه يختصر الطريق: مستودع في الذاكرة، أو عميل يرد من دالة. و<dfn>المحاكي</dfn> (mock) كائن يسجل النداءات ليتحقق منها الاختبار، ويُصنع عادة بحزمة مثل <code>mocktail</code>. البدائل المزيّفة تختبر السلوك («الشاشة تعرض القائمة»)، والمحاكيات تختبر التفاعل («الشاشة نادت <code>menu()</code> مرة واحدة»). فضّل البدائل المزيّفة؛ والجأ إلى المحاكي حين يكون التفاعل نفسه هو المقصود، وحتى حينها كثيراً ما يكفي بديل مزيّف بعدّاد، كما يبيّن المشروع 10.2.</p>
+
+<h2><span class="sec">10.4</span> <span>اختبارات الـ Widget</span></h2>
+
+<p>الشاشة تأخذ مستودعها وساعتها معاملين، للسبب نفسه الذي جعل <code>total</code> تأخذ الوقت:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/ui/menu_screen.dart (جزء)</div><pre class="code"><span class="k">class</span> MenuScreen <span class="k">extends</span> StatefulWidget {
+  <span class="c line-bidi">// الساعة معامل، فيستطيع الاختبار أن يختار الوقت.</span>
+  <span class="k">const</span> MenuScreen({
+    <span class="k">super</span>.key,
+    <span class="k">required</span> <span class="k">this</span>.repository,
+    <span class="k">this</span>.now = DateTime.now,
+  });
+
+  <span class="k">final</span> MenuRepository repository;
+  <span class="k">final</span> DateTime <span class="k">Function</span>() now;</pre></div>
+
+<p>والاختبار يعطيها بديلاً مزيّفاً لا تصل قائمته إلا حين يقول الاختبار، عن طريق <code>Completer</code>. وهذا يجعل حالة التحميل قابلة للاختبار: تدوم بالضبط ما يريده الاختبار.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/menu_screen_test.dart (جزء)</div><pre class="code"><span class="k">class</span> FakeMenu <span class="k">implements</span> MenuRepository {
+  <span class="k">final</span> arrives = Completer&lt;<span class="k">List</span>&lt;Drink&gt;&gt;();
+
+  @override
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu() =&gt; arrives.future;
+}
+
+<span class="k">const</span> drinks = [Drink(<span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>), Drink(<span class="s">&#x27;cake&#x27;</span>, <span class="s">&#x27;Cherry cake&#x27;</span>, <span class="n">55</span>)];
+
+Widget screen(MenuRepository repository) =&gt; MaterialApp(
+  <span class="c line-bidi">// العاشرة صباحاً في يوم عمل: لا ساعة سعادة، فالمجموع معروف مسبقاً.</span>
+  home: MenuScreen(
+    repository: repository,
+    now: () =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">10</span>),
+  ),
+);
+
+<span class="k">void</span> main() {
+  testWidgets(<span class="s">&#x27;يعرض مؤشراً ثم القائمة&#x27;</span>, (tester) <span class="k">async</span> {
+    <span class="k">final</span> fake = FakeMenu();
+    <span class="k">await</span> tester.pumpWidget(screen(fake));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    fake.arrives.complete(drinks);
+    <span class="k">await</span> tester.pump();
+    expect(find.text(<span class="s">&#x27;Latte&#x27;</span>), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/menu_screen_test.dart</span>
+00:00 +0: loading test/menu_screen_test.dart
+00:00 +0: يعرض مؤشراً ثم القائمة
+00:00 +1: الضغط على مشروب يضيفه إلى المجموع
+00:01 +2: All tests passed!</pre></div>
+
+<p>والاختبار الثاني يضغط لاتيهين وكيكة ويتوقع 145 جنيهاً. وساعته تقول العاشرة صباحاً، فلا تجعل ساعة السعادة الاختبار ينجح صباحاً ويفشل عصراً. والاختبار الذي يعتمد على وقت تشغيله هو أشهر أنواع الاختبار <dfn>المتذبذب</dfn> (flaky): أخضر على جهازك، وأحمر في CI في الثالثة وخمس دقائق.</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-testing-ar-shots-error.png" alt=""></div>
+<figcaption>الزيارة الأولى لتطبيق العرض تفشل</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-testing-ar-shots-menu.png" alt=""></div>
+<figcaption>بعد «حاول مرة أخرى»، وطلب</figcaption>
+</figure>
+</div>
+
+<h2><span class="sec">10.5</span> <span>اللقطات الذهبية</span></h2>
+
+<p>اختبار الـ Widget يفحص ما تقوله الشاشة. و<dfn>اختبار اللقطة الذهبية</dfn> (golden test) يفحص شكلها: يرسم Widget، ويقارن بكسلاته بصورة معتمدة، الصورة الذهبية، محفوظة في المستودع.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/golden_test.dart (جزء)</div><pre class="code"><span class="k">void</span> main() {
+  testWidgets(<span class="s">&#x27;بلاطة المشروب كما اعتُمدت&#x27;</span>, (tester) <span class="k">async</span> {
+    tester.view.physicalSize = <span class="k">const</span> Size(<span class="n">320</span>, <span class="n">120</span>);
+    tester.view.devicePixelRatio = <span class="n">1</span>;
+    addTearDown(tester.view.reset);
+    <span class="k">await</span> tester.pumpWidget(tile(ThemeData(colorSchemeSeed: Colors.brown)));
+    <span class="k">await</span> expectLater(
+      find.byType(DrinkTile),
+      matchesGoldenFile(<span class="s">&#x27;goldens/drink_tile.png&#x27;</span>),
+    );
+  });
+}</pre></div>
+
+<p>في المرة الأولى لا توجد صورة ذهبية للمقارنة، فتصنعها، وتنظر إليها، وتحفظها في المستودع:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test --update-goldens test/golden_test.dart test/golden_rtl_test.dart</span>
+00:00 +0: loading test/golden_test.dart
+00:00 +0: test/golden_test.dart: بلاطة المشروب كما اعتُمدت
+00:00 +1: test/golden_rtl_test.dart: بلاطة المشروب بالعربية وفي الوضع الداكن
+00:00 +2: All tests passed!</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/golden_test.dart</span>
+00:00 +0: loading test/golden_test.dart
+00:00 +0: بلاطة المشروب كما اعتُمدت
+00:00 +1: All tests passed!</pre></div>
+
+<p>ثم يغيّر زميل لون البذرة في الثيم من البني إلى الأزرق المخضر، من أجل شاشة أخرى، فيفشل اختبار اللقطة الذهبية:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/golden_change_test.dart</span>
+Golden &quot;goldens/drink_tile.png&quot;: Pixel test failed, 100.00%, 38400px diff detected.
+Failure feedback can be found at test/failures
+00:00 +0 -1: بلاطة المشروب كما اعتُمدت [E]
+00:00 +0 -1: Some tests failed.</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/golden-compare.png</span><b>560px</b></div><img src="img/b6-testing-ar-shots-golden-compare.png" alt="">
+<figcaption>من اليسار إلى اليمين: الصورة الذهبية المعتمدة، وما رسمه الاختبار، والفرق الذي حفظه Flutter في test/failures. تغيّر كل بكسل، لأن لون البذرة يصبغ الخلفية أيضاً.</figcaption>
+</figure>
+
+<p>شيئان في هذه الصور يفاجئان الجميع أول مرة. النص مرسوم مربعات: اختبارات Flutter تستخدم خط اختبار كل حرف فيه مربع، لتكون الصور الذهبية متطابقة على كل جهاز، أياً كانت الخطوط المثبتة فيه. والأيقونات مربعات أيضاً، للسبب نفسه. فالصور الذهبية تحمي التخطيط والألوان والمسافات؛ أما الكلمات فتفحصها اختبارات الـ Widget.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>الصور الذهبية حساسة لكل ما يرسم: نسخة Flutter، ومكتبات الصور في نظام التشغيل، بل ومعالج الرسوم في بعض الإعدادات. ولِّدها وقارنها في مكان واحد، عادة جهاز CI، وحدّثها بـ <code>--update-goldens</code> فقط بعد النظر في الفرق. فالصورة الذهبية التي تُحدَّث دون نظر لا تحمي شيئاً.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا تأخذ <code>total</code> الوقت معاملاً؟</li><li>ما الفرق بين البديل المزيّف والمحاكي؟</li><li>لماذا يُرسم النص في الصورة الذهبية مربعات؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">10.6</span> <span>اختبارات التكامل</span></h2>
+
+<p>كل ما سبق جرى في بيئة اختبار: لا نافذة حقيقية، ولا محرك حقيقي، ولا منصة. و<dfn>اختبار التكامل</dfn> يبني التطبيق الحقيقي ويشغّله على جهاز، وهنا سطح مكتب Linux، الجهاز المتاح على جهاز هذا الكتاب، على شاشة افتراضية. والاختبار نفسه يعمل دون تغيير على محاكي Android أو هاتف، بـ <code>-d</code> ومعرّف الجهاز.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">integration_test/order_flow_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets(<span class="s">&#x27;من بداية فاشلة إلى طلب&#x27;</span>, (tester) <span class="k">async</span> {
+    <span class="k">await</span> tester.pumpWidget(
+      BitApp(repository: DemoMenu(), now: () =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">10</span>)),
+    );
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;تعذّر تحميل القائمة.&#x27;</span>), findsOneWidget);
+
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;حاول مرة أخرى&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;لاتيه&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;لاتيه&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;كيك الكرز&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;المجموع: 145 جنيه&#x27;</span>), findsOneWidget);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test integration_test/order_flow_test.dart -d linux</span>
+00:00 +0: loading integration_test/order_flow_test.dart
+Building Linux application...                                   
+✓ Built build/linux/x64/debug/bundle/bit_app
+00:00 +0: من بداية فاشلة إلى طلب
+00:02 +1: (tearDownAll)
+00:02 +1: All tests passed!</pre></div>
+
+<p>والحزمة جزء من Flutter SDK، تُضاف اعتماداً للتطوير:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter pub add http &#x27;dev:integration_test:{&quot;sdk&quot;:&quot;flutter&quot;}&#x27;</span>
+Resolving dependencies...
+Downloading packages...
++ http 1.6.0
+  ... and 11 packages they need
+Changed 12 dependencies!</pre></div>
+
+<p>في أول تشغيل فشل هذا الاختبار. كان زر «حاول مرة أخرى» مكتوباً هكذا: <code>onPressed: () =&gt; setState(() =&gt; drinks = widget.repository.menu())</code>. والسهم الداخلي يعيد قيمة الإسناد، أي <code>Future</code>، و<code>setState</code> تتأكد أن دالتها لا تعيد شيئاً، لأن دالة <code>async</code> كانت ستحدّث الحالة متأخرة. واختبار التكامل يشغّل نسخة debug، حيث التأكيدات مفعّلة، فتوقف برسالة «setState() callback argument returned a Future». أما لقطات الشاشة للتطبيق نفسه فجاءت من نسخة release، حيث تُحذف التأكيدات، فبدا الزر يعمل هناك. والإصلاح جسم بأقواس: <code>setState(() { drinks = widget.repository.menu(); })</code>.</p>
+
+<p>هذه قيمة تشغيل الشيء الحقيقي: وجد خطأً في طريق لم يسلكه بعدُ أي اختبار Widget.</p>
+
+<h2><span class="sec">10.7</span> <span>التغطية</span></h2>
+
+<p><code>flutter test --coverage</code> يسجل الأسطر التي شغّلتها الاختبارات، في <code>coverage/lcov.info</code>. وسكربت قصير في المشروع، <code>tool/coverage.dart</code>، يطبعها لكل ملف:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run tool/coverage.dart</span>
+lib/domain/pricing.dart          5/5  100%
+lib/data/menu.dart             10/12   83%
+lib/ui/menu_screen.dart        41/47   87%
+all                            56/64   88%</pre></div>
+
+<p>اقرأ التغطية خريطةً لما لم يلمسه أي اختبار، لا درجةً. والأسطر الناقصة هنا هي <code>MenuException.toString</code> وفرع الخطأ في الشاشة، بزر «حاول مرة أخرى»: الطريق نفسه الذي وجد فيه القسم 10.6 خطأه. (المشروع 10.2 يغطيه؛ ولم يدخل في هذا التشغيل.) ولاحظ ما ليس في القائمة إطلاقاً: مستودع العرض. فالملف الذي لا يستورده أي اختبار لا يظهر في التقرير، فلا يستطيع حتى أن يُنقص النسبة. وتغطية 100% لا تعني أن الكود صحيح؛ أما 40% فتعني أن معظمه لم يجرِ قط في اختبار.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>حين يُبلَّغ عن خطأ، اكتب الاختبار الذي يُظهره قبل إصلاحه، وشاهده يفشل. ثم أصلح الكود وشاهده ينجح. فالاختبار يثبت أنك فهمت الخطأ، ويثبت الإصلاح، ويحرس من عودته، ومع السنين تصير هذه الاختبارات أثمن ما في المجموعة: كل واحد منها يمثّل شيئاً ساء حقاً.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td><code>DateTime.now()</code> داخل المنطق</td><td>اختبارات تفشل في ساعات معينة</td><td>مرّر الساعة</td></tr>
+<tr><td>شبكة حقيقية في الاختبارات</td><td>اختبارات بطيئة متذبذبة تحتاج الخادم يعمل</td><td>مستودع مزيّف، أو <code>MockClient</code></td></tr>
+<tr><td>محاكاة كل شيء</td><td>اختبارات تنكسر مع كل إعادة هيكلة</td><td>بدائل تتصرف؛ ومحاكيات للتفاعلات فقط</td></tr>
+<tr><td>تحديث الصور الذهبية دون نظر</td><td>شكل مكسور، معتمد</td><td>انظر في الفرق أولاً</td></tr>
+<tr><td>الاختبار في نسخ release فقط</td><td>التأكيدات لا تجري أبداً</td><td>اختبارات Widget وتكامل في debug</td></tr>
+<tr><td>مطاردة تغطية 100%</td><td>اختبارات تشغّل الأسطر دون أن تفحص شيئاً</td><td>استخدم التغطية لتجد الطرق غير المختبرة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>اختبارات الوحدة للقواعد، والـ Widget للشاشات، واللقطات الذهبية للشكل، والتكامل للرحلات، بهذه النسب.</li>
+<li>الكود قابل للاختبار حين يُعطى ما يعتمد عليه: مستودعاً، وعميل HTTP، وساعة.</li>
+<li>البدائل المزيّفة تتصرف كالحقيقية بلا شبكة؛ و<code>Completer</code> يتحكم في متى ترد.</li>
+<li>اللقطات الذهبية تقارن البكسلات بصورة معتمدة؛ والنص يُرسم مربعات لتتطابق في كل مكان.</li>
+<li>اختبارات التكامل تشغّل التطبيق الحقيقي على جهاز، والتأكيدات مفعّلة، فتجد ما لا يجده غيرها.</li>
+<li>التغطية تُظهر ما لم يجرِ قط في اختبار؛ إنها خريطة لا درجة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ليستطيع الاختبار أن يختار الوقت: الدالة التي تنادي <code>DateTime.now()</code> بنفسها تعطي أجوبة مختلفة حسب وقت تشغيل الاختبار، ولا تُختبر ساعة السعادة إلا بين 15:00 و17:00. 2. البديل المزيّف تنفيذ أبسط يعمل (مستودع في الذاكرة، أو عميل يرد من دالة)؛ والمحاكي يسجل النداءات التي تصله ليتحقق منها الاختبار. البدائل تختبر السلوك، والمحاكيات تختبر التفاعل. 3. اختبارات Flutter ترسم النص بخط اختبار كل حرف فيه مربع، لتتطابق الصور الذهبية على كل جهاز مهما كانت خطوطه المثبتة؛ أما الكلمات نفسها فتفحصها اختبارات الـ Widget.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تختبر حدود قاعدة، وطريق فشل، وشكل مكوّن بلغة وثيم لا تغطيهما الصورة الذهبية السابقة.</p>
+
+<div class="project">
+<p class="project-label">المشروع 10.1 · سهل</p>
+<h3>ساعة السعادة عند حدودها</h3>
+<p class="project-goal">الأخطاء تسكن الحدود. اختبر ساعة السعادة في 14:59 و15:00 و16:59 و17:00 وفي منتصف الليل، بجدول حالات واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>group</code>، والاختبارات المبنية على جداول، وأسماء اختبارات مصنوعة من البيانات.</p>
+<ol class="steps">
+<li>اكتب خريطة من الأوقات إلى الجواب المتوقع.</li>
+<li>مرّ عليها وأنشئ <code>test</code> لكل حالة، باسم من الوقت، فيقول الفشل أي وقت خاطئ.</li>
+<li>غيّر <code>&lt; 17</code> إلى <code>&lt;= 17</code> في <code>isHappyHour</code> وشاهد حالة واحدة بالضبط تفشل.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/edges_test.dart (جزء)</div><pre class="code">  group(<span class="s">&#x27;ساعة السعادة عند حدودها&#x27;</span>, () {
+    <span class="k">final</span> cases = {
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">14</span>, <span class="n">59</span>): <span class="k">false</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">15</span>): <span class="k">true</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">16</span>, <span class="n">59</span>, <span class="n">59</span>): <span class="k">true</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">17</span>): <span class="k">false</span>,
+      DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">3</span>, <span class="n">30</span>): <span class="k">false</span>,
+    };
+    cases.forEach((time, expected) {
+      <span class="k">final</span> hhmm =
+          <span class="s">&#x27;${time.hour.toString().padLeft(2, &#x27;</span><span class="n">0</span><span class="s">&#x27;)}:${time.minute.toString().padLeft(2, &#x27;</span><span class="n">0</span><span class="s">&#x27;)}&#x27;</span>;
+      test(
+        <span class="s">&#x27;$hhmm is ${expected ? &#x27;</span><span class="s">&#x27; : &#x27;</span>not <span class="s">&#x27;}happy hour&#x27;</span>,
+        () =&gt; expect(isHappyHour(time), expected),
+      );
+    });
+  });</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/edges_test.dart</span>
+00:00 +0: loading test/edges_test.dart
+00:00 +0: ساعة السعادة عند حدودها 14:59 is not happy hour
+00:00 +1: ساعة السعادة عند حدودها 15:00 is happy hour
+00:00 +2: ساعة السعادة عند حدودها 16:59 is happy hour
+00:00 +3: ساعة السعادة عند حدودها 17:00 is not happy hour
+00:00 +4: ساعة السعادة عند حدودها 03:30 is not happy hour
+00:00 +5: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 10.2 · متوسط</p>
+<h3>«حاول مرة أخرى»، حقاً</h3>
+<p class="project-goal">اختبر طريق الفشل في الشاشة: النداء الأول يفشل، فيظهر الخطأ والزر، والزر يسأل المستودع من جديد، فيجيب هذه المرة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> البدائل المزيّفة ذات الحالة، وعدّ النداءات بلا مكتبة محاكاة، و<code>pumpAndSettle</code>.</p>
+<ol class="steps">
+<li>اكتب <code>FlakyMenu</code> الذي يرمي استثناء في أول نداء ويعيد قائمة بعده، ويعدّ نداءاته.</li>
+<li>اعرض الشاشة، وتوقّع نص الخطأ ونداءً واحداً.</li>
+<li>اضغط «حاول مرة أخرى»، وانتظر الاستقرار، وتوقّع نداءين والقائمة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/retry_test.dart (جزء)</div><pre class="code"><span class="k">class</span> FlakyMenu <span class="k">implements</span> MenuRepository {
+  <span class="k">var</span> calls = <span class="n">0</span>;
+
+  @override
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu() <span class="k">async</span> {
+    calls++;
+    <span class="k">if</span> (calls == <span class="n">1</span>) {
+      <span class="k">throw</span> <span class="k">const</span> MenuException(<span class="s">&#x27;timeout&#x27;</span>);
+    }
+    <span class="k">return</span> <span class="k">const</span> [Drink(<span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;Latte&#x27;</span>, <span class="n">45</span>)];
+  }
+}</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/retry_test.dart</span>
+00:00 +0: loading test/retry_test.dart
+00:00 +0: «حاول مرة أخرى» تسأل المستودع من جديد
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> بعد الضغط لا يكفي <code>pump</code> واحد: الإطار الأول يعرض الـ <code>Future</code> الجديد في حالة التحميل، والقائمة تحتاج إطاراً آخر بعد اكتماله. و<code>pumpAndSettle</code> تواصل حتى لا يبقى شيء مجدول. وهذا الاختبار كان سيكشف خطأ <code>setState</code> في القسم 10.6 أيضاً، لو كُتب أولاً.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 10.3 · تحدٍّ</p>
+<h3>صورة ذهبية بالعربية وفي الظلام</h3>
+<p class="project-goal">أضف صورة ذهبية لبلاطة المشروب بنص من اليمين إلى اليسار وبالثيم الداكن، فيُكشف أي تغيير يكسر أياً منهما.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اللقطات الذهبية بحجم عرض ثابت، و<code>Directionality</code>، والثيمات الداكنة.</p>
+<ol class="steps">
+<li>اجعل عرض الاختبار 320 × 120 بكثافة بكسلات 1، لتكون الصورة واحدة في كل مكان، وأعده في النهاية.</li>
+<li>اعرض البلاطة داخل ثيم داكن و<code>Directionality</code> من اليمين إلى اليسار.</li>
+<li>اصنع الصورة الذهبية بـ <code>--update-goldens</code>، وانظر إليها، وشغّل الاختبار.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/golden_rtl_test.dart (جزء)</div><pre class="code">    <span class="k">await</span> tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: <span class="k">false</span>,
+        theme: ThemeData(
+          colorSchemeSeed: Colors.brown,
+          brightness: Brightness.dark,
+        ),
+        home: <span class="k">const</span> Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: <span class="n">320</span>,
+                child: DrinkTile(
+                  drink: Drink(<span class="s">&#x27;latte&#x27;</span>, <span class="s">&#x27;لاتيه&#x27;</span>, <span class="n">45</span>),
+                  quantity: <span class="n">2</span>,
+                  onAdd: _nothing,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    <span class="k">await</span> expectLater(
+      find.byType(DrinkTile),
+      matchesGoldenFile(<span class="s">&#x27;goldens/drink_tile_rtl_dark.png&#x27;</span>),</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/golden-rtl-dark.png</span><b>560px</b></div><img src="img/b6-testing-ar-shots-golden-rtl-dark.png" alt="">
+<figcaption>المشروع 10.3: الصورة الذهبية معكوسة وداكنة. العدد الآن على اليمين، والزر على اليسار.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/golden_rtl_test.dart</span>
+00:00 +0: loading test/golden_rtl_test.dart
+00:00 +0: بلاطة المشروب بالعربية وفي الوضع الداكن
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف اختبار وحدة لمشروب ثمنه 45 طُلب ثلاث مرات في ساعة السعادة. كم المجموع، ولماذا ليس 108.0؟</li>
+<li><span class="level">سهل</span> اختبار الـ API يفحص عنوان الطلب. أضف فحصاً أن الطلب من نوع <code>GET</code>.</li>
+<li><span class="level medium">متوسط</span> اكتب اختبار Widget يفشل إن ظهر المجموع قبل تحميل القائمة.</li>
+<li><span class="level medium">متوسط</span> اجعل اللقطات الذهبية تستخدم خطاً حقيقياً، لتُظهر الصور كلمات فعلية. ماذا تكسب، وماذا تخاطر؟</li>
+<li><span class="level hard">تحدٍّ</span> حوّل اختبار التكامل إلى فحص يجري مع كل طلب دمج. أي جهاز يشغّله، وماذا يحتاج مثبتاً، وكم من الوقت تحتمل أن يأخذ؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 11</p>
+<p>التطبيق ينجح في اختباراته. لكن هل يعمل لمن لا يرى الشاشة، أو يستخدم نصاً كبيراً، أو يتنقل بمفتاح واحد؟ والفصل القادم يجعل التطبيق متاحاً للجميع، ويثبت ذلك بالأدوات نفسها: الدلالات والاختبارات وقارئات الشاشة الحقيقية.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4279,6 +4785,16 @@ chart painted in 60 frames: without a boundary 60, with one 0
 <li>مرة واحدة. كل الصفوف تستخدم المزوّد نفسه، <code>AssetImage</code> للملف نفسه داخل <code>ResizeImage</code> بالعرض نفسه، فتشترك في مفتاح واحد في <code>ImageCache</code> الخاص بـ Flutter: الصف الأول يفك الصورة، والـ 999 الباقية تعيد استخدام الصورة المفكوكة. ولا تُفك مرة أخرى إلا إن أخرجها الكاش، وهذا يحدث بعد 1000 صورة أو 100 MB افتراضياً (<code>PaintingBinding.instance.imageCache.maximumSize</code> و<code>maximumSizeBytes</code>).</li>
 <li><code>Future&lt;void&gt; startTogether() =&gt; Future.wait([readSettings().then((settings) =&gt; fetchMenu(settings.language)), openDatabase()]).then((_) {});</code>. القائمة ما زالت تنتظر الإعدادات، 300 + 400 = 700 ms، لكن قاعدة البيانات تُفتح في الوقت نفسه، فيستغرق البدء كله نحو 700 ms بدل 900.</li>
 <li>احفظ خريطة لمرات البناء حسب نوع الـ Widget (كل Widget معدود يضيف <code>runtimeType</code> الخاص به)، وصفّرها بعد الإطار الأول، واضغط مرة، وتوقّع <code>expect(rowBuilds, 0)</code>، مع طباعة الخريطة مرتبة بالعدد عند الفشل لتسمّي الرسالة المتسبب. والعدد في CI حتمي: الكود نفسه يعطي الرقم نفسه على حاسوب محمول، وعلى جهاز CI مثقل، وعلى حاسوب مكتبي سريع، فيفشل الاختبار بالضبط حين يسوء الكود. أما اختبار الميلي ثانية فيقيس الجهاز بقدر ما يقيس الكود: إما يتذبذب، وإما يُعطى هامشاً واسعاً حتى لا يكشف شيئاً.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 10</h2>
+<ol class="exercises">
+<li><code>expect(total(const [Line('latte', 45, 3)], DateTime(2026, 11, 23, 16)), 108);</code>. المجموع الفرعي 135، و20% منه، محسوبة بـ <code>135 * 20 ~/ 100</code>، هي 27، فالمجموع 108. وهو <code>int</code>، لا <code>108.0</code> أبداً، لأن الأسعار محفوظة بجنيهات كاملة و<code>~/</code> تقسم دون أن تترك الأعداد الصحيحة: المال بالأعداد العشرية يجمع أخطاء التقريب.</li>
+<li>داخل دالة <code>MockClient</code> أضف <code>expect(request.method, 'GET');</code>. والـ <code>expect</code> التي تفشل داخل الدالة تُفشل الاختبار، لأن الخطأ يعود عبر الـ <code>Future</code> الذي تعيده <code>menu()</code>.</li>
+<li>اعرض الشاشة ببديل <code>FakeMenu</code> لا يكتمل <code>Completer</code> فيه أبداً، ثم <code>expect(find.textContaining('Total'), findsNothing)</code> و<code>expect(find.byType(CircularProgressIndicator), findsOneWidget)</code> (والنص «المجموع» في النسخة العربية). وهو ينجح اليوم لأن المجموع يُبنى داخل فرع البيانات؛ والاختبار يضمن ألا ينقله أحد من هناك دون أن يلاحظ.</li>
+<li>حمّل ملف خط قبل أن يرسم الاختبار، واستخدمه في الثيم: <code>final loader = FontLoader('Roboto')..addFont(rootBundle.load('assets/fonts/Roboto-Regular.ttf')); await loader.load();</code>، مع <code>ThemeData(fontFamily: 'Roboto')</code>، والشيء نفسه لخط الأيقونات. فتكسب صوراً يراجعها المصمم، وتكشف مشكلات كنص يفيض أو ينكسر سطره. وتخاطر بصور ذهبية تختلف بين الأجهزة، لأن الخطوط الحقيقية تُرسم بتنعيم حواف يعتمد على المنصة: فولّد هذه الصور وقارنها على نوع واحد من الأجهزة، عادة جهاز CI.</li>
+<li>جهاز CI بنظام Linux يستطيع تشغيله كما فعل هذا الفصل: يحتاج Flutter، وأدوات سطح مكتب Linux (<code>clang</code> و<code>cmake</code> و<code>ninja-build</code> و<code>pkg-config</code> و<code>libgtk-3-dev</code>)، وشاشة افتراضية، ثم <code>xvfb-run flutter test integration_test -d linux</code>. البناء الأول يأخذ دقيقة أو اثنتين، وكل رحلة ثوانيَ قليلة؛ فأبقِ مجموعة طلب الدمج تحت عشر دقائق تقريباً، وشغّل الرحلات الأطول، أو الاختبارات نفسها على محاكي Android، بعد الدمج أو كل ليلة.</li>
 </ol>
 
 </section>

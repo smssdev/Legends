@@ -1,0 +1,6 @@
+$ flutter pub add http 'dev:integration_test:{"sdk":"flutter"}'
+Resolving dependencies...
+Downloading packages...
++ http 1.6.0
+  ... and 11 packages they need
+Changed 12 dependencies!

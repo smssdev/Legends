@@ -1241,7 +1241,8 @@
             },
             {
               "en": "Testing: Unit, Widget, Golden and Integration",
-              "ar": "الاختبار: الوحدات والـ Widget واللقطات والتكامل"
+              "ar": "الاختبار: الوحدات والـ Widget واللقطات والتكامل",
+              "src": "b6/testing"
             },
             {
               "en": "Accessibility on Mobile",
