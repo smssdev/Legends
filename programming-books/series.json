@@ -1188,7 +1188,8 @@
           "chapters": [
             {
               "en": "How Flutter Really Renders",
-              "ar": "كيف يرسم Flutter فعلاً"
+              "ar": "كيف يرسم Flutter فعلاً",
+              "src": "b6/render"
             },
             {
               "en": "Clean Architecture for Flutter",
@@ -1281,7 +1282,17 @@
       ],
       "number": 6,
       "status": "approved",
-      "track": "mobile"
+      "track": "mobile",
+      "notes": {
+        "code": {
+          "en": "The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.",
+          "ar": "اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب."
+        },
+        "trademarks": {
+          "en": "Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.",
+          "ar": "Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط."
+        }
+      }
     },
     {
       "id": "b7",

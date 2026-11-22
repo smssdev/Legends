@@ -1,0 +1,645 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>احتراف تطبيقات الموبايل بـ Flutter</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "احتراف تطبيقات الموبايل بـ Flutter"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: كيف يرسم Flutter فعلاً"; } }
+@page ch01:first { @top-center { content: none; } }
+@page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">من الصفر إلى الاحتراف · الكتاب السادس</p>
+  <h1 class="cv-title">احتراف تطبيقات الموبايل بـ Flutter</h1>
+  <p class="cv-sub">المعمارية وRiverpod والأداء والاختبار والإصدار على نطاق واسع</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>Flutter</span><span>Riverpod</span><span>Testing</span><span>CI/CD</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">مبتدئ محترف ← خبير</span><span class="cv-author">سليمان ماجد سعيد صلاح</span></div>
+</div></section><section class="front half-title"><p class="ht">احتراف تطبيقات الموبايل بـ Flutter</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب السادس</p>
+          <h1 class="tp-title">احتراف تطبيقات الموبايل بـ Flutter</h1>
+          <p class="tp-sub">المعمارية وRiverpod والأداء والاختبار والإصدار على نطاق واسع</p>
+          <p class="tp-level">مبتدئ محترف ← خبير</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>احتراف تطبيقات الموبايل بـ Flutter</strong><br>المعمارية وRiverpod والأداء والاختبار والإصدار على نطاق واسع</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">29</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">تستطيع أن تبني تطبيق Flutter وتنشره. وهذا الكتاب عن بناء تطبيقات تبقى جيدة وهي تكبر: شاشات أكثر، وأشخاص أكثر يعملون عليها، ومستخدمون أكثر على أنواع أكثر من الجوالات، وسنوات أكثر من التحديثات. وهو مكتوب لمن أنهى <em>Flutter من الصفر</em>، الكتاب الخامس في هذه السلسلة، أو لمن نشر تطبيق Flutter بنفسه. لا يشرح الـ Widgets ولا التخطيطات ولا <code>setState</code> من جديد؛ بل يشرح لماذا تعمل كما تعمل، وما الذي يبنيه المحترفون فوقها.</p>
+
+<h2 class="plain-h">ما تحتاجه</h2>
+<ul>
+<li>كل ما في الكتاب الخامس: Flutter، وVisual Studio Code أو Android Studio، ومحاكٍ أو جوال. وجهاز Mac لأجزاء iOS.</li>
+<li>حساب GitHub مجاني لفصول خوادم البناء، ومشروع Firebase مجاني للإشعارات وتقارير الأعطال.</li>
+<li>صبراً على الأدوات: فهذا الكتاب يستخدم حزماً أكثر من سابقه، وكل فصل يقول بالضبط أيها، ولماذا.</li>
+</ul>
+
+<h2 class="plain-h">كيف نُظّم الكتاب</h2>
+<p>فصول الكتاب سبعة عشر، في ثلاثة أجزاء. الجزء الأول أساس ما بعده؛ أما الجزآن الثاني والثالث فيُقرآن بأي ترتيب بعده.</p>
+<ul>
+<li><strong>المعمارية</strong> يبدأ من تحت الغطاء، بكيف يحوّل Flutter الـ Widgets إلى نقاط على الشاشة، ثم يبني هيكل التطبيق الكبير: طبقات نظيفة، والحالة بـ Riverpod، والتنقل بـ go_router، وطبقة شبكة تتعامل مع الأخطاء وإعادة المحاولة، وبيانات تعمل بلا اتصال.</li>
+<li><strong>الجودة</strong> عن إحساس التطبيق، وكيف تعرف أنه يعمل: نظام تصميم، وحركات، وأداء يُقاس ويُصلح، وكل أنواع الاختبار، وإمكانية الوصول.</li>
+<li><strong>الإنتاج</strong> عن تشغيل التطبيق في العالم الحقيقي: الإشعارات والعمل في الخلفية، والكود الأصلي، والأمان، وخوادم البناء التي توقّع وتنشر، وتقارير الأعطال والتحليلات، ومشروع ختامي يستخدم كل ذلك.</li>
+</ul>
+
+<h2 class="plain-h">في كل فصل</h2>
+<p>يسير كل فصل على النمط الذي عرفته في الكتاب الخامس: ما ستتعلمه؛ وشرح مبني على أمثلة حقيقية تعمل؛ و«اختبر نفسك»؛ وصناديق فيها نصائح وفخاخ وعادات المحترفين؛ والأخطاء الشائعة؛ وملخص؛ و<strong>ثلاثة مشاريع تطبيقية</strong> (سهل ومتوسط وتحدٍّ)؛ وتمارين بثلاثة مستويات، وإجاباتها في آخر الكتاب. وفي هذا المستوى تقترب المشاريع من العمل الحقيقي: أكثرها يبدأ من كود بطيء أو هش أو صعب الاختبار، ويطلب منك أن تجعله أفضل، وأن تثبت ذلك.</p>
+
+<h2 class="plain-h">كود حقيقي وأرقام حقيقية</h2>
+<p>كل مثال ملف حقيقي، وكل جلسة طرفية سُجّلت أثناء إعداد الكتاب، وكل صورة شاشة هي التطبيق نفسه. وحين يقول فصل إن تغييراً وفّر أربعين إعادة بناء أو ألف عملية رسم، فقد عدّها اختبار. وسترى النتائج نفسها بالإصدارات نفسها:</p>
+<table>
+<thead><tr><th>الأداة</th><th>الإصدار</th></tr></thead>
+<tbody>
+<tr><td>Flutter</td><td>3.50.1 (المستقر)</td></tr>
+<tr><td>Dart</td><td>3.14.0</td></tr>
+<tr><td>الحزم</td><td>إصداراتها الدقيقة في جلسة <code dir="ltr">pub add</code> في كل فصل</td></tr>
+</tbody>
+</table>
+<p>وقياسات الوقت، مثل مدة الإطار، تعتمد على الجهاز. وحيث يعرضها الكتاب يقول على أي جهاز قاسها، ويعلّمك أن تقيس على جوالك أنت، وهذا ما يهم.</p>
+
+<h2 class="plain-h">قراءة الأمثلة</h2>
+<ul>
+<li>اللسان الداكن فوق المثال يذكر مسار الملف في المشروع. والملفات الطويلة تُعرض أجزاءً، والملف كاملاً في مستودع الكود.</li>
+<li>الصندوق ذو النقاط الملونة الثلاث طرفية: السطر الذي يبدأ بـ <code>$</code> أمر، والأسطر تحته رده.</li>
+<li>الصورة داخل إطار جوال لقطة من التطبيق.</li>
+<li>الكود بالإنجليزية دائماً، أما التعليقات والنصوص التي يراها المستخدم فبالعربية في هذا الإصدار.</li>
+</ul>
+
+<h2 class="plain-h">مستودع الكود</h2>
+<p>كل مثال ومشروع وحل تمرين موجود في مستودع الكود الخاص بالكتاب، مع السكربت الذي أنتج مخرجاته. استخدمه للمقارنة، أو لتبدأ من نسخة تعمل حين تتعثر؛ لكن اكتب الكود بنفسك أولاً.</p>
+
+<h2 class="plain-h">كلمة من المؤلف</h2>
+<p>الفرق بين مطور يبني تطبيقات ومطور يبني تطبيقات تدوم نادراً ما يكون الموهبة. إنه معرفة ما يحدث تحت الكود الذي تكتبه، وعادات تكتشف الأخطاء قبل أن يكتشفها الناس. ويحاول هذا الكتاب أن يعطيك الاثنين. وبِت، الروبوت البنفسجي، ما زال هنا، ومعه الآن بعض الندوب من بيئة الإنتاج. أهلاً بعودتك.</p>
+<p><strong>سليمان ماجد سعيد صلاح</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b6/render/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>كيف يرسم Flutter فعلاً</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>ترى الأشجار الثلاث خلف كل شاشة: الـ Widgets، والعناصر (elements)، وكائنات الرسم (render objects)</li>
+<li>تتبع إطاراً واحداً من <code>setState</code> إلى النقاط على الشاشة، وتعرف كلفة كل خطوة</li>
+<li>تتوقع أي الـ Widgets يُعاد بناؤها، وتُبقي عددها صغيراً بـ <code>const</code> والحالة المحلية</li>
+<li>تقرأ التخطيط بجملة: «القيود تنزل، والمقاسات تصعد، والأب يحدد الموضع»</li>
+<li>تستخدم المفاتيح لتبقى الحالة حيث يجب، وحدود إعادة الرسم ليبقى الرسم رخيصاً</li>
+<li>تثبت كل ذلك باختبارات تعدّ مرات البناء ومرات الرسم</li>
+</ul>
+</div>
+
+<p class="lead">في الكتاب الخامس كتبت الـ Widgets ورسمها Flutter. وكان هذا كافياً لبناء التطبيقات. لكنه لا يكفي لتعرف لماذا تتقطع قائمة، ولماذا يفقد حقل نص ما كُتب فيه حين تتغير الشاشة، ولماذا يتجاهل Widget العرض الذي أعطيته. وللثلاثة جواب واحد: ما يفعله Flutter بالـ Widgets بعد أن تعيد <code>build</code>. وهذا الفصل يفتح الصندوق، وكل ادعاء فيه يقيسه اختبار.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>لا شيء في هذا الفصل قاعدة تقريبية. كل رقم، من مرات البناء إلى مرات الرسم، عدّته الاختبارات التي ستراها، على الجهاز الذي صنع الكتاب. غيّر الكود، وشغّل الاختبارات، وشاهد الأرقام تتغير.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>ثلاث أشجار</span></h2>
+
+<p>الـ <dfn>Widget</dfn> ليس ما تراه على الشاشة. إنه وصف: كائن صغير لا يتغير يقول ما يجب أن يكون هناك. ويحتفظ Flutter بشجرتين أخريين بجانب الـ Widgets:</p>
+
+<ul>
+<li>الـ <dfn>عنصر</dfn> (element) مكان الـ Widget في الشجرة الحية. يُنشأ مرة واحدة، ويحفظ موضعه، ويحمل الـ <code>State</code> الخاصة بالـ Widget ذي الحالة، ويُعاد استخدامه حين يصل Widget جديد من النوع نفسه إلى المكان نفسه.</li>
+<li>و<dfn>كائن الرسم</dfn> (render object) يقوم بالعمل الحقيقي: يقيس نفسه، ويضع أبناءه، ويرسم. ولبعض الـ Widgets فقط كائن رسم.</li>
+</ul>
+
+<p>يستطيع اختبار أن يمر على عناصر شاشة صغيرة ويطبع الثلاثة، سطراً لكل عنصر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/trees_test.dart (جزء)</div><pre class="code">    <span class="k">final</span> root = tester.element(find.byType(Directionality));
+    <span class="k">void</span> <span class="k">show</span>(Element e, <span class="k">int</span> depth) {
+      <span class="c line-bidi">// RenderObjectElement وحده يملك كائن رسم؛ والباقي يبني Widgets فقط.</span>
+      <span class="k">final</span> ro = e <span class="k">is</span> RenderObjectElement
+          ? <span class="s">&#x27;${e.renderObject.runtimeType}&#x27;</span>
+          : <span class="s">&#x27;-&#x27;</span>;
+      debugPrint(
+        <span class="s">&#x27;${&#x27;</span>  <span class="s">&#x27; * depth}${e.widget.runtimeType} | ${e.runtimeType} | $ro&#x27;</span>,
+      );
+      e.visitChildren((child) =&gt; <span class="k">show</span>(child, depth + <span class="n">1</span>));
+    }
+
+    <span class="k">show</span>(root, <span class="n">0</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/trees_test.dart</span>
+00:00 +0: loading test/trees_test.dart
+00:00 +0: الأشجار الثلاث لشاشة صغيرة
+Directionality | _UbiquitousInheritedElement | -
+  Center | SingleChildRenderObjectElement | RenderPositionedBox
+    Padding | SingleChildRenderObjectElement | RenderPadding
+      Text | StatelessElement | -
+        RichText | MultiChildRenderObjectElement | RenderParagraph
+00:00 +1: All tests passed!</pre></div>
+
+<ul>
+<li><code>Center</code> و<code>Padding</code> رقيقان: لكل منهما عنصر وكائن رسم يخطط لابن واحد.</li>
+<li>و<code>Text</code> <em>بلا</em> كائن رسم. إنه <code>StatelessWidget</code> يبني <code>RichText</code>، و<code>RichText</code> هو صاحب <code>RenderParagraph</code> الذي يقيس الحروف ويرسمها. وأكثر الـ Widgets التي تستخدمها مثل <code>Text</code>: لا تفعل إلا بناء Widgets أخرى.</li>
+<li>و<code>Directionality</code> بلا كائن رسم أيضاً: إنه <dfn>Widget موروث</dfn> (inherited widget) يمرر قيمة إلى الأسفل، كما يفعل <code>Theme</code> و<code>MediaQuery</code>.</li>
+</ul>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>الـ Widgets رخيصة عن قصد. فإنشاء آلاف الكائنات الصغيرة في كل إطار سريع في Dart، لأن مدير ذاكرتها مبني للكائنات قصيرة العمر. أما الأشياء الغالية، العناصر والحالة وكائنات الرسم، فتعيش أطول ما تستطيع، ويجتهد الإطار في إعادة استخدامها. وكل قاعدة أداء تقريباً في Flutter طريقة لمساعدته على إعادة الاستخدام.</p></aside>
+
+<h2><span class="sec">1.2</span> <span>إطار واحد</span></h2>
+
+<p>شاشة الجوال تطلب صورة جديدة 60 أو 120 مرة في الثانية. ولكل صورة يملك Flutter نحو 16 أو 8 أجزاء من الألف من الثانية، ويقوم بالخطوات نفسها بالترتيب:</p>
+
+<ol class="steps">
+<li><strong>الحركة.</strong> كل حركة جارية تنتقل إلى قيمتها في هذه اللحظة.</li>
+<li><strong>البناء.</strong> كل عنصر مُعلَّم بأنه متسخ (dirty)، بـ <code>setState</code> أو بتغير قيمة موروثة، تُنفَّذ دالة <code>build</code> في الـ Widget الخاص به، وتُقارن الـ Widgets الجديدة بالقديمة.</li>
+<li><strong>التخطيط.</strong> كائنات الرسم التي ربما تغيّر مقاسها تقيس نفسها وتضع أبناءها.</li>
+<li><strong>الرسم.</strong> كائنات الرسم التي تغيّر شكلها تسجّل ما يجب رسمه، في طبقات.</li>
+<li><strong>التركيب والتنقيط.</strong> تذهب الطبقات إلى خيط الـ GPU، فيحولها إلى نقاط بينما يُبنى الإطار التالي.</li>
+</ol>
+
+<p>وكل خطوة لا تلمس إلا ما تغيّر. فالإطار الذي لم يتغير فيه شيء لا يكلّف شيئاً تقريباً؛ والإطار الذي تغيّر فيه كل شيء قد يفوته موعده، فيرى الشخص تقطعاً يسمى <dfn>jank</dfn>. وباقي هذا الفصل عن إبقاء «ما تغيّر» صغيراً في كل خطوة.</p>
+
+<h2><span class="sec">1.3</span> <span>من يُعاد بناؤه</span></h2>
+
+<p><code>setState</code> تعلّم عنصراً واحداً بأنه متسخ. وفي الإطار التالي يُبنى الـ Widget الخاص به من جديد، فيعيد Widgets أبناء جديدة. ولكل ابن يقارن Flutter الـ Widget الجديد بالقديم في المكان نفسه:</p>
+
+<ul>
+<li>إن كان <em>الكائن نفسه</em>، فلا يمكن أن يكون شيء تحته قد تغيّر: فيتخطاه Flutter كله. وهذا ما تعطيك إياه <code>const</code>: فالـ Widget الثابت يُنشأ مرة واحدة، حين يُترجم التطبيق، وهو الكائن نفسه في كل بناء.</li>
+<li>وإن كان كائناً مختلفاً من النوع نفسه (وبالمفتاح نفسه)، بقي العنصر وحُدّث، وبُني الابن من جديد.</li>
+<li>وإن اختلف النوع أو المفتاح، رُمي العنصر القديم وكل ما تحته، وأُنشئ جديد.</li>
+</ul>
+
+<p>الصفحة التالية تعدّ مرات بناء كل Widget على الشاشة نفسها. تُغيَّر حالة الصفحة ثلاث مرات بالزر الممتلئ، وحالة Widget أصغر خمس مرات بالزر ذي الإطار:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/rebuilds.dart (جزء)</div><pre class="code">          <span class="c line-bidi">// const: الكائن نفسه في كل مرة، فيتخطاه Flutter.</span>
+          <span class="k">const</span> Badge1(),
+          <span class="c line-bidi">// بلا const: كائن جديد مع كل بناء لأبيه، فيُبنى من جديد.</span>
+          Badge2(),
+          FilledButton(
+            onPressed: () =&gt; setState(() =&gt; count++),
+            child: Text(<span class="s">&#x27;أضف واحداً ($count)&#x27;</span>),
+          ),
+          <span class="k">const</span> Divider(height: <span class="n">32</span>),
+          Text(
+            <span class="s">&#x27;الحالة أُنزلت إلى أسفل&#x27;</span>,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          <span class="k">const</span> LocalCounter(),</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b6-render-ar-shots-rebuilds.png" alt=""></div>
+<figcaption>الشكل 1.1: بعد ثلاث لمسات لزر الصفحة وخمس للزر المحلي.</figcaption>
+</figure>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/rebuilds_test.dart</span>
+00:00 +0: loading test/rebuilds_test.dart
+00:00 +0: setState تعيد بناء الـ Widget وكل جديد تحته
+{page: 4, const: 1, plain: 4, local: 6}
+00:00 +1: All tests passed!</pre></div>
+
+<ul>
+<li>بُنيت الصفحة أربع مرات: مرة في البداية، ومرة مع كل واحدة من استدعاءات <code>setState</code> الثلاثة.</li>
+<li>وبُني <code dir="ltr">const Badge1()</code> مرة واحدة. فالصفحة أعادت الكائن نفسه في كل مرة، فلم يطلب منه Flutter البناء ثانية أبداً.</li>
+<li>وبُني <code dir="ltr">Badge2()</code> أربع مرات مثل أبيه، مع أن شيئاً فيه لم يتغير: فالكائن الجديد Widget جديد.</li>
+<li>وبُني <code>LocalCounter</code> ست مرات: مرة في البداية، ومرة مع كل واحد من استدعاءات <code>setState</code> الخمسة الخاصة به. ولم تُعد هذه الخمسة بناء الصفحة ولا الشارتين: فالحالة التي تعيش منخفضة في الشجرة لا تعيد إلا بناء ما تحتها.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>عادتان تُبقيان إعادة البناء صغيرة دون قياس أي شيء. اكتب <code>const</code> حيثما يسمح المحلل (وقاعدة <code>prefer_const_constructors</code> تقول لك أين). وأبقِ الحالة في أدنى مكان تستطيع العيش فيه: المؤقت، وحقل النص، وأثر مرور الفأرة، كلها مكانها Widget صغير ذو حالة خاص بها، لا الصفحة.</p></aside>
+
+<h2><span class="sec">1.4</span> <span>القيود تنزل، والمقاسات تصعد</span></h2>
+
+<p>التخطيط في Flutter مرور واحد إلى أسفل الشجرة ثم العودة. يعطي الأب كل ابن <dfn>قيوداً</dfn> (constraints): عرضاً وارتفاعاً أدنى وأقصى. ويختار الابن مقاسه داخلها، ويخبر أباه. ثم يقرر الأب أين يضع الابن. وثلاث جمل تشرح كل مفاجأة في التخطيط:</p>
+
+<p class="pull">القيود تنزل. والمقاسات تصعد. والأب يحدد الموضع.</p>
+
+<p>وWidget صغير يجعل القيود مرئية: فـ <code>LayoutBuilder</code> يعطي دالته القيود التي تلقّاها.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/constraints.dart (جزء)</div><pre class="code"><span class="k">String</span> describe(BoxConstraints c) {
+  <span class="k">String</span> range(<span class="k">double</span> min, <span class="k">double</span> max) =&gt; min == max
+      ? min.toStringAsFixed(<span class="n">0</span>)
+      : <span class="s">&#x27;${min.toStringAsFixed(0)}–${max.isFinite ? max.toStringAsFixed(0) : &#x27;</span>∞<span class="s">&#x27;}&#x27;</span>;
+  <span class="k">return</span> <span class="s">&#x27;w ${range(c.minWidth, c.maxWidth)}   h ${range(c.minHeight, c.maxHeight)}&#x27;</span>;
+}
+
+<span class="c line-bidi">// يعرض القيود التي تلقّاها هذا المكان من أبيه.</span>
+<span class="k">class</span> ConstraintsLabel <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> ConstraintsLabel({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> LayoutBuilder(
+      builder: (context, constraints) =&gt; ColoredBox(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        child: Padding(
+          padding: <span class="k">const</span> EdgeInsets.all(<span class="n">8</span>),
+          child: Text(describe(constraints), textDirection: TextDirection.ltr),
+        ),
+      ),
+    );
+  }
+}</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b6-render-ar-shots-constraints.png" alt=""></div>
+<figcaption>الشكل 1.2: اللافتة نفسها في خمسة أماكن، تعرض ما سمح به كل مكان.</figcaption>
+</figure>
+
+<ul>
+<li><code>SizedBox</code> بمقاس 300 × 56 يعطي قيوداً <dfn>صارمة</dfn> (tight): الأدنى يساوي الأقصى، ولا خيار للابن.</li>
+<li>و<code>Center</code> يرخيها: أي شيء من الصفر حتى مقاس الصندوق. فتأخذ اللافتة ما يحتاجه نصها فقط، ويضعها <code>Center</code> في المنتصف.</li>
+<li>و<code>Expanded</code> يعطي الابن العرض الباقي في الصف بالضبط، وارتفاع الصف بلا حد: <code dir="ltr">0–∞</code>.</li>
+<li>و<code>ListView</code> العمودية تعطي أبناءها ارتفاعاً بلا حد، لأن القائمة تتمرر. ولهذا يفشل <code>Column</code> فيه <code>Expanded</code> داخل <code>ListView</code>: فـ«أطول ما يمكن» لا جواب له حين يكون الأقصى بلا نهاية.</li>
+<li>والأخير يطلب عرض 100، فيأخذ 300. فـ <code dir="ltr">Container(width: 100)</code> أمنية، وقيود أبيه الصارمة تغلب. ولتجعله بعرض 100 أرخِ القيود أولاً، بـ <code>Center</code> أو <code>Align</code>.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>حين يتجاهل Widget مقاسه، لا تجرّب القيم حتى ينجح شيء. اسأل الأسئلة الثلاثة: ما القيود التي تلقّاها، وما المقاس الذي اختاره، ومن وضعه؟ و<code>LayoutBuilder</code> مثل الذي أعلاه يجيب عن الأول في دقيقة؛ ومستكشف التخطيط في DevTools يجيب عن الثلاثة لأي Widget.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أيٌّ من <code>Text</code> و<code>RichText</code> و<code>Padding</code> له كائن رسم؟</li><li>صفحة تستدعي <code>setState</code>. أي الأبناء يُبنى من جديد: <code dir="ltr">const Logo()</code> أم <code dir="ltr">Logo()</code> أم كلاهما؟</li><li>لماذا ينتهي <code dir="ltr">SizedBox(width: 50)</code> بعرض 300 حين يكون مباشرة داخل أب صارم عرضه 300؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>المفاتيح: أي عنصر هو أيّها</span></h2>
+
+<p>يُبقي Flutter العنصر حين يكون للـ Widget الجديد في مكانه النوع نفسه و<dfn>المفتاح</dfn> (key) نفسه. وبلا مفاتيح يعني «مكانه» ترتيبه بين إخوته. وهذا صحيح عادة، ويفشل بالضبط حين يتحرك إخوة من النوع نفسه. الصفحة التالية فيها صفان من البطاقات ذات الحالة، أحدهما بلا مفاتيح والآخر بـ <code>ValueKey</code> لكل حرف، وزر يبدّل الحرفين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/keys.dart (جزء)</div><pre class="code">          <span class="c line-bidi">// بلا مفتاح: بعد التبديل تبقى كل State في موضعها.</span>
+          Row(children: [<span class="k">for</span> (<span class="k">final</span> l <span class="k">in</span> labels) Tile(label: l)]),
+          <span class="k">const</span> SizedBox(height: <span class="n">24</span>),
+          Text(<span class="s">&#x27;مع ValueKey&#x27;</span>, style: Theme.of(context).textTheme.titleMedium),
+          <span class="c line-bidi">// مع مفتاح: كل State تتبع الـ Widget الخاص بها.</span>
+          Row(
+            children: [
+              <span class="k">for</span> (<span class="k">final</span> l <span class="k">in</span> labels) Tile(key: ValueKey(l), label: l),</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-render-ar-shots-keys-before.png" alt=""></div>
+<figcaption>قبل</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-render-ar-shots-keys-after.png" alt=""></div>
+<figcaption>لُمس A ثلاث مرات في كل صف، ثم التبديل</figcaption>
+</figure>
+</div>
+
+<p>في الصف الأول انتقل الحرفان، لكن العدّين بقيا مكانهما: فصار B يعرض لمسات A الثلاث. فكل عنصر قارن الـ Widget الجديد في موضعه، فوجد <code>Tile</code> كما كان، فأبقى الـ <code>State</code> الخاصة به. وفي الصف الثاني وجد كل مفتاح عنصره أينما انتقل، فذهبت لمسات A الثلاث مع A. والاختبار يقول ذلك بدقة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/keys_test.dart (جزء)</div><pre class="code">    <span class="k">String</span> tapsUnder(Finder label) =&gt; (tester.widget&lt;Text&gt;(
+      find.descendant(
+        of: find.ancestor(of: label, matching: find.byType(Column)),
+        matching: find.textContaining(<span class="s">&#x27;:&#x27;</span>),
+      ),
+    )).data!;
+    <span class="c line-bidi">// بلا مفاتيح: انتقل A إلى الجهة الأخرى، لكن لمساته الثلاث بقيت مكانها.</span>
+    expect(tapsUnder(find.text(<span class="s">&#x27;A&#x27;</span>).first), <span class="s">&#x27;المس: 0&#x27;</span>);
+    <span class="c line-bidi">// مع المفاتيح: انتقلت لمسات A الثلاث معه.</span>
+    expect(tapsUnder(find.text(<span class="s">&#x27;A&#x27;</span>).last), <span class="s">&#x27;المس: 3&#x27;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/keys_test.dart</span>
+00:00 +0: loading test/keys_test.dart
+00:00 +0: بلا مفاتيح تبقى الحالة مكانها؛ ومع المفاتيح تنتقل
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>أعطِ مفتاحاً لكل عنصر في قائمة يمكن أن تتحرك عناصرها أو تُضاف أو تُحذف، واستخدم شيئاً من البيانات: رقماً معرّفاً، لا الترتيب أبداً. فـ <code dir="ltr">ValueKey(index)</code> مثل عدم وجود مفتاح. و<code dir="ltr">UniqueKey()</code> المُنشأ داخل <code>build</code> أسوأ: مفتاح جديد في كل مرة يعني عنصراً جديداً في كل مرة، فتضيع الحالة مع كل إعادة بناء.</p></aside>
+
+<h2><span class="sec">1.6</span> <span>الرسم والطبقات</span></h2>
+
+<p>حين يتغير شكل كائن رسم، يعلّم نفسه بأنه يحتاج الرسم، ويصعد التعليم إلى أقرب <dfn>حد لإعادة الرسم</dfn> (repaint boundary): فيُعاد رسم كل ما تحت هذا الحد، تغيّر أو لم يتغير. وشعار يدور بجانب صورة ثابتة يُظهر كلفة ذلك. والاختبار يعدّ مرات رسم الصورة الثابتة خلال ستين إطاراً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/repaint_test.dart (جزء)</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">int</span>&gt; paintsOver60Frames(
+  WidgetTester tester, {
+  <span class="k">required</span> <span class="k">bool</span> boundary,
+}) <span class="k">async</span> {
+  <span class="k">final</span> painter = CountingPainter();
+  <span class="k">final</span> picture = CustomPaint(painter: painter, size: <span class="k">const</span> Size(<span class="n">100</span>, <span class="n">100</span>));
+  <span class="k">await</span> tester.pumpWidget(
+    Directionality(
+      textDirection: TextDirection.ltr,
+      child: Row(
+        children: [
+          picture,
+          <span class="c line-bidi">// طبقة خاصة به: إعادة رسم المؤشر لم تعد تعيد رسم جيرانه.</span>
+          <span class="k">if</span> (boundary)
+            <span class="k">const</span> RepaintBoundary(child: Spinner())
+          <span class="k">else</span>
+            <span class="k">const</span> Spinner(),
+        ],
+      ),
+    ),
+  );
+  <span class="k">for</span> (<span class="k">var</span> i = <span class="n">0</span>; i &lt; <span class="n">60</span>; i++) {
+    <span class="k">await</span> tester.pump(<span class="k">const</span> Duration(milliseconds: <span class="n">16</span>));
+  }
+  <span class="k">return</span> painter.paints;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/repaint_test.dart</span>
+00:00 +0: loading test/repaint_test.dart
+00:00 +0: الحد يمنع الرسمة الثابتة من إعادة الرسم
+without a boundary: 61 paints, with one: 1
+00:00 +1: All tests passed!</pre></div>
+
+<p>بلا حد، رُسمت الصورة التي لا تتغير أبداً إحدى وستين مرة: مرة في البداية ومرة مع كل إطار، لأنها تشارك المؤشر الدوّار طبقته. ومع <code>RepaintBoundary</code> حول المؤشر صارت له طبقة خاصة، ورُسمت الصورة مرة واحدة.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>الحد ليس مجانياً: فكل حد يحفظ صورته في الذاكرة، والكثير منها يكلف أكثر مما يوفّر. وFlutter يضع حدوداً من قبل حول كل صفحة، وكل عنصر في قائمة، وكل منطقة تتمرر. فأضف حداً حيث قست مشكلة: شيء يتحرك دائماً بجانب شيء غالٍ لا يتحرك.</p></aside>
+
+<h2><span class="sec">1.7</span> <span>رؤية ذلك على الجوال</span></h2>
+
+<p>اختبارات هذا الفصل تعدّ؛ وعلى الجوال تشاهد. شغّل التطبيق في <dfn>وضع profile</dfn>، <code dir="ltr">flutter run --profile</code>، على جهاز حقيقي: فوضع التطوير أبطأ مرات كثيرة، وتوقيتاته بلا معنى. ثم افتح DevTools من الرابط في الطرفية:</p>
+
+<ul>
+<li>صفحة <strong>Performance</strong> تعرض كل إطار عموداً، مقسوماً بين خيط البناء وخيط التنقيط، وتعلّم الإطارات التي فاتها موعدها.</li>
+<li>و<strong>Track widget rebuilds</strong> تعرض الأعداد نفسها التي في صفحة هذا الفصل، لكل Widget، مباشرة.</li>
+<li>و<strong>Highlight repaints</strong> ترسم إطاراً ملوناً يتغير لونه في كل مرة تُرسم فيها منطقة: فما يظل يومض حين لا يجب أن يتغير شيء هو حد ناقص.</li>
+<li>ومستكشف التخطيط في <strong>Inspector</strong> يعرض قيود كل Widget ومقاسه، كما في القسم 1.4.</li>
+</ul>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>const</code></td><td>تُبنى Widgets لم تتغير مع كل أب</td><td>مُنشئات <code>const</code>، والقاعدة التي تطلبها</td></tr>
+<tr><td>الحالة عالية في الشجرة</td><td>تغيير صغير يعيد بناء صفحة كاملة</td><td>انقل الحالة إلى الـ Widget الصغير الذي يستخدمها</td></tr>
+<tr><td>مقاومة مقاس Widget</td><td>عرض وارتفاع يبدوان متجاهَلين</td><td>افحص قيوده؛ وأرخها بـ <code>Center</code> أو <code>Align</code></td></tr>
+<tr><td>عناصر متحركة بلا مفاتيح</td><td>الحالة والنص والتركيز تبقى مكانها حين تتحرك العناصر</td><td><code>ValueKey</code> بمعرّف العنصر</td></tr>
+<tr><td><code dir="ltr">UniqueKey()</code> داخل <code>build</code></td><td>تضيع الحالة مع كل إعادة بناء</td><td>مفتاح من البيانات، يُنشأ مرة واحدة</td></tr>
+<tr><td>القياس في وضع التطوير</td><td>إطارات بطيئة ليست بطيئة في الحقيقة</td><td><code dir="ltr">flutter run --profile</code> على جوال حقيقي</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الـ Widgets تصف؛ والعناصر تعيش وتحمل الحالة؛ وكائنات الرسم تخطط وترسم. وأكثر الـ Widgets لا تفعل إلا بناء Widgets أخرى.</li>
+<li>الإطار يحرّك، ويبني المتسخ، ويخطط ويرسم ما تغيّر، وينقّط على خيط آخر.</li>
+<li>الابن يُتخطى إن كان الكائن نفسه (<code>const</code>)، ويُحدَّث إن كان له النوع والمفتاح نفسهما، ويُستبدل في غير ذلك. والحالة التي تعيش منخفضة تعيد بناء القليل.</li>
+<li>القيود تنزل، والمقاسات تصعد، والأب يحدد الموضع. والقيود الصارمة تغلب أمنيات الابن.</li>
+<li>المفاتيح تجعل العناصر تتبع الـ Widgets الخاصة بها حين يتحرك الإخوة. وحدود إعادة الرسم تعزل ما يُعاد رسمه كثيراً.</li>
+<li>عُدّ مرات البناء والرسم في الاختبارات؛ وشاهدها في DevTools، في وضع profile، على جوال.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>RichText</code> (وكائنه <code>RenderParagraph</code>) و<code>Padding</code> (وكائنه <code>RenderPadding</code>)؛ أما <code>Text</code> فلا يفعل إلا بناء <code>RichText</code>. 2. <code dir="ltr">Logo()</code> وحده: فـ <code dir="ltr">const Logo()</code> هو الكائن نفسه كما كان، فيتخطاه Flutter. 3. قيود أبيه صارمة: العرض الأدنى والأقصى كلاهما 300، والابن يجب أن يختار مقاساً داخل قيوده، أياً كان ما طلبه.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">كل مشروع ينتهي باختبار يعدّ شيئاً. اكتب الاختبار أولاً، وشاهده يفشل أو يطبع رقماً مفاجئاً، ثم غيّر الكود حتى يصير الرقم ما تتوقعه.</p>
+
+<div class="project">
+<p class="project-label">المشروع 1.1 · سهل</p>
+<h3>ماذا داخل ListTile؟</h3>
+<p class="project-goal">عُدّ العناصر وكائنات الرسم في <code>ListTile</code> واحد، واطبع قائمة كائنات الرسم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على العناصر بـ <code>visitChildren</code>، ومعرفة أي العناصر يملك كائن رسم.</p>
+<ol class="steps">
+<li>ارسم <code>ListTile</code> له أيقونة على كل جانب وعنوان، داخل <code>MaterialApp</code> و<code>Material</code>.</li>
+<li>جِد عنصره بـ <code dir="ltr">tester.element(find.byType(ListTile))</code>، ومُرّ على كل ما تحته.</li>
+<li>عُدّ كل العناصر، واجمع <code dir="ltr">e.renderObject.runtimeType</code> لما كان منها <code>RenderObjectElement</code>.</li>
+<li>اطبع الاثنين، واقرأ القائمة: أي كائنات الرسم موجودة فقط من أجل قارئات الشاشة والفأرة واللمس؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ثلاث من الفقرات ليست العنوان: فالأيقونات تُرسم نصاً، حرفاً واحداً من خط أيقونات لكل منها.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/tile_test.dart</span>
+00:00 +0: loading test/tile_test.dart
+00:00 +0: ListTile عناصر كثيرة وكائنات رسم قليلة
+47 elements, 19 render objects:
+RenderSemanticsAnnotations, RenderMouseRegion, RenderSemanticsAnnotations, RenderPointerListener, RenderSemanticsAnnotations, RenderPadding, RenderPadding, _RenderListTile, RenderSemanticsAnnotations, RenderExcludeSemantics, RenderConstrainedBox, RenderPositionedBox, RenderParagraph, RenderParagraph, RenderSemanticsAnnotations, RenderExcludeSemantics, RenderConstrainedBox, RenderPositionedBox, RenderParagraph
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 1.2 · متوسط</p>
+<h3>أعد الترتيب دون أن تفقد شيئاً</h3>
+<p class="project-goal">قائمة مهام يمكن سحبها إلى ترتيب جديد، وكل مهمة تحتفظ بعلامتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>ReorderableListView</code>، ومفاتيح من البيانات، وقيادة سحب في اختبار.</p>
+<ol class="steps">
+<li><code>TaskTile</code> ذو حالة يحفظ <code>done</code> في حالته، ويعرض <code>CheckboxListTile</code>.</li>
+<li><code>ReorderableListView</code> يعرض المهام، لكل منها <code dir="ltr">key: ValueKey(task)</code>. و<code>onReorderItem</code> تتلقى الموضع القديم والجديد وتنقل المهمة في القائمة.</li>
+<li>في اختبار، علّم المهمة الأولى، ثم اسحبها إلى الآخر: <code>startGesture</code> عليها، وانتظر الضغط المطوّل، وحرّكها إلى أسفل، وأفلتها.</li>
+<li>تأكد أن المهمة الأولى صارت الأخيرة، وما زالت معلَّمة. ثم احذف المفتاح وشاهد الاختبار يفشل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>ReorderableListView</code> تصر على المفاتيح وترمي خطأً بدونها، لكنها لا تستطيع التأكد أنها من البيانات: فـ <code dir="ltr">ValueKey(index)</code> سينجح في فحصها ويضيّع العلامات مع ذلك.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-render-ar-shots-reorder.png" alt=""></div>
+<figcaption>المشروع 1.2: اسحب المهمة لتنقلها.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/reorder_test.dart</span>
+00:00 +0: loading test/reorder_test.dart
+00:00 +0: إعادة الترتيب تُبقي حالة كل عدّاد
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 1.3 · تحدٍّ</p>
+<h3>ميزانية لإعادة الرسم</h3>
+<p class="project-goal">لوحة فيها رأس، ورسم بياني، وتذييل، وساعة حية. اكتب اختباراً يفشل إن أُعيد رسم أي شيء غير الساعة وهي تعمل، ثم أصلح اللوحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> عدّ مرات الرسم بـ <code>CustomPainter</code>، وكتابة الاختبارات كميزانيات، والإصلاح بـ <code>RepaintBoundary</code> مقيس.</p>
+<ol class="steps">
+<li>أعطِ كل جزء ثابت رسّاماً يعدّ مرات رسمه في خريطة مشتركة، وأعطِ الساعة رسّاماً يعيد الرسم مع كل دقة.</li>
+<li>ارسم اللوحة، وشغّل ثلاثين إطاراً، وتوقع أن يكون كل عدد إلا عدد الساعة 1. واجعل رسالة الفشل تطبع الأعداد.</li>
+<li>شغّله: يفشل، ويقول كم أُعيد الرسم.</li>
+<li>ضع الساعة، والساعة وحدها، داخل <code>RepaintBoundary</code>، وشغّله من جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اختبار كهذا <dfn>ميزانية</dfn>: لا يتحقق من أن التطبيق يبدو صحيحاً، بل من أنه يبقى رخيصاً. احتفظ به، فالشخص التالي الذي ينقل الساعة سيعرف عن الحد من الاختبار الفاشل، لا من المستخدمين.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (قبل الإصلاح، ثم بعده):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/budget_before_test.dart</span>
+00:00 +0: loading test/budget_before_test.dart
+00:00 +0: الساعة تعيد رسم نفسها فقط
+{header: 31, chart: 31, clock: 31, footer: 31}
+Expected: true
+  Actual: &lt;false&gt;
+repainted: {header: 31, chart: 31, footer: 31}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/budget_test.dart</span>
+00:00 +0: loading test/budget_test.dart
+00:00 +0: الساعة تعيد رسم نفسها فقط
+{header: 1, chart: 1, clock: 31, footer: 1}
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف <code>Icon</code> و<code>SizedBox</code> إلى اختبار الأشجار. وقبل أن تشغّله اكتب أي الأسطر سيكون لها كائن رسم.</li>
+<li><span class="level">سهل</span> في صفحة إعادة البناء، اجعل مُنشئ <code>Badge2</code> من نوع <code>const</code> لكن استمر في استدعائه بلا <code>const</code>. كم مرة يُبنى الآن، ولماذا؟</li>
+<li><span class="level medium">متوسط</span> ضع <code>Column</code> فيه ابن <code>Expanded</code> داخل <code>ListView</code> عمودية. اقرأ الخطأ، واشرحه بالقيود من القسم 1.4، وأصلحه بطريقتين مختلفتين.</li>
+<li><span class="level medium">متوسط</span> أعطِ بطاقات صفحة المفاتيح <code>TextField</code> بدل العدّاد، واكتب في واحدة، وبدّل. ماذا يحدث للنص في كل صف، ولتركيز لوحة المفاتيح؟</li>
+<li><span class="level hard">تحدٍّ</span> انقل <code>RepaintBoundary</code> في اختبار الرسم من المؤشر إلى الصورة الثابتة. توقّع العدد، ثم شغّله. متى يكون كل موضع هو الأفضل؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+<p>عرفت كيف يرسم Flutter شاشة واحدة. والتطبيق الحقيقي فيه خمسون، وفريق يعمل عليها. والفصل القادم يعطي التطبيق هيكلاً ينمو: طبقات للبيانات والمجال والعرض، مع قواعد عمّن يحق له أن يكلّم من.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">حاول حل كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف حلك عن هذا فليس بالضرورة خطأ: معظم المسائل لها حلول جيدة كثيرة. إن كان حلك يعالج الحالات العادية وغير العادية، وتستطيع أن تشرح اختياراتك، فهو حل جيد. والكود الكامل المختبر لكل حل موجود في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li>لـ <code>SizedBox</code> كائن رسم واحد، <code>RenderConstrainedBox</code>. أما <code>Icon</code> فلا كائن رسم خاصاً به: فهو مثل <code>Text</code> يبني Widgets أخرى، منها <code>RichText</code> يرسم كائنه <code>RenderParagraph</code> الأيقونة حرفاً واحداً من خط أيقونات، داخل بضعة Widgets للمقاس وقارئات الشاشة. وكتابة التوقع أولاً هي المقصود: فأخطاؤك تقول لك أي الـ Widgets ظننتها «حقيقية».</li>
+<li>أربع مرات أيضاً. فمُنشئ <code>const</code> <em>يسمح</em> بالثابت فقط؛ ومكان الاستدعاء هو الذي يقرر. و<code dir="ltr">Badge2()</code> بلا <code>const</code> داخل دالة <code>build</code> تُنشئ كائناً جديداً في كل مرة، والكائن الجديد يُبنى من جديد. ولهذا تنظر قاعدة <code>prefer_const_constructors</code> إلى الاستدعاءات، لا إلى الأصناف وحدها.</li>
+<li>يقول الخطأ إن <code>RenderFlex</code> له أبناء بنسبة مرنة لكن قيد الارتفاع الذي يصله بلا حد: فقد أعطت <code>ListView</code> العمود <code>Column</code> ارتفاعاً أقصى لا نهائياً، و<code>Expanded</code> تعني «خذ الباقي من الأقصى». فإما أن تعطي العمود ارتفاعاً محدوداً (<code dir="ltr">SizedBox(height: …)</code> حوله، أو لا <code>ListView</code> إن لم تكن الصفحة تحتاج التمرير)، وإما أن تحذف <code>Expanded</code> وتدع الأبناء يأخذون مقاساتهم بـ <code dir="ltr">mainAxisSize: MainAxisSize.min</code>.</li>
+<li>في الصف بلا مفاتيح يبقى النص في موضعه ويظهر تحت الحرف الآخر، لأن النص يعيش في الـ <code>State</code> الخاصة بالحقل، وقد أبقاها العنصر؛ والتركيز والمؤشر يبقيان هناك أيضاً. وفي الصف ذي المفاتيح ينتقل النص والمؤشر والتركيز مع البطاقة. وهذه أشهر صورة واقعية لمشكلة المفاتيح: نماذج تُضاف حقولها أو تُحذف.</li>
+<li>تُرسم الصورة مرة واحدة أيضاً: فلها الآن طبقة خاصة، وحين يعيد المؤشر رسم طبقة الأب تُعاد طبقة الصورة كما هي دون رسمها. فالموضعان كلاهما يحمي الصورة؛ والفرق فيما يحميانه غيرها. فالحد حول الشيء الذي يتغير يحمي كل جيرانه دفعة واحدة، وهو الأفضل عادة؛ والحد حول شيء ثابت غالٍ واحد يحميه وحده، وهو الاختيار الأفضل حين يكون رسمه مكلفاً والأجزاء المتغيرة موزعة في الشاشة.</li>
+</ol>
+
+</section>
+</body></html>
