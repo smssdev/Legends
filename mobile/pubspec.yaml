@@ -2,7 +2,7 @@ name: glm
 description: "Game Legend Manager — المدرب الأسطورة"
 publish_to: 'none'
 
-version: 2.5.4+20
+version: 2.5.5+21
 
 environment:
   sdk: '>=3.13.0 <4.0.0'

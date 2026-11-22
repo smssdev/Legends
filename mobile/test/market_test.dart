@@ -209,7 +209,7 @@ void main() {
     expect(m.sent.last, 'accept 31');
   });
 
-  testWidgets('[X105] a player whose line is at the squad\'s floor: the server\'s reason, and no way to sell him', (t) async {
+  testWidgets('[X114] a player whose line is at the squad\'s floor: the server\'s reason, and no way to sell him', (t) async {
     final m = FakeMarket();
     const why = 'لا بد أن يبقى في فريقك 4 مدافعين على الأقل.';
     final held = Selling.fromJson(json('market_pool')).mine.firstWhere((x) => x.line == 'def');

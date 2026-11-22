@@ -14662,7 +14662,7 @@ export interface components {
                     /** Format: date-time */
                     sells_at: string | null;
                 } | null;
-                /** @description [X105] Why he cannot be sold now: his line is at the squad's floor (2 keepers, 4 defenders, 4 midfielders, 3 forwards) */
+                /** @description [X114] Why he cannot be sold now: his line is at the squad's floor (2 keepers, 4 defenders, 4 midfielders, 3 forwards) */
                 held?: string | null;
             }[];
             /** @description [Sprint 23] Listing: how many at once, how many now, and the season's profit room selling outside the league */

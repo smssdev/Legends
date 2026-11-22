@@ -17,7 +17,7 @@ import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
 import 'market_data.dart';
 
-/// [X105, the owner's request 2026-11-22] One of my players' sale, from the market's sell tab or from his card in the
+/// [X114, the owner's request 2026-11-22] One of my players' sale, from the market's sell tab or from his card in the
 /// squad (as on the site): listed at a price, as an auction, or sold now. A player whose line is at the squad's floor
 /// shows why and cannot be sold (the server's rule, App\Market\SquadFloor).
 Future<void> showSellSheet(BuildContext context, WidgetRef ref, int leagueId, MyPlayer player) async {
@@ -123,7 +123,7 @@ class _SellSheetState extends State<SellSheet> {
               style: TextStyle(color: p.textMuted),
             ),
             const SizedBox(height: 14),
-            // [X105] His line is at the squad's floor: the reason, and no way to sell him (a listing can still go).
+            // [X114] His line is at the squad's floor: the reason, and no way to sell him (a listing can still go).
             if (pl.held != null && !pl.listed) ...[
               Container(
                 padding: const EdgeInsets.all(GlmSpace.md),

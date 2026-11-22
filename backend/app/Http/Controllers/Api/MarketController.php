@@ -189,7 +189,7 @@ class MarketController extends Controller
         $scale = (int) $league->timer_scale ?: 10000;
         $fair = (bool) $league->fair_league;
         $mad = TimedEvents::times('madness', $league->id);
-        $held = SquadFloor::held($club->id);   // [X105] the lines at their floor
+        $held = SquadFloor::held($club->id);   // [X114] the lines at their floor
         $hours = fn (int $price, object $p) => intdiv(intdiv(Buyer::wait($price, (int) $p->value, $league->id, $scale, (int) $p->age, (int) $p->overall + (int) $p->training_bonus) * 10000, $mad) + 1800, 3600);
 
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
@@ -205,7 +205,7 @@ class MarketController extends Controller
                     // About how long the outside buyer takes, at his value and at his cap (his age and rating, and a madness, counted).
                     'wait_hours' => ['value' => $hours((int) $p->value, $p), 'cap' => $hours($cap, $p)],
                     'listed' => $l ? ['price' => (int) $l->price, 'sells_at' => $l->sells_at ? Buyer::effectiveAt($l, $mad)->toIso8601ZuluString() : null] : null,
-                    // [X105] Why he cannot be sold now (his line at its floor), or null.
+                    // [X114] Why he cannot be sold now (his line at its floor), or null.
                     'held' => $held[$p->line] ?? null,
                 ];
             })->all();

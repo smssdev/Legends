@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
-/** [X105] A coach's squad keeps 2 keepers, 4 defenders, 4 midfielders and 3 forwards through any sale. */
+/** [X114] A coach's squad keeps 2 keepers, 4 defenders, 4 midfielders and 3 forwards through any sale. */
 class SquadFloorTest extends TestCase
 {
     use MakesLeagues, RefreshDatabase;

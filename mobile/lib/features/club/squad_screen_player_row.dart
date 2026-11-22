@@ -112,7 +112,7 @@ class PlayerRow extends StatelessWidget {
 
 /// A player's card: his numbers and each attribute as a bar. [Sprint 60 F4] One card, as the site's PlayerCard: beside
 /// the squad's table as a panel ([PlayerCardPanel]), in a sheet where there is no table to keep in view.
-/// [X105] [action] under the card (a sale, an offer), built in the sheet's own context.
+/// [X114] [action] under the card (a sale, an offer), built in the sheet's own context.
 Future<void> showPlayerCard(BuildContext context, Player p, {Widget? Function(BuildContext context)? action}) => showModalBottomSheet<void>(
   context: context,
   showDragHandle: true,
@@ -143,7 +143,7 @@ class PlayerCardPanel extends StatelessWidget {
   final Player player;
   final VoidCallback close;
 
-  /// [X105] Under the card, kept in sight: his sale (mine) or an offer for him (another coach's).
+  /// [X114] Under the card, kept in sight: his sale (mine) or an offer for him (another coach's).
   final Widget? action;
 
   @override

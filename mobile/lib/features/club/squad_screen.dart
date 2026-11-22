@@ -42,7 +42,7 @@ part 'squad_screen_rival.dart';
 /// the name, age, rating, potential, fitness as a bar, value and who cannot play; a tap on a column sorts by it (again:
 /// the other way), the lines filter it, and a tap on a player opens his card.
 ///
-/// [X105, the owner's request 2026-11-22] Any other club of the league in the same table ([clubId], from «Rival squads»
+/// [X114, the owner's request 2026-11-22] Any other club of the league in the same table ([clubId], from «Rival squads»
 /// in the bar), its players' numbers only (never its tactics); and a player of mine sold from his card, as on the site.
 class SquadScreen extends ConsumerStatefulWidget {
   const SquadScreen({super.key, required this.leagueId, this.clubId});
@@ -108,7 +108,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
     final AsyncValue<TeamData> value = rivalValue == null ? ref.watch(teamProvider(widget.leagueId)) : rivalValue.whenData((r) => r.team);
     return Scaffold(
       appBar: GameBar(title: Text(rivalId == null ? l.squad : rival?.name ?? l.rivalSquads)),
-      // [X105] The screen's actions in its bar: the rival squads, and back to mine from one.
+      // [X114] The screen's actions in its bar: the rival squads, and back to mine from one.
       bottomNavigationBar: SafeArea(
         top: false,
         child: GlmActionBar(
