@@ -1,0 +1,257 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/render/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>كيف يرسم Flutter فعلاً</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>ترى الأشجار الثلاث خلف كل شاشة: الـ Widgets، والعناصر (elements)، وكائنات الرسم (render objects)</li>
+<li>تتبع إطاراً واحداً من <code>setState</code> إلى النقاط على الشاشة، وتعرف كلفة كل خطوة</li>
+<li>تتوقع أي الـ Widgets يُعاد بناؤها، وتُبقي عددها صغيراً بـ <code>const</code> والحالة المحلية</li>
+<li>تقرأ التخطيط بجملة: «القيود تنزل، والمقاسات تصعد، والأب يحدد الموضع»</li>
+<li>تستخدم المفاتيح لتبقى الحالة حيث يجب، وحدود إعادة الرسم ليبقى الرسم رخيصاً</li>
+<li>تثبت كل ذلك باختبارات تعدّ مرات البناء ومرات الرسم</li>
+</ul>
+</div>
+
+<p class="lead">في الكتاب الخامس كتبت الـ Widgets ورسمها Flutter. وكان هذا كافياً لبناء التطبيقات. لكنه لا يكفي لتعرف لماذا تتقطع قائمة، ولماذا يفقد حقل نص ما كُتب فيه حين تتغير الشاشة، ولماذا يتجاهل Widget العرض الذي أعطيته. وللثلاثة جواب واحد: ما يفعله Flutter بالـ Widgets بعد أن تعيد <code>build</code>. وهذا الفصل يفتح الصندوق، وكل ادعاء فيه يقيسه اختبار.</p>
+
+<aside class="bit" data-mood="happy"><p>لا شيء في هذا الفصل قاعدة تقريبية. كل رقم، من مرات البناء إلى مرات الرسم، عدّته الاختبارات التي ستراها، على الجهاز الذي صنع الكتاب. غيّر الكود، وشغّل الاختبارات، وشاهد الأرقام تتغير.</p></aside>
+
+<h2>{{n}}.1 ثلاث أشجار</h2>
+
+<p>الـ <dfn>Widget</dfn> ليس ما تراه على الشاشة. إنه وصف: كائن صغير لا يتغير يقول ما يجب أن يكون هناك. ويحتفظ Flutter بشجرتين أخريين بجانب الـ Widgets:</p>
+
+<ul>
+<li>الـ <dfn>عنصر</dfn> (element) مكان الـ Widget في الشجرة الحية. يُنشأ مرة واحدة، ويحفظ موضعه، ويحمل الـ <code>State</code> الخاصة بالـ Widget ذي الحالة، ويُعاد استخدامه حين يصل Widget جديد من النوع نفسه إلى المكان نفسه.</li>
+<li>و<dfn>كائن الرسم</dfn> (render object) يقوم بالعمل الحقيقي: يقيس نفسه، ويضع أبناءه، ويرسم. ولبعض الـ Widgets فقط كائن رسم.</li>
+</ul>
+
+<p>يستطيع اختبار أن يمر على عناصر شاشة صغيرة ويطبع الثلاثة، سطراً لكل عنصر:</p>
+
+<pre data-code="test/trees_test.dart" data-from="    final root" data-to="show(root, 0)" data-title="test/trees_test.dart (جزء)"></pre>
+<pre data-term="trees-test.sh"></pre>
+
+<ul>
+<li><code>Center</code> و<code>Padding</code> رقيقان: لكل منهما عنصر وكائن رسم يخطط لابن واحد.</li>
+<li>و<code>Text</code> <em>بلا</em> كائن رسم. إنه <code>StatelessWidget</code> يبني <code>RichText</code>، و<code>RichText</code> هو صاحب <code>RenderParagraph</code> الذي يقيس الحروف ويرسمها. وأكثر الـ Widgets التي تستخدمها مثل <code>Text</code>: لا تفعل إلا بناء Widgets أخرى.</li>
+<li>و<code>Directionality</code> بلا كائن رسم أيضاً: إنه <dfn>Widget موروث</dfn> (inherited widget) يمرر قيمة إلى الأسفل، كما يفعل <code>Theme</code> و<code>MediaQuery</code>.</li>
+</ul>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>الـ Widgets رخيصة عن قصد. فإنشاء آلاف الكائنات الصغيرة في كل إطار سريع في Dart، لأن مدير ذاكرتها مبني للكائنات قصيرة العمر. أما الأشياء الغالية، العناصر والحالة وكائنات الرسم، فتعيش أطول ما تستطيع، ويجتهد الإطار في إعادة استخدامها. وكل قاعدة أداء تقريباً في Flutter طريقة لمساعدته على إعادة الاستخدام.</p></aside>
+
+<h2>{{n}}.2 إطار واحد</h2>
+
+<p>شاشة الجوال تطلب صورة جديدة 60 أو 120 مرة في الثانية. ولكل صورة يملك Flutter نحو 16 أو 8 أجزاء من الألف من الثانية، ويقوم بالخطوات نفسها بالترتيب:</p>
+
+<ol class="steps">
+<li><strong>الحركة.</strong> كل حركة جارية تنتقل إلى قيمتها في هذه اللحظة.</li>
+<li><strong>البناء.</strong> كل عنصر مُعلَّم بأنه متسخ (dirty)، بـ <code>setState</code> أو بتغير قيمة موروثة، تُنفَّذ دالة <code>build</code> في الـ Widget الخاص به، وتُقارن الـ Widgets الجديدة بالقديمة.</li>
+<li><strong>التخطيط.</strong> كائنات الرسم التي ربما تغيّر مقاسها تقيس نفسها وتضع أبناءها.</li>
+<li><strong>الرسم.</strong> كائنات الرسم التي تغيّر شكلها تسجّل ما يجب رسمه، في طبقات.</li>
+<li><strong>التركيب والتنقيط.</strong> تذهب الطبقات إلى خيط الـ GPU، فيحولها إلى نقاط بينما يُبنى الإطار التالي.</li>
+</ol>
+
+<p>وكل خطوة لا تلمس إلا ما تغيّر. فالإطار الذي لم يتغير فيه شيء لا يكلّف شيئاً تقريباً؛ والإطار الذي تغيّر فيه كل شيء قد يفوته موعده، فيرى الشخص تقطعاً يسمى <dfn>jank</dfn>. وباقي هذا الفصل عن إبقاء «ما تغيّر» صغيراً في كل خطوة.</p>
+
+<h2>{{n}}.3 من يُعاد بناؤه</h2>
+
+<p><code>setState</code> تعلّم عنصراً واحداً بأنه متسخ. وفي الإطار التالي يُبنى الـ Widget الخاص به من جديد، فيعيد Widgets أبناء جديدة. ولكل ابن يقارن Flutter الـ Widget الجديد بالقديم في المكان نفسه:</p>
+
+<ul>
+<li>إن كان <em>الكائن نفسه</em>، فلا يمكن أن يكون شيء تحته قد تغيّر: فيتخطاه Flutter كله. وهذا ما تعطيك إياه <code>const</code>: فالـ Widget الثابت يُنشأ مرة واحدة، حين يُترجم التطبيق، وهو الكائن نفسه في كل بناء.</li>
+<li>وإن كان كائناً مختلفاً من النوع نفسه (وبالمفتاح نفسه)، بقي العنصر وحُدّث، وبُني الابن من جديد.</li>
+<li>وإن اختلف النوع أو المفتاح، رُمي العنصر القديم وكل ما تحته، وأُنشئ جديد.</li>
+</ul>
+
+<p>الصفحة التالية تعدّ مرات بناء كل Widget على الشاشة نفسها. تُغيَّر حالة الصفحة ثلاث مرات بالزر الممتلئ، وحالة Widget أصغر خمس مرات بالزر ذي الإطار:</p>
+
+<pre data-code="lib/rebuilds.dart" data-from="^          // " data-to="          const LocalCounter()" data-title="lib/rebuilds.dart (جزء)"></pre>
+
+<figure data-img="shots/rebuilds.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: بعد ثلاث لمسات لزر الصفحة وخمس للزر المحلي.</figcaption>
+</figure>
+
+<pre data-term="rebuilds-test.sh"></pre>
+
+<ul>
+<li>بُنيت الصفحة أربع مرات: مرة في البداية، ومرة مع كل واحدة من استدعاءات <code>setState</code> الثلاثة.</li>
+<li>وبُني <code dir="ltr">const Badge1()</code> مرة واحدة. فالصفحة أعادت الكائن نفسه في كل مرة، فلم يطلب منه Flutter البناء ثانية أبداً.</li>
+<li>وبُني <code dir="ltr">Badge2()</code> أربع مرات مثل أبيه، مع أن شيئاً فيه لم يتغير: فالكائن الجديد Widget جديد.</li>
+<li>وبُني <code>LocalCounter</code> ست مرات: مرة في البداية، ومرة مع كل واحد من استدعاءات <code>setState</code> الخمسة الخاصة به. ولم تُعد هذه الخمسة بناء الصفحة ولا الشارتين: فالحالة التي تعيش منخفضة في الشجرة لا تعيد إلا بناء ما تحتها.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>عادتان تُبقيان إعادة البناء صغيرة دون قياس أي شيء. اكتب <code>const</code> حيثما يسمح المحلل (وقاعدة <code>prefer_const_constructors</code> تقول لك أين). وأبقِ الحالة في أدنى مكان تستطيع العيش فيه: المؤقت، وحقل النص، وأثر مرور الفأرة، كلها مكانها Widget صغير ذو حالة خاص بها، لا الصفحة.</p></aside>
+
+<h2>{{n}}.4 القيود تنزل، والمقاسات تصعد</h2>
+
+<p>التخطيط في Flutter مرور واحد إلى أسفل الشجرة ثم العودة. يعطي الأب كل ابن <dfn>قيوداً</dfn> (constraints): عرضاً وارتفاعاً أدنى وأقصى. ويختار الابن مقاسه داخلها، ويخبر أباه. ثم يقرر الأب أين يضع الابن. وثلاث جمل تشرح كل مفاجأة في التخطيط:</p>
+
+<p class="pull">القيود تنزل. والمقاسات تصعد. والأب يحدد الموضع.</p>
+
+<p>وWidget صغير يجعل القيود مرئية: فـ <code>LayoutBuilder</code> يعطي دالته القيود التي تلقّاها.</p>
+
+<pre data-code="lib/constraints.dart" data-from="^String describe" data-to="^}#2" data-title="lib/constraints.dart (جزء)"></pre>
+
+<figure data-img="shots/constraints.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: اللافتة نفسها في خمسة أماكن، تعرض ما سمح به كل مكان.</figcaption>
+</figure>
+
+<ul>
+<li><code>SizedBox</code> بمقاس 300 × 56 يعطي قيوداً <dfn>صارمة</dfn> (tight): الأدنى يساوي الأقصى، ولا خيار للابن.</li>
+<li>و<code>Center</code> يرخيها: أي شيء من الصفر حتى مقاس الصندوق. فتأخذ اللافتة ما يحتاجه نصها فقط، ويضعها <code>Center</code> في المنتصف.</li>
+<li>و<code>Expanded</code> يعطي الابن العرض الباقي في الصف بالضبط، وارتفاع الصف بلا حد: <code dir="ltr">0–∞</code>.</li>
+<li>و<code>ListView</code> العمودية تعطي أبناءها ارتفاعاً بلا حد، لأن القائمة تتمرر. ولهذا يفشل <code>Column</code> فيه <code>Expanded</code> داخل <code>ListView</code>: فـ«أطول ما يمكن» لا جواب له حين يكون الأقصى بلا نهاية.</li>
+<li>والأخير يطلب عرض 100، فيأخذ 300. فـ <code dir="ltr">Container(width: 100)</code> أمنية، وقيود أبيه الصارمة تغلب. ولتجعله بعرض 100 أرخِ القيود أولاً، بـ <code>Center</code> أو <code>Align</code>.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>حين يتجاهل Widget مقاسه، لا تجرّب القيم حتى ينجح شيء. اسأل الأسئلة الثلاثة: ما القيود التي تلقّاها، وما المقاس الذي اختاره، ومن وضعه؟ و<code>LayoutBuilder</code> مثل الذي أعلاه يجيب عن الأول في دقيقة؛ ومستكشف التخطيط في DevTools يجيب عن الثلاثة لأي Widget.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>أيٌّ من <code>Text</code> و<code>RichText</code> و<code>Padding</code> له كائن رسم؟</li><li>صفحة تستدعي <code>setState</code>. أي الأبناء يُبنى من جديد: <code dir="ltr">const Logo()</code> أم <code dir="ltr">Logo()</code> أم كلاهما؟</li><li>لماذا ينتهي <code dir="ltr">SizedBox(width: 50)</code> بعرض 300 حين يكون مباشرة داخل أب صارم عرضه 300؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.5 المفاتيح: أي عنصر هو أيّها</h2>
+
+<p>يُبقي Flutter العنصر حين يكون للـ Widget الجديد في مكانه النوع نفسه و<dfn>المفتاح</dfn> (key) نفسه. وبلا مفاتيح يعني «مكانه» ترتيبه بين إخوته. وهذا صحيح عادة، ويفشل بالضبط حين يتحرك إخوة من النوع نفسه. الصفحة التالية فيها صفان من البطاقات ذات الحالة، أحدهما بلا مفاتيح والآخر بـ <code>ValueKey</code> لكل حرف، وزر يبدّل الحرفين:</p>
+
+<pre data-code="lib/keys.dart" data-from="^          // " data-to="ValueKey(l)" data-title="lib/keys.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/keys-before.png" data-frame="phone">
+<figcaption>قبل</figcaption>
+</figure>
+<figure data-img="shots/keys-after.png" data-frame="phone">
+<figcaption>لُمس A ثلاث مرات في كل صف، ثم التبديل</figcaption>
+</figure>
+</div>
+
+<p>في الصف الأول انتقل الحرفان، لكن العدّين بقيا مكانهما: فصار B يعرض لمسات A الثلاث. فكل عنصر قارن الـ Widget الجديد في موضعه، فوجد <code>Tile</code> كما كان، فأبقى الـ <code>State</code> الخاصة به. وفي الصف الثاني وجد كل مفتاح عنصره أينما انتقل، فذهبت لمسات A الثلاث مع A. والاختبار يقول ذلك بدقة:</p>
+
+<pre data-code="test/keys_test.dart" data-from="^    String tapsUnder" data-to="find.text('A').last), " data-title="test/keys_test.dart (جزء)"></pre>
+<pre data-term="keys-test.sh"></pre>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>أعطِ مفتاحاً لكل عنصر في قائمة يمكن أن تتحرك عناصرها أو تُضاف أو تُحذف، واستخدم شيئاً من البيانات: رقماً معرّفاً، لا الترتيب أبداً. فـ <code dir="ltr">ValueKey(index)</code> مثل عدم وجود مفتاح. و<code dir="ltr">UniqueKey()</code> المُنشأ داخل <code>build</code> أسوأ: مفتاح جديد في كل مرة يعني عنصراً جديداً في كل مرة، فتضيع الحالة مع كل إعادة بناء.</p></aside>
+
+<h2>{{n}}.6 الرسم والطبقات</h2>
+
+<p>حين يتغير شكل كائن رسم، يعلّم نفسه بأنه يحتاج الرسم، ويصعد التعليم إلى أقرب <dfn>حد لإعادة الرسم</dfn> (repaint boundary): فيُعاد رسم كل ما تحت هذا الحد، تغيّر أو لم يتغير. وشعار يدور بجانب صورة ثابتة يُظهر كلفة ذلك. والاختبار يعدّ مرات رسم الصورة الثابتة خلال ستين إطاراً:</p>
+
+<pre data-code="test/repaint_test.dart" data-from="Future<int> paintsOver60Frames" data-to="^}" data-title="test/repaint_test.dart (جزء)"></pre>
+<pre data-term="repaint-test.sh"></pre>
+
+<p>بلا حد، رُسمت الصورة التي لا تتغير أبداً إحدى وستين مرة: مرة في البداية ومرة مع كل إطار، لأنها تشارك المؤشر الدوّار طبقته. ومع <code>RepaintBoundary</code> حول المؤشر صارت له طبقة خاصة، ورُسمت الصورة مرة واحدة.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>الحد ليس مجانياً: فكل حد يحفظ صورته في الذاكرة، والكثير منها يكلف أكثر مما يوفّر. وFlutter يضع حدوداً من قبل حول كل صفحة، وكل عنصر في قائمة، وكل منطقة تتمرر. فأضف حداً حيث قست مشكلة: شيء يتحرك دائماً بجانب شيء غالٍ لا يتحرك.</p></aside>
+
+<h2>{{n}}.7 رؤية ذلك على الجوال</h2>
+
+<p>اختبارات هذا الفصل تعدّ؛ وعلى الجوال تشاهد. شغّل التطبيق في <dfn>وضع profile</dfn>، <code dir="ltr">flutter run --profile</code>، على جهاز حقيقي: فوضع التطوير أبطأ مرات كثيرة، وتوقيتاته بلا معنى. ثم افتح DevTools من الرابط في الطرفية:</p>
+
+<ul>
+<li>صفحة <strong>Performance</strong> تعرض كل إطار عموداً، مقسوماً بين خيط البناء وخيط التنقيط، وتعلّم الإطارات التي فاتها موعدها.</li>
+<li>و<strong>Track widget rebuilds</strong> تعرض الأعداد نفسها التي في صفحة هذا الفصل، لكل Widget، مباشرة.</li>
+<li>و<strong>Highlight repaints</strong> ترسم إطاراً ملوناً يتغير لونه في كل مرة تُرسم فيها منطقة: فما يظل يومض حين لا يجب أن يتغير شيء هو حد ناقص.</li>
+<li>ومستكشف التخطيط في <strong>Inspector</strong> يعرض قيود كل Widget ومقاسه، كما في القسم {{n}}.4.</li>
+</ul>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>const</code></td><td>تُبنى Widgets لم تتغير مع كل أب</td><td>مُنشئات <code>const</code>، والقاعدة التي تطلبها</td></tr>
+<tr><td>الحالة عالية في الشجرة</td><td>تغيير صغير يعيد بناء صفحة كاملة</td><td>انقل الحالة إلى الـ Widget الصغير الذي يستخدمها</td></tr>
+<tr><td>مقاومة مقاس Widget</td><td>عرض وارتفاع يبدوان متجاهَلين</td><td>افحص قيوده؛ وأرخها بـ <code>Center</code> أو <code>Align</code></td></tr>
+<tr><td>عناصر متحركة بلا مفاتيح</td><td>الحالة والنص والتركيز تبقى مكانها حين تتحرك العناصر</td><td><code>ValueKey</code> بمعرّف العنصر</td></tr>
+<tr><td><code dir="ltr">UniqueKey()</code> داخل <code>build</code></td><td>تضيع الحالة مع كل إعادة بناء</td><td>مفتاح من البيانات، يُنشأ مرة واحدة</td></tr>
+<tr><td>القياس في وضع التطوير</td><td>إطارات بطيئة ليست بطيئة في الحقيقة</td><td><code dir="ltr">flutter run --profile</code> على جوال حقيقي</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>الـ Widgets تصف؛ والعناصر تعيش وتحمل الحالة؛ وكائنات الرسم تخطط وترسم. وأكثر الـ Widgets لا تفعل إلا بناء Widgets أخرى.</li>
+<li>الإطار يحرّك، ويبني المتسخ، ويخطط ويرسم ما تغيّر، وينقّط على خيط آخر.</li>
+<li>الابن يُتخطى إن كان الكائن نفسه (<code>const</code>)، ويُحدَّث إن كان له النوع والمفتاح نفسهما، ويُستبدل في غير ذلك. والحالة التي تعيش منخفضة تعيد بناء القليل.</li>
+<li>القيود تنزل، والمقاسات تصعد، والأب يحدد الموضع. والقيود الصارمة تغلب أمنيات الابن.</li>
+<li>المفاتيح تجعل العناصر تتبع الـ Widgets الخاصة بها حين يتحرك الإخوة. وحدود إعادة الرسم تعزل ما يُعاد رسمه كثيراً.</li>
+<li>عُدّ مرات البناء والرسم في الاختبارات؛ وشاهدها في DevTools، في وضع profile، على جوال.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>RichText</code> (وكائنه <code>RenderParagraph</code>) و<code>Padding</code> (وكائنه <code>RenderPadding</code>)؛ أما <code>Text</code> فلا يفعل إلا بناء <code>RichText</code>. 2. <code dir="ltr">Logo()</code> وحده: فـ <code dir="ltr">const Logo()</code> هو الكائن نفسه كما كان، فيتخطاه Flutter. 3. قيود أبيه صارمة: العرض الأدنى والأقصى كلاهما 300، والابن يجب أن يختار مقاساً داخل قيوده، أياً كان ما طلبه.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">كل مشروع ينتهي باختبار يعدّ شيئاً. اكتب الاختبار أولاً، وشاهده يفشل أو يطبع رقماً مفاجئاً، ثم غيّر الكود حتى يصير الرقم ما تتوقعه.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>ماذا داخل ListTile؟</h3>
+<p class="project-goal">عُدّ العناصر وكائنات الرسم في <code>ListTile</code> واحد، واطبع قائمة كائنات الرسم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على العناصر بـ <code>visitChildren</code>، ومعرفة أي العناصر يملك كائن رسم.</p>
+<ol class="steps">
+<li>ارسم <code>ListTile</code> له أيقونة على كل جانب وعنوان، داخل <code>MaterialApp</code> و<code>Material</code>.</li>
+<li>جِد عنصره بـ <code dir="ltr">tester.element(find.byType(ListTile))</code>، ومُرّ على كل ما تحته.</li>
+<li>عُدّ كل العناصر، واجمع <code dir="ltr">e.renderObject.runtimeType</code> لما كان منها <code>RenderObjectElement</code>.</li>
+<li>اطبع الاثنين، واقرأ القائمة: أي كائنات الرسم موجودة فقط من أجل قارئات الشاشة والفأرة واللمس؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ثلاث من الفقرات ليست العنوان: فالأيقونات تُرسم نصاً، حرفاً واحداً من خط أيقونات لكل منها.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/tile-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>أعد الترتيب دون أن تفقد شيئاً</h3>
+<p class="project-goal">قائمة مهام يمكن سحبها إلى ترتيب جديد، وكل مهمة تحتفظ بعلامتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>ReorderableListView</code>، ومفاتيح من البيانات، وقيادة سحب في اختبار.</p>
+<ol class="steps">
+<li><code>TaskTile</code> ذو حالة يحفظ <code>done</code> في حالته، ويعرض <code>CheckboxListTile</code>.</li>
+<li><code>ReorderableListView</code> يعرض المهام، لكل منها <code dir="ltr">key: ValueKey(task)</code>. و<code>onReorderItem</code> تتلقى الموضع القديم والجديد وتنقل المهمة في القائمة.</li>
+<li>في اختبار، علّم المهمة الأولى، ثم اسحبها إلى الآخر: <code>startGesture</code> عليها، وانتظر الضغط المطوّل، وحرّكها إلى أسفل، وأفلتها.</li>
+<li>تأكد أن المهمة الأولى صارت الأخيرة، وما زالت معلَّمة. ثم احذف المفتاح وشاهد الاختبار يفشل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>ReorderableListView</code> تصر على المفاتيح وترمي خطأً بدونها، لكنها لا تستطيع التأكد أنها من البيانات: فـ <code dir="ltr">ValueKey(index)</code> سينجح في فحصها ويضيّع العلامات مع ذلك.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure data-img="shots/reorder.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: اسحب المهمة لتنقلها.</figcaption>
+</figure>
+<pre data-term="projects/reorder-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>ميزانية لإعادة الرسم</h3>
+<p class="project-goal">لوحة فيها رأس، ورسم بياني، وتذييل، وساعة حية. اكتب اختباراً يفشل إن أُعيد رسم أي شيء غير الساعة وهي تعمل، ثم أصلح اللوحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> عدّ مرات الرسم بـ <code>CustomPainter</code>، وكتابة الاختبارات كميزانيات، والإصلاح بـ <code>RepaintBoundary</code> مقيس.</p>
+<ol class="steps">
+<li>أعطِ كل جزء ثابت رسّاماً يعدّ مرات رسمه في خريطة مشتركة، وأعطِ الساعة رسّاماً يعيد الرسم مع كل دقة.</li>
+<li>ارسم اللوحة، وشغّل ثلاثين إطاراً، وتوقع أن يكون كل عدد إلا عدد الساعة 1. واجعل رسالة الفشل تطبع الأعداد.</li>
+<li>شغّله: يفشل، ويقول كم أُعيد الرسم.</li>
+<li>ضع الساعة، والساعة وحدها، داخل <code>RepaintBoundary</code>، وشغّله من جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اختبار كهذا <dfn>ميزانية</dfn>: لا يتحقق من أن التطبيق يبدو صحيحاً، بل من أنه يبقى رخيصاً. احتفظ به، فالشخص التالي الذي ينقل الساعة سيعرف عن الحد من الاختبار الفاشل، لا من المستخدمين.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (قبل الإصلاح، ثم بعده):</p>
+<pre data-term="projects/budget-before.sh"></pre>
+<pre data-term="projects/budget-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف <code>Icon</code> و<code>SizedBox</code> إلى اختبار الأشجار. وقبل أن تشغّله اكتب أي الأسطر سيكون لها كائن رسم.</li>
+<li><span class="level">سهل</span> في صفحة إعادة البناء، اجعل مُنشئ <code>Badge2</code> من نوع <code>const</code> لكن استمر في استدعائه بلا <code>const</code>. كم مرة يُبنى الآن، ولماذا؟</li>
+<li><span class="level">متوسط</span> ضع <code>Column</code> فيه ابن <code>Expanded</code> داخل <code>ListView</code> عمودية. اقرأ الخطأ، واشرحه بالقيود من القسم {{n}}.4، وأصلحه بطريقتين مختلفتين.</li>
+<li><span class="level">متوسط</span> أعطِ بطاقات صفحة المفاتيح <code>TextField</code> بدل العدّاد، واكتب في واحدة، وبدّل. ماذا يحدث للنص في كل صف، ولتركيز لوحة المفاتيح؟</li>
+<li><span class="level">تحدٍّ</span> انقل <code>RepaintBoundary</code> في اختبار الرسم من المؤشر إلى الصورة الثابتة. توقّع العدد، ثم شغّله. متى يكون كل موضع هو الأفضل؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>عرفت كيف يرسم Flutter شاشة واحدة. والتطبيق الحقيقي فيه خمسون، وفريق يعمل عليها. والفصل القادم يعطي التطبيق هيكلاً ينمو: طبقات للبيانات والمجال والعرض، مع قواعد عمّن يحق له أن يكلّم من.</p>
+</div>
+</section>

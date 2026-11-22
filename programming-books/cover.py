@@ -94,6 +94,14 @@ STYLE = """
 
 # The code on each front cover: a few lines in the language of the book (Book 1's are its first example).
 CARDS = {
+    "b6": """final notes = FutureProvider((ref) =>
+    ref.watch(repository).load());
+
+Widget build(context, ref) =>
+  switch (ref.watch(notes)) {
+    AsyncData(:final value) => List(value),
+    _ => const Spinner(),
+  };""",
     "b5": """void main() {
   runApp(const HelloBit());
 }

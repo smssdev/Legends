@@ -1,0 +1,257 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/render/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>How Flutter Really Renders</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>see the three trees behind every screen: widgets, elements and render objects</li>
+<li>follow one frame from <code>setState</code> to pixels, and know what each step costs</li>
+<li>predict which widgets rebuild, and keep that number small with <code>const</code> and local state</li>
+<li>read layout as “constraints go down, sizes go up, the parent sets the position”</li>
+<li>use keys to keep state where it belongs, and repaint boundaries to keep painting cheap</li>
+<li>prove all of this with tests that count builds and paints</li>
+</ul>
+</div>
+
+<p class="lead">In Book 5 you wrote widgets and Flutter drew them. That was enough to build apps. It is not enough to know why a list stutters, why a text field loses what was typed when the screen changes, or why a widget ignores the width you gave it. All three have the same answer: what Flutter does with your widgets after <code>build</code> returns. This chapter opens the box, and every claim in it is measured by a test.</p>
+
+<aside class="bit" data-mood="happy"><p>Nothing in this chapter is a rule of thumb. Every number, from rebuilds to paints, was counted by the tests you will see, on the machine that made the book. Change the code, run the tests, and watch the numbers change.</p></aside>
+
+<h2>{{n}}.1 Three trees</h2>
+
+<p>A <dfn>widget</dfn> is not what you see on the screen. It is a description: a small, immutable object that says what should be there. Flutter keeps two more trees beside the widgets:</p>
+
+<ul>
+<li>An <dfn>element</dfn> is a widget’s place in the live tree. It is created once, keeps its position, holds the <code>State</code> of a stateful widget, and is reused when a new widget of the same kind arrives at the same place.</li>
+<li>A <dfn>render object</dfn> does the real work: it measures itself, positions its children, and paints. Only some widgets have one.</li>
+</ul>
+
+<p>A test can walk the elements of a small screen and print all three, one line per element:</p>
+
+<pre data-code="test/trees_test.dart" data-from="    final root" data-to="show(root, 0)" data-title="test/trees_test.dart (part)"></pre>
+<pre data-term="trees-test.sh"></pre>
+
+<ul>
+<li><code>Center</code> and <code>Padding</code> are thin: each has an element and a render object that lays out one child.</li>
+<li><code>Text</code> has <em>no</em> render object. It is a <code>StatelessWidget</code> that builds a <code>RichText</code>, and <code>RichText</code> has the <code>RenderParagraph</code> that measures and paints the letters. Most widgets you use are like <code>Text</code>: they only build other widgets.</li>
+<li><code>Directionality</code> has none either: it is an <dfn>inherited widget</dfn> that passes a value down, as <code>Theme</code> and <code>MediaQuery</code> do.</li>
+</ul>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>Widgets are cheap on purpose. Creating thousands of small objects per frame is fast in Dart, whose memory manager is built for short-lived objects. The expensive things, the elements, the state and the render objects, live for as long as they can, and the framework works hard to reuse them. Almost every performance rule in Flutter is a way of helping it reuse.</p></aside>
+
+<h2>{{n}}.2 One frame</h2>
+
+<p>A phone’s screen asks for a new picture 60 or 120 times a second. For each one, Flutter has about 16 or 8 milliseconds, and does the same steps in order:</p>
+
+<ol class="steps">
+<li><strong>Animate.</strong> Every running animation moves to its value for this moment.</li>
+<li><strong>Build.</strong> Every element marked dirty, by <code>setState</code> or a changed inherited value, runs its widget’s <code>build</code>, and the new widgets are compared with the old ones.</li>
+<li><strong>Layout.</strong> Render objects whose size may have changed measure themselves and place their children.</li>
+<li><strong>Paint.</strong> Render objects whose look changed record what to draw, in layers.</li>
+<li><strong>Composite and raster.</strong> The layers go to the GPU thread, which turns them into pixels while the next frame is being built.</li>
+</ol>
+
+<p>Each step only touches what changed. A frame where nothing changed costs almost nothing; a frame where everything changed may miss its deadline, and the person sees a stutter, called <dfn>jank</dfn>. The rest of this chapter is about keeping “what changed” small at each step.</p>
+
+<h2>{{n}}.3 Who rebuilds</h2>
+
+<p><code>setState</code> marks one element dirty. In the next frame its widget builds again, and returns new child widgets. For each child, Flutter compares the new widget with the old one at the same place:</p>
+
+<ul>
+<li>If it is the <em>same object</em>, nothing below it can have changed: Flutter skips it entirely. This is what <code>const</code> gives you: a <code>const</code> widget is created once, when the app is compiled, and is the same object on every build.</li>
+<li>If it is a different object of the same type (and the same key), the element is kept and updated, and the child builds again.</li>
+<li>If the type or key differs, the old element and its whole subtree are thrown away and new ones are created.</li>
+</ul>
+
+<p>The page below counts the builds of each widget on the screen itself. The page’s own state is changed three times with the filled button, and a smaller widget’s state five times with the outlined one:</p>
+
+<pre data-code="lib/rebuilds.dart" data-from="          // const:" data-to="          const LocalCounter()" data-title="lib/rebuilds.dart (part)"></pre>
+
+<figure data-img="shots/rebuilds.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: After three taps on the page’s button and five on the local one.</figcaption>
+</figure>
+
+<pre data-term="rebuilds-test.sh"></pre>
+
+<ul>
+<li>The page built four times: once at the start and once for each of its three <code>setState</code> calls.</li>
+<li><code>const Badge1()</code> built once. The page returned the same object each time, so Flutter never asked it to build again.</li>
+<li><code>Badge2()</code> built four times, like its parent, although nothing about it changed: a new object is a new widget.</li>
+<li><code>LocalCounter</code> built six times: once at the start, and once for each of its own five <code>setState</code> calls. And those five did not rebuild the page, nor the badges: state that lives low in the tree rebuilds only what is under it.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Two habits keep rebuilds small without measuring anything. Write <code>const</code> wherever the analyzer allows it (the <code>prefer_const_constructors</code> lint tells you where). And keep state as low as it can live: a timer, a text field, a hover effect belongs in its own small stateful widget, not in the page.</p></aside>
+
+<h2>{{n}}.4 Constraints go down, sizes go up</h2>
+
+<p>Layout in Flutter is one pass down the tree and back up. A parent gives each child <dfn>constraints</dfn>: a minimum and a maximum width and height. The child chooses its size inside them, and tells the parent. The parent then decides where the child goes. Three sentences explain every layout surprise:</p>
+
+<p class="pull">Constraints go down. Sizes go up. The parent sets the position.</p>
+
+<p>A small widget makes the constraints visible: <code>LayoutBuilder</code> gives its builder the constraints it received.</p>
+
+<pre data-code="lib/constraints.dart" data-from="^String describe" data-to="^}#2" data-title="lib/constraints.dart (part)"></pre>
+
+<figure data-img="shots/constraints.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: The same label in five places, showing what each place allowed.</figcaption>
+</figure>
+
+<ul>
+<li>A <code>SizedBox</code> of 300 × 56 gives <dfn>tight</dfn> constraints: minimum and maximum are equal, and the child has no choice.</li>
+<li><code>Center</code> loosens them: anything from zero up to the box’s size. The label then takes only what its text needs, and <code>Center</code> places it in the middle.</li>
+<li><code>Expanded</code> gives the child exactly the width left in the row, and the row’s height is unlimited: <code>0–∞</code>.</li>
+<li>A vertical <code>ListView</code> gives its children unlimited height, because a list scrolls. That is why a <code>Column</code> with <code>Expanded</code> inside a <code>ListView</code> fails: “as tall as possible” has no answer when the maximum is infinite.</li>
+<li>The last one asks for a width of 100, and gets 300. <code>Container(width: 100)</code> is a wish, and its parent’s tight constraints win. To make it 100 wide, loosen the constraints first, with <code>Center</code> or <code>Align</code>.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>When a widget ignores its size, do not try values until it works. Ask the three questions: what constraints did it receive, what size did it choose, and who placed it? A <code>LayoutBuilder</code> like the one above answers the first in a minute; DevTools’ layout explorer answers all three for any widget.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which of <code>Text</code>, <code>RichText</code> and <code>Padding</code> have a render object?</li><li>A page calls <code>setState</code>. Which children build again: <code>const Logo()</code>, <code>Logo()</code>, or both?</li><li>Why does <code>SizedBox(width: 50)</code> directly inside a tight 300-wide parent end up 300 wide?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Keys: which element is which</h2>
+
+<p>Flutter keeps an element when the new widget at its place has the same type and the same <dfn>key</dfn>. Without keys, “its place” means its position among its siblings. That is usually right, and fails exactly when siblings of the same type move. The page below has two rows of stateful tiles, one without keys and one with a <code>ValueKey</code> for each label, and a button that swaps the labels:</p>
+
+<pre data-code="lib/keys.dart" data-from="^          // " data-to="ValueKey(l)" data-title="lib/keys.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/keys-before.png" data-frame="phone">
+<figcaption>Before</figcaption>
+</figure>
+<figure data-img="shots/keys-after.png" data-frame="phone">
+<figcaption>A tapped three times in each row, then swapped</figcaption>
+</figure>
+</div>
+
+<p>In the first row the labels moved, but the counts stayed where they were: B now shows A’s three taps. Each element compared the new widget at its position, found a <code>Tile</code> as before, and kept its <code>State</code>. In the second row each key found its own element wherever it moved, and A’s three taps went with A. The test states it precisely:</p>
+
+<pre data-code="test/keys_test.dart" data-from="^    String tapsUnder" data-to="find.text('A').last), " data-title="test/keys_test.dart (part)"></pre>
+<pre data-term="keys-test.sh"></pre>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Give a key to every item of a list whose items can move, be inserted or be removed, and use something that belongs to the data: an id, never the index. <code>ValueKey(index)</code> is the same as no key at all. <code>UniqueKey()</code> created inside <code>build</code> is worse: a new key every time means a new element every time, and the state is lost on every rebuild.</p></aside>
+
+<h2>{{n}}.6 Paint and layers</h2>
+
+<p>When a render object’s look changes, it marks itself as needing paint, and the mark climbs to the nearest <dfn>repaint boundary</dfn>: everything under that boundary is painted again, changed or not. A spinning logo next to a static picture shows what that costs. The test counts how often the static picture is painted during sixty frames:</p>
+
+<pre data-code="test/repaint_test.dart" data-from="Future<int> paintsOver60Frames" data-to="^}" data-title="test/repaint_test.dart (part)"></pre>
+<pre data-term="repaint-test.sh"></pre>
+
+<p>Without a boundary, the picture that never changes was painted sixty-one times: once at the start and once per frame, because it shares a layer with the spinner. With <code>RepaintBoundary</code> around the spinner, the spinner gets a layer of its own, and the picture is painted once.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>A boundary is not free: each one keeps its own picture in memory, and too many cost more than they save. Flutter already puts boundaries around each page, each list item and each scrolling area. Add one where you have measured a problem: something that animates constantly next to something expensive that does not.</p></aside>
+
+<h2>{{n}}.7 Seeing it on a phone</h2>
+
+<p>The tests in this chapter count; on a phone you watch. Run the app in <dfn>profile mode</dfn>, <code>flutter run --profile</code>, on a real device: debug mode is many times slower and its timings mean nothing. Then open DevTools from the terminal’s link:</p>
+
+<ul>
+<li>The <strong>Performance</strong> page shows every frame as a bar, split into the build and raster threads, and marks the ones that missed their deadline.</li>
+<li><strong>Track widget rebuilds</strong> shows the same counts as this chapter’s page, for every widget, live.</li>
+<li><strong>Highlight repaints</strong> draws a coloured border that changes colour each time an area is painted: whatever keeps flashing while nothing should change is a missing boundary.</li>
+<li>The <strong>Inspector</strong>’s layout explorer shows each widget’s constraints and size, as in Section {{n}}.4.</li>
+</ul>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Missing <code>const</code></td><td>Unchanged widgets build again with every parent</td><td><code>const</code> constructors, and the lint that asks for them</td></tr>
+<tr><td>State high in the tree</td><td>A small change rebuilds a whole page</td><td>Move the state into the small widget that uses it</td></tr>
+<tr><td>Fighting a widget’s size</td><td>Width and height that seem ignored</td><td>Check its constraints; loosen them with <code>Center</code> or <code>Align</code></td></tr>
+<tr><td>Movable items without keys</td><td>State, text and focus stay behind when items move</td><td><code>ValueKey</code> of the item’s id</td></tr>
+<tr><td><code>UniqueKey()</code> in <code>build</code></td><td>State lost on every rebuild</td><td>A key from the data, created once</td></tr>
+<tr><td>Measuring in debug mode</td><td>Slow frames that are not slow in reality</td><td><code>flutter run --profile</code> on a real phone</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Widgets describe; elements live and hold state; render objects lay out and paint. Most widgets only build other widgets.</li>
+<li>A frame animates, builds what is dirty, lays out and paints what changed, and rasters on another thread.</li>
+<li>A child is skipped if it is the same object (<code>const</code>), updated if it has the same type and key, and replaced otherwise. State that lives low rebuilds little.</li>
+<li>Constraints go down, sizes go up, the parent sets the position. Tight constraints win over a child’s wishes.</li>
+<li>Keys make elements follow their widgets when siblings move. Repaint boundaries isolate what repaints often.</li>
+<li>Count builds and paints in tests; watch them in DevTools, in profile mode, on a phone.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>RichText</code> (a <code>RenderParagraph</code>) and <code>Padding</code> (a <code>RenderPadding</code>); <code>Text</code> only builds a <code>RichText</code>. 2. Only <code>Logo()</code>: <code>const Logo()</code> is the same object as before, so Flutter skips it. 3. Its parent’s constraints are tight: minimum and maximum width are both 300, and a child must choose a size inside its constraints, whatever it asked for.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project ends with a test that counts something. Write the test first, watch it fail or print a surprising number, then change the code until the number is what you expect.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>What is inside a ListTile?</h3>
+<p class="project-goal">Count the elements and the render objects of one <code>ListTile</code>, and list the render objects.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking elements with <code>visitChildren</code>, and telling which elements own render objects.</p>
+<ol class="steps">
+<li>Pump a <code>ListTile</code> with an icon on each side and a title, inside <code>MaterialApp</code> and <code>Material</code>.</li>
+<li>Find its element with <code>tester.element(find.byType(ListTile))</code>, and walk everything under it.</li>
+<li>Count all elements, and collect <code>e.renderObject.runtimeType</code> for those that are <code>RenderObjectElement</code>s.</li>
+<li>Print both, and read the list: which render objects are there only for semantics, mouse and touch?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> three of the paragraphs are not the title: icons are drawn as text, one letter of an icon font each.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/tile-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Reorder without losing anything</h3>
+<p class="project-goal">A list of tasks that can be dragged into a new order, where each task keeps its own ticked state.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>ReorderableListView</code>, keys from the data, and driving a drag in a test.</p>
+<ol class="steps">
+<li>A stateful <code>TaskTile</code> keeps <code>done</code> in its own state and shows a <code>CheckboxListTile</code>.</li>
+<li>A <code>ReorderableListView</code> lists the tasks, each with <code>key: ValueKey(task)</code>. <code>onReorderItem</code> receives the old and new index and moves the task in the list.</li>
+<li>In a test, tick the first task, then drag it to the end: <code>startGesture</code> on it, wait for the long press, move it down, and release.</li>
+<li>Check that the first task is now last, and still ticked. Then remove the key and watch the test fail.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>ReorderableListView</code> insists on keys and throws without them, but it cannot check that they come from the data: <code>ValueKey(index)</code> would pass its check and still lose the ticks.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/reorder.png" data-frame="phone">
+<figcaption>Project {{n}}.2: drag a task to move it.</figcaption>
+</figure>
+<pre data-term="projects/reorder-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A repaint budget</h3>
+<p class="project-goal">A dashboard with a header, a chart, a footer and a live clock. Write a test that fails if anything but the clock repaints while the clock runs, then fix the dashboard.</p>
+<p class="project-skills"><strong>You will practise:</strong> counting paints with <code>CustomPainter</code>, writing tests as budgets, and fixing with a measured <code>RepaintBoundary</code>.</p>
+<ol class="steps">
+<li>Give each static part a painter that counts its paints in a shared map, and give the clock a painter that repaints on every tick.</li>
+<li>Pump the dashboard, run thirty frames, and expect every count except the clock’s to be 1. Make the failure message print the counts.</li>
+<li>Run it: it fails, and says how much was repainted.</li>
+<li>Wrap the clock, and only the clock, in a <code>RepaintBoundary</code>, and run it again.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a test like this is a <dfn>budget</dfn>: it does not check that the app looks right, it checks that it stays cheap. Keep it, and the next person who moves the clock will learn about the boundary from the failing test, not from users.</p>
+<p><strong>Your result should look like this</strong> (before, then after the fix):</p>
+<pre data-term="projects/budget-before.sh"></pre>
+<pre data-term="projects/budget-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an <code>Icon</code> and a <code>SizedBox</code> to the trees test. Before you run it, write down which lines will have a render object.</li>
+<li><span class="level">Easy</span> In the rebuilds page, make <code>Badge2</code>’s constructor <code>const</code> but keep calling it without <code>const</code>. How many times does it build now, and why?</li>
+<li><span class="level">Medium</span> Put a <code>Column</code> with an <code>Expanded</code> child inside a vertical <code>ListView</code>. Read the error, explain it with the constraints from Section {{n}}.4, and fix it in two different ways.</li>
+<li><span class="level">Medium</span> Give the tiles in the keys page a <code>TextField</code> instead of a counter, type in one, and swap. What happens to the text in each row, and to the keyboard focus?</li>
+<li><span class="level">Challenge</span> Move the <code>RepaintBoundary</code> in the repaint test from the spinner to the static picture. Predict the count, then run it. When is each placement the better one?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You know how Flutter draws one screen. A real app has fifty, and a team working on them. The next chapter gives the app a skeleton that grows: layers for data, domain and presentation, with rules about who may talk to whom.</p>
+</div>
+</section>
