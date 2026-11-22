@@ -33,6 +33,8 @@
 @page ch12:first { @top-center { content: none; } }
 @page ch13 { @top-center { content: "الفصل 13: قنوات المنصة والكود الأصلي"; } }
 @page ch13:first { @top-center { content: none; } }
+@page ch14 { @top-center { content: "الفصل 14: الأمان على الجهاز"; } }
+@page ch14:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -165,7 +167,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p">193</span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p">213</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p">234</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">253</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p">193</span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p">213</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p">234</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p">253</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">270</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -6143,6 +6145,418 @@ free memory: 4513 MB, 4521 MB, 4521 MB, 4529 MB in 2010 ms
 <p>الكود الأصلي يستطيع قراءة البطارية؛ ويستطيع أيضاً قراءة كل ما يتركه التطبيق مكشوفاً. والفصل القادم عن الأمان على الجهاز: أين تنتهي الأسرار، وما الذي يستطيع المهاجم قراءته من نسختك، وكيف تحفظ الرموز والاتصالات.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch14" data-chapter="14" data-code="b6/security/ar">
+<div class="opener"><span class="opener-num">14</span><p class="chapter-kicker">الفصل 14</p><h1>الأمان على الجهاز</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفكر كمهاجم يملك تطبيقك، وأحياناً الهاتف نفسه</li>
+<li>ترى أين تنتهي بيانات التطبيق حقاً، وتقرؤها كما يقرؤها المهاجم</li>
+<li>تحفظ الرموز في التخزين الآمن للمنصة، والقصيرة العمر في الذاكرة فقط</li>
+<li>تقبل أن لا شيء مترجَم داخل التطبيق سرّي، وتصمم على ذلك</li>
+<li>تثبّت شهادة الخادم، وتدوّر التثبيت بأمان، وتُبعد الأسرار عن السجلات</li>
+</ul>
+</div>
+
+<p class="lead">الخادم في غرفة مقفلة. والتطبيق في جيب غريب. يستطيع أي أحد تنزيله، وفكّه، وقراءة نصوصه، وتشغيله على هاتف مكسور الحماية (rooted)، ومراقبة كل ملف يكتبه. والأمان على الجهاز يبدأ بقبول ذلك، ثم بتقرير ما يحق للتطبيق أن يحفظه، وأين، وإلى متى.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل هجوم في هذا الفصل نُفّذ على تطبيقات الكتاب نفسها: رمز قُرئ من ملف، وقيمة «آمنة» فُكّ تشفيرها، وسر استُخرج من نسخة إصدار مموّهة. وواحد منها فشل في المرة الأولى، لسبب مثير. ويرويه القسم 14.3.</p></div></div>
+
+<h2><span class="sec">14.1</span> <span>المهاجم يملك التطبيق</span></h2>
+
+<p>ثلاثة أنواع من المهاجمين تهم تطبيق مقهى. <em>المستخدم الفضولي</em> يفك التطبيق ليرى كيف يعمل، أو ليجد رمز خصم. و<em>اللص</em> يملك الهاتف، مفتوحاً ربما، وبأداة تصحيح ربما. و<em>الشبكة</em>، في الـ Wi-Fi المجاني للمقهى، تراقب الاتصال أو تغيّره. ومن هؤلاء تنتج أربع قواعد:</p>
+
+<ul>
+<li>كل ما في التطبيق علني: الكود والنصوص والملفات والمفاتيح.</li>
+<li>الملفات التي يكتبها التطبيق تُقرأ، على هاتف مكسور الحماية، أو في نسخة احتياطية، أو على حاسوب مشترك، ما لم تشفّرها المنصة بمفاتيح لا يملكها التطبيق.</li>
+<li>الاتصال آمن بقدر فكرة التطبيق عمّن يثق به فقط.</li>
+<li>الخادم هو من يقرر. والفحص في التطبيق راحة للمستخدمين الأمناء، لا حماية أبداً.</li>
+</ul>
+
+<h2><span class="sec">14.2</span> <span>أين تنتهي البيانات</span></h2>
+
+<p>شاشة الدخول تحفظ الجلسة مرتين: رمز الوصول بـ <code>shared_preferences</code>، كما تفعل تطبيقات كثيرة، ورمز التجديد بـ <code>flutter_secure_storage</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/sign_in_app.dart (جزء)</div><pre class="code">  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; signIn() <span class="k">async</span> {
+    <span class="c line-bidi">// The server&#x27;s answer, in this demo.</span>
+    <span class="k">const</span> access = <span class="s">&#x27;eyJhbGciOiJIUzI1NiJ9.demo-access.sig&#x27;</span>;
+    <span class="k">const</span> refresh = <span class="s">&#x27;rt-demo-7f3a91c4&#x27;</span>;
+    <span class="c line-bidi">// مريح، ومقروء لأي شيء يستطيع قراءة ملفات التطبيق.</span>
+    <span class="k">await</span> SharedPreferencesAsync().setString(<span class="s">&#x27;token&#x27;</span>, access);
+    <span class="k">await</span> TokenStore(DeviceSecureStore()).signedIn(
+      access: access,
+      lifetime: <span class="k">const</span> Duration(minutes: <span class="n">15</span>),
+      refresh: refresh,
+    );
+    setState(() =&gt; signedIn = <span class="k">true</span>);
+  }</pre></div>
+
+<p>على Linux يحفظ اختبار تكامل الرمز، ثم يستطيع قراءته أي أحد يصل إلى ملفات المستخدم:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test integration_test/prefs_test.dart -d linux</span>
+00:00 +0: loading integration_test/prefs_test.dart
+Building Linux application...                                   
+✓ Built build/linux/x64/debug/bundle/bit_app
+00:00 +0: أين تحفظ shared_preferences رمزاً على Linux
+saved in ~/.local/share/com.example.bit_app
+00:00 +1: (tearDownAll)
+00:00 +1: All tests passed!
+<span class="c">$ </span><span class="k">cat ~/.local/share/com.example.bit_app/shared_preferences.json; echo</span>
+{&quot;token&quot;:&quot;eyJhbGciOiJIUzI1NiJ9.demo-access.sig&quot;}</pre></div>
+
+<p>وفي Android تكتب <code>shared_preferences</code> ملفاً في المجلد الخاص بالتطبيق (ملف DataStore، أو XML في الواجهة الأقدم)؛ وفي iOS ملف property list. و«خاص» يعني أن التطبيقات الأخرى لا تستطيع قراءته على هاتف سليم، لا أكثر: الهاتف مكسور الحماية، أو النسخة الاحتياطية، أو أداة التصحيح، تقرؤه كما في السطر أعلاه.</p>
+
+<p>وعلى الويب سجّلت أداة لقطات الكتاب الدخول، ثم قرأت <code>localStorage</code> في المتصفح، كما يستطيع أي سكربت في الصفحة، أو أي أحد أمام الحاسوب:</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-security-ar-shots-signin.png" alt=""></div>
+<figcaption>تم الدخول، على الويب</figcaption>
+</figure>
+</div>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">cat storage.json</span>
+{
+  &quot;token&quot;: &quot;\&quot;eyJhbGciOiJIUzI1NiJ9.demo-access.sig\&quot;&quot;,
+  &quot;FlutterSecureStorage.refresh&quot;: &quot;f2QpnjEZ/9mOBKVA.YUNmCxF31pk57b+Zimjq6fjbAcCBjnn7sL8czn1nrrA=&quot;,
+  &quot;FlutterSecureStorage&quot;: &quot;1s7TZ9uDK9h5A97//VgOL3XRaf65eBSkyTVa1XFqL5I=&quot;
+}</pre></div>
+
+<p>رمز الوصول نص صريح. ورمز التجديد مشفّر بـ AES-GCM، لكن انظر إلى السطر الأخير: المفتاح محفوظ بجانبه تماماً، لأن صفحة الويب لا تملك مكاناً آخر تضعه فيه. واثنا عشر سطراً من Python، أداة مهاجم، تقرأ الاثنين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tool/peek.py</div><pre class="code">&quot;&quot;&quot;What anyone who can read this browser&#x27;s storage can read: the secure storage keeps its key beside its values.&quot;&quot;&quot;
+import base64
+import json
+import sys
+
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+kept = json.load(open(sys.argv[1]))
+print(&quot;shared_preferences, as stored:      &quot;, kept[&quot;token&quot;])
+key = base64.b64decode(kept[&quot;FlutterSecureStorage&quot;])
+for name, value in kept.items():
+    if name.startswith(&quot;FlutterSecureStorage.&quot;):
+        iv, data = (base64.b64decode(part) for part in value.split(&quot;.&quot;))
+        print(f&quot;{name}, as stored:   {value[:32]}...&quot;)
+        print(f&quot;{name}, decrypted:   {AESGCM(key).decrypt(iv, data, None).decode()}&quot;)</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">python3 tool/peek.py storage.json</span>
+shared_preferences, as stored:       &quot;eyJhbGciOiJIUzI1NiJ9.demo-access.sig&quot;
+FlutterSecureStorage.refresh, as stored:   f2QpnjEZ/9mOBKVA.YUNmCxF31pk57b+...
+FlutterSecureStorage.refresh, decrypted:   rt-demo-7f3a91c4</pre></div>
+
+<p>هذا ليس خطأً في الإضافة؛ إنه الويب. فالمتصفح لا يعطي الصفحة مخزن مفاتيح مدعوماً بالعتاد يبقى بعد إعادة التحميل. وعلى الويب أسلم جلسة هي ملف تعريف ارتباط (cookie) لا تستطيع الصفحة قراءته إطلاقاً (<code>HttpOnly</code>)، يضعه خادمك.</p>
+
+<h2><span class="sec">14.3</span> <span>لا شيء مترجَم سرّي</span></h2>
+
+<p>التطبيقات تحتاج مفاتيح كثيراً: مفتاح خرائط، ومفتاح تحليلات، والمفتاح العام لمزوّد دفع. ونمط شائع يمررها وقت البناء:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/maps_app.dart (جزء)</div><pre class="code"><span class="k">const</span> mapsKey = <span class="k">String</span>.fromEnvironment(<span class="s">&#x27;MAPS_KEY&#x27;</span>);
+
+<span class="k">final</span> tiles = Uri.https(<span class="s">&#x27;maps.example.com&#x27;</span>, <span class="s">&#x27;/tiles&#x27;</span>, {<span class="s">&#x27;key&#x27;</span>: mapsKey});
+
+<span class="k">void</span> main() =&gt; runApp(
+  MaterialApp(
+    home: Scaffold(
+      body: Center(
+        child: Text(
+          <span class="s">&#x27;طول مفتاح الخرائط: ${tiles.queryParameters[&#x27;</span>key<span class="s">&#x27;]!.length}&#x27;</span>,
+        ),
+      ),
+    ),
+  ),
+);</pre></div>
+
+<p>المفتاح داخل الكود الذي ينزّله المستخدم. وعلى الويب هذا ملف نصي:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter build web -t lib/maps_app.dart --dart-define=MAPS_KEY=cafe-maps-key-DEMO-0000</span>
+✓ Built build/web
+<span class="c">$ </span><span class="k">grep -o &quot;cafe-maps-key-DEMO-0000&quot; build/web/main.dart.js</span>
+cafe-maps-key-DEMO-0000</pre></div>
+
+<p>وفي Android، نسخة الإصدار مع تمويه Dart مفعّلاً، الذي يعيد تسمية الأصناف والدوال:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter build apk --release --obfuscate --split-debug-info=build/symbols -t lib/maps_app.dart --dart-define=MAPS_KEY=cafe-maps-key-DEMO-0000</span>
+✓ Built build/app/outputs/flutter-apk/app-release.apk (41.5MB)
+<span class="c">$ </span><span class="k">unzip -p build/app/outputs/flutter-apk/app-release.apk lib/arm64-v8a/libapp.so | strings | grep cafe-maps-key-DEMO-0000</span>
+cafe-maps-key-DEMO-0000</pre></div>
+
+<p>التمويه يعيد التسمية؛ ولا يخفي النصوص. وأمر <code>strings</code> واحد يجد المفتاح في <code>libapp.so</code>، كود Dart المترجَم داخل ملف APK.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>النسخة الأولى من هذا التطبيق كانت تعرض طول المفتاح فقط، فلم يجد <code>grep</code> شيئاً في نسخة الويب:</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter build web -t lib/maps_length.dart --dart-define=MAPS_KEY=cafe-maps-key-DEMO-0000</span>
+✓ Built build/web
+<span class="c">$ </span><span class="k">grep -c &quot;cafe-maps-key-DEMO-0000&quot; build/web/main.dart.js</span>
+0</pre></div>
+<p>لم تكن تلك حماية. فقد رأى المترجم أن الطول وحده، 23، هو ما يُستخدم، فأبقى الرقم بدل النص. وفي اللحظة التي <em>يستخدم</em> فيها التطبيق المفتاح، ليطلب خدمة الخرائط، يصير المفتاح داخل النسخة. ولا تخلط أبداً بين «لم أجده» و«ليس موجوداً».</p></aside>
+
+<p>إذن: المفتاح الذي يجب أن يبقى سرياً مكانه خادمك، الذي ينادي الخدمة نيابة عن التطبيق. أما المفاتيح المقصود أن تكون علنية (مفتاح خرائط مقيَّد باسم حزمة تطبيقك، والمفتاح القابل للنشر لمزوّد الدفع) فيجوز أن تُشحن، ما دام المزوّد يتيح لك تقييد ما تستطيع فعله.</p>
+
+<h2><span class="sec">14.4</span> <span>الرموز على الهاتف</span></h2>
+
+<p>في Android وiOS، <code>flutter_secure_storage</code> شيء مختلف عن الويب: القيم تُشفَّر بمفاتيح يحفظها نظام التشغيل، في Keychain الخاص بـ iOS أو Keystore الخاص بـ Android، كثيراً في عتاد مخصص، ولا يمكن نسخ تلك المفاتيح خارج الهاتف. فالملف المنسوخ أو النسخة الاحتياطية بلا قيمة دونها. والمقهى يحفظ رمز التجديد الطويل العمر هناك، ورمز الوصول القصير العمر في الذاكرة فقط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/security/tokens.dart (جزء)</div><pre class="code"><span class="k">class</span> TokenStore {
+  TokenStore(<span class="k">this</span>.secure, {DateTime <span class="k">Function</span>()? now})
+    : now = now ?? DateTime.now;
+
+  <span class="k">final</span> SecureStore secure;
+  <span class="k">final</span> DateTime <span class="k">Function</span>() now;
+  <span class="c line-bidi">// الرمز قصير العمر يعيش في الذاكرة فقط: يموت مع التطبيق.</span>
+  <span class="k">String</span>? _access;
+  DateTime? _expires;
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; signedIn({
+    <span class="k">required</span> <span class="k">String</span> access,
+    <span class="k">required</span> Duration lifetime,
+    <span class="k">required</span> <span class="k">String</span> refresh,
+  }) <span class="k">async</span> {
+    _access = access;
+    _expires = now().add(lifetime);
+    <span class="k">await</span> secure.write(<span class="s">&#x27;refresh&#x27;</span>, refresh);
+  }
+
+  <span class="k">String</span>? <span class="k">get</span> access =&gt;
+      _expires != <span class="k">null</span> &amp;&amp; now().isBefore(_expires!) ? _access : <span class="k">null</span>;
+
+  <span class="k">Future</span>&lt;<span class="k">String</span>?&gt; refreshToken() =&gt; secure.read(<span class="s">&#x27;refresh&#x27;</span>);
+
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; signOut() <span class="k">async</span> {
+    _access = <span class="k">null</span>;
+    _expires = <span class="k">null</span>;
+    <span class="k">await</span> secure.delete(<span class="s">&#x27;refresh&#x27;</span>);
+  }
+}</pre></div>
+
+<p>رمز الوصول الذي يتسرب يفيد دقائق؛ ورمز التجديد تحرسه المنصة؛ وتسجيل الخروج يحذف الاثنين. ويختبر المشروع 14.2 ذلك، بمخزن مزيّف وساعة مزيّفة. (جهاز هذا الكتاب بلا هاتف، فلا يُجرَّب Keychain وKeystore هنا؛ والإضافة مترجَمة داخل نسخة Android أعلاه.)</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا لا يكون «التخزين الآمن» على الويب أسلم من <code>localStorage</code> أمام شخص يجلس إلى الحاسوب؟</li><li>هل يخفي التمويه مفتاحاً مُرَّر بـ <code>--dart-define</code>؟</li><li>لماذا يعيش رمز الوصول في الذاكرة فقط؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">14.5</span> <span>الثقة على الشبكة</span></h2>
+
+<p>HTTPS يشفّر الاتصال ويتحقق أن شهادة الخادم صادرة عن جهة يثق بها الهاتف. وعلى هاتف ثبّت فيه المستخدم (أو مهاجم، أو شركة) جهة إضافية، يستطيع وسيط أن يقدّم شهادته الخاصة ويقرأ كل شيء. و<dfn>تثبيت الشهادة</dfn> (certificate pinning) يضيّق الثقة: التطبيق لا يقبل إلا الشهادة التي يتوقعها، أياً كانت الجهات التي يثق بها الهاتف.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/security/pinned_client.dart (جزء)</div><pre class="code">http.Client pinnedClient(<span class="k">List</span>&lt;<span class="k">List</span>&lt;<span class="k">int</span>&gt;&gt; certificates) {
+  <span class="k">final</span> context = SecurityContext(withTrustedRoots: <span class="k">false</span>);
+  <span class="k">for</span> (<span class="k">final</span> pem <span class="k">in</span> certificates) {
+    context.setTrustedCertificatesBytes(pem);
+  }
+  <span class="k">return</span> IOClient(HttpClient(context: context));
+}</pre></div>
+
+<p>ولاختباره حقاً يصنع سكربت شهادات مؤقتة لـ <code>localhost</code> في كل تشغيل (ولا تُحفظ في المستودع أبداً)، ويشغّل الاختبار خوادم HTTPS حقيقية بها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tool/make_certs.sh</div><pre class="code"><span class="c line-bidi">#!/bin/sh</span>
+<span class="c line-bidi"># شهادات لاختبارات التثبيت: موقَّعة ذاتياً، لـ localhost، تُصنع في كل تشغيل، ولا تُحفظ في المستودع.</span>
+mkdir -p test/certs
+for name in pinned next other; do
+  openssl req -x509 -newkey rsa:2048 -nodes -days 2 -subj &quot;/CN=localhost&quot; \
+    -addext &quot;subjectAltName=DNS:localhost&quot; -keyout test/certs/$name.key -out test/certs/$name.pem 2&gt;/dev/null
+done
+ls test/certs</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">test/pinning_test.dart (جزء)</div><pre class="code"><span class="k">void</span> main() {
+  test(<span class="s">&#x27;الخادم المثبَّت وحده موثوق&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> pinnedServer = <span class="k">await</span> serve(<span class="s">&#x27;pinned&#x27;</span>);
+    <span class="k">final</span> otherServer = <span class="k">await</span> serve(<span class="s">&#x27;other&#x27;</span>);
+    <span class="k">final</span> pinned = pinnedClient([
+      File(<span class="s">&#x27;test/certs/pinned.pem&#x27;</span>).readAsBytesSync(),
+    ]);
+    <span class="k">final</span> ordinary = http.Client();
+    debugPrint(
+      <span class="s">&#x27;pinned client   -&gt; pinned server: ${await ask(pinned, pinnedServer)}&#x27;</span>,
+    );
+    debugPrint(
+      <span class="s">&#x27;pinned client   -&gt; other server:  ${await ask(pinned, otherServer)}&#x27;</span>,
+    );
+    debugPrint(
+      <span class="s">&#x27;ordinary client -&gt; pinned server: ${await ask(ordinary, pinnedServer)}&#x27;</span>,
+    );
+    <span class="k">await</span> pinnedServer.close(force: <span class="k">true</span>);
+    <span class="k">await</span> otherServer.close(force: <span class="k">true</span>);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/pinning_test.dart</span>
+00:00 +0: loading test/pinning_test.dart
+00:00 +0: الخادم المثبَّت وحده موثوق
+pinned client   -&gt; pinned server: menu from the pinned server
+pinned client   -&gt; other server:  refused: HandshakeException
+ordinary client -&gt; pinned server: refused: HandshakeException
+00:00 +1: All tests passed!</pre></div>
+
+<p>العميل المثبَّت يتحدث مع خادمه ويرفض الآخر، مع أن الاثنين خادما HTTPS صالحان بالقدر نفسه. والعميل العادي يرفض الخادم المثبَّت أيضاً، لأن شهادته موقَّعة ذاتياً: وذلك السطر يُظهر الفحص العادي وهو يعمل.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>لا تثبّت إلا بخطة للتجديد. الشهادات تنتهي؛ والتثبيت الذي لا يُحدَّث في وقته يصير تطبيقاً لا يصل إلى خادمه، عند كل المستخدمين، حتى يحدّثوا. اشحن تثبيت الشهادة التالية قبل أن تحتاجه (المشروع 14.3)، وثبّت مفتاحاً تتحكم فيه لا شهادة مزوّد تتبدل، واحتفظ بطريقة لإطفاء التثبيت من الخادم في الطوارئ.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>الرموز في <code>shared_preferences</code></td><td>مقروءة في النسخ الاحتياطية وعلى الهواتف مكسورة الحماية</td><td>التخزين الآمن؛ والرموز القصيرة في الذاكرة</td></tr>
+<tr><td>الثقة بالتخزين الآمن على الويب</td><td>المفتاح بجانب القيمة</td><td>ملفات تعريف <code>HttpOnly</code> يضعها الخادم</td></tr>
+<tr><td>مفاتيح سرية داخل التطبيق</td><td>تُستخرج بأمر واحد</td><td>أبقِها على الخادم</td></tr>
+<tr><td>التمويه بوصفه حماية</td><td>النصوص لا تُمس</td><td>افترض أن كل ما يُشحن علني</td></tr>
+<tr><td>تثبيت بلا خطة تجديد</td><td>كل المستخدمين ينقطعون يوم التجديد</td><td>اشحن التثبيت التالي مبكراً</td></tr>
+<tr><td>رموز وعناوين بريد في السجلات</td><td>أسرار في تقارير الأعطال وتذاكر الدعم</td><td>أخفِها قبل التسجيل (المشروع 14.1)</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>المهاجم يملك التطبيق وأحياناً الهاتف؛ والخادم هو المكان الوحيد الذي تُفرض فيه القاعدة.</li>
+<li>الملفات و<code>localStorage</code> مقروءة؛ وعلى الويب حتى التخزين «الآمن» يحفظ مفتاحه بجانب القيمة.</li>
+<li>كل ما يُترجم داخل التطبيق، مموّهاً أو لا، يمكن استخراجه.</li>
+<li>على الهواتف احفظ رموز التجديد في Keychain أو Keystore ورموز الوصول في الذاكرة؛ وتسجيل الخروج يحذف الاثنين.</li>
+<li>ثبّت الشهادات لتضييق الثقة، مع شحن التثبيت التالي مقدماً؛ وأبعد الأسرار عن السجلات.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن مفتاح التشفير محفوظ في <code>localStorage</code> نفسه، بجانب القيمة المشفّرة: من يقرأ أحدهما يقرأ الآخر، ويفك التشفير. 2. لا: التمويه يعيد تسمية الرموز، ويبقى المفتاح نصاً صريحاً في <code>libapp.so</code>، يجده <code>strings</code>. 3. كي لا يُكتب في أي مكان أبداً: يختفي حين يُغلق التطبيق، وإن تسرب والتطبيق يعمل فإنه ينتهي خلال دقائق.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تسد ثلاث تسريبات شائعة: السجلات، والجلسات التي تعيش بعد تسجيل الخروج، والتثبيت الذي ينكسر يوم التجديد.</p>
+
+<div class="project">
+<p class="project-label">المشروع 14.1 · سهل</p>
+<h3>أخفِ ما في السجلات</h3>
+<p class="project-goal">السجلات تنتهي في تقارير الأعطال ورسائل الدعم. أخفِ رموز Bearer، وحقول الرموز وكلمات المرور، والجزء الأول من عناوين البريد، قبل تسجيل أي شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التعابير النمطية، و<code>replaceAllMapped</code>، والسجلات (records).</p>
+<ol class="steps">
+<li>اكتب قائمة قواعد، كل منها نمط وبديل يُبقي السياق ويخفي السر.</li>
+<li>طبّقها بالترتيب بـ <code>fold</code>.</li>
+<li>اختبر أربعة أسطر تشبه السجلات الحقيقية، بينها واحد لا شيء فيه يُخفى.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/security/redact.dart</div><pre class="code"><span class="c line-bidi">// السجلات تغادر الجهاز (تقارير الأعطال، ورسائل الدعم): لا يدخلها سر.</span>
+<span class="k">final</span> _rules = &lt;(RegExp, <span class="k">String</span> <span class="k">Function</span>(Match))&gt;[
+  (RegExp(r<span class="s">&#x27;(Bearer\s+)[A-Za-z0-9._~+/=-]+&#x27;</span>), (m) =&gt; <span class="s">&#x27;${m[1]}***&#x27;</span>),
+  (RegExp(r<span class="s">&#x27;(&quot;(?:token|refresh|password)&quot;\s*:\s*&quot;)[^&quot;]*&#x27;</span>), (m) =&gt; <span class="s">&#x27;${m[1]}***&#x27;</span>),
+  (
+    RegExp(r<span class="s">&#x27;[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]{2,})&#x27;</span>),
+    (m) =&gt; <span class="s">&#x27;***@${m[1]}&#x27;</span>,
+  ),
+];
+
+<span class="k">String</span> redact(<span class="k">String</span> line) =&gt;
+    _rules.fold(line, (text, rule) =&gt; text.replaceAllMapped(rule.$<span class="n">1</span>, rule.$<span class="n">2</span>));</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/redact_test.dart</span>
+00:00 +0: loading test/redact_test.dart
+00:00 +0: الأسرار لا تصل إلى السجل
+GET /orders Authorization: Bearer ***
+POST /session {&quot;email&quot;:&quot;***@example.com&quot;,&quot;password&quot;:&quot;***&quot;}
+refresh failed: {&quot;refresh&quot;:&quot;***&quot;,&quot;status&quot;:401}
+order 42 ready
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 14.2 · متوسط</p>
+<h3>جلسات تنتهي</h3>
+<p class="project-goal">اختبر مخزن الرموز: رمز الوصول ينتهي في وقته، ورمز التجديد يبقى في المخزن الآمن، وتسجيل الخروج لا يترك شيئاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تخزين آمن مزيّف، وساعة مُمرَّرة، واختبار ما هو <em>غير</em> موجود.</p>
+<ol class="steps">
+<li>اكتب <code>SecureStore</code> في الذاكرة للاختبارات.</li>
+<li>سجّل الدخول برمز مدته 15 دقيقة، وقدّم الساعة 16 دقيقة، وتوقّع ألا رمز وصول لكن رمز التجديد موجود.</li>
+<li>سجّل الخروج، وتوقّع أن يكون المخزن فارغاً.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/tokens_test.dart (جزء)</div><pre class="code"><span class="k">void</span> main() {
+  test(<span class="s">&#x27;الرموز تنتهي، وتسجيل الخروج ينساها&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">var</span> clock = DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">23</span>, <span class="n">9</span>);
+    <span class="k">final</span> store = MemoryStore();
+    <span class="k">final</span> tokens = TokenStore(store, now: () =&gt; clock);
+    <span class="k">await</span> tokens.signedIn(
+      access: <span class="s">&#x27;a1&#x27;</span>,
+      lifetime: <span class="k">const</span> Duration(minutes: <span class="n">15</span>),
+      refresh: <span class="s">&#x27;r1&#x27;</span>,
+    );
+    expect(tokens.access, <span class="s">&#x27;a1&#x27;</span>);
+
+    clock = clock.add(<span class="k">const</span> Duration(minutes: <span class="n">16</span>));
+    expect(tokens.access, isNull);
+    expect(<span class="k">await</span> tokens.refreshToken(), <span class="s">&#x27;r1&#x27;</span>);
+
+    <span class="k">await</span> tokens.signOut();
+    expect(<span class="k">await</span> tokens.refreshToken(), isNull);
+    expect(store.values, isEmpty);
+  });
+}</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/tokens_test.dart</span>
+00:00 +0: loading test/tokens_test.dart
+00:00 +0: الرموز تنتهي، وتسجيل الخروج ينساها
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 14.3 · تحدٍّ</p>
+<h3>دوّر التثبيت بلا انقطاع</h3>
+<p class="project-goal">ثق بشهادتين، الحالية والتالية، ليستطيع الخادم التبديل يوم التجديد وكل التطبيقات المثبتة ما زالت تعمل. وأثبت أن شهادة ثالثة ما زالت مرفوضة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>SecurityContext</code> بعدة شهادات موثوقة، والاختبار مقابل عدة خوادم.</p>
+<ol class="steps">
+<li>ابنِ العميل بالشهادتين.</li>
+<li>شغّل خادماً بكل واحدة من الشهادات الثلاث بالتتابع وجرّبه.</li>
+<li>توقّع أن يُوثق بالأوليين وتُرفض الثالثة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/rotation_test.dart (جزء)</div><pre class="code">    <span class="k">final</span> client = pinnedClient([
+      File(<span class="s">&#x27;test/certs/pinned.pem&#x27;</span>).readAsBytesSync(),
+      File(<span class="s">&#x27;test/certs/next.pem&#x27;</span>).readAsBytesSync(),
+    ]);</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/rotation_test.dart</span>
+00:00 +0: loading test/rotation_test.dart
+00:00 +0: تثبيتان: شهادة اليوم والشهادة التالية
+pinned: trusted
+next: trusted
+other: refused (HandshakeException)
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> في تطبيق حقيقي تكون التثبيتات ملفات أو ثوابت تُشحن مع كل إصدار. خطّط الجدول الزمني: اشحن التثبيت التالي قبل التجديد بأشهر، وبدّل الخادم، ثم احذف التثبيت القديم في إصدار لاحق.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> يقترح زميل حفظ رمز الوصول في <code>const</code> بعد الدخول «كي لا يكون في ملف». ما الخطأ في الفكرة؟</li>
+<li><span class="level">سهل</span> أضف إلى أداة الإخفاء قاعدة لأرقام البطاقات (من 13 إلى 19 رقماً، ربما بمسافات)، تُبقي آخر أربعة أرقام.</li>
+<li><span class="level medium">متوسط</span> يريد المقهى منع التقاط صور الشاشة لرمز خصم يُستخدم مرة. ماذا يستطيع التطبيق فعله في Android وiOS، وماذا لا يستطيع منعه؟</li>
+<li><span class="level medium">متوسط</span> تثبيت الشهادة يعني تحديث التطبيق عند كل تجديد. ماذا يغيّر تثبيت المفتاح العام بدلاً منها، وكيف تحصل على تجزئة المفتاح؟</li>
+<li><span class="level hard">تحدٍّ</span> يجب أن يرفض التطبيق تشغيل شاشة الدفع على هاتف مكسور الحماية. اشرح ما يستطيع مثل هذا الفحص تحقيقه وما لا يستطيع، وأين يجب أن تعيش الحماية الحقيقية.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 15</p>
+<p>مفاتيح مكانها الخادم، ونسخ يجب توقيعها، وإصدارات للاختبار وللمتجر: الفصل القادم يؤتمت ذلك كله، بالنكهات (flavors) والتوقيع وخط CI يبني كل commit.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6288,6 +6702,16 @@ free memory: 4513 MB, 4521 MB, 4521 MB, 4529 MB in 2010 ms
 <li>ابدأ العمل بـ <code>g_task_run_in_thread</code> (أو <code>GThreadPool</code>)، واحتفظ بالنداء لتجيب لاحقاً، وارجع دون أن تجيب؛ وحين ينتهي الخيط أجب من الخيط الرئيسي بـ <code>g_main_context_invoke</code>. ومع Pigeon علّم الدالة بـ <code>@async</code> في التعريف: فيعطي كود GObject المولَّد المعالجَ مقبضاً يجيب به لاحقاً، بدل أن يتوقع الجواب قيمةً مُعادة.</li>
 <li>في C++: المقصود تجنب إرسال رسائل لا تحمل جديداً، والطرف المرسِل وحده يستطيع ألا يرسل. احفظ آخر قيمة في متغير ثابت، ولا تنادِ <code>fl_event_channel_send</code> إلا إن اختلفت القراءة الجديدة. ويستطيع Dart أن يستخدم <code>distinct()</code> احتياطاً، لكن عمل الترميز والإرسال يكون قد تم حينها.</li>
 <li>أنشئ إضافة بـ <code>flutter create --template=plugin --platforms=android,ios,linux cafe_device</code>؛ وانقل إليها <code>pigeons/device.dart</code> والملفات المولَّدة والتنفيذات الأصلية، وسجّل جانبي Linux وAndroid في دوال تسجيل الإضافة نفسها بدل <code>my_application.cc</code> و<code>MainActivity</code> في التطبيق. ولا يبقى في التطبيق إلا الاعتماد وكود Dart الذي يستخدم <code>DeviceSource</code>؛ ثم تسجّلها <code>fl_register_plugins</code> ومسجّل إضافات Android تلقائياً.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 14</h2>
+<ol class="exercises">
+<li>الـ <code>const</code> يُقرَّر حين يُترجم التطبيق، لا عند الدخول؛ والقيمة المستلمة وقت التشغيل لا يمكن أن تكون <code>const</code>. وما يقصده الزميل متغير في الذاكرة، وهذا صحيح لرمز الوصول، كما يفعل <code>TokenStore</code>. أما السر الثابت فسيكون أسوأ الاثنين: مترجَماً داخل التطبيق، واحداً لكل المستخدمين، ومقروءاً بـ <code>strings</code> كما أظهر القسم 14.3.</li>
+<li>أضف <code>(RegExp(r'\b(?:\d[ -]?){9,15}(\d{4})\b'), (m) =&gt; '**** ${m[1]}')</code>: من تسعة إلى خمسة عشر رقماً، يتبع كلاً منها ربما مسافة أو شرطة، ثم آخر أربعة، ملتقَطة. واختبر رقم بطاقة بمسافات، وآخر بلا مسافات، ورقم طلب من خمسة أرقام يجب ألا يُمس.</li>
+<li>في Android، <code>FLAG_SECURE</code> على النافذة يمنع صور الشاشة وتسجيلها ويخفي الشاشة في قائمة التطبيقات الأخيرة (يُضبط من Kotlin، أو بإضافة، على تلك الصفحة فقط). وiOS بلا مانع مكافئ؛ يستطيع التطبيق اكتشاف صورة الشاشة بعد التقاطها، أو تمويه محتواه حين ينتقل التطبيق إلى الخلفية. ولا شيء منهما يوقف هاتفاً ثانياً موجَّهاً إلى الشاشة: الحماية الحقيقية أن الرمز يُستخدم مرة ويُفحص على الخادم.</li>
+<li>الشهادة تتغير مع كل تجديد؛ أما زوج مفاتيحها فقد يبقى نفسه إن جدّد فريق الخادم بالمفتاح نفسه. فتثبيت تجزئة <em>المفتاح العام</em> (SubjectPublicKeyInfo، بـ SHA-256، وbase64) يصمد عبر التجديدات. واحصل عليها بـ <code>openssl x509 -in cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64</code>، وفي Dart قارنها في <code>HttpClient.badCertificateCallback</code> أو بفحص مخصص على <code>connectionInfo</code>، مع إبقاء التحقق العادي.</li>
+<li>فحص كسر الحماية مطب سرعة: يوقف المستخدمين العاديين للهواتف مكسورة الحماية ويجعل الإساءة الآلية أصعب قليلاً، لكن المهاجم يتحكم في الهاتف ويستطيع حذف الفحص من التطبيق. والدفع يجب أن يُحمى حيث لا سيطرة للمهاجم: في SDK مزوّد الدفع وخادمه، وفي تحقق الخادم من كل عملية، وحيث يتاح، في شهادة المنصة (Play Integrity وApp Attest) التي يفحص خادمك حكمها، لا التطبيق.</li>
 </ol>
 
 </section>

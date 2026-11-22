@@ -1,0 +1,202 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/security/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Security on the Device</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>think like an attacker who holds your app, and sometimes the phone</li>
+<li>see where an app’s data really ends up, and read it back as an attacker would</li>
+<li>keep tokens in the platform’s secure storage, short-lived ones only in memory</li>
+<li>accept that nothing compiled into an app is secret, and design for it</li>
+<li>pin the server’s certificate, rotate pins safely, and keep secrets out of logs</li>
+</ul>
+</div>
+
+<p class="lead">A server sits in a locked room. An app sits in a stranger’s pocket. Anyone can download it, unpack it, read its strings, run it on a rooted phone and watch every file it writes. Security on the device starts by accepting that, and then deciding what the app may keep, where, and for how long.</p>
+
+<aside class="bit" data-mood="think"><p>Every attack in this chapter was carried out on the book’s own apps: a token read from a file, a “secure” value decrypted, a secret pulled out of an obfuscated release build. One of them failed the first time, for an interesting reason. Section {{n}}.3 tells it.</p></aside>
+
+<h2>{{n}}.1 The attacker holds the app</h2>
+
+<p>Three kinds of attacker matter for a café app. The <em>curious user</em> unpacks the app to see how it works, or to find a discount code. The <em>thief</em> has the phone, perhaps unlocked, perhaps with a debugging tool. The <em>network</em>, at a café’s free Wi-Fi, watches or changes traffic. From these follow four rules:</p>
+
+<ul>
+<li>Everything in the app is public: code, strings, assets, keys.</li>
+<li>Files the app writes can be read, on a rooted phone, a backup or a shared computer, unless the platform encrypts them with keys the app does not hold.</li>
+<li>Traffic is only as safe as the app’s idea of whom to trust.</li>
+<li>The server decides. A check in the app is a convenience for honest users, never a protection.</li>
+</ul>
+
+<h2>{{n}}.2 Where data ends up</h2>
+
+<p>The sign-in screen saves the session twice: the access token with <code>shared_preferences</code>, as many apps do, and the refresh token with <code>flutter_secure_storage</code>:</p>
+
+<pre data-code="lib/sign_in_app.dart" data-from="  Future&lt;void&gt; signIn()" data-to="^  }" data-title="lib/sign_in_app.dart (part)"></pre>
+
+<p>On Linux, an integration test saves the token, and then anyone with the user’s files can read it:</p>
+
+<pre data-term="prefs-test.sh"></pre>
+
+<p>On Android, <code>shared_preferences</code> writes a file in the app’s private folder (a DataStore file, or XML with the older API); on iOS, a property list. Private means other apps cannot read it on a healthy phone, nothing more: a rooted phone, a backup, or a debugging tool reads it like the line above.</p>
+
+<p>On the web, the book’s screenshot tool signed in, then read the browser’s <code>localStorage</code>, as any script on the page, or anyone at the computer, can:</p>
+
+<div class="phones">
+<figure data-img="shots/signin.png" data-frame="phone">
+<figcaption>Signed in, on the web</figcaption>
+</figure>
+</div>
+
+<pre data-term="storage.sh"></pre>
+
+<p>The access token is in plain text. The refresh token is encrypted with AES-GCM, but look at the last line: the key is stored right beside it, because a web page has nowhere else to put one. A dozen lines of Python, an attacker’s tool, read both:</p>
+
+<pre data-code="tool/peek.py" data-title="tool/peek.py"></pre>
+<pre data-term="peek.sh"></pre>
+
+<p>That is not a bug in the plugin; it is the web. A browser gives a page no hardware-backed key store that survives a reload. On the web, the safest session is a cookie the page cannot read at all (<code>HttpOnly</code>), set by your server.</p>
+
+<h2>{{n}}.3 Nothing compiled in is secret</h2>
+
+<p>Apps often need keys: a maps key, an analytics key, a payment provider’s public key. A common pattern passes them at build time:</p>
+
+<pre data-code="lib/maps_app.dart" data-from="^const mapsKey" data-title="lib/maps_app.dart (part)"></pre>
+
+<p>The key is in the code the user downloads. On the web, that is a text file:</p>
+
+<pre data-term="secret-web.sh"></pre>
+
+<p>On Android, the release build with Dart’s obfuscation turned on, which renames classes and functions:</p>
+
+<pre data-term="secret-apk.sh"></pre>
+
+<p>Obfuscation renames; it does not hide strings. One <code>strings</code> command finds the key in <code>libapp.so</code>, the compiled Dart code inside the APK.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The first version of this app only displayed the key’s length, and <code>grep</code> found nothing in the web build:</p>
+<pre data-term="secret-length.sh"></pre>
+<p>That was not protection. The compiler saw that only the length, 23, was ever used, and kept the number instead of the string. The moment the app <em>uses</em> the key, to call the maps service, the key is in the build. Never mistake “I could not find it” for “it is not there”.</p></aside>
+
+<p>So: a key that must stay secret belongs on your server, which calls the service on the app’s behalf. Keys that are meant to be public (a maps key restricted to your app’s package name, a payment provider’s publishable key) may ship, as long as the provider lets you restrict what they can do.</p>
+
+<h2>{{n}}.4 Tokens on the phone</h2>
+
+<p>On Android and iOS, <code>flutter_secure_storage</code> is a different thing from the web: values are encrypted with keys kept by the operating system, in the iOS Keychain or the Android Keystore, often in dedicated hardware, and those keys cannot be copied out of the phone. A copied file or a backup is useless without them. The café keeps the long-lived refresh token there, and the short-lived access token only in memory:</p>
+
+<pre data-code="lib/security/tokens.dart" data-from="^class TokenStore" data-title="lib/security/tokens.dart (part)"></pre>
+
+<p>An access token that leaks is useful for minutes; a refresh token is guarded by the platform; signing out deletes both. Project {{n}}.2 tests that, with a fake store and a fake clock. (This book’s machine has no phone, so the Keychain and Keystore themselves are not exercised here; the plugin is compiled into the Android build above.)</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why is the web’s “secure storage” no safer than <code>localStorage</code> against someone at the computer?</li><li>Does obfuscation hide a key passed with <code>--dart-define</code>?</li><li>Why does the access token live only in memory?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Trust on the wire</h2>
+
+<p>HTTPS encrypts traffic and checks that the server’s certificate was issued by an authority the phone trusts. On a phone where the user (or an attacker, or a company) has installed an extra authority, a proxy can present its own certificate and read everything. <dfn>Certificate pinning</dfn> narrows the trust: the app accepts only the certificate it expects, whatever authorities the phone has.</p>
+
+<pre data-code="lib/security/pinned_client.dart" data-from="^http.Client" data-title="lib/security/pinned_client.dart (part)"></pre>
+
+<p>To test it for real, a script makes throwaway certificates for <code>localhost</code> on every run (they are never committed), and the test starts real HTTPS servers with them:</p>
+
+<pre data-code="tool/make_certs.sh" data-title="tool/make_certs.sh"></pre>
+<pre data-code="test/pinning_test.dart" data-from="^void main" data-title="test/pinning_test.dart (part)"></pre>
+<pre data-term="pinning-test.sh"></pre>
+
+<p>The pinned client talks to its server and refuses the other one, although both are equally valid HTTPS servers. The ordinary client refuses the pinned server too, because its certificate is self-signed: that row shows the normal check at work.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Pin only with a plan for renewal. Certificates expire; a pin that is not updated in time turns into an app that cannot reach its own server, for every user, until they update. Ship the next certificate’s pin before you need it (Project {{n}}.3), pin a key you control rather than a provider’s rotating certificate, and keep a way to turn pinning off from the server for emergencies.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Tokens in <code>shared_preferences</code></td><td>Readable in backups and on rooted phones</td><td>Secure storage; short tokens in memory</td></tr>
+<tr><td>Trusting the web’s secure storage</td><td>The key sits next to the value</td><td><code>HttpOnly</code> cookies set by the server</td></tr>
+<tr><td>Secret keys in the app</td><td>Extracted with one command</td><td>Keep them on the server</td></tr>
+<tr><td>Obfuscation as protection</td><td>Strings untouched</td><td>Assume everything shipped is public</td></tr>
+<tr><td>Pinning without a renewal plan</td><td>Every user cut off on renewal day</td><td>Ship the next pin early</td></tr>
+<tr><td>Tokens and emails in logs</td><td>Secrets in crash reports and support tickets</td><td>Redact before logging (Project {{n}}.1)</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>The attacker holds the app and sometimes the phone; the server is the only place a rule is enforced.</li>
+<li>Files and <code>localStorage</code> are readable; on the web, even “secure” storage keeps its key beside the value.</li>
+<li>Anything compiled into the app, obfuscated or not, can be extracted.</li>
+<li>On phones, keep refresh tokens in the Keychain or Keystore and access tokens in memory; sign-out deletes both.</li>
+<li>Pin certificates to narrow trust, with the next pin shipped in advance; keep secrets out of logs.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the encryption key is stored in the same <code>localStorage</code>, next to the encrypted value: whoever can read one can read the other, and decrypt. 2. No: obfuscation renames symbols, and the key stays a plain string in <code>libapp.so</code>, found with <code>strings</code>. 3. So that it is never written anywhere: it disappears when the app closes, and if it leaks while the app runs, it expires within minutes.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects close three common leaks: logs, sessions that outlive sign-out, and pins that break on renewal day.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Redact the logs</h3>
+<p class="project-goal">Logs end up in crash reports and support emails. Mask bearer tokens, token and password fields, and the name part of email addresses, before anything is logged.</p>
+<p class="project-skills"><strong>You will practise:</strong> regular expressions, <code>replaceAllMapped</code>, and records.</p>
+<ol class="steps">
+<li>Write a list of rules, each a pattern and a replacement that keeps the context and masks the secret.</li>
+<li>Apply them in order with <code>fold</code>.</li>
+<li>Test four real-looking log lines, including one with nothing to hide.</li>
+</ol>
+<pre data-code="lib/security/redact.dart" data-title="lib/security/redact.dart"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/redact-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Sessions that end</h3>
+<p class="project-goal">Test the token store: the access token expires on time, the refresh token survives in the secure store, and signing out leaves nothing behind.</p>
+<p class="project-skills"><strong>You will practise:</strong> fake secure storage, an injected clock, and testing what is <em>not</em> there.</p>
+<ol class="steps">
+<li>Write an in-memory <code>SecureStore</code> for tests.</li>
+<li>Sign in with a 15-minute token, move the clock 16 minutes, and expect no access token but the refresh token.</li>
+<li>Sign out, and expect the store to be empty.</li>
+</ol>
+<pre data-code="test/tokens_test.dart" data-from="^void main" data-title="test/tokens_test.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/tokens-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Rotate pins without an outage</h3>
+<p class="project-goal">Trust two certificates, the current one and the next, so the server can switch on renewal day while every installed app keeps working. Prove that a third certificate is still refused.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>SecurityContext</code> with several trusted certificates, and testing against several servers.</p>
+<ol class="steps">
+<li>Build the client with both certificates.</li>
+<li>Start a server with each of the three certificates in turn and try it.</li>
+<li>Expect the first two trusted and the third refused.</li>
+</ol>
+<pre data-code="test/rotation_test.dart" data-from="final client = pinnedClient" data-to="]);" data-title="test/rotation_test.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/rotation-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> in a real app, the pins are assets or constants shipped with each version. Plan the timeline: ship the next pin months before the renewal, switch the server, then remove the old pin in a later version.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A colleague proposes storing the access token in a <code>const</code> after sign-in “so it is not in a file”. What is wrong with the idea?</li>
+<li><span class="level">Easy</span> Add a rule to the redactor for card numbers (13 to 19 digits, perhaps with spaces), keeping the last four digits.</li>
+<li><span class="level">Medium</span> The café wants to stop people taking screenshots of a one-time discount code. What can the app do on Android and iOS, and what can it not prevent?</li>
+<li><span class="level">Medium</span> Pinning a certificate means updating the app at every renewal. What does pinning the public key instead change, and how would you get the key’s hash?</li>
+<li><span class="level">Challenge</span> The app should refuse to run its payment screen on a rooted or jailbroken phone. Explain what such a check can and cannot achieve, and where the real protection must live.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Keys that belong on a server, builds that must be signed, versions for testing and for the store: the next chapter automates all of it, with flavors, signing and a CI pipeline that builds every commit.</p>
+</div>
+</section>

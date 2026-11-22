@@ -1269,7 +1269,8 @@
             },
             {
               "en": "Security on the Device",
-              "ar": "الأمان على الجهاز"
+              "ar": "الأمان على الجهاز",
+              "src": "b6/security"
             },
             {
               "en": "CI/CD, Flavors and Signing",
