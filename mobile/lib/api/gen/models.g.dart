@@ -614,6 +614,59 @@ class AdminClientErrorsAnswerErrorsItem {
   final String version;
 }
 
+class AdminClientFramesAnswer {
+  const AdminClientFramesAnswer({required this.screens});
+
+  factory AdminClientFramesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminClientFramesAnswer');
+    return AdminClientFramesAnswer(screens: r.list('screens', AdminClientFramesAnswerScreensItem.fromJson));
+  }
+
+  final List<AdminClientFramesAnswerScreensItem> screens;
+}
+
+class AdminClientFramesAnswerScreensItem {
+  const AdminClientFramesAnswerScreensItem({
+    required this.frames,
+    required this.late16Bp,
+    required this.late33Bp,
+    required this.path,
+    required this.platform,
+    required this.sessions,
+    required this.tier,
+    required this.version,
+  });
+
+  factory AdminClientFramesAnswerScreensItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminClientFramesAnswerScreensItem');
+    return AdminClientFramesAnswerScreensItem(
+      frames: r.int_('frames'),
+      late16Bp: r.int_('late16_bp'),
+      late33Bp: r.int_('late33_bp'),
+      path: r.string('path'),
+      platform: r.string('platform'),
+      sessions: r.int_('sessions'),
+      tier: r.string('tier'),
+      version: r.string('version'),
+    );
+  }
+
+  final int frames;
+
+  /// Frames over 16 ms, in hundredths of a percent
+  final int late16Bp;
+
+  /// Frames over 33 ms, in hundredths of a percent
+  final int late33Bp;
+
+  /// The screen, without its ids
+  final String path;
+  final String platform;
+  final int sessions;
+  final String tier;
+  final String version;
+}
+
 class AdminCommentaryAnswer {
   const AdminCommentaryAnswer({required this.keys});
 
@@ -1899,7 +1952,7 @@ class BootstrapAnswer {
     );
   }
 
-  /// GET /health's version, time, clock_offset, broadcast, support, bots, adsense and analytics
+  /// GET /health's version, time, clock_offset, broadcast, support, bots, adsense, analytics and unity_build
   final Map<String, Object?> config;
   final BootstrapAnswerHome? home;
   final int unread;
@@ -4474,6 +4527,7 @@ class HealthAnswer {
     required this.status,
     this.support,
     required this.time,
+    this.unityBuild,
     required this.version,
   });
 
@@ -4491,6 +4545,7 @@ class HealthAnswer {
       status: r.string('status'),
       support: r.objectOrNull('support', HealthAnswerSupport.fromJson),
       time: r.string('time'),
+      unityBuild: r.stringOrNull('unity_build'),
       version: r.string('version'),
     );
   }
@@ -4521,6 +4576,9 @@ class HealthAnswer {
 
   /// The game time (GameClock) in UTC
   final String time;
+
+  /// [Sprint 11 X1] The Unity web build the match screen loads from `/unity/<build>/Build/`, null when none is deployed (the cartoon plays)
+  final String? unityBuild;
   final String version;
 }
 
@@ -7493,6 +7551,7 @@ class MarketMineItem {
     required this.cap,
     this.cost,
     required this.floor,
+    this.held,
     required this.id,
     required this.line,
     this.listed,
@@ -7510,6 +7569,7 @@ class MarketMineItem {
       cap: r.int_('cap'),
       cost: r.intOrNull('cost'),
       floor: r.int_('floor'),
+      held: r.stringOrNull('held'),
       id: r.int_('id'),
       line: r.string('line'),
       listed: r.objectOrNull('listed', MarketMineItemListed.fromJson),
@@ -7530,6 +7590,9 @@ class MarketMineItem {
 
   /// The least a listing asks
   final int floor;
+
+  /// [X105] Why he cannot be sold now: his line is at the squad's floor (2 keepers, 4 defenders, 4 midfielders, 3 forwards)
+  final String? held;
   final int id;
   final String line;
   final MarketMineItemListed? listed;
@@ -8605,6 +8668,7 @@ class MatchesSceneAnswer {
     this.kits,
     required this.light,
     required this.players,
+    this.seed,
     required this.stadium,
     required this.tickMs,
   });
@@ -8620,6 +8684,7 @@ class MatchesSceneAnswer {
       kits: r.objectOrNull('kits', MatchKits.fromJson),
       light: r.string('light'),
       players: r.object('players', MatchesSceneAnswerPlayers.fromJson),
+      seed: r.intOrNull('seed'),
       stadium: r.string('stadium'),
       tickMs: r.int_('tick_ms'),
     );
@@ -8635,6 +8700,9 @@ class MatchesSceneAnswer {
   final MatchKits? kits;
   final String light;
   final MatchesSceneAnswerPlayers players;
+
+  /// [Sprint 11] The match's seed, as GET /matches/{match} gives it: the director's crowd and fights vary by it, as the cartoon's
+  final int? seed;
   final String stadium;
   final int tickMs;
 }

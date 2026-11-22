@@ -3239,4 +3239,27 @@ class LAr extends L {
 
   @override
   String get brokenPart => 'تعذّر عرض هذا الجزء. ارجع وافتح الشاشة من جديد.';
+
+  @override
+  String get rivalSquads => 'فرق الخصوم';
+
+  @override
+  String get mySquad => 'فريقي';
+
+  @override
+  String get nextRival => 'خصمك القادم';
+
+  @override
+  String get sellPlayer => 'بيع اللاعب';
+
+  @override
+  String get askForPlayer => 'اطلبه بعرض';
+
+  @override
+  String get runByComputer => 'يديره الحاسوب';
+
+  @override
+  String coachedBy(String name) {
+    return 'المدرب $name';
+  }
 }

@@ -665,7 +665,7 @@ paths:
                     type: string
                     nullable: true
                     example: '2026.11.18'
-                    description: '[Sprint 11 X1] The Unity web build the match screen loads from /unity/<build>/Build/, null when none is deployed (the cartoon plays)'
+                    description: '[Sprint 11 X1] The Unity web build the match screen loads from `/unity/<build>/Build/`, null when none is deployed (the cartoon plays)'
   /health/ping:
     post:
       tags: [system]
@@ -5790,6 +5790,7 @@ components:
                   fee: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
               wait_hours: { type: object, required: [value, cap], properties: { value: { type: integer }, cap: { type: integer } }, description: 'About how long the outside buyer takes at his value and at his cap (his age and rating, and a transfer madness, counted) [Sprint 23]' }
               listed: { type: object, nullable: true, required: [price, sells_at], properties: { price: { type: integer }, sells_at: { type: string, format: date-time, nullable: true } } }
+              held: { type: string, nullable: true, description: '[X105] Why he cannot be sold now: his line is at the squad''s floor (2 keepers, 4 defenders, 4 midfielders, 3 forwards)' }
         selling:
           type: object
           description: '[Sprint 23] Listing: how many at once, how many now, and the season''s profit room selling outside the league'

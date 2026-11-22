@@ -27,7 +27,7 @@ class GlmActionBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: GlmSpace.sm),
       decoration: BoxDecoration(
         color: p.bgDeep.withValues(alpha: .82),
-        border: Border(top: BorderSide(color: p.gold.withValues(alpha: .35))),
+        border: Border(top: BorderSide(color: p.gold.withValues(alpha: .2))),
       ),
       child: Row(
         children: [
@@ -66,14 +66,14 @@ class GlmActionItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconTheme(
-              data: IconThemeData(color: on ? p.gold : Colors.white, size: 24),
+              data: IconThemeData(color: on ? p.gold : p.text, size: 24),
               child: SizedBox(height: 26, child: Center(child: icon)),
             ),
             const SizedBox(height: 2),
             Text(
               label,
               maxLines: 1,
-              style: glmText(GlmType.caption, color: on ? p.gold : Colors.white, fontWeight: FontWeight.w700, height: 1.1),
+              style: glmText(GlmType.caption, color: on ? p.gold : p.text, fontWeight: FontWeight.w700, height: 1.1),
             ),
           ],
         ),

@@ -35,21 +35,70 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(_HeaderDelegate old) => true;
 }
 
+/// [X105, the owner 2026-11-22: tiring on the eyes] The table's colours: by day the white sheet of the approved draft;
+/// at night the night's own surfaces and text, so a bright white block no longer stands in the dark screen.
+class _Sheet {
+  const _Sheet({
+    required this.row,
+    required this.paper,
+    required this.ink,
+    required this.soft,
+    required this.label,
+    required this.chip,
+    required this.reserve,
+    required this.starter,
+    required this.fit,
+  });
+
+  factory _Sheet.of(BuildContext context) {
+    if (context.glm.day) {
+      return const _Sheet(
+        row: Colors.white,
+        paper: GlmSheet.paper,
+        ink: GlmSheet.ink,
+        soft: GlmSheet.soft,
+        label: GlmSheet.label,
+        chip: GlmSheet.chip,
+        reserve: GlmSheet.reserve,
+        starter: GlmSheet.starter,
+        fit: GlmSheet.fit,
+      );
+    }
+    final p = context.palette;
+    return _Sheet(
+      row: p.surface,
+      paper: p.surfaceSunk,
+      ink: p.text,
+      soft: p.textMuted,
+      label: p.textMuted,
+      chip: p.surfaceRaised,
+      reserve: p.surfaceRaised,
+      starter: p.success,
+      fit: p.success,
+    );
+  }
+
+  final Color row, paper, ink, soft, label, chip, reserve, starter, fit;
+}
+
 class _GroupTitle extends StatelessWidget {
   const _GroupTitle(this.title);
 
   final String title;
 
   @override
-  Widget build(BuildContext context) => Container(
-    color: GlmSheet.paper,
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    alignment: Alignment.center,
-    child: Text(
-      title,
-      style: glmText(GlmType.bodyLg, color: GlmSheet.label, fontWeight: FontWeight.w700),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final sheet = _Sheet.of(context);
+    return Container(
+      color: sheet.paper,
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      alignment: Alignment.center,
+      child: Text(
+        title,
+        style: glmText(GlmType.bodyLg, color: sheet.label, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
 }
 
 /// The table's columns: the same widths in the header and each row.
@@ -107,7 +156,7 @@ class _Head extends StatelessWidget {
             child: Text(
               label,
               maxLines: 1,
-              style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: on ? GlmSheet.sortOn : Colors.white),
+              style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: on ? GlmSheet.sortOn : glmNight.text),
             ),
           ),
         ),
@@ -134,14 +183,15 @@ class _Row extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const ink = GlmSheet.ink, soft = GlmSheet.soft;
+    final sheet = _Sheet.of(context);
+    final ink = sheet.ink, soft = sheet.soft;
     final num = glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: ink);
     final starter = p.role == 'starter', bench = p.role == 'bench';
     final c = context.palette;
     Widget bar(double v, Color color) => Container(
       width: 46,
       height: 20,
-      decoration: BoxDecoration(color: GlmSheet.chip, borderRadius: BorderRadius.circular(3)),
+      decoration: BoxDecoration(color: sheet.chip, borderRadius: BorderRadius.circular(3)),
       alignment: AlignmentDirectional.centerStart,
       child: FractionallySizedBox(
         widthFactor: v.clamp(.05, 1),
@@ -152,7 +202,7 @@ class _Row extends StatelessWidget {
       ),
     );
     return Material(
-      color: Colors.white,
+      color: sheet.row,
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -160,12 +210,10 @@ class _Row extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             border: BorderDirectional(
-              bottom: const BorderSide(color: GlmSheet.paper),
-              start: BorderSide(color: starter ? GlmSheet.starter : Colors.transparent, width: 5),
+              bottom: BorderSide(color: sheet.paper),
+              start: BorderSide(color: starter ? sheet.starter : Colors.transparent, width: 5),
             ),
-            gradient: starter
-                ? LinearGradient(colors: [GlmSheet.starter.withValues(alpha: .10), Colors.white], stops: const [0, .35])
-                : null,
+            gradient: starter ? LinearGradient(colors: [sheet.starter.withValues(alpha: .10), sheet.row], stops: const [0, .35]) : null,
           ),
           child: _Cells(
             name: Row(
@@ -178,7 +226,7 @@ class _Row extends StatelessWidget {
                           ? GlmStage.pill
                           : bench
                           ? GlmSheet.bench
-                          : GlmSheet.reserve,
+                          : sheet.reserve,
                       trim: starter ? GlmSheet.captainTrim : Colors.white,
                       size: 38,
                     ),
@@ -261,7 +309,7 @@ class _Row extends StatelessWidget {
                 children: [
                   bar(p.fitness / 100, fitnessColor(p.fitness)),
                   const SizedBox(width: 6),
-                  bar(p.available ? 1 : .15, p.available ? GlmSheet.fit : c.live),
+                  bar(p.available ? 1 : .15, p.available ? sheet.fit : c.live),
                 ],
               ),
             ),

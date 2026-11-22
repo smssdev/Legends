@@ -69,32 +69,32 @@ class GlmPalette {
 }
 
 const glmNight = GlmPalette(
-  bg: Color(0xFF0B1A2C),
-  bgDeep: Color(0xFF06111E),
-  surface: Color(0xFF102538),
-  surfaceSunk: Color(0xFF0B1D2E),
-  surfaceRaised: Color(0xFF183349),
-  gold: Color(0xFFF5B82E),
-  goldDark: Color(0xFFC08A0C),
-  goldLight: Color(0xFFFFD36B),
-  pitch: Color(0xFF1E9E4A),
-  pitchDark: Color(0xFF1A8A42),
-  text: Color(0xFFF7F4EA),
-  textMuted: Color(0xFFA9B6CC),
-  textSoft: Color(0xFFC9D2E1),
+  bg: Color(0xFF101F30),
+  bgDeep: Color(0xFF0C1928),
+  surface: Color(0xFF15283B),
+  surfaceSunk: Color(0xFF112334),
+  surfaceRaised: Color(0xFF1D3348),
+  gold: Color(0xFFE2B252),
+  goldDark: Color(0xFFB98B2C),
+  goldLight: Color(0xFFEAC984),
+  pitch: Color(0xFF2C8C52),
+  pitchDark: Color(0xFF277D49),
+  text: Color(0xFFE3E1D9),
+  textMuted: Color(0xFF9EABBC),
+  textSoft: Color(0xFFC3CAD5),
   live: Color(0xFFEF4444),
-  warning: Color(0xFFF2994A),
-  success: Color(0xFF2BB673),
+  warning: Color(0xFFE59C5C),
+  success: Color(0xFF3FAF7A),
   onGold: Color(0xFF0B1A2C),
   brand: Color(0xFF12A07E),
   brandDark: Color(0xFF0A7559),
-  brandLight: Color(0xFF4FE0B5),
-  ring: Color(0xFF4FE0B5),
-  chrome: Color(0xFFF6EEDB),
-  chromeDark: Color(0xFFD8C59B),
+  brandLight: Color(0xFF6ED0B1),
+  ring: Color(0xFF6ED0B1),
+  chrome: Color(0xFFE5DDC9),
+  chromeDark: Color(0xFFCCBB92),
   onChrome: Color(0xFF13241D),
-  panel: Color(0xFF0D2133),
-  danger: Color(0xFFFF8A8A),
+  panel: Color(0xFF132638),
+  danger: Color(0xFFF3A3A3),
   bronze: Color(0xFFB4692A),
   silver: Color(0xFFC3CCDA),
   cardYellow: Color(0xFFF5D90A),
@@ -147,19 +147,19 @@ abstract final class GlmInk {
 
 /// [Sprint 47] The app's stage in the approved design: the night ground, the navy cards, the mint accent, the pills.
 abstract final class GlmStage {
-  static const ground = Color(0xFF0B1A2C);
-  static const deep = Color(0xFF06111E);
-  static const card = Color(0xFF102538);
-  static const cardRaised = Color(0xFF183349);
-  static const edge = Color(0xFF183349);
-  static const accent = Color(0xFF4FE0B5);
+  static const ground = Color(0xFF101F30);
+  static const deep = Color(0xFF0C1928);
+  static const card = Color(0xFF15283B);
+  static const cardRaised = Color(0xFF1D3348);
+  static const edge = Color(0xFF1D3348);
+  static const accent = Color(0xFF6ED0B1);
   static const band = Color(0xFF0A7559);
-  static const cash = Color(0xFF2BB673);
-  static const pill = Color(0xFF0D2133);
-  static const alert = Color(0xFF2BB673);
-  static const questTop = Color(0xFFFFD36B);
-  static const questBottom = Color(0xFFF5B82E);
-  static const menu = Color(0xFF0D2133);
+  static const cash = Color(0xFF3FAF7A);
+  static const pill = Color(0xFF112334);
+  static const alert = Color(0xFF3FAF7A);
+  static const questTop = Color(0xFFEAC984);
+  static const questBottom = Color(0xFFE2B252);
+  static const menu = Color(0xFF112334);
 }
 
 /// A player's line: its badge colour and text.

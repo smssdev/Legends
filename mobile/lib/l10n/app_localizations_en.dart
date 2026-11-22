@@ -3201,4 +3201,27 @@ class LEn extends L {
 
   @override
   String get brokenPart => 'This part couldn\'t be shown. Go back and open the screen again.';
+
+  @override
+  String get rivalSquads => 'Rival squads';
+
+  @override
+  String get mySquad => 'My squad';
+
+  @override
+  String get nextRival => 'Next opponent';
+
+  @override
+  String get sellPlayer => 'Sell player';
+
+  @override
+  String get askForPlayer => 'Make an offer';
+
+  @override
+  String get runByComputer => 'Run by the computer';
+
+  @override
+  String coachedBy(String name) {
+    return 'Coach $name';
+  }
 }

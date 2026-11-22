@@ -155,6 +155,8 @@ return [
         'debt_rounds_before_forced_sale' => 3,
         'min_squad' => 16,                  // a forced sale never leaves fewer players than this
         'bot_min_squad' => 18, 'min_keepers' => 2,   // a bot club sells no lower than this [PLAN 2.7]
+        // [X105] A coach's squad keeps at least this many of each line through any sale (App\Market\SquadFloor).
+        'min_lines' => ['gk' => 2, 'def' => 4, 'mid' => 4, 'att' => 3],
         'pool_size' => 300,
         // The pool renews every pool_hours from the players of every league in the data [X6], as strong as this
         // league: from its pool_level_from_pct percentile of strength to its best, in pool_lines shares per line.

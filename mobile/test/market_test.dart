@@ -11,6 +11,7 @@ import 'package:glm/features/market/market_data.dart';
 import 'package:glm/features/market/market_screen.dart';
 import 'package:glm/features/market/offer_screen.dart';
 import 'package:glm/features/market/scout_screen.dart';
+import 'package:glm/features/market/sell_sheet.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -206,6 +207,38 @@ void main() {
     await t.tap(find.text('اقبل').first);
     await t.pumpAndSettle();
     expect(m.sent.last, 'accept 31');
+  });
+
+  testWidgets('[X105] a player whose line is at the squad\'s floor: the server\'s reason, and no way to sell him', (t) async {
+    final m = FakeMarket();
+    const why = 'لا بد أن يبقى في فريقك 4 مدافعين على الأقل.';
+    final held = Selling.fromJson(json('market_pool')).mine.firstWhere((x) => x.line == 'def');
+    final pl = MyPlayer(
+      id: held.id,
+      name: held.name,
+      position: held.position,
+      line: held.line,
+      overall: held.overall,
+      value: held.value,
+      cost: held.cost,
+      floor: held.floor,
+      cap: held.cap,
+      quickPays: held.quickPays,
+      quickFee: held.quickFee,
+      waitValue: held.waitValue,
+      waitCap: held.waitCap,
+      held: why,
+    );
+    await pump(
+      t,
+      Scaffold(
+        body: SellSheet(player: pl, leagueId: 8, repo: m),
+      ),
+      m,
+    );
+    expect(find.text(why), findsOneWidget);
+    expect(find.text('اعرضه للبيع'), findsNothing);
+    expect(find.textContaining('بيع فوري'), findsNothing);
   });
 
   testWidgets('the scout: a report\'s players, one bought', (t) async {

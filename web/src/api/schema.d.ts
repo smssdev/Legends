@@ -1400,7 +1400,7 @@ export interface paths {
                                 pixel: string | null;
                             } | null;
                             /**
-                             * @description [Sprint 11 X1] The Unity web build the match screen loads from /unity/<build>/Build/, null when none is deployed (the cartoon plays)
+                             * @description [Sprint 11 X1] The Unity web build the match screen loads from `/unity/<build>/Build/`, null when none is deployed (the cartoon plays)
                              * @example 2026.11.18
                              */
                             unity_build?: string | null;
@@ -14662,6 +14662,8 @@ export interface components {
                     /** Format: date-time */
                     sells_at: string | null;
                 } | null;
+                /** @description [X105] Why he cannot be sold now: his line is at the squad's floor (2 keepers, 4 defenders, 4 midfielders, 3 forwards) */
+                held?: string | null;
             }[];
             /** @description [Sprint 23] Listing: how many at once, how many now, and the season's profit room selling outside the league */
             selling?: {

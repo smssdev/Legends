@@ -34,6 +34,8 @@ class MarketTest extends TestCase
         $this->owner = User::factory()->create();
         $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString()]);
         $this->mine = $this->league['my_club_id'];
+        // [X105] The squads of 18 here test the other limits; each line's floor is SquadFloorTest's.
+        config(['game.economy.min_lines' => []]);
     }
 
     protected function tearDown(): void
