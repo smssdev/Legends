@@ -1,0 +1,195 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/release/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>التكامل المستمر والنسخ المتعددة والتوقيع</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تبني تطبيقاً واحداً لعدة بيئات من ملفات إعدادات، لا من تعديلات على الكود</li>
+<li>تعطي كل بيئة تطبيق Android خاصاً بها قابلاً للتثبيت، بالنكهات (product flavors)</li>
+<li>توقّع نسخ الإصدار بمفتاح لا تلمس كلمة مروره أي ملف</li>
+<li>تكتب سكربت إصدار يرفض البناء من حالة غير آمنة</li>
+<li>تشغّل الفحوص نفسها مع كل push بسير عمل CI، وعلى جهازك قبل الـ push</li>
+</ul>
+</div>
+
+<p class="lead">انتهى الكتاب الخامس بتطبيق واحد، موقَّع مرة، باليد. والفريق يحتاج أكثر: نسخة تتحدث مع خادم الاختبار وأخرى مع الخادم الحقيقي، مثبتتين على الهاتف نفسه؛ وإصداراً لا يمكن صنعه من تغيير منسي؛ وجهازاً يفحص كل push قبل أن يراجعه إنسان. لا شيء من هذا صعب. وكله سهل أن يُخطأ فيه بخفاء، ولهذا مكانه السكربتات.</p>
+
+<aside class="bit" data-mood="happy"><p>كل بناء في هذا الفصل جرى حقاً: ثلاث نكهات من تطبيق Android، ونسخة إصدار موقَّعة، ورفضان من سكربت الإصدار، وسكربت CI من أوله إلى آخره، وتطبيق الويب مبنياً مرتين من ملفَي إعدادات.</p></aside>
+
+<h2>{{n}}.1 تطبيق واحد، وعدة بيئات</h2>
+
+<p>للمقهى خادم تطوير، وخادم staging للفحوص الأخيرة، وخادم الإنتاج. ويجب ألا يقرر التطبيق أيها ينادي بـ <code>if</code> يتذكر أحد تغييره؛ بل يقرؤه من البناء. وكل بيئة ملف JSON صغير:</p>
+
+<pre data-code="config/dev.json" data-title="config/dev.json"></pre>
+<pre data-code="config/prod.json" data-title="config/prod.json"></pre>
+
+<p>و<code>--dart-define-from-file</code> يحوّل كل مفتاح إلى ثابت وقت الترجمة، يقرؤه التطبيق في مكان واحد:</p>
+
+<pre data-code="lib/config.dart" data-title="lib/config.dart"></pre>
+<pre data-term="config-test.sh"></pre>
+<pre data-term="config-prod-test.sh"></pre>
+
+<p>الاختبار نفسه، بلا ملف ثم مع <code>config/prod.json</code>، يطبع تطبيقين مختلفين. والقيم الافتراضية هي قيم التطوير، كي لا تتحدث نسخة بُنيت دون تفكير مع الإنتاج مصادفة. وكما أظهر الفصل 14، هذه القيم داخل التطبيق يقرؤها أي أحد: عنوان ومفتاح تشغيل، لا سر أبداً.</p>
+
+<p>وكل نسخة ليست للإنتاج تقول ذلك:</p>
+
+<pre data-code="lib/main_app.dart" data-from="return AppConfig.isProduction" data-to="^  }" data-title="lib/main_app.dart (جزء)"></pre>
+
+<div class="phones">
+<figure data-img="shots/dev.png" data-frame="phone">
+<figcaption>مبنية بـ config/dev.json</figcaption>
+</figure>
+<figure data-img="shots/prod.png" data-frame="phone">
+<figcaption>الكود نفسه، مبنياً بـ config/prod.json</figcaption>
+</figure>
+</div>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>وُضع الشريط أولاً في الطرف العلوي، كما يفعل شريط التصحيح في Flutter. وفي النسخة العربية الطرف العلوي هو مكان عنوان الصفحة، فغطّاه الشريط. أما الطرف السفلي فخالٍ في الاتجاهين. افحص كل زاوية تزيّنها باللغتين.</p></aside>
+
+<h2>{{n}}.2 النكهات: تُثبَّت جنباً إلى جنب</h2>
+
+<p>المختبرون يريدون تطبيق التطوير وتطبيق المتجر على الهاتف نفسه. وAndroid يميّز التطبيقات بمعرّف التطبيق (application id)، فتأخذ كل <dfn>نكهة</dfn> (flavor) لاحقة معرّف خاصة بها واسماً خاصاً:</p>
+
+<pre data-code="android/app/build.gradle.kts" data-from="flavorDimensions" data-to="^    }" data-title="android/app/build.gradle.kts (جزء)"></pre>
+
+<p>وتسمية التطبيق في الـ manifest تصير <code>@string/app_name</code>، فيظهر اسم كل نكهة تحت أيقونتها. والبناء يسمّي النكهة وملف إعداداتها معاً:</p>
+
+<pre data-term="android-dev.sh"></pre>
+
+<p><code>com.example.bit_app.dev</code>، و«Bit Café Dev»، والإصدار <code>0.1.0-dev</code>: تطبيق مختلف في نظر الهاتف، ببياناته الخاصة، يُثبَّت بجانب التطبيق الحقيقي. وiOS يفعل الشيء نفسه بالـ schemes وإعدادات البناء في Xcode؛ ويبقى جانب Dart هو نفسه: <code>--flavor</code> وملف الإعدادات.</p>
+
+<h2>{{n}}.3 التوقيع، بلا كلمة مرور في أي ملف</h2>
+
+<p>مفتاح الإصدار يُصنع مرة (الكتاب الخامس، الفصل 15) ويبقى خارج المستودع. وكلمة المرور لا تُكتب في المشروع أبداً: تؤخذ من البيئة حين يجري البناء.</p>
+
+<pre data-term="keytool.sh"></pre>
+<pre data-code="android/key.properties" data-title="android/key.properties (ليس في Git)"></pre>
+<pre data-code="android/app/build.gradle.kts" data-from="signingConfigs {" data-to="^    }#2" data-title="android/app/build.gradle.kts (جزء)"></pre>
+
+<p>وعلى جهاز CI يأتي مخزن المفاتيح وكلمة مروره من مخزن الأسرار في نظام CI، ويُكتبان على الجهاز طوال المهمة ويختفيان حين تنتهي. (وملاحظة <code>keytool</code> عن JKS نصيحة حقيقية: PKCS12 هو الصيغة القياسية، والخطوات نفسها تعمل مع <code>-storetype PKCS12</code>.)</p>
+
+<h2>{{n}}.4 سكربت إصدار يقول لا</h2>
+
+<p>الإصدار المصنوع من حالة خاطئة أسوأ من لا إصدار: غير موقَّع، أو برقم بناء رآه المتجر من قبل، يفشل في الخطوة الأخيرة، ليلاً غالباً. والسكربت يفحص أولاً:</p>
+
+<pre data-code="tool/release.sh" data-title="tool/release.sh"></pre>
+<pre data-term="release-refused.sh"></pre>
+
+<p>بلا كلمة المرور في البيئة لا يُبنى شيء. ومعها:</p>
+
+<pre data-term="release.sh"></pre>
+
+<p>حزمة الإنتاج، بلا لاحقة، باسم «Bit Café»، والإصدار 1.4.0 برقم بناء 42، وموقَّعة بمفتاحنا لا بمفتاح التصحيح. ويُظهر المشروع {{n}}.3 الفحص الثاني وهو يرفض رقم بناء غير جديد.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>لماذا القيم الافتراضية في <code>AppConfig</code> هي قيم التطوير؟</li><li>ما الذي يسمح بتثبيت تطبيقَي dev وprod على الهاتف نفسه؟</li><li>من أين تأتي كلمة مرور التوقيع، على جهازك وعلى CI؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.5 CI: الفحوص نفسها، مع كل push</h2>
+
+<p><dfn>التكامل المستمر</dfn> (Continuous integration) يشغّل فحوص المشروع على جهاز نظيف مع كل push وطلب دمج، فيُكتشف الخطأ بعد دقائق من ارتكابه، بآلة، لا بعد أيام بزميل. والفحوص تعيش في سكربت داخل المستودع، فتكون واحدة في كل مكان:</p>
+
+<pre data-code="tool/ci.sh" data-title="tool/ci.sh"></pre>
+<pre data-term="ci.sh"></pre>
+
+<p>وسير العمل يجهّز جهازاً ويشغّل ذلك السكربت فقط:</p>
+
+<pre data-code=".github/workflows/ci.yml" data-title=".github/workflows/ci.yml"></pre>
+
+<p>التشغيل أعلاه هو السكربت على جهاز الكتاب؛ وGitHub يشغّل الأسطر نفسها على جهاز Linux خاص به مع كل push. وإبقاء المنطق في <code>tool/ci.sh</code> لا في ملف YAML يعني أنك تستطيع تشغيله قبل الـ push، وتغيير خدمة CI دون إعادة كتابة الفحوص.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>اجعل الفرع الرئيسي محمياً: لا دمج بلا تشغيل CI أخضر ومراجعة واحدة. وأبقِ الخط سريعاً (أقل من عشر دقائق) كي ينتظره الناس بدل أن يلتفوا عليه، واجعل البناء الأحمر على الفرع الرئيسي أول عمل للفريق في اليوم. فالخط الأحمر كثيراً يعلّم الجميع تجاهله.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>تغيير عناوين الخوادم باليد قبل الإصدار</td><td>نسخة اختبار تتحدث مع الإنتاج، أو العكس</td><td>ملفات إعدادات و<code>--dart-define-from-file</code></td></tr>
+<tr><td>الإنتاج قيمةً افتراضية</td><td>التجارب تصيب العملاء الحقيقيين</td><td>قيم افتراضية للتطوير</td></tr>
+<tr><td>معرّف تطبيق واحد لكل النسخ</td><td>المختبرون يفقدون تطبيق المتجر ليثبتوا نسخة اختبار</td><td>نكهات بلاحقات معرّف</td></tr>
+<tr><td>كلمات مرور في <code>key.properties</code> أو ملفات Gradle</td><td>مفتاح التوقيع على بُعد commit من التسرب</td><td>كلمات المرور من البيئة</td></tr>
+<tr><td>خطوات الإصدار من الذاكرة</td><td>نسخ غير موقَّعة، وأرقام بناء مكررة</td><td>سكربت إصدار يفحص أولاً</td></tr>
+<tr><td>منطق CI في ملف سير العمل فقط</td><td>فحوص لا تستطيع تشغيلها قبل الـ push</td><td>سكربت، يشغّله سير العمل</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>كل بيئة ملف إعدادات؛ والتطبيق يقرأ ثوابت وقت الترجمة من مكان واحد، بقيم افتراضية آمنة.</li>
+<li>النكهات تعطي كل بيئة معرّف تطبيق واسماً خاصين، تُثبَّت جنباً إلى جنب.</li>
+<li>نسخ الإصدار تُوقَّع بمفتاح تأتي كلمة مروره من البيئة، لا من ملف أبداً.</li>
+<li>سكربت الإصدار يفحص الحالة قبل البناء، ويرفض بوضوح.</li>
+<li>CI يشغّل سكربتاً من المستودع مع كل push؛ والسكربت نفسه يجري على جهازك.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. كي تتحدث النسخة المبنية بلا ملف إعدادات، من عضو جديد في الفريق أو بخيار منسي، مع خادم التطوير وتُظهر شريط DEV، لا مع الإنتاج مصادفة أبداً. 2. لكل نكهة معرّف تطبيق مختلف (<code>com.example.bit_app.dev</code> و<code>com.example.bit_app</code>)، وAndroid يعامل المعرّفات المختلفة تطبيقات مختلفة، ببياناتها وأيقوناتها الخاصة. 3. من متغير البيئة <code>STORE_PASSWORD</code>: على جهازك تضبطه في الطرفية للبناء؛ وعلى CI يأتي من مخزن الأسرار في نظام CI، طوال المهمة.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تحرس الإعدادات، وتضيف بيئة ثالثة، وتجعل سكربت الإصدار يرفض البناء المكرر.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>كل بيئة، بالمفاتيح نفسها</h3>
+<p class="project-goal">اختبار يقرأ كل ملف في <code>config/</code> ويفشل إن نقص أحدها مفتاحاً تملكه البقية، أو استخدم <code>http</code> الصريح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الملفات في الاختبارات، والمجموعات، ورسائل فشل تسمّي الملف.</p>
+<ol class="steps">
+<li>اعرض محتوى <code>config/</code> مرتباً، وحلّل كل ملف.</li>
+<li>تحقق أن كل عنوان خادم يبدأ بـ <code>https://</code>.</li>
+<li>قارن مفاتيح كل ملف بمفاتيح الملف الأول.</li>
+</ol>
+<pre data-code="test/config_files_test.dart" data-from="^void main" data-title="test/config_files_test.dart"></pre>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/config-files-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>نكهة staging</h3>
+<p class="project-goal">أضف بيئة staging: ملف إعداداتها، ونكهتها بمعرّفها واسمها، وبناءً يثبت ذلك.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نكهات Gradle، و<code>resValue</code>، وقراءة هوية ملف APK.</p>
+<ol class="steps">
+<li>اكتب <code>config/staging.json</code> بخادم staging.</li>
+<li>أضف نكهة <code>staging</code> باللاحقة <code>.staging</code> والاسم «Bit Café Staging».</li>
+<li>ابنها، واقرأ اسم الحزمة والتسمية من ملف APK.</li>
+</ol>
+<pre data-code="config/staging.json" data-title="config/staging.json"></pre>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/android-staging.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>لا رقم بناء مرتين</h3>
+<p class="project-goal">المتجر يرفض رفعاً رأى رقم بنائه من قبل. اجعل سكربت الإصدار يرفض أولاً، بتذكّر آخر رقم صدر والمقارنة به.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سكربتات shell تفشل مبكراً، وحالة تُحفظ بين الإصدارات.</p>
+<ol class="steps">
+<li>بعد بناء ناجح اكتب رقم البناء في <code>release/last_build_number</code>.</li>
+<li>قبل البناء ارفض أي رقم ليس أعلى.</li>
+<li>شغّل الإصدار مرتين بالرقم 42 وشاهد الثانية تُرفض.</li>
+</ol>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (الإصدار الثاني بالرقم 42):</p>
+<pre data-term="projects/release-again.sh"></pre>
+<p class="hint"><strong>تلميح:</strong> على CI يضيع الملف مع الجهاز. هناك استخدم رقماً لا يكبر إلا صعوداً، كرقم تشغيل CI أو <code>git rev-list --count HEAD</code>، واحفظ آخر رقم صدر حيث يراه الفريق: وسماً (tag)، أو المتجر نفسه.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف <code>SUPPORT_EMAIL</code> إلى الإعدادات. أي الملفات تتغير، وأي اختبار يفشل إن نسيت واحداً منها؟</li>
+<li><span class="level">سهل</span> لماذا إصدار نكهة staging هو <code>0.1.0-staging</code>، ومن أين تأتي اللاحقة؟</li>
+<li><span class="level">متوسط</span> أعطِ كل نكهة أيقونة تشغيل خاصة. أين تذهب الأيقونات، وكيف يختار Gradle؟</li>
+<li><span class="level">متوسط</span> وسّع سير عمل CI بحيث يبني push إلى وسم مثل <code>v1.4.0</code> نسخة الإصدار الموقَّعة. ماذا يجب أن يوفر نظام CI، وكيف تحصل عليه المهمة؟</li>
+<li><span class="level">تحدٍّ</span> تشغيل CI يأخذ تسع دقائق، معظمها في بناء Android. اقترح ثلاثة تغييرات تجعل طلبات الدمج أسرع دون فحص أقل.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>التطبيق مبني وموقَّع ومشحون. وما يحدث بعد ذلك يحدث على هواتف لن تراها: انهيارات، وشاشات بطيئة، وميزات لا يستخدمها أحد. والفصل القادم يعيد ذلك إليك، بتقارير الأعطال والتحليلات التي تحترم من يستخدمون التطبيق.</p>
+</div>
+</section>

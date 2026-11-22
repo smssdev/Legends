@@ -35,6 +35,12 @@
 @page ch13:first { @top-center { content: none; } }
 @page ch14 { @top-center { content: "Chapter 14: Security on the Device"; } }
 @page ch14:first { @top-center { content: none; } }
+@page ch15 { @top-center { content: "Chapter 15: CI/CD, Flavors and Signing"; } }
+@page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "Chapter 16: Crash Reporting and Analytics"; } }
+@page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "Chapter 17: Capstone: A Production App"; } }
+@page ch17:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -167,7 +173,7 @@ Widget build(context, ref) =&gt;
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p">167</span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p">184</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p">202</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p">219</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">234</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p">167</span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p">184</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p">202</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p">219</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p">234</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p">248</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p">261</span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">272</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -6544,6 +6550,1162 @@ other: refused (HandshakeException)
 <p>Keys that belong on a server, builds that must be signed, versions for testing and for the store: the next chapter automates all of it, with flavors, signing and a CI pipeline that builds every commit.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch15" data-chapter="15" data-code="b6/release/en">
+<div class="opener"><span class="opener-num">15</span><p class="chapter-kicker">Chapter 15</p><h1>CI/CD, Flavors and Signing</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>build one app for several environments from configuration files, not from edits to the code</li>
+<li>give each environment its own installable Android app with product flavors</li>
+<li>sign release builds with a key whose password never touches a file</li>
+<li>write a release script that refuses to build from an unsafe state</li>
+<li>run the same checks on every push with a CI workflow, and on your own machine before pushing</li>
+</ul>
+</div>
+
+<p class="lead">Book 5 ended with one app, signed once, by hand. A team needs more: a build that talks to the test server and one that talks to the real one, both installed on the same phone; a release that cannot be made from a forgotten change; and a machine that checks every push before a person reviews it. None of it is hard. All of it is easy to get subtly wrong, which is why it belongs in scripts.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every build in this chapter really ran: three flavors of the Android app, a signed release, two refusals by the release script, the CI script from start to finish, and the web app built twice from two configuration files.</p></div></div>
+
+<h2><span class="sec">15.1</span> <span>One app, several environments</span></h2>
+
+<p>The café has a development server, a staging server for the final checks, and the production server. The app must not decide which one to call by an <code>if</code> someone remembers to change; it reads it from the build. Each environment is a small JSON file:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">config/dev.json</div><pre class="code">{
+  <span class="s">&quot;FLAVOR&quot;</span>: <span class="s">&quot;dev&quot;</span>,
+  <span class="s">&quot;API_URL&quot;</span>: <span class="s">&quot;https://dev.api.bitcafe.online&quot;</span>,
+  <span class="s">&quot;SHOW_DEBUG&quot;</span>: <span class="k">true</span>
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">config/prod.json</div><pre class="code">{
+  <span class="s">&quot;FLAVOR&quot;</span>: <span class="s">&quot;prod&quot;</span>,
+  <span class="s">&quot;API_URL&quot;</span>: <span class="s">&quot;https://api.bitcafe.online&quot;</span>,
+  <span class="s">&quot;SHOW_DEBUG&quot;</span>: <span class="k">false</span>
+}</pre></div>
+
+<p><code>--dart-define-from-file</code> turns each key into a compile-time constant, which the app reads in one place:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/config.dart</div><pre class="code"><span class="c line-bidi">// Decided when the app is built, from a file per environment: nothing here is secret.</span>
+<span class="k">abstract</span> <span class="k">final</span> <span class="k">class</span> AppConfig {
+  <span class="k">static</span> <span class="k">const</span> flavor = <span class="k">String</span>.fromEnvironment(<span class="s">&#x27;FLAVOR&#x27;</span>, defaultValue: <span class="s">&#x27;dev&#x27;</span>);
+  <span class="k">static</span> <span class="k">const</span> apiUrl = <span class="k">String</span>.fromEnvironment(
+    <span class="s">&#x27;API_URL&#x27;</span>,
+    defaultValue: <span class="s">&#x27;http://localhost:8080&#x27;</span>,
+  );
+  <span class="k">static</span> <span class="k">const</span> showDebug = <span class="k">bool</span>.fromEnvironment(
+    <span class="s">&#x27;SHOW_DEBUG&#x27;</span>,
+    defaultValue: <span class="k">true</span>,
+  );
+
+  <span class="k">static</span> <span class="k">bool</span> <span class="k">get</span> isProduction =&gt; flavor == <span class="s">&#x27;prod&#x27;</span>;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/config_test.dart</span>
+00:00 +0: loading test/config_test.dart
+00:00 +0: the configuration this build was given
+flavor dev, server http://localhost:8080, debug tools true
+00:00 +1: All tests passed!</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test --dart-define-from-file=config/prod.json test/config_test.dart</span>
+00:00 +0: loading test/config_test.dart
+00:00 +0: the configuration this build was given
+flavor prod, server https://api.bitcafe.online, debug tools false
+00:00 +1: All tests passed!</pre></div>
+
+<p>The same test, given no file and then <code>config/prod.json</code>, prints two different apps. The defaults are the development ones, so that a build made without thinking cannot talk to production by accident. And, as Chapter 14 showed, these values are in the app for anyone to read: an address and a switch, never a secret.</p>
+
+<p>Every build that is not production says so:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/main_app.dart (part)</div><pre class="code">    <span class="k">return</span> AppConfig.isProduction
+        ? app
+        : Directionality(
+            textDirection: TextDirection.ltr,
+            child: Banner(
+              message: AppConfig.flavor.toUpperCase(),
+              location: BannerLocation.bottomEnd,
+              child: app,
+            ),
+          );
+  }</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-release-en-shots-dev.png" alt=""></div>
+<figcaption>Built with config/dev.json</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-release-en-shots-prod.png" alt=""></div>
+<figcaption>The same code, built with config/prod.json</figcaption>
+</figure>
+</div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The ribbon was first placed at the top end, as Flutter’s own debug banner is. In the Arabic build, the top end is where the page title sits, and the ribbon covered it. The bottom end is free in both directions. Check every corner you decorate in both languages.</p></aside>
+
+<h2><span class="sec">15.2</span> <span>Flavors: installable side by side</span></h2>
+
+<p>Testers want the development app and the store app on the same phone. Android tells apps apart by their application id, so each <dfn>flavor</dfn> gets its own id suffix and its own name:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">android/app/build.gradle.kts (part)</div><pre class="code">    flavorDimensions += &quot;environment&quot;
+    productFlavors {
+        create(&quot;dev&quot;) {
+            dimension = &quot;environment&quot;
+            applicationIdSuffix = &quot;.dev&quot;
+            versionNameSuffix = &quot;-dev&quot;
+            resValue(&quot;string&quot;, &quot;app_name&quot;, &quot;Bit Café Dev&quot;)
+        }
+        create(&quot;staging&quot;) {
+            dimension = &quot;environment&quot;
+            applicationIdSuffix = &quot;.staging&quot;
+            versionNameSuffix = &quot;-staging&quot;
+            resValue(&quot;string&quot;, &quot;app_name&quot;, &quot;Bit Café Staging&quot;)
+        }
+        create(&quot;prod&quot;) {
+            dimension = &quot;environment&quot;
+            resValue(&quot;string&quot;, &quot;app_name&quot;, &quot;Bit Café&quot;)
+        }
+    }</pre></div>
+
+<p>The manifest’s label becomes <code>@string/app_name</code>, so each flavor’s name appears under its icon. A build names the flavor and its configuration file together:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter build apk --debug --flavor dev --dart-define-from-file=config/dev.json -t lib/main_app.dart</span>
+✓ Built build/app/outputs/flutter-apk/app-dev-debug.apk
+<span class="c">$ </span><span class="k">aapt2 dump badging build/app/outputs/flutter-apk/app-dev-debug.apk | grep -E &quot;^package|^application-label:&quot;</span>
+package: name=&#x27;com.example.bit_app.dev&#x27; versionCode=&#x27;1&#x27; versionName=&#x27;0.1.0-dev&#x27; platformBuildVersionName=&#x27;16&#x27; platformBuildVersionCode=&#x27;36&#x27; compileSdkVersion=&#x27;36&#x27; compileSdkVersionCodename=&#x27;16&#x27;
+application-label:&#x27;Bit Café Dev&#x27;</pre></div>
+
+<p><code>com.example.bit_app.dev</code>, “Bit Café Dev”, version <code>0.1.0-dev</code>: a different app as far as the phone is concerned, with its own data, installable next to the real one. iOS does the same with schemes and build configurations in Xcode; the Dart side, <code>--flavor</code> and the configuration file, stays the same.</p>
+
+<h2><span class="sec">15.3</span> <span>Signing, without a password in any file</span></h2>
+
+<p>The release key is made once (Book 5, Chapter 15) and kept off the repository. The password is never written down in the project: it is taken from the environment when the build runs.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">keytool -genkeypair -keystore ~/keys/upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass:env STORE_PASSWORD -keypass:env STORE_PASSWORD -dname &#x27;CN=Bit Cafe, O=Bit Cafe, C=EG&#x27;</span>
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using &quot;keytool -importkeystore -srckeystore ~/keys/upload-keystore.jks -destkeystore ~/keys/upload-keystore.jks -deststoretype pkcs12&quot;.</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">android/key.properties (not in Git)</div><pre class="code">storeFile=~/keys/upload-keystore.jks
+keyAlias=upload</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">android/app/build.gradle.kts (part)</div><pre class="code">    signingConfigs {
+        create(&quot;release&quot;) {
+            val keyProperties = Properties()
+            keyProperties.load(FileInputStream(rootProject.file(&quot;key.properties&quot;)))
+            keyAlias = keyProperties.getProperty(&quot;keyAlias&quot;)
+            storeFile = file(keyProperties.getProperty(&quot;storeFile&quot;))
+            storePassword = System.getenv(&quot;STORE_PASSWORD&quot;)
+            keyPassword = System.getenv(&quot;STORE_PASSWORD&quot;)
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName(&quot;release&quot;)
+        }
+    }</pre></div>
+
+<p>On a CI machine, the keystore and its password come from the CI system’s secret store, written to the machine for the length of the job and gone when it ends. (<code>keytool</code>’s note about JKS is real advice: PKCS12 is the standard format, and the same steps work with <code>-storetype PKCS12</code>.)</p>
+
+<h2><span class="sec">15.4</span> <span>A release script that says no</span></h2>
+
+<p>A release made from the wrong state is worse than no release: unsigned, or with a build number that the store has already seen, it fails at the last step, often at night. The script checks first:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tool/release.sh</div><pre class="code"><span class="c line-bidi">#!/bin/sh</span>
+<span class="c line-bidi"># A release build only from a safe state: signing password present, build number higher than the last.</span>
+set -e
+BUILD_NUMBER=${1:?usage: tool/release.sh BUILD_NUMBER}
+if [ -z &quot;$STORE_PASSWORD&quot; ]; then
+  echo &quot;refusing: STORE_PASSWORD is not set, the build could not be signed&quot; &gt;&amp;2
+  exit 1
+fi
+LAST=$(cat release/last_build_number 2&gt;/dev/null || echo 0)
+if [ &quot;$BUILD_NUMBER&quot; -le &quot;$LAST&quot; ]; then
+  echo &quot;refusing: build $BUILD_NUMBER is not higher than the last release, $LAST&quot; &gt;&amp;2
+  exit 1
+fi
+flutter build apk --release --flavor prod --dart-define-from-file=config/prod.json \
+  -t lib/main_app.dart --build-name=1.4.0 --build-number=&quot;$BUILD_NUMBER&quot;
+mkdir -p release
+echo &quot;$BUILD_NUMBER&quot; &gt; release/last_build_number</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh tool/release.sh 42</span>
+refusing: STORE_PASSWORD is not set, the build could not be signed</pre></div>
+
+<p>Without the password in the environment, nothing is built. With it:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh tool/release.sh 42</span>
+✓ Built build/app/outputs/flutter-apk/app-prod-release.apk (44.1MB)
+<span class="c">$ </span><span class="k">aapt2 dump badging build/app/outputs/flutter-apk/app-prod-release.apk | grep -E &quot;^package|^application-label:&quot;</span>
+package: name=&#x27;com.example.bit_app&#x27; versionCode=&#x27;42&#x27; versionName=&#x27;1.4.0&#x27; platformBuildVersionName=&#x27;16&#x27; platformBuildVersionCode=&#x27;36&#x27; compileSdkVersion=&#x27;36&#x27; compileSdkVersionCodename=&#x27;16&#x27;
+application-label:&#x27;Bit Café&#x27;
+<span class="c">$ </span><span class="k">apksigner verify --print-certs build/app/outputs/flutter-apk/app-prod-release.apk | grep DN</span>
+Signer #1 certificate DN: CN=Bit Cafe, O=Bit Cafe, C=EG</pre></div>
+
+<p>The production package, without a suffix, named “Bit Café”, version 1.4.0 with build number 42, and signed by our key, not the debug key. Project 15.3 shows the second check refusing a build number that is not new.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why are the defaults in <code>AppConfig</code> the development values?</li><li>What lets the dev and prod apps be installed on the same phone?</li><li>Where does the signing password come from, on your machine and on CI?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">15.5</span> <span>CI: the same checks, on every push</span></h2>
+
+<p><dfn>Continuous integration</dfn> runs the project’s checks on a clean machine for every push and pull request, so a mistake is found minutes after it is made, by a machine, not days later by a colleague. The checks live in a script in the repository, so they are the same everywhere:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tool/ci.sh</div><pre class="code"><span class="c line-bidi">#!/bin/sh</span>
+<span class="c line-bidi"># What CI runs on every push, and what you can run before pushing: stop at the first failure.</span>
+set -e
+echo &quot;== format&quot;
+dart format --output=none --set-exit-if-changed lib test
+echo &quot;== analyze&quot;
+flutter analyze
+echo &quot;== test&quot;
+flutter test
+echo &quot;== build&quot;
+flutter build web --release --dart-define-from-file=config/prod.json -t lib/main_app.dart</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh tool/ci.sh</span>
+== format
+== analyze
+No issues found! (ran in 1.2s)
+== test
+00:00 +2: All tests passed!
+== build
+✓ Built build/web</pre></div>
+
+<p>The workflow only prepares a machine and runs that script:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.github/workflows/ci.yml</div><pre class="code"># On every push and pull request, on a fresh Linux machine: the same script as on your computer.
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.50.1
+          cache: true
+      - run: flutter pub get
+      - run: sh tool/ci.sh</pre></div>
+
+<p>The run above is the script on the book’s machine; GitHub runs the same lines on its own Linux machine for every push. Keeping the logic in <code>tool/ci.sh</code> and not in the YAML file means you can run it before you push, and change CI services without rewriting the checks.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Make the main branch protected: no merge without a green CI run and one review. Keep the pipeline fast (under ten minutes) so that people wait for it instead of working around it, and treat a red build on the main branch as the team’s first job of the day. A pipeline that is often red teaches everyone to ignore it.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Server addresses changed by hand before a release</td><td>A test build that talks to production, or the reverse</td><td>Configuration files and <code>--dart-define-from-file</code></td></tr>
+<tr><td>Production as the default</td><td>Experiments hit real customers</td><td>Development defaults</td></tr>
+<tr><td>One application id for every build</td><td>Testers lose the store app to install a test one</td><td>Flavors with id suffixes</td></tr>
+<tr><td>Passwords in <code>key.properties</code> or Gradle files</td><td>The signing key one commit away from leaking</td><td>Passwords from the environment</td></tr>
+<tr><td>Release steps from memory</td><td>Unsigned builds, repeated build numbers</td><td>A release script that checks first</td></tr>
+<tr><td>CI logic in the workflow file only</td><td>Checks you cannot run before pushing</td><td>A script, run by the workflow</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Each environment is a configuration file; the app reads compile-time constants from one place, with safe defaults.</li>
+<li>Product flavors give each environment its own application id and name, installable side by side.</li>
+<li>Release builds are signed with a key whose password comes from the environment, never from a file.</li>
+<li>A release script checks the state before building, and refuses clearly.</li>
+<li>CI runs a script from the repository on every push; the same script runs on your machine.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that a build made without a configuration file, by a new team member or a forgotten flag, talks to the development server and shows the DEV ribbon, never to production by accident. 2. Each flavor has a different application id (<code>com.example.bit_app.dev</code> and <code>com.example.bit_app</code>), and Android treats different ids as different apps, with their own data and icons. 3. From the environment variable <code>STORE_PASSWORD</code>: on your machine you set it in the shell for the build; on CI it comes from the CI system’s secret store, for the length of the job.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects guard the configuration, add a third environment, and make the release script refuse a repeated build.</p>
+
+<div class="project">
+<p class="project-label">Project 15.1 · Easy</p>
+<h3>Every environment, the same keys</h3>
+<p class="project-goal">A test that reads every file in <code>config/</code> and fails if one of them is missing a key the others have, or uses plain <code>http</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading files in tests, sets, and failure messages that name the file.</p>
+<ol class="steps">
+<li>List <code>config/</code>, sorted, and decode each file.</li>
+<li>Check that every server address starts with <code>https://</code>.</li>
+<li>Compare each file’s keys with the first file’s.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/config_files_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  test(<span class="s">&#x27;every environment defines the same keys&#x27;</span>, () {
+    <span class="k">final</span> files = Directory(<span class="s">&#x27;config&#x27;</span>).listSync().whereType&lt;File&gt;().toList()
+      ..sort((a, b) =&gt; a.path.compareTo(b.path));
+    <span class="k">final</span> keys = &lt;<span class="k">String</span>, <span class="k">Set</span>&lt;<span class="k">String</span>&gt;&gt;{};
+    <span class="k">for</span> (<span class="k">final</span> file <span class="k">in</span> files) {
+      <span class="k">final</span> config =
+          jsonDecode(file.readAsStringSync()) <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt;;
+      keys[file.path] = config.keys.toSet();
+      expect(
+        (config[<span class="s">&#x27;API_URL&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>).startsWith(<span class="s">&#x27;https://&#x27;</span>),
+        isTrue,
+        reason: <span class="s">&#x27;${file.path} must use https&#x27;</span>,
+      );
+      debugPrint(
+        <span class="s">&#x27;${file.path.padRight(22)} ${config[&#x27;</span>FLAVOR<span class="s">&#x27;]}  ${config[&#x27;</span>API_URL<span class="s">&#x27;]}&#x27;</span>,
+      );
+    }
+    <span class="k">final</span> first = keys.values.first;
+    <span class="k">for</span> (<span class="k">final</span> MapEntry(key: path, value: names) <span class="k">in</span> keys.entries) {
+      expect(names, first, reason: <span class="s">&#x27;$path defines different keys&#x27;</span>);
+    }
+  });
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/config_files_test.dart</span>
+00:00 +0: loading test/config_files_test.dart
+00:00 +0: every environment defines the same keys
+config/dev.json        dev  https://dev.api.bitcafe.online
+config/prod.json       prod  https://api.bitcafe.online
+config/staging.json    staging  https://staging.api.bitcafe.online
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 15.2 · Medium</p>
+<h3>A staging flavor</h3>
+<p class="project-goal">Add the staging environment: its configuration file, its flavor with its own id and name, and a build that proves it.</p>
+<p class="project-skills"><strong>You will practise:</strong> Gradle product flavors, <code>resValue</code>, and reading an APK’s identity.</p>
+<ol class="steps">
+<li>Write <code>config/staging.json</code> with the staging server.</li>
+<li>Add a <code>staging</code> flavor with the suffix <code>.staging</code> and the name “Bit Café Staging”.</li>
+<li>Build it, and read the package name and label from the APK.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">config/staging.json</div><pre class="code">{
+  <span class="s">&quot;FLAVOR&quot;</span>: <span class="s">&quot;staging&quot;</span>,
+  <span class="s">&quot;API_URL&quot;</span>: <span class="s">&quot;https://staging.api.bitcafe.online&quot;</span>,
+  <span class="s">&quot;SHOW_DEBUG&quot;</span>: <span class="k">true</span>
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter build apk --debug --flavor staging --dart-define-from-file=config/staging.json -t lib/main_app.dart</span>
+✓ Built build/app/outputs/flutter-apk/app-staging-debug.apk
+<span class="c">$ </span><span class="k">aapt2 dump badging build/app/outputs/flutter-apk/app-staging-debug.apk | grep -E &quot;^package|^application-label:&quot;</span>
+package: name=&#x27;com.example.bit_app.staging&#x27; versionCode=&#x27;1&#x27; versionName=&#x27;0.1.0-staging&#x27; platformBuildVersionName=&#x27;16&#x27; platformBuildVersionCode=&#x27;36&#x27; compileSdkVersion=&#x27;36&#x27; compileSdkVersionCodename=&#x27;16&#x27;
+application-label:&#x27;Bit Café Staging&#x27;</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 15.3 · Challenge</p>
+<h3>Never the same build number twice</h3>
+<p class="project-goal">The store refuses an upload whose build number it has seen. Make the release script refuse first, by remembering the last released number and comparing.</p>
+<p class="project-skills"><strong>You will practise:</strong> shell scripts that fail early, and state kept between releases.</p>
+<ol class="steps">
+<li>After a successful build, write the build number to <code>release/last_build_number</code>.</li>
+<li>Before building, refuse any number that is not higher.</li>
+<li>Run the release twice with 42 and see the second refused.</li>
+</ol>
+<p><strong>Your result should look like this</strong> (the second release with 42):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh tool/release.sh 42</span>
+refusing: build 42 is not higher than the last release, 42</pre></div>
+<p class="hint"><strong>Hint:</strong> on CI the file would be lost with the machine. There, use a number that only grows, such as the CI run number or <code>git rev-list --count HEAD</code>, and keep the last released number where the team can see it: a tag, or the store itself.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>SUPPORT_EMAIL</code> to the configuration. Which files change, and which test fails if you forget one of them?</li>
+<li><span class="level">Easy</span> Why is the staging flavor’s version <code>0.1.0-staging</code>, and where does the suffix come from?</li>
+<li><span class="level medium">Medium</span> Give each flavor its own launcher icon. Where do the icons go, and how does Gradle choose?</li>
+<li><span class="level medium">Medium</span> Extend the CI workflow so that a push to a tag like <code>v1.4.0</code> builds the signed release. What must the CI system provide, and how does the job get it?</li>
+<li><span class="level hard">Challenge</span> The CI run takes nine minutes, mostly in the Android build. Propose three changes that make pull requests faster without checking less.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 16</p>
+<p>The app is built, signed and shipped. What happens next happens on phones you will never see: crashes, slow screens, and features nobody uses. The next chapter brings that back to you, with crash reporting and analytics that respect the people using the app.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b6/observability/en">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">Chapter 16</p><h1>Crash Reporting and Analytics</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>catch every error an app can raise, from build methods to forgotten futures</li>
+<li>send useful crash reports: what, where, which version, and what came before, without user data</li>
+<li>show people a calm screen instead of a broken one</li>
+<li>turn an obfuscated release stack trace back into file names and line numbers</li>
+<li>collect analytics only with consent, in batches, and measure crash-free sessions</li>
+</ul>
+</div>
+
+<p class="lead">Before the release, you see every error in your terminal. After it, errors happen on thousands of phones you will never hold, and the only report you get, unless you build one, is a one-star review that says “it crashes”. This chapter builds the reporting itself, without an outside service, so that every part is visible. Services such as Sentry and Firebase Crashlytics do the same things at scale, and the ideas carry over unchanged.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Two things in this chapter went wrong the first time, and both are kept: the friendly error screen came out in red, underlined text, and Flutter’s own symbolizer could not read a Linux crash that a newer tool decoded at once. Sections 16.2 and 16.4 show both.</p></div></div>
+
+<h2><span class="sec">16.1</span> <span>Every error, in one place</span></h2>
+
+<p>Errors reach a Flutter app by two doors. Errors in building, laying out and painting widgets go to <code>FlutterError.onError</code>. Everything else that nobody caught, in a <code>Future</code>, a timer, or platform code, goes to <code>PlatformDispatcher.instance.onError</code>. A small class sends both to one method:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/observe/crashes.dart (part)</div><pre class="code">  <span class="k">void</span> install() {
+    <span class="c line-bidi">// Errors in build, layout and paint: Flutter reports them here.</span>
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      record(
+        details.exception,
+        details.stack ?? StackTrace.current,
+        fatal: <span class="k">false</span>,
+      );
+    };
+    <span class="c line-bidi">// Errors no one caught, in futures, timers and platform code.</span>
+    PlatformDispatcher.instance.onError = (error, stack) {
+      record(error, stack, fatal: <span class="k">true</span>);
+      <span class="k">return</span> <span class="k">true</span>;
+    };
+  }</pre></div>
+
+<p>A test raises one error through each door, after recording two steps the user took:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/capture_test.dart</span>
+00:00 +0: loading test/capture_test.dart
+00:00 +0: errors from build and from async code are both recorded
+non-fatal StateError: Bad state: No element
+fatal     FormatException: FormatException: Unexpected character
+breadcrumbs: [open menu, open specials]
+00:00 +1: All tests passed!</pre></div>
+
+<p>A build error is non-fatal: Flutter replaces the broken widget and the app goes on. An uncaught error in async code has left something unfinished, so it is reported as fatal. The <dfn>breadcrumbs</dfn>, the last few things the user did, travel with every report; they are often the quickest way from “a <code>StateError</code> in the specials page” to “it happens when the specials list is empty”.</p>
+
+<h2><span class="sec">16.2</span> <span>A calm screen instead of a broken one</span></h2>
+
+<p>In debug builds, a broken widget shows the famous red screen. In release builds, it shows a grey box, which looks like the app froze. <code>ErrorWidget.builder</code> replaces it with something a customer can understand:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/specials_app.dart (part)</div><pre class="code"><span class="k">class</span> FriendlyError <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> FriendlyError({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="c line-bidi">// It replaces the whole broken page, so it brings its own Material for text styles.</span>
+    <span class="k">return</span> Material(
+      child: Center(
+        child: Padding(
+          padding: <span class="k">const</span> EdgeInsets.all(<span class="n">24</span>),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: <span class="n">12</span>,
+            children: [
+              <span class="k">const</span> Icon(Icons.sentiment_dissatisfied, size: <span class="n">64</span>),
+              Text(
+                <span class="s">&#x27;Something went wrong on this screen.&#x27;</span>,
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              <span class="k">const</span> Text(
+                <span class="s">&#x27;We have been told, and you can go back.&#x27;</span>,
+                textAlign: TextAlign.center,
+              ),
+              FilledButton(
+                onPressed: () =&gt; Navigator.of(context).maybePop(),
+                child: <span class="k">const</span> Text(<span class="s">&#x27;Back&#x27;</span>),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-observability-en-shots-menu.png" alt=""></div>
+<figcaption>The menu; the specials page is broken</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-observability-en-shots-friendly.png" alt=""></div>
+<figcaption>The release build shows a calm screen, and the error is reported</figcaption>
+</figure>
+</div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The first version of this screen drew its second line in large red letters with two yellow underlines. That is Flutter’s style for text with no <code>Material</code> above it, and an error widget has none: it replaces the entire broken page, <code>Scaffold</code> included. Wrapping it in its own <code>Material</code> fixed it. Test your error screen in a release build, the only place customers see it.</p></aside>
+
+<h2><span class="sec">16.3</span> <span>Sending a report</span></h2>
+
+<p>A report is a small JSON document. It says what happened and where, the app version and platform, and the breadcrumbs, and nothing about the person: no name, no email, no order contents. The error message itself can contain user data, so in a real app it goes through the redactor of Chapter 14 first.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/observe/crashes.dart (part)</div><pre class="code">  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; record(<span class="k">Object</span> error, StackTrace stack, {<span class="k">required</span> <span class="k">bool</span> fatal}) =&gt;
+      sink.send({
+        <span class="s">&#x27;type&#x27;</span>: error.runtimeType.toString(),
+        <span class="s">&#x27;message&#x27;</span>: error.toString(),
+        <span class="s">&#x27;fatal&#x27;</span>: fatal,
+        <span class="s">&#x27;version&#x27;</span>: appVersion,
+        <span class="s">&#x27;platform&#x27;</span>: platform,
+        <span class="s">&#x27;breadcrumbs&#x27;</span>: breadcrumbs.items,
+        <span class="s">&#x27;stack&#x27;</span>: stack.toString().split(<span class="s">&#x27;\n&#x27;</span>).take(<span class="n">8</span>).toList(),
+      });</pre></div>
+
+<p>A test starts a real HTTP server, causes a real error, records it, and prints what the server received:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/server_test.dart</span>
+00:00 +0: loading test/server_test.dart
+00:00 +0: a report reaches the server
+{
+  &quot;type&quot;: &quot;StateError&quot;,
+  &quot;message&quot;: &quot;Bad state: No element&quot;,
+  &quot;fatal&quot;: false,
+  &quot;version&quot;: &quot;1.4.0+42&quot;,
+  &quot;platform&quot;: &quot;linux&quot;,
+  &quot;breadcrumbs&quot;: [
+    &quot;open specials&quot;
+  ],
+  &quot;stack&quot;: [
+    &quot;#0      List.first (dart:core-patch/growable_array.dart:352:5)&quot;,
+    &quot;#1      main.&lt;anonymous closure&gt; (file://test/server_test.dart:26:18)&quot;
+  ]
+}
+00:00 +1: All tests passed!</pre></div>
+
+<p>In production, the server stores reports, groups them by error type and top stack frame, and counts how many users each group affects, which is what tells you which crash to fix first.</p>
+
+<h2><span class="sec">16.4</span> <span>Reading an obfuscated stack trace</span></h2>
+
+<p>Chapter 15’s release builds use <code>--obfuscate</code>, which renames everything. A crash in such a build tells you nothing until it is translated back with the symbols saved at build time. To show it for real, a small app crashes on purpose a second after it starts:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/crash_app.dart (part)</div><pre class="code"><span class="k">class</span> Order {
+  Order(<span class="k">this</span>.items);
+
+  <span class="k">factory</span> Order.fromJson(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt; json) =&gt;
+      Order((json[<span class="s">&#x27;items&#x27;</span>]! <span class="k">as</span> <span class="k">List</span>).cast&lt;<span class="k">String</span>&gt;());
+
+  <span class="k">final</span> <span class="k">List</span>&lt;<span class="k">String</span>&gt; items;
+}
+
+<span class="k">int</span> total(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt; json) =&gt; Order.fromJson(json).items.length * <span class="n">45</span>;
+
+<span class="c line-bidi">// The release app below crashes on purpose a second after it starts.</span>
+<span class="k">void</span> main() {
+  PlatformDispatcher.instance.onError = (error, stack) {
+    stdout.writeln(<span class="s">&#x27;crash: $error&#x27;</span>);
+    stdout.writeln(stack);
+    exit(<span class="n">1</span>);
+  };
+  runApp(
+    <span class="k">const</span> MaterialApp(
+      home: Scaffold(body: Center(child: Text(<span class="s">&#x27;Bit Café&#x27;</span>))),
+    ),
+  );
+  Timer(<span class="k">const</span> Duration(seconds: <span class="n">1</span>), () =&gt; total({<span class="s">&#x27;customer&#x27;</span>: <span class="s">&#x27;Layla&#x27;</span>}));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter build linux --release --obfuscate --split-debug-info=build/symbols -t lib/crash_app.dart</span>
+✓ Built build/linux/x64/release/bundle/bit_app
+<span class="c">$ </span><span class="k">ls build/symbols</span>
+app.linux-x64.symbols</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">build/linux/x64/release/bundle/bit_app &gt; crash.txt 2&gt;/dev/null; cat crash.txt</span>
+crash: Null check operator used on a null value
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+pid: 31689, tid: 140066282179392, name io.flutter.ui
+os: linux arch: x64 comp: no sim: no
+build_id: &#x27;49da3cbf4c5e4c216b483b3b31889a38&#x27;
+isolate_dso_base: 7f639c179000, vm_dso_base: 0
+isolate_instructions: 7f639c23d000, vm_instructions: 0
+    #00 abs 00007f639c3b8917 virt 000000000023f917 _kDartSnapshotText+0x17b917
+    #01 abs 00007f639c3b87da virt 000000000023f7da _kDartSnapshotText+0x17b7da
+    #02 abs 00007f639c3b879d virt 000000000023f79d _kDartSnapshotText+0x17b79d
+    #03 abs 00007f639c2595c2 virt 00000000000e05c2 _kDartSnapshotText+0x1c5c2
+    #04 abs 00007f639c3be44a virt 000000000024544a _kDartSnapshotText+0x18144a
+    #05 abs 00007f639c2581a5 virt 00000000000df1a5 _kDartSnapshotText+0x1b1a5
+    #06 abs 00007f639c25812e virt 00000000000df12e _kDartSnapshotText+0x1b12e
+    #07 abs 00007f639c3e5adc virt 000000000026cadc _kDartSnapshotText+0x1a8adc
+    #08 abs 00007f639c3ba5cf virt 00000000002415cf _kDartSnapshotText+0x17d5cf</pre></div>
+
+<p>Only addresses. The symbols file, kept on the build machine and never shipped, can translate them. Flutter’s own command, on this Linux build, could not:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter symbolize -i crash.txt -d build/symbols/app.linux-x64.symbols</span>
+crash: Null check operator used on a null value
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+pid: 31689, tid: 140066282179392, name io.flutter.ui
+os: linux arch: x64 comp: no sim: no
+build_id: &#x27;49da3cbf4c5e4c216b483b3b31889a38&#x27;
+isolate_dso_base: 7f639c179000, vm_dso_base: 0
+isolate_instructions: 7f639c23d000, vm_instructions: 0
+Failed to symbolize stack trace:
+ Cannot locate isolate instructions section in snapshot</pre></div>
+
+<p>The <code>native_stack_traces</code> package, from the Dart team and the same code <code>flutter symbolize</code> is built on, in its newest version, decoded the same file at once:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">dart pub global activate native_stack_traces</span>
+Activated native_stack_traces 0.7.1.
+<span class="c">$ </span><span class="k">dart pub global run native_stack_traces:decode translate -d build/symbols/app.linux-x64.symbols -i crash.txt | grep &#x27;^#&#x27; | head -3</span>
+<span class="c line-bidi">#0      new Order.fromJson (lib/crash_app.dart:11:27)</span>
+<span class="c line-bidi">#1      total (lib/crash_app.dart:16:47)</span>
+<span class="c line-bidi">#2      main.&lt;anonymous closure&gt; (lib/crash_app.dart:30:43)</span></pre></div>
+
+<p>Now the trace says what happened: <code>Order.fromJson</code>, line 11, called from <code>total</code>, called from the timer in <code>main</code>. The order had no <code>items</code>.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Keep the symbols of every release you ship, labelled with its version and build id, for as long as that version is in use. A crash report from an old version without its symbols is a list of numbers forever. Crash services take care of this when you upload the symbols as part of the release script.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which errors reach <code>FlutterError.onError</code>, and which reach <code>PlatformDispatcher.instance.onError</code>?</li><li>Why did the first error screen draw red, underlined text?</li><li>What do you need, besides the stack trace, to read a crash from an obfuscated build?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">16.5</span> <span>Analytics, with consent</span></h2>
+
+<p>Crash reports tell you what broke; analytics tell you what people do: which screens they open, where they give up, which features nobody finds. They are also the part of an app most likely to break the trust of the people using it. Three rules keep them honest: ask before collecting anything, collect events and not people, and send them in batches so that measuring does not cost the user battery and data. The projects build all three, and use the reports to measure the number that matters most after a release: the share of sessions without a crash.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Only <code>FlutterError.onError</code></td><td>Async crashes never reported</td><td>Also <code>PlatformDispatcher.instance.onError</code></td></tr>
+<tr><td>The grey box in release</td><td>The app looks frozen</td><td><code>ErrorWidget.builder</code>, with its own <code>Material</code></td></tr>
+<tr><td>User data in reports</td><td>A privacy problem in every crash</td><td>Versions, types and breadcrumbs only; redact messages</td></tr>
+<tr><td>Losing the symbols</td><td>Release crashes that cannot be read</td><td>Keep symbols per release, upload them</td></tr>
+<tr><td>Analytics before consent</td><td>Broken trust, and broken laws in many countries</td><td>Nothing collected until the user agrees</td></tr>
+<tr><td>One request per event</td><td>Battery and data spent on measuring</td><td>Batches, by count or by time</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Two handlers catch everything: <code>FlutterError.onError</code> for widget errors, <code>PlatformDispatcher.instance.onError</code> for the rest.</li>
+<li>Reports carry the error, the version, the platform and breadcrumbs, never user data.</li>
+<li>A custom <code>ErrorWidget.builder</code> replaces the release grey box with a calm screen.</li>
+<li>Obfuscated traces are translated with the symbols kept from the build.</li>
+<li>Analytics wait for consent, travel in batches, and the crash-free rate per version decides when a release is healthy.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Errors thrown while building, laying out or painting widgets are reported by the framework to <code>FlutterError.onError</code>; errors that nothing caught elsewhere, in futures, timers, streams or platform callbacks, reach <code>PlatformDispatcher.instance.onError</code>. 2. Because the error widget replaces the whole broken page, so there was no <code>Material</code> above its text to give it a style, and Flutter draws unstyled text in red with yellow underlines to make the mistake visible. 3. The symbols file saved by <code>--split-debug-info</code> for that exact build (matched by its build id), and a tool to translate the addresses: <code>flutter symbolize</code> or the <code>native_stack_traces</code> decoder.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects build analytics that respect consent and battery, and turn reports into the one number a release is judged by.</p>
+
+<div class="project">
+<p class="project-label">Project 16.1 · Easy</p>
+<h3>No consent, no events</h3>
+<p class="project-goal">Events logged before consent are not kept; events after it are; and when consent is withdrawn, everything still queued is dropped.</p>
+<p class="project-skills"><strong>You will practise:</strong> state that gates behaviour, and tests that check what was <em>not</em> sent.</p>
+<ol class="steps">
+<li>Ignore <code>log</code> while there is no consent.</li>
+<li>On withdrawal, clear the queue and cancel the timer.</li>
+<li>Log before, during and after consent, flush, and print what was sent.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/observe/analytics.dart (part)</div><pre class="code">  <span class="k">void</span> setConsent(<span class="k">bool</span> granted) {
+    _consent = granted;
+    <span class="k">if</span> (!granted) {
+      _queue.clear();
+      _timer?.cancel();
+    }
+  }
+
+  <span class="k">void</span> log(<span class="k">String</span> name, [<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt; params = <span class="k">const</span> {}]) {
+    <span class="k">if</span> (!_consent) {
+      <span class="k">return</span>;
+    }
+    _queue.add({<span class="s">&#x27;name&#x27;</span>: name, ...params});
+    <span class="c line-bidi">// Events travel in batches: fewer requests, less battery.</span>
+    <span class="k">if</span> (_queue.length &gt;= batchSize) {
+      flush();
+    } <span class="k">else</span> {
+      _timer ??= Timer(every, flush);
+    }
+  }</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/consent_test.dart</span>
+00:00 +0: loading test/consent_test.dart
+00:00 +0: no consent, no events
+batches sent: [[{name: open_menu}, {name: add_to_order, drink: latte}]]
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> “open_specials” was logged with consent but never sent: it was still in the queue when consent was withdrawn. That is the right outcome; “no” applies to what has not left the phone yet.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 16.2 · Medium</p>
+<h3>Batches by count or by time</h3>
+<p class="project-goal">Send events ten at a time, and send whatever is left after thirty seconds, so that a quiet session still reports.</p>
+<p class="project-skills"><strong>You will practise:</strong> timers, <code>fakeAsync</code>, and flushing.</p>
+<ol class="steps">
+<li>Flush when the queue reaches the batch size.</li>
+<li>Otherwise start a timer on the first queued event, and flush when it fires.</li>
+<li>Log 23 events and move a fake clock 29, then 30 seconds.</li>
+</ol>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/batch_test.dart</span>
+00:00 +0: loading test/batch_test.dart
+00:00 +0: ten events, or thirty seconds, whichever comes first
+after 23 events:    batches of [10, 10]
+after 29 seconds:   batches of [10, 10]
+after 30 seconds:   batches of [10, 10, 3]
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 16.3 · Challenge</p>
+<h3>Crash-free sessions per version</h3>
+<p class="project-goal">From session records (version, crashed or not), compute the share of sessions without a crash for each version, and decide whether the new release is healthy.</p>
+<p class="project-skills"><strong>You will practise:</strong> aggregation with maps, and reading a metric.</p>
+<ol class="steps">
+<li>Count sessions and clean sessions per version.</li>
+<li>Return the percentage for each version.</li>
+<li>Feed it 1,000 sessions of 1.3.0 and 400 of 1.4.0, with different crash rates, and compare.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/observe/rates.dart (part)</div><pre class="code"><span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">double</span>&gt; crashFreeRate(Iterable&lt;Session&gt; sessions) {
+  <span class="k">final</span> total = &lt;<span class="k">String</span>, <span class="k">int</span>&gt;{};
+  <span class="k">final</span> clean = &lt;<span class="k">String</span>, <span class="k">int</span>&gt;{};
+  <span class="k">for</span> (<span class="k">final</span> session <span class="k">in</span> sessions) {
+    total.update(session.version, (n) =&gt; n + <span class="n">1</span>, ifAbsent: () =&gt; <span class="n">1</span>);
+    <span class="k">if</span> (!session.crashed) {
+      clean.update(session.version, (n) =&gt; n + <span class="n">1</span>, ifAbsent: () =&gt; <span class="n">1</span>);
+    }
+  }
+  <span class="k">return</span> {
+    <span class="k">for</span> (<span class="k">final</span> MapEntry(key: version, value: n) <span class="k">in</span> total.entries)
+      version: <span class="n">100</span> * (clean[version] ?? <span class="n">0</span>) / n,
+  };
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/rates_test.dart</span>
+00:00 +0: loading test/rates_test.dart
+00:00 +0: crash-free sessions per version
+1.3.0  99.2% of sessions without a crash
+1.4.0  95.0% of sessions without a crash
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> 95% sounds good and is not: one session in twenty ends in a crash. Teams commonly aim for 99.5% or better, and stop a staged rollout when a new version falls clearly below the previous one. Look at sessions, not users: one unlucky user with many crashes and many happy users can hide each other in a per-user number.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add the screen’s route name to the breadcrumbs automatically, for every navigation. Which Flutter class lets you observe navigation?</li>
+<li><span class="level">Easy</span> The report includes the first eight lines of the stack. Why not the whole stack, and why not just one line?</li>
+<li><span class="level medium">Medium</span> A crash happens while the phone is offline, and the app is killed. How can the report still reach the server?</li>
+<li><span class="level medium">Medium</span> Two crashes have different messages (“order 41 has no items”, “order 42 has no items”) but the same cause. How should the server group them?</li>
+<li><span class="level hard">Challenge</span> Design the events that would tell you where customers give up between opening the menu and paying. Which events, which parameters, and which ones must you avoid?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 17</p>
+<p>Seventeen chapters of parts. The last chapter puts them together: one café app, built with the architecture, state, navigation, offline data, design system, tests, accessibility, notifications, security, CI and reporting of this book.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b6/capstone/en">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">Chapter 17</p><h1>Capstone: A Production App</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>see one app built with the architecture, state, navigation and data layers of this book</li>
+<li>follow a customer from the menu to an order that is ready, in tests at every level</li>
+<li>check the whole app for accessibility, dark mode and large text</li>
+<li>run the release pipeline: format, analysis, tests with coverage, and a production build</li>
+<li>extend the app the way a team would: favorites, robustness checks, an offline outbox</li>
+</ul>
+</div>
+
+<p class="lead">Each chapter so far built one part, on its own, so that it could be seen clearly. A real app is all of them at once, and most of the skill of a senior engineer is in how they fit: which layer knows what, where a rule lives, what a test proves. This chapter builds Bit Café, a small ordering app, from the parts of the book, and runs everything a team would run before shipping it.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Everything in this chapter ran on the book’s machine: seven test files, the Linux integration test, the CI script and the web build behind the screenshots. And, fittingly for a last chapter, the screenshots caught a bug that every test had passed. Section 17.5 shows it.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>The map</span></h2>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">find lib -name &#x27;*.dart&#x27; | sort | grep -v gallery</span>
+lib/cafe_app.dart
+lib/config.dart
+lib/data/cafe_api.dart
+lib/data/menu_repository.dart
+lib/data/models.dart
+lib/data/outbox.dart
+lib/design/tokens.dart
+lib/features/cart/cart_page.dart
+lib/features/menu/menu_page.dart
+lib/features/orders/order_page.dart
+lib/main_cafe.dart
+lib/observe/crashes.dart
+lib/router.dart
+lib/state/favorites.dart
+lib/state/providers.dart</pre></div>
+
+<table>
+<thead><tr><th>Where</th><th>What it does</th><th>From chapter</th></tr></thead>
+<tbody>
+<tr><td><code>features/</code></td><td>One folder per feature: its pages and nothing else</td><td>2</td></tr>
+<tr><td><code>state/</code></td><td>Providers: the cart, the menu, orders, favorites</td><td>3</td></tr>
+<tr><td><code>router.dart</code></td><td>Three pages and a deep link to an order</td><td>4, 12</td></tr>
+<tr><td><code>data/</code></td><td>The API behind an interface, the cached menu, the outbox</td><td>5, 6</td></tr>
+<tr><td><code>design/</code></td><td>Spaces and corners as tokens</td><td>7</td></tr>
+<tr><td><code>config.dart</code></td><td>The environment, from the build</td><td>15</td></tr>
+<tr><td><code>observe/</code></td><td>Every error reported</td><td>16</td></tr>
+</tbody>
+</table>
+
+<p>The rule that holds it together is the one from Chapter 2: dependencies point inward. Pages know providers; providers know the data layer’s interfaces; nothing in <code>data/</code> knows about widgets. That is what lets every layer be tested without the ones above it.</p>
+
+<h2><span class="sec">17.2</span> <span>Data</span></h2>
+
+<p>The app talks to the café through one interface. The demo app gives it an implementation that answers from memory, the tests give it a fake, and production gives it the HTTP client:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/data/cafe_api.dart (part)</div><pre class="code"><span class="k">abstract</span> <span class="k">interface</span> <span class="k">class</span> CafeApi {
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Drink&gt;&gt; menu();
+  <span class="k">Future</span>&lt;Order&gt; place(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt; lines);
+  <span class="k">Future</span>&lt;Order&gt; order(<span class="k">String</span> id);
+}</pre></div>
+
+<p>The menu shows the saved copy at once and the fresh one when it arrives, so a café with weak Wi-Fi still opens instantly:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/data/menu_repository.dart (part)</div><pre class="code">  <span class="k">Stream</span>&lt;(<span class="k">List</span>&lt;Drink&gt;, {<span class="k">bool</span> fresh})&gt; watch() <span class="k">async</span>* {
+    <span class="k">final</span> saved = <span class="k">await</span> prefs.getString(<span class="s">&#x27;menu&#x27;</span>);
+    <span class="k">if</span> (saved != <span class="k">null</span>) {
+      <span class="k">yield</span> (
+        [
+          <span class="k">for</span> (<span class="k">final</span> item <span class="k">in</span> jsonDecode(saved) <span class="k">as</span> <span class="k">List</span>)
+            Drink.fromJson(item <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt;),
+        ],
+        fresh: <span class="k">false</span>,
+      );
+    }
+    <span class="k">final</span> menu = <span class="k">await</span> api.menu();
+    <span class="k">await</span> prefs.setString(
+      <span class="s">&#x27;menu&#x27;</span>,
+      jsonEncode([<span class="k">for</span> (<span class="k">final</span> drink <span class="k">in</span> menu) drink.toJson()]),
+    );
+    <span class="k">yield</span> (menu, fresh: <span class="k">true</span>);
+  }</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/menu_cache_test.dart</span>
+00:00 +0: loading test/menu_cache_test.dart
+00:00 +0: the saved menu first, then the fresh one
+first launch:  [2 drinks, fresh: true]
+second launch: [2 drinks, fresh: false, 2 drinks, fresh: true]
+00:00 +1: All tests passed!</pre></div>
+
+<h2><span class="sec">17.3</span> <span>State</span></h2>
+
+<p>The cart is plain state in a <code>Notifier</code>: a map from drink to count, replaced, never changed in place, so that every widget watching it rebuilds exactly when it should.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/state/providers.dart (part)</div><pre class="code"><span class="k">class</span> Cart <span class="k">extends</span> Notifier&lt;<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt;&gt; {
+  @override
+  <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt; build() =&gt; {};
+
+  <span class="k">void</span> add(<span class="k">String</span> id) =&gt; state = {...state, id: (state[id] ?? <span class="n">0</span>) + <span class="n">1</span>};
+
+  <span class="k">void</span> remove(<span class="k">String</span> id) {
+    <span class="k">final</span> count = (state[id] ?? <span class="n">0</span>) - <span class="n">1</span>;
+    state = {
+      <span class="k">for</span> (<span class="k">final</span> MapEntry(:key, :value) <span class="k">in</span> state.entries)
+        <span class="k">if</span> (key != id) key: value,
+      <span class="k">if</span> (count &gt; <span class="n">0</span>) id: count,
+    };
+  }
+
+  <span class="k">void</span> clear() =&gt; state = {};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/cart_test.dart</span>
+00:00 +0: loading test/cart_test.dart
+00:00 +0: the cart adds, removes and totals
+00:00 +1: All tests passed!</pre></div>
+
+<h2><span class="sec">17.4</span> <span>Screens</span></h2>
+
+<p>The menu page uses what the book taught about lists, motion and accessibility: rows built lazily, a badge that moves only when the person allows motion, and buttons named after what they do and to which drink.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/menu/menu_page.dart (part)</div><pre class="code">      body: <span class="k">switch</span> (menu) {
+        AsyncData(value: (<span class="k">final</span> drinks, fresh: _)) =&gt; ListView.builder(
+          <span class="c line-bidi">// Only the rows on screen are built (Chapter 9).</span>
+          itemCount: drinks.length,
+          itemBuilder: (context, i) {
+            <span class="k">final</span> drink = drinks[i];
+            <span class="k">return</span> ListTile(
+              contentPadding: <span class="k">const</span> EdgeInsets.symmetric(
+                horizontal: Space.m,
+                vertical: Space.s,
+              ),
+              title: Text(drink.name),
+              subtitle: Text(<span class="s">&#x27;${drink.about}\n${drink.price} EGP&#x27;</span>),
+              isThreeLine: <span class="k">true</span>,
+              trailing: IconButton.filled(
+                tooltip: <span class="s">&#x27;Add ${drink.name}&#x27;</span>,
+                onPressed: () =&gt; ref.read(cartProvider.notifier).add(drink.id),
+                <span class="c line-bidi">// Inside a ListTile, the tile&#x27;s icon colour wins over the button&#x27;s: say it explicitly.</span>
+                icon: Icon(
+                  Icons.add,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+            );
+          },
+        ),
+        AsyncError() =&gt; Center(</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-capstone-en-shots-menu.png" alt=""></div>
+<figcaption>The menu</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-capstone-en-shots-cart.png" alt=""></div>
+<figcaption>The order, with its total</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-capstone-en-shots-order.png" alt=""></div>
+<figcaption>The order being prepared</figcaption>
+</figure>
+</div>
+
+<h2><span class="sec">17.5</span> <span>Tests at every level</span></h2>
+
+<p>The main journey, from the menu to a placed order, is a widget test with the fake API: fast, and run on every push.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/journey_test.dart (part)</div><pre class="code">  testWidgets(<span class="s">&#x27;from the menu to an order that is ready&#x27;</span>, (tester) <span class="k">async</span> {
+    <span class="k">final</span> api = FakeApi();
+    <span class="k">await</span> tester.pumpWidget(
+      cafe(
+        overrides: [
+          apiProvider.overrideWithValue(api),
+          prefsProvider.overrideWithValue(memoryPrefs()),
+        ],
+      ),
+    );
+    <span class="k">await</span> tester.pumpAndSettle();
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Add Latte&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Add Latte&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Add Cherry cake&#x27;</span>));
+    <span class="k">await</span> tester.tap(find.byTooltip(<span class="s">&#x27;Open your order&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;Total: 145 EGP&#x27;</span>), findsOneWidget);
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;Place order&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(<span class="s">&#x27;Order 41&#x27;</span>), findsOneWidget);
+    expect(api.placed.single, {<span class="s">&#x27;latte&#x27;</span>: <span class="n">2</span>, <span class="s">&#x27;cake&#x27;</span>: <span class="n">1</span>});
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/journey_test.dart</span>
+00:00 +0: loading test/journey_test.dart
+00:00 +0: from the menu to an order that is ready
+00:01 +1: All tests passed!</pre></div>
+
+<p>The same journey runs as the real app on Linux, with the demo API and real time, until the order is ready:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test integration_test/journey_test.dart -d linux</span>
+00:00 +0: loading integration_test/journey_test.dart
+Building Linux application...                                   
+✓ Built build/linux/x64/debug/bundle/bit_app
+00:00 +0: from the menu to an order that is ready
+order 41: ready after a pull to refresh
+00:06 +1: (tearDownAll)
+00:06 +1: All tests passed!</pre></div>
+
+<p>And the menu and cart pages pass Flutter’s accessibility guidelines:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/a11y_test.dart</span>
+00:00 +0: loading test/a11y_test.dart
+00:00 +0: the main screens meet the accessibility guidelines
+menu: labels, tap targets and contrast pass
+cart: labels, tap targets and contrast pass
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>All of those tests passed on the first run, and the first screenshot of the menu still showed a bug: the plus on each “Add” button was drawn dark grey on brown, barely visible. A <code>ListTile</code> gives its trailing widget the tile’s icon colour, and that won over the filled button’s own. No test looked at that colour: the contrast guideline checks text, not icons. Giving the icon <code>onPrimary</code> explicitly fixed it. Tests prove what you thought to check; looking at the real screen, in both themes and both languages, catches what you did not.</p></aside>
+
+<h2><span class="sec">17.6</span> <span>Ship it</span></h2>
+
+<p>The entry point installs crash reporting before anything else can fail, then starts the app with its real dependencies:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/main_cafe.dart (part)</div><pre class="code"><span class="k">void</span> main() {
+  Crashes((report) =&gt; debugPrint(<span class="s">&#x27;report: $report&#x27;</span>)).install();
+  runApp(cafe());
+}</pre></div>
+
+<p>Before a release, the same script CI runs on every push: formatting, analysis, every test with coverage, and the production build.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh tool/ci.sh</span>
+== format
+== analyze
+No issues found! (ran in 0.9s)
+== test
+00:07 +7: All tests passed!
+== build
+✓ Built build/web</pre></div>
+
+<p>From here, Chapter 15’s flavors and signing turn the build into store packages, Chapter 12’s push source replaces the demo’s, and Chapter 14’s token store holds the session. Each is a file added to the map above, not a change to what is already there. That is the payoff of the structure: a feature is a new folder; a new service is a new implementation of an interface.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Write down the decisions that shaped the app, in a short file next to the code: why Riverpod, why this folder structure, why the menu is cached, why notifications ask after the first order. A new team member reads the code to learn what it does and the decision record to learn why, and the why is what stops the next refactor from undoing a choice that was made for a reason.</p></aside>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>One app, built in layers: features, state, data behind interfaces, design tokens, configuration, reporting.</li>
+<li>Dependencies point inward, so every layer is tested without the ones above it.</li>
+<li>The main journey runs as a fast widget test on every push and as the real app in an integration test.</li>
+<li>Accessibility, dark mode and large text are checked by tests; the screen itself is still checked by eye.</li>
+<li>One script, run by CI and by you, decides whether the app is ready to ship.</li>
+</ul>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects extend Bit Café the way a team would, each change in its own place and with its own test.</p>
+
+<div class="project">
+<p class="project-label">Project 17.1 · Easy</p>
+<h3>Favorites that survive a restart</h3>
+<p class="project-goal">Customers save their favorite drinks; the list is still there when the app starts again.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>AsyncNotifier</code>, persistence through the existing preferences provider, and tests across two containers.</p>
+<ol class="steps">
+<li>Load the saved list in <code>build</code>; toggle by writing the new list, then updating the state.</li>
+<li>In a test, toggle three times in one container, then read the favorites from a new container over the same storage.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/state/favorites.dart (part)</div><pre class="code">  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; toggle(<span class="k">String</span> id) <span class="k">async</span> {
+    <span class="k">final</span> current = <span class="k">await</span> future;
+    <span class="k">final</span> next = current.contains(id)
+        ? ({...current}..remove(id))
+        : {...current, id};
+    <span class="k">await</span> ref
+        .read(prefsProvider)
+        .setStringList(<span class="s">&#x27;favorites&#x27;</span>, next.toList()..sort());
+    state = AsyncData(next);
+  }</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/favorites_test.dart</span>
+00:00 +0: loading test/favorites_test.dart
+00:00 +0: favorites are remembered
+after a restart: {cake}
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 17.2 · Medium</p>
+<h3>Every screen, in the hardest conditions</h3>
+<p class="project-goal">Walk through every screen with the dark theme, text at 200% and a small phone, and fail on any overflow.</p>
+<p class="project-skills"><strong>You will practise:</strong> test values for the platform (text scale, brightness), view sizes, and <code>takeException</code>.</p>
+<ol class="steps">
+<li>Set the view to 360 × 640, the text scale to 2 and the brightness to dark, and reset them after the test.</li>
+<li>Visit the menu, the cart and the order, checking for exceptions on each.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/robust_test.dart (part)</div><pre class="code">    tester.view.physicalSize = <span class="k">const</span> Size(<span class="n">1080</span>, <span class="n">1920</span>);
+    tester.view.devicePixelRatio = <span class="n">3</span>;
+    tester.platformDispatcher.textScaleFactorTestValue = <span class="n">2</span>;
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearAllTestValues);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/robust_test.dart</span>
+00:00 +0: loading test/robust_test.dart
+00:00 +0: every screen, dark and at 200% text, without overflow
+dark theme, text at 200%, 360 x 640: menu, cart, order without overflow
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 17.3 · Challenge</p>
+<h3>Orders placed offline</h3>
+<p class="project-goal">When the network is down, the order is kept in an outbox and sent when it returns, once.</p>
+<p class="project-skills"><strong>You will practise:</strong> network failures as data, persistence, and idempotent retries.</p>
+<ol class="steps">
+<li>On <code>SocketException</code>, append the order to a list in the preferences and return <code>null</code>.</li>
+<li><code>flush</code> sends the waiting orders in order and keeps those that still fail.</li>
+<li>Test offline, back online, and a second flush that sends nothing.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/data/outbox.dart (part)</div><pre class="code">  <span class="k">Future</span>&lt;Order?&gt; place(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt; lines) <span class="k">async</span> {
+    <span class="k">try</span> {
+      <span class="k">return</span> <span class="k">await</span> api.place(lines);
+    } <span class="k">on</span> SocketException {
+      <span class="k">final</span> waiting = <span class="k">await</span> prefs.getStringList(<span class="s">&#x27;outbox&#x27;</span>) ?? [];
+      <span class="k">await</span> prefs.setStringList(<span class="s">&#x27;outbox&#x27;</span>, [...waiting, jsonEncode(lines)]);
+      <span class="k">return</span> <span class="k">null</span>;
+    }
+  }</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/outbox_test.dart</span>
+00:00 +0: loading test/outbox_test.dart
+00:00 +0: an order placed offline is sent when the network returns
+offline: order queued, sent to the server: 0
+back online: 1 sent, server received [{latte: 1}]
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> a real server should also accept an id chosen by the app for each order, so that an order sent twice (the request arrived, the answer was lost) is recognized and not prepared twice. That is the idempotency of Chapter 6, applied to money and coffee.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Show a heart on each menu row for favorites. Which files change, and which test would you add?</li>
+<li><span class="level">Easy</span> Where would you put a rule that a cart may not hold more than ten of one drink, and why there?</li>
+<li><span class="level medium">Medium</span> Replace <code>DemoApi</code> with an HTTP implementation using the pinned client of Chapter 14. What changes outside <code>data/</code>?</li>
+<li><span class="level medium">Medium</span> Open the order page from a push notification for order 41 (Chapter 12). What is already in place, and what must be added?</li>
+<li><span class="level hard">Challenge</span> Write the decision record for this app: five decisions, each with the alternative you did not choose and why.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You have built every part of a production Flutter app and put them together. The next step is not another book: it is a real app, with real users, shipped and then improved, release after release. Keep the habits of these chapters (pass in what you depend on, measure before you optimize, test what matters, look at the real screen) and the code will stay something a team is glad to work on.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -6699,6 +7861,36 @@ other: refused (HandshakeException)
 <li>On Android, <code>FLAG_SECURE</code> on the window blocks screenshots and screen recording and hides the screen in the recent-apps list (set from Kotlin, or with a plugin, only on that page). iOS has no equivalent block; the app can detect a screenshot after it happened, or blur its content when the app moves to the background. Neither stops a second phone pointed at the screen: the real protection is that the code is single-use and checked on the server.</li>
 <li>A certificate changes at every renewal; its key pair can stay the same if the server team renews with the same key. Pinning the hash of the <em>public key</em> (the SubjectPublicKeyInfo, SHA-256, base64) then survives renewals. Get it with <code>openssl x509 -in cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64</code>, and in Dart, compare it in <code>HttpClient.badCertificateCallback</code> or a custom check on <code>connectionInfo</code>, while keeping normal validation on.</li>
 <li>A root or jailbreak check is a speed bump: it stops casual users of rooted phones and makes automated abuse a little more work, but the attacker controls the phone and can patch the check out of the app. Payments must be protected where the attacker has no control: the payment provider’s own SDK and server, server-side verification of every transaction, and, where available, platform attestation (Play Integrity, App Attest) whose verdict your server checks, not the app.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 15</h2>
+<ol class="exercises">
+<li>Every file in <code>config/</code> gets the key, and <code>lib/config.dart</code> gets a <code>String.fromEnvironment('SUPPORT_EMAIL', defaultValue: …)</code>. If one file is forgotten, Project 15.1’s test fails with a message naming that file, because its keys differ from the others.</li>
+<li>Because the flavor sets <code>versionNameSuffix = "-staging"</code>, which Gradle appends to the version name from <code>pubspec.yaml</code> (0.1.0). It shows in Settings and in crash reports, so nobody mistakes a staging build for a release.</li>
+<li>Put each flavor’s icons in its own source set, <code>android/app/src/dev/res/mipmap-*</code> and <code>android/app/src/staging/res/mipmap-*</code>, with the same file names as in <code>src/main/res</code>. Gradle merges the source sets and the flavor’s resources win over <code>main</code>’s; the prod flavor uses <code>main</code>’s icons. <code>flutter_launcher_icons</code> can generate them per flavor from a configuration file for each one.</li>
+<li>Add a second job, or a workflow, with <code>on: push: tags: ['v*']</code>, that runs <code>tool/release.sh</code>. The CI system must hold the keystore (base64-encoded) and its password as encrypted secrets; the job decodes the keystore to a temporary file, writes <code>key.properties</code> pointing to it, sets <code>STORE_PASSWORD</code> from the secret for that step only, and uses the run number as the build number. Nothing is committed, and everything disappears with the machine.</li>
+<li>Cache the pub and Gradle downloads between runs; run the analyzer and tests, which take a minute, on every pull request, and build the Android app only on the main branch and on tags (or only when <code>android/</code> or the dependencies change); and split the work into parallel jobs (checks, web build, Android build) so the total time is the longest job, not the sum. None of these checks less: the Android build still runs before every release.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 16</h2>
+<ol class="exercises">
+<li>A <code>NavigatorObserver</code>: give <code>MaterialApp</code> (or the router) an observer whose <code>didPush</code>, <code>didPop</code> and <code>didReplace</code> add <code>route.settings.name</code> to the breadcrumbs. With go_router, pass it in the router’s <code>observers</code>, and name your routes so the breadcrumbs read as words, not as anonymous routes.</li>
+<li>One line is usually the framework method that threw (<code>List.first</code>), which says nothing about your code; the useful frames are a few lines below. The whole stack of a Flutter error can be a hundred framework frames, most of them identical between reports, which costs data and storage for nothing. Eight lines usually reach the app’s own frames; a crash service keeps the whole stack because it stores it compactly and groups by it.</li>
+<li>Write the report to a file before anything else, synchronously if the error is fatal, and send queued files on the next launch, deleting each one when the server accepts it. The sending is the same <code>ReportSink</code>, reading from a small queue on disk, as the offline outbox of Chapter 6.</li>
+<li>By the error type and the top frames of the stack that belong to the app (here <code>Order.fromJson</code>, <code>total</code>), not by the message. Messages contain data that changes between occurrences; the place in the code does not. That grouping is also why reports keep the stack in a stable form.</li>
+<li>One event per step of the funnel, with the same names on every platform: <code>menu_opened</code>, <code>item_added</code> (with the item’s category and the cart size, not the customer), <code>checkout_started</code>, <code>payment_failed</code> (with the error code), <code>order_placed</code> (with the number of items and a price bucket). The drop between two steps shows where people give up. Avoid anything that identifies a person: names, emails, phone numbers, exact addresses or locations, free-text notes, and order or payment ids that can be joined with other data.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 17</h2>
+<ol class="exercises">
+<li>The menu page watches <code>favoritesProvider</code> and shows an <code>IconButton</code> with a filled or empty heart, a tooltip “Save Latte” or “Unsave Latte”, and <code>toggle</code> on press; nothing in <code>data/</code> changes. Add a widget test: tap the heart for Latte, expect the filled heart and the provider’s set to contain <code>latte</code>, and run the accessibility test again, since a new button is a new tap target.</li>
+<li>In the <code>Cart</code> notifier’s <code>add</code>, because the cart is the one place every way of adding passes through: the menu button, a “repeat last order” button, a deep link. A rule in a page is a rule only for that page. If the limit is a business rule, the server checks it too, and the app’s check is the friendly early warning.</li>
+<li>Only <code>data/</code> and the place where dependencies are chosen: a new <code>HttpCafeApi implements CafeApi</code> using <code>pinnedClient(...)</code> and <code>AppConfig.apiUrl</code>, and <code>apiProvider</code> returning it in <code>main_cafe.dart</code> (or the provider’s default). Pages, providers and tests do not change; the tests keep using the fake. That is the point of the interface.</li>
+<li>Already in place: the route <code>/orders/:id</code>, the order page and its provider. To add: a <code>PushSource</code> (Chapter 12) provided at the top of the app, listening to the opened and initial messages and calling <code>router.go(message.route)</code>, with the message parsing and checking of Chapter 12; and the router created where that listener can reach it, as in <code>_CafeAppState</code>.</li>
+<li>For example: Riverpod rather than <code>setState</code> everywhere (shared state across pages, testable without widgets); features in folders rather than layers at the top (a feature’s files stay together); a cached menu rather than always loading (the café’s Wi-Fi is weak); configuration files rather than code edits per environment (no accidental production builds); asking for notifications after the first order rather than at launch (people refuse what they do not understand). For each, the record names the alternative, the reason, and the date, so it can be revisited when the reason changes.</li>
 </ol>
 
 </section>

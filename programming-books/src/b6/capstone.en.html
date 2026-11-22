@@ -1,0 +1,182 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/capstone/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Capstone: A Production App</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>see one app built with the architecture, state, navigation and data layers of this book</li>
+<li>follow a customer from the menu to an order that is ready, in tests at every level</li>
+<li>check the whole app for accessibility, dark mode and large text</li>
+<li>run the release pipeline: format, analysis, tests with coverage, and a production build</li>
+<li>extend the app the way a team would: favorites, robustness checks, an offline outbox</li>
+</ul>
+</div>
+
+<p class="lead">Each chapter so far built one part, on its own, so that it could be seen clearly. A real app is all of them at once, and most of the skill of a senior engineer is in how they fit: which layer knows what, where a rule lives, what a test proves. This chapter builds Bit Café, a small ordering app, from the parts of the book, and runs everything a team would run before shipping it.</p>
+
+<aside class="bit" data-mood="wow"><p>Everything in this chapter ran on the book’s machine: seven test files, the Linux integration test, the CI script and the web build behind the screenshots. And, fittingly for a last chapter, the screenshots caught a bug that every test had passed. Section {{n}}.5 shows it.</p></aside>
+
+<h2>{{n}}.1 The map</h2>
+
+<pre data-term="tree.sh"></pre>
+
+<table>
+<thead><tr><th>Where</th><th>What it does</th><th>From chapter</th></tr></thead>
+<tbody>
+<tr><td><code>features/</code></td><td>One folder per feature: its pages and nothing else</td><td>2</td></tr>
+<tr><td><code>state/</code></td><td>Providers: the cart, the menu, orders, favorites</td><td>3</td></tr>
+<tr><td><code>router.dart</code></td><td>Three pages and a deep link to an order</td><td>4, 12</td></tr>
+<tr><td><code>data/</code></td><td>The API behind an interface, the cached menu, the outbox</td><td>5, 6</td></tr>
+<tr><td><code>design/</code></td><td>Spaces and corners as tokens</td><td>7</td></tr>
+<tr><td><code>config.dart</code></td><td>The environment, from the build</td><td>15</td></tr>
+<tr><td><code>observe/</code></td><td>Every error reported</td><td>16</td></tr>
+</tbody>
+</table>
+
+<p>The rule that holds it together is the one from Chapter 2: dependencies point inward. Pages know providers; providers know the data layer’s interfaces; nothing in <code>data/</code> knows about widgets. That is what lets every layer be tested without the ones above it.</p>
+
+<h2>{{n}}.2 Data</h2>
+
+<p>The app talks to the café through one interface. The demo app gives it an implementation that answers from memory, the tests give it a fake, and production gives it the HTTP client:</p>
+
+<pre data-code="lib/data/cafe_api.dart" data-from="^abstract interface" data-to="^}" data-title="lib/data/cafe_api.dart (part)"></pre>
+
+<p>The menu shows the saved copy at once and the fresh one when it arrives, so a café with weak Wi-Fi still opens instantly:</p>
+
+<pre data-code="lib/data/menu_repository.dart" data-from="  Stream&lt;" data-to="^  }" data-title="lib/data/menu_repository.dart (part)"></pre>
+<pre data-term="cache-test.sh"></pre>
+
+<h2>{{n}}.3 State</h2>
+
+<p>The cart is plain state in a <code>Notifier</code>: a map from drink to count, replaced, never changed in place, so that every widget watching it rebuilds exactly when it should.</p>
+
+<pre data-code="lib/state/providers.dart" data-from="^class Cart" data-to="^}" data-title="lib/state/providers.dart (part)"></pre>
+<pre data-term="cart-test.sh"></pre>
+
+<h2>{{n}}.4 Screens</h2>
+
+<p>The menu page uses what the book taught about lists, motion and accessibility: rows built lazily, a badge that moves only when the person allows motion, and buttons named after what they do and to which drink.</p>
+
+<pre data-code="lib/features/menu/menu_page.dart" data-from="      body: switch (menu)" data-to="        AsyncError()" data-title="lib/features/menu/menu_page.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>The menu</figcaption>
+</figure>
+<figure data-img="shots/cart.png" data-frame="phone">
+<figcaption>The order, with its total</figcaption>
+</figure>
+<figure data-img="shots/order.png" data-frame="phone">
+<figcaption>The order being prepared</figcaption>
+</figure>
+</div>
+
+<h2>{{n}}.5 Tests at every level</h2>
+
+<p>The main journey, from the menu to a placed order, is a widget test with the fake API: fast, and run on every push.</p>
+
+<pre data-code="test/journey_test.dart" data-from="testWidgets(" data-to="^  });" data-title="test/journey_test.dart (part)"></pre>
+<pre data-term="journey-test.sh"></pre>
+
+<p>The same journey runs as the real app on Linux, with the demo API and real time, until the order is ready:</p>
+
+<pre data-term="integration-test.sh"></pre>
+
+<p>And the menu and cart pages pass Flutter’s accessibility guidelines:</p>
+
+<pre data-term="a11y-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>All of those tests passed on the first run, and the first screenshot of the menu still showed a bug: the plus on each “Add” button was drawn dark grey on brown, barely visible. A <code>ListTile</code> gives its trailing widget the tile’s icon colour, and that won over the filled button’s own. No test looked at that colour: the contrast guideline checks text, not icons. Giving the icon <code>onPrimary</code> explicitly fixed it. Tests prove what you thought to check; looking at the real screen, in both themes and both languages, catches what you did not.</p></aside>
+
+<h2>{{n}}.6 Ship it</h2>
+
+<p>The entry point installs crash reporting before anything else can fail, then starts the app with its real dependencies:</p>
+
+<pre data-code="lib/main_cafe.dart" data-from="^void main" data-title="lib/main_cafe.dart (part)"></pre>
+
+<p>Before a release, the same script CI runs on every push: formatting, analysis, every test with coverage, and the production build.</p>
+
+<pre data-term="ci.sh"></pre>
+
+<p>From here, Chapter 15’s flavors and signing turn the build into store packages, Chapter 12’s push source replaces the demo’s, and Chapter 14’s token store holds the session. Each is a file added to the map above, not a change to what is already there. That is the payoff of the structure: a feature is a new folder; a new service is a new implementation of an interface.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Write down the decisions that shaped the app, in a short file next to the code: why Riverpod, why this folder structure, why the menu is cached, why notifications ask after the first order. A new team member reads the code to learn what it does and the decision record to learn why, and the why is what stops the next refactor from undoing a choice that was made for a reason.</p></aside>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>One app, built in layers: features, state, data behind interfaces, design tokens, configuration, reporting.</li>
+<li>Dependencies point inward, so every layer is tested without the ones above it.</li>
+<li>The main journey runs as a fast widget test on every push and as the real app in an integration test.</li>
+<li>Accessibility, dark mode and large text are checked by tests; the screen itself is still checked by eye.</li>
+<li>One script, run by CI and by you, decides whether the app is ready to ship.</li>
+</ul>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects extend Bit Café the way a team would, each change in its own place and with its own test.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Favorites that survive a restart</h3>
+<p class="project-goal">Customers save their favorite drinks; the list is still there when the app starts again.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>AsyncNotifier</code>, persistence through the existing preferences provider, and tests across two containers.</p>
+<ol class="steps">
+<li>Load the saved list in <code>build</code>; toggle by writing the new list, then updating the state.</li>
+<li>In a test, toggle three times in one container, then read the favorites from a new container over the same storage.</li>
+</ol>
+<pre data-code="lib/state/favorites.dart" data-from="  Future&lt;void&gt; toggle" data-to="^  }" data-title="lib/state/favorites.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/favorites-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Every screen, in the hardest conditions</h3>
+<p class="project-goal">Walk through every screen with the dark theme, text at 200% and a small phone, and fail on any overflow.</p>
+<p class="project-skills"><strong>You will practise:</strong> test values for the platform (text scale, brightness), view sizes, and <code>takeException</code>.</p>
+<ol class="steps">
+<li>Set the view to 360 × 640, the text scale to 2 and the brightness to dark, and reset them after the test.</li>
+<li>Visit the menu, the cart and the order, checking for exceptions on each.</li>
+</ol>
+<pre data-code="test/robust_test.dart" data-from="tester.view.physicalSize" data-to="addTearDown(tester.platformDispatcher" data-title="test/robust_test.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/robust-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Orders placed offline</h3>
+<p class="project-goal">When the network is down, the order is kept in an outbox and sent when it returns, once.</p>
+<p class="project-skills"><strong>You will practise:</strong> network failures as data, persistence, and idempotent retries.</p>
+<ol class="steps">
+<li>On <code>SocketException</code>, append the order to a list in the preferences and return <code>null</code>.</li>
+<li><code>flush</code> sends the waiting orders in order and keeps those that still fail.</li>
+<li>Test offline, back online, and a second flush that sends nothing.</li>
+</ol>
+<pre data-code="lib/data/outbox.dart" data-from="  Future&lt;Order?&gt; place" data-to="^  }" data-title="lib/data/outbox.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/outbox-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> a real server should also accept an id chosen by the app for each order, so that an order sent twice (the request arrived, the answer was lost) is recognized and not prepared twice. That is the idempotency of Chapter 6, applied to money and coffee.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Show a heart on each menu row for favorites. Which files change, and which test would you add?</li>
+<li><span class="level">Easy</span> Where would you put a rule that a cart may not hold more than ten of one drink, and why there?</li>
+<li><span class="level">Medium</span> Replace <code>DemoApi</code> with an HTTP implementation using the pinned client of Chapter 14. What changes outside <code>data/</code>?</li>
+<li><span class="level">Medium</span> Open the order page from a push notification for order 41 (Chapter 12). What is already in place, and what must be added?</li>
+<li><span class="level">Challenge</span> Write the decision record for this app: five decisions, each with the alternative you did not choose and why.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You have built every part of a production Flutter app and put them together. The next step is not another book: it is a real app, with real users, shipped and then improved, release after release. Keep the habits of these chapters (pass in what you depend on, measure before you optimize, test what matters, look at the real screen) and the code will stay something a team is glad to work on.</p>
+</div>
+</section>

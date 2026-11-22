@@ -1,0 +1,181 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/observability/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Crash Reporting and Analytics</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>catch every error an app can raise, from build methods to forgotten futures</li>
+<li>send useful crash reports: what, where, which version, and what came before, without user data</li>
+<li>show people a calm screen instead of a broken one</li>
+<li>turn an obfuscated release stack trace back into file names and line numbers</li>
+<li>collect analytics only with consent, in batches, and measure crash-free sessions</li>
+</ul>
+</div>
+
+<p class="lead">Before the release, you see every error in your terminal. After it, errors happen on thousands of phones you will never hold, and the only report you get, unless you build one, is a one-star review that says “it crashes”. This chapter builds the reporting itself, without an outside service, so that every part is visible. Services such as Sentry and Firebase Crashlytics do the same things at scale, and the ideas carry over unchanged.</p>
+
+<aside class="bit" data-mood="wow"><p>Two things in this chapter went wrong the first time, and both are kept: the friendly error screen came out in red, underlined text, and Flutter’s own symbolizer could not read a Linux crash that a newer tool decoded at once. Sections {{n}}.2 and {{n}}.4 show both.</p></aside>
+
+<h2>{{n}}.1 Every error, in one place</h2>
+
+<p>Errors reach a Flutter app by two doors. Errors in building, laying out and painting widgets go to <code>FlutterError.onError</code>. Everything else that nobody caught, in a <code>Future</code>, a timer, or platform code, goes to <code>PlatformDispatcher.instance.onError</code>. A small class sends both to one method:</p>
+
+<pre data-code="lib/observe/crashes.dart" data-from="  void install()" data-to="^  }" data-title="lib/observe/crashes.dart (part)"></pre>
+
+<p>A test raises one error through each door, after recording two steps the user took:</p>
+
+<pre data-term="capture-test.sh"></pre>
+
+<p>A build error is non-fatal: Flutter replaces the broken widget and the app goes on. An uncaught error in async code has left something unfinished, so it is reported as fatal. The <dfn>breadcrumbs</dfn>, the last few things the user did, travel with every report; they are often the quickest way from “a <code>StateError</code> in the specials page” to “it happens when the specials list is empty”.</p>
+
+<h2>{{n}}.2 A calm screen instead of a broken one</h2>
+
+<p>In debug builds, a broken widget shows the famous red screen. In release builds, it shows a grey box, which looks like the app froze. <code>ErrorWidget.builder</code> replaces it with something a customer can understand:</p>
+
+<pre data-code="lib/specials_app.dart" data-from="^class FriendlyError" data-title="lib/specials_app.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>The menu; the specials page is broken</figcaption>
+</figure>
+<figure data-img="shots/friendly.png" data-frame="phone">
+<figcaption>The release build shows a calm screen, and the error is reported</figcaption>
+</figure>
+</div>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The first version of this screen drew its second line in large red letters with two yellow underlines. That is Flutter’s style for text with no <code>Material</code> above it, and an error widget has none: it replaces the entire broken page, <code>Scaffold</code> included. Wrapping it in its own <code>Material</code> fixed it. Test your error screen in a release build, the only place customers see it.</p></aside>
+
+<h2>{{n}}.3 Sending a report</h2>
+
+<p>A report is a small JSON document. It says what happened and where, the app version and platform, and the breadcrumbs, and nothing about the person: no name, no email, no order contents. The error message itself can contain user data, so in a real app it goes through the redactor of Chapter 14 first.</p>
+
+<pre data-code="lib/observe/crashes.dart" data-from="  Future&lt;void&gt; record(" data-to="});" data-title="lib/observe/crashes.dart (part)"></pre>
+
+<p>A test starts a real HTTP server, causes a real error, records it, and prints what the server received:</p>
+
+<pre data-term="server-test.sh"></pre>
+
+<p>In production, the server stores reports, groups them by error type and top stack frame, and counts how many users each group affects, which is what tells you which crash to fix first.</p>
+
+<h2>{{n}}.4 Reading an obfuscated stack trace</h2>
+
+<p>Chapter 15’s release builds use <code>--obfuscate</code>, which renames everything. A crash in such a build tells you nothing until it is translated back with the symbols saved at build time. To show it for real, a small app crashes on purpose a second after it starts:</p>
+
+<pre data-code="lib/crash_app.dart" data-from="^class Order" data-title="lib/crash_app.dart (part)"></pre>
+<pre data-term="build-obfuscated.sh"></pre>
+<pre data-term="crash.sh"></pre>
+
+<p>Only addresses. The symbols file, kept on the build machine and never shipped, can translate them. Flutter’s own command, on this Linux build, could not:</p>
+
+<pre data-term="symbolize.sh"></pre>
+
+<p>The <code>native_stack_traces</code> package, from the Dart team and the same code <code>flutter symbolize</code> is built on, in its newest version, decoded the same file at once:</p>
+
+<pre data-term="decode.sh"></pre>
+
+<p>Now the trace says what happened: <code>Order.fromJson</code>, line 11, called from <code>total</code>, called from the timer in <code>main</code>. The order had no <code>items</code>.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Keep the symbols of every release you ship, labelled with its version and build id, for as long as that version is in use. A crash report from an old version without its symbols is a list of numbers forever. Crash services take care of this when you upload the symbols as part of the release script.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which errors reach <code>FlutterError.onError</code>, and which reach <code>PlatformDispatcher.instance.onError</code>?</li><li>Why did the first error screen draw red, underlined text?</li><li>What do you need, besides the stack trace, to read a crash from an obfuscated build?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Analytics, with consent</h2>
+
+<p>Crash reports tell you what broke; analytics tell you what people do: which screens they open, where they give up, which features nobody finds. They are also the part of an app most likely to break the trust of the people using it. Three rules keep them honest: ask before collecting anything, collect events and not people, and send them in batches so that measuring does not cost the user battery and data. The projects build all three, and use the reports to measure the number that matters most after a release: the share of sessions without a crash.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Only <code>FlutterError.onError</code></td><td>Async crashes never reported</td><td>Also <code>PlatformDispatcher.instance.onError</code></td></tr>
+<tr><td>The grey box in release</td><td>The app looks frozen</td><td><code>ErrorWidget.builder</code>, with its own <code>Material</code></td></tr>
+<tr><td>User data in reports</td><td>A privacy problem in every crash</td><td>Versions, types and breadcrumbs only; redact messages</td></tr>
+<tr><td>Losing the symbols</td><td>Release crashes that cannot be read</td><td>Keep symbols per release, upload them</td></tr>
+<tr><td>Analytics before consent</td><td>Broken trust, and broken laws in many countries</td><td>Nothing collected until the user agrees</td></tr>
+<tr><td>One request per event</td><td>Battery and data spent on measuring</td><td>Batches, by count or by time</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Two handlers catch everything: <code>FlutterError.onError</code> for widget errors, <code>PlatformDispatcher.instance.onError</code> for the rest.</li>
+<li>Reports carry the error, the version, the platform and breadcrumbs, never user data.</li>
+<li>A custom <code>ErrorWidget.builder</code> replaces the release grey box with a calm screen.</li>
+<li>Obfuscated traces are translated with the symbols kept from the build.</li>
+<li>Analytics wait for consent, travel in batches, and the crash-free rate per version decides when a release is healthy.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Errors thrown while building, laying out or painting widgets are reported by the framework to <code>FlutterError.onError</code>; errors that nothing caught elsewhere, in futures, timers, streams or platform callbacks, reach <code>PlatformDispatcher.instance.onError</code>. 2. Because the error widget replaces the whole broken page, so there was no <code>Material</code> above its text to give it a style, and Flutter draws unstyled text in red with yellow underlines to make the mistake visible. 3. The symbols file saved by <code>--split-debug-info</code> for that exact build (matched by its build id), and a tool to translate the addresses: <code>flutter symbolize</code> or the <code>native_stack_traces</code> decoder.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects build analytics that respect consent and battery, and turn reports into the one number a release is judged by.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>No consent, no events</h3>
+<p class="project-goal">Events logged before consent are not kept; events after it are; and when consent is withdrawn, everything still queued is dropped.</p>
+<p class="project-skills"><strong>You will practise:</strong> state that gates behaviour, and tests that check what was <em>not</em> sent.</p>
+<ol class="steps">
+<li>Ignore <code>log</code> while there is no consent.</li>
+<li>On withdrawal, clear the queue and cancel the timer.</li>
+<li>Log before, during and after consent, flush, and print what was sent.</li>
+</ol>
+<pre data-code="lib/observe/analytics.dart" data-from="  void setConsent" data-to="^  }#2" data-title="lib/observe/analytics.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/consent-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> “open_specials” was logged with consent but never sent: it was still in the queue when consent was withdrawn. That is the right outcome; “no” applies to what has not left the phone yet.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Batches by count or by time</h3>
+<p class="project-goal">Send events ten at a time, and send whatever is left after thirty seconds, so that a quiet session still reports.</p>
+<p class="project-skills"><strong>You will practise:</strong> timers, <code>fakeAsync</code>, and flushing.</p>
+<ol class="steps">
+<li>Flush when the queue reaches the batch size.</li>
+<li>Otherwise start a timer on the first queued event, and flush when it fires.</li>
+<li>Log 23 events and move a fake clock 29, then 30 seconds.</li>
+</ol>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/batch-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Crash-free sessions per version</h3>
+<p class="project-goal">From session records (version, crashed or not), compute the share of sessions without a crash for each version, and decide whether the new release is healthy.</p>
+<p class="project-skills"><strong>You will practise:</strong> aggregation with maps, and reading a metric.</p>
+<ol class="steps">
+<li>Count sessions and clean sessions per version.</li>
+<li>Return the percentage for each version.</li>
+<li>Feed it 1,000 sessions of 1.3.0 and 400 of 1.4.0, with different crash rates, and compare.</li>
+</ol>
+<pre data-code="lib/observe/rates.dart" data-from="^Map&lt;String, double&gt; crashFreeRate" data-title="lib/observe/rates.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/rates-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> 95% sounds good and is not: one session in twenty ends in a crash. Teams commonly aim for 99.5% or better, and stop a staged rollout when a new version falls clearly below the previous one. Look at sessions, not users: one unlucky user with many crashes and many happy users can hide each other in a per-user number.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add the screen’s route name to the breadcrumbs automatically, for every navigation. Which Flutter class lets you observe navigation?</li>
+<li><span class="level">Easy</span> The report includes the first eight lines of the stack. Why not the whole stack, and why not just one line?</li>
+<li><span class="level">Medium</span> A crash happens while the phone is offline, and the app is killed. How can the report still reach the server?</li>
+<li><span class="level">Medium</span> Two crashes have different messages (“order 41 has no items”, “order 42 has no items”) but the same cause. How should the server group them?</li>
+<li><span class="level">Challenge</span> Design the events that would tell you where customers give up between opening the menu and paying. Which events, which parameters, and which ones must you avoid?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Seventeen chapters of parts. The last chapter puts them together: one café app, built with the architecture, state, navigation, offline data, design system, tests, accessibility, notifications, security, CI and reporting of this book.</p>
+</div>
+</section>

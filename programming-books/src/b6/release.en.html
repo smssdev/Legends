@@ -1,0 +1,195 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/release/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>CI/CD, Flavors and Signing</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>build one app for several environments from configuration files, not from edits to the code</li>
+<li>give each environment its own installable Android app with product flavors</li>
+<li>sign release builds with a key whose password never touches a file</li>
+<li>write a release script that refuses to build from an unsafe state</li>
+<li>run the same checks on every push with a CI workflow, and on your own machine before pushing</li>
+</ul>
+</div>
+
+<p class="lead">Book 5 ended with one app, signed once, by hand. A team needs more: a build that talks to the test server and one that talks to the real one, both installed on the same phone; a release that cannot be made from a forgotten change; and a machine that checks every push before a person reviews it. None of it is hard. All of it is easy to get subtly wrong, which is why it belongs in scripts.</p>
+
+<aside class="bit" data-mood="happy"><p>Every build in this chapter really ran: three flavors of the Android app, a signed release, two refusals by the release script, the CI script from start to finish, and the web app built twice from two configuration files.</p></aside>
+
+<h2>{{n}}.1 One app, several environments</h2>
+
+<p>The café has a development server, a staging server for the final checks, and the production server. The app must not decide which one to call by an <code>if</code> someone remembers to change; it reads it from the build. Each environment is a small JSON file:</p>
+
+<pre data-code="config/dev.json" data-title="config/dev.json"></pre>
+<pre data-code="config/prod.json" data-title="config/prod.json"></pre>
+
+<p><code>--dart-define-from-file</code> turns each key into a compile-time constant, which the app reads in one place:</p>
+
+<pre data-code="lib/config.dart" data-title="lib/config.dart"></pre>
+<pre data-term="config-test.sh"></pre>
+<pre data-term="config-prod-test.sh"></pre>
+
+<p>The same test, given no file and then <code>config/prod.json</code>, prints two different apps. The defaults are the development ones, so that a build made without thinking cannot talk to production by accident. And, as Chapter 14 showed, these values are in the app for anyone to read: an address and a switch, never a secret.</p>
+
+<p>Every build that is not production says so:</p>
+
+<pre data-code="lib/main_app.dart" data-from="return AppConfig.isProduction" data-to="^  }" data-title="lib/main_app.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/dev.png" data-frame="phone">
+<figcaption>Built with config/dev.json</figcaption>
+</figure>
+<figure data-img="shots/prod.png" data-frame="phone">
+<figcaption>The same code, built with config/prod.json</figcaption>
+</figure>
+</div>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The ribbon was first placed at the top end, as Flutter’s own debug banner is. In the Arabic build, the top end is where the page title sits, and the ribbon covered it. The bottom end is free in both directions. Check every corner you decorate in both languages.</p></aside>
+
+<h2>{{n}}.2 Flavors: installable side by side</h2>
+
+<p>Testers want the development app and the store app on the same phone. Android tells apps apart by their application id, so each <dfn>flavor</dfn> gets its own id suffix and its own name:</p>
+
+<pre data-code="android/app/build.gradle.kts" data-from="flavorDimensions" data-to="^    }" data-title="android/app/build.gradle.kts (part)"></pre>
+
+<p>The manifest’s label becomes <code>@string/app_name</code>, so each flavor’s name appears under its icon. A build names the flavor and its configuration file together:</p>
+
+<pre data-term="android-dev.sh"></pre>
+
+<p><code>com.example.bit_app.dev</code>, “Bit Café Dev”, version <code>0.1.0-dev</code>: a different app as far as the phone is concerned, with its own data, installable next to the real one. iOS does the same with schemes and build configurations in Xcode; the Dart side, <code>--flavor</code> and the configuration file, stays the same.</p>
+
+<h2>{{n}}.3 Signing, without a password in any file</h2>
+
+<p>The release key is made once (Book 5, Chapter 15) and kept off the repository. The password is never written down in the project: it is taken from the environment when the build runs.</p>
+
+<pre data-term="keytool.sh"></pre>
+<pre data-code="android/key.properties" data-title="android/key.properties (not in Git)"></pre>
+<pre data-code="android/app/build.gradle.kts" data-from="signingConfigs {" data-to="^    }#2" data-title="android/app/build.gradle.kts (part)"></pre>
+
+<p>On a CI machine, the keystore and its password come from the CI system’s secret store, written to the machine for the length of the job and gone when it ends. (<code>keytool</code>’s note about JKS is real advice: PKCS12 is the standard format, and the same steps work with <code>-storetype PKCS12</code>.)</p>
+
+<h2>{{n}}.4 A release script that says no</h2>
+
+<p>A release made from the wrong state is worse than no release: unsigned, or with a build number that the store has already seen, it fails at the last step, often at night. The script checks first:</p>
+
+<pre data-code="tool/release.sh" data-title="tool/release.sh"></pre>
+<pre data-term="release-refused.sh"></pre>
+
+<p>Without the password in the environment, nothing is built. With it:</p>
+
+<pre data-term="release.sh"></pre>
+
+<p>The production package, without a suffix, named “Bit Café”, version 1.4.0 with build number 42, and signed by our key, not the debug key. Project {{n}}.3 shows the second check refusing a build number that is not new.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why are the defaults in <code>AppConfig</code> the development values?</li><li>What lets the dev and prod apps be installed on the same phone?</li><li>Where does the signing password come from, on your machine and on CI?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 CI: the same checks, on every push</h2>
+
+<p><dfn>Continuous integration</dfn> runs the project’s checks on a clean machine for every push and pull request, so a mistake is found minutes after it is made, by a machine, not days later by a colleague. The checks live in a script in the repository, so they are the same everywhere:</p>
+
+<pre data-code="tool/ci.sh" data-title="tool/ci.sh"></pre>
+<pre data-term="ci.sh"></pre>
+
+<p>The workflow only prepares a machine and runs that script:</p>
+
+<pre data-code=".github/workflows/ci.yml" data-title=".github/workflows/ci.yml"></pre>
+
+<p>The run above is the script on the book’s machine; GitHub runs the same lines on its own Linux machine for every push. Keeping the logic in <code>tool/ci.sh</code> and not in the YAML file means you can run it before you push, and change CI services without rewriting the checks.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Make the main branch protected: no merge without a green CI run and one review. Keep the pipeline fast (under ten minutes) so that people wait for it instead of working around it, and treat a red build on the main branch as the team’s first job of the day. A pipeline that is often red teaches everyone to ignore it.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Server addresses changed by hand before a release</td><td>A test build that talks to production, or the reverse</td><td>Configuration files and <code>--dart-define-from-file</code></td></tr>
+<tr><td>Production as the default</td><td>Experiments hit real customers</td><td>Development defaults</td></tr>
+<tr><td>One application id for every build</td><td>Testers lose the store app to install a test one</td><td>Flavors with id suffixes</td></tr>
+<tr><td>Passwords in <code>key.properties</code> or Gradle files</td><td>The signing key one commit away from leaking</td><td>Passwords from the environment</td></tr>
+<tr><td>Release steps from memory</td><td>Unsigned builds, repeated build numbers</td><td>A release script that checks first</td></tr>
+<tr><td>CI logic in the workflow file only</td><td>Checks you cannot run before pushing</td><td>A script, run by the workflow</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Each environment is a configuration file; the app reads compile-time constants from one place, with safe defaults.</li>
+<li>Product flavors give each environment its own application id and name, installable side by side.</li>
+<li>Release builds are signed with a key whose password comes from the environment, never from a file.</li>
+<li>A release script checks the state before building, and refuses clearly.</li>
+<li>CI runs a script from the repository on every push; the same script runs on your machine.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that a build made without a configuration file, by a new team member or a forgotten flag, talks to the development server and shows the DEV ribbon, never to production by accident. 2. Each flavor has a different application id (<code>com.example.bit_app.dev</code> and <code>com.example.bit_app</code>), and Android treats different ids as different apps, with their own data and icons. 3. From the environment variable <code>STORE_PASSWORD</code>: on your machine you set it in the shell for the build; on CI it comes from the CI system’s secret store, for the length of the job.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects guard the configuration, add a third environment, and make the release script refuse a repeated build.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Every environment, the same keys</h3>
+<p class="project-goal">A test that reads every file in <code>config/</code> and fails if one of them is missing a key the others have, or uses plain <code>http</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading files in tests, sets, and failure messages that name the file.</p>
+<ol class="steps">
+<li>List <code>config/</code>, sorted, and decode each file.</li>
+<li>Check that every server address starts with <code>https://</code>.</li>
+<li>Compare each file’s keys with the first file’s.</li>
+</ol>
+<pre data-code="test/config_files_test.dart" data-from="^void main" data-title="test/config_files_test.dart"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/config-files-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A staging flavor</h3>
+<p class="project-goal">Add the staging environment: its configuration file, its flavor with its own id and name, and a build that proves it.</p>
+<p class="project-skills"><strong>You will practise:</strong> Gradle product flavors, <code>resValue</code>, and reading an APK’s identity.</p>
+<ol class="steps">
+<li>Write <code>config/staging.json</code> with the staging server.</li>
+<li>Add a <code>staging</code> flavor with the suffix <code>.staging</code> and the name “Bit Café Staging”.</li>
+<li>Build it, and read the package name and label from the APK.</li>
+</ol>
+<pre data-code="config/staging.json" data-title="config/staging.json"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/android-staging.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Never the same build number twice</h3>
+<p class="project-goal">The store refuses an upload whose build number it has seen. Make the release script refuse first, by remembering the last released number and comparing.</p>
+<p class="project-skills"><strong>You will practise:</strong> shell scripts that fail early, and state kept between releases.</p>
+<ol class="steps">
+<li>After a successful build, write the build number to <code>release/last_build_number</code>.</li>
+<li>Before building, refuse any number that is not higher.</li>
+<li>Run the release twice with 42 and see the second refused.</li>
+</ol>
+<p><strong>Your result should look like this</strong> (the second release with 42):</p>
+<pre data-term="projects/release-again.sh"></pre>
+<p class="hint"><strong>Hint:</strong> on CI the file would be lost with the machine. There, use a number that only grows, such as the CI run number or <code>git rev-list --count HEAD</code>, and keep the last released number where the team can see it: a tag, or the store itself.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>SUPPORT_EMAIL</code> to the configuration. Which files change, and which test fails if you forget one of them?</li>
+<li><span class="level">Easy</span> Why is the staging flavor’s version <code>0.1.0-staging</code>, and where does the suffix come from?</li>
+<li><span class="level">Medium</span> Give each flavor its own launcher icon. Where do the icons go, and how does Gradle choose?</li>
+<li><span class="level">Medium</span> Extend the CI workflow so that a push to a tag like <code>v1.4.0</code> builds the signed release. What must the CI system provide, and how does the job get it?</li>
+<li><span class="level">Challenge</span> The CI run takes nine minutes, mostly in the Android build. Propose three changes that make pull requests faster without checking less.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The app is built, signed and shipped. What happens next happens on phones you will never see: crashes, slow screens, and features nobody uses. The next chapter brings that back to you, with crash reporting and analytics that respect the people using the app.</p>
+</div>
+</section>
