@@ -110,7 +110,7 @@ class MyPlayer {
   final int? listedPrice;
   final DateTime? sellsAt;
 
-  /// [X105] Why he cannot be sold now (his line at the squad's floor), the server's words; null: he can.
+  /// [X114] Why he cannot be sold now (his line at the squad's floor), the server's words; null: he can.
   final String? held;
 
   bool get listed => listedPrice != null;

@@ -258,7 +258,7 @@ class Market
         if ($line === 'gk' && $keepers - 1 < (int) config('game.economy.min_keepers')) {
             throw new HttpException(409, 'لا بد أن يبقى حارسان على الأقل.');
         }
-        SquadFloor::assert($clubId, [(int) $player->id]);   // [X105] a coach's: every line's floor
+        SquadFloor::assert($clubId, [(int) $player->id]);   // [X114] a coach's: every line's floor
     }
 
     /**

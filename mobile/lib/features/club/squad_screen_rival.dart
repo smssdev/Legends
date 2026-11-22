@@ -1,9 +1,9 @@
 part of 'squad_screen.dart';
 
-/// [X105, the owner's request 2026-11-22] The squad screen's rivals: picking another club of the league, and the action
+/// [X114, the owner's request 2026-11-22] The squad screen's rivals: picking another club of the league, and the action
 /// under a player's card (mine sold, another coach's asked for).
 extension _Rivals on _SquadScreenState {
-  /// [X105] The league's other clubs, the next opponent first: a tap opens his squad here.
+  /// [X114] The league's other clubs, the next opponent first: a tap opens his squad here.
   Future<void> _pickRival(BuildContext context) async {
     final l = L.of(context);
     final c = context.palette;
@@ -54,7 +54,7 @@ extension _Rivals on _SquadScreenState {
     if (picked != null && context.mounted) await context.push<void>('/leagues/${widget.leagueId}/squad?club=$picked');
   }
 
-  /// [X105] Under a player's card: mine for sale (the market's own sheet), another coach's asked for with an offer.
+  /// [X114] Under a player's card: mine for sale (the market's own sheet), another coach's asked for with an offer.
   Widget? _cardAction(BuildContext context, Player pl, RivalSquad? rival) {
     final l = L.of(context);
     if (rival == null) {
@@ -80,7 +80,7 @@ extension _Rivals on _SquadScreenState {
   }
 }
 
-/// [X105] Another club's facts in the same navy band: its crest and name, who runs it, its players and its value.
+/// [X114] Another club's facts in the same navy band: its crest and name, who runs it, its players and its value.
 class _RivalBand extends StatelessWidget {
   const _RivalBand({required this.rival});
 

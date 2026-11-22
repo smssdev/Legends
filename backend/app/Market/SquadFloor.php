@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * [X105, the owner's request 2026-11-22] A coach's squad never falls under its floor by line: at least
+ * [X114, the owner's request 2026-11-22] A coach's squad never falls under its floor by line: at least
  * game.economy.min_lines of each (two keepers, four defenders, four midfielders, three forwards). Every way a player
  * leaves a coach's club goes through here: the instant sale, a listing (refused at once, and its buyer waits), an
  * offer or an auction or a release clause (Transfers::check) and the end of a contract. A bot club keeps its own
