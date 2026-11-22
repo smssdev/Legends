@@ -39,6 +39,8 @@ namespace Legends
         {
             var m = scene != null ? scene.OnAir : null;
             if (m == null || scene.Setup == null) return;
+            // [X113] On the web the page draws the score, the clock and the names over the scene, in Arabic.
+            if (Application.platform == RuntimePlatform.WebGLPlayer) return;
             if (style == null)
                 style = new GUIStyle(GUI.skin.box) { fontSize = Mathf.Max(14, Screen.height / 32), alignment = TextAnchor.MiddleCenter };
             var (clock, _, home, away) = At(m, scene.Plan, scene.Elapsed, scene.KeyMoment);

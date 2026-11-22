@@ -107,6 +107,34 @@ namespace Legends.Tests
             Assert.Greater(checks, 300);
         }
 
+        /// <summary>
+        /// [X113] The strike on the cartoon's second: every recorded scene with a strike (a shot, a save, a card, a foul)
+        /// has it in Unity at the cartoon's key second (SCENE_TIME's key over its length, as told.ts), where the page plays
+        /// its sound, turns the score and the commentator says his key line; and the ball is struck there in the frames.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheStrikeIsOnTheCartoonsKeySecond()
+        {
+            int checkedScenes = 0;
+            foreach (var (kind, entry, m) in All())
+            {
+                if (kind.EndsWith("(retold)")) continue;
+                scene.Begin(MatchSetup.From(MiniJson.Parse(SamplePlayback.Setup(entry, new List<object> { MiniJson.Obj(entry, "tick") }))));
+                yield return null;
+                var w = MatchScene.WindowOf(m, PlayerMotion.Cues(m));
+                if (!w.HasKey) continue;
+                var plan = scene.PlanFor(m);
+                double cartoonKey = ShotList.KeyAt(plan, m.Story);
+                scene.HoldAt(m, cartoonKey);
+                yield return null;
+                Assert.AreEqual(cartoonKey, scene.KeyMoment ?? -1, 1e-6, kind + ": the strike's second is the cartoon's");
+                int n = m.Frames.Count - 1;
+                Assert.AreEqual(w.Key / n, scene.FramesOf(m, cartoonKey), 1e-4f, kind + ": the frames are at the strike then");
+                checkedScenes++;
+            }
+            Assert.Greater(checkedScenes, 8);
+        }
+
         [UnityTest]
         public IEnumerator AGoalsReplayIsSlowAndComesBackLive()
         {

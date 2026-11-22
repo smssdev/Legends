@@ -251,6 +251,30 @@ namespace Legends
             queue.Enqueue(minute);
         }
 
+        /// <summary>How far the scene may drift from the page's clock before it jumps to it (s): less is smoothed by the next sync.</summary>
+        public const double Drift = 0.12;
+
+        /// <summary>[X113] The page's speed as the scene's time scale: 0 when it stops, at most 8.</summary>
+        public static float ClockRate(float rate) => float.IsNaN(rate) ? 1f : Mathf.Clamp(rate, 0f, 8f);
+
+        /// <summary>
+        /// [X113] Where the page is: minute `tick`, `seconds` into it. The scene on that minute jumps there when it has
+        /// drifted (a slow frame, a hidden tab, the page's speed); a minute the scene has not been given is left alone.
+        /// </summary>
+        public void Sync(int tick, double seconds)
+        {
+            var m = Current ?? (queue.Count > 0 ? queue.Peek() : null);
+            if (m == null || m.Tick != tick) return;
+            if (Current == null)
+            {
+                Current = queue.Dequeue();
+                OnAir = Current;
+                Plan = PlanFor(Current);
+                if (bench != null) bench.Feel(Current.HomeMood, Current.AwayMood);
+            }
+            if (System.Math.Abs(elapsedMs / 1000.0 - seconds) > Drift) elapsedMs = (float)(seconds * 1000.0);
+        }
+
         /// <summary>[Sprint 11 W3] The page skipped ahead (the result at once): the scene stops on the last minute shown.</summary>
         public void Skip()
         {
@@ -273,7 +297,8 @@ namespace Legends
             elapsedMs += Time.deltaTime * 1000f;
             Elapsed = elapsedMs / 1000.0;
             SlowTo(Slowness(Plan, Elapsed));
-            Draw(Current, FramesAt(Plan, Elapsed));
+            Blackout(Current, Elapsed);
+            Draw(Current, FramesOf(Current, Elapsed));
             if (elapsedMs >= Current.Ms) Current = null;
         }
 
@@ -300,7 +325,8 @@ namespace Legends
             Plan = PlanFor(m);
             Elapsed = seconds;
             SlowTo(Slowness(Plan, seconds));
-            Draw(m, FramesAt(Plan, seconds), true);
+            Blackout(m, seconds);
+            Draw(m, FramesOf(m, seconds), true);
         }
 
         /// <summary>
@@ -376,6 +402,7 @@ namespace Legends
         {
             float turn = snap ? 1f : 10f * Time.deltaTime;
             if (m.Frames.Count == 0) return;
+            WindowFor(m);
             Segment(m.Frames.Count, t, out int i, out float k);
             var a = m.Frames[i];
             var b = m.Frames[Mathf.Min(i + 1, m.Frames.Count - 1)];
@@ -383,7 +410,8 @@ namespace Legends
             var nf = i + 2 < m.Frames.Count ? m.Frames[i + 2] : null;
             bool flip = Flipped(m.Period);
             // [Sprint 07 U4] how long this stretch between two frames lasts on screen, for each player's speed
-            float span = Mathf.Max(0.05f, (float)FramesSeconds(Plan ?? PlanFor(m)) / Mathf.Max(1, m.Frames.Count - 1));
+            // [X113] how long this stretch lasts on screen where the frames are now (the timeline is warped round the strike)
+            float span = SpanAt(i + k);
             float dt = snap ? 0f : Time.deltaTime;
 
             foreach (var kv in players)
@@ -440,6 +468,7 @@ namespace Legends
             Moves(m, t, span, flip, snap);
 
             var ball = SampleBall(pf, a, b, nf, k);
+            ball = PostBall(m, i + k, ball);
             Roll(World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (BallRadius + ball.z / 10f));
         }
 
@@ -455,7 +484,8 @@ namespace Legends
                 cuesOf = m;
                 cuesNow = 0f;
                 cues = PlayerMotion.Cues(m);
-                KeyMoment = KeyOf(cues, m, Plan ?? PlanFor(m));
+                // [X113] the strike on the cartoon's second when the scene was warped round it, else where the frames have it
+                KeyMoment = ReferenceEquals(windowOf, m) && window.HasKey ? windowKeyT : KeyOf(cues, m, Plan ?? PlanFor(m));
                 fired.Clear();
                 facing.Clear();
                 foreach (var p in players.Values)
@@ -515,10 +545,11 @@ namespace Legends
                     if (beaten != null) beaten.Beaten = true;
                 }
                 float contact = cue.OnContact && contactOf.TryGetValue(move, out var c) ? c : 0f;
-                float start = cue.At - contact / span;
+                float cueSpan = SpanAt(cue.At);
+                float start = cue.At - contact / cueSpan;
                 if (now < start) continue;
                 fired.Add(cue);
-                stride.Play(move, snap ? 0f : 0.12f, (now - start) * span);
+                stride.Play(move, snap ? 0f : 0.12f, (now - start) * cueSpan);
             }
         }
 
@@ -541,6 +572,168 @@ namespace Legends
         {
             if (officials.Count < 3) return null;
             return World(new Vector2(ballDm.x, ballDm.y), flip).z > 0 ? officials[1] : officials[2];
+        }
+
+        // ---------------------------------------------------------------- [X113] the scene on the cartoon's timeline
+
+        /// <summary>
+        /// Which of a minute's frames its scene plays, and where its strike is (in frames). The server's frames are the
+        /// whole minute's play; the cartoon's scene is only its event. So the scene starts a few frames before its strike
+        /// (the set piece set up, the attack under way), and the strike falls on the cartoon's key second (Warp).
+        /// </summary>
+        public struct Window
+        {
+            public int From;
+            public float Key;
+            public bool HasKey;
+        }
+
+        /// <summary>The time the frames before the window take to go by, at the start of a scene (s): the clock running to its second.</summary>
+        public const double Lead = 0.4;
+
+        /// <summary>How many frames before the strike each scene starts: a set piece from its setting up, an attack from its build-up.</summary>
+        public static int FramesBefore(string scene) => scene switch
+        {
+            "penalty" or "freekick" => 2,
+            "corner" => 3,
+            "card" or "foul" or "slip" => 2,
+            _ => 4,
+        };
+
+        /// <summary>The window of minute m with its cues (PlayerMotion): none (all its frames) without a scene or a strike.</summary>
+        public static Window WindowOf(MatchMinute m, List<PlayerMotion.Cue> cues)
+        {
+            var w = new Window();
+            int n = m.Frames.Count - 1;
+            if (m.Story == null || string.IsNullOrEmpty(m.Story.Scene) || n < 2) return w;
+            float key = KeyFrame(cues);
+            if (key < 0) return w;
+            w.HasKey = true;
+            w.Key = Mathf.Min(key, n);
+            w.From = Mathf.Clamp(Mathf.FloorToInt(w.Key) - FramesBefore(m.Story.Scene), 0, n);
+            if (w.From >= w.Key) w.From = Mathf.Max(0, Mathf.FloorToInt(w.Key) - 1);
+            return w;
+        }
+
+        /// <summary>The minute's strike in frames: the shot at goal, else the keeper's answer, else the card, else the foul (as KeyOf); -1 none.</summary>
+        public static float KeyFrame(List<PlayerMotion.Cue> cues)
+        {
+            PlayerMotion.Cue Find(System.Predicate<PlayerMotion.Cue> f) => cues.Find(f);
+            var key = Find(c => c.OnContact && (c.Move.StartsWith("shot") || c.Move == "header"))
+                      ?? Find(c => c.Move == PlayerMotion.Dive) ?? Find(c => c.Move == "ref_card") ?? Find(c => c.Move == "fall");
+            return key == null ? -1f : key.At;
+        }
+
+        /// <summary>
+        /// Where the frames are (0..1) `s` seconds into a scene of `length` seconds over frames 0..n, in window w with its
+        /// strike at keyT seconds: the frames before the window go by in Lead, the window's frames up to the strike take
+        /// until keyT, the rest the scene's remainder. Without a window, all the frames evenly. Pure.
+        /// </summary>
+        public static float Warp(double s, double length, int n, Window w, double keyT)
+        {
+            if (n <= 0 || length <= 0) return 0f;
+            s = System.Math.Max(0, System.Math.Min(length, s));
+            if (!w.HasKey && w.From == 0) return (float)(s / length);
+            double lead = w.From > 0 ? System.Math.Min(Lead, length * 0.2) : 0;
+            double f;
+            if (s < lead) f = w.From * (s / lead);
+            else if (w.HasKey)
+            {
+                double k = System.Math.Max(lead + 0.2, System.Math.Min(length - 0.2, keyT));
+                f = s < k ? w.From + (w.Key - w.From) * (s - lead) / (k - lead) : w.Key + (n - w.Key) * (s - k) / System.Math.Max(0.01, length - k);
+            }
+            else f = w.From + (n - w.From) * (s - lead) / System.Math.Max(0.01, length - lead);
+            return Mathf.Clamp01((float)(f / n));
+        }
+
+        Window window;
+        MatchMinute windowOf;
+        double windowKeyT, windowLength;
+
+        /// <summary>The window of minute m and its strike's second on the cartoon's timeline, worked out once a minute.</summary>
+        void WindowFor(MatchMinute m)
+        {
+            if (ReferenceEquals(windowOf, m)) return;
+            windowOf = m;
+            var plan = PlanFor(m);
+            window = WindowOf(m, PlayerMotion.Cues(m));
+            windowLength = FramesSeconds(plan);
+            windowKeyT = window.HasKey ? Shots.ShotList.KeyAt(plan, m.Story) : 0;
+            if (window.HasKey && windowKeyT <= 0) windowKeyT = windowLength * 0.5;
+        }
+
+        /// <summary>
+        /// [X113] Where minute m's frames are (0..1) `seconds` into it: the scene's window warped round its strike, and in
+        /// a goal's replay the scene again, slowed, on the same warp.
+        /// </summary>
+        public float FramesOf(MatchMinute m, double seconds)
+        {
+            WindowFor(m);
+            var p = Plan ?? PlanFor(m);
+            int n = m.Frames.Count - 1;
+            if (InReplay(p, seconds))
+            {
+                double sceneSeconds = (p.Replay.Off + (seconds - p.Replay.At) * p.Replay.Rate) / System.Math.Max(0.01, p.Rate);
+                return Warp(sceneSeconds, windowLength, n, window, windowKeyT);
+            }
+            return Warp(seconds, windowLength, n, window, windowKeyT);
+        }
+
+        /// <summary>
+        /// [X113] The blackout (the story's goal drama, as the cartoon's clip F9): the lights go out from 0.9 s before the
+        /// strike, and come back with the ball in the net, 0.5 s after it. Whether they are out at `seconds` into minute m. Pure.
+        /// </summary>
+        public static bool LightsOut(MatchMinute m, double seconds, double keyT) =>
+            m?.Story != null && m.Story.Scene == "goal" && m.Story.Str("drama") == "blackout" && seconds >= keyT - 0.9 && seconds < keyT + 0.5;
+
+        bool dark;
+
+        void Blackout(MatchMinute m, double seconds)
+        {
+            WindowFor(m);
+            bool now = LightsOut(m, seconds, windowKeyT);
+            if (now == dark) return;
+            dark = now;
+            foreach (var l in Object.FindObjectsByType<Light>(FindObjectsSortMode.None))
+                if (l.name == "Floodlight" || l.name == "Sun" || l.name == "Moonlight") l.enabled = !now;
+            if (now) RenderSettings.ambientLight = new Color(0.02f, 0.02f, 0.03f);
+            if (!now && Setup != null) StadiumLight.Apply(Setup.Light, transform.parent);
+        }
+
+        /// <summary>
+        /// [X113] A shot off the post (the story's miss, how: post, as the cartoon's clip): from the strike the ball flies to
+        /// the near post (the story's lane: left, right), rings off it in the next 0.6 of a frame, then rejoins the frames'
+        /// path. Decimetres on the server's pitch, as the frames. Pure.
+        /// </summary>
+        public static Vector3 PostBall(MatchMinute m, float frame, Vector3 ball, Window w)
+        {
+            if (m?.Story == null || m.Story.Scene != "miss" || m.Story.Str("how") != "post" || !w.HasKey || m.Frames.Count < 2) return ball;
+            float u = frame - w.Key;
+            if (u <= 0f || u >= 1.6f) return ball;
+            var strike = m.Frames[Mathf.Clamp(Mathf.FloorToInt(w.Key), 0, m.Frames.Count - 1)].Ball;
+            // the goal the shot goes at: the one nearer the ball at the strike; the post on the story's lane
+            float gx = strike.x >= 525f ? 1050f : 0f;
+            bool top = (m.Story.Str("lane") == "left") == (gx > 0);
+            var post = new Vector3(gx, top ? 340f - 36.6f : 340f + 36.6f, 14f);
+            if (u < 1f) return Vector3.Lerp(strike, post, u);
+            return Vector3.Lerp(post, ball, (u - 1f) / 0.6f);
+        }
+
+        Vector3 PostBall(MatchMinute m, float frame, Vector3 ball) => ReferenceEquals(windowOf, m) ? PostBall(m, frame, ball, window) : ball;
+
+        /// <summary>How long one frame lasts on screen around frame f (s), on the warped timeline: for each player's pace and each move's start.</summary>
+        float SpanAt(float f)
+        {
+            var m = windowOf;
+            int n = m != null ? m.Frames.Count - 1 : 1;
+            double len = windowLength > 0 ? windowLength : FramesSeconds(Plan);
+            double span;
+            double lead = window.From > 0 ? System.Math.Min(Lead, len * 0.2) : 0;
+            if (window.From > 0 && f < window.From) span = lead / window.From;
+            else if (window.HasKey && f < window.Key) span = (System.Math.Max(lead + 0.2, windowKeyT) - lead) / System.Math.Max(0.5f, window.Key - window.From);
+            else if (window.HasKey) span = (len - windowKeyT) / System.Math.Max(0.5f, n - window.Key);
+            else span = (len - lead) / System.Math.Max(1, n - window.From);
+            return Mathf.Max(0.05f, (float)span);
         }
 
         /// <summary>[Sprint 09 U1] The minute's key moment in its frames (s): its strike at goal, else its keeper's answer, else its card.</summary>
@@ -671,7 +864,7 @@ namespace Legends
         }
 
         /// <summary>How far through the current minute's shot, 0 to 1 (the tests compare the scene with the frames at it).</summary>
-        public float Progress => Current == null ? 0f : FramesAt(Plan, Elapsed);
+        public float Progress => Current == null ? 0f : FramesOf(Current, Elapsed);
 
         /// <summary>
         /// Where a minute's progress t (0..1) falls among its key frames: between frame i and i + 1, by k (0..1).

@@ -3103,8 +3103,8 @@ export const EN: Record<string, string> = {
   'مبارياتي الحية على البوت': 'My live matches on the bot',
   'الأهداف والطرد ونهاية الشوط والنتيجة، حين تظهر في المباراة': 'Goals, red cards, half-time and the result, as the match shows them',
   'الملخص اليومي (بتوقيت القاهرة)': 'Daily summary (Cairo time)',
-  'مشهد المباراة ثلاثي الأبعاد': 'The 3D match scene',
-  'نجهّز الملعب ثلاثي الأبعاد...': 'Getting the 3D stadium ready...',
-  'المباراة مستمرة بالمحاكي الكرتوني حتى يجهز': 'The match goes on in the cartoon simulator until it is ready',
   'لم يعمل المشهد ثلاثي الأبعاد على هذا الجهاز، فتكمل المباراة بالمحاكي الكرتوني بنفس التوقيت.': 'The 3D scene did not run on this device, so the match goes on in the cartoon simulator, at the same time.',
+  'كرتوني': 'Cartoon',
+  'ثلاثي الأبعاد': '3D',
+  'نجهّز الملعب ثلاثي الأبعاد ({v0}٪)، والمباراة مستمرة بالكرتوني حتى يجهز': 'Getting the 3D stadium ready ({v0}%); the match goes on in the cartoon until then',
 }
