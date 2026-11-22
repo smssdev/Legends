@@ -18,7 +18,11 @@ T = {
         w_q2="And how do I write one?",
         w_fresh="A new conversation, asked only the second question:",
         w_agent_q="What does a large latte cost, and which file sets that price?",
-        w_calc_q="An order is 48213 cups at 7.5 each, plus 12% tax. What is the total? Give the number.",
+        w_agent_sys="You work inside a software project. Use the tools to look at its files before you answer.",
+        w_agent_q2="In this project, what does a large latte cost, and which file sets that price?",
+        w_c_bare="First the question alone; then a system prompt that says what the tools are for, and a "
+                 "question that says it is about the project.",
+        w_calc_q="An order is 48213 cups at 7.35 each, plus 14% tax. What is the total?",
         w_readme="# Bit Café\n\nThe café's ordering service. Prices are in dollars.\n",
         w_c_chat="The model remembers nothing: every turn, the whole conversation is sent again.",
         w_c_tokens="How many tokens the conversation now takes in the context.",
@@ -41,7 +45,10 @@ T = {
         w_q2="وكيف أكتب واحداً؟",
         w_fresh="محادثة جديدة، سُئلت السؤال الثاني وحده:",
         w_agent_q="كم سعر اللاتيه الكبير، وأي ملف يحدد هذا السعر؟",
-        w_calc_q="طلب من 48213 كوباً بسعر 7.5 للكوب، مع ضريبة 12%. ما المجموع؟ أعطِ الرقم.",
+        w_agent_sys="أنت تعمل داخل مشروع برمجي. استخدم الأدوات لتنظر في ملفاته قبل أن تجيب.",
+        w_agent_q2="في هذا المشروع، كم سعر اللاتيه الكبير، وأي ملف يحدد هذا السعر؟",
+        w_c_bare="أولاً السؤال وحده؛ ثم أمر نظام يقول ما الغرض من الأدوات، وسؤال يقول إنه عن المشروع.",
+        w_calc_q="طلب من 48213 كوباً بسعر 7.35 للكوب، مع ضريبة 14%. ما المجموع؟",
         w_readme="# مقهى بِت\n\nخدمة الطلبات في المقهى. الأسعار بالدولار.\n",
         w_c_chat="النموذج لا يتذكر شيئاً: في كل دور تُرسل المحادثة كلها من جديد.",
         w_c_tokens="كم رمزاً تأخذ المحادثة الآن في السياق.",
@@ -122,7 +129,6 @@ import {loadModel} from "./lib/model.mjs";
 
 const model = await loadModel();
 const context = await model.createContext({contextSize: 4096});
-const session = new LlamaChatSession({contextSequence: context.getSequence()});
 
 // {w_c_tools}
 const functions = {
@@ -147,9 +153,22 @@ function show(name, params, result) {
   return result;
 }
 
-const question = "{w_agent_q}";
-console.log(`> ${question}`);
-console.log(await session.prompt(question, {functions, temperature: 0}));
+// {w_c_bare}
+const tries = [
+  [undefined, "{w_agent_q}"],
+  ["{w_agent_sys}", "{w_agent_q2}"],
+];
+for (const [systemPrompt, question] of tries) {
+  const session = new LlamaChatSession({
+    contextSequence: context.getSequence(),
+    autoDisposeSequence: true,
+    systemPrompt,
+  });
+  console.log(`--- system prompt: ${systemPrompt ?? "(default)"}`);
+  console.log(`> ${question}`);
+  console.log(await session.prompt(question, {functions, temperature: 0}));
+  session.dispose();
+}
 """,
     "cafe/README.md": "{w_readme}",
     "cafe/menu.json": """{
@@ -292,9 +311,20 @@ for (const functions of [undefined, {calculate}]) {
   console.log(await session.prompt(question, {functions, temperature: 0}));
   session.dispose();
 }
-console.log(`--- exact: ${(48213 * 7.5 * 1.12).toFixed(2)}`);
+console.log(`--- exact: ${(48213 * 7.35 * 1.14).toFixed(2)}`);
 """,
 }
+
+def shorten(lines):
+    """The model's working alone runs to a page; keep its start and its end, and say how much is left out."""
+    start = next(i for i, line in enumerate(lines) if line.startswith("--- alone"))
+    end = next(i for i, line in enumerate(lines) if line.startswith("--- with"))
+    body = [line for line in lines[start + 1:end] if line.strip() and line.strip() != "---"]
+    if len(body) <= 30:
+        return lines
+    cut = len(body) - 12
+    return lines[:start + 1] + body[:6] + [f"[... {cut} lines ...]"] + body[-6:] + lines[end:]
+
 
 RUNS = [
     ("chat.sh", "node chat.mjs"),
@@ -304,7 +334,7 @@ RUNS = [
     ("context.sh", "node context.mjs"),
     ("projects/repl.sh", "printf '{w_repl_in}' | node repl.mjs"),
     ("projects/budget.sh", "node budget.mjs cafe 120 && node budget.mjs cafe 60"),
-    ("projects/calc.sh", "node calc.mjs"),
+    ("projects/calc.sh", "node calc.mjs", shorten),
 ]
 
 

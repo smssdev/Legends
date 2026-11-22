@@ -1,0 +1,4 @@
+{
+  "drinks": ["espresso", "latte", "tea"],
+  "sizes": ["small", "large"]
+}

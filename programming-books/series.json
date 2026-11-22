@@ -1372,7 +1372,8 @@
             },
             {
               "en": "The AI Toolbox for Developers",
-              "ar": "صندوق أدوات الذكاء الاصطناعي للمطورين"
+              "ar": "صندوق أدوات الذكاء الاصطناعي للمطورين",
+              "src": "b7/tools"
             },
             {
               "en": "Prompting That Works",

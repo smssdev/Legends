@@ -1,0 +1,215 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/tools/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>The AI Toolbox for Developers</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise the three shapes every AI tool takes: a chat, a completion in your editor, and an agent</li>
+<li>see what a chat really sends each time, and why a new conversation forgets everything</li>
+<li>build a fill-in-the-middle completion, the way an editor assistant does</li>
+<li>give a model tools, and watch it decide when to use them</li>
+<li>measure speed and size: time to the first token, tokens per second, and how much code fits</li>
+<li>choose the right tool for a task, and know what each one sends out of your computer</li>
+</ul>
+</div>
+
+<p class="lead">There are hundreds of AI products for developers, and new ones every month. Their names change faster than any book. What does not change is how they are built: each one is a language model, like the one in Chapter 1, wrapped in one of three shapes. Learn the shapes and you can judge any new tool in an afternoon: what it is good at, what it costs, and what it can see. This chapter builds a small version of each shape with the book’s model, so that nothing about them is magic.</p>
+
+<aside class="bit" data-mood="wow"><p>The agent in this chapter failed the first time I ran it, in an instructive way, and the model got a multiplication wrong in one language and right in the other. Both runs are in the chapter, unedited.</p></aside>
+
+<h2>{{n}}.1 Three shapes</h2>
+
+<table>
+<thead><tr><th>Shape</th><th>What you give it</th><th>What it gives back</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td>Chat</td><td>A conversation</td><td>The next message</td><td>ChatGPT, Claude, Gemini</td></tr>
+<tr><td>Completion</td><td>The code around your cursor</td><td>The code that goes there</td><td>Suggestions in your editor, as in GitHub Copilot</td></tr>
+<tr><td>Agent</td><td>A goal, and tools</td><td>Actions, then an answer</td><td>Claude Code, coding agents in editors and on the command line</td></tr>
+</tbody>
+</table>
+
+<p>Many products offer two or all three: a chat panel, completions while you type, and an agent mode. Underneath, each is the same loop from Chapter 1, predicting one token at a time. What differs is what is put into the context, and what is done with the answer.</p>
+
+<h2>{{n}}.2 Chat: the whole conversation, every time</h2>
+
+<p>A chat session in <code>node-llama-cpp</code> keeps the conversation for you. This program asks two questions in one session, prints how many tokens the context holds after each answer, and then asks the second question again, in a new session:</p>
+
+<pre data-code="chat.mjs" data-title="chat.mjs"></pre>
+<pre data-term="chat.sh"></pre>
+
+<p>“And how do I write one?” only makes sense after the first question, and in the first session the model understood it: write a JSON file. The context had grown from 75 to 120 tokens, because the system prompt, the first question, the first answer and the second question were all in it. In the new session, the same five words meant nothing in particular, and the model answered a different question with confidence: how to write a variable.</p>
+
+<p>Every chat product works this way. The model remembers nothing; the application sends the conversation again with each message. Three practical rules follow:</p>
+<ul>
+<li>A long conversation gets slower and, with hosted models, more expensive with every message, because every message resends all the earlier ones.</li>
+<li>When the conversation outgrows the context window, the application must drop or summarise the oldest messages, and the model then forgets what you said at the start.</li>
+<li>When an assistant starts to confuse an old task with a new one, start a new conversation. It is not rude; it is a clean context.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>The <em>system prompt</em> is the instruction placed before the conversation: here, “a concise assistant for JavaScript developers, at most two lines”. Chat products let you set one, often called custom instructions or a project prompt. Put there what is true for every question: your language, your framework and versions, how long answers should be. Then you do not repeat it in every message.</p></aside>
+
+<h2>{{n}}.3 Completion: the code around your cursor</h2>
+
+<p>An editor assistant does not chat. As you type, it sends the code before the cursor and the code after it, and asks the model for the piece in between. This is called <em>fill in the middle</em>, and some models, like the book’s, were trained for it:</p>
+
+<pre data-code="complete.mjs" data-title="complete.mjs"></pre>
+<pre data-term="complete.sh"></pre>
+
+<p>The middle is reasonable code, but look at the end of the raw answer: a closing brace. The code after the cursor already has one, so accepting the raw text would leave two and break the file. The second run stops when the model writes a newline and a brace at the start of a line, which is what an editor does in its own way: it trims, checks the brackets, and shows only what fits.</p>
+
+<p>Notice also what the model assumed. The comment says “total price of an order” and nothing more, so it invented the shape of an item: <code>item.price</code> and <code>item.quantity</code>. If your items have <code>count</code>, the suggestion is wrong, and it looks exactly like right code. A completion knows only what is near the cursor, plus whatever other files the editor chose to send. Open the files it should know about, and name things clearly: the clearer the code around the cursor, the better the suggestion.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Completions arrive one Tab away, many times an hour. That is what makes them useful, and what makes them easy to accept without reading. Read each one as you would read a colleague’s code in review: the names, the edge cases, the units. A wrong field name accepted at 4 p.m. is a bug report at 9 a.m.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did the fresh session answer a different question?</li><li>Why can a chat with a hosted model get more expensive with every message?</li><li>What two pieces of text does an editor send for a completion?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Agents: a model that uses tools</h2>
+
+<p>An agent is a model that can ask your program to do things. You describe some functions; the model may answer with a call instead of text; your program runs the call and gives the result back; and the model continues, until it answers. Here the agent may list and read the files of a small project, and every call is printed:</p>
+
+<pre data-code="agent.mjs" data-from="^const functions" data-to="^}" data-title="agent.mjs (part)"></pre>
+<pre data-code="agent.mjs" data-from="^const tries" data-title="agent.mjs (part)"></pre>
+<pre data-term="agent.sh"></pre>
+
+<p>The first attempt is the instructive failure. The tools were there, and the model did not use them: nothing in the question said it was about a project, so the most likely answer was “I have no data”. The second attempt changed two things, a system prompt that says what the tools are for and a question that says “in this project”, and the model went to work: it listed the files, read <code>menu.json</code> because it looked promising, found no prices there, read <code>src/prices.mjs</code>, and answered correctly, naming the file.</p>
+
+<p>That is the whole idea of every coding agent, from the small one here to the products that edit whole repositories. The model plans; your program acts; the results go back into the context. Three consequences matter more than any feature list:</p>
+<ul>
+<li><strong>An agent can only be as good as its instructions and tools.</strong> The same model failed and succeeded with the same tools; only the words changed. Chapter 3 is about those words.</li>
+<li><strong>Tools are permissions.</strong> This agent can only read, inside one folder. An agent that can write files, run commands or call services can do damage when it is wrong. Give it the least it needs, and review what it did. Chapter 12 goes further.</li>
+<li><strong>Show the calls.</strong> The <code>[tool]</code> lines are how you know the answer came from the file, not from the model’s imagination. Good agent products show every step for the same reason.</li>
+</ul>
+
+<h2>{{n}}.5 Speed</h2>
+
+<p>Two numbers describe how fast a model feels: how long until the first token appears, and how many tokens follow per second.</p>
+
+<pre data-code="speed.mjs" data-from="^const start" data-title="speed.mjs (part)"></pre>
+<pre data-term="speed.sh"></pre>
+
+<p>On the book’s computer, a four-core processor with no graphics card, the first token comes in about a quarter of a second, and then eight tokens a second follow: a two-line answer in a few seconds, a full page in a couple of minutes. That is enough to learn with and to run small tasks, and it is why the book’s examples ask for short answers. Hosted models run on racks of accelerators and are usually many times faster, and a graphics card speeds a local model up a great deal. For completions in an editor, speed is everything: a suggestion that arrives after you have typed the line is useless, which is why editor tools use small, fast models and only a little context.</p>
+
+<h2>{{n}}.6 What the tool can see</h2>
+
+<p>An assistant can only use what is in its context. How much is that, against a real code base? This program counts the tokens in one library, <code>node-llama-cpp</code> itself:</p>
+
+<pre data-code="context.mjs" data-from="// " data-title="context.mjs (part)"></pre>
+<pre data-term="context.sh"></pre>
+
+<p>One mid-sized library is about 410,000 tokens. An 8,000-token window holds 2% of it; even a 128,000-token window, common in hosted models, holds less than a third. Your application, with its dependencies, is far larger. So every tool that works with code must <em>choose</em> what to send: the open files, files with similar names, the results of a search, the files an agent decided to read. When an assistant gets your code wrong, the first question is not “is the model clever enough?” but “did it see the right files?”</p>
+
+<p>And whatever a hosted tool sends leaves your computer. Before you use one at work, find out three things: what it sends (the current file, open files, the whole repository), where it goes and whether it is kept, and whether your company allows it. Chapter 15 covers this in detail; the short rule is that a secret in a file is a secret sent to the tool.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Keep secrets out of the files an assistant can see: in environment variables or a secret manager, never in the code, and never in a file you paste into a chat. Most tools also let you exclude files or folders; exclude anything that holds keys, customer data or configuration for production.</p></aside>
+
+<h2>{{n}}.7 Choosing a tool</h2>
+
+<table>
+<thead><tr><th>Task</th><th>Best shape</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Writing the next few lines</td><td>Completion</td><td>It sees the code around the cursor and answers instantly</td></tr>
+<tr><td>Understanding an error or an idea</td><td>Chat</td><td>You can ask, read, and ask again</td></tr>
+<tr><td>A change across several files</td><td>Agent</td><td>It can find and read the files itself, and make the edits</td></tr>
+<tr><td>A question about your own project</td><td>Agent, or chat with the files pasted</td><td>The answer is in your files, not in the model’s training</td></tr>
+<tr><td>Exact arithmetic, counts, sorting</td><td>A tool the model calls, or code you run</td><td>Models predict text; programs calculate (Project {{n}}.3)</td></tr>
+</tbody>
+</table>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>One endless chat for every task</td><td>Slow, costly answers mixed up with old tasks</td><td>A new conversation for each new task</td></tr>
+<tr><td>A follow-up in a new conversation</td><td>An answer to a different question</td><td>Give the full question, or continue the old conversation</td></tr>
+<tr><td>Accepting completions unread</td><td>Wrong field names and units that look right</td><td>Read each suggestion like code in review</td></tr>
+<tr><td>Tools without instructions</td><td>An agent that never uses them</td><td>Say what the tools are for, and what the question is about</td></tr>
+<tr><td>Giving an agent every permission</td><td>Damage when the model is wrong</td><td>The fewest tools it needs; review its actions</td></tr>
+<tr><td>Assuming the tool sees your project</td><td>Answers about code it never read</td><td>Open or paste the relevant files; ask what it read</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Every AI tool is a model in one of three shapes: a chat, a completion, or an agent with tools.</li>
+<li>A chat resends the whole conversation each time; the model remembers nothing, so a new conversation starts from zero.</li>
+<li>An editor completion fills the middle between the code before and after the cursor, and must be trimmed and read.</li>
+<li>An agent calls functions your program runs, and its results go back into the context. Its instructions decide whether it uses its tools; its tools decide what it can break.</li>
+<li>Speed is time to the first token and tokens per second. Context is limited, so every tool chooses what to send, and what it sends to a hosted model leaves your computer.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The new session’s context held only the system prompt and “And how do I write one?”; without the earlier question about JSON, “one” could mean anything, and the model picked a likely meaning. 2. Each message resends all the earlier ones, and hosted models charge for every token sent. 3. The code before the cursor and the code after it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects build one small piece of each shape: a chat in the terminal, the context selection an assistant makes, and a tool that makes a model exact.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A chat in the terminal</h3>
+<p class="project-goal">A program that reads questions line by line, answers them in one conversation, and starts over on <code>/reset</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> chat sessions, chat history, and reading standard input.</p>
+<ol class="steps">
+<li>Create one session and save its history before the first question.</li>
+<li>For each line, print it, then the answer; on <code>/reset</code>, restore the saved history.</li>
+<li>Ask a question, a follow-up, reset, and the same follow-up.</li>
+</ol>
+<pre data-code="repl.mjs" data-from="^const lines" data-title="repl.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/repl.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the first answer is wrong in a small way: listening to <code>data</code> gives chunks of the file, not lines. The model’s second answer is good because the conversation was there; after <code>/reset</code>, the same words got an answer about arrays. Reading line by line properly uses <code>readline</code>, as this program does with standard input.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A context budget</h3>
+<p class="project-goal">Given a folder and a number of tokens, decide which files fit, and say which were left out.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking a folder, counting tokens per file, and a simple selection policy.</p>
+<ol class="steps">
+<li>List every file under the folder and count its tokens with the model’s tokenizer.</li>
+<li>Sort by size and take files while they fit in the budget.</li>
+<li>Print each file as in or out, and the total used.</li>
+</ol>
+<pre data-code="budget.mjs" data-from="^const count" data-title="budget.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/budget.sh"></pre>
+<p class="hint"><strong>Hint:</strong> with 60 tokens, the policy kept the README and the menu, and left out <code>prices.mjs</code>, the one file that answers questions about prices. Smallest-first is simple, not smart. Real tools rank files by relevance to the question, which is the subject of Chapter 14.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A model that cannot get sums wrong</h3>
+<p class="project-goal">Give the model a calculator tool, and compare its answer to a sum with and without it.</p>
+<p class="project-skills"><strong>You will practise:</strong> defining a function for a model, validating what the model passes in, and comparing with an exact result.</p>
+<ol class="steps">
+<li>Define <code>calculate</code>, which accepts only digits, spaces and <code>+ - * / ( ) .</code>, and returns the result.</li>
+<li>Ask the same question in a session without functions and in one with the calculator.</li>
+<li>Print the exact answer, computed in JavaScript, for comparison.</li>
+</ol>
+<pre data-code="calc.mjs" data-from="^const calculate" data-to="^});" data-title="calc.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/calc.sh"></pre>
+<p class="hint"><strong>Hint:</strong> alone, the model worked step by step for a page (shortened above) and reached the right total. In the Arabic edition, the same model, asked the same question in Arabic, computed 48213 × 0.35 as 168,745.5, ten times too much, and answered 577,109.61 with the same confidence. With the calculator, both languages took one call and gave 403,976.73. A long, careful-looking working is not a proof. The check on the expression matters as much as the tool: it is what stops a model, or someone who controls its input, from running any JavaScript they like.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In <code>chat.mjs</code>, the context grew from 75 to 120 tokens. Estimate how many tokens it would hold after ten such questions, and what happens when it reaches the 2,048 of <code>contextSize</code>.</li>
+<li><span class="level">Easy</span> Run <code>budget.mjs</code> on a project of your own with a budget of 8,192. Which files are left out, and would you have chosen differently?</li>
+<li><span class="level">Medium</span> Add a third tool to the agent, <code>searchFiles(text)</code>, that returns the paths of files containing a word. Which questions does it answer with fewer calls than <code>listFiles</code> and <code>readFile</code>?</li>
+<li><span class="level">Medium</span> Remove the regular expression from <code>calculate</code>. Explain, with an example input, why that turns a calculator into something dangerous.</li>
+<li><span class="level">Challenge</span> Make <code>complete.mjs</code> stop at the end of the function without <code>customStopTriggers</code>, by counting braces in the text as it arrives. Which inputs would break a simple brace count?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Twice in this chapter, a few words decided whether the model succeeded. The next chapter is about those words: how to write instructions, give examples and constraints, ask for a format, and leave room for “I don’t know”, measured on the same model.</p>
+</div>
+</section>
