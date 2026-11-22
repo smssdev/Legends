@@ -1,0 +1,13 @@
+- heading "Menu" [level=2]
+- group:
+  - group "Latte Espresso and steamed milk 45 EGP":
+    - button
+    - button
+  - group "Mint tea Fresh mint, lightly sweet 30 EGP":
+    - button
+    - button
+  - group "Cherry cake Baked this morning 55 EGP":
+    - button
+    - button
+- text: "Total: 90 EGP"
+- button "Check out"

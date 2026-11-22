@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Testing: Unit, Widget, Golden and Integration"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "Chapter 11: Accessibility on Mobile"; } }
+@page ch11:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -159,7 +161,7 @@ Widget build(context, ref) =&gt;
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">167</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p">167</span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">184</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -4675,6 +4677,469 @@ all                            56/64   88%</pre></div>
 <p>The app passes its tests. Does it work for someone who cannot see the screen, who uses large text, or who navigates with a switch? The next chapter makes the app accessible, and proves it, with the same tools: semantics, tests and real screen readers.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b6/accessibility/en">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">Chapter 11</p><h1>Accessibility on Mobile</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read your app the way a screen reader does, through Flutter’s semantics tree</li>
+<li>name every control, merge what belongs together, and hide what is decoration</li>
+<li>turn Flutter’s accessibility guidelines into tests, and know what they cannot see</li>
+<li>make the reading order of an Arabic screen run right to left, not only its layout</li>
+<li>survive text at twice its size, and announce changes that cannot be seen</li>
+</ul>
+</div>
+
+<p class="lead">About one person in six lives with some disability, and almost everyone has a bad day: a cracked screen, bright sun, a broken arm, a phone held in one hand on a crowded bus. People use screen readers (TalkBack on Android, VoiceOver on iOS), larger text, a keyboard or a single switch, and higher contrast. An accessible app is not a separate app for them. It is the same app, built so that what the screen shows is also available as names, roles and actions.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Two results in this chapter surprised the author, and both are kept: a guideline that passed a grey that fails, and an Arabic screen that looked right to left but was read left to right. Sections 11.3 and 11.4 show the tests that found them.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>The semantics tree</span></h2>
+
+<p>Flutter draws every pixel itself, so the operating system cannot look inside the picture to find buttons and text. Next to the widget tree and the render tree, Flutter builds a third tree, the <dfn>semantics tree</dfn>: nodes with a label (“Add Latte”), a role (button, heading, text field), a state (selected, checked) and actions (tap, scroll). The platform hands this tree to TalkBack or VoiceOver; on the web, Flutter turns it into HTML elements with ARIA roles that the browser’s accessibility tree reads.</p>
+
+<p>Most widgets fill the tree well by themselves: <code>Text</code> gives its words, <code>ElevatedButton</code> says it is a button, <code>TextField</code> gives its label. The trouble starts with what we build ourselves from <code>GestureDetector</code>s, icons and containers.</p>
+
+<h2><span class="sec">11.2</span> <span>What a screen reader hears</span></h2>
+
+<p>Here is a menu written in a hurry. Each row has a photo, a name, a description, a price, a heart to save the drink and a plus to add it. The two icons are drawn by hand:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu_hurried.dart (part)</div><pre class="code">                        Text(<span class="s">&#x27;$price EGP&#x27;</span>),
+                        GestureDetector(
+                          onTap: () {},
+                          child: <span class="k">const</span> Icon(Icons.favorite_border, size: <span class="n">20</span>),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            width: <span class="n">28</span>,
+                            height: <span class="n">28</span>,
+                            decoration: BoxDecoration(
+                              color: colors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.add,</pre></div>
+
+<p>To hear what it says, the book’s screenshot tool asked the browser for its accessibility tree, the same tree a screen reader reads, from the real app built for the web:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>- heading &quot;Menu&quot; [level=2]
+- group:
+  - group &quot;Latte Espresso and steamed milk 45 EGP&quot;:
+    - button
+    - button
+  - group &quot;Mint tea Fresh mint, lightly sweet 30 EGP&quot;:
+    - button
+    - button
+  - group &quot;Cherry cake Baked this morning 55 EGP&quot;:
+    - button
+    - button
+- text: &quot;Total: 90 EGP&quot;
+- button &quot;Check out&quot;</pre></div>
+
+<p>A screen-reader user hears each drink, then “button”, “button”. Which one saves and which one adds? Nothing says. The careful version names each button after what it does and to which drink, merges the photo, name, description and price into one stop, and hides the photo, whose meaning the name already carries:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu_careful.dart (part)</div><pre class="code">                          child: MergeSemantics(
+                            child: Row(
+                              spacing: <span class="n">12</span>,
+                              children: [
+                                <span class="c line-bidi">// The photo is decoration: the name already says what it is.</span>
+                                ExcludeSemantics(
+                                  child: Container(
+                                    width: <span class="n">56</span>,
+                                    height: <span class="n">56</span>,
+                                    decoration: BoxDecoration(
+                                      color: Colors.brown,
+                                      borderRadius: BorderRadius.circular(<span class="n">12</span>),
+                                    ),
+                                    child: <span class="k">const</span> Icon(
+                                      Icons.local_cafe,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(name, style: text.titleMedium),
+                                      Text(
+                                        about,
+                                        style: text.bodySmall!.copyWith(
+                                          color: colors.onSurfaceVariant,
+                                        ),
+                                      ),
+                                      <span class="c line-bidi">// Under the name, not beside it: at large sizes a row has no width to spare.</span>
+                                      Text(
+                                        <span class="s">&#x27;$price EGP&#x27;</span>,
+                                        style: text.labelLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        <span class="c line-bidi">// Every icon button says what it does, and to which drink.</span>
+                        IconButton(
+                          tooltip: <span class="s">&#x27;Save $name&#x27;</span>,
+                          onPressed: () {},
+                          icon: <span class="k">const</span> Icon(Icons.favorite_border),
+                        ),
+                        IconButton.filled(
+                          tooltip: <span class="s">&#x27;Add $name&#x27;</span>,
+                          onPressed: () {},
+                          icon: <span class="k">const</span> Icon(Icons.add),</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>- heading &quot;Menu&quot; [level=2]
+- group:
+  - text: Latte Espresso and steamed milk 45 EGP
+  - button &quot;Save Latte&quot;
+  - button &quot;Add Latte&quot;
+  - text: Mint tea Fresh mint, lightly sweet 30 EGP
+  - button &quot;Save Mint tea&quot;
+  - button &quot;Add Mint tea&quot;
+  - text: Cherry cake Baked this morning 55 EGP
+  - button &quot;Save Cherry cake&quot;
+  - button &quot;Add Cherry cake&quot;
+- text: &quot;Total: 90 EGP&quot;
+- button &quot;Check out&quot;</pre></div>
+
+<ul>
+<li><code>tooltip</code> on an <code>IconButton</code> is its accessible name, and also the label that appears on a long press: one string serves both.</li>
+<li><code>MergeSemantics</code> turns its subtree into one node, read in one go. Use it for things that are one idea, like a menu item; not for things that are separate actions.</li>
+<li><code>ExcludeSemantics</code> removes decoration. An image that carries information needs a <code>semanticLabel</code> instead.</li>
+</ul>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-en-shots-hurried.png" alt=""></div>
+<figcaption>The hurried menu: small icons with no names</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-en-shots-careful.png" alt=""></div>
+<figcaption>The careful menu: the same screen, with names</figcaption>
+</figure>
+</div>
+
+<p>To the eye, the two screens are almost the same. To a screen reader, they are different apps.</p>
+
+<h2><span class="sec">11.3</span> <span>Guidelines as tests</span></h2>
+
+<p>Flutter’s test package includes accessibility guidelines that check a pumped screen: every tappable node has a label, every tap target is at least 48 × 48 (Android) or 44 × 44 (iOS), and text has enough contrast. A test runs all four on both menus:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/guidelines_test.dart (part)</div><pre class="code"><span class="k">const</span> guidelines = {
+  <span class="s">&#x27;labeled tap targets&#x27;</span>: labeledTapTargetGuideline,
+  <span class="s">&#x27;Android tap targets (48 x 48)&#x27;</span>: androidTapTargetGuideline,
+  <span class="s">&#x27;iOS tap targets (44 x 44)&#x27;</span>: iOSTapTargetGuideline,
+  <span class="s">&#x27;text contrast&#x27;</span>: textContrastGuideline,
+};
+
+<span class="k">Future</span>&lt;<span class="k">int</span>&gt; check(WidgetTester tester, <span class="k">String</span> name, Widget menu) <span class="k">async</span> {
+  <span class="k">final</span> semantics = tester.ensureSemantics();
+  <span class="k">await</span> tester.pumpWidget(cafe(menu));
+  <span class="k">var</span> failed = <span class="n">0</span>;
+  debugPrint(<span class="s">&#x27;$name menu:&#x27;</span>);
+  <span class="k">for</span> (<span class="k">final</span> MapEntry(key: rule, value: guideline) <span class="k">in</span> guidelines.entries) {
+    <span class="k">final</span> result = <span class="k">await</span> guideline.evaluate(tester);
+    <span class="k">if</span> (!result.passed) {
+      failed++;
+    }
+    <span class="k">final</span> first = result.reason?.split(<span class="s">&#x27;\n&#x27;</span>).first ?? <span class="s">&#x27;&#x27;</span>;
+    debugPrint(
+      <span class="s">&#x27;  ${result.passed ? &#x27;</span>pass<span class="s">&#x27; : &#x27;</span>FAIL<span class="s">&#x27;}  ${rule.padRight(30)}${first.length &gt; 70 ? &#x27;</span>${first.substring(<span class="n">0</span>, <span class="n">70</span>)}...<span class="s">&#x27; : first}&#x27;</span>,
+    );
+  }
+  semantics.dispose();
+  <span class="k">return</span> failed;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/guidelines_test.dart</span>
+00:00 +0: loading test/guidelines_test.dart
+00:00 +0: four accessibility guidelines, hurried and careful menus
+hurried menu:
+  FAIL  labeled tap targets           SemanticsNode#6(Rect.fromLTRB(728.0, 30.0, 748.0, 50.0), actions: [tap...
+  FAIL  Android tap targets (48 x 48) SemanticsNode#6(Rect.fromLTRB(728.0, 30.0, 748.0, 50.0), actions: [tap...
+  FAIL  iOS tap targets (44 x 44)     SemanticsNode#6(Rect.fromLTRB(728.0, 30.0, 748.0, 50.0), actions: [tap...
+  pass  text contrast                 
+careful menu:
+  pass  labeled tap targets           
+  pass  Android tap targets (48 x 48) 
+  pass  iOS tap targets (44 x 44)     
+  pass  text contrast                 
+00:00 +1: All tests passed!</pre></div>
+
+<p>The hurried menu fails three: its 20-pixel heart has no label, and it is too small to hit reliably. The careful menu passes all four. But look at the last line of the hurried menu: text contrast <em>passes</em>, for a description drawn in a light grey that is plainly hard to read. Checked on its own, the same grey fails clearly:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/contrast_alone_test.dart</span>
+00:00 +0: loading test/contrast_alone_test.dart
+00:00 +0: the grey description, checked on its own
+text contrast: FAIL
+Expected contrast ratio of at least 4.5 but found 1.79 for a font size of 12.0.
+00:00 +1: All tests passed!</pre></div>
+
+<p>Why did it pass in the menu? The contrast guideline looks for each semantics node’s label among the <code>Text</code> widgets on screen, and measures that text. In the menu, Flutter had combined each row’s name, description and price into one node, so its label was all three lines together, no single <code>Text</code> matched it, and nothing was measured. The guideline did not lie; it checked nothing and reported no failure.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>A passing accessibility guideline means “no problem found”, not “no problem”. Use the guidelines to catch missing labels and small targets, which they do reliably, and check colour contrast where it can be computed for certain: on the design tokens themselves, as the contrast test of Chapter 7 does for every pair of the theme. The careful menu’s description uses <code>onSurfaceVariant</code> on the surface, a pair Material’s colour scheme is built to keep readable, and one a token test like Chapter 7’s can check for every theme.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>Reading order, right to left</span></h2>
+
+<p>A screen reader moves through the semantics tree in its <dfn>traversal order</dfn>: top to bottom, and within a line, in the reading direction. In an Arabic app, the drink’s name is on the right and its buttons on the left, so the name should be read first. A test prints the first row as a screen reader would visit it, for the careful menu set up two ways:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/reading_order_test.dart (part)</div><pre class="code">    <span class="k">await</span> firstRow(
+      tester,
+      <span class="s">&#x27;Directionality only:&#x27;</span>,
+      MaterialApp(
+        key: <span class="k">const</span> ValueKey(<span class="n">1</span>),
+        builder: (context, child) =&gt;
+            Directionality(textDirection: TextDirection.rtl, child: child!),
+        home: <span class="k">const</span> CarefulMenu(),
+      ),
+    );
+    <span class="k">await</span> firstRow(
+      tester,
+      <span class="s">&#x27;Arabic locale:&#x27;</span>,
+      <span class="k">const</span> MaterialApp(
+        key: ValueKey(<span class="n">2</span>),
+        locale: Locale(<span class="s">&#x27;ar&#x27;</span>),
+        supportedLocales: [Locale(<span class="s">&#x27;ar&#x27;</span>)],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        home: CarefulMenu(),
+      ),
+    );
+    semantics.dispose();</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/reading_order_test.dart</span>
+00:00 +0: loading test/reading_order_test.dart
+00:00 +0: the reading order of a right-to-left menu
+Directionality only:  Add Latte  -&gt;  Save Latte  -&gt;  Latte
+Arabic locale:        Latte  -&gt;  Save Latte  -&gt;  Add Latte
+00:00 +1: All tests passed!</pre></div>
+
+<p>With only a <code>Directionality</code> widget, the screen <em>looks</em> right to left, but it is <em>read</em> left to right: “Add Latte” before the user has heard what Latte is. The direction of the semantics tree comes from higher up, from the app’s locale. With the Arabic locale and its localizations, both the layout and the reading order run right to left. The Arabic edition of this chapter’s apps uses that setup, the same one Chapter 13 of Book 5 used.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What does <code>MergeSemantics</code> do, and when should you not use it?</li><li>Why did the contrast guideline pass the hurried menu’s grey text?</li><li>What sets the reading order of a right-to-left screen?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">11.5</span> <span>Large text</span></h2>
+
+<p>Both Android and iOS let people make text larger, up to twice its size and more, and Flutter honours it through <code>MediaQuery.textScalerOf</code>. Layouts written for the default size break: rows run out of width, fixed heights cut words in half. The book’s demo apps take a text scale so that a test and a screenshot can try 200%:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/large_text_test.dart</span>
+00:00 +0: loading test/large_text_test.dart
+00:00 +0: the menus with text at twice the size
+hurried menu at 200%: A RenderFlex overflowed by 491 pixels on the right.
+careful menu at 200%: fits
+00:00 +1: All tests passed!</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-en-shots-hurried-large.png" alt=""></div>
+<figcaption>Hurried, at 200%: the total bar runs off the screen</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-en-shots-careful-large.png" alt=""></div>
+<figcaption>Careful, at 200%: everything wraps</figcaption>
+</figure>
+</div>
+
+<p>Two changes made the careful menu fit. The total bar is a <code>Wrap</code> with no fixed height, so the button moves to a second line when the line is full:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu_careful.dart (part)</div><pre class="code">            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              runSpacing: <span class="n">8</span>,
+              children: [
+                Text(<span class="s">&#x27;Total: 90 EGP&#x27;</span>, style: text.titleLarge),
+                FilledButton(onPressed: () {}, child: <span class="k">const</span> Text(<span class="s">&#x27;Check out&#x27;</span>)),
+              ],</pre></div>
+
+<p>And the price moved from beside the name to under it. The first careful version kept it beside the name; in English it fitted, but in Arabic, whose words are wider at this size, the test reported “A RenderFlex overflowed by 6.5 pixels on the right”. Test large text in every language you ship.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Once per feature, use it as your users would: with TalkBack or VoiceOver on and your eyes closed, with the largest text size, and with a keyboard only. Ten minutes finds what no guideline can: a screen that makes sense to the eye but not to the ear, a button that can be reached but not understood, an order that only works with a finger.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Icons drawn with <code>GestureDetector</code></td><td>“Button, button”: no names, small targets</td><td><code>IconButton</code> with a <code>tooltip</code></td></tr>
+<tr><td>Decorative images in the tree</td><td>Noise read aloud on every row</td><td><code>ExcludeSemantics</code>, or <code>semanticLabel</code> if it informs</td></tr>
+<tr><td>Trusting a passing contrast guideline</td><td>Unreadable text that “passed”</td><td>Contrast tests on the design tokens</td></tr>
+<tr><td><code>Directionality</code> instead of a locale</td><td>Arabic laid out right to left, read left to right</td><td>The Arabic locale with its localizations</td></tr>
+<tr><td>Fixed heights and crowded rows</td><td>Large text cut off or overflowing</td><td><code>Wrap</code>, no fixed heights, test at 200%</td></tr>
+<tr><td>Changes shown only visually</td><td>A screen-reader user never learns the order changed</td><td>An announcement (Project 11.1)</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Flutter builds a semantics tree of labels, roles, states and actions; screen readers and the browser read it.</li>
+<li>Name every control (<code>tooltip</code>, labels), merge what is one idea, hide what is decoration.</li>
+<li>The accessibility guidelines catch missing labels and small targets; contrast is checked for certain on the tokens.</li>
+<li>Right-to-left reading order comes from the locale, not from a <code>Directionality</code> widget.</li>
+<li>Test at 200% text in every language, and let layouts wrap instead of fixing sizes.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It combines its whole subtree into one semantics node, read in one go, like a menu item’s photo, name and price. Do not use it around things that are separate actions, such as two buttons: merged, they would become one node and the user could not reach them separately. 2. Because the guideline measures the <code>Text</code> widget whose words match a node’s label, and Flutter had merged each row’s texts into one node whose label matched no single <code>Text</code>; nothing was measured, so nothing failed. 3. The app’s locale: with the Arabic locale and its localizations, the semantics tree reads right to left. A <code>Directionality</code> widget alone mirrors the layout but leaves the reading order left to right.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects cover what the eye sees but the ear does not: a change on screen, the order of a form, and a control made by hand.</p>
+
+<div class="project">
+<p class="project-label">Project 11.1 · Easy</p>
+<h3>Announce what changed</h3>
+<p class="project-goal">When a drink is added, the badge on the cup changes, which a screen-reader user cannot see. Announce the change, and prove it with a test.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>SemanticsService.sendAnnouncement</code>, and <code>tester.takeAnnouncements</code>.</p>
+<ol class="steps">
+<li>After the state changes, send an announcement with the drink and the new count, in the screen’s text direction.</li>
+<li>In a test, tap twice and take the announcements.</li>
+<li>Print them, and expect two.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/announce.dart (part)</div><pre class="code">  <span class="k">void</span> add() {
+    setState(() =&gt; count++);
+    <span class="c line-bidi">// Tell screen reader users what changed, since they cannot see the badge.</span>
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      <span class="s">&#x27;Latte added, $count items in your order&#x27;</span>,
+      Directionality.of(context),
+    );
+  }</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/announce_test.dart</span>
+00:00 +0: loading test/announce_test.dart
+00:00 +0: adding a drink is announced
+announced (polite): &quot;Latte added, 1 items in your order&quot;
+announced (polite): &quot;Latte added, 2 items in your order&quot;
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> announce results, not actions: “Latte added, 2 items”, not “button pressed”. And keep announcements polite (the default), so they wait for the screen reader to finish what it is saying.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 11.2 · Medium</p>
+<h3>The order of the Tab key</h3>
+<p class="project-goal">The checkout page has its Pay button in the app bar, at the top, so keyboard and switch users reach it before the fields they must fill. Make Tab go name, phone, then Pay.</p>
+<p class="project-skills"><strong>You will practise:</strong> focus traversal, <code>FocusTraversalGroup</code>, <code>OrderedTraversalPolicy</code> and <code>NumericFocusOrder</code>, and key events in tests.</p>
+<ol class="steps">
+<li>Give each focusable widget a <code>FocusNode</code> with a <code>debugLabel</code>, so a test can say which one has focus.</li>
+<li>Press Tab three times in a test and print the labels, before and after the fix.</li>
+<li>Wrap the page in a <code>FocusTraversalGroup</code> with an <code>OrderedTraversalPolicy</code>, and number the three widgets.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/checkout.dart (part)</div><pre class="code">        actions: [
+          ordered
+              ? FocusTraversalOrder(
+                  order: <span class="k">const</span> NumericFocusOrder(<span class="n">3</span>),
+                  child: pay,
+                )
+              : pay,
+        ],
+      ),
+      body: Padding(
+        padding: <span class="k">const</span> EdgeInsets.all(<span class="n">16</span>),
+        child: Column(
+          spacing: <span class="n">16</span>,
+          children: [
+            FocusTraversalOrder(
+              order: <span class="k">const</span> NumericFocusOrder(<span class="n">1</span>),
+              child: TextField(
+                focusNode: FocusNode(debugLabel: <span class="s">&#x27;name&#x27;</span>),
+                decoration: <span class="k">const</span> InputDecoration(labelText: <span class="s">&#x27;Your name&#x27;</span>),
+              ),
+            ),
+            FocusTraversalOrder(
+              order: <span class="k">const</span> NumericFocusOrder(<span class="n">2</span>),
+              child: TextField(
+                focusNode: FocusNode(debugLabel: <span class="s">&#x27;phone&#x27;</span>),
+                decoration: <span class="k">const</span> InputDecoration(labelText: <span class="s">&#x27;Phone&#x27;</span>),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    <span class="k">return</span> ordered</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/focus_order_test.dart</span>
+00:00 +0: loading test/focus_order_test.dart
+00:00 +0: the order of the Tab key
+by position: pay -&gt; name -&gt; phone
+in order:    name -&gt; phone -&gt; pay
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 11.3 · Challenge</p>
+<h3>A cup-size picker that explains itself</h3>
+<p class="project-goal">A custom picker of three rounded chips, made from <code>GestureDetector</code>s. Make each chip a button, in a group where one is selected, with a clear label, large enough to tap, and prove it.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>Semantics</code> widget, <code>isSemantics</code>, <code>tester.semantics.tap</code>, and guidelines on a custom control.</p>
+<ol class="steps">
+<li>Wrap each chip in <code>Semantics</code> with <code>button</code>, <code>selected</code>, <code>inMutuallyExclusiveGroup</code>, a label and an <code>onTap</code>, and exclude the chip’s own text from the tree.</li>
+<li>In a test, check the flags of the selected and unselected chips with <code>isSemantics</code>.</li>
+<li>Tap “Large” through the semantics tree, as a screen reader’s double tap would, and check that the selection moved; then run the tap-target and contrast guidelines.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/cup_size.dart (part)</div><pre class="code">          Semantics(
+            button: <span class="k">true</span>,
+            selected: i == chosen,
+            inMutuallyExclusiveGroup: <span class="k">true</span>,
+            label: <span class="s">&#x27;Cup size: $size&#x27;</span>,
+            excludeSemantics: <span class="k">true</span>,
+            onTap: () =&gt; setState(() =&gt; chosen = i),</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-en-shots-cup-size.png" alt=""></div>
+<figcaption>Project 11.3: three chips, each a labelled button</figcaption>
+</figure>
+</div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/cup_size_test.dart</span>
+00:00 +0: loading test/cup_size_test.dart
+00:00 +0: the cup sizes are buttons in a group, one selected
+a screen reader double-tap on Large selected it, and Medium is no longer selected
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> before writing a custom control, check whether a Material one does the job: a <code>SegmentedButton</code> is already a group of selectable buttons with all these semantics built in.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Give the hurried menu’s photo a meaning: say it shows the drink in its real cup. What should the photo’s semantics be now?</li>
+<li><span class="level">Easy</span> The careful menu’s plus button says “Add Latte”. Why is “Add” alone not enough, even though it sits in Latte’s row?</li>
+<li><span class="level medium">Medium</span> The browser’s tree already shows “Menu” as a heading, though no code asked for one. Who made it a heading? Then make the total a live region. What does that change for a screen-reader user?</li>
+<li><span class="level medium">Medium</span> Write a test that fails if any <code>IconButton</code> in the app has no tooltip. Why might it be stricter than <code>labeledTapTargetGuideline</code>?</li>
+<li><span class="level hard">Challenge</span> Write a test that prints the whole careful menu as a screen reader would visit it, in Arabic and in English, and compare the two orders. Which nodes move, and which stay in place?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 12</p>
+<p>The app now works for everyone who opens it. The next chapter is about the moments it is closed: push notifications that bring people back, and work that runs in the background, within the strict limits Android and iOS set.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4790,6 +5255,16 @@ all                            56/64   88%</pre></div>
 <li>Pump the screen with a <code>FakeMenu</code> whose <code>Completer</code> is never completed, then <code>expect(find.textContaining('Total'), findsNothing)</code> and <code>expect(find.byType(CircularProgressIndicator), findsOneWidget)</code>. It passes today because the total is built inside the data branch; the test makes sure nobody moves it out of there without noticing.</li>
 <li>Load a font file before the test draws, and use it in the theme: <code>final loader = FontLoader('Roboto')..addFont(rootBundle.load('assets/fonts/Roboto-Regular.ttf')); await loader.load();</code>, with <code>ThemeData(fontFamily: 'Roboto')</code>, and the same for the icon font. You gain images a designer can review, and catch problems like text that overflows or wraps. You risk goldens that differ between machines, because real fonts are drawn with anti-aliasing that depends on the platform: generate and compare such goldens on one kind of machine only, usually the CI runner.</li>
 <li>A Linux CI runner can run it as this chapter did: it needs Flutter, the Linux desktop tools (<code>clang</code>, <code>cmake</code>, <code>ninja-build</code>, <code>pkg-config</code>, <code>libgtk-3-dev</code>) and a virtual screen, then <code>xvfb-run flutter test integration_test -d linux</code>. The first build takes a minute or two and each journey a few seconds; keep the pull-request suite under about ten minutes, and run longer journeys, or the same tests on an Android emulator, after merging or every night.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 11</h2>
+<ol class="exercises">
+<li>It now carries information, so it must stay in the tree with a description: <code>Image.asset('assets/latte.jpg', semanticLabel: 'Latte in its tall glass cup')</code>, or, for a drawn picture like the hurried menu’s, <code>Semantics(image: true, label: '…', child: …)</code> instead of <code>ExcludeSemantics</code>. Describe what the picture adds, not that it is a picture: screen readers already say “image”.</li>
+<li>Because screen-reader users often move by element type, not by row: VoiceOver’s rotor and TalkBack’s navigation can jump from button to button, and Android and iOS can list all the buttons on a screen. Out of their rows, three buttons called “Add” cannot be told apart; “Add Latte”, “Add Mint tea” and “Add Cherry cake” can.</li>
+<li><code>AppBar</code> did: it marks its title as a header that names the route, which the web build turned into a heading. For the total, wrap it in <code>Semantics(liveRegion: true, child: …)</code>: on Android, TalkBack reads it again each time its text changes, without the user moving to it. Live regions are not honoured the same way on every platform, so for a change that matters, also send an announcement, as in Project 11.1.</li>
+<li>Find every <code>IconButton</code> with <code>find.byType(IconButton)</code>, read <code>tester.widget&lt;IconButton&gt;(…).tooltip</code>, and fail with the list of those without one. It is stricter because <code>labeledTapTargetGuideline</code> accepts any label, from any source, and only for targets on screen in that test; the tooltip rule also guarantees the long-press label sighted users see, and covers every icon button the test pumps, consistently, as a house rule.</li>
+<li>Walk the tree in traversal order (as <code>heard</code> does in the reading-order test) and print every name. Nothing moves: in both languages each row is read as drink, “Save”, “Add”, and the total before “Check out”, exactly as the browser’s trees in this chapter show. In Arabic the row is mirrored and read in the mirrored direction, so the order for the listener is the same, which is what a correct right-to-left setup should give. With a <code>Directionality</code> widget alone, every row would be read backwards.</li>
 </ol>
 
 </section>

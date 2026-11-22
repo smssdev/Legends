@@ -1,0 +1,207 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/accessibility/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Accessibility on Mobile</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read your app the way a screen reader does, through Flutter’s semantics tree</li>
+<li>name every control, merge what belongs together, and hide what is decoration</li>
+<li>turn Flutter’s accessibility guidelines into tests, and know what they cannot see</li>
+<li>make the reading order of an Arabic screen run right to left, not only its layout</li>
+<li>survive text at twice its size, and announce changes that cannot be seen</li>
+</ul>
+</div>
+
+<p class="lead">About one person in six lives with some disability, and almost everyone has a bad day: a cracked screen, bright sun, a broken arm, a phone held in one hand on a crowded bus. People use screen readers (TalkBack on Android, VoiceOver on iOS), larger text, a keyboard or a single switch, and higher contrast. An accessible app is not a separate app for them. It is the same app, built so that what the screen shows is also available as names, roles and actions.</p>
+
+<aside class="bit" data-mood="think"><p>Two results in this chapter surprised the author, and both are kept: a guideline that passed a grey that fails, and an Arabic screen that looked right to left but was read left to right. Sections {{n}}.3 and {{n}}.4 show the tests that found them.</p></aside>
+
+<h2>{{n}}.1 The semantics tree</h2>
+
+<p>Flutter draws every pixel itself, so the operating system cannot look inside the picture to find buttons and text. Next to the widget tree and the render tree, Flutter builds a third tree, the <dfn>semantics tree</dfn>: nodes with a label (“Add Latte”), a role (button, heading, text field), a state (selected, checked) and actions (tap, scroll). The platform hands this tree to TalkBack or VoiceOver; on the web, Flutter turns it into HTML elements with ARIA roles that the browser’s accessibility tree reads.</p>
+
+<p>Most widgets fill the tree well by themselves: <code>Text</code> gives its words, <code>ElevatedButton</code> says it is a button, <code>TextField</code> gives its label. The trouble starts with what we build ourselves from <code>GestureDetector</code>s, icons and containers.</p>
+
+<h2>{{n}}.2 What a screen reader hears</h2>
+
+<p>Here is a menu written in a hurry. Each row has a photo, a name, a description, a price, a heart to save the drink and a plus to add it. The two icons are drawn by hand:</p>
+
+<pre data-code="lib/menu_hurried.dart" data-from="Text('$price" data-to="Icons.add," data-title="lib/menu_hurried.dart (part)"></pre>
+
+<p>To hear what it says, the book’s screenshot tool asked the browser for its accessibility tree, the same tree a screen reader reads, from the real app built for the web:</p>
+
+<pre data-term="shots/hurried-aria.txt"></pre>
+
+<p>A screen-reader user hears each drink, then “button”, “button”. Which one saves and which one adds? Nothing says. The careful version names each button after what it does and to which drink, merges the photo, name, description and price into one stop, and hides the photo, whose meaning the name already carries:</p>
+
+<pre data-code="lib/menu_careful.dart" data-from="child: MergeSemantics(" data-to="icon: const Icon(Icons.add)" data-title="lib/menu_careful.dart (part)"></pre>
+<pre data-term="shots/careful-aria.txt"></pre>
+
+<ul>
+<li><code>tooltip</code> on an <code>IconButton</code> is its accessible name, and also the label that appears on a long press: one string serves both.</li>
+<li><code>MergeSemantics</code> turns its subtree into one node, read in one go. Use it for things that are one idea, like a menu item; not for things that are separate actions.</li>
+<li><code>ExcludeSemantics</code> removes decoration. An image that carries information needs a <code>semanticLabel</code> instead.</li>
+</ul>
+
+<div class="phones">
+<figure data-img="shots/hurried.png" data-frame="phone">
+<figcaption>The hurried menu: small icons with no names</figcaption>
+</figure>
+<figure data-img="shots/careful.png" data-frame="phone">
+<figcaption>The careful menu: the same screen, with names</figcaption>
+</figure>
+</div>
+
+<p>To the eye, the two screens are almost the same. To a screen reader, they are different apps.</p>
+
+<h2>{{n}}.3 Guidelines as tests</h2>
+
+<p>Flutter’s test package includes accessibility guidelines that check a pumped screen: every tappable node has a label, every tap target is at least 48 × 48 (Android) or 44 × 44 (iOS), and text has enough contrast. A test runs all four on both menus:</p>
+
+<pre data-code="test/guidelines_test.dart" data-from="^const guidelines" data-to="^}" data-title="test/guidelines_test.dart (part)"></pre>
+<pre data-term="guidelines-test.sh"></pre>
+
+<p>The hurried menu fails three: its 20-pixel heart has no label, and it is too small to hit reliably. The careful menu passes all four. But look at the last line of the hurried menu: text contrast <em>passes</em>, for a description drawn in a light grey that is plainly hard to read. Checked on its own, the same grey fails clearly:</p>
+
+<pre data-term="contrast-alone-test.sh"></pre>
+
+<p>Why did it pass in the menu? The contrast guideline looks for each semantics node’s label among the <code>Text</code> widgets on screen, and measures that text. In the menu, Flutter had combined each row’s name, description and price into one node, so its label was all three lines together, no single <code>Text</code> matched it, and nothing was measured. The guideline did not lie; it checked nothing and reported no failure.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>A passing accessibility guideline means “no problem found”, not “no problem”. Use the guidelines to catch missing labels and small targets, which they do reliably, and check colour contrast where it can be computed for certain: on the design tokens themselves, as the contrast test of Chapter 7 does for every pair of the theme. The careful menu’s description uses <code>onSurfaceVariant</code> on the surface, a pair Material’s colour scheme is built to keep readable, and one a token test like Chapter 7’s can check for every theme.</p></aside>
+
+<h2>{{n}}.4 Reading order, right to left</h2>
+
+<p>A screen reader moves through the semantics tree in its <dfn>traversal order</dfn>: top to bottom, and within a line, in the reading direction. In an Arabic app, the drink’s name is on the right and its buttons on the left, so the name should be read first. A test prints the first row as a screen reader would visit it, for the careful menu set up two ways:</p>
+
+<pre data-code="test/reading_order_test.dart" data-from="await firstRow(" data-to="semantics.dispose" data-title="test/reading_order_test.dart (part)"></pre>
+<pre data-term="reading-order-test.sh"></pre>
+
+<p>With only a <code>Directionality</code> widget, the screen <em>looks</em> right to left, but it is <em>read</em> left to right: “Add Latte” before the user has heard what Latte is. The direction of the semantics tree comes from higher up, from the app’s locale. With the Arabic locale and its localizations, both the layout and the reading order run right to left. The Arabic edition of this chapter’s apps uses that setup, the same one Chapter 13 of Book 5 used.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What does <code>MergeSemantics</code> do, and when should you not use it?</li><li>Why did the contrast guideline pass the hurried menu’s grey text?</li><li>What sets the reading order of a right-to-left screen?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Large text</h2>
+
+<p>Both Android and iOS let people make text larger, up to twice its size and more, and Flutter honours it through <code>MediaQuery.textScalerOf</code>. Layouts written for the default size break: rows run out of width, fixed heights cut words in half. The book’s demo apps take a text scale so that a test and a screenshot can try 200%:</p>
+
+<pre data-term="large-text-test.sh"></pre>
+
+<div class="phones">
+<figure data-img="shots/hurried-large.png" data-frame="phone">
+<figcaption>Hurried, at 200%: the total bar runs off the screen</figcaption>
+</figure>
+<figure data-img="shots/careful-large.png" data-frame="phone">
+<figcaption>Careful, at 200%: everything wraps</figcaption>
+</figure>
+</div>
+
+<p>Two changes made the careful menu fit. The total bar is a <code>Wrap</code> with no fixed height, so the button moves to a second line when the line is full:</p>
+
+<pre data-code="lib/menu_careful.dart" data-from="child: Wrap(" data-to="^              ]," data-title="lib/menu_careful.dart (part)"></pre>
+
+<p>And the price moved from beside the name to under it. The first careful version kept it beside the name; in English it fitted, but in Arabic, whose words are wider at this size, the test reported “A RenderFlex overflowed by 6.5 pixels on the right”. Test large text in every language you ship.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Once per feature, use it as your users would: with TalkBack or VoiceOver on and your eyes closed, with the largest text size, and with a keyboard only. Ten minutes finds what no guideline can: a screen that makes sense to the eye but not to the ear, a button that can be reached but not understood, an order that only works with a finger.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Icons drawn with <code>GestureDetector</code></td><td>“Button, button”: no names, small targets</td><td><code>IconButton</code> with a <code>tooltip</code></td></tr>
+<tr><td>Decorative images in the tree</td><td>Noise read aloud on every row</td><td><code>ExcludeSemantics</code>, or <code>semanticLabel</code> if it informs</td></tr>
+<tr><td>Trusting a passing contrast guideline</td><td>Unreadable text that “passed”</td><td>Contrast tests on the design tokens</td></tr>
+<tr><td><code>Directionality</code> instead of a locale</td><td>Arabic laid out right to left, read left to right</td><td>The Arabic locale with its localizations</td></tr>
+<tr><td>Fixed heights and crowded rows</td><td>Large text cut off or overflowing</td><td><code>Wrap</code>, no fixed heights, test at 200%</td></tr>
+<tr><td>Changes shown only visually</td><td>A screen-reader user never learns the order changed</td><td>An announcement (Project {{n}}.1)</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Flutter builds a semantics tree of labels, roles, states and actions; screen readers and the browser read it.</li>
+<li>Name every control (<code>tooltip</code>, labels), merge what is one idea, hide what is decoration.</li>
+<li>The accessibility guidelines catch missing labels and small targets; contrast is checked for certain on the tokens.</li>
+<li>Right-to-left reading order comes from the locale, not from a <code>Directionality</code> widget.</li>
+<li>Test at 200% text in every language, and let layouts wrap instead of fixing sizes.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It combines its whole subtree into one semantics node, read in one go, like a menu item’s photo, name and price. Do not use it around things that are separate actions, such as two buttons: merged, they would become one node and the user could not reach them separately. 2. Because the guideline measures the <code>Text</code> widget whose words match a node’s label, and Flutter had merged each row’s texts into one node whose label matched no single <code>Text</code>; nothing was measured, so nothing failed. 3. The app’s locale: with the Arabic locale and its localizations, the semantics tree reads right to left. A <code>Directionality</code> widget alone mirrors the layout but leaves the reading order left to right.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects cover what the eye sees but the ear does not: a change on screen, the order of a form, and a control made by hand.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Announce what changed</h3>
+<p class="project-goal">When a drink is added, the badge on the cup changes, which a screen-reader user cannot see. Announce the change, and prove it with a test.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>SemanticsService.sendAnnouncement</code>, and <code>tester.takeAnnouncements</code>.</p>
+<ol class="steps">
+<li>After the state changes, send an announcement with the drink and the new count, in the screen’s text direction.</li>
+<li>In a test, tap twice and take the announcements.</li>
+<li>Print them, and expect two.</li>
+</ol>
+<pre data-code="lib/announce.dart" data-from="  void add()" data-to="^  }" data-title="lib/announce.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/announce-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> announce results, not actions: “Latte added, 2 items”, not “button pressed”. And keep announcements polite (the default), so they wait for the screen reader to finish what it is saying.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>The order of the Tab key</h3>
+<p class="project-goal">The checkout page has its Pay button in the app bar, at the top, so keyboard and switch users reach it before the fields they must fill. Make Tab go name, phone, then Pay.</p>
+<p class="project-skills"><strong>You will practise:</strong> focus traversal, <code>FocusTraversalGroup</code>, <code>OrderedTraversalPolicy</code> and <code>NumericFocusOrder</code>, and key events in tests.</p>
+<ol class="steps">
+<li>Give each focusable widget a <code>FocusNode</code> with a <code>debugLabel</code>, so a test can say which one has focus.</li>
+<li>Press Tab three times in a test and print the labels, before and after the fix.</li>
+<li>Wrap the page in a <code>FocusTraversalGroup</code> with an <code>OrderedTraversalPolicy</code>, and number the three widgets.</li>
+</ol>
+<pre data-code="lib/checkout.dart" data-from="actions: [" data-to="return ordered" data-title="lib/checkout.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/focus-order-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A cup-size picker that explains itself</h3>
+<p class="project-goal">A custom picker of three rounded chips, made from <code>GestureDetector</code>s. Make each chip a button, in a group where one is selected, with a clear label, large enough to tap, and prove it.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>Semantics</code> widget, <code>isSemantics</code>, <code>tester.semantics.tap</code>, and guidelines on a custom control.</p>
+<ol class="steps">
+<li>Wrap each chip in <code>Semantics</code> with <code>button</code>, <code>selected</code>, <code>inMutuallyExclusiveGroup</code>, a label and an <code>onTap</code>, and exclude the chip’s own text from the tree.</li>
+<li>In a test, check the flags of the selected and unselected chips with <code>isSemantics</code>.</li>
+<li>Tap “Large” through the semantics tree, as a screen reader’s double tap would, and check that the selection moved; then run the tap-target and contrast guidelines.</li>
+</ol>
+<pre data-code="lib/cup_size.dart" data-from="Semantics(" data-to="onTap: () =&gt; setState" data-title="lib/cup_size.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<div class="phones">
+<figure data-img="shots/cup-size.png" data-frame="phone">
+<figcaption>Project {{n}}.3: three chips, each a labelled button</figcaption>
+</figure>
+</div>
+<pre data-term="projects/cup-size-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> before writing a custom control, check whether a Material one does the job: a <code>SegmentedButton</code> is already a group of selectable buttons with all these semantics built in.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Give the hurried menu’s photo a meaning: say it shows the drink in its real cup. What should the photo’s semantics be now?</li>
+<li><span class="level">Easy</span> The careful menu’s plus button says “Add Latte”. Why is “Add” alone not enough, even though it sits in Latte’s row?</li>
+<li><span class="level">Medium</span> The browser’s tree already shows “Menu” as a heading, though no code asked for one. Who made it a heading? Then make the total a live region. What does that change for a screen-reader user?</li>
+<li><span class="level">Medium</span> Write a test that fails if any <code>IconButton</code> in the app has no tooltip. Why might it be stricter than <code>labeledTapTargetGuideline</code>?</li>
+<li><span class="level">Challenge</span> Write a test that prints the whole careful menu as a screen reader would visit it, in Arabic and in English, and compare the two orders. Which nodes move, and which stay in place?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The app now works for everyone who opens it. The next chapter is about the moments it is closed: push notifications that bring people back, and work that runs in the background, within the strict limits Android and iOS set.</p>
+</div>
+</section>

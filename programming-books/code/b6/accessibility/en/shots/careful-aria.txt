@@ -1,0 +1,13 @@
+- heading "Menu" [level=2]
+- group:
+  - text: Latte Espresso and steamed milk 45 EGP
+  - button "Save Latte"
+  - button "Add Latte"
+  - text: Mint tea Fresh mint, lightly sweet 30 EGP
+  - button "Save Mint tea"
+  - button "Add Mint tea"
+  - text: Cherry cake Baked this morning 55 EGP
+  - button "Save Cherry cake"
+  - button "Add Cherry cake"
+- text: "Total: 90 EGP"
+- button "Check out"
