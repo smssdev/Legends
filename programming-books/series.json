@@ -1236,7 +1236,8 @@
             },
             {
               "en": "Performance: Jank, Memory and Startup",
-              "ar": "الأداء: التقطّع والذاكرة وسرعة الفتح"
+              "ar": "الأداء: التقطّع والذاكرة وسرعة الفتح",
+              "src": "b6/performance"
             },
             {
               "en": "Testing: Unit, Widget, Golden and Integration",

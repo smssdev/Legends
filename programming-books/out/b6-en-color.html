@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Animations That Feel Native"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: Performance: Jank, Memory and Startup"; } }
+@page ch09:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -155,7 +157,7 @@ Widget build(context, ref) =&gt;
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">136</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">150</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -3784,6 +3786,389 @@ halfway through the push: normal 0.95, reduced motion: no fade at all
 <p>Smooth motion needs every frame on time: 16 milliseconds at 60 Hz, 8 at 120. The next chapter measures frames, finds the work that makes them late, and fixes it: rebuilds, layouts, images and lists, with DevTools and with tests.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b6/performance/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>Performance: Jank, Memory and Startup</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>think in frames: 16 milliseconds at 60 Hz, 8 at 120, and what happens when a frame is late</li>
+<li>rebuild only what changed, and prove it by counting rebuilds in a test</li>
+<li>decode images at the size they are shown, and measure the memory you save</li>
+<li>start an app faster by running independent work together and showing something at once</li>
+<li>keep heavy work off the main isolate, and keep repaints in their own layer</li>
+</ul>
+</div>
+
+<p class="lead">People rarely say an app is slow. They say it “feels cheap”, “stutters”, “heats my phone”, “takes forever to open”. Each of those has a cause that can be measured: a frame that took too long, a picture that filled the memory, a startup that waited for things one by one. This chapter measures each cause with a test that prints numbers, fixes it, and measures again.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The tests in this chapter count things: rebuilds, paints, bytes, frames. Counts are the same on every machine, so they make good tests. Milliseconds depend on the phone: section 9.5 shows how to measure those on a real device, where they mean something.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>The frame budget</span></h2>
+
+<p>A screen at 60 Hz shows a new picture every 16.7 milliseconds; at 120 Hz, every 8.3. For each picture, Flutter does its work in two places. On the <dfn>UI thread</dfn>, the main isolate where your Dart code runs, it builds widgets, lays them out and records what to paint. On the <dfn>raster thread</dfn>, the engine turns those records into pixels on the GPU. If either side misses the deadline, the screen shows the previous picture again, and the eye sees a stutter: <dfn>jank</dfn>.</p>
+
+<p>Three rules follow from this:</p>
+<ul>
+<li><strong>Do less per frame.</strong> Every widget rebuilt, every row built, every layer painted costs time in the frame that needs it.</li>
+<li><strong>Do heavy work elsewhere.</strong> While your Dart code parses a large JSON on the UI thread, no frame can be built at all.</li>
+<li><strong>Measure in profile mode.</strong> Debug builds are many times slower than release builds, on purpose, to support hot reload and assertions. Never judge speed in debug; use <code>flutter run --profile</code> on a real phone.</li>
+</ul>
+
+<h2><span class="sec">9.2</span> <span>Rebuild less</span></h2>
+
+<p>The order page has thirty drinks and a badge with the number of items. The first version keeps the number in the page’s state:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_slow.dart (part)</div><pre class="code"><span class="k">class</span> _SlowOrderPageState <span class="k">extends</span> State&lt;SlowOrderPage&gt; {
+  <span class="k">var</span> count = <span class="n">0</span>;
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(
+        title: <span class="k">const</span> Text(<span class="s">&#x27;Your order&#x27;</span>),
+        actions: [
+          Badge.count(count: count, child: <span class="k">const</span> Icon(Icons.local_cafe)),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(children: [<span class="k">for</span> (<span class="k">var</span> n = <span class="n">1</span>; n &lt;= <span class="n">30</span>; n++) DrinkRow(n: n)]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =&gt; setState(() =&gt; count++),
+        child: <span class="k">const</span> Icon(Icons.add),
+      ),
+    );
+  }
+}</pre></div>
+
+<p>It looks harmless. But <code>setState</code> rebuilds the whole <code>build</code> method, and the rows are new objects each time, so each one is built again. Each row counts its builds, and a test taps the button once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/rebuilds_test.dart (part)</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">int</span>&gt; rowsRebuiltByOneTap(WidgetTester tester, Widget page) <span class="k">async</span> {
+  <span class="k">await</span> tester.pumpWidget(MaterialApp(home: page));
+  rowBuilds = <span class="n">0</span>;
+  <span class="k">await</span> tester.tap(find.byType(FloatingActionButton));
+  <span class="k">await</span> tester.pump();
+  expect(find.text(<span class="s">&#x27;1&#x27;</span>), findsOneWidget);
+  <span class="k">return</span> rowBuilds;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/rebuilds_test.dart</span>
+00:00 +0: loading test/rebuilds_test.dart
+00:00 +0: one tap, how many rows are rebuilt
+rows rebuilt by one tap: slow page 30, fast page 0
+00:01 +1: All tests passed!</pre></div>
+
+<p>Thirty rows rebuilt to change one number. The fast version makes two changes:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_fast.dart (part)</div><pre class="code">        actions: [
+          ValueListenableBuilder(
+            valueListenable: count,
+            builder: (context, value, child) =&gt;
+                Badge.count(count: value, child: child),
+            child: <span class="k">const</span> Icon(Icons.local_cafe),
+          ),
+        ],
+      ),
+      body: <span class="k">const</span> DrinkColumn(),
+      floatingActionButton: FloatingActionButton(</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_fast.dart (part)</div><pre class="code"><span class="k">class</span> DrinkColumn <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> DrinkColumn({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) =&gt; SingleChildScrollView(
+    child: Column(children: [<span class="k">for</span> (<span class="k">var</span> n = <span class="n">1</span>; n &lt;= <span class="n">30</span>; n++) DrinkRow(n: n)]),
+  );
+}</pre></div>
+
+<ul>
+<li>The count is a <code>ValueNotifier</code>, and only a <code>ValueListenableBuilder</code> around the badge listens to it. The page itself never rebuilds. (A Riverpod provider watched only by the badge, as in Chapter 3, does the same.)</li>
+<li>The rows live in their own widget, created with <code>const</code>. A <code>const</code> widget is the same object every time, and Flutter skips rebuilding a widget that has not changed.</li>
+</ul>
+
+<p>Zero rows rebuilt. Thirty rows are nothing for a phone; but the same mistake at the top of a large screen, with images, charts and text, is how apps start to stutter. The habit is cheap: keep state as low in the tree as the widgets that use it, and make what does not depend on it <code>const</code>.</p>
+
+<h2><span class="sec">9.3</span> <span>Images and memory</span></h2>
+
+<p>A phone camera takes photos of 4032 by 3024 pixels. The menu shows them at 56 by 56. The file is small because JPEG compresses well, but to draw it, Flutter must <em>decode</em> it into raw pixels, four bytes each, and those bytes stay in memory while the image is cached. A test decodes the menu’s photo both ways:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/image_test.dart (part)</div><pre class="code"><span class="k">Future</span>&lt;ui.Image&gt; decode(Uint8List bytes, {<span class="k">int</span>? width}) <span class="k">async</span> {
+  <span class="k">final</span> codec = <span class="k">await</span> ui.instantiateImageCodec(bytes, targetWidth: width);
+  <span class="k">return</span> (<span class="k">await</span> codec.getNextFrame()).image;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/image_test.dart</span>
+00:00 +0: loading test/image_test.dart
+00:00 +0: the memory of a decoded photo
+file on disk:            0.32 MB
+decoded, full size:      4032 x 3024, 46.51 MB
+decoded, cacheWidth 168: 168 x 126, 0.08 MB
+00:00 +1: All tests passed!</pre></div>
+
+<p>A file of a third of a megabyte becomes 46.5 MB of memory when decoded at full size: more than many phones will give an app for all its images. Decoded at the size it is shown, it takes 0.08 MB, almost six hundred times less. In a widget, <code>cacheWidth</code> does this, computed from the size on screen and the phone’s pixel density:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu.dart (part)</div><pre class="code">    <span class="k">final</span> width = (<span class="n">56</span> * MediaQuery.devicePixelRatioOf(context)).round();
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(title: <span class="k">const</span> Text(<span class="s">&#x27;Menu&#x27;</span>)),
+      <span class="c line-bidi">// Only the rows on screen, and a few around them, are ever built.</span>
+      body: ListView.builder(
+        itemCount: <span class="n">1000</span>,
+        itemExtent: <span class="n">72</span>,
+        itemBuilder: (context, i) =&gt; ListTile(
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(<span class="n">12</span>),
+            <span class="c line-bidi">// Decode the photo at the size it is shown, not at the size it was taken.</span>
+            child: Image.asset(
+              <span class="s">&#x27;assets/photos/latte.jpg&#x27;</span>,
+              width: <span class="n">56</span>,
+              height: <span class="n">56</span>,
+              fit: BoxFit.cover,
+              cacheWidth: width,
+            ),
+          ),
+          title: Text(<span class="s">&#x27;Drink ${i + 1}&#x27;</span>),</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-performance-en-shots-menu.png" alt=""></div>
+<figcaption>A thousand drinks, each photo decoded at 168 pixels wide</figcaption>
+</figure>
+</div>
+
+<p>On this phone the density is 3, so 56 logical pixels are 168 real ones: the picture is as sharp as it can be on that screen, and no sharper. Too much memory does not show up as jank at first; it shows up as the app being killed in the background, or the phone getting hot and slow after a few minutes of scrolling.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p><code>cacheWidth</code> is in real pixels, not logical ones. Writing <code>cacheWidth: 56</code> would decode a picture of 56 pixels and stretch it over 168: blurry on every modern phone. Always multiply by <code>MediaQuery.devicePixelRatioOf(context)</code>.</p></aside>
+
+<h2><span class="sec">9.4</span> <span>Starting fast</span></h2>
+
+<p>An app is judged in its first second. A common <code>main</code> reads the settings, then opens the database, then fetches the menu, then shows something. The three steps here are stand-ins that wait as long as the real ones might:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/startup.dart (part)</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">void</span>&gt; startOneByOne() <span class="k">async</span> {
+  <span class="k">await</span> readSettings();
+  <span class="k">await</span> openDatabase();
+  <span class="k">await</span> fetchMenu();
+}
+
+<span class="c line-bidi">// The three steps do not depend on each other: start them together.</span>
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; startTogether() =&gt;
+    <span class="k">Future</span>.wait([readSettings(), openDatabase(), fetchMenu()]).then((_) {});
+
+<span class="c line-bidi">// Show something at once; load the rest behind it.</span>
+<span class="k">void</span> main() {
+  <span class="k">final</span> ready = startTogether();
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: <span class="k">false</span>,
+
+      theme: ThemeData(colorSchemeSeed: Colors.brown),
+      home: FutureBuilder(
+        future: ready,
+        builder: (context, snapshot) =&gt;
+            snapshot.connectionState == ConnectionState.done
+            ? <span class="k">const</span> MenuPage()
+            : <span class="k">const</span> Splash(),
+      ),
+    ),
+  );
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/startup_test.dart</span>
+00:00 +0: loading test/startup_test.dart
+00:00 +0: three steps, one after the other or together
+one by one: 906 ms
+together:   407 ms
+00:01 +1: All tests passed!</pre></div>
+
+<p>One by one, the waits add up: 300 + 200 + 400, about 900 ms. The steps do not need each other, so <code>Future.wait</code> starts them together, and the app is ready when the slowest is: about 400 ms. And <code>runApp</code> is not kept waiting at all: a splash screen (or, better, the menu from the last visit, as in Chapter 6) appears on the first frame, and the real screen replaces it when the work is done.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does one <code>setState</code> at the top of a page rebuild every row, and how does <code>const</code> prevent it?</li><li>How much memory does a 4032 × 3024 photo take once decoded, and why?</li><li>When can three startup steps run with <code>Future.wait</code>, and when can they not?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">9.5</span> <span>Measuring on a real phone</span></h2>
+
+<p>Counts tell you that a change does less work. How long that work takes depends on the phone, so the milliseconds must be measured on one, ideally a mid-range Android phone a few years old, because that is the phone many of your users have:</p>
+
+<ul>
+<li><code>flutter run --profile</code> builds the app almost like a release, but keeps the hooks that tools need. Open <strong>DevTools</strong> from the link it prints.</li>
+<li>The <strong>Performance</strong> page draws every frame as two bars, UI and raster, against the frame budget. Slow frames are red; selecting one shows which builds, layouts and paints filled it. Turn on “Track widget builds” to see the rebuilds of section 9.2 by name.</li>
+<li>The <strong>Memory</strong> page shows the app’s memory over time; scrolling the menu with full-size photos makes the line climb in steps of tens of megabytes.</li>
+<li><code>flutter run --profile --trace-startup</code> writes the time to the first frame into <code>build/start_up_info.json</code>.</li>
+<li><code>showPerformanceOverlay: true</code> on <code>MaterialApp</code> draws the two frame graphs on the phone’s screen itself, which is useful when testing in someone else’s hands.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Turn each performance fix into a test that counts, as this chapter does: rows rebuilt by a tap, rows created by a list, bytes per thumbnail. Counts never flake, so they can run on every pull request and catch the regression on the day it is written. Keep the millisecond measurements for the phone, before each release, with the same phone each time so that the numbers can be compared.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Judging speed in debug mode</td><td>Fixing problems that do not exist, missing real ones</td><td><code>flutter run --profile</code> on a real phone</td></tr>
+<tr><td><code>setState</code> at the top of a big screen</td><td>Everything rebuilt for one small change</td><td>State as low as its users; <code>const</code> for the rest</td></tr>
+<tr><td>Full-size images in thumbnails</td><td>Tens of megabytes per photo; the app is killed in the background</td><td><code>cacheWidth</code> times the pixel density</td></tr>
+<tr><td>Startup steps awaited one by one</td><td>A first second spent waiting</td><td><code>Future.wait</code>, and a first frame at once</td></tr>
+<tr><td>Parsing large data on the UI thread</td><td>Frozen screen while it runs</td><td><code>Isolate.run</code> (Project 9.2)</td></tr>
+<tr><td>An animation sharing a layer with a heavy painting</td><td>The painting is repainted every frame</td><td><code>RepaintBoundary</code> (Project 9.3)</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Each frame has 16 ms at 60 Hz, 8 at 120; work on the UI thread or the raster thread that misses it is jank.</li>
+<li>Keep state low and the rest <code>const</code>: a tap that rebuilt 30 rows rebuilds none.</li>
+<li>Decode images at their size on screen: 46.5 MB becomes 0.08 MB.</li>
+<li>Run independent startup work together and show a first frame at once: 900 ms becomes 400.</li>
+<li>Count work in tests; measure time in profile mode on a real phone, with DevTools.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>setState</code> runs the page’s whole <code>build</code>, which creates new row widgets, and Flutter rebuilds every widget that is a new object. A <code>const</code> widget is created once by the compiler and is the same object every time, so Flutter sees that it has not changed and skips it. 2. 4032 × 3024 × 4 bytes, about 46.5 MB, because a decoded image keeps four bytes (red, green, blue, alpha) for every pixel, whatever the size of the compressed file. 3. When none of them needs the result of another; a step that needs another’s result must wait for it, though it can still run alongside the steps that do not.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects measure three more causes of jank: long lists, heavy work on the UI thread, and repaints that spread.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>What a long list really costs</h3>
+<p class="project-goal">A list of 1000 drinks, written two ways. Count the rows that are created and the rows that are built in each, then scroll and count again.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>ListView</code> and <code>ListView.builder</code>, counters in tests, and <code>tester.drag</code>.</p>
+<ol class="steps">
+<li>Count creations with a function that makes each row, and builds with the counter inside <code>DrinkRow</code>.</li>
+<li>Pump <code>ListView(children: [...])</code> and <code>ListView.builder</code> with 1000 rows each and print both counts.</li>
+<li>Drag the builder list 3000 pixels and print how many rows are alive and how many were created in all.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/list_test.dart (part)</div><pre class="code"><span class="k">var</span> created = <span class="n">0</span>;
+
+DrinkRow row(<span class="k">int</span> n) {
+  created++;
+  <span class="k">return</span> DrinkRow(n: n);
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; measure(
+  WidgetTester tester,
+  <span class="k">String</span> name,
+  Widget <span class="k">Function</span>() list,
+) <span class="k">async</span> {
+  created = <span class="n">0</span>;
+  rowBuilds = <span class="n">0</span>;
+  <span class="k">await</span> tester.pumpWidget(MaterialApp(home: Scaffold(body: list())));
+  debugPrint(<span class="s">&#x27;${name.padRight(21)}$created rows created, $rowBuilds built&#x27;</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/list_test.dart</span>
+00:00 +0: loading test/list_test.dart
+00:00 +0: a list of 1000 drinks, how many rows are built
+ListView(children:)  1000 rows created, 16 built
+ListView.builder     16 rows created, 16 built
+after scrolling 3000 pixels: 12 rows alive, 69 created in all
+00:01 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> the result surprised the author: both lists <em>build</em> only the 16 rows near the screen, because <code>ListView</code> is lazy either way. The difference is the 1000 widgets that <code>ListView(children:)</code> <em>creates</em> before showing anything, and keeps; with data from a server, that also means 1000 rows of work up front. After scrolling, the builder has created 69 rows in all and keeps only 12 alive.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>Parse off the main isolate</h3>
+<p class="project-goal">The day’s orders arrive as 15 MB of JSON. Total them on the main isolate and with <code>Isolate.run</code>, and count how many frames could be drawn while the work ran.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Isolate.run</code>, periodic timers as a frame clock, and records.</p>
+<ol class="steps">
+<li>Generate 200,000 orders as JSON, and write <code>total(json)</code>, which decodes them and adds up the prices.</li>
+<li>Start a timer that ticks every 16 ms, as frames would, and count the ticks while the work runs.</li>
+<li>Run <code>total</code> directly, then inside <code>Isolate.run</code>, and compare the time, the frames due and the frames drawn.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/isolate_test.dart (part)</div><pre class="code"><span class="c line-bidi">// A frame is due every 16 ms: count how many times the main isolate was free to draw one.</span>
+<span class="k">Future</span>&lt;(<span class="k">int</span>, <span class="k">int</span>, <span class="k">int</span>)&gt; whileWorking(FutureOr&lt;<span class="k">int</span>&gt; <span class="k">Function</span>() work) <span class="k">async</span> {
+  <span class="k">var</span> frames = <span class="n">0</span>;
+  <span class="k">final</span> ticker = Timer.periodic(
+    <span class="k">const</span> Duration(milliseconds: <span class="n">16</span>),
+    (_) =&gt; frames++,
+  );
+  <span class="k">final</span> watch = Stopwatch()..start();
+  <span class="k">final</span> result = <span class="k">await</span> work();
+  <span class="k">final</span> ms = watch.elapsedMilliseconds;
+  ticker.cancel();
+  <span class="k">return</span> (result, ms, frames);
+}</pre></div>
+<p><strong>Your result should look like this</strong> (the milliseconds change a little on each run):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/isolate_test.dart</span>
+00:00 +0: loading test/isolate_test.dart
+00:00 +0: frames lost while parsing a big JSON
+JSON: 15.0 MB, 200000 orders
+on the main isolate: 409 ms, 25 frames due, 0 drawn
+with Isolate.run:    350 ms, 21 frames due, 20 drawn
+00:01 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> on the main isolate not a single tick fires: for 400 ms the app could not have drawn anything, animated anything or answered a tap. With <code>Isolate.run</code>, the work takes about as long, but nearly every frame is drawn; the one or two missing are the moments the main isolate spends starting the isolate and receiving its answer. Send the isolate the raw text and get back the small result (here a total); sending large objects between isolates costs copying time of its own.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>Keep a chart out of the spinner’s frames</h3>
+<p class="project-goal">A dashboard shows a progress bar that animates and, under it, a sales chart that never changes. Prove that the chart is painted in every frame of the animation, then stop it with a <code>RepaintBoundary</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>CustomPainter</code>, layers and <code>RepaintBoundary</code>, and counting paints.</p>
+<ol class="steps">
+<li>Make the chart a <code>CustomPainter</code> that counts its <code>paint</code> calls, with <code>shouldRepaint</code> returning <code>false</code>.</li>
+<li>Pump the dashboard and 60 frames of 16 ms, with and without a <code>RepaintBoundary</code> around the chart, and print the paints.</li>
+<li>Expect no paints at all with the boundary, once the first frame is done.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/repaint.dart (part)</div><pre class="code">    <span class="k">final</span> chart = CustomPaint(
+      size: <span class="k">const</span> Size(<span class="n">300</span>, <span class="n">160</span>),
+      painter: SalesChart(),
+    );
+    <span class="k">return</span> Scaffold(
+      body: Column(
+        children: [
+          <span class="k">const</span> LinearProgressIndicator(),
+          <span class="c line-bidi">// The spinner repaints sixty times a second; the boundary keeps the chart out of it.</span>
+          <span class="k">if</span> (boundary) RepaintBoundary(child: chart) <span class="k">else</span> chart,</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/repaint_test.dart</span>
+00:00 +0: loading test/repaint_test.dart
+00:00 +0: sixty frames of a spinner, how many times the chart is painted
+chart painted in 60 frames: without a boundary 60, with one 0
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>Hint:</strong> <code>shouldRepaint: false</code> is not enough, and that is the lesson. It only answers “has the painter changed?”; when the layer the chart shares with the progress bar is repainted, every painting in it is painted again. A <code>RepaintBoundary</code> gives the chart its own layer, which the engine reuses as long as the chart does not change.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Why can’t the slow page be fixed by writing <code>const DrinkRow(n: n)</code> inside its loop?</li>
+<li><span class="level">Easy</span> On a phone with a pixel density of 2, what <code>cacheWidth</code> does the menu use, and how many bytes does each decoded thumbnail take?</li>
+<li><span class="level medium">Medium</span> The menu shows the same photo a thousand times. How many times is it decoded while you scroll, and why?</li>
+<li><span class="level medium">Medium</span> Fetching the menu now needs the language from the settings. Rewrite <code>startTogether</code> so that it still runs as much as possible in parallel. How long does it take?</li>
+<li><span class="level hard">Challenge</span> Write a “rebuild budget” test for the fast order page: it fails if one tap rebuilds any row, and prints which widget type was rebuilt most. Why is a test like this more useful in CI than a test that measures milliseconds?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>Every chapter so far has proved its claims with tests. The next one is about the tests themselves: unit, widget and integration tests, golden images, fakes and mocks, and a test suite that a team trusts enough to ship on a green build.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3879,6 +4264,16 @@ halfway through the push: normal 0.95, reduced motion: no fade at all
 <li>Stop the repetition and finish the current turn: <code>turns.stop(); turns.animateTo(1, curve: Motion.enter)</code>, which takes the ring from where it is to the end of the turn and stops there. Calling <code>stop()</code> alone freezes it mid-turn; calling <code>reset()</code> makes it jump back to the start. When the next order begins, <code>turns.repeat()</code> again.</li>
 <li><code>flightShuttleBuilder: (context, animation, direction, from, to) =&gt; ClipOval(child: to.widget)</code> on both heroes. It is needed when the two ends do not have the same shape, for example a square photo in the list and a round one on the page, or when the destination widget depends on something that is not there during the flight (a <code>Material</code> ancestor, text styles). With two circles, as here, the default shuttle is already right.</li>
 <li>Read every <code>.dart</code> file under <code>lib/</code> except <code>lib/motion/</code>, and report each line that matches <code>RegExp(r'Duration\(\s*milliseconds:')</code> as <code>file:line</code>, expecting none. It protects the motion tokens the way Chapter 7’s guard protects colours and spacing: new screens cannot invent their own speeds. It should allow durations that are not motion, such as a network timeout or a debounce, so either keep those in a named constant in their own layer (<code>lib/data/</code>, excluded from the check) or allow them line by line with a short, reviewed list.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 9</h2>
+<ol class="exercises">
+<li>Because <code>n</code> changes on each turn of the loop, <code>DrinkRow(n: n)</code> is not a constant expression, and the compiler refuses <code>const</code> there. <code>const</code> works one level up: the whole list moves into its own widget, <code>DrinkColumn</code>, which takes no arguments and can be <code>const</code>. Its rows are still built in a loop, but only once, because nothing ever asks <code>DrinkColumn</code> to rebuild.</li>
+<li><code>(56 × 2).round()</code> = 112. The photo keeps its 4:3 shape, so it is decoded at 112 × 84 pixels: 112 × 84 × 4 = 37,632 bytes, about 0.04 MB.</li>
+<li>Once. Every row uses the same provider, an <code>AssetImage</code> of the same file wrapped in a <code>ResizeImage</code> of the same width, so they share one key in Flutter’s <code>ImageCache</code>: the first row decodes the photo, and the 999 others reuse the decoded image. It would be decoded again only if the cache evicted it, which happens after 1000 images or 100 MB by default (<code>PaintingBinding.instance.imageCache.maximumSize</code> and <code>maximumSizeBytes</code>).</li>
+<li><code>Future&lt;void&gt; startTogether() =&gt; Future.wait([readSettings().then((settings) =&gt; fetchMenu(settings.language)), openDatabase()]).then((_) {});</code>. The menu still waits for the settings, 300 + 400 = 700 ms, but the database opens at the same time, so the whole startup takes about 700 ms instead of 900.</li>
+<li>Keep a map of builds per widget type (each counted widget adds its <code>runtimeType</code>), reset it after the first frame, tap once, and <code>expect(rowBuilds, 0)</code>, printing the map sorted by count when it fails so the message names the culprit. In CI a count is deterministic: the same code gives the same number on a laptop, a CI machine under load and a fast desktop, so the test fails exactly when the code gets worse. A test of milliseconds measures the machine as much as the code: it either flakes or is given so much slack that it catches nothing.</li>
 </ol>
 
 </section>
