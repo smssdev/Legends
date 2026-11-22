@@ -1,0 +1,212 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/navigation/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Navigation at Scale with go_router</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe every screen of an app as an address, in one router</li>
+<li>open any screen directly from a link, with a back button that makes sense</li>
+<li>keep tabs alive, each with its own stack of pages</li>
+<li>protect screens with a redirect that returns people where they wanted to go, and only inside the app</li>
+<li>handle addresses that do not exist, and changes that should not be lost</li>
+</ul>
+</div>
+
+<p class="lead">Book 5 moved between screens with <code>Navigator.push</code>: “now show this page on top”. That works until the app has to open a screen from outside: a notification about order 2, a link in a message, the address bar of a browser, a phone restoring the app after a restart. Each of those arrives as an <em>address</em>, not as a push, and the app must build the right stack of pages for it. This chapter makes the address the source of truth, with go_router, the router maintained by the Flutter team.</p>
+
+<aside class="bit" data-mood="happy"><p>The screenshots in this chapter were taken by opening the app at an address, such as <code>#/orders/2</code>, exactly as a link from outside would, instead of tapping through it.</p></aside>
+
+<h2>{{n}}.1 Every screen is an address</h2>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>First, all the addresses, in one place. Screens build links with these functions and never by joining text, so a renamed path is changed once, and a query value is always encoded:</p>
+
+<pre data-code="lib/cafe/routes.dart" data-from="^// " data-title="lib/cafe/routes.dart"></pre>
+
+<p>Then the router: a tree of routes, each with its path and the page it builds. The structure of the tree is the structure of the app:</p>
+
+<pre data-code="lib/cafe/router.dart" data-from="  routes: [" data-title="lib/cafe/router.dart (part)"></pre>
+
+<ul>
+<li><code>:id</code> is a <dfn>path parameter</dfn>: <code>/menu/latte</code> builds <code>DrinkPage(id: 'latte')</code>.</li>
+<li>A route inside another is a <dfn>child route</dfn>, and its page is stacked on its parent’s: opening <code>/menu/latte</code> builds the menu with the drink on top of it.</li>
+<li>Pages move with <code>context.go(address)</code>. The router compares the new address with the tree and builds the matching stack.</li>
+</ul>
+
+<h2>{{n}}.2 Deep links</h2>
+
+<p>A <dfn>deep link</dfn> opens a screen deep inside the app. Because <code>/orders/2</code> is a child of <code>/orders</code>, opening it directly still builds both pages, and the back arrow appears and works, although the person never saw the list:</p>
+
+<div class="phones">
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>Opened at #/menu</figcaption>
+</figure>
+<figure data-img="shots/deep.png" data-frame="phone">
+<figcaption>Opened at #/orders/2</figcaption>
+</figure>
+</div>
+
+<p>On the web, the address bar is the address. On phones, links reach the app after a small setup outside Dart: an intent filter in <code>AndroidManifest.xml</code> with your domain, and the Associated Domains capability with an <code>apple-app-site-association</code> file on your site for iOS. Flutter then hands the link to the router, which treats it like any <code>go</code>.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Flutter on the web puts the address after a <code>#</code> by default, as in this chapter’s screenshots, because it works on any server. Call <code>usePathUrlStrategy()</code> before <code>runApp</code> for clean addresses like <code>/orders/2</code>, and configure your server to answer every path with <code>index.html</code>, or a reload of a deep address will be a 404.</p></aside>
+
+<h2>{{n}}.3 Tabs that keep their state</h2>
+
+<p>Most apps have a bar of tabs, and people expect each tab to remember where they were. A <code>StatefulShellRoute</code> gives each tab, a <dfn>branch</dfn>, its own navigator and its own stack, and keeps all of them alive:</p>
+
+<pre data-code="lib/cafe/pages.dart" data-from="^class TabsScaffold" data-to="^}" data-title="lib/cafe/pages.dart (part)"></pre>
+
+<figure data-img="shots/kept.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: Cherry cake opened, then the Orders tab, then back to Menu: the cake is still there.</figcaption>
+</figure>
+
+<p>The test drives the same steps, then a deep link, then the back button:</p>
+
+<pre data-code="test/tabs_test.dart" data-from="    final router" data-to="^  });" data-title="test/tabs_test.dart (part)"></pre>
+<pre data-term="tabs-test.sh"></pre>
+
+<h2>{{n}}.4 Redirects</h2>
+
+<p>The account tab is only for people who signed in. A <dfn>redirect</dfn> runs before every navigation: it looks at where the person is going and returns either <code>null</code>, “go ahead”, or another address:</p>
+
+<pre data-code="lib/cafe/router.dart" data-from="^  // #2" data-to="^  }," data-title="lib/cafe/router.dart (part)"></pre>
+
+<ul>
+<li>A signed-out person going to anything under <code>/account</code> is sent to <code>/signin</code>, with the address they asked for in <code>from</code>.</li>
+<li><code>refreshListenable: auth</code> runs the redirect again whenever the sign-in state changes. Signing in on the sign-in page therefore triggers the second rule, which sends the person to <code>from</code>: nobody had to call <code>go</code> after signing in.</li>
+<li>Signing out while on the account page sends the person back to sign-in, by the first rule, for the same reason.</li>
+</ul>
+
+<figure data-img="shots/signin.png" data-frame="phone">
+<figcaption>Figure {{n}}.2: Opened at #/account while signed out.</figcaption>
+</figure>
+
+<pre data-term="redirect-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The last line of the test is a real attack. If the app trusted <code>from</code>, a link to <code>/signin?from=https://evil.example</code> would send people, right after signing in and full of trust, wherever the attacker likes: an <dfn>open redirect</dfn>. Accept only addresses inside the app, starting with one <code>/</code> (two slashes, <code>//evil.example</code>, are another site too).</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does opening <code>/orders/2</code> directly still show a back arrow?</li><li>What makes the app leave the sign-in page after <code>auth.signIn()</code>?</li><li>What should a redirect return to let the navigation happen unchanged?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Addresses that do not exist</h2>
+
+<p>Links get old, people type, apps change their paths. Two different failures need two different answers:</p>
+
+<ul>
+<li>An address that matches no route at all, like <code>/nothing/here</code>, reaches <code>errorBuilder</code>: a full page that says so and offers a way home.</li>
+<li>An address that matches a route with an id that does not exist, like <code>/orders/9</code> or <code>/menu/coffee</code>, is the page’s job: it knows what an order is, and says “no order number 9” inside the normal layout, with the tabs and the back arrow.</li>
+</ul>
+
+<div class="phones">
+<figure data-img="shots/notfound.png" data-frame="phone">
+<figcaption>No route: #/nothing/here</figcaption>
+</figure>
+</div>
+
+<pre data-term="missing-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Treat every address as input from a stranger, because it is: a link can contain anything. Parse ids with <code>tryParse</code>, never <code>parse</code>; check that the record exists; validate query values; and decide what each page shows for nonsense. The router test file is the place to collect every strange address you have ever seen in your crash reports.</p></aside>
+
+<h2>{{n}}.6 go and push</h2>
+
+<p><code>go</code> sets the address and rebuilds the stack to match it. <code>push</code> puts a page on top of whatever is there, like <code>Navigator.push</code>, and the address may not describe the stack any more. Prefer <code>go</code>, so that the address always tells the truth and every screen can be reopened from a link. Use <code>push</code> for pages that return a value to the one below, such as a picker, and for dialogs, which are not destinations.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Links built by joining text everywhere</td><td>A renamed path breaks links; values with spaces break addresses</td><td>One <code>Routes</code> class, with <code>Uri</code> for queries</td></tr>
+<tr><td>Detail pages as separate top-level routes</td><td>A deep link has no back button</td><td>Child routes under their list</td></tr>
+<tr><td>Tabs as plain routes</td><td>Switching tabs loses scroll and pages</td><td><code>StatefulShellRoute.indexedStack</code></td></tr>
+<tr><td>Calling <code>go</code> after sign-in by hand</td><td>Some sign-in paths forget it</td><td>A redirect with <code>refreshListenable</code></td></tr>
+<tr><td>Trusting <code>from</code></td><td>An open redirect to any site</td><td>Accept only paths that start with one <code>/</code></td></tr>
+<tr><td><code>int.parse</code> on a path parameter</td><td>A crash for <code>/orders/abc</code></td><td><code>int.tryParse</code>, and a page for nonsense</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Every screen is an address; one router maps addresses to stacks of pages; one <code>Routes</code> class builds every link.</li>
+<li>Child routes make deep links come with their parents, so back works.</li>
+<li><code>StatefulShellRoute.indexedStack</code> gives each tab its own stack and keeps it alive.</li>
+<li>A redirect guards routes; <code>refreshListenable</code> re-runs it when sign-in changes; <code>from</code> is accepted only inside the app.</li>
+<li><code>errorBuilder</code> for unknown addresses, and each page for unknown ids.</li>
+<li>Prefer <code>go</code>; keep <code>push</code> for pages that return values.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>/orders/:id</code> is a child of <code>/orders</code>, so the router builds both pages for that address, and the back arrow pops to the list. 2. <code>refreshListenable: auth</code>: the change re-runs the redirect, whose second rule sends a signed-in person away from <code>/signin</code> to <code>from</code>. 3. <code>null</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects use the same router. Each adds something every large app needs sooner or later.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>One place for every link</h3>
+<p class="project-goal">Build every address with functions in <code>Routes</code>, and test that they are right, including the encoding of queries.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Uri</code> with query parameters, and testing addresses.</p>
+<ol class="steps">
+<li>Add functions for each address with a parameter: <code>order(id)</code>, <code>drink(id)</code>, <code>menuUpTo(max)</code>, <code>signIn(from:)</code>.</li>
+<li>Build queries with <code>Uri(path: …, queryParameters: …)</code>, never with <code>'?max=$max'</code>.</li>
+<li>Test that <code>signIn(from: '/account?tab=2')</code> encodes the inner <code>?</code>, <code>/</code> and <code>=</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> search the project for <code>go('/</code>: every result is a link that does not use <code>Routes</code>. A lint rule or a test that greps for it keeps it that way.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/routes-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Filters in the address</h3>
+<p class="project-goal">Filter the menu by price with chips, keeping the filter in the address so it can be shared, bookmarked and undone with back.</p>
+<p class="project-skills"><strong>You will practise:</strong> query parameters, <code>state.uri.queryParameters</code>, and parsing them safely.</p>
+<ol class="steps">
+<li>The menu route reads <code>max</code> from the query with <code>int.tryParse</code>, and passes it to the page.</li>
+<li>Chips call <code>context.go(Routes.menuUpTo(limit))</code>; “Any price” goes to the plain menu.</li>
+<li>Test that opening <code>/menu?max=50</code> hides the cake, and that tapping “Up to 30” changes the address.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> state that should survive a link (a filter, a search, a selected tab inside a page) belongs in the address; state that should not (a half-typed comment) belongs in the page.</p>
+<p><strong>Your result should look like this</strong> (opened at <code>#/menu?max=50</code>):</p>
+<figure data-img="shots/query.png" data-frame="phone">
+<figcaption>Project {{n}}.2: the filter came from the address.</figcaption>
+</figure>
+<pre data-term="projects/query-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Do not lose unsaved changes</h3>
+<p class="project-goal">An edit page that asks before it is left with unsaved changes, whether by the back button, another tab, or a link.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>onExit</code> on a route, dialogs that return values, and testing several ways out.</p>
+<ol class="steps">
+<li>Add <code>/account/edit</code> as a child of the account route, with a text field that marks the page as having unsaved changes.</li>
+<li>Give the route <code>onExit</code>, which returns <code>true</code> at once if nothing is unsaved, and otherwise shows a dialog “Leave without saving?” and returns the answer.</li>
+<li>Test both ways out: the back button, where Stay keeps the page; and the Menu tab, where Discard leaves.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>onExit</code> runs for every way of leaving the route through the router, which is why it is better than catching only the back button. Keep the unsaved flag somewhere the route can see; a real app keeps it in the page’s state provider.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/exit-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Open <code>#/orders/9</code> and <code>#/orders/abc</code>. What do the two pages say, and why is it not the not-found page?</li>
+<li><span class="level">Easy</span> Make <code>/orders/:id</code> a top-level route instead of a child of <code>/orders</code>, and open it directly. What changed, and why?</li>
+<li><span class="level">Medium</span> Tapping the current tab again returns to its first page. Find the line that does it, and explain <code>initialLocation</code> in <code>goBranch</code>.</li>
+<li><span class="level">Medium</span> Add a redirect rule: <code>/menu/:id</code> with an id that is not on the menu goes to <code>/menu</code>. Is that better or worse for people than the page’s message?</li>
+<li><span class="level">Challenge</span> Move <code>Auth</code> into a Riverpod provider. How do you give <code>refreshListenable</code> something to listen to, and where is the router created so that tests can still replace the auth?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Every page in this chapter used data that was already in the app. The next chapter takes the network seriously: a client with timeouts, errors that tell the screen exactly what happened, retries that do not make things worse, and tests for all of it.</p>
+</div>
+</section>

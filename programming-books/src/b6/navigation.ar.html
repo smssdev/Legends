@@ -1,0 +1,212 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/navigation/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>التنقل على نطاق واسع بـ go_router</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تصف كل شاشة في التطبيق بعنوان، في موجّه واحد</li>
+<li>تفتح أي شاشة مباشرة من رابط، بزر رجوع منطقي</li>
+<li>تُبقي الألسنة حية، ولكل منها كومة صفحاته</li>
+<li>تحمي الشاشات بتحويل يُرجع الناس إلى حيث أرادوا، وداخل التطبيق فقط</li>
+<li>تتعامل مع العناوين غير الموجودة، ومع التغييرات التي يجب ألا تضيع</li>
+</ul>
+</div>
+
+<p class="lead">تنقّل الكتاب الخامس بين الشاشات بـ <code>Navigator.push</code>: «اعرض هذه الصفحة فوق». وهذا يعمل حتى يضطر التطبيق إلى فتح شاشة من الخارج: إشعار عن الطلب 2، أو رابط في رسالة، أو شريط العنوان في متصفح، أو جوال يستعيد التطبيق بعد إعادة التشغيل. وكل ذلك يصل في صورة <em>عنوان</em> لا في صورة دفع، ويجب على التطبيق أن يبني له كومة الصفحات الصحيحة. وهذا الفصل يجعل العنوان مصدر الحقيقة، بـ go_router، الموجّه الذي يرعاه فريق Flutter.</p>
+
+<aside class="bit" data-mood="happy"><p>صور هذا الفصل التُقطت بفتح التطبيق على عنوان، مثل <code dir="ltr">#/orders/2</code>، كما يفعل رابط من الخارج تماماً، بدل اللمس للوصول إليه.</p></aside>
+
+<h2>{{n}}.1 كل شاشة عنوان</h2>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>أولاً كل العناوين، في مكان واحد. فالشاشات تبني الروابط بهذه الدوال ولا تصل النصوص أبداً، فيتغير المسار المعاد تسميته مرة واحدة، وتُرمَّز قيمة الاستعلام دائماً:</p>
+
+<pre data-code="lib/cafe/routes.dart" data-from="^// " data-title="lib/cafe/routes.dart"></pre>
+
+<p>ثم الموجّه: شجرة مسارات، لكل منها مساره والصفحة التي يبنيها. وبنية الشجرة هي بنية التطبيق:</p>
+
+<pre data-code="lib/cafe/router.dart" data-from="  routes: [" data-title="lib/cafe/router.dart (جزء)"></pre>
+
+<ul>
+<li><code>:id</code> <dfn>معامل مسار</dfn>: فـ <code dir="ltr">/menu/latte</code> يبني <code dir="ltr">DrinkPage(id: 'latte')</code>.</li>
+<li>والمسار داخل مسار آخر <dfn>مسار ابن</dfn>، وتوضع صفحته فوق صفحة أبيه: ففتح <code dir="ltr">/menu/latte</code> يبني القائمة والمشروب فوقها.</li>
+<li>والصفحات تنتقل بـ <code dir="ltr">context.go(address)</code>. فيقارن الموجّه العنوان الجديد بالشجرة ويبني الكومة المطابقة.</li>
+</ul>
+
+<h2>{{n}}.2 الروابط العميقة</h2>
+
+<p><dfn>الرابط العميق</dfn> (deep link) يفتح شاشة في عمق التطبيق. ولأن <code dir="ltr">/orders/2</code> ابن لـ <code dir="ltr">/orders</code>، يبني فتحه مباشرة الصفحتين معاً، فيظهر سهم الرجوع ويعمل، مع أن الشخص لم يرَ القائمة قط:</p>
+
+<div class="phones">
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>فُتح على ‎#/menu</figcaption>
+</figure>
+<figure data-img="shots/deep.png" data-frame="phone">
+<figcaption>فُتح على ‎#/orders/2</figcaption>
+</figure>
+</div>
+
+<p>على الويب شريط العنوان هو العنوان. وعلى الجوالات تصل الروابط إلى التطبيق بعد إعداد صغير خارج Dart: مرشح intent في <code>AndroidManifest.xml</code> بنطاقك، وقدرة Associated Domains مع ملف <code>apple-app-site-association</code> على موقعك لـ iOS. ثم يسلّم Flutter الرابط إلى الموجّه، فيعامله كأي <code>go</code>.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>يضع Flutter على الويب العنوان بعد <code>#</code> افتراضياً، كما في صور هذا الفصل، لأن ذلك يعمل على أي خادم. واستدعِ <code dir="ltr">usePathUrlStrategy()</code> قبل <code>runApp</code> لتحصل على عناوين نظيفة مثل <code dir="ltr">/orders/2</code>، واضبط خادمك ليجيب كل مسار بـ <code>index.html</code>، وإلا كانت إعادة تحميل عنوان عميق خطأ 404.</p></aside>
+
+<h2>{{n}}.3 ألسنة تحفظ حالتها</h2>
+
+<p>لأكثر التطبيقات شريط ألسنة، ويتوقع الناس أن يتذكر كل لسان أين كانوا. و<code>StatefulShellRoute</code> يعطي كل لسان، أي كل <dfn>فرع</dfn>، موجّهه الخاص وكومته الخاصة، ويُبقيها كلها حية:</p>
+
+<pre data-code="lib/cafe/pages.dart" data-from="^class TabsScaffold" data-to="^}" data-title="lib/cafe/pages.dart (جزء)"></pre>
+
+<figure data-img="shots/kept.png" data-frame="phone">
+<figcaption>الشكل {{n}}.1: فُتح كيك الكرز، ثم لسان الطلبات، ثم العودة إلى القائمة: الكيك ما زال هناك.</figcaption>
+</figure>
+
+<p>والاختبار يقود الخطوات نفسها، ثم رابطاً عميقاً، ثم زر الرجوع:</p>
+
+<pre data-code="test/tabs_test.dart" data-from="    final router" data-to="^  });" data-title="test/tabs_test.dart (جزء)"></pre>
+<pre data-term="tabs-test.sh"></pre>
+
+<h2>{{n}}.4 التحويلات</h2>
+
+<p>لسان الحساب لمن سجّل الدخول فقط. و<dfn>التحويل</dfn> (redirect) يعمل قبل كل انتقال: ينظر إلى حيث يذهب الشخص ويعيد إما <code>null</code>، أي «تابع»، وإما عنواناً آخر:</p>
+
+<pre data-code="lib/cafe/router.dart" data-from="^  // #2" data-to="^  }," data-title="lib/cafe/router.dart (جزء)"></pre>
+
+<ul>
+<li>من لم يسجّل الدخول وذهب إلى أي شيء تحت <code dir="ltr">/account</code> يُرسَل إلى <code dir="ltr">/signin</code>، ومعه العنوان الذي طلبه في <code>from</code>.</li>
+<li>و<code dir="ltr">refreshListenable: auth</code> تعيد تشغيل التحويل كلما تغيرت حالة تسجيل الدخول. فتسجيل الدخول في صفحته يشغّل القاعدة الثانية، فترسل الشخص إلى <code>from</code>: ولم يحتج أحد أن يستدعي <code>go</code> بعد تسجيل الدخول.</li>
+<li>وتسجيل الخروج في صفحة الحساب يعيد الشخص إلى تسجيل الدخول، بالقاعدة الأولى، للسبب نفسه.</li>
+</ul>
+
+<figure data-img="shots/signin.png" data-frame="phone">
+<figcaption>الشكل {{n}}.2: فُتح على ‎#/account دون تسجيل دخول.</figcaption>
+</figure>
+
+<pre data-term="redirect-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>السطر الأخير في الاختبار هجوم حقيقي. فلو وثق التطبيق بـ <code>from</code>، لأرسل رابط إلى <code dir="ltr">/signin?from=https://evil.example</code> الناسَ، بعد تسجيل الدخول مباشرة وهم في أوج ثقتهم، إلى حيث يشاء المهاجم: <dfn>تحويل مفتوح</dfn> (open redirect). فلا تقبل إلا عناوين داخل التطبيق، تبدأ بـ <code>/</code> واحدة (فالشرطتان <code dir="ltr">//evil.example</code> موقع آخر أيضاً).</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>لماذا يُظهر فتح <code dir="ltr">/orders/2</code> مباشرة سهم رجوع رغم ذلك؟</li><li>ما الذي يجعل التطبيق يغادر صفحة تسجيل الدخول بعد <code dir="ltr">auth.signIn()</code>؟</li><li>ماذا يجب أن يعيد التحويل ليدع الانتقال يحدث دون تغيير؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.5 عناوين غير موجودة</h2>
+
+<p>الروابط تقدم، والناس يكتبون، والتطبيقات تغيّر مساراتها. وفشلان مختلفان يحتاجان جوابين مختلفين:</p>
+
+<ul>
+<li>العنوان الذي لا يطابق أي مسار، مثل <code dir="ltr">/nothing/here</code>، يصل إلى <code>errorBuilder</code>: صفحة كاملة تقول ذلك وتعرض طريقاً إلى البداية.</li>
+<li>والعنوان الذي يطابق مساراً لكن برقم غير موجود، مثل <code dir="ltr">/orders/9</code> أو <code dir="ltr">/menu/coffee</code>، شأن الصفحة: فهي تعرف ما الطلب، وتقول «لا طلب برقم 9» داخل التخطيط العادي، مع الألسنة وسهم الرجوع.</li>
+</ul>
+
+<div class="phones">
+<figure data-img="shots/notfound.png" data-frame="phone">
+<figcaption>لا مسار: ‎#/nothing/here</figcaption>
+</figure>
+</div>
+
+<pre data-term="missing-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>عامل كل عنوان كمدخل من غريب، لأنه كذلك: فالرابط يمكن أن يحتوي أي شيء. حلّل الأرقام بـ <code>tryParse</code> لا <code>parse</code> أبداً؛ وتحقق أن السجل موجود؛ وتحقق من قيم الاستعلام؛ وقرّر ما تعرضه كل صفحة أمام الهراء. وملف اختبار الموجّه هو المكان الذي تجمع فيه كل عنوان غريب رأيته في تقارير الأعطال.</p></aside>
+
+<h2>{{n}}.6 go وpush</h2>
+
+<p><code>go</code> تضبط العنوان وتعيد بناء الكومة لتطابقه. و<code>push</code> تضع صفحة فوق ما هو موجود، مثل <code>Navigator.push</code>، وقد لا يعود العنوان يصف الكومة. ففضّل <code>go</code>، ليقول العنوان الحقيقة دائماً، ويمكن فتح كل شاشة من رابط. واستخدم <code>push</code> للصفحات التي تعيد قيمة لما تحتها، مثل صفحة اختيار، وللنوافذ الحوارية، فهي ليست وجهات.</p>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>روابط تُبنى بوصل النصوص في كل مكان</td><td>مسار معاد تسميته يكسر الروابط؛ وقيم فيها مسافات تكسر العناوين</td><td>صنف <code>Routes</code> واحد، و<code>Uri</code> للاستعلامات</td></tr>
+<tr><td>صفحات التفاصيل مسارات مستقلة في الأعلى</td><td>الرابط العميق بلا زر رجوع</td><td>مسارات أبناء تحت قوائمها</td></tr>
+<tr><td>الألسنة مسارات عادية</td><td>الانتقال بين الألسنة يضيّع التمرير والصفحات</td><td><code>StatefulShellRoute.indexedStack</code></td></tr>
+<tr><td>استدعاء <code>go</code> بعد تسجيل الدخول باليد</td><td>بعض طرق تسجيل الدخول تنساه</td><td>تحويل مع <code>refreshListenable</code></td></tr>
+<tr><td>الثقة بـ <code>from</code></td><td>تحويل مفتوح إلى أي موقع</td><td>اقبل فقط المسارات التي تبدأ بـ <code>/</code> واحدة</td></tr>
+<tr><td><code>int.parse</code> على معامل مسار</td><td>انهيار مع <code dir="ltr">/orders/abc</code></td><td><code>int.tryParse</code>، وصفحة للهراء</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>كل شاشة عنوان؛ وموجّه واحد يحوّل العناوين إلى أكوام صفحات؛ وصنف <code>Routes</code> واحد يبني كل رابط.</li>
+<li>المسارات الأبناء تجعل الروابط العميقة تأتي مع آبائها، فيعمل الرجوع.</li>
+<li><code>StatefulShellRoute.indexedStack</code> يعطي كل لسان كومته ويُبقيها حية.</li>
+<li>التحويل يحرس المسارات؛ و<code>refreshListenable</code> تعيد تشغيله حين يتغير تسجيل الدخول؛ ولا يُقبل <code>from</code> إلا داخل التطبيق.</li>
+<li><code>errorBuilder</code> للعناوين المجهولة، وكل صفحة للأرقام المجهولة.</li>
+<li>فضّل <code>go</code>؛ وأبقِ <code>push</code> للصفحات التي تعيد قيماً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن <code dir="ltr">/orders/:id</code> ابن لـ <code dir="ltr">/orders</code>، فيبني الموجّه الصفحتين لهذا العنوان، ويعود سهم الرجوع إلى القائمة. 2. <code dir="ltr">refreshListenable: auth</code>: فالتغيير يعيد تشغيل التحويل، وقاعدته الثانية ترسل من سجّل الدخول بعيداً عن <code dir="ltr">/signin</code> إلى <code>from</code>. 3. <code>null</code>.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تستخدم الموجّه نفسه. وكل واحد يضيف شيئاً يحتاجه كل تطبيق كبير عاجلاً أو آجلاً.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>مكان واحد لكل رابط</h3>
+<p class="project-goal">ابنِ كل عنوان بدوال في <code>Routes</code>، واختبر أنها صحيحة، ومنها ترميز الاستعلامات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Uri</code> بمعاملات الاستعلام، واختبار العناوين.</p>
+<ol class="steps">
+<li>أضف دالة لكل عنوان له معامل: <code dir="ltr">order(id)</code> و<code dir="ltr">drink(id)</code> و<code dir="ltr">menuUpTo(max)</code> و<code dir="ltr">signIn(from:)</code>.</li>
+<li>ابنِ الاستعلامات بـ <code dir="ltr">Uri(path: …, queryParameters: …)</code>، لا بـ <code dir="ltr">'?max=$max'</code> أبداً.</li>
+<li>اختبر أن <code dir="ltr">signIn(from: '/account?tab=2')</code> ترمّز <code>?</code> و<code>/</code> و<code>=</code> الداخلية.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ابحث في المشروع عن <code dir="ltr">go('/</code>: فكل نتيجة رابط لا يستخدم <code>Routes</code>. وقاعدة فحص أو اختبار يبحث عنها يُبقي الأمر كذلك.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/routes-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>الفلاتر في العنوان</h3>
+<p class="project-goal">صفِّ القائمة بالسعر بأزرار اختيار، واحفظ الفلتر في العنوان ليمكن مشاركته وحفظه والتراجع عنه بالرجوع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> معاملات الاستعلام، و<code>state.uri.queryParameters</code>، وتحليلها بأمان.</p>
+<ol class="steps">
+<li>مسار القائمة يقرأ <code>max</code> من الاستعلام بـ <code>int.tryParse</code>، ويمرره إلى الصفحة.</li>
+<li>أزرار الاختيار تستدعي <code dir="ltr">context.go(Routes.menuUpTo(limit))</code>؛ و«أي سعر» يذهب إلى القائمة العادية.</li>
+<li>اختبر أن فتح <code dir="ltr">/menu?max=50</code> يُخفي الكيك، وأن لمس «حتى 30» يغيّر العنوان.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الحالة التي يجب أن تبقى مع الرابط (فلتر، أو بحث، أو لسان مختار داخل صفحة) مكانها العنوان؛ والتي لا يجب (تعليق نصف مكتوب) مكانها الصفحة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (مفتوحاً على <code dir="ltr">#/menu?max=50</code>):</p>
+<figure data-img="shots/query.png" data-frame="phone">
+<figcaption>المشروع {{n}}.2: الفلتر جاء من العنوان.</figcaption>
+</figure>
+<pre data-term="projects/query-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>لا تضيّع التغييرات غير المحفوظة</h3>
+<p class="project-goal">صفحة تعديل تسأل قبل مغادرتها وفيها تغييرات غير محفوظة، سواء بزر الرجوع أو بلسان آخر أو برابط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>onExit</code> على مسار، والنوافذ الحوارية التي تعيد قيماً، واختبار طرق خروج متعددة.</p>
+<ol class="steps">
+<li>أضف <code dir="ltr">/account/edit</code> ابناً لمسار الحساب، بحقل نص يعلّم الصفحة بأن فيها تغييرات غير محفوظة.</li>
+<li>أعطِ المسار <code>onExit</code> تعيد <code>true</code> فوراً إن لم يكن شيء غير محفوظ، وإلا عرضت نافذة «تغادر دون حفظ؟» وأعادت الجواب.</li>
+<li>اختبر طريقي الخروج: زر الرجوع، حيث يُبقي «ابقَ» الصفحة؛ ولسان القائمة، حيث يغادر «تجاهل».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>onExit</code> تعمل مع كل طريقة لمغادرة المسار عبر الموجّه، ولهذا هي أفضل من التقاط زر الرجوع وحده. واحفظ علامة «غير محفوظ» في مكان يراه المسار؛ والتطبيق الحقيقي يحفظها في provider الحالة الخاص بالصفحة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/exit-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> افتح <code dir="ltr">#/orders/9</code> و<code dir="ltr">#/orders/abc</code>. ماذا تقول الصفحتان، ولماذا ليست صفحة «غير موجودة»؟</li>
+<li><span class="level">سهل</span> اجعل <code dir="ltr">/orders/:id</code> مساراً في الأعلى بدل أن يكون ابناً لـ <code dir="ltr">/orders</code>، وافتحه مباشرة. ماذا تغيّر، ولماذا؟</li>
+<li><span class="level">متوسط</span> لمس اللسان الحالي من جديد يعود إلى صفحته الأولى. جِد السطر الذي يفعل ذلك، واشرح <code>initialLocation</code> في <code>goBranch</code>.</li>
+<li><span class="level">متوسط</span> أضف قاعدة تحويل: <code dir="ltr">/menu/:id</code> برقم ليس في القائمة يذهب إلى <code dir="ltr">/menu</code>. هل هذا أفضل للناس أم أسوأ من رسالة الصفحة؟</li>
+<li><span class="level">تحدٍّ</span> انقل <code>Auth</code> إلى provider في Riverpod. كيف تعطي <code>refreshListenable</code> شيئاً تستمع إليه، وأين يُنشأ الموجّه لتبقى الاختبارات قادرة على استبدال تسجيل الدخول؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>كل صفحة في هذا الفصل استخدمت بيانات موجودة في التطبيق من قبل. والفصل القادم يأخذ الشبكة بجدية: عميل بمهلات، وأخطاء تقول للشاشة بالضبط ما حدث، وإعادة محاولة لا تزيد الأمور سوءاً، واختبارات لكل ذلك.</p>
+</div>
+</section>
