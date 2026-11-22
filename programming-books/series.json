@@ -1203,7 +1203,8 @@
             },
             {
               "en": "Navigation at Scale with go_router",
-              "ar": "التنقل على نطاق واسع بـ go_router"
+              "ar": "التنقل على نطاق واسع بـ go_router",
+              "src": "b6/navigation"
             },
             {
               "en": "Networking, Errors and Retries",

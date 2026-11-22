@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "الفصل 3: إدارة الحالة بـ Riverpod"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "الفصل 4: التنقل على نطاق واسع بـ go_router"; } }
+@page ch04:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -145,7 +147,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">65</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">83</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -1539,6 +1541,409 @@ no retries: error: Exception: connection refused, still loading: false
 <p>ميزة الطلبات تعيش في شاشة واحدة. والتطبيق الحقيقي فيه عشرات، وروابط تدخلها من الإشعارات والويب، وزر رجوع يجب أن يكون منطقياً، وشاشات لا يفتحها إلا من سجّل دخوله. والفصل القادم يفعل ذلك بـ go_router.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b6/navigation/ar">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">الفصل 4</p><h1>التنقل على نطاق واسع بـ go_router</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تصف كل شاشة في التطبيق بعنوان، في موجّه واحد</li>
+<li>تفتح أي شاشة مباشرة من رابط، بزر رجوع منطقي</li>
+<li>تُبقي الألسنة حية، ولكل منها كومة صفحاته</li>
+<li>تحمي الشاشات بتحويل يُرجع الناس إلى حيث أرادوا، وداخل التطبيق فقط</li>
+<li>تتعامل مع العناوين غير الموجودة، ومع التغييرات التي يجب ألا تضيع</li>
+</ul>
+</div>
+
+<p class="lead">تنقّل الكتاب الخامس بين الشاشات بـ <code>Navigator.push</code>: «اعرض هذه الصفحة فوق». وهذا يعمل حتى يضطر التطبيق إلى فتح شاشة من الخارج: إشعار عن الطلب 2، أو رابط في رسالة، أو شريط العنوان في متصفح، أو جوال يستعيد التطبيق بعد إعادة التشغيل. وكل ذلك يصل في صورة <em>عنوان</em> لا في صورة دفع، ويجب على التطبيق أن يبني له كومة الصفحات الصحيحة. وهذا الفصل يجعل العنوان مصدر الحقيقة، بـ go_router، الموجّه الذي يرعاه فريق Flutter.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>صور هذا الفصل التُقطت بفتح التطبيق على عنوان، مثل <code dir="ltr">#/orders/2</code>، كما يفعل رابط من الخارج تماماً، بدل اللمس للوصول إليه.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>كل شاشة عنوان</span></h2>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter pub add go_router</span>
+Resolving dependencies...
+Downloading packages...
++ flutter_web_plugins 0.0.0 from sdk flutter
++ go_router 18.1.4
++ logging 1.3.0
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.14 (0.7.15 available)
+  vector_math 2.4.3 (2.4.4 available)
+Changed 3 dependencies!
+3 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.</pre></div>
+
+<p>أولاً كل العناوين، في مكان واحد. فالشاشات تبني الروابط بهذه الدوال ولا تصل النصوص أبداً، فيتغير المسار المعاد تسميته مرة واحدة، وتُرمَّز قيمة الاستعلام دائماً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/cafe/routes.dart</div><pre class="code"><span class="c line-bidi">// كل العناوين في مكان واحد: الروابط تُبنى هنا، ولا تُكتب باليد أبداً.</span>
+<span class="k">abstract</span> <span class="k">final</span> <span class="k">class</span> Routes {
+  <span class="k">static</span> <span class="k">const</span> menu = <span class="s">&#x27;/menu&#x27;</span>;
+  <span class="k">static</span> <span class="k">const</span> orders = <span class="s">&#x27;/orders&#x27;</span>;
+  <span class="k">static</span> <span class="k">const</span> account = <span class="s">&#x27;/account&#x27;</span>;
+  <span class="k">static</span> <span class="k">const</span> edit = <span class="s">&#x27;/account/edit&#x27;</span>;
+
+  <span class="k">static</span> <span class="k">String</span> drink(<span class="k">String</span> id) =&gt; <span class="s">&#x27;/menu/$id&#x27;</span>;
+  <span class="k">static</span> <span class="k">String</span> order(<span class="k">int</span> id) =&gt; <span class="s">&#x27;/orders/$id&#x27;</span>;
+  <span class="k">static</span> <span class="k">String</span> menuUpTo(<span class="k">int</span> max) =&gt;
+      Uri(path: menu, queryParameters: {<span class="s">&#x27;max&#x27;</span>: <span class="s">&#x27;$max&#x27;</span>}).toString();
+  <span class="k">static</span> <span class="k">String</span> signIn({<span class="k">required</span> <span class="k">String</span> from}) =&gt;
+      Uri(path: <span class="s">&#x27;/signin&#x27;</span>, queryParameters: {<span class="s">&#x27;from&#x27;</span>: from}).toString();
+}</pre></div>
+
+<p>ثم الموجّه: شجرة مسارات، لكل منها مساره والصفحة التي يبنيها. وبنية الشجرة هي بنية التطبيق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/cafe/router.dart (جزء)</div><pre class="code">  routes: [
+    <span class="c line-bidi">// ثلاثة ألسنة، لكل منها كومة صفحاته، تبقى حية حين تنتقل بينها.</span>
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, shell) =&gt; TabsScaffold(shell: shell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.menu,
+              builder: (context, state) =&gt; MenuPage(
+                max: <span class="k">int</span>.tryParse(state.uri.queryParameters[<span class="s">&#x27;max&#x27;</span>] ?? <span class="s">&#x27;&#x27;</span>),
+              ),
+              routes: [
+                <span class="c line-bidi">// مسار ابن: /menu/latte فوق /menu، فيعود زر الرجوع إلى القائمة.</span>
+                GoRoute(
+                  path: <span class="s">&#x27;:id&#x27;</span>,
+                  builder: (context, state) =&gt;
+                      DrinkPage(id: state.pathParameters[<span class="s">&#x27;id&#x27;</span>]!),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.orders,
+              builder: (context, state) =&gt; <span class="k">const</span> OrdersPage(),
+              routes: [
+                GoRoute(
+                  path: <span class="s">&#x27;:id&#x27;</span>,
+                  builder: (context, state) =&gt;
+                      OrderPage(id: <span class="k">int</span>.tryParse(state.pathParameters[<span class="s">&#x27;id&#x27;</span>]!)),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.account,
+              builder: (context, state) =&gt; AccountPage(auth: auth),
+              routes: [
+                GoRoute(
+                  path: <span class="s">&#x27;edit&#x27;</span>,
+                  builder: (context, state) =&gt; <span class="k">const</span> EditNamePage(),
+                  <span class="c line-bidi">// يُسأل قبل مغادرة هذا المسار بأي طريقة: زر الرجوع، أو لسان، أو go.</span>
+                  onExit: (context, state) =&gt;
+                      EditNamePage.confirmLeave(context),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+    <span class="c line-bidi">// خارج الإطار: تسجيل الدخول يغطي الشاشة كلها، بلا ألسنة.</span>
+    GoRoute(
+      path: <span class="s">&#x27;/signin&#x27;</span>,
+      builder: (context, state) =&gt; SignInPage(
+        auth: auth,
+        from: state.uri.queryParameters[<span class="s">&#x27;from&#x27;</span>] ?? Routes.menu,
+      ),
+    ),
+  ],
+);</pre></div>
+
+<ul>
+<li><code>:id</code> <dfn>معامل مسار</dfn>: فـ <code dir="ltr">/menu/latte</code> يبني <code dir="ltr">DrinkPage(id: 'latte')</code>.</li>
+<li>والمسار داخل مسار آخر <dfn>مسار ابن</dfn>، وتوضع صفحته فوق صفحة أبيه: ففتح <code dir="ltr">/menu/latte</code> يبني القائمة والمشروب فوقها.</li>
+<li>والصفحات تنتقل بـ <code dir="ltr">context.go(address)</code>. فيقارن الموجّه العنوان الجديد بالشجرة ويبني الكومة المطابقة.</li>
+</ul>
+
+<h2><span class="sec">4.2</span> <span>الروابط العميقة</span></h2>
+
+<p><dfn>الرابط العميق</dfn> (deep link) يفتح شاشة في عمق التطبيق. ولأن <code dir="ltr">/orders/2</code> ابن لـ <code dir="ltr">/orders</code>، يبني فتحه مباشرة الصفحتين معاً، فيظهر سهم الرجوع ويعمل، مع أن الشخص لم يرَ القائمة قط:</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-navigation-ar-shots-menu.png" alt=""></div>
+<figcaption>فُتح على ‎#/menu</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-navigation-ar-shots-deep.png" alt=""></div>
+<figcaption>فُتح على ‎#/orders/2</figcaption>
+</figure>
+</div>
+
+<p>على الويب شريط العنوان هو العنوان. وعلى الجوالات تصل الروابط إلى التطبيق بعد إعداد صغير خارج Dart: مرشح intent في <code>AndroidManifest.xml</code> بنطاقك، وقدرة Associated Domains مع ملف <code>apple-app-site-association</code> على موقعك لـ iOS. ثم يسلّم Flutter الرابط إلى الموجّه، فيعامله كأي <code>go</code>.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>يضع Flutter على الويب العنوان بعد <code>#</code> افتراضياً، كما في صور هذا الفصل، لأن ذلك يعمل على أي خادم. واستدعِ <code dir="ltr">usePathUrlStrategy()</code> قبل <code>runApp</code> لتحصل على عناوين نظيفة مثل <code dir="ltr">/orders/2</code>، واضبط خادمك ليجيب كل مسار بـ <code>index.html</code>، وإلا كانت إعادة تحميل عنوان عميق خطأ 404.</p></aside>
+
+<h2><span class="sec">4.3</span> <span>ألسنة تحفظ حالتها</span></h2>
+
+<p>لأكثر التطبيقات شريط ألسنة، ويتوقع الناس أن يتذكر كل لسان أين كانوا. و<code>StatefulShellRoute</code> يعطي كل لسان، أي كل <dfn>فرع</dfn>، موجّهه الخاص وكومته الخاصة، ويُبقيها كلها حية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/cafe/pages.dart (جزء)</div><pre class="code"><span class="k">class</span> TabsScaffold <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> TabsScaffold({<span class="k">super</span>.key, <span class="k">required</span> <span class="k">this</span>.shell});
+
+  <span class="k">final</span> StatefulNavigationShell shell;
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> Scaffold(
+      body: shell,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: shell.currentIndex,
+        <span class="c line-bidi">// goBranch تنتقل بين الألسنة وتُبقي كومة كل لسان؛ ولمس اللسان الحالي من جديد يعود إلى صفحته الأولى.</span>
+        onDestinationSelected: (i) =&gt;
+            shell.goBranch(i, initialLocation: i == shell.currentIndex),
+        destinations: <span class="k">const</span> [
+          NavigationDestination(icon: Icon(Icons.local_cafe), label: <span class="s">&#x27;القائمة&#x27;</span>),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long),
+            label: <span class="s">&#x27;الطلبات&#x27;</span>,
+          ),
+          NavigationDestination(icon: Icon(Icons.person), label: <span class="s">&#x27;الحساب&#x27;</span>),
+        ],
+      ),
+    );
+  }
+}</pre></div>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b6-navigation-ar-shots-kept.png" alt=""></div>
+<figcaption>الشكل 4.1: فُتح كيك الكرز، ثم لسان الطلبات، ثم العودة إلى القائمة: الكيك ما زال هناك.</figcaption>
+</figure>
+
+<p>والاختبار يقود الخطوات نفسها، ثم رابطاً عميقاً، ثم زر الرجوع:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/tabs_test.dart (جزء)</div><pre class="code">    <span class="k">final</span> router = <span class="k">await</span> pumpCafe(tester, Auth());
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;كيك الكرز&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;الطلبات&#x27;</span>));
+    <span class="k">await</span> tester.pumpAndSettle();
+    <span class="k">await</span> tester.tap(find.text(<span class="s">&#x27;القائمة&#x27;</span>).last);
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(where(router), <span class="s">&#x27;/menu/cake&#x27;</span>);
+
+    <span class="c line-bidi">// رابط عميق إلى طلب مباشرة: تُبنى الكومة، فيعود زر الرجوع إلى القائمة.</span>
+    router.go(<span class="s">&#x27;/orders/2&#x27;</span>);
+    <span class="k">await</span> tester.pumpAndSettle();
+    <span class="k">await</span> tester.tap(find.byType(BackButton));
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(where(router), <span class="s">&#x27;/orders&#x27;</span>);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/tabs_test.dart</span>
+00:00 +0: loading test/tabs_test.dart
+00:00 +0: الألسنة تحفظ صفحاتها، والروابط العميقة لها طريق رجوع
+00:01 +1: All tests passed!</pre></div>
+
+<h2><span class="sec">4.4</span> <span>التحويلات</span></h2>
+
+<p>لسان الحساب لمن سجّل الدخول فقط. و<dfn>التحويل</dfn> (redirect) يعمل قبل كل انتقال: ينظر إلى حيث يذهب الشخص ويعيد إما <code>null</code>، أي «تابع»، وإما عنواناً آخر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/cafe/router.dart (جزء)</div><pre class="code">  <span class="c line-bidi">// يعمل قبل كل انتقال. أعد عنواناً جديداً لترسل الشخص إلى مكان آخر، أو null.</span>
+  redirect: (context, state) {
+    <span class="k">final</span> path = state.matchedLocation;
+    <span class="k">if</span> (!auth.signedIn &amp;&amp; path.startsWith(Routes.account)) {
+      <span class="k">return</span> Routes.signIn(from: state.uri.toString());
+    }
+    <span class="k">if</span> (auth.signedIn &amp;&amp; path == <span class="s">&#x27;/signin&#x27;</span>) {
+      <span class="c line-bidi">// تذكّر أين أراد الشخص أن يذهب، ولا تُرجع إلا إلى داخل التطبيق.</span>
+      <span class="k">final</span> from = state.uri.queryParameters[<span class="s">&#x27;from&#x27;</span>] ?? Routes.menu;
+      <span class="k">return</span> from.startsWith(<span class="s">&#x27;/&#x27;</span>) &amp;&amp; !from.startsWith(<span class="s">&#x27;//&#x27;</span>)
+          ? from
+          : Routes.menu;
+    }
+    <span class="k">return</span> <span class="k">null</span>;
+  },</pre></div>
+
+<ul>
+<li>من لم يسجّل الدخول وذهب إلى أي شيء تحت <code dir="ltr">/account</code> يُرسَل إلى <code dir="ltr">/signin</code>، ومعه العنوان الذي طلبه في <code>from</code>.</li>
+<li>و<code dir="ltr">refreshListenable: auth</code> تعيد تشغيل التحويل كلما تغيرت حالة تسجيل الدخول. فتسجيل الدخول في صفحته يشغّل القاعدة الثانية، فترسل الشخص إلى <code>from</code>: ولم يحتج أحد أن يستدعي <code>go</code> بعد تسجيل الدخول.</li>
+<li>وتسجيل الخروج في صفحة الحساب يعيد الشخص إلى تسجيل الدخول، بالقاعدة الأولى، للسبب نفسه.</li>
+</ul>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b6-navigation-ar-shots-signin.png" alt=""></div>
+<figcaption>الشكل 4.2: فُتح على ‎#/account دون تسجيل دخول.</figcaption>
+</figure>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/redirect_test.dart</span>
+00:00 +0: loading test/redirect_test.dart
+00:00 +0: الحساب يحتاج تسجيل الدخول، ويعود إلى حيث طُلب
+signed out, asked /account: /signin?from=%2Faccount
+after signing in:           /account
+after signing out:          /signin?from=%2Faccount
+from an outside address:    /menu
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>السطر الأخير في الاختبار هجوم حقيقي. فلو وثق التطبيق بـ <code>from</code>، لأرسل رابط إلى <code dir="ltr">/signin?from=https://evil.example</code> الناسَ، بعد تسجيل الدخول مباشرة وهم في أوج ثقتهم، إلى حيث يشاء المهاجم: <dfn>تحويل مفتوح</dfn> (open redirect). فلا تقبل إلا عناوين داخل التطبيق، تبدأ بـ <code>/</code> واحدة (فالشرطتان <code dir="ltr">//evil.example</code> موقع آخر أيضاً).</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يُظهر فتح <code dir="ltr">/orders/2</code> مباشرة سهم رجوع رغم ذلك؟</li><li>ما الذي يجعل التطبيق يغادر صفحة تسجيل الدخول بعد <code dir="ltr">auth.signIn()</code>؟</li><li>ماذا يجب أن يعيد التحويل ليدع الانتقال يحدث دون تغيير؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>عناوين غير موجودة</span></h2>
+
+<p>الروابط تقدم، والناس يكتبون، والتطبيقات تغيّر مساراتها. وفشلان مختلفان يحتاجان جوابين مختلفين:</p>
+
+<ul>
+<li>العنوان الذي لا يطابق أي مسار، مثل <code dir="ltr">/nothing/here</code>، يصل إلى <code>errorBuilder</code>: صفحة كاملة تقول ذلك وتعرض طريقاً إلى البداية.</li>
+<li>والعنوان الذي يطابق مساراً لكن برقم غير موجود، مثل <code dir="ltr">/orders/9</code> أو <code dir="ltr">/menu/coffee</code>، شأن الصفحة: فهي تعرف ما الطلب، وتقول «لا طلب برقم 9» داخل التخطيط العادي، مع الألسنة وسهم الرجوع.</li>
+</ul>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-navigation-ar-shots-notfound.png" alt=""></div>
+<figcaption>لا مسار: ‎#/nothing/here</figcaption>
+</figure>
+</div>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/missing_test.dart</span>
+00:00 +0: loading test/missing_test.dart
+00:00 +0: العناوين والأرقام المجهولة تجد صفحة تقول ذلك
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>عامل كل عنوان كمدخل من غريب، لأنه كذلك: فالرابط يمكن أن يحتوي أي شيء. حلّل الأرقام بـ <code>tryParse</code> لا <code>parse</code> أبداً؛ وتحقق أن السجل موجود؛ وتحقق من قيم الاستعلام؛ وقرّر ما تعرضه كل صفحة أمام الهراء. وملف اختبار الموجّه هو المكان الذي تجمع فيه كل عنوان غريب رأيته في تقارير الأعطال.</p></aside>
+
+<h2><span class="sec">4.6</span> <span>go وpush</span></h2>
+
+<p><code>go</code> تضبط العنوان وتعيد بناء الكومة لتطابقه. و<code>push</code> تضع صفحة فوق ما هو موجود، مثل <code>Navigator.push</code>، وقد لا يعود العنوان يصف الكومة. ففضّل <code>go</code>، ليقول العنوان الحقيقة دائماً، ويمكن فتح كل شاشة من رابط. واستخدم <code>push</code> للصفحات التي تعيد قيمة لما تحتها، مثل صفحة اختيار، وللنوافذ الحوارية، فهي ليست وجهات.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>روابط تُبنى بوصل النصوص في كل مكان</td><td>مسار معاد تسميته يكسر الروابط؛ وقيم فيها مسافات تكسر العناوين</td><td>صنف <code>Routes</code> واحد، و<code>Uri</code> للاستعلامات</td></tr>
+<tr><td>صفحات التفاصيل مسارات مستقلة في الأعلى</td><td>الرابط العميق بلا زر رجوع</td><td>مسارات أبناء تحت قوائمها</td></tr>
+<tr><td>الألسنة مسارات عادية</td><td>الانتقال بين الألسنة يضيّع التمرير والصفحات</td><td><code>StatefulShellRoute.indexedStack</code></td></tr>
+<tr><td>استدعاء <code>go</code> بعد تسجيل الدخول باليد</td><td>بعض طرق تسجيل الدخول تنساه</td><td>تحويل مع <code>refreshListenable</code></td></tr>
+<tr><td>الثقة بـ <code>from</code></td><td>تحويل مفتوح إلى أي موقع</td><td>اقبل فقط المسارات التي تبدأ بـ <code>/</code> واحدة</td></tr>
+<tr><td><code>int.parse</code> على معامل مسار</td><td>انهيار مع <code dir="ltr">/orders/abc</code></td><td><code>int.tryParse</code>، وصفحة للهراء</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>كل شاشة عنوان؛ وموجّه واحد يحوّل العناوين إلى أكوام صفحات؛ وصنف <code>Routes</code> واحد يبني كل رابط.</li>
+<li>المسارات الأبناء تجعل الروابط العميقة تأتي مع آبائها، فيعمل الرجوع.</li>
+<li><code>StatefulShellRoute.indexedStack</code> يعطي كل لسان كومته ويُبقيها حية.</li>
+<li>التحويل يحرس المسارات؛ و<code>refreshListenable</code> تعيد تشغيله حين يتغير تسجيل الدخول؛ ولا يُقبل <code>from</code> إلا داخل التطبيق.</li>
+<li><code>errorBuilder</code> للعناوين المجهولة، وكل صفحة للأرقام المجهولة.</li>
+<li>فضّل <code>go</code>؛ وأبقِ <code>push</code> للصفحات التي تعيد قيماً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن <code dir="ltr">/orders/:id</code> ابن لـ <code dir="ltr">/orders</code>، فيبني الموجّه الصفحتين لهذا العنوان، ويعود سهم الرجوع إلى القائمة. 2. <code dir="ltr">refreshListenable: auth</code>: فالتغيير يعيد تشغيل التحويل، وقاعدته الثانية ترسل من سجّل الدخول بعيداً عن <code dir="ltr">/signin</code> إلى <code>from</code>. 3. <code>null</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تستخدم الموجّه نفسه. وكل واحد يضيف شيئاً يحتاجه كل تطبيق كبير عاجلاً أو آجلاً.</p>
+
+<div class="project">
+<p class="project-label">المشروع 4.1 · سهل</p>
+<h3>مكان واحد لكل رابط</h3>
+<p class="project-goal">ابنِ كل عنوان بدوال في <code>Routes</code>، واختبر أنها صحيحة، ومنها ترميز الاستعلامات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Uri</code> بمعاملات الاستعلام، واختبار العناوين.</p>
+<ol class="steps">
+<li>أضف دالة لكل عنوان له معامل: <code dir="ltr">order(id)</code> و<code dir="ltr">drink(id)</code> و<code dir="ltr">menuUpTo(max)</code> و<code dir="ltr">signIn(from:)</code>.</li>
+<li>ابنِ الاستعلامات بـ <code dir="ltr">Uri(path: …, queryParameters: …)</code>، لا بـ <code dir="ltr">'?max=$max'</code> أبداً.</li>
+<li>اختبر أن <code dir="ltr">signIn(from: '/account?tab=2')</code> ترمّز <code>?</code> و<code>/</code> و<code>=</code> الداخلية.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ابحث في المشروع عن <code dir="ltr">go('/</code>: فكل نتيجة رابط لا يستخدم <code>Routes</code>. وقاعدة فحص أو اختبار يبحث عنها يُبقي الأمر كذلك.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/routes_test.dart</span>
+00:00 +0: loading test/routes_test.dart
+00:00 +0: الروابط تُبنى في مكان واحد، وتُرمَّز كما يجب
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 4.2 · متوسط</p>
+<h3>الفلاتر في العنوان</h3>
+<p class="project-goal">صفِّ القائمة بالسعر بأزرار اختيار، واحفظ الفلتر في العنوان ليمكن مشاركته وحفظه والتراجع عنه بالرجوع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> معاملات الاستعلام، و<code>state.uri.queryParameters</code>، وتحليلها بأمان.</p>
+<ol class="steps">
+<li>مسار القائمة يقرأ <code>max</code> من الاستعلام بـ <code>int.tryParse</code>، ويمرره إلى الصفحة.</li>
+<li>أزرار الاختيار تستدعي <code dir="ltr">context.go(Routes.menuUpTo(limit))</code>؛ و«أي سعر» يذهب إلى القائمة العادية.</li>
+<li>اختبر أن فتح <code dir="ltr">/menu?max=50</code> يُخفي الكيك، وأن لمس «حتى 30» يغيّر العنوان.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الحالة التي يجب أن تبقى مع الرابط (فلتر، أو بحث، أو لسان مختار داخل صفحة) مكانها العنوان؛ والتي لا يجب (تعليق نصف مكتوب) مكانها الصفحة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (مفتوحاً على <code dir="ltr">#/menu?max=50</code>):</p>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-navigation-ar-shots-query.png" alt=""></div>
+<figcaption>المشروع 4.2: الفلتر جاء من العنوان.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/query_test.dart</span>
+00:00 +0: loading test/query_test.dart
+00:00 +0: الفلتر يأتي من العنوان
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 4.3 · تحدٍّ</p>
+<h3>لا تضيّع التغييرات غير المحفوظة</h3>
+<p class="project-goal">صفحة تعديل تسأل قبل مغادرتها وفيها تغييرات غير محفوظة، سواء بزر الرجوع أو بلسان آخر أو برابط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>onExit</code> على مسار، والنوافذ الحوارية التي تعيد قيماً، واختبار طرق خروج متعددة.</p>
+<ol class="steps">
+<li>أضف <code dir="ltr">/account/edit</code> ابناً لمسار الحساب، بحقل نص يعلّم الصفحة بأن فيها تغييرات غير محفوظة.</li>
+<li>أعطِ المسار <code>onExit</code> تعيد <code>true</code> فوراً إن لم يكن شيء غير محفوظ، وإلا عرضت نافذة «تغادر دون حفظ؟» وأعادت الجواب.</li>
+<li>اختبر طريقي الخروج: زر الرجوع، حيث يُبقي «ابقَ» الصفحة؛ ولسان القائمة، حيث يغادر «تجاهل».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>onExit</code> تعمل مع كل طريقة لمغادرة المسار عبر الموجّه، ولهذا هي أفضل من التقاط زر الرجوع وحده. واحفظ علامة «غير محفوظ» في مكان يراه المسار؛ والتطبيق الحقيقي يحفظها في provider الحالة الخاص بالصفحة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/exit_test.dart</span>
+00:00 +0: loading test/exit_test.dart
+00:00 +0: التغييرات غير المحفوظة لا تضيع خطأً
+00:01 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> افتح <code dir="ltr">#/orders/9</code> و<code dir="ltr">#/orders/abc</code>. ماذا تقول الصفحتان، ولماذا ليست صفحة «غير موجودة»؟</li>
+<li><span class="level">سهل</span> اجعل <code dir="ltr">/orders/:id</code> مساراً في الأعلى بدل أن يكون ابناً لـ <code dir="ltr">/orders</code>، وافتحه مباشرة. ماذا تغيّر، ولماذا؟</li>
+<li><span class="level medium">متوسط</span> لمس اللسان الحالي من جديد يعود إلى صفحته الأولى. جِد السطر الذي يفعل ذلك، واشرح <code>initialLocation</code> في <code>goBranch</code>.</li>
+<li><span class="level medium">متوسط</span> أضف قاعدة تحويل: <code dir="ltr">/menu/:id</code> برقم ليس في القائمة يذهب إلى <code dir="ltr">/menu</code>. هل هذا أفضل للناس أم أسوأ من رسالة الصفحة؟</li>
+<li><span class="level hard">تحدٍّ</span> انقل <code>Auth</code> إلى provider في Riverpod. كيف تعطي <code>refreshListenable</code> شيئاً تستمع إليه، وأين يُنشأ الموجّه لتبقى الاختبارات قادرة على استبدال تسجيل الدخول؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 5</p>
+<p>كل صفحة في هذا الفصل استخدمت بيانات موجودة في التطبيق من قبل. والفصل القادم يأخذ الشبكة بجدية: عميل بمهلات، وأخطاء تقول للشاشة بالضبط ما حدث، وإعادة محاولة لا تزيد الأمور سوءاً، واختبارات لكل ذلك.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1584,6 +1989,16 @@ no retries: error: Exception: connection refused, still loading: false
 <li><code dir="ltr">ref.listen(placeControllerProvider, (previous, next) { if (next.value case Ok(:final value)) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('… ${value.id}'))); } });</code> في بداية <code>build</code>. فـ <code>listen</code> تشغّل دالة مرة واحدة لكل تغيير، وهذا ما يحتاجه الأثر الجانبي: شريط سفلي، أو انتقال، أو صوت. أما <code>watch</code> فتعيد البناء فقط، وعرض الشريط من <code>build</code> سيعرضه من جديد مع كل إعادة بناء، حتى حين لا يحدث جديد.</li>
 <li><code dir="ltr">FutureProvider(…, retry: (count, error) =&gt; null)</code>. فتعرض شاشة انقطاع الاتصال الخطأ فوراً بدل قيمة تبقى في التحميل أثناء إعادة المحاولة؛ ويبقى زر «أعد المحاولة» يعمل لأنه يُبطل. واختر ذلك حين لا تفيد إعادة المحاولة (403، أو خطأ تحقق، أو سجل غير موجود)، أو حين يجب أن يقرر الشخص، مثلاً على باقة بيانات محدودة؛ وأبقِ إعادة المحاولة التلقائية للأخطاء العابرة مثل انتهاء المهلة.</li>
 <li><code dir="ltr">historyProvider.overrideWith((ref) async =&gt; [order1, order2, order3])</code>. وهذا يتخطى المصدر والـ DTO وتحويل المستودع: جيد لصور الشاشات ولاختبار كيف ترسم الصفحة قائمة معروفة، لكنه لم يعد يختبر أن طبقة البيانات تنتج هذه القائمة، ولا تظهر الطلبات الجديدة أبداً، لأن إبطال السجل يشغّل الاستبدال من جديد فيعيد الثلاثة نفسها. أما استبدال المصدر فيُبقي كل الطبقات تعمل.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 4</h2>
+<ol class="exercises">
+<li>«لا طلب برقم 9» و«لا طلب برقم ?»، وكلاهما داخل التخطيط العادي، مع اختيار لسان الطلبات وسهم رجوع. فالعنوانان يطابقان المسار <code dir="ltr">/orders/:id</code>، فيبني الموجّه <code>OrderPage</code>؛ والصفحة وحدها تعرف أن الطلب 9 غير موجود، و<code dir="ltr">int.tryParse('abc')</code> تعطي <code>null</code> بدل الانهيار. أما صفحة «غير موجودة» فللعناوين التي لا تطابق أي مسار أصلاً.</li>
+<li>يختفي سهم الرجوع. فالمسار في الأعلى لا أب له في الشجرة، ففتحه يبني كومة من صفحة واحدة: لا شيء يُرجع إليه. (وخارج الإطار يفقد الألسنة أيضاً.) فالتداخل ليس زينة: إنه ما يقول للموجّه أي الصفحات تنتمي تحت الرابط العميق.</li>
+<li><code dir="ltr">onDestinationSelected: (i) =&gt; shell.goBranch(i, initialLocation: i == shell.currentIndex)</code>. فـ <code>goBranch</code> تستعيد عادة آخر مكان في الفرع، وهذا ما يُبقي الكيك مفتوحاً؛ ومع <code dir="ltr">initialLocation: true</code> تذهب إلى أول مسار في الفرع بدلاً من ذلك. وتمريرها للسان المختار من قبل وحده يعطي السلوك الذي يعرفه الناس من أكثر التطبيقات: المس لساناً آخر لتعود إلى حيث كنت، والمس اللسان الحالي من جديد لتعود إلى بدايته.</li>
+<li>أعطِ المسار الابن تحويله الخاص: <code dir="ltr">GoRoute(path: ':id', redirect: (context, state) =&gt; drinks.containsKey(state.pathParameters['id']) ? null : Routes.menu, …)</code>. وهذا أسوأ عادة: فقد تبع الشخص رابطاً، فوجد نفسه في القائمة، ولا يعرف لماذا. أما رسالة «لا مشروب باسم coffee» فتشرح ذلك. والتحويلات أفضل للعناوين التي انتقلت، مثل رقم قديم أُعيدت تسميته، حيث الوجهة هي الشيء نفسه حقاً.</li>
+<li>اجعل حالة تسجيل الدخول provider من نوع <code dir="ltr">Notifier&lt;bool&gt;</code>، وأنشئ الموجّه داخل provider: <code dir="ltr">final routerProvider = Provider((ref) { final refresh = ValueNotifier(0); ref.listen(authProvider, (previous, next) =&gt; refresh.value++); ref.onDispose(refresh.dispose); return GoRouter(refreshListenable: refresh, redirect: (context, state) { final signedIn = ref.read(authProvider); … }, routes: […]); });</code>. ويشاهد التطبيق <code>routerProvider</code> من أجل <code>routerConfig</code>، ويستبدل الاختبار <code>authProvider</code> في <code>ProviderScope</code> الخاص به، كما في الفصل 3. ويُنشأ الموجّه مرة واحدة لكل حاوية، لا داخل <code>build</code> أبداً.</li>
 </ol>
 
 </section>
