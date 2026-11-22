@@ -1259,7 +1259,8 @@
           "chapters": [
             {
               "en": "Push Notifications and Background Work",
-              "ar": "الإشعارات والعمل في الخلفية"
+              "ar": "الإشعارات والعمل في الخلفية",
+              "src": "b6/notifications"
             },
             {
               "en": "Platform Channels and Native Code",
