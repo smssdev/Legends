@@ -1,0 +1,240 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/architecture/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>المعمارية النظيفة في Flutter</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقسم الميزة إلى ثلاث طبقات، المجال والبيانات والعرض، وتقول ما مكان كل شيء فيها</li>
+<li>تتبع قاعدة الاعتماد: المجال لا يعرف شيئاً عن Flutter ولا JSON ولا الشبكة</li>
+<li>تمثّل ما قد يسوء في صورة أنواع، بـ <code>Result</code> مختوم وحالات فشل مختومة</li>
+<li>تصل كل شيء في جذر تركيب واحد، وتشغّل التطبيق نفسه موصولاً بثلاث طرق</li>
+<li>تختبر كل طبقة وحدها، وتحرس القاعدة نفسها باختبار يقرأ الاستيرادات</li>
+</ul>
+</div>
+
+<p class="lead">كان لتطبيق الملاحظات في الكتاب الخامس طبقات من قبل: ملاحظة، ومخزن، ونموذج، وشاشات. وكان هذا كافياً لميزة واحدة يكتبها شخص واحد. أما التطبيق الحقيقي ففيه عشرون ميزة، وفريق، وخادم يغيّر شكل JSON الخاص به، وقواعد تتغير كل ثلاثة أشهر. وهذا الفصل يعطي هذا النوع من التطبيقات هيكله: الطبقات التي تستخدمها فرق Flutter المحترفة، والقاعدة الواحدة التي تجمعها، واختباراً يضمن ألا يكسرها أحد، ولا أنت نفسك مساء يوم خميس.</p>
+
+<aside class="bit" data-mood="happy"><p>المثال ميزة واحدة، الطلب من المقهى، مبنية كاملة: ثلاث طبقات، وثلاثة تطبيقات لا تختلف إلا في توصيلها، وثمانية اختبارات، واختبار واحد يفشل عمداً لترى ما يلتقطه.</p></aside>
+
+<h2>{{n}}.1 ثلاث طبقات وقاعدة واحدة</h2>
+
+<ul>
+<li><dfn>المجال</dfn> (domain) هو ما يدور حوله التطبيق: الكيانات (طلب، ومبلغ من المال)، والقواعد (الطلب لا يكون فارغاً؛ المقهى يغلق في العاشرة)، والأفعال التي يقوم بها الناس، وتسمى <dfn>حالات الاستخدام</dfn> (use cases). وهو Dart خالصة.</li>
+<li>وطبقة <dfn>البيانات</dfn> (data) تعرف من أين تأتي الأشياء: JSON وHTTP وقاعدة بيانات. وتترجم ذلك العالم إلى كيانات المجال.</li>
+<li>وطبقة <dfn>العرض</dfn> (presentation) هي الشاشات والكائنات التي تحمل حالتها. تعرض الكيانات وتستدعي حالات الاستخدام.</li>
+</ul>
+
+<p>وقاعدة واحدة، <dfn>قاعدة الاعتماد</dfn>: الاستيرادات تشير نحو المجال، لا تبتعد عنه أبداً.</p>
+
+<pre class="plain" dir="ltr">presentation  ──▶  domain  ◀──  data
+                     ▲
+          (knows no Flutter, no JSON, no HTTP)</pre>
+
+<p>يعرّف المجال ما يحتاجه، مثل «شيء يستطيع إرسال طلب»، في صورة واجهة. وطبقة البيانات تنفّذها. والعرض يتسلّمها. ولا أحد في المجال يكتب <code dir="ltr">import 'package:http/...'</code> أبداً، فحين يتغير الخادم لا تتغير القواعد؛ وحين يُعاد تصميم الشاشات لا تتغير القواعد؛ وتُختبر القواعد في أجزاء من الثانية، بلا جوال ولا شبكة.</p>
+
+<p>والتطبيقات الكبيرة تنظّم المجلدات بالـ <em>ميزة</em> أولاً، ثم بالطبقة، فيعيش كل ما يخص الطلبات معاً:</p>
+
+<pre class="plain" dir="ltr">lib/
+  core/result.dart                    shared by every feature
+  features/orders/
+    domain/   money, order, failures, orders_repository, place_order
+    data/     order_dto, orders_source, orders_repository_impl
+    presentation/   orders_controller, orders_page
+  orders_app.dart                     the composition root</pre>
+
+<h2>{{n}}.2 المجال</h2>
+
+<p>الأشياء تسوء: السلة فارغة، والمقهى مغلق، والشبكة متوقفة. والاستثناءات تُخفي ذلك عن نوع الدالة، فتكتشفه الشاشة وقت التشغيل. أما في المجال فتعيد حالة الاستخدام <dfn>نتيجة</dfn>، وهي إما قيمة وإما فشل:</p>
+
+<pre data-code="lib/core/result.dart" data-title="lib/core/result.dart"></pre>
+
+<p>وحالات الفشل أنواع أيضاً، بلا كلمات فيها: فما <em>يُقال</em> عن الفشل، وبأي لغة، شأن الشاشة.</p>
+
+<pre data-code="lib/features/orders/domain/failures.dart" data-from="^// " data-to="^}#3" data-title="lib/features/orders/domain/failures.dart (جزء)"></pre>
+
+<p>ولأن الاثنين <dfn>مختومان</dfn> (sealed)، يجب على كل <code>switch</code> عليهما أن يعالج كل الحالات، ويتحقق المترجم من ذلك. أضف فشلاً خامساً العام القادم، فتتوقف كل شاشة نسيته عن الترجمة حتى تقول شيئاً عنه.</p>
+
+<p>ويحتاج المجال أن يرسل الطلبات إلى مكان ما، لكن يجب ألا يعرف كيف. فيقول ما يحتاجه في صورة واجهة، تسمى <dfn>منفذاً</dfn> (port):</p>
+
+<pre data-code="lib/features/orders/domain/orders_repository.dart" data-from="^// " data-title="lib/features/orders/domain/orders_repository.dart (جزء)"></pre>
+
+<p>وحالة الاستخدام تحمل قواعد فعل واحد:</p>
+
+<pre data-code="lib/features/orders/domain/place_order.dart" data-from="^// " data-title="lib/features/orders/domain/place_order.dart (جزء)"></pre>
+
+<ul>
+<li><code>call</code> تجعل الكائن قابلاً للاستدعاء كدالة: <code dir="ltr">await placeOrder(lines)</code>.</li>
+<li>والساعة تُعطى من الخارج كما في الكتاب الخامس: فيقرر الاختبار كم الساعة.</li>
+<li>والقواعد تعمل قبل الشبكة. فالمقهى المغلق يُقال عنه فوراً، دون طلب كان الخادم سيرفضه على أي حال.</li>
+</ul>
+
+<p>والاختبار لا يحتاج Flutter ولا خادماً ولا شاشة. ومستودع مزيف يسجّل ما وصله:</p>
+
+<pre data-code="test/domain/place_order_test.dart" data-from="^void main" data-title="test/domain/place_order_test.dart (جزء)"></pre>
+<pre data-term="place-order-test.sh"></pre>
+
+<p>وآخر <code>expect</code> قبل النجاح مهم بقدر غيره: بعد ثلاث حالات رفض لم يصل المستودع <em>شيء</em>. فالقواعد تعمل أولاً فعلاً.</p>
+
+<h2>{{n}}.3 طبقة البيانات</h2>
+
+<p>الخادم يتكلم JSON، بأسمائه الخاصة: <code>placed_at</code>، والحالات نصوصاً، والقطع خريطة. و<dfn>DTO</dfn>، أي كائن نقل البيانات، يعكس هذا الشكل بالضبط، ولا شيء أكثر:</p>
+
+<pre data-code="lib/features/orders/data/order_dto.dart" data-from="^// " data-title="lib/features/orders/data/order_dto.dart (جزء)"></pre>
+
+<p>وتنفيذ المستودع يحوّل الـ DTO إلى كيانات، وكل ما يسوء إلى فشل:</p>
+
+<pre data-code="lib/features/orders/data/orders_repository_impl.dart" data-from="^class" data-to="^}" data-title="lib/features/orders/data/orders_repository_impl.dart (جزء)"></pre>
+
+<p>والمصدر خلفه واجهة أخرى: هنا مصدر مزيف يجيب بعد 400 جزء من الثانية كما تفعل الشبكة؛ وفي المشروع {{n}}.2 عميل HTTP حقيقي. ولا يتغير المستودع ولا المجال بين الاثنين.</p>
+
+<pre data-term="repository-test.sh"></pre>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>لماذا لا نعطي <code>Order</code> في المجال دالة <code>fromJson</code>، كما فعل الكتاب الخامس مع <code>Drink</code>؟ في التطبيق الصغير افعل ذلك. فالـ DTO يؤتي ثمره حين يتباعد شكل الخادم عن معنى التطبيق: حقل أُعيدت تسميته، أو إصدار ثانٍ من الـ API، أو مصدر ثانٍ للكيان نفسه. حينها يتغير الـ DTO والتحويل، ولا يتغير شيء غيرهما.</p></aside>
+
+<h2>{{n}}.4 العرض</h2>
+
+<p>المتحكم يحمل حالة الشاشة، ويستدعي حالة الاستخدام، ويحوّل كل فشل إلى كلمات بلغة الشخص:</p>
+
+<pre data-code="lib/features/orders/presentation/orders_controller.dart" data-from="  Future<void> place" data-title="lib/features/orders/presentation/orders_controller.dart (جزء)"></pre>
+
+<p>والصفحة تشاهد المتحكم وترسم فقط. والصفحة نفسها والمتحكم نفسه وحالة الاستخدام نفسها تعطي ثلاث شاشات مختلفة، بحسب ما أُعطيته وحده:</p>
+
+<div class="phones">
+<figure data-img="shots/placed.png" data-frame="phone">
+<figcaption>في 10:00: أُرسل</figcaption>
+</figure>
+<figure data-img="shots/closed.png" data-frame="phone">
+<figcaption>في 23:00: مغلق</figcaption>
+</figure>
+<figure data-img="shots/offline.png" data-frame="phone">
+<figcaption>بلا شبكة</figcaption>
+</figure>
+</div>
+
+<pre data-term="page-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>اختبار الـ Widget يرسم التطبيق مرتين، في 10:00 ثم في 23:00. وقد فشلت النسخة الأولى من هذا الاختبار: فاستدعاء <code>pumpWidget</code> الثاني وضع provider من النوع نفسه في المكان نفسه، فأبقى Flutter الأول بساعته التي تقول 10:00، كما شرح الفصل 1 بالضبط. و<code dir="ltr">ValueKey(hour)</code> على الـ provider أصلحه.</p></aside>
+
+<h2>{{n}}.5 جذر التركيب</h2>
+
+<p>في مكان ما يجب أن يعرف أحدٌ كل صنف حقيقي: أي مصدر، وأي مستودع، وأي ساعة. وهذا المكان <dfn>جذر التركيب</dfn> (composition root)، وهو عادة <code>main</code>، وهو المكان الوحيد:</p>
+
+<pre data-code="lib/orders_app.dart" data-from="^// " data-title="lib/orders_app.dart (جزء)"></pre>
+
+<p>والشاشات الثلاث أعلاه ثلاثة جذور تركيب، <code>orders_app.dart</code> و<code>orders_closed.dart</code> و<code>orders_offline.dart</code>، يختلف كل منها في سطر واحد: الساعة، أو المصدر. وفي تطبيق حقيقي تعطيك الفكرة نفسها نسخة عرض ببيانات مزيفة، ونسخة اختبار على خادم تجريبي، ونسخة إنتاج، من الكود نفسه.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>في أي طبقة تكون قاعدة «المقهى يغلق في 22:00»؟ والنص «المقهى مغلق»؟</li><li>لماذا لا يعرف <code>PlaceOrder</code> المستودع إلا بواجهته؟</li><li>ماذا سيفعل المترجم لو أضفت فشلاً اسمه <code>PaymentDeclined</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.6 حراسة القاعدة</h2>
+
+<p>القواعد التي تعيش في رؤوس الناس وحدها تُكسر خلال شهر: يحتاج أحدهم لوناً في المجال «مؤقتاً»، فيستورد Flutter. ويستطيع اختبار أن يقرأ استيرادات كل ملف في المجال، ويفشل حين يشير أحدها في الاتجاه الخطأ:</p>
+
+<pre data-code="test/architecture_test.dart" data-from="^const forbidden" data-title="test/architecture_test.dart (جزء)"></pre>
+<pre data-term="architecture-test.sh"></pre>
+
+<p>ولتراه يلتقط شيئاً، يعمل الفحص نفسه على مجلد أمثلة فيه ملف مجال سيئ واحد، دالة تختار <code>Color</code> لكل حالة:</p>
+
+<pre data-term="architecture-bad.sh"></pre>
+
+<p>الفشل يسمّي الملف والاستيراد. والإصلاح أن تنقل <code>statusColor</code> إلى طبقة العرض، حيث مكان الألوان، وتُبقي <code>OrderStatus</code> وحدها في المجال.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>المعمارية ليست رسماً في صفحة توثيق؛ إنها مجموعة القواعد التي يفرضها البناء. اكتب المهم منها اختبارات، وشغّلها مع غيرها، فلا يُكتب تعليق المراجعة «من فضلك لا تستورد Flutter في المجال» مرة أخرى أبداً.</p></aside>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>الطبقات تكلّف ملفات. فالشاشة التي تعرض قائمة من نقطة اتصال واحدة لا تحتاج حالة استخدام لا تفعل إلا استدعاء المستودع، ولا DTO مطابقاً لكيانه. ابدأ بالمجال وواجهة المستودع؛ وأضف حالات الاستخدام حيث توجد قواعد، والـ DTO حيث تختلف الأشكال. أما قاعدة الاعتماد فهي الجزء الذي لا يُتخطى أبداً.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>Flutter أو JSON في المجال</td><td>قواعد لا تُختبر ولا يُعاد استخدامها بلا جوال</td><td>Dart خالصة في المجال؛ واختبار معمارية</td></tr>
+<tr><td>رسائل الخطأ في المجال</td><td>قواعد مربوطة بلغة واحدة وشاشة واحدة</td><td>حالات فشل أنواعاً؛ والكلمات في العرض</td></tr>
+<tr><td>رمي الاستثناءات عبر الطبقات</td><td>شاشات تنهار في حالات لم يحصها أحد</td><td><code>Result</code> مختوم مع حالات فشل مختومة</td></tr>
+<tr><td><code dir="ltr">new HttpClient()</code> داخل المستودع</td><td>لا شيء يمكن تزييفه في اختبار</td><td>تسلّم المصدر في المُنشئ؛ وصِله في الجذر</td></tr>
+<tr><td>اختيار الأصناف الحقيقية في أماكن كثيرة</td><td>تغيير مصدر يعني البحث في التطبيق كله</td><td>جذر تركيب واحد</td></tr>
+<tr><td>كل الطبقات لكل شاشة</td><td>ملفات كثيرة بلا قاعدة فيها</td><td>أضف الطبقات حيث تحمل قواعد أو أشكالاً</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>المجال (كيانات، وقواعد، وحالات استخدام، ومنافذ)، والبيانات (DTO، ومصادر، وتنفيذ المستودعات)، والعرض (متحكمات وشاشات).</li>
+<li>الاستيرادات تشير نحو المجال؛ والمجال Dart خالصة.</li>
+<li>حالات الاستخدام تعيد <code>Result</code> مختوماً؛ وحالات الفشل أنواع مختومة بلا كلمات، والشاشة تختار الكلمات.</li>
+<li>جذر تركيب واحد يختار كل صنف حقيقي؛ وجذور مختلفة تعطي تطبيقات للعرض والاختبار والإنتاج من الكود نفسه.</li>
+<li>اختبر كل طبقة وحدها بالمزيفات، وافرض قاعدة الاعتماد باختبار يقرأ الاستيرادات.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. القاعدة مكانها المجال (في <code>PlaceOrder</code>)؛ والنص مكانه العرض (في <code>describe</code>)، بكل لغة. 2. ليعمل مع أي تنفيذ، المزيف في الاختبارات، أو الذي في الذاكرة، أو HTTP، ولا يحتاج أبداً أن يستورد طبقة البيانات. 3. كل <code>switch</code> على <code>OrderFailure</code> لا يعالجه سيتوقف عن الترجمة، بدءاً بـ <code>describe</code> في المتحكم، حتى يقرر أحد ما الذي يُقال للشخص.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع الثلاثة تُنمي ميزة الطلبات دون لمس الملفات الموجودة: حالة استخدام جديدة، ومصدر بيانات جديد، وقاعدة معمارية جديدة. وإن أجبرك أحدها على تغيير طبقة موجودة، فاسأل لماذا قبل أن تفعل.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>ألغِ طلباً</h3>
+<p class="project-goal">حالة استخدام تلغي الطلب فقط إن كان ما زال معلّقاً وأُرسل قبل أقل من خمس دقائق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حالة استخدام بحالات فشل مختومة خاصة بها، وساعة، وحدود نافذة زمنية.</p>
+<ol class="steps">
+<li>عرّف <code dir="ltr">sealed class CancelFailure</code> مع <code>NotPending</code> و<code>TooLate</code>.</li>
+<li>اكتب <code>CancelOrder</code> بساعة، ودالة <code dir="ltr">call(Order)</code> تعيد <code dir="ltr">Result&lt;Order, CancelFailure&gt;</code>: نسخة من الطلب بحالة <code dir="ltr">OrderStatus.cancelled</code>، أو فشلاً.</li>
+<li>اختبر أربع حالات: معلّق بعد دقيقتين، وجاهز بعد دقيقتين، ومعلّق بعد خمس دقائق بالضبط، ومعلّق بعد ست.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قرّر، واختبر، ما يحدث عند الحد بالضبط. فهنا الدقائق الخمس ما زالت مسموحة (<code>&gt;</code> لا <code>&gt;=</code>)؛ اكتب ذلك في الاختبار، فلا يضطر الشخص التالي إلى التخمين.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/cancel-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>مصدر HTTP حقيقي</h3>
+<p class="project-goal">نفّذ <code>OrdersSource</code> بحزمة <code>http</code>، وأثبت أن المستودع والمجال يعملان معه دون تغيير.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تنفيذ واجهة من طبقة البيانات، ورموز الحالة، و<code>MockClient</code> من الكتاب الخامس.</p>
+<ol class="steps">
+<li><code>HttpOrdersSource</code> يتسلّم <code>http.Client</code> وعنواناً أساسياً. و<code>post</code> ترسل القطع بصيغة JSON، مع مهلة، وترمي إن لم يكن رمز الحالة 201.</li>
+<li>اختبر عبر المستودع بخادم <code>MockClient</code> يقبل الشاي بالنعناع ويرفض الكيك برمز 409.</li>
+<li>تأكد أن طلب الشاي يصل <code>Order</code> بالمجموع الصحيح، وأن الرفض يصل <code>NetworkFailure</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> رد 409 «نفد» ليس فشل شبكة حقاً. وحين يبدأ الخادم بإرسال الأسباب، أضف فشلاً <code>SoldOut</code> إلى المجال، وحوّله في المستودع، ودع المترجم يريك كل شاشة يجب أن تشرحه الآن.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/http-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>ميزات تلتزم حدودها</h3>
+<p class="project-goal">قاعدة معمارية ثانية: يحق للميزة أن تستورد مجال ميزة أخرى، لكن لا بياناتها ولا عرضها أبداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الاستيرادات بالتعبيرات النمطية، والمسارات النسبية، واختبار اختبارٍ بأمثلة ثابتة (fixtures).</p>
+<ol class="steps">
+<li>لكل ملف Dart تحت <code dir="ltr">lib/features</code> جِد ميزته من المسار، <code dir="ltr">features/&lt;name&gt;/</code>.</li>
+<li>ولكل استيراد جِد الميزة والطبقة اللتين يشير إليهما، لاستيرادات <code>package:</code> وللنسبية مثل <code dir="ltr">'../../orders/presentation/...'</code>.</li>
+<li>أبلغ عنه حين تكون الميزة أخرى والطبقة ليست <code>domain</code>.</li>
+<li>توقّع ألا يوجد بلاغ في <code dir="ltr">lib/features</code>، وأن يوجد بلاغ واحد بالضبط في مجلد أمثلة فيه ميزة <code>menu</code> تستورد مجال الطلبات (مسموح) ومتحكم الطلبات (غير مسموح).</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اختبار القاعدة على مثال يكسرها هو ما يثبت أنها تعمل. فالفحص الذي لم يفشل قط ربما يبحث في المكان الخطأ ببساطة.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/features-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> وزّع هذه على المجال أو البيانات أو العرض: <code>OrderDto</code>، و«الطلب يتسع لعشرين قطعة على الأكثر»، و<code>Colors.green</code> للطلبات الجاهزة، و<code>Money</code>، والنص «أُرسل الطلب»، و<code>jsonDecode</code>.</li>
+<li><span class="level">سهل</span> أضف الفشل <code>SoldOut</code> إلى <code>failures.dart</code> وشغّل <code dir="ltr">flutter analyze</code>. أين يشتكي، وماذا يقول لك ذلك؟</li>
+<li><span class="level">متوسط</span> اكتب جذر تركيب رابعاً، <code>orders_demo.dart</code>، يبدأ مصدره بثلاثة طلبات في سجله، لعرض التطبيق على أحد بلا خادم.</li>
+<li><span class="level">متوسط</span> <code>Money</code> تحمل جنيهات كاملة. غيّرها لتحمل القروش دون تغيير أي ملف خارج المجال. أي الملفات تتغير، ولماذا هي قليلة إلى هذا الحد؟</li>
+<li><span class="level">تحدٍّ</span> المتحكم في هذا الفصل <code>ChangeNotifier</code>، وهو من Flutter. هل يحق لطبقة العرض أن تعتمد على Flutter؟ وهل يمكن أن يكون المتحكم Dart خالصة، وماذا تكسب وتخسر؟ (والفصل القادم يجيب بـ Riverpod.)</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>وصل هذا الفصل كل شيء باليد في <code>main</code>، ومرّر المتحكم إلى الأسفل بـ Provider. والفصل القادم يستبدل الاثنين بـ Riverpod: providers يبني بعضها بعضاً، وحالة يمكن أن تكون تحميلاً أو جاهزة أو فاشلة، وكل اعتماد يُستبدل في الاختبارات بسطر واحد.</p>
+</div>
+</section>

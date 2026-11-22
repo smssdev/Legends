@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "Chapter 1: How Flutter Really Renders"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: Clean Architecture for Flutter"; } }
+@page ch02:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -92,16 +94,14 @@ if (isMember && day === "Tuesday") {
   <p class="cv-series">From Zero to Senior · Book 6</p>
   <h1 class="cv-title">Senior Flutter Engineering</h1>
   <p class="cv-sub">Architecture, Riverpod, Performance, Testing and Release at Scale</p>
-  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
-<span class="k">let</span> price;
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="s"></span><span class="k">final</span> notes = FutureProvider((ref) =&gt;
+    ref.watch(repository).load());
 
-<span class="k">if</span> (age &lt; <span class="n">13</span>) {
-  price = <span class="n">6</span>;
-} <span class="k">else</span> {
-  price = <span class="n">10</span>;
-}
-
-console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>Flutter</span><span>Riverpod</span><span>Testing</span><span>CI/CD</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+Widget build(context, ref) =&gt;
+  <span class="k">switch</span> (ref.watch(notes)) {
+    AsyncData(:<span class="k">final</span> value) =&gt; List(value),
+    _ =&gt; <span class="k">const</span> Spinner(),
+  };</pre></div><div class="cv-tracks"><span>Flutter</span><span>Riverpod</span><span>Testing</span><span>CI/CD</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
 <rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
@@ -143,7 +143,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">26</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">42</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -613,6 +613,503 @@ repainted: {header: 31, chart: 31, footer: 31}</pre></div>
 <p>You know how Flutter draws one screen. A real app has fifty, and a team working on them. The next chapter gives the app a skeleton that grows: layers for data, domain and presentation, with rules about who may talk to whom.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b6/architecture/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>Clean Architecture for Flutter</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>split a feature into three layers, domain, data and presentation, and say what belongs in each</li>
+<li>follow the dependency rule: the domain knows nothing about Flutter, JSON or the network</li>
+<li>model what can go wrong as types, with a sealed <code>Result</code> and sealed failures</li>
+<li>wire everything in one composition root, and run the same app wired three ways</li>
+<li>test each layer alone, and guard the rule itself with a test that reads the imports</li>
+</ul>
+</div>
+
+<p class="lead">The notes app of Book 5 had layers already: a note, a store, a model, the screens. That was enough for one feature written by one person. A real app has twenty features, a team, a server that changes its JSON, and rules that change every quarter. This chapter gives that kind of app its skeleton: the layers professional Flutter teams use, the one rule that holds them together, and a test that makes sure nobody breaks it, not even you on a Friday evening.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The example is one feature, ordering at the café, built in full: three layers, three apps that differ only in their wiring, eight tests, and one test that fails on purpose, so that you can see what it catches.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>Three layers and one rule</span></h2>
+
+<ul>
+<li>The <dfn>domain</dfn> is what the app is about: entities (an order, an amount of money), the rules (an order cannot be empty; the café closes at ten), and the actions people can take, called <dfn>use cases</dfn>. It is plain Dart.</li>
+<li>The <dfn>data</dfn> layer knows where things come from: JSON, HTTP, a database. It translates that world into the domain’s entities.</li>
+<li>The <dfn>presentation</dfn> layer is the screens and the objects that hold their state. It shows entities and calls use cases.</li>
+</ul>
+
+<p>And one rule, the <dfn>dependency rule</dfn>: imports point toward the domain, never away from it.</p>
+
+<pre class="plain" dir="ltr">presentation  ──▶  domain  ◀──  data
+                     ▲
+          (knows no Flutter, no JSON, no HTTP)</pre>
+
+<p>The domain defines what it needs, for example “something that can place an order”, as an interface. The data layer implements it. The presentation receives it. Nobody in the domain ever writes <code>import 'package:http/...'</code>, so when the server changes, the rules do not; when the screens are redesigned, the rules do not; and the rules can be tested in milliseconds, without a phone or a network.</p>
+
+<p>Large apps organise folders by <em>feature</em> first, then by layer, so that everything about orders lives together:</p>
+
+<pre class="plain" dir="ltr">lib/
+  core/result.dart                    shared by every feature
+  features/orders/
+    domain/   money, order, failures, orders_repository, place_order
+    data/     order_dto, orders_source, orders_repository_impl
+    presentation/   orders_controller, orders_page
+  orders_app.dart                     the composition root</pre>
+
+<h2><span class="sec">2.2</span> <span>The domain</span></h2>
+
+<p>Things go wrong: the basket is empty, the café is closed, the network is down. Exceptions hide that from the function’s type, and the screen finds out at run time. In the domain, a use case returns a <dfn>result</dfn> instead, which is either a value or a failure:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/core/result.dart</div><pre class="code"><span class="c line-bidi">// A result is either a value or a failure; the type says which, and switch must handle both.</span>
+<span class="k">sealed</span> <span class="k">class</span> Result&lt;T, F&gt; {
+  <span class="k">const</span> Result();
+}
+
+<span class="k">final</span> <span class="k">class</span> Ok&lt;T, F&gt; <span class="k">extends</span> Result&lt;T, F&gt; {
+  <span class="k">const</span> Ok(<span class="k">this</span>.value);
+  <span class="k">final</span> T value;
+}
+
+<span class="k">final</span> <span class="k">class</span> Err&lt;T, F&gt; <span class="k">extends</span> Result&lt;T, F&gt; {
+  <span class="k">const</span> Err(<span class="k">this</span>.failure);
+  <span class="k">final</span> F failure;
+}</pre></div>
+
+<p>And the failures are types too, with no words in them: what to <em>say</em> about a failure, in which language, is the screen’s business.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/domain/failures.dart (part)</div><pre class="code"><span class="c line-bidi">// Everything that can go wrong, as types. No text: words belong to the screen.</span>
+<span class="k">sealed</span> <span class="k">class</span> OrderFailure {
+  <span class="k">const</span> OrderFailure();
+}
+
+<span class="k">final</span> <span class="k">class</span> EmptyOrder <span class="k">extends</span> OrderFailure {
+  <span class="k">const</span> EmptyOrder();
+}
+
+<span class="k">final</span> <span class="k">class</span> TooLarge <span class="k">extends</span> OrderFailure {
+  <span class="k">const</span> TooLarge(<span class="k">this</span>.max);
+  <span class="k">final</span> <span class="k">int</span> max;
+}</pre></div>
+
+<p>Because both are <dfn>sealed</dfn>, every <code>switch</code> over them must handle every case, and the compiler checks it. Add a fifth failure next year, and every screen that forgot it stops compiling until it says something about it.</p>
+
+<p>The domain needs to place orders somewhere, but must not know how. It says what it needs as an interface, a <dfn>port</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/domain/orders_repository.dart (part)</div><pre class="code"><span class="c line-bidi">// What the domain needs from the outside world. The data layer will provide it.</span>
+<span class="k">abstract</span> <span class="k">interface</span> <span class="k">class</span> OrdersRepository {
+  <span class="k">Future</span>&lt;Result&lt;Order, OrderFailure&gt;&gt; place(<span class="k">List</span>&lt;OrderLine&gt; lines);
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; history();
+}</pre></div>
+
+<p>The use case holds the rules of one action:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/domain/place_order.dart (part)</div><pre class="code"><span class="c line-bidi">// One action of the app, with its rules. It knows the repository only by its interface.</span>
+<span class="k">class</span> PlaceOrder {
+  PlaceOrder(<span class="k">this</span>.repository, {DateTime <span class="k">Function</span>()? clock})
+    : clock = clock ?? DateTime.now;
+
+  <span class="k">final</span> OrdersRepository repository;
+  <span class="k">final</span> DateTime <span class="k">Function</span>() clock;
+
+  <span class="k">static</span> <span class="k">const</span> maxItems = <span class="n">20</span>;
+
+  <span class="k">Future</span>&lt;Result&lt;Order, OrderFailure&gt;&gt; call(<span class="k">List</span>&lt;OrderLine&gt; lines) <span class="k">async</span> {
+    <span class="c line-bidi">// The rules, in order: cheapest checks first, the network last.</span>
+    <span class="k">final</span> items = lines.fold(<span class="n">0</span>, (sum, line) =&gt; sum + line.quantity);
+    <span class="k">if</span> (items == <span class="n">0</span>) {
+      <span class="k">return</span> <span class="k">const</span> Err(EmptyOrder());
+    }
+    <span class="k">if</span> (items &gt; maxItems) {
+      <span class="k">return</span> <span class="k">const</span> Err(TooLarge(maxItems));
+    }
+    <span class="k">final</span> hour = clock().hour;
+    <span class="k">if</span> (hour &lt; <span class="n">8</span> || hour &gt;= <span class="n">22</span>) {
+      <span class="k">return</span> <span class="k">const</span> Err(Closed());
+    }
+    <span class="k">return</span> repository.place(lines);
+  }
+}</pre></div>
+
+<ul>
+<li><code>call</code> makes the object callable like a function: <code>await placeOrder(lines)</code>.</li>
+<li>The clock is given, as in Book 5: the test decides what time it is.</li>
+<li>The rules run before the network. A closed café is told so at once, without a request that the server would refuse anyway.</li>
+</ul>
+
+<p>The test needs no Flutter, no server and no screen. A fake repository records what reached it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/domain/place_order_test.dart (part)</div><pre class="code"><span class="k">void</span> main() {
+  test(<span class="s">&#x27;placing an order follows the rules, in order&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">final</span> repo = FakeRepository();
+    <span class="k">var</span> hour = <span class="n">10</span>;
+    <span class="k">final</span> place = PlaceOrder(repo, clock: () =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">22</span>, hour));
+    <span class="k">final</span> latte = OrderLine(menu.first, <span class="n">2</span>);
+
+    expect(
+      <span class="k">await</span> place([]),
+      isA&lt;Err&lt;Order, OrderFailure&gt;&gt;().having(
+        (e) =&gt; e.failure,
+        <span class="s">&#x27;failure&#x27;</span>,
+        isA&lt;EmptyOrder&gt;(),
+      ),
+    );
+    expect(
+      (<span class="k">await</span> place([OrderLine(menu.first, <span class="n">21</span>)]) <span class="k">as</span> Err).failure,
+      isA&lt;TooLarge&gt;(),
+    );
+    hour = <span class="n">23</span>;
+    expect((<span class="k">await</span> place([latte]) <span class="k">as</span> Err).failure, isA&lt;Closed&gt;());
+    expect(repo.placed, isEmpty);
+
+    hour = <span class="n">10</span>;
+    <span class="k">final</span> ok = <span class="k">await</span> place([latte]) <span class="k">as</span> Ok&lt;Order, OrderFailure&gt;;
+    expect(ok.value.total.pounds, <span class="n">90</span>);
+    expect(repo.placed, hasLength(<span class="n">1</span>));
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/domain/place_order_test.dart</span>
+00:00 +0: loading test/domain/place_order_test.dart
+00:00 +0: placing an order follows the rules, in order
+00:00 +1: All tests passed!</pre></div>
+
+<p>The last <code>expect</code> before the success matters as much as the others: after three refusals, the repository received <em>nothing</em>. The rules really run first.</p>
+
+<h2><span class="sec">2.3</span> <span>The data layer</span></h2>
+
+<p>The server speaks JSON, with its own names: <code>placed_at</code>, statuses as text, items as a map. A <dfn>DTO</dfn>, a data transfer object, mirrors exactly that shape, and nothing more:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/data/order_dto.dart (part)</div><pre class="code"><span class="c line-bidi">// The shape of the data on the wire. It changes when the server changes; the entity does not.</span>
+<span class="k">class</span> OrderDto {
+  <span class="k">const</span> OrderDto({
+    <span class="k">required</span> <span class="k">this</span>.id,
+    <span class="k">required</span> <span class="k">this</span>.items,
+    <span class="k">required</span> <span class="k">this</span>.status,
+    <span class="k">required</span> <span class="k">this</span>.placedAt,
+  });
+
+  <span class="k">factory</span> OrderDto.fromJson(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt; json) =&gt; OrderDto(
+    id: json[<span class="s">&#x27;id&#x27;</span>] <span class="k">as</span> <span class="k">int</span>,
+    items: (json[<span class="s">&#x27;items&#x27;</span>] <span class="k">as</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">dynamic</span>&gt;).map(
+      (k, v) =&gt; MapEntry(k, v <span class="k">as</span> <span class="k">int</span>),
+    ),
+    status: json[<span class="s">&#x27;status&#x27;</span>] <span class="k">as</span> <span class="k">String</span>,
+    placedAt: json[<span class="s">&#x27;placed_at&#x27;</span>] <span class="k">as</span> <span class="k">String</span>,
+  );
+
+  <span class="k">final</span> <span class="k">int</span> id;
+  <span class="k">final</span> <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">int</span>&gt; items;
+  <span class="k">final</span> <span class="k">String</span> status;
+  <span class="k">final</span> <span class="k">String</span> placedAt;
+}</pre></div>
+
+<p>The repository implementation turns DTOs into entities, and anything that goes wrong into a failure:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/data/orders_repository_impl.dart (part)</div><pre class="code"><span class="k">class</span> OrdersRepositoryImpl <span class="k">implements</span> OrdersRepository {
+  OrdersRepositoryImpl(<span class="k">this</span>.source);
+
+  <span class="k">final</span> OrdersSource source;
+
+  @override
+  <span class="k">Future</span>&lt;Result&lt;Order, OrderFailure&gt;&gt; place(<span class="k">List</span>&lt;OrderLine&gt; lines) <span class="k">async</span> {
+    <span class="k">try</span> {
+      <span class="k">final</span> json = <span class="k">await</span> source.post({
+        <span class="k">for</span> (<span class="k">final</span> l <span class="k">in</span> lines) l.item.id: l.quantity,
+      });
+      <span class="k">return</span> Ok(_toOrder(OrderDto.fromJson(json)));
+    } <span class="k">catch</span> (_) {
+      <span class="c line-bidi">// Any failure of the source becomes a NetworkFailure: the domain never sees an exception.</span>
+      <span class="k">return</span> <span class="k">const</span> Err(NetworkFailure());
+    }
+  }
+
+  @override
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; history() <span class="k">async</span> =&gt; [
+    <span class="k">for</span> (<span class="k">final</span> json <span class="k">in</span> <span class="k">await</span> source.list()) _toOrder(OrderDto.fromJson(json)),
+  ];
+
+  Order _toOrder(OrderDto dto) =&gt; Order(
+    id: dto.id,
+    lines: [
+      <span class="k">for</span> (<span class="k">final</span> MapEntry(:key, :value) <span class="k">in</span> dto.items.entries)
+        OrderLine(menu.firstWhere((m) =&gt; m.id == key), value),
+    ],
+    status: OrderStatus.values.byName(dto.status),
+    placedAt: DateTime.parse(dto.placedAt),
+  );
+}</pre></div>
+
+<p>The source behind it is another interface: here a fake that answers after 400 milliseconds, as a network would; in Project 2.2, a real HTTP client. The repository and the domain do not change between the two.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/data/orders_repository_test.dart</span>
+00:00 +0: loading test/data/orders_repository_test.dart
+00:00 +0: the repository turns data into entities, and errors into failures
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Why not give the domain’s <code>Order</code> a <code>fromJson</code>, as Book 5 did with <code>Drink</code>? For a small app, do. The DTO pays off when the server’s shape and the app’s meaning drift apart: a field renamed, an API version two, a second source for the same entity. Then the DTO changes, the mapping changes, and nothing else does.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>The presentation</span></h2>
+
+<p>The controller holds the screen’s state, calls the use case, and turns each failure into words in the person’s language:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/features/orders/presentation/orders_controller.dart (part)</div><pre class="code">  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; place() <span class="k">async</span> {
+    placing = <span class="k">true</span>;
+    notifyListeners();
+    <span class="k">final</span> result = <span class="k">await</span> placeOrder([
+      <span class="k">for</span> (<span class="k">final</span> e <span class="k">in</span> basket.entries) OrderLine(e.key, e.value),
+    ]);
+    <span class="k">switch</span> (result) {
+      <span class="k">case</span> Ok(:<span class="k">final</span> value):
+        basket.clear();
+        message = <span class="s">&#x27;Order placed: Order ${value.id}&#x27;</span>;
+        history = <span class="k">await</span> repository.history();
+      <span class="k">case</span> Err(:<span class="k">final</span> failure):
+        message = describe(failure);
+    }
+    placing = <span class="k">false</span>;
+    notifyListeners();
+  }
+
+  <span class="c line-bidi">// Each failure, in the person&#x27;s language.</span>
+  <span class="k">static</span> <span class="k">String</span> describe(OrderFailure failure) =&gt; <span class="k">switch</span> (failure) {
+    EmptyOrder() =&gt; <span class="s">&#x27;Add something to your basket first.&#x27;</span>,
+    TooLarge() =&gt; <span class="s">&#x27;One order can hold at most 20 items.&#x27;</span>,
+    Closed() =&gt; <span class="s">&#x27;The café is closed. We open from 8:00 to 22:00.&#x27;</span>,
+    NetworkFailure() =&gt; <span class="s">&#x27;No connection. Your basket is kept; try again.&#x27;</span>,
+  };
+}</pre></div>
+
+<p>The page only watches the controller and draws. The same page, the same controller and the same use case give three different screens, depending only on what they were given:</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-architecture-en-shots-placed.png" alt=""></div>
+<figcaption>At 10:00: placed</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-architecture-en-shots-closed.png" alt=""></div>
+<figcaption>At 23:00: closed</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-architecture-en-shots-offline.png" alt=""></div>
+<figcaption>No network</figcaption>
+</figure>
+</div>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/presentation/orders_page_test.dart</span>
+00:00 +0: loading test/presentation/orders_page_test.dart
+00:00 +0: the page shows the placed order, or the failure in words
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The widget test pumps the app twice, at 10:00 and then at 23:00. The first version of this test failed: the second <code>pumpWidget</code> put a provider of the same type at the same place, so Flutter kept the first one, with its 10:00 clock, exactly as Chapter 1 explained. A <code>ValueKey(hour)</code> on the provider fixed it.</p></aside>
+
+<h2><span class="sec">2.5</span> <span>The composition root</span></h2>
+
+<p>Somewhere, someone must know every concrete class: which source, which repository, which clock. That place is the <dfn>composition root</dfn>, normally <code>main</code>, and it is the only one:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/orders_app.dart (part)</div><pre class="code"><span class="c line-bidi">// The composition root: the only place that knows every concrete class.</span>
+<span class="k">void</span> main() {
+  <span class="k">final</span> repository = OrdersRepositoryImpl(FakeOrdersSource());
+  <span class="k">final</span> placeOrder = PlaceOrder(
+    repository,
+    clock: () =&gt; DateTime(<span class="n">2026</span>, <span class="n">11</span>, <span class="n">22</span>, <span class="n">10</span>),
+  );
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) =&gt; OrdersController(placeOrder, repository),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: <span class="k">false</span>,
+
+        theme: ThemeData(colorSchemeSeed: Colors.brown),
+        home: <span class="k">const</span> OrdersPage(),
+      ),
+    ),
+  );
+}</pre></div>
+
+<p>The three screens above are three composition roots, <code>orders_app.dart</code>, <code>orders_closed.dart</code> and <code>orders_offline.dart</code>, which differ in one line each: the clock, or the source. In a real app the same idea gives you a demo build with fake data, a staging build against a test server, and a production build, from the same code.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>In which layer does the rule “the café closes at 22:00” belong? And the text “The café is closed”?</li><li>Why does <code>PlaceOrder</code> know the repository only as an interface?</li><li>What would the compiler do if you added a failure <code>PaymentDeclined</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">2.6</span> <span>Guarding the rule</span></h2>
+
+<p>Rules that live only in people’s heads are broken within a month: someone needs a colour in the domain “just for now”, and imports Flutter. A test can read the imports of every domain file, and fail when one points the wrong way:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/architecture_test.dart (part)</div><pre class="code"><span class="k">const</span> forbidden = [
+  <span class="s">&#x27;package:flutter/&#x27;</span>,
+  <span class="s">&#x27;package:material_ui/&#x27;</span>,
+  <span class="s">&#x27;package:provider/&#x27;</span>,
+  <span class="s">&#x27;package:http/&#x27;</span>,
+  <span class="s">&#x27;/data/&#x27;</span>,
+  <span class="s">&#x27;/presentation/&#x27;</span>,
+];
+
+<span class="c line-bidi">/// Every import in a domain folder that breaks the rule, as &quot;file: import&quot;.</span>
+<span class="k">List</span>&lt;<span class="k">String</span>&gt; violations(<span class="k">String</span> root) =&gt; [
+  <span class="k">for</span> (<span class="k">final</span> file <span class="k">in</span> Directory(
+    root,
+  ).listSync(recursive: <span class="k">true</span>).whereType&lt;File&gt;())
+    <span class="k">if</span> (file.path.contains(<span class="s">&#x27;/domain/&#x27;</span>) &amp;&amp; file.path.endsWith(<span class="s">&#x27;.dart&#x27;</span>))
+      <span class="k">for</span> (<span class="k">final</span> line <span class="k">in</span> file.readAsLinesSync())
+        <span class="k">if</span> (line.startsWith(<span class="s">&#x27;import &#x27;</span>) &amp;&amp; forbidden.any(line.contains))
+          <span class="s">&#x27;${file.path}: $line&#x27;</span>,
+];
+
+<span class="k">void</span> main() {
+  test(<span class="s">&#x27;the domain imports no Flutter, no data and no presentation&#x27;</span>, () {
+    <span class="c line-bidi">// The domain imports only Dart and other domain files.</span>
+    expect(violations(<span class="s">&#x27;lib/features&#x27;</span>), isEmpty);
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/architecture_test.dart</span>
+00:00 +0: loading test/architecture_test.dart
+00:00 +0: the domain imports no Flutter, no data and no presentation
+00:00 +1: All tests passed!</pre></div>
+
+<p>To see it catch something, the same check runs on a folder of examples that contains one bad domain file, a function that picks a <code>Color</code> for each status:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/architecture_bad_test.dart</span>
+00:00 +0: loading test/architecture_bad_test.dart
+00:00 +0: a domain file that imports Flutter is caught
+00:00 +0 -1: a domain file that imports Flutter is caught [E]
+  Expected: empty
+    Actual: [
+              &#x27;test/fixtures/orders/domain/status_color.dart: import \&#x27;package:material_ui/material_ui.dart\&#x27;;&#x27;
+            ]</pre></div>
+
+<p>The failure names the file and the import. The fix is to move <code>statusColor</code> to the presentation layer, where colours belong, and keep only <code>OrderStatus</code> in the domain.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Architecture is not a diagram on a wiki; it is the set of rules the build enforces. Write the important ones as tests, run them with the others, and the review comment “please don’t import Flutter in the domain” is never written again.</p></aside>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Layers cost files. A screen that shows a list from one endpoint does not need a use case that only calls the repository, nor a DTO identical to its entity. Start with the domain and the repository interface; add use cases where there are rules, and DTOs where the shapes differ. The dependency rule is the part never to skip.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Flutter or JSON in the domain</td><td>Rules that cannot be tested or reused without a phone</td><td>Plain Dart in the domain; an architecture test</td></tr>
+<tr><td>Error messages in the domain</td><td>Rules tied to one language and one screen</td><td>Failures as types; words in the presentation</td></tr>
+<tr><td>Throwing exceptions across layers</td><td>Screens that crash on cases nobody listed</td><td>A sealed <code>Result</code> with sealed failures</td></tr>
+<tr><td><code>new HttpClient()</code> inside a repository</td><td>Nothing can be faked in a test</td><td>Receive the source in the constructor; wire it in the root</td></tr>
+<tr><td>Concrete classes chosen in many places</td><td>Changing a source means hunting through the app</td><td>One composition root</td></tr>
+<tr><td>Every layer for every screen</td><td>Many files with no rule in them</td><td>Add layers where they carry rules or shapes</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Domain (entities, rules, use cases, ports), data (DTOs, sources, repository implementations), presentation (controllers, screens).</li>
+<li>Imports point toward the domain; the domain is plain Dart.</li>
+<li>Use cases return a sealed <code>Result</code>; failures are sealed types without words, and the screen chooses the words.</li>
+<li>One composition root chooses every concrete class; different roots give demo, test and production apps from the same code.</li>
+<li>Test each layer alone with fakes, and enforce the dependency rule with a test that reads the imports.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The rule belongs in the domain (in <code>PlaceOrder</code>); the text belongs in the presentation (in <code>describe</code>), in each language. 2. So that it works with any implementation, the fake in the tests, an in-memory one, or HTTP, and never needs to import the data layer. 3. Every <code>switch</code> over <code>OrderFailure</code> that does not handle it would stop compiling, starting with the controller’s <code>describe</code>, until someone decides what to tell the person.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The three projects grow the orders feature without touching the files you have: a new use case, a new data source, and a new architecture rule. If one of them forces you to change an existing layer, ask why before you do.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>Cancel an order</h3>
+<p class="project-goal">A use case that cancels an order only if it is still pending and was placed less than five minutes ago.</p>
+<p class="project-skills"><strong>You will practise:</strong> a use case with its own sealed failures, a clock, and the edges of a time window.</p>
+<ol class="steps">
+<li>Define <code>sealed class CancelFailure</code> with <code>NotPending</code> and <code>TooLate</code>.</li>
+<li>Write <code>CancelOrder</code> with a clock, and a <code>call(Order)</code> that returns <code>Result&lt;Order, CancelFailure&gt;</code>: a copy of the order with <code>OrderStatus.cancelled</code>, or a failure.</li>
+<li>Test four cases: pending at two minutes, ready at two minutes, pending at exactly five minutes, and pending at six.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> decide, and test, what happens exactly at the edge. Here five minutes is still allowed (<code>&gt;</code>, not <code>&gt;=</code>); write it in the test so the next person does not have to guess.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/domain/cancel_order_test.dart</span>
+00:00 +0: loading test/domain/cancel_order_test.dart
+00:00 +0: an order can be cancelled only while pending, within five minutes
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>A real HTTP source</h3>
+<p class="project-goal">Implement <code>OrdersSource</code> with the <code>http</code> package, and prove that the repository and the domain work with it unchanged.</p>
+<p class="project-skills"><strong>You will practise:</strong> implementing a data-layer interface, status codes, and <code>MockClient</code> from Book 5.</p>
+<ol class="steps">
+<li><code>HttpOrdersSource</code> receives an <code>http.Client</code> and a base address. <code>post</code> sends the items as JSON, with a timeout, and throws if the status is not 201.</li>
+<li>Test through the repository with a <code>MockClient</code> server that accepts mint tea and refuses cake with 409.</li>
+<li>Check that the tea order arrives as an <code>Order</code> with the right total, and that the refusal arrives as a <code>NetworkFailure</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a 409 “sold out” is not really a network failure. When the server starts sending reasons, add a failure <code>SoldOut</code> to the domain, map it in the repository, and let the compiler show you every screen that must now explain it.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/data/http_orders_source_test.dart</span>
+00:00 +0: loading test/data/http_orders_source_test.dart
+00:00 +0: the HTTP source maps answers and errors
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>Features that keep to themselves</h3>
+<p class="project-goal">A second architecture rule: a feature may import another feature’s domain, but never its data or presentation.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading imports with regular expressions, relative paths, and testing a test with fixtures.</p>
+<ol class="steps">
+<li>For each Dart file under <code>lib/features</code>, find its feature from the path, <code>features/&lt;name&gt;/</code>.</li>
+<li>For each import, find the feature and layer it points to, both for <code>package:</code> imports and for relative ones like <code>'../../orders/presentation/...'</code>.</li>
+<li>Report it when the feature is another one and the layer is not <code>domain</code>.</li>
+<li>Expect no reports in <code>lib/features</code>, and exactly one in a fixture folder with a <code>menu</code> feature that imports both the orders domain (allowed) and the orders controller (not allowed).</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> testing the rule against a fixture that breaks it is what proves the rule works. A check that has never failed may simply be looking in the wrong place.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/features_test.dart</span>
+00:00 +0: loading test/features_test.dart
+00:00 +0: features talk to each other only through their domain
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Sort these into domain, data or presentation: <code>OrderDto</code>, “an order holds at most 20 items”, <code>Colors.green</code> for ready orders, <code>Money</code>, the text “Order placed”, <code>jsonDecode</code>.</li>
+<li><span class="level">Easy</span> Add the failure <code>SoldOut</code> to <code>failures.dart</code> and run <code>flutter analyze</code>. Where does it complain, and what does that tell you?</li>
+<li><span class="level medium">Medium</span> Write a fourth composition root, <code>orders_demo.dart</code>, whose source starts with three orders in its history, for showing the app to someone without a server.</li>
+<li><span class="level medium">Medium</span> <code>Money</code> holds whole pounds. Change it to hold piastres (hundredths) without changing any file outside the domain. Which files change, and why so few?</li>
+<li><span class="level hard">Challenge</span> The controller in this chapter is a <code>ChangeNotifier</code>, which comes from Flutter. Is the presentation layer allowed to depend on Flutter? Could the controller be plain Dart, and what would you gain and lose? (The next chapter answers with Riverpod.)</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>This chapter wired everything by hand in <code>main</code>, and passed the controller down with Provider. The next chapter replaces both with Riverpod: providers that build each other, state that can be loading, ready or failed, and every dependency replaceable in tests with one line.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -638,6 +1135,16 @@ repainted: {header: 31, chart: 31, footer: 31}</pre></div>
 <li>The error says that a <code>RenderFlex</code> has children with flex but its incoming height constraint is unbounded: the <code>ListView</code> gave the <code>Column</code> a maximum height of infinity, and <code>Expanded</code> means “take what is left of the maximum”. Either give the column a bounded height (a <code>SizedBox(height: …)</code> around it, or no <code>ListView</code> if the page does not need to scroll), or drop <code>Expanded</code> and let the children take their own sizes with <code>mainAxisSize: MainAxisSize.min</code>.</li>
 <li>In the row without keys, the text stays in its position and appears under the other letter, because the text lives in the <code>State</code> of the field, which the element kept; the focus and the cursor stay there too. In the row with keys, the text, the cursor and the focus move with their tile. This is the most common real-life version of the keys problem: forms whose fields are added or removed.</li>
 <li>The picture is painted once again: it now has its own layer, and when the spinner repaints the parent’s layer, the picture’s layer is reused without painting it. Both placements protect the picture; the difference is what else they protect. A boundary around the thing that changes protects all its neighbours at once, which is usually best; a boundary around one expensive static thing protects only that one, and is the better choice when that thing is costly to paint and the changing part is spread across the screen.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 2</h2>
+<ol class="exercises">
+<li>Data: <code>OrderDto</code> and <code>jsonDecode</code>. Domain: the 20-item rule and <code>Money</code>. Presentation: <code>Colors.green</code> and the text “Order placed”. A quick test for any item: would it change if the server changed (data), if the business changed (domain), or if the design or the language changed (presentation)?</li>
+<li>The analyzer reports that the switch in <code>OrdersController.describe</code> does not handle every <code>OrderFailure</code>, because <code>SoldOut</code> is not matched. That is the sealed type doing its work: it lists, at compile time, every place that must decide what to say about the new case, before any person meets it.</li>
+<li>Give <code>FakeOrdersSource</code> an optional starting list, <code>FakeOrdersSource({this.fails = false, List&lt;Map&lt;String, dynamic&gt;&gt; orders = const []})</code>, copying it into <code>_orders</code>; the demo root passes three orders in JSON shape and the 10:00 clock. Nothing else changes, and the page shows the history at once after the first refresh. Keep demo data in the composition root or a demo file, never in the domain.</li>
+<li>Store <code>piastres</code> in <code>Money</code>, keep a getter <code>int get pounds =&gt; piastres ~/ 100</code>, and write the menu as <code>Money(4500)</code>; <code>+</code>, <code>*</code>, <code>==</code> and <code>compareTo</code> work as before. Only <code>money.dart</code> and <code>order.dart</code> change. Few files change because only the domain knows what money is: the data layer never carries prices (the server computes nothing here), and the presentation only reads <code>pounds</code>. That is the point of a value object.</li>
+<li>It is allowed: the dependency rule is about the domain, and the presentation is Flutter’s layer by nature. But a controller in plain Dart, with its state as an immutable value and no <code>BuildContext</code>, can be tested without pumping widgets, reused by another screen or a desktop app, and replaced in tests more easily. You lose the convenience of <code>ChangeNotifier</code>’s listeners and need another way to tell the screen something changed, which is exactly what Riverpod’s <code>Notifier</code>, a plain Dart class, gives you in the next chapter.</li>
 </ol>
 
 </section>

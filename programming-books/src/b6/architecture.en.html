@@ -1,0 +1,240 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/architecture/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Clean Architecture for Flutter</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>split a feature into three layers, domain, data and presentation, and say what belongs in each</li>
+<li>follow the dependency rule: the domain knows nothing about Flutter, JSON or the network</li>
+<li>model what can go wrong as types, with a sealed <code>Result</code> and sealed failures</li>
+<li>wire everything in one composition root, and run the same app wired three ways</li>
+<li>test each layer alone, and guard the rule itself with a test that reads the imports</li>
+</ul>
+</div>
+
+<p class="lead">The notes app of Book 5 had layers already: a note, a store, a model, the screens. That was enough for one feature written by one person. A real app has twenty features, a team, a server that changes its JSON, and rules that change every quarter. This chapter gives that kind of app its skeleton: the layers professional Flutter teams use, the one rule that holds them together, and a test that makes sure nobody breaks it, not even you on a Friday evening.</p>
+
+<aside class="bit" data-mood="happy"><p>The example is one feature, ordering at the café, built in full: three layers, three apps that differ only in their wiring, eight tests, and one test that fails on purpose, so that you can see what it catches.</p></aside>
+
+<h2>{{n}}.1 Three layers and one rule</h2>
+
+<ul>
+<li>The <dfn>domain</dfn> is what the app is about: entities (an order, an amount of money), the rules (an order cannot be empty; the café closes at ten), and the actions people can take, called <dfn>use cases</dfn>. It is plain Dart.</li>
+<li>The <dfn>data</dfn> layer knows where things come from: JSON, HTTP, a database. It translates that world into the domain’s entities.</li>
+<li>The <dfn>presentation</dfn> layer is the screens and the objects that hold their state. It shows entities and calls use cases.</li>
+</ul>
+
+<p>And one rule, the <dfn>dependency rule</dfn>: imports point toward the domain, never away from it.</p>
+
+<pre class="plain" dir="ltr">presentation  ──▶  domain  ◀──  data
+                     ▲
+          (knows no Flutter, no JSON, no HTTP)</pre>
+
+<p>The domain defines what it needs, for example “something that can place an order”, as an interface. The data layer implements it. The presentation receives it. Nobody in the domain ever writes <code>import 'package:http/...'</code>, so when the server changes, the rules do not; when the screens are redesigned, the rules do not; and the rules can be tested in milliseconds, without a phone or a network.</p>
+
+<p>Large apps organise folders by <em>feature</em> first, then by layer, so that everything about orders lives together:</p>
+
+<pre class="plain" dir="ltr">lib/
+  core/result.dart                    shared by every feature
+  features/orders/
+    domain/   money, order, failures, orders_repository, place_order
+    data/     order_dto, orders_source, orders_repository_impl
+    presentation/   orders_controller, orders_page
+  orders_app.dart                     the composition root</pre>
+
+<h2>{{n}}.2 The domain</h2>
+
+<p>Things go wrong: the basket is empty, the café is closed, the network is down. Exceptions hide that from the function’s type, and the screen finds out at run time. In the domain, a use case returns a <dfn>result</dfn> instead, which is either a value or a failure:</p>
+
+<pre data-code="lib/core/result.dart" data-title="lib/core/result.dart"></pre>
+
+<p>And the failures are types too, with no words in them: what to <em>say</em> about a failure, in which language, is the screen’s business.</p>
+
+<pre data-code="lib/features/orders/domain/failures.dart" data-from="^// " data-to="^}#3" data-title="lib/features/orders/domain/failures.dart (part)"></pre>
+
+<p>Because both are <dfn>sealed</dfn>, every <code>switch</code> over them must handle every case, and the compiler checks it. Add a fifth failure next year, and every screen that forgot it stops compiling until it says something about it.</p>
+
+<p>The domain needs to place orders somewhere, but must not know how. It says what it needs as an interface, a <dfn>port</dfn>:</p>
+
+<pre data-code="lib/features/orders/domain/orders_repository.dart" data-from="^// " data-title="lib/features/orders/domain/orders_repository.dart (part)"></pre>
+
+<p>The use case holds the rules of one action:</p>
+
+<pre data-code="lib/features/orders/domain/place_order.dart" data-from="^// " data-title="lib/features/orders/domain/place_order.dart (part)"></pre>
+
+<ul>
+<li><code>call</code> makes the object callable like a function: <code>await placeOrder(lines)</code>.</li>
+<li>The clock is given, as in Book 5: the test decides what time it is.</li>
+<li>The rules run before the network. A closed café is told so at once, without a request that the server would refuse anyway.</li>
+</ul>
+
+<p>The test needs no Flutter, no server and no screen. A fake repository records what reached it:</p>
+
+<pre data-code="test/domain/place_order_test.dart" data-from="^void main" data-title="test/domain/place_order_test.dart (part)"></pre>
+<pre data-term="place-order-test.sh"></pre>
+
+<p>The last <code>expect</code> before the success matters as much as the others: after three refusals, the repository received <em>nothing</em>. The rules really run first.</p>
+
+<h2>{{n}}.3 The data layer</h2>
+
+<p>The server speaks JSON, with its own names: <code>placed_at</code>, statuses as text, items as a map. A <dfn>DTO</dfn>, a data transfer object, mirrors exactly that shape, and nothing more:</p>
+
+<pre data-code="lib/features/orders/data/order_dto.dart" data-from="^// " data-title="lib/features/orders/data/order_dto.dart (part)"></pre>
+
+<p>The repository implementation turns DTOs into entities, and anything that goes wrong into a failure:</p>
+
+<pre data-code="lib/features/orders/data/orders_repository_impl.dart" data-from="^class" data-to="^}" data-title="lib/features/orders/data/orders_repository_impl.dart (part)"></pre>
+
+<p>The source behind it is another interface: here a fake that answers after 400 milliseconds, as a network would; in Project {{n}}.2, a real HTTP client. The repository and the domain do not change between the two.</p>
+
+<pre data-term="repository-test.sh"></pre>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Why not give the domain’s <code>Order</code> a <code>fromJson</code>, as Book 5 did with <code>Drink</code>? For a small app, do. The DTO pays off when the server’s shape and the app’s meaning drift apart: a field renamed, an API version two, a second source for the same entity. Then the DTO changes, the mapping changes, and nothing else does.</p></aside>
+
+<h2>{{n}}.4 The presentation</h2>
+
+<p>The controller holds the screen’s state, calls the use case, and turns each failure into words in the person’s language:</p>
+
+<pre data-code="lib/features/orders/presentation/orders_controller.dart" data-from="  Future<void> place" data-title="lib/features/orders/presentation/orders_controller.dart (part)"></pre>
+
+<p>The page only watches the controller and draws. The same page, the same controller and the same use case give three different screens, depending only on what they were given:</p>
+
+<div class="phones">
+<figure data-img="shots/placed.png" data-frame="phone">
+<figcaption>At 10:00: placed</figcaption>
+</figure>
+<figure data-img="shots/closed.png" data-frame="phone">
+<figcaption>At 23:00: closed</figcaption>
+</figure>
+<figure data-img="shots/offline.png" data-frame="phone">
+<figcaption>No network</figcaption>
+</figure>
+</div>
+
+<pre data-term="page-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The widget test pumps the app twice, at 10:00 and then at 23:00. The first version of this test failed: the second <code>pumpWidget</code> put a provider of the same type at the same place, so Flutter kept the first one, with its 10:00 clock, exactly as Chapter 1 explained. A <code>ValueKey(hour)</code> on the provider fixed it.</p></aside>
+
+<h2>{{n}}.5 The composition root</h2>
+
+<p>Somewhere, someone must know every concrete class: which source, which repository, which clock. That place is the <dfn>composition root</dfn>, normally <code>main</code>, and it is the only one:</p>
+
+<pre data-code="lib/orders_app.dart" data-from="^// " data-title="lib/orders_app.dart (part)"></pre>
+
+<p>The three screens above are three composition roots, <code>orders_app.dart</code>, <code>orders_closed.dart</code> and <code>orders_offline.dart</code>, which differ in one line each: the clock, or the source. In a real app the same idea gives you a demo build with fake data, a staging build against a test server, and a production build, from the same code.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>In which layer does the rule “the café closes at 22:00” belong? And the text “The café is closed”?</li><li>Why does <code>PlaceOrder</code> know the repository only as an interface?</li><li>What would the compiler do if you added a failure <code>PaymentDeclined</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Guarding the rule</h2>
+
+<p>Rules that live only in people’s heads are broken within a month: someone needs a colour in the domain “just for now”, and imports Flutter. A test can read the imports of every domain file, and fail when one points the wrong way:</p>
+
+<pre data-code="test/architecture_test.dart" data-from="^const forbidden" data-title="test/architecture_test.dart (part)"></pre>
+<pre data-term="architecture-test.sh"></pre>
+
+<p>To see it catch something, the same check runs on a folder of examples that contains one bad domain file, a function that picks a <code>Color</code> for each status:</p>
+
+<pre data-term="architecture-bad.sh"></pre>
+
+<p>The failure names the file and the import. The fix is to move <code>statusColor</code> to the presentation layer, where colours belong, and keep only <code>OrderStatus</code> in the domain.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Architecture is not a diagram on a wiki; it is the set of rules the build enforces. Write the important ones as tests, run them with the others, and the review comment “please don’t import Flutter in the domain” is never written again.</p></aside>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Layers cost files. A screen that shows a list from one endpoint does not need a use case that only calls the repository, nor a DTO identical to its entity. Start with the domain and the repository interface; add use cases where there are rules, and DTOs where the shapes differ. The dependency rule is the part never to skip.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Flutter or JSON in the domain</td><td>Rules that cannot be tested or reused without a phone</td><td>Plain Dart in the domain; an architecture test</td></tr>
+<tr><td>Error messages in the domain</td><td>Rules tied to one language and one screen</td><td>Failures as types; words in the presentation</td></tr>
+<tr><td>Throwing exceptions across layers</td><td>Screens that crash on cases nobody listed</td><td>A sealed <code>Result</code> with sealed failures</td></tr>
+<tr><td><code>new HttpClient()</code> inside a repository</td><td>Nothing can be faked in a test</td><td>Receive the source in the constructor; wire it in the root</td></tr>
+<tr><td>Concrete classes chosen in many places</td><td>Changing a source means hunting through the app</td><td>One composition root</td></tr>
+<tr><td>Every layer for every screen</td><td>Many files with no rule in them</td><td>Add layers where they carry rules or shapes</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Domain (entities, rules, use cases, ports), data (DTOs, sources, repository implementations), presentation (controllers, screens).</li>
+<li>Imports point toward the domain; the domain is plain Dart.</li>
+<li>Use cases return a sealed <code>Result</code>; failures are sealed types without words, and the screen chooses the words.</li>
+<li>One composition root chooses every concrete class; different roots give demo, test and production apps from the same code.</li>
+<li>Test each layer alone with fakes, and enforce the dependency rule with a test that reads the imports.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The rule belongs in the domain (in <code>PlaceOrder</code>); the text belongs in the presentation (in <code>describe</code>), in each language. 2. So that it works with any implementation, the fake in the tests, an in-memory one, or HTTP, and never needs to import the data layer. 3. Every <code>switch</code> over <code>OrderFailure</code> that does not handle it would stop compiling, starting with the controller’s <code>describe</code>, until someone decides what to tell the person.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The three projects grow the orders feature without touching the files you have: a new use case, a new data source, and a new architecture rule. If one of them forces you to change an existing layer, ask why before you do.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Cancel an order</h3>
+<p class="project-goal">A use case that cancels an order only if it is still pending and was placed less than five minutes ago.</p>
+<p class="project-skills"><strong>You will practise:</strong> a use case with its own sealed failures, a clock, and the edges of a time window.</p>
+<ol class="steps">
+<li>Define <code>sealed class CancelFailure</code> with <code>NotPending</code> and <code>TooLate</code>.</li>
+<li>Write <code>CancelOrder</code> with a clock, and a <code>call(Order)</code> that returns <code>Result&lt;Order, CancelFailure&gt;</code>: a copy of the order with <code>OrderStatus.cancelled</code>, or a failure.</li>
+<li>Test four cases: pending at two minutes, ready at two minutes, pending at exactly five minutes, and pending at six.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> decide, and test, what happens exactly at the edge. Here five minutes is still allowed (<code>&gt;</code>, not <code>&gt;=</code>); write it in the test so the next person does not have to guess.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/cancel-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A real HTTP source</h3>
+<p class="project-goal">Implement <code>OrdersSource</code> with the <code>http</code> package, and prove that the repository and the domain work with it unchanged.</p>
+<p class="project-skills"><strong>You will practise:</strong> implementing a data-layer interface, status codes, and <code>MockClient</code> from Book 5.</p>
+<ol class="steps">
+<li><code>HttpOrdersSource</code> receives an <code>http.Client</code> and a base address. <code>post</code> sends the items as JSON, with a timeout, and throws if the status is not 201.</li>
+<li>Test through the repository with a <code>MockClient</code> server that accepts mint tea and refuses cake with 409.</li>
+<li>Check that the tea order arrives as an <code>Order</code> with the right total, and that the refusal arrives as a <code>NetworkFailure</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a 409 “sold out” is not really a network failure. When the server starts sending reasons, add a failure <code>SoldOut</code> to the domain, map it in the repository, and let the compiler show you every screen that must now explain it.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/http-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Features that keep to themselves</h3>
+<p class="project-goal">A second architecture rule: a feature may import another feature’s domain, but never its data or presentation.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading imports with regular expressions, relative paths, and testing a test with fixtures.</p>
+<ol class="steps">
+<li>For each Dart file under <code>lib/features</code>, find its feature from the path, <code>features/&lt;name&gt;/</code>.</li>
+<li>For each import, find the feature and layer it points to, both for <code>package:</code> imports and for relative ones like <code>'../../orders/presentation/...'</code>.</li>
+<li>Report it when the feature is another one and the layer is not <code>domain</code>.</li>
+<li>Expect no reports in <code>lib/features</code>, and exactly one in a fixture folder with a <code>menu</code> feature that imports both the orders domain (allowed) and the orders controller (not allowed).</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> testing the rule against a fixture that breaks it is what proves the rule works. A check that has never failed may simply be looking in the wrong place.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/features-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Sort these into domain, data or presentation: <code>OrderDto</code>, “an order holds at most 20 items”, <code>Colors.green</code> for ready orders, <code>Money</code>, the text “Order placed”, <code>jsonDecode</code>.</li>
+<li><span class="level">Easy</span> Add the failure <code>SoldOut</code> to <code>failures.dart</code> and run <code>flutter analyze</code>. Where does it complain, and what does that tell you?</li>
+<li><span class="level">Medium</span> Write a fourth composition root, <code>orders_demo.dart</code>, whose source starts with three orders in its history, for showing the app to someone without a server.</li>
+<li><span class="level">Medium</span> <code>Money</code> holds whole pounds. Change it to hold piastres (hundredths) without changing any file outside the domain. Which files change, and why so few?</li>
+<li><span class="level">Challenge</span> The controller in this chapter is a <code>ChangeNotifier</code>, which comes from Flutter. Is the presentation layer allowed to depend on Flutter? Could the controller be plain Dart, and what would you gain and lose? (The next chapter answers with Riverpod.)</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>This chapter wired everything by hand in <code>main</code>, and passed the controller down with Provider. The next chapter replaces both with Riverpod: providers that build each other, state that can be loading, ready or failed, and every dependency replaceable in tests with one line.</p>
+</div>
+</section>
