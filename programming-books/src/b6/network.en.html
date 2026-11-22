@@ -1,0 +1,208 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/network/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Networking, Errors and Retries</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>send every request of the app through one client, with a timeout</li>
+<li>turn everything that can go wrong into typed errors the screens can switch on</li>
+<li>retry only what may succeed, with exponential backoff and jitter, and respect <code>Retry-After</code></li>
+<li>make repeated orders safe with idempotency keys</li>
+<li>refresh an expired token once, however many requests need it</li>
+<li>test all of it without waiting, and watch it against a real, unreliable server</li>
+</ul>
+</div>
+
+<p class="lead">On a developer’s desk the network always works. On a phone it does not: the train enters a tunnel, the café’s server restarts during a deploy, a thousand people open the app when the match ends, a token expires in the middle of an order. Book 5 caught exceptions and showed a message. This chapter builds the layer that every serious app has between its repositories and the internet: one client that knows what each failure means, which ones are worth another try, how long to wait, and how to repeat an order without charging twice.</p>
+
+<aside class="bit" data-mood="happy"><p>The last terminal in Section {{n}}.4 was not simulated: a small Dart server that fails two requests out of three ran on the book’s machine, and the client really waited between its tries. Everywhere else, the tests replace waiting with a log, so that they run in milliseconds.</p></aside>
+
+<h2>{{n}}.1 Every failure, as a type</h2>
+
+<p>A request can end in seven different ways, and each one needs a different answer from the app. A sealed class lists them:</p>
+
+<pre data-code="lib/api/errors.dart" data-from="^// " data-to="String describe" data-title="lib/api/errors.dart (part)"></pre>
+
+<ul>
+<li><code>Offline</code>: the request never reached the server. <code>TimedOut</code>: it may have, but no answer came in time.</li>
+<li><code>Unauthorized</code> and <code>NotFound</code> need their own screens: sign in again, or explain that the thing is gone.</li>
+<li><code>Rejected</code> is the server saying no for a reason (sold out, invalid address); its message is for the person.</li>
+<li><code>ServerError</code> covers 429 (too many requests) and the 5xx statuses; <code>BadResponse</code> is a 200 whose body cannot be read, usually an old app talking to a new server.</li>
+</ul>
+
+<p>The client turns every status into one of these, once, in one place. A test sends a different status for each request:</p>
+
+<pre data-term="map-test.sh"></pre>
+
+<p>A 201 with a body that is not JSON is a <code>BadResponse</code>, not a success: the client never returns data it could not read.</p>
+
+<h2>{{n}}.2 One client</h2>
+
+<pre data-term="pub-add.sh"></pre>
+
+<pre data-code="lib/api/client.dart" data-from="^  // #2" data-to="^  }#2" data-title="lib/api/client.dart (part)"></pre>
+
+<ul>
+<li>Every request goes through <code>_send</code>, so every request has a timeout, the same headers, the same error mapping and the same retry rules. A repository never calls <code>http</code> itself.</li>
+<li><code>GET</code> is retried, because asking again for the menu cannot do harm. <code>POST</code> is retried only with an idempotency key, explained in Section {{n}}.5: without one, a retry could place a second order.</li>
+<li>Waiting goes through <code>sleep</code>, given in the constructor, so that tests can record waits instead of waiting.</li>
+</ul>
+
+<h2>{{n}}.3 When to retry, and how long to wait</h2>
+
+<p>Retrying is not always kind. A <code>500</code> is usually a bug: asking again gives the same bug, three times. A <code>409 Sold out</code> will not become available in 200 milliseconds. Only some failures may pass by themselves:</p>
+
+<pre data-code="lib/api/retry.dart" data-from="^// " data-title="lib/api/retry.dart (part)"></pre>
+
+<p>The wait doubles each time (<dfn>exponential backoff</dfn>), so a struggling server gets more and more air, and it is chosen at random below that limit (<dfn>jitter</dfn>). Without the randomness, every phone that failed at the same second would retry at the same second, again and again, in waves that keep the server down. The test shows each rule with a server that answers whatever statuses it is told:</p>
+
+<pre data-term="retry-test.sh"></pre>
+
+<ul>
+<li>Three <code>503</code>s, then success on the fourth attempt, waiting a little longer each time: 108, 244 and 368 milliseconds, random under limits of 200, 400 and 800.</li>
+<li>A <code>500</code> is not retried, nor a <code>POST</code> without a key. A <code>POST</code> with a key is.</li>
+<li>A <code>429</code> with <code>Retry-After: 2</code> waits exactly two seconds: when the server says when to come back, the client believes it.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Retries multiply. If the app retries four times, and the repository above it retries three times, and the screen has a Retry button that people tap twice, one failure becomes twenty-four requests. Retry in exactly one layer, this one, and let the layers above only show the result.</p></aside>
+
+<h2>{{n}}.4 Timeouts, and a real unreliable server</h2>
+
+<p>A request with no timeout can wait for minutes, while the person stares at a spinner. The client gives every request a deadline:</p>
+
+<pre data-code="test/timeout_test.dart" data-from="    final never" data-title="test/timeout_test.dart (part)"></pre>
+<pre data-term="timeout-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The first version of this client wrote <code>http.Response.fromStream(await client.send(request)).timeout(timeout)</code>. It looks right, and it is not: the <code>await</code> inside waits for the server <em>before</em> the timeout exists, so the timeout only covered reading the body. Against a server that never answers, this very test hung for thirty seconds and failed. The fixed line, <code>client.send(request).then(http.Response.fromStream).timeout(timeout)</code>, puts the whole request under the deadline. Without the test, the bug would have reached people.</p></aside>
+
+<p>Tests prove the rules; a real network shows how they feel. This server, in plain Dart, answers <code>/menu</code> with <code>503</code> two times out of three, takes three seconds on <code>/slow</code>, and asks for patience on <code>/busy</code>:</p>
+
+<pre data-code="bin/flaky_server.dart" data-from="    switch" data-to="^    }" data-title="bin/flaky_server.dart (part)"></pre>
+
+<p>A small program sends four requests through the real client, with a one-second timeout, printing the time of each line:</p>
+
+<pre data-term="demo.sh"></pre>
+
+<p>The menu arrived on the third attempt, after two short waits. <code>/slow</code> timed out after one second, four times, with short random waits between: 4.7 seconds in all, then <code>TimedOut</code>. <code>/busy</code> waited exactly the second it was asked for, each time, and gave up after four attempts. <code>/missing</code> failed at once: a <code>404</code> will not appear by waiting.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>The first run of this demo looked much worse: <code>/busy</code> and <code>/missing</code> timed out too. The server handled one request at a time, with <code>await for</code>, so while it slept three seconds on each <code>/slow</code>, everything behind it waited in line. This is called <dfn>head-of-line blocking</dfn>, and real servers suffer from it as well; from the phone it looks exactly like a slow network. Handling each request on its own, with <code>server.listen</code>, fixed it.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which of these should be retried: a timeout, a 409, a 503, a 500?</li><li>Why is the wait random, and not exactly 200, 400 and 800 milliseconds?</li><li>Why is a POST without an idempotency key never retried?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Repeating an order safely</h2>
+
+<p>The worst network failure is the silent success: the server saved the order, and the answer was lost on the way back. The app sees an error, and the person, or the retry logic, sends the order again. Now there are two orders, and two charges.</p>
+
+<p>An <dfn>idempotency key</dfn> fixes it. The app creates one key for each order the person places, and sends it with every attempt of that order. The server remembers the keys it has seen, and answers a repeat with the first result instead of creating a second order. Project {{n}}.2 builds exactly this, with a server that loses the first answer.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Any request that creates or changes something, and might be sent twice, gets an idempotency key: orders, payments, messages, sign-ups. Generate it when the person acts (the tap), not when the request is built, so that the retry and the second tap carry the same key.</p></aside>
+
+<h2>{{n}}.6 Showing errors</h2>
+
+<p>The screen switches on the error type, and each type has its own words. The menu below loaded through a pretend server inside the app that was busy twice, and the page prints what the client logged:</p>
+
+<figure data-img="shots/retries.png" data-frame="phone">
+<figcaption>Figure {{n}}.1: Two 503s, two short waits, then the menu.</figcaption>
+</figure>
+
+<p>Nobody saw an error: two failures were absorbed in under half a second. That is the goal of this whole chapter. When retries are not enough, Project {{n}}.1 gives every error its words, in the person’s language.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>No timeout</td><td>Spinners that turn for minutes</td><td>A timeout on every request, in the client</td></tr>
+<tr><td>Retrying everything</td><td>The same bug three times; overloaded servers kept down</td><td>Retry only offline, timeouts, 429, 502, 503, 504</td></tr>
+<tr><td>Fixed waits</td><td>Thousands of phones retry together, in waves</td><td>Exponential backoff with jitter</td></tr>
+<tr><td>Retrying POST blindly</td><td>Duplicate orders and charges</td><td>Idempotency keys, or no retry</td></tr>
+<tr><td>Retrying in several layers</td><td>One failure becomes dozens of requests</td><td>Retry in the client only</td></tr>
+<tr><td>Showing <code>e.toString()</code></td><td>“ClientException: SocketException…” on screen</td><td>A typed error, and words chosen for people</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>One client sends every request, with a timeout, and turns every outcome into data or a typed <code>ApiError</code>.</li>
+<li>Retry only failures that may pass by themselves; wait with exponential backoff and full jitter; respect <code>Retry-After</code>; retry in one layer only.</li>
+<li><code>GET</code> may be repeated; <code>POST</code> only with an idempotency key created when the person acts.</li>
+<li>Inject the clock’s waiting and the randomness, so that tests are instant and repeatable.</li>
+<li>Screens switch on the error type and choose words for people.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The timeout and the 503; a 409 is a refusal that will not change by waiting, and a 500 is usually a bug that gives the same answer again. 2. So that many phones that failed together do not retry together: random waits spread them out, and the server recovers. 3. Because the first attempt may have succeeded with its answer lost; without a key the server cannot know that the second one is a repeat, and creates a second order.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects finish the client: words for every error, safe repeats, and expired tokens. Each one has a test that would catch the bug it prevents.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Words for every error</h3>
+<p class="project-goal">A function that gives each <code>ApiError</code> a message for people, with the server’s own reason when it sends one.</p>
+<p class="project-skills"><strong>You will practise:</strong> exhaustive switches on sealed types, and patterns on fields.</p>
+<ol class="steps">
+<li>Write <code>message(ApiError e)</code> as a switch expression with one case per type.</li>
+<li>Use a pattern on the status to give 429 and 503 their own words: <code>ServerError(status: 429 || 503)</code>, before the general <code>ServerError()</code>.</li>
+<li>For <code>Rejected</code>, return the server’s message: it already explains the reason.</li>
+<li>Test four errors, including both kinds of server error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in a two-language app, these strings belong in the ARB files of Book 5, Chapter 13; the switch stays the same and returns <code>l.offline</code> and so on.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-code="lib/api/messages.dart" data-from="^// " data-title="lib/api/messages.dart (part)"></pre>
+<pre data-term="projects/messages-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>The order that was saved twice</h3>
+<p class="project-goal">Reproduce the lost-answer problem in a test, and show that an idempotency key makes it harmless.</p>
+<p class="project-skills"><strong>You will practise:</strong> a fake server with memory, idempotency keys, and testing a failure that happens after success.</p>
+<ol class="steps">
+<li>A fake server saves every order it receives, but throws a connection error instead of answering the first one.</li>
+<li>It also keeps a map from idempotency key to order id, and answers a known key with the first order’s id.</li>
+<li>Post one order with a key, letting the client retry: one order on the server.</li>
+<li>Post without a key, and “tap again” after the error: two orders on the server.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> keys must be unique per action and hard to guess: a UUID from the <code>uuid</code> package, created when the person taps Order, and kept until the order is confirmed.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/idempotency-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>One refresh for many requests</h3>
+<p class="project-goal">An HTTP client that adds the access token to every request and, on a 401, refreshes the token once, even when several requests fail at the same moment.</p>
+<p class="project-skills"><strong>You will practise:</strong> extending <code>http.BaseClient</code>, copying requests, and sharing one <code>Future</code> between callers.</p>
+<ol class="steps">
+<li>Extend <code>http.BaseClient</code> and override <code>send</code>: copy the request with an <code>Authorization</code> header, and send it with the inner client.</li>
+<li>On a 401, start a refresh if none is running, keeping its <code>Future</code> in a field; requests that arrive meanwhile await the same <code>Future</code>.</li>
+<li>Clear the field when the refresh completes, store the new token, and send the copied request again.</li>
+<li>Test with three parallel requests and an expired token: three answers of 200, and exactly one refresh.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> without the shared <code>Future</code>, three requests start three refreshes, and with many servers each refresh invalidates the token of the one before: the app signs itself out. Also stop after one retry: if the refreshed token gets a 401 too, the person must sign in again.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/refresh-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> A request has 4 attempts, a base of 200 ms and a cap of 5 seconds. What is the longest it can wait in total before giving up, not counting the requests themselves?</li>
+<li><span class="level">Easy</span> Change the map test so that the server answers 200 with an empty body. What does <code>get</code> return, and why is that not a <code>BadResponse</code>?</li>
+<li><span class="level">Medium</span> Add a <code>Cancelled</code> error and a way for the screen to stop retrying when the person leaves it. Where would you check it?</li>
+<li><span class="level">Medium</span> Log every request’s method, path, status and duration, without logging the <code>Authorization</code> header or the body. Why those two?</li>
+<li><span class="level">Challenge</span> Write a test that runs one hundred clients against a server that fails for the first two seconds, with and without jitter, and counts requests per 100 milliseconds. What does the difference look like?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Retries help when the network comes back in a second. When it is gone for an hour, people still want to read their orders and add to their basket. The next chapter makes the app work offline first: a local database as the source of truth, and synchronisation when the network returns.</p>
+</div>
+</section>

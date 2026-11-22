@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "الفصل 4: التنقل على نطاق واسع بـ go_router"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "الفصل 5: الشبكة والأخطاء وإعادة المحاولة"; } }
+@page ch05:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -47,7 +49,7 @@
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">28</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">47</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">64</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">82</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">28</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">47</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">64</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">82</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">102</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -1844,6 +1846,519 @@ from an outside address:    /menu
 <p>كل صفحة في هذا الفصل استخدمت بيانات موجودة في التطبيق من قبل. والفصل القادم يأخذ الشبكة بجدية: عميل بمهلات، وأخطاء تقول للشاشة بالضبط ما حدث، وإعادة محاولة لا تزيد الأمور سوءاً، واختبارات لكل ذلك.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b6/network/ar">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">الفصل 5</p><h1>الشبكة والأخطاء وإعادة المحاولة</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>ترسل كل طلبات التطبيق عبر عميل واحد، بمهلة</li>
+<li>تحوّل كل ما قد يسوء إلى أخطاء لها أنواع تعمل الشاشات switch عليها</li>
+<li>تعيد المحاولة فقط فيما قد ينجح، بتأخير أسّي وعشوائية، وتحترم <code>Retry-After</code></li>
+<li>تجعل الطلبات المكررة آمنة بمفاتيح عدم التكرار</li>
+<li>تجدد التوكن المنتهي مرة واحدة، مهما كثرت الطلبات التي تحتاجه</li>
+<li>تختبر كل ذلك دون انتظار، وتشاهده مع خادم حقيقي غير موثوق</li>
+</ul>
+</div>
+
+<p class="lead">على مكتب المطور تعمل الشبكة دائماً. أما على الجوال فلا: القطار يدخل نفقاً، وخادم المقهى يُعاد تشغيله أثناء نشر جديد، وألف شخص يفتحون التطبيق حين تنتهي المباراة، والتوكن ينتهي في منتصف طلب. وقد التقط الكتاب الخامس الاستثناءات وعرض رسالة. أما هذا الفصل فيبني الطبقة التي يملكها كل تطبيق جاد بين مستودعاته والإنترنت: عميل واحد يعرف ما يعنيه كل فشل، وأيها يستحق محاولة أخرى، وكم ينتظر، وكيف يكرر طلباً دون أن يدفع الشخص مرتين.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الطرفية الأخيرة في القسم 5.4 ليست محاكاة: خادم Dart صغير يفشل في طلبين من كل ثلاثة عمل على جهاز الكتاب، وانتظر العميل فعلاً بين محاولاته. وفي كل مكان آخر تستبدل الاختبارات الانتظار بسجل، فتعمل في أجزاء من الثانية.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>كل فشل، في صورة نوع</span></h2>
+
+<p>الطلب يمكن أن ينتهي بسبع طرق مختلفة، وكل واحدة تحتاج من التطبيق جواباً مختلفاً. وصنف مختوم يحصيها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/api/errors.dart (جزء)</div><pre class="code"><span class="c line-bidi">// كل ما قد يسوء في طلب، في صورة أنواع تستطيع الشاشة أن تعمل switch عليها.</span>
+<span class="k">sealed</span> <span class="k">class</span> ApiError <span class="k">implements</span> Exception {
+  <span class="k">const</span> ApiError();
+}
+
+<span class="k">final</span> <span class="k">class</span> Offline <span class="k">extends</span> ApiError {
+  <span class="k">const</span> Offline();
+}
+
+<span class="k">final</span> <span class="k">class</span> TimedOut <span class="k">extends</span> ApiError {
+  <span class="k">const</span> TimedOut();
+}
+
+<span class="k">final</span> <span class="k">class</span> Unauthorized <span class="k">extends</span> ApiError {
+  <span class="k">const</span> Unauthorized();
+}
+
+<span class="k">final</span> <span class="k">class</span> NotFound <span class="k">extends</span> ApiError {
+  <span class="k">const</span> NotFound();
+}
+
+<span class="c line-bidi">/// The server refused the request (400, 409, 422…), with its reason.</span>
+<span class="k">final</span> <span class="k">class</span> Rejected <span class="k">extends</span> ApiError {
+  <span class="k">const</span> Rejected(<span class="k">this</span>.status, <span class="k">this</span>.message);
+  <span class="k">final</span> <span class="k">int</span> status;
+  <span class="k">final</span> <span class="k">String</span> message;
+}
+
+<span class="c line-bidi">/// 429 and 5xx: the server could not answer now.</span>
+<span class="k">final</span> <span class="k">class</span> ServerError <span class="k">extends</span> ApiError {
+  <span class="k">const</span> ServerError(<span class="k">this</span>.status, {<span class="k">this</span>.retryAfter});
+  <span class="k">final</span> <span class="k">int</span> status;
+  <span class="k">final</span> Duration? retryAfter;
+}
+
+<span class="k">final</span> <span class="k">class</span> BadResponse <span class="k">extends</span> ApiError {
+  <span class="k">const</span> BadResponse(<span class="k">this</span>.detail);
+  <span class="k">final</span> <span class="k">String</span> detail;
+}
+
+<span class="k">String</span> describe(ApiError e) =&gt; <span class="k">switch</span> (e) {</pre></div>
+
+<ul>
+<li><code>Offline</code>: الطلب لم يصل إلى الخادم أبداً. و<code>TimedOut</code>: ربما وصل، لكن لم يأتِ جواب في الوقت.</li>
+<li>و<code>Unauthorized</code> و<code>NotFound</code> تحتاجان شاشتيهما: سجّل الدخول من جديد، أو اشرح أن الشيء لم يعد موجوداً.</li>
+<li>و<code>Rejected</code> هو الخادم يقول لا لسبب (نفد، أو عنوان غير صالح)؛ ورسالته موجهة للشخص.</li>
+<li>و<code>ServerError</code> تغطي 429 (طلبات كثيرة جداً) ورموز 5xx؛ و<code>BadResponse</code> رمز 200 لا يمكن قراءة جسمه، وغالباً تطبيق قديم يكلّم خادماً جديداً.</li>
+</ul>
+
+<p>والعميل يحوّل كل رمز حالة إلى واحد منها، مرة، في مكان واحد. واختبار يرسل رمزاً مختلفاً لكل طلب:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/map_test.dart</span>
+00:00 +0: loading test/map_test.dart
+00:00 +0: كل رمز حالة يصير خطأه
+200 -&gt; {ok: true}
+201 -&gt; BadResponse
+401 -&gt; Unauthorized
+404 -&gt; NotFound
+409 -&gt; Rejected(409, Sold out)
+500 -&gt; ServerError(500)
+503 -&gt; ServerError(503)
+00:00 +1: All tests passed!</pre></div>
+
+<p>ورمز 201 بجسم ليس JSON هو <code>BadResponse</code> لا نجاح: فالعميل لا يعيد أبداً بيانات لم يستطع قراءتها.</p>
+
+<h2><span class="sec">5.2</span> <span>عميل واحد</span></h2>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter pub add http</span>
+Resolving dependencies...
+Downloading packages...
++ http 1.6.0
++ http_parser 4.1.2
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.14 (0.7.15 available)
++ typed_data 1.4.0
+  vector_math 2.4.3 (2.4.4 available)
++ web 1.1.2
+Changed 4 dependencies!
+3 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/api/client.dart (جزء)</div><pre class="code">  <span class="c line-bidi">// GET آمن التكرار. أما POST فبمفتاح عدم تكرار (idempotency key) فقط، يجعل الخادم يعرف التكرار.</span>
+  <span class="k">Future</span>&lt;<span class="k">Object</span>?&gt; <span class="k">get</span>(<span class="k">String</span> path) =&gt; _send(<span class="s">&#x27;GET&#x27;</span>, path, retry: <span class="k">true</span>);
+
+  <span class="k">Future</span>&lt;<span class="k">Object</span>?&gt; post(<span class="k">String</span> path, <span class="k">Object</span> body, {<span class="k">String</span>? idempotencyKey}) =&gt;
+      _send(
+        <span class="s">&#x27;POST&#x27;</span>,
+        path,
+        body: body,
+        headers: {<span class="s">&#x27;idempotency-key&#x27;</span>: ?idempotencyKey},
+        retry: idempotencyKey != <span class="k">null</span>,
+      );
+
+  <span class="k">Future</span>&lt;<span class="k">Object</span>?&gt; _send(
+    <span class="k">String</span> method,
+    <span class="k">String</span> path, {
+    <span class="k">Object</span>? body,
+    <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">String</span>&gt; headers = <span class="k">const</span> {},
+    <span class="k">required</span> <span class="k">bool</span> retry,
+  }) <span class="k">async</span> {
+    <span class="k">for</span> (<span class="k">var</span> attempt = <span class="n">1</span>; ; attempt++) {
+      <span class="k">try</span> {
+        <span class="k">final</span> result = <span class="k">await</span> _once(method, path, body, headers);
+        log?.call(<span class="s">&#x27;attempt $attempt: OK&#x27;</span>);
+        <span class="k">return</span> result;
+      } <span class="k">on</span> ApiError <span class="k">catch</span> (e) {
+        log?.call(<span class="s">&#x27;attempt $attempt: ${describe(e)}&#x27;</span>);
+        <span class="k">if</span> (!retry || attempt &gt;= policy.attempts || !retryable(e)) {
+          <span class="k">rethrow</span>;
+        }
+        <span class="c line-bidi">// إن قال الخادم متى نعود، فصدّقه.</span>
+        <span class="k">final</span> wait =
+            (e <span class="k">is</span> ServerError ? e.retryAfter : <span class="k">null</span>) ??
+            policy.delay(attempt - <span class="n">1</span>, random);
+        log?.call(<span class="s">&#x27;  waiting ${wait.inMilliseconds} ms&#x27;</span>);
+        <span class="k">await</span> sleep(wait);
+      }
+    }
+  }
+
+  <span class="k">Future</span>&lt;<span class="k">Object</span>?&gt; _once(
+    <span class="k">String</span> method,
+    <span class="k">String</span> path,
+    <span class="k">Object</span>? body,
+    <span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">String</span>&gt; headers,
+  ) <span class="k">async</span> {
+    <span class="k">final</span> request = http.Request(method, Uri.parse(<span class="s">&#x27;$base$path&#x27;</span>))
+      ..headers.addAll({<span class="s">&#x27;accept&#x27;</span>: <span class="s">&#x27;application/json&#x27;</span>, ...headers});
+    <span class="k">if</span> (body != <span class="k">null</span>) {
+      request.headers[<span class="s">&#x27;content-type&#x27;</span>] = <span class="s">&#x27;application/json&#x27;</span>;
+      request.body = jsonEncode(body);
+    }
+    <span class="k">final</span> http.Response response;
+    <span class="k">try</span> {
+      <span class="c line-bidi">// عدم الإجابة في الوقت فشل أيضاً. والمهلة تغطي الطلب كله: الإرسال والانتظار والقراءة.</span>
+      response = <span class="k">await</span> client
+          .send(request)
+          .then(http.Response.fromStream)
+          .timeout(timeout);
+    } <span class="k">on</span> TimeoutException {
+      <span class="k">throw</span> <span class="k">const</span> TimedOut();
+    } <span class="k">on</span> http.ClientException {
+      <span class="k">throw</span> <span class="k">const</span> Offline();
+    }
+    <span class="k">final</span> status = response.statusCode;
+    <span class="k">if</span> (status &gt;= <span class="n">200</span> &amp;&amp; status &lt; <span class="n">300</span>) {
+      <span class="k">if</span> (response.bodyBytes.isEmpty) {
+        <span class="k">return</span> <span class="k">null</span>;
+      }
+      <span class="k">try</span> {
+        <span class="k">return</span> jsonDecode(utf8.decode(response.bodyBytes));
+      } <span class="k">on</span> FormatException <span class="k">catch</span> (e) {
+        <span class="k">throw</span> BadResponse(e.message);
+      }
+    }
+    <span class="c line-bidi">// كل رمز حالة يصير الخطأ الذي يعنيه.</span>
+    <span class="k">throw</span> <span class="k">switch</span> (status) {
+      <span class="n">401</span> =&gt; <span class="k">const</span> Unauthorized(),
+      <span class="n">404</span> =&gt; <span class="k">const</span> NotFound(),
+      <span class="n">429</span> || &gt;= <span class="n">500</span> =&gt; ServerError(status, retryAfter: _retryAfter(response)),
+      _ =&gt; Rejected(status, _message(response)),
+    };
+  }</pre></div>
+
+<ul>
+<li>كل طلب يمر من <code>_send</code>، فلكل طلب مهلة، والترويسات نفسها، وتحويل الأخطاء نفسه، وقواعد إعادة المحاولة نفسها. ولا يستدعي أي مستودع <code>http</code> بنفسه.</li>
+<li><code>GET</code> تُعاد، لأن طلب القائمة من جديد لا يضر. أما <code>POST</code> فلا تُعاد إلا بمفتاح عدم تكرار، يشرحه القسم 5.5: فبدونه قد تُنشئ إعادة المحاولة طلباً ثانياً.</li>
+<li>والانتظار يمر عبر <code>sleep</code> المعطاة في المُنشئ، فتستطيع الاختبارات أن تسجّل الانتظار بدل أن تنتظر.</li>
+</ul>
+
+<h2><span class="sec">5.3</span> <span>متى تعيد المحاولة، وكم تنتظر</span></h2>
+
+<p>إعادة المحاولة ليست لطفاً دائماً. فرمز <code>500</code> خطأ برمجي في العادة: والسؤال من جديد يعطي الخطأ نفسه ثلاث مرات. و<code dir="ltr">409 Sold out</code> لن يتوفر بعد 200 جزء من الثانية. ولا تزول إلا بعض حالات الفشل وحدها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/api/retry.dart (جزء)</div><pre class="code"><span class="c line-bidi">// كم مرة نحاول، وكم ننتظر بين المحاولات.</span>
+<span class="k">class</span> RetryPolicy {
+  <span class="k">const</span> RetryPolicy({
+    <span class="k">this</span>.attempts = <span class="n">4</span>,
+    <span class="k">this</span>.<span class="k">base</span> = <span class="k">const</span> Duration(milliseconds: <span class="n">200</span>),
+    <span class="k">this</span>.cap = <span class="k">const</span> Duration(seconds: <span class="n">5</span>),
+  });
+
+  <span class="k">final</span> <span class="k">int</span> attempts;
+  <span class="k">final</span> Duration <span class="k">base</span>;
+  <span class="k">final</span> Duration cap;
+
+  <span class="c line-bidi">// عشوائية كاملة: انتظار عشوائي بين الصفر وحد يتضاعف، كي لا تعيد ألف جوال المحاولة في اللحظة نفسها.</span>
+  Duration delay(<span class="k">int</span> retry, Random random) {
+    <span class="k">final</span> limit = min(
+      cap.inMilliseconds,
+      <span class="k">base</span>.inMilliseconds * pow(<span class="n">2</span>, retry).toInt(),
+    );
+    <span class="k">return</span> Duration(milliseconds: random.nextInt(limit + <span class="n">1</span>));
+  }
+}
+
+<span class="c line-bidi">// فقط حالات الفشل التي قد تزول: لا اتصال، أو انتهاء المهلة، أو خادم مزدحم أو يُعاد تشغيله.</span>
+<span class="k">bool</span> retryable(ApiError e) =&gt; <span class="k">switch</span> (e) {
+  Offline() || TimedOut() =&gt; <span class="k">true</span>,
+  ServerError(:<span class="k">final</span> status) =&gt;
+    status == <span class="n">429</span> || status == <span class="n">502</span> || status == <span class="n">503</span> || status == <span class="n">504</span>,
+  _ =&gt; <span class="k">false</span>,
+};</pre></div>
+
+<p>والانتظار يتضاعف في كل مرة (<dfn>تأخير أسّي</dfn>)، فيأخذ الخادم المتعب متنفساً أكبر فأكبر، ويُختار عشوائياً تحت هذا الحد (<dfn>العشوائية</dfn>، jitter). فبدون العشوائية تعيد كل الجوالات التي فشلت في الثانية نفسها المحاولة في الثانية نفسها، مرة بعد مرة، في موجات تُبقي الخادم متوقفاً. والاختبار يُظهر كل قاعدة بخادم يجيب بما يُقال له من رموز:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/retry_test.dart</span>
+00:00 +0: loading test/retry_test.dart
+00:00 +0: إعادة المحاولة تنتظر أطول في كل مرة، وفقط حين يفيد ذلك
+GET, busy three times:
+attempt 1: ServerError(503)
+  waiting 108 ms
+attempt 2: ServerError(503)
+  waiting 244 ms
+attempt 3: ServerError(503)
+  waiting 368 ms
+attempt 4: OK
+GET, a bug on the server:
+attempt 1: ServerError(500)
+POST without a key:
+attempt 1: ServerError(503)
+POST with a key:
+attempt 1: ServerError(503)
+  waiting 108 ms
+attempt 2: OK
+429 with Retry-After: 2
+attempt 1: ServerError(429)
+  waiting 2000 ms
+attempt 2: OK
+00:00 +1: All tests passed!</pre></div>
+
+<ul>
+<li>ثلاثة <code>503</code> ثم نجاح في المحاولة الرابعة، بانتظار أطول قليلاً كل مرة: 108 و244 و368 جزءاً من الثانية، عشوائياً تحت حدود 200 و400 و800.</li>
+<li>و<code>500</code> لا تُعاد، ولا <code>POST</code> بلا مفتاح. أما <code>POST</code> بمفتاح فتُعاد.</li>
+<li>و<code>429</code> مع <code dir="ltr">Retry-After: 2</code> تنتظر ثانيتين بالضبط: فحين يقول الخادم متى تعود، يصدّقه العميل.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>إعادة المحاولة تتضاعف. فإن أعاد التطبيق أربع مرات، وأعاد المستودع فوقه ثلاث مرات، وفي الشاشة زر «أعد المحاولة» يلمسه الناس مرتين، صار الفشل الواحد أربعة وعشرين طلباً. أعد المحاولة في طبقة واحدة بالضبط، هذه، ودع الطبقات فوقها تعرض النتيجة فقط.</p></aside>
+
+<h2><span class="sec">5.4</span> <span>المهلات، وخادم حقيقي غير موثوق</span></h2>
+
+<p>الطلب بلا مهلة قد ينتظر دقائق، والشخص يحدّق في مؤشر دوّار. والعميل يعطي كل طلب موعداً نهائياً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/timeout_test.dart (جزء)</div><pre class="code">    <span class="k">final</span> never = MockClient((r) =&gt; Completer&lt;http.Response&gt;().future);
+    <span class="k">final</span> api = ApiClient(
+      never,
+      <span class="k">base</span>: <span class="s">&#x27;&#x27;</span>,
+      timeout: <span class="k">const</span> Duration(milliseconds: <span class="n">50</span>),
+      policy: <span class="k">const</span> RetryPolicy(attempts: <span class="n">1</span>),
+    );
+    <span class="k">final</span> watch = Stopwatch()..start();
+    <span class="k">await</span> expectLater(api.<span class="k">get</span>(<span class="s">&#x27;/menu&#x27;</span>), throwsA(isA&lt;TimedOut&gt;()));
+    expect(watch.elapsedMilliseconds, lessThan(<span class="n">1000</span>));
+  });
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/timeout_test.dart</span>
+00:00 +0: loading test/timeout_test.dart
+00:00 +0: الخادم الذي لا يجيب أبداً يصير TimedOut
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>كتبت النسخة الأولى من هذا العميل <code dir="ltr">http.Response.fromStream(await client.send(request)).timeout(timeout)</code>. تبدو صحيحة، وليست كذلك: فـ <code>await</code> الداخلية تنتظر الخادم <em>قبل</em> أن توجد المهلة، فلم تغطِّ المهلة إلا قراءة الجسم. ومع خادم لا يجيب أبداً علِق هذا الاختبار نفسه ثلاثين ثانية وفشل. والسطر المصلَح، <code dir="ltr">client.send(request).then(http.Response.fromStream).timeout(timeout)</code>، يضع الطلب كله تحت الموعد النهائي. ولولا الاختبار لوصل الخطأ إلى الناس.</p></aside>
+
+<p>الاختبارات تثبت القواعد؛ والشبكة الحقيقية تُظهر إحساسها. وهذا الخادم، بـ Dart الخالصة، يجيب <code dir="ltr">/menu</code> برمز <code>503</code> مرتين من كل ثلاث، ويأخذ ثلاث ثوانٍ على <code dir="ltr">/slow</code>، ويطلب الصبر على <code dir="ltr">/busy</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bin/flaky_server.dart (جزء)</div><pre class="code">    <span class="k">switch</span> (request.uri.path) {
+      <span class="k">case</span> <span class="s">&#x27;/menu&#x27;</span> <span class="k">when</span> ++menuCalls % <span class="n">3</span> != <span class="n">0</span>:
+        response
+          ..statusCode = <span class="n">503</span>
+          ..write(<span class="s">&#x27;{&quot;error&quot;: &quot;busy&quot;}&#x27;</span>);
+      <span class="k">case</span> <span class="s">&#x27;/menu&#x27;</span>:
+        response.write(
+          jsonEncode([
+            {<span class="s">&#x27;name&#x27;</span>: <span class="s">&#x27;Latte&#x27;</span>, <span class="s">&#x27;price&#x27;</span>: <span class="n">45</span>},
+          ]),
+        );
+      <span class="k">case</span> <span class="s">&#x27;/slow&#x27;</span>:
+        <span class="k">await</span> <span class="k">Future</span>&lt;<span class="k">void</span>&gt;.delayed(<span class="k">const</span> Duration(seconds: <span class="n">3</span>));
+        response.write(<span class="s">&#x27;[]&#x27;</span>);
+      <span class="k">case</span> <span class="s">&#x27;/busy&#x27;</span>:
+        response
+          ..statusCode = <span class="n">429</span>
+          ..headers.<span class="k">set</span>(<span class="s">&#x27;retry-after&#x27;</span>, <span class="s">&#x27;1&#x27;</span>)
+          ..write(<span class="s">&#x27;{&quot;error&quot;: &quot;slow down&quot;}&#x27;</span>);
+      <span class="k">default</span>:
+        response
+          ..statusCode = <span class="n">404</span>
+          ..write(<span class="s">&#x27;{&quot;error&quot;: &quot;not found&quot;}&#x27;</span>);
+    }</pre></div>
+
+<p>وبرنامج صغير يرسل أربعة طلبات عبر العميل الحقيقي، بمهلة ثانية واحدة، طابعاً وقت كل سطر:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run bin/demo.dart</span>
+GET /menu
+0.1s  attempt 1: ServerError(503)
+0.1s    waiting 108 ms
+0.2s  attempt 2: ServerError(503)
+0.2s    waiting 244 ms
+0.5s  attempt 3: OK
+  -&gt; [{name: Latte, price: 45}]
+GET /slow
+1.0s  attempt 1: TimedOut
+1.0s    waiting 173 ms
+2.2s  attempt 2: TimedOut
+2.2s    waiting 247 ms
+3.4s  attempt 3: TimedOut
+3.4s    waiting 223 ms
+4.7s  attempt 4: TimedOut
+  -&gt; TimedOut
+GET /busy
+0.0s  attempt 1: ServerError(429)
+0.0s    waiting 1000 ms
+1.0s  attempt 2: ServerError(429)
+1.0s    waiting 1000 ms
+2.0s  attempt 3: ServerError(429)
+2.0s    waiting 1000 ms
+3.0s  attempt 4: ServerError(429)
+  -&gt; ServerError(429)
+GET /missing
+0.0s  attempt 1: NotFound
+  -&gt; NotFound</pre></div>
+
+<p>وصلت القائمة في المحاولة الثالثة، بعد انتظارين قصيرين. وانتهت مهلة <code dir="ltr">/slow</code> بعد ثانية أربع مرات، بانتظارات عشوائية قصيرة بينها: 4.7 ثانية في المجموع، ثم <code>TimedOut</code>. وانتظر <code dir="ltr">/busy</code> الثانية التي طُلبت بالضبط في كل مرة، واستسلم بعد أربع محاولات. وفشل <code dir="ltr">/missing</code> فوراً: فرمز <code>404</code> لا يزول بالانتظار.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>بدا التشغيل الأول لهذا العرض أسوأ بكثير: فقد انتهت مهلة <code dir="ltr">/busy</code> و<code dir="ltr">/missing</code> أيضاً. فالخادم كان يعالج طلباً واحداً في كل مرة، بـ <code dir="ltr">await for</code>، فبينما ينام ثلاث ثوانٍ على كل <code dir="ltr">/slow</code> كان كل ما خلفه ينتظر في الطابور. وهذا يسمى <dfn>حجب رأس الطابور</dfn> (head-of-line blocking)، وتعاني منه الخوادم الحقيقية أيضاً؛ ويبدو من الجوال تماماً مثل شبكة بطيئة. ومعالجة كل طلب وحده، بـ <code>server.listen</code>، أصلحته.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أيٌّ من هذه يجب أن يُعاد: انتهاء المهلة، و409، و503، و500؟</li><li>لماذا الانتظار عشوائي، لا 200 و400 و800 جزء من الثانية بالضبط؟</li><li>لماذا لا تُعاد أبداً طلبات POST بلا مفتاح عدم تكرار؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">5.5</span> <span>تكرار الطلب بأمان</span></h2>
+
+<p>أسوأ فشل في الشبكة هو النجاح الصامت: حفظ الخادم الطلب، وضاع الجواب في طريق العودة. فيرى التطبيق خطأ، فيرسل الشخص الطلب من جديد، أو يرسله منطق إعادة المحاولة. فصار هناك طلبان، ودفعتان.</p>
+
+<p>و<dfn>مفتاح عدم التكرار</dfn> (idempotency key) يصلح ذلك. فينشئ التطبيق مفتاحاً واحداً لكل طلب يرسله الشخص، ويرسله مع كل محاولة لهذا الطلب. ويتذكر الخادم المفاتيح التي رآها، ويجيب التكرار بالنتيجة الأولى بدل إنشاء طلب ثانٍ. ويبني المشروع 5.2 هذا بالضبط، بخادم يُضيّع الجواب الأول.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>كل طلب يُنشئ شيئاً أو يغيّره، وقد يُرسل مرتين، يأخذ مفتاح عدم تكرار: الطلبات، والمدفوعات، والرسائل، والتسجيل. وأنشئه حين يفعل الشخص الفعل (اللمسة)، لا حين يُبنى الطلب، فتحمل إعادة المحاولة واللمسة الثانية المفتاح نفسه.</p></aside>
+
+<h2><span class="sec">5.6</span> <span>عرض الأخطاء</span></h2>
+
+<p>الشاشة تعمل switch على نوع الخطأ، ولكل نوع كلماته. والقائمة التالية حُمِّلت عبر خادم متخيَّل داخل التطبيق كان مشغولاً مرتين، والصفحة تطبع ما سجّله العميل:</p>
+
+<figure class="phone-shot"><div class="phone"><img src="img/b6-network-ar-shots-retries.png" alt=""></div>
+<figcaption>الشكل 5.1: مرتان 503، وانتظاران قصيران، ثم القائمة.</figcaption>
+</figure>
+
+<p>لم يرَ أحد خطأ: فقد امتُص فشلان في أقل من نصف ثانية. وهذا هدف الفصل كله. وحين لا تكفي إعادة المحاولة، يعطي المشروع 5.1 كل خطأ كلماته، بلغة الشخص.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>بلا مهلة</td><td>مؤشرات دوّارة تدور دقائق</td><td>مهلة لكل طلب، في العميل</td></tr>
+<tr><td>إعادة كل شيء</td><td>الخطأ البرمجي نفسه ثلاث مرات؛ وخوادم مزدحمة تبقى متوقفة</td><td>أعد فقط: لا اتصال، وانتهاء المهلة، و429 و502 و503 و504</td></tr>
+<tr><td>انتظارات ثابتة</td><td>آلاف الجوالات تعيد معاً، في موجات</td><td>تأخير أسّي مع عشوائية</td></tr>
+<tr><td>إعادة POST بلا تفكير</td><td>طلبات ودفعات مكررة</td><td>مفاتيح عدم التكرار، أو لا إعادة</td></tr>
+<tr><td>إعادة المحاولة في طبقات عدة</td><td>فشل واحد يصير عشرات الطلبات</td><td>أعد في العميل وحده</td></tr>
+<tr><td>عرض <code dir="ltr">e.toString()</code></td><td>«ClientException: SocketException…» على الشاشة</td><td>خطأ له نوع، وكلمات مختارة للناس</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>عميل واحد يرسل كل طلب، بمهلة، ويحوّل كل نتيجة إلى بيانات أو <code>ApiError</code> له نوع.</li>
+<li>أعد فقط حالات الفشل التي قد تزول وحدها؛ وانتظر بتأخير أسّي وعشوائية كاملة؛ واحترم <code>Retry-After</code>؛ وأعد في طبقة واحدة فقط.</li>
+<li><code>GET</code> يمكن أن تتكرر؛ و<code>POST</code> فقط بمفتاح عدم تكرار يُنشأ حين يفعل الشخص الفعل.</li>
+<li>احقن الانتظار والعشوائية، فتكون الاختبارات فورية وقابلة للتكرار.</li>
+<li>الشاشات تعمل switch على نوع الخطأ وتختار كلمات للناس.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. انتهاء المهلة و503؛ أما 409 فرفض لا يتغير بالانتظار، و500 خطأ برمجي في العادة يعطي الجواب نفسه من جديد. 2. كي لا تعيد الجوالات الكثيرة التي فشلت معاً المحاولة معاً: فالانتظارات العشوائية تفرّقها، فيتعافى الخادم. 3. لأن المحاولة الأولى ربما نجحت وضاع جوابها؛ وبلا مفتاح لا يستطيع الخادم أن يعرف أن الثانية تكرار، فيُنشئ طلباً ثانياً.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تُكمل العميل: كلمات لكل خطأ، وتكرار آمن، وتوكنات منتهية. ولكل منها اختبار يلتقط الخطأ الذي يمنعه.</p>
+
+<div class="project">
+<p class="project-label">المشروع 5.1 · سهل</p>
+<h3>كلمات لكل خطأ</h3>
+<p class="project-goal">دالة تعطي كل <code>ApiError</code> رسالة للناس، مع سبب الخادم نفسه حين يرسله.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الـ switch الشامل على الأنواع المختومة، والأنماط على الحقول.</p>
+<ol class="steps">
+<li>اكتب <code dir="ltr">message(ApiError e)</code> تعبير switch بحالة لكل نوع.</li>
+<li>استخدم نمطاً على رمز الحالة لتعطي 429 و503 كلماتهما: <code dir="ltr">ServerError(status: 429 || 503)</code>، قبل <code dir="ltr">ServerError()</code> العامة.</li>
+<li>ولـ <code>Rejected</code> أعد رسالة الخادم: فهي تشرح السبب من قبل.</li>
+<li>اختبر أربعة أخطاء، ومنها نوعا خطأ الخادم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في تطبيق بلغتين، مكان هذه النصوص ملفات ARB من الفصل 13 في الكتاب الخامس؛ ويبقى الـ switch كما هو ويعيد <code>l.offline</code> وغيرها.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="listing" dir="ltr"><div class="listing-title">lib/api/messages.dart (جزء)</div><pre class="code"><span class="c line-bidi">// كلمات الشاشة لكل خطأ: ويجب أن يغطيها الـ switch كلها.</span>
+<span class="k">String</span> message(ApiError e) =&gt; <span class="k">switch</span> (e) {
+  Offline() =&gt; <span class="s">&#x27;لا اتصال. تحقق من الإنترنت وحاول من جديد.&#x27;</span>,
+  TimedOut() =&gt; <span class="s">&#x27;المقهى يتأخر في الإجابة. حاول بعد لحظة.&#x27;</span>,
+  Unauthorized() =&gt; <span class="s">&#x27;من فضلك سجّل الدخول من جديد.&#x27;</span>,
+  NotFound() =&gt; <span class="s">&#x27;لم يُعثر على هذا. ربما حُذف.&#x27;</span>,
+  Rejected(:<span class="k">final</span> message) =&gt; message,
+  ServerError(status: <span class="n">429</span> || <span class="n">503</span>) =&gt; <span class="s">&#x27;المقهى مزدحم جداً. حاول بعد دقيقة.&#x27;</span>,
+  ServerError() =&gt; <span class="s">&#x27;حدث خطأ من جهتنا. ونحن نعمل عليه.&#x27;</span>,
+  BadResponse() =&gt; <span class="s">&#x27;تعذّرت قراءة إجابة المقهى. من فضلك حدّث التطبيق.&#x27;</span>,
+};</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/messages_test.dart</span>
+00:00 +0: loading test/messages_test.dart
+00:00 +0: لكل خطأ كلمات، بلغة الشخص
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 5.2 · متوسط</p>
+<h3>الطلب الذي حُفظ مرتين</h3>
+<p class="project-goal">أعد إنتاج مشكلة الجواب الضائع في اختبار، وأظهر أن مفتاح عدم التكرار يجعلها بلا ضرر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> خادم مزيف له ذاكرة، ومفاتيح عدم التكرار، واختبار فشل يحدث بعد النجاح.</p>
+<ol class="steps">
+<li>خادم مزيف يحفظ كل طلب يصله، لكنه يرمي خطأ اتصال بدل أن يجيب الأول.</li>
+<li>ويحفظ أيضاً خريطة من مفتاح عدم التكرار إلى رقم الطلب، ويجيب المفتاح المعروف برقم الطلب الأول.</li>
+<li>أرسل طلباً بمفتاح، ودع العميل يعيد المحاولة: طلب واحد على الخادم.</li>
+<li>وأرسل بلا مفتاح، و«المس من جديد» بعد الخطأ: طلبان على الخادم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المفاتيح يجب أن تكون فريدة لكل فعل وصعبة التخمين: UUID من حزمة <code>uuid</code>، يُنشأ حين يلمس الشخص «اطلب»، ويُحفظ حتى يتأكد الطلب.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/idempotency_test.dart</span>
+00:00 +0: loading test/idempotency_test.dart
+00:00 +0: مع المفتاح، الطلب المعاد يُنشأ مرة واحدة
+with a key: answer {id: 1}, orders on the server: [1]
+without a key, tapped twice: orders on the server: [1, 2]
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 5.3 · تحدٍّ</p>
+<h3>تجديد واحد لطلبات كثيرة</h3>
+<p class="project-goal">عميل HTTP يضيف توكن الدخول إلى كل طلب، ومع 401 يجدد التوكن مرة واحدة، حتى حين تفشل طلبات عدة في اللحظة نفسها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> توسيع <code>http.BaseClient</code>، ونسخ الطلبات، ومشاركة <code>Future</code> واحد بين المستدعين.</p>
+<ol class="steps">
+<li>وسّع <code>http.BaseClient</code> واكتب <code>send</code> من جديد: انسخ الطلب بترويسة <code>Authorization</code>، وأرسله بالعميل الداخلي.</li>
+<li>ومع 401 ابدأ تجديداً إن لم يكن هناك واحد جارٍ، واحفظ الـ <code>Future</code> الخاص به في حقل؛ والطلبات التي تصل في هذه الأثناء تنتظر الـ <code>Future</code> نفسه.</li>
+<li>أفرغ الحقل حين يكتمل التجديد، واحفظ التوكن الجديد، وأرسل الطلب المنسوخ من جديد.</li>
+<li>اختبر بثلاثة طلبات متوازية وتوكن منتهٍ: ثلاثة أجوبة 200، وتجديد واحد بالضبط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> بلا الـ <code>Future</code> المشترك تبدأ الطلبات الثلاثة ثلاثة تجديدات، ومع خوادم كثيرة يُبطل كل تجديد توكن الذي قبله: فيُخرج التطبيق نفسه. وتوقف بعد إعادة واحدة أيضاً: فإن حصل التوكن المجدَّد على 401 كذلك، فيجب أن يسجّل الشخص الدخول من جديد.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/refresh_test.dart</span>
+00:00 +0: loading test/refresh_test.dart
+00:00 +0: ثلاثة طلبات، وتجديد واحد
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> طلب له 4 محاولات، وأساس 200 جزء من الثانية، وحد أقصى 5 ثوانٍ. ما أطول ما يمكن أن ينتظره في المجموع قبل أن يستسلم، دون حساب الطلبات نفسها؟</li>
+<li><span class="level">سهل</span> غيّر اختبار التحويل ليجيب الخادم برمز 200 بجسم فارغ. ماذا تعيد <code>get</code>، ولماذا ليس هذا <code>BadResponse</code>؟</li>
+<li><span class="level medium">متوسط</span> أضف خطأ <code>Cancelled</code> وطريقة تجعل الشاشة توقف إعادة المحاولة حين يغادرها الشخص. أين ستتحقق منه؟</li>
+<li><span class="level medium">متوسط</span> سجّل طريقة كل طلب ومساره ورمز حالته ومدته، دون تسجيل ترويسة <code>Authorization</code> ولا الجسم. لماذا هذان؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب اختباراً يشغّل مئة عميل على خادم يفشل في أول ثانيتين، مع العشوائية ودونها، ويعدّ الطلبات في كل 100 جزء من الثانية. كيف يبدو الفرق؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>إعادة المحاولة تساعد حين تعود الشبكة في ثانية. أما حين تغيب ساعة، فما زال الناس يريدون قراءة طلباتهم والإضافة إلى سلتهم. والفصل القادم يجعل التطبيق يعمل بلا اتصال أولاً: قاعدة بيانات محلية مصدراً للحقيقة، ومزامنة حين تعود الشبكة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1899,6 +2414,16 @@ from an outside address:    /menu
 <li><code dir="ltr">onDestinationSelected: (i) =&gt; shell.goBranch(i, initialLocation: i == shell.currentIndex)</code>. فـ <code>goBranch</code> تستعيد عادة آخر مكان في الفرع، وهذا ما يُبقي الكيك مفتوحاً؛ ومع <code dir="ltr">initialLocation: true</code> تذهب إلى أول مسار في الفرع بدلاً من ذلك. وتمريرها للسان المختار من قبل وحده يعطي السلوك الذي يعرفه الناس من أكثر التطبيقات: المس لساناً آخر لتعود إلى حيث كنت، والمس اللسان الحالي من جديد لتعود إلى بدايته.</li>
 <li>أعطِ المسار الابن تحويله الخاص: <code dir="ltr">GoRoute(path: ':id', redirect: (context, state) =&gt; drinks.containsKey(state.pathParameters['id']) ? null : Routes.menu, …)</code>. وهذا أسوأ عادة: فقد تبع الشخص رابطاً، فوجد نفسه في القائمة، ولا يعرف لماذا. أما رسالة «لا مشروب باسم coffee» فتشرح ذلك. والتحويلات أفضل للعناوين التي انتقلت، مثل رقم قديم أُعيدت تسميته، حيث الوجهة هي الشيء نفسه حقاً.</li>
 <li>اجعل حالة تسجيل الدخول provider من نوع <code dir="ltr">Notifier&lt;bool&gt;</code>، وأنشئ الموجّه داخل provider: <code dir="ltr">final routerProvider = Provider((ref) { final refresh = ValueNotifier(0); ref.listen(authProvider, (previous, next) =&gt; refresh.value++); ref.onDispose(refresh.dispose); return GoRouter(refreshListenable: refresh, redirect: (context, state) { final signedIn = ref.read(authProvider); … }, routes: […]); });</code>. ويشاهد التطبيق <code>routerProvider</code> من أجل <code>routerConfig</code>، ويستبدل الاختبار <code>authProvider</code> في <code>ProviderScope</code> الخاص به، كما في الفصل 3. ويُنشأ الموجّه مرة واحدة لكل حاوية، لا داخل <code>build</code> أبداً.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 5</h2>
+<ol class="exercises">
+<li>أربع محاولات بينها ثلاثة انتظارات، بحدود 200 و400 و800 جزء من الثانية: 1.4 ثانية من الانتظار على الأكثر، وعادة نحو نصف ذلك، لأن العشوائية الكاملة تختار قيمة عشوائية تحت كل حد. ولا يُبلغ الحد الأقصى 5 ثوانٍ بهذه الأرقام؛ بل يهم مع محاولات أكثر. و<code>Retry-After</code> من الخادم يحل محل الانتظار المحسوب، وقد يجعله أطول.</li>
+<li>تعيد <code>get</code> القيمة <code>null</code>: فالعميل يعامل الجسم الناجح الفارغ على أنه «لا محتوى»، وهذا ما ترسله <code dir="ltr">204 No Content</code> وكثير من أجوبة <code>DELETE</code>. وليس <code>BadResponse</code> لأن شيئاً لم يفشل في القراءة. والمستودع الذي كان يتوقع قائمة يجب أن يقرر ما تعنيه <code>null</code> له، قائمة فارغة أم خطأ، ومكان هذا القرار هناك، لا في العميل.</li>
+<li>أعطِ الطلبات رمز إلغاء اختيارياً (كائناً فيه علامة <code>cancelled</code>، أو <code>Future</code> يكتمل عند الإلغاء)، تُنشئه الشاشة وتلغيه في <code>dispose</code>. ويتحقق العميل منه في مكانين: قبل كل محاولة، وبعد كل انتظار، رامياً <code>Cancelled</code>. والشاشات تتجاهل <code>Cancelled</code>: فلا أحد هناك ليراه. وبدونه يبقى الشخص الذي غادر الشاشة سبباً في أربعة طلبات وأربعة انتظارات.</li>
+<li>غلّف العميل (بـ <code>http.BaseClient</code> مثل المشروع 5.3) أو سجّل في <code>_send</code>: <code dir="ltr">'$method $path -&gt; $status in ${watch.elapsedMilliseconds} ms'</code>. ولا تسجّل ترويسة <code>Authorization</code> أبداً: فالسجلات تُنسخ إلى أدوات تقارير الأعطال وتذاكر الدعم وصور الشاشة، والتوكن في سجل يسمح لكل من يقرؤه أن يتصرف باسم الشخص. ولا الجسم أبداً: ففيه بيانات شخصية (أسماء، وعناوين، ورسائل)، وجمعها في السجلات خطر على الخصوصية، ومخالف للقانون في بلدان كثيرة.</li>
+<li>بلا عشوائية تصل الأعداد في قمم عالية: العملاء المئة كلهم عند 0 و200 و600 و1400 جزء من الثانية، ولا شيء بينها، فيقابل الخادم الذي يتعافى للتو جداراً من الطلبات عند كل قمة، وقد يسقط من جديد. ومع العشوائية الكاملة تتوزع الطلبات نفسها على كل الفترات، قليلاً في كل 100 جزء من الثانية، فيرى الخادم المتعافي تدفقاً هادئاً. والعدد الكلي للطلبات واحد؛ لا يتغير إلا شكلها في الزمن، وهذا الشكل هو ما يقرر هل يتعافى الخادم.</li>
 </ol>
 
 </section>
