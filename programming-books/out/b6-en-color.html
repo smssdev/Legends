@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: Offline-First Apps"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Design Systems in Flutter"; } }
+@page ch07:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -151,7 +153,7 @@ Widget build(context, ref) =&gt;
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">102</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">117</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -2863,6 +2865,453 @@ again:             sent 0, refused 0, pulled 0
 <p>Part I gave the app its skeleton: rendering, layers, state, navigation, network and offline data. Part II is about quality, and starts with what people see first: a design system, so that fifty screens look like one app.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b6/design/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Design Systems in Flutter</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>turn design decisions into tokens: one scale for spacing, one for corners, named colours</li>
+<li>carry the brand’s own colours in the theme with a <code>ThemeExtension</code>, in light and dark</li>
+<li>build components that take every value from the theme, so screens never choose one</li>
+<li>prove that every colour pair is readable, with the WCAG contrast ratio</li>
+<li>keep raw values out of screens with a test, and change the whole brand by changing the tokens</li>
+</ul>
+</div>
+
+<p class="lead">The first screen of an app is designed carefully. The fiftieth is built on a Friday afternoon, with a padding of 12 because 16 looked too big, a brown that is almost the brand’s brown, and white text on yellow because it looked fine on one monitor. Multiply by a team and two years, and the app looks like many apps. A <dfn>design system</dfn> prevents this: decisions are made once, as named values and components, and screens only combine them.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every contrast ratio in this chapter was computed by a test from the real colours of the theme, and one of them failed on purpose: the first idea for a tag. Section 7.4 shows the numbers.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>Tokens</span></h2>
+
+<p>A <dfn>token</dfn> is a design decision with a name: not “16 pixels”, but “the medium space”. Spacing and corners are plain constants:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/design/tokens.dart</div><pre class="code"><span class="c line-bidi">// Spacing: one scale for every gap in the app.</span>
+<span class="k">abstract</span> <span class="k">final</span> <span class="k">class</span> Space {
+  <span class="k">static</span> <span class="k">const</span> xs = <span class="n">4.0</span>;
+  <span class="k">static</span> <span class="k">const</span> s = <span class="n">8.0</span>;
+  <span class="k">static</span> <span class="k">const</span> m = <span class="n">16.0</span>;
+  <span class="k">static</span> <span class="k">const</span> l = <span class="n">24.0</span>;
+  <span class="k">static</span> <span class="k">const</span> xl = <span class="n">32.0</span>;
+}
+
+<span class="c line-bidi">// Corners: three sizes, nothing in between.</span>
+<span class="k">abstract</span> <span class="k">final</span> <span class="k">class</span> Radii {
+  <span class="k">static</span> <span class="k">const</span> s = <span class="n">8.0</span>;
+  <span class="k">static</span> <span class="k">const</span> m = <span class="n">16.0</span>;
+  <span class="k">static</span> <span class="k">const</span> l = <span class="n">28.0</span>;
+}</pre></div>
+
+<p>Five spaces and three corners sound limiting, and that is the point. When every gap in the app is one of five sizes, screens line up with each other without anyone measuring, and a designer can change “medium” everywhere by changing one number.</p>
+
+<h2><span class="sec">7.2</span> <span>The brand in the theme</span></h2>
+
+<p>Material gives every app a <code>ColorScheme</code>, built from one seed colour into a full set of roles: primary, surface, error and the colours written on each. A brand usually needs a few more: an accent for prices, a green for “ready”, an amber for warnings. A <code>ThemeExtension</code> adds them to the theme, so that they follow it into dark mode and through every animation:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/design/brand.dart (part)</div><pre class="code"><span class="c line-bidi">// The brand&#x27;s own colours, next to Material&#x27;s: a ThemeExtension travels with the theme.</span>
+@immutable
+<span class="k">class</span> Brand <span class="k">extends</span> ThemeExtension&lt;Brand&gt; {
+  <span class="k">const</span> Brand({
+    <span class="k">required</span> <span class="k">this</span>.accent,
+    <span class="k">required</span> <span class="k">this</span>.onAccent,
+    <span class="k">required</span> <span class="k">this</span>.success,
+    <span class="k">required</span> <span class="k">this</span>.onSuccess,
+    <span class="k">required</span> <span class="k">this</span>.warning,
+    <span class="k">required</span> <span class="k">this</span>.onWarning,
+    <span class="k">required</span> <span class="k">this</span>.muted,
+  });
+
+  <span class="c line-bidi">// Every colour comes with the colour of what is written on it.</span>
+  <span class="k">final</span> Color accent;
+  <span class="k">final</span> Color onAccent;
+  <span class="k">final</span> Color success;
+  <span class="k">final</span> Color onSuccess;
+  <span class="k">final</span> Color warning;
+  <span class="k">final</span> Color onWarning;
+  <span class="k">final</span> Color muted;
+
+  <span class="k">static</span> <span class="k">const</span> light = Brand(
+    accent: Color(0xFF6D4C41),
+    onAccent: Color(0xFFFFFFFF),
+    success: Color(0xFF1B5E20),
+    onSuccess: Color(0xFFFFFFFF),
+    warning: Color(0xFFFFB300),
+    onWarning: Color(0xFF3E2723),
+    muted: Color(0xFFF3EDE7),
+  );
+
+  <span class="k">static</span> <span class="k">const</span> dark = Brand(</pre></div>
+
+<ul>
+<li>Every colour comes with its <code>on</code> colour, the colour of text and icons drawn on it. A component never picks a text colour by itself.</li>
+<li><code>lerp</code> says how to move between two brands. When the person switches to dark mode, <code>MaterialApp</code> animates the theme, and with <code>lerp</code> the brand colours animate with it instead of jumping:</li>
+</ul>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/lerp_test.dart</span>
+00:00 +0: loading test/lerp_test.dart
+00:00 +0: switching themes animates the brand colours too
+t = 0.0   accent #6D4C41   muted #F3EDE7
+t = 0.25   accent #88675B   muted #C1BBB5
+t = 0.5   accent #A28275   muted #8F8984
+t = 0.75   accent #BC9D8E   muted #5D5652
+t = 1.0   accent #D7B8A8   muted #2B2420
+00:00 +1: All tests passed!</pre></div>
+
+<p>The theme puts everything together, once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/design/theme.dart (part)</div><pre class="code">ThemeData buildTheme(
+  Brightness brightness, {
+  Brand? brand,
+  Color seed = <span class="k">const</span> Color(0xFF6D4C41),
+}) {
+  <span class="c line-bidi">// Material builds a full, accessible scheme from one seed colour.</span>
+  <span class="k">final</span> colors = ColorScheme.fromSeed(seedColor: seed, brightness: brightness);
+  <span class="k">final</span> shape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(Radii.m),
+  );
+  <span class="k">return</span> ThemeData(
+    colorScheme: colors,
+    extensions: [
+      brand ?? (brightness == Brightness.light ? Brand.light : Brand.dark),
+    ],
+    <span class="c line-bidi">// Components take their shapes from the tokens once, here, not in every screen.</span>
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        shape: shape,
+        minimumSize: <span class="k">const</span> Size(<span class="n">0</span>, <span class="n">48</span>),
+        padding: <span class="k">const</span> EdgeInsets.symmetric(horizontal: Space.l),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        shape: shape,
+        minimumSize: <span class="k">const</span> Size(<span class="n">0</span>, <span class="n">48</span>),
+      ),
+    ),
+    cardTheme: CardThemeData(shape: shape, margin: EdgeInsets.zero),
+  );
+}</pre></div>
+
+<h2><span class="sec">7.3</span> <span>Components</span></h2>
+
+<p>Screens should not know how a button looks, only what it means. A small set of components takes every value from the tokens and the theme:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/design/components.dart (part)</div><pre class="code"><span class="c line-bidi">// A tag says one thing at a glance: its kind chooses the colours.</span>
+<span class="k">class</span> StatusTag <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> StatusTag({
+    <span class="k">super</span>.key,
+    <span class="k">required</span> <span class="k">this</span>.label,
+    <span class="k">this</span>.kind = TagKind.neutral,
+  });
+
+  <span class="k">final</span> <span class="k">String</span> label;
+  <span class="k">final</span> TagKind kind;
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">final</span> brand = context.brand;
+    <span class="k">final</span> (background, foreground) = <span class="k">switch</span> (kind) {
+      TagKind.success =&gt; (brand.success, brand.onSuccess),
+      TagKind.warning =&gt; (brand.warning, brand.onWarning),
+      TagKind.neutral =&gt; (brand.muted, context.colors.onSurface),
+    };
+    <span class="k">return</span> DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(Radii.s),
+      ),
+      child: Padding(
+        padding: <span class="k">const</span> EdgeInsets.symmetric(
+          horizontal: Space.s,
+          vertical: Space.xs,
+        ),
+        child: Text(
+          label,
+          style: context.text.labelMedium!.copyWith(color: foreground),
+        ),
+      ),
+    );
+  }
+}
+
+<span class="k">class</span> AppCard <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> AppCard({<span class="k">super</span>.key, <span class="k">required</span> <span class="k">this</span>.child});
+
+  <span class="k">final</span> Widget child;
+
+  @override
+  Widget build(BuildContext context) =&gt; Card(
+    child: Padding(padding: <span class="k">const</span> EdgeInsets.all(Space.m), child: child),
+  );
+}</pre></div>
+
+<p>An extension on <code>BuildContext</code> keeps screens short: <code>context.brand</code>, <code>context.colors</code>, <code>context.text</code>. A catalogue page shows every component in one place, in both themes, so that designers and developers review the same thing:</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-design-en-shots-catalog-light.png" alt=""></div>
+<figcaption>The catalogue, light</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-design-en-shots-catalog-dark.png" alt=""></div>
+<figcaption>The same components, dark</figcaption>
+</figure>
+</div>
+
+<p>A real screen then contains no decision of its own, only components, tokens and theme values:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/screens/menu_screen.dart (part)</div><pre class="code"><span class="k">class</span> MenuCard <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> MenuCard({
+    <span class="k">super</span>.key,
+    <span class="k">required</span> <span class="k">this</span>.name,
+    <span class="k">required</span> <span class="k">this</span>.description,
+    <span class="k">required</span> <span class="k">this</span>.price,
+    <span class="k">this</span>.tag,
+  });
+
+  <span class="k">final</span> <span class="k">String</span> name;
+  <span class="k">final</span> <span class="k">String</span> description;
+  <span class="k">final</span> <span class="k">int</span> price;
+  <span class="k">final</span> Widget? tag;
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(child: Text(name, style: context.text.titleLarge)),
+              ?tag,
+            ],
+          ),
+          <span class="k">const</span> Gap(Space.xs),
+          Text(
+            description,
+            style: context.text.bodyMedium!.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+          <span class="k">const</span> Gap(Space.m),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  <span class="s">&#x27;$price EGP&#x27;</span>,
+                  style: context.text.titleMedium!.copyWith(
+                    color: context.brand.accent,
+                  ),
+                ),
+              ),
+              AppButton(label: <span class="s">&#x27;Order&#x27;</span>, icon: Icons.add, onPressed: () {}),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-design-en-shots-menu-light.png" alt=""></div>
+<figcaption>The menu, light</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-design-en-shots-menu-dark.png" alt=""></div>
+<figcaption>Dark: every colour changed, no screen code did</figcaption>
+</figure>
+</div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The first version of this screen built each card inside the list’s <code>itemBuilder</code>, reading the theme with the <code>context</code> the builder received. In dark mode the drink names were invisible: those cards kept the colours of the light theme. A widget test that printed the painted colour of “Latte” showed it: dark brown text on a dark card. Making each card its own widget, <code>MenuCard</code>, which reads the theme in its own <code>build</code>, fixed it, and is the right shape anyway: every widget that depends on the theme should ask for it with its own context.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>Readable colours</span></h2>
+
+<p>A colour pair is readable when its <dfn>contrast ratio</dfn> is high enough. The ratio comes from the relative luminance of the two colours, from 1:1 (the same colour) to 21:1 (black on white); the WCAG guidelines ask for at least 4.5:1 for normal text. Flutter computes the luminance; a test computes every pair of the design system, in both themes:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/contrast_test.dart (part)</div><pre class="code"><span class="k">double</span> contrast(Color a, Color b) {
+  <span class="k">final</span> (hi, lo) = (
+    max(a.computeLuminance(), b.computeLuminance()),
+    min(a.computeLuminance(), b.computeLuminance()),
+  );
+  <span class="k">return</span> (hi + <span class="n">0.05</span>) / (lo + <span class="n">0.05</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/contrast_test.dart</span>
+00:00 +0: loading test/contrast_test.dart
+00:00 +0: every colour pair is readable in both themes
+dark
+  text on surface             14.4 : 1
+  text on primary             7.7 : 1
+  text on accent              7.4 : 1
+  text on success             6.2 : 1
+  text on warning             9.0 : 1
+  text on muted               11.8 : 1
+  price (accent on surface)   10.0 : 1
+light
+  text on surface             16.4 : 1
+  text on primary             6.5 : 1
+  text on accent              7.6 : 1
+  text on success             7.9 : 1
+  text on warning             7.7 : 1
+  text on muted               14.8 : 1
+  price (accent on surface)   7.2 : 1
+00:00 +1: All tests passed!</pre></div>
+
+<p>Every pair passes, the lowest at 6.2:1, the green tag in dark mode. Project 7.1 shows this test catching the first idea for the warning tag.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does every brand colour come with an <code>on</code> colour?</li><li>What would happen to the brand colours when switching to dark mode if <code>lerp</code> returned <code>this</code>?</li><li>What contrast ratio does normal text need, and what are the two extremes of the scale?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Keep the design system in its own folder, or its own package in larger teams, and review changes to it like changes to an API: a new token or component affects every screen. And give designers the catalogue page, running on a real phone: it is the fastest way to agree on what “medium” and “warning” mean.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Hex colours in screens</td><td>Fifty browns, and a dark mode that misses half of them</td><td>Theme roles and a <code>ThemeExtension</code></td></tr>
+<tr><td>Spacing chosen per screen</td><td>Screens that almost line up</td><td>A spacing scale, and <code>Gap</code></td></tr>
+<tr><td>A colour without its <code>on</code> colour</td><td>Each screen guesses the text colour, some badly</td><td>Pairs of colours, chosen and tested together</td></tr>
+<tr><td>No <code>lerp</code> in an extension</td><td>Brand colours jump while the rest animates</td><td>Implement <code>lerp</code> with <code>Color.lerp</code></td></tr>
+<tr><td>Theme read with someone else’s context</td><td>Parts of a screen keep the old theme</td><td>Each widget reads the theme in its own <code>build</code></td></tr>
+<tr><td>Trusting the eye for contrast</td><td>Unreadable text in sunlight or for many people</td><td>A contrast test on every pair</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Tokens name design decisions: a scale for spacing, a few corner sizes, named colours.</li>
+<li><code>ColorScheme.fromSeed</code> gives Material’s roles; a <code>ThemeExtension</code> adds the brand’s own colours, with <code>lerp</code> for animation and light and dark values.</li>
+<li>Components take every value from tokens and the theme; screens only combine components.</li>
+<li>Every colour pair is tested for a WCAG contrast of at least 4.5:1, in both themes.</li>
+<li>A guard test keeps raw values out of screens; a new brand is a new set of tokens.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that the colour of text and icons drawn on it is decided, and tested for contrast, once, with the colour itself, instead of guessed by each component. 2. The brand colours would not animate with the rest of the theme: during the switch they would stay light and then jump to dark at the end. 3. At least 4.5:1; the scale goes from 1:1, the same colour twice, to 21:1, black on white.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects turn the design system’s promises into tests, then use it to make a second brand.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>Catch an unreadable tag</h3>
+<p class="project-goal">The first idea for “Almost sold out” was white text on amber. Prove with the contrast function that it is unreadable, then choose a better text colour.</p>
+<p class="project-skills"><strong>You will practise:</strong> the contrast formula, failing tests with clear reasons, and choosing colour pairs.</p>
+<ol class="steps">
+<li>Write a test that computes <code>contrast(white, amber)</code> and expects at least 4.5, with a <code>reason</code> that prints the ratio.</li>
+<li>Run it and read the failure.</li>
+<li>Try a very dark brown for the text on amber, and add the pair to the main contrast test.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> bright colours (yellow, amber, light green, cyan) need dark text; deep colours need light text. The contrast function settles every argument about it in a second.</p>
+<p><strong>Your result should look like this</strong> (the first idea, failing):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/contrast_bad_test.dart</span>
+00:00 +0: loading test/contrast_bad_test.dart
+00:00 +0: a pair that is not readable is caught
+00:00 +0 -1: a pair that is not readable is caught [E]
+  Expected: a value greater than or equal to &lt;4.5&gt;
+    Actual: &lt;1.7948656834741148&gt;
+     Which: is not a value greater than or equal to &lt;4.5&gt;
+  white on amber is 1.8 : 1</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>No raw values in screens</h3>
+<p class="project-goal">A test that fails when a screen contains a raw colour, a numeric padding or a font size, and says where.</p>
+<p class="project-skills"><strong>You will practise:</strong> regular expressions over source files, line numbers, and testing a check against a fixture.</p>
+<ol class="steps">
+<li>For every Dart file under <code>lib/screens</code>, look at each line for <code>Color(0x</code> or <code>Colors.</code>, for <code>EdgeInsets…(</code> with a digit, and for <code>fontSize:</code>.</li>
+<li>Report each as <code>file:line: what</code>, and expect no reports.</li>
+<li>Write a “hurried” screen in a fixture folder, with all three, and check that the same function reports each one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the same idea as Chapter 2’s architecture test: rules that a team keeps forgetting become tests that never forget. Allow exceptions explicitly (here <code>Colors.transparent</code>), and keep the list short.</p>
+<p><strong>Your result should look like this</strong> (the screens pass; the fixture is caught):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/guard_test.dart</span>
+00:00 +0: loading test/guard_test.dart
+00:00 +0: screens use tokens, not raw values
+00:00 +1: All tests passed!</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/guard_bad_test.dart</span>
+00:00 +0: loading test/guard_bad_test.dart
+00:00 +0: a screen with raw values is caught
+00:00 +0 -1: a screen with raw values is caught [E]
+  Expected: empty
+    Actual: [
+              &#x27;test/fixtures/hurried_screen.dart:8: a raw colour&#x27;,
+              &#x27;test/fixtures/hurried_screen.dart:9: a raw spacing&#x27;,
+              &#x27;test/fixtures/hurried_screen.dart:12: a raw colour&#x27;,
+              &#x27;test/fixtures/hurried_screen.dart:12: a raw font size&#x27;
+            ]</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>A second brand</h3>
+<p class="project-goal">Bit Bakery opens next door. Give it its own colours, using the same components and screens, and prove that its pairs are readable too.</p>
+<p class="project-skills"><strong>You will practise:</strong> theming by tokens, seed colours, and reusing tests across brands.</p>
+<ol class="steps">
+<li>Define a second <code>Brand</code> with a raspberry accent and a pale pink for muted surfaces, and a seed colour for Material’s scheme.</li>
+<li>Let <code>buildTheme</code> accept a brand and a seed; the menu screen does not change at all.</li>
+<li>Run the contrast checks on the bakery’s pairs.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if any screen needs to change for the second brand, a decision was hiding in that screen. Move it into a token.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-design-en-shots-bakery.png" alt=""></div>
+<figcaption>Project 7.3: the same menu, the bakery’s colours.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/brands_test.dart</span>
+00:00 +0: loading test/brands_test.dart
+00:00 +0: two brands, the same components, both readable
+bakery  text on accent    7.0 : 1
+bakery  price on surface  6.6 : 1
+bakery  text on muted     14.3 : 1
+bakery  text on primary   6.5 : 1
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>Space.xxl</code> of 48. Where in the catalogue does it appear without any change to the catalogue page, and why?</li>
+<li><span class="level">Easy</span> Change the seed colour to a blue. Which parts of the menu change, and which stay brown? Why?</li>
+<li><span class="level medium">Medium</span> Add a <code>TagKind.info</code> with its own pair in <code>Brand</code>, for light and dark. Which files change, and which tests must grow?</li>
+<li><span class="level medium">Medium</span> Give the app a text scale setting (large text). Which components break first, and how do the tokens help fix them?</li>
+<li><span class="level hard">Challenge</span> Make the guard test also forbid <code>TextStyle(</code> in screens, and fix the screens so that they use only the theme’s text styles. When is a <code>copyWith</code> on a theme style acceptable?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>The app now looks like one app. The next chapter makes it move like one: implicit and explicit animations, hero transitions, and motion that feels native on both Android and iOS, without dropping a frame.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2938,6 +3387,16 @@ again:             sent 0, refused 0, pulled 0
 <li>An order that was never sent has never been seen by the server: it can simply be removed from the store and therefore from the outbox (unless a push for it is running at that moment, which the engine should guard against). An order that was sent exists on the server too: removing it locally would bring it back with the next pull. Mark it deleted and queued (a tombstone), push the delete, and remove the row only when the server confirms.</li>
 <li>The rule “the note belongs to the person” breaks: now two writers share one field, and field ownership can no longer decide. The cleanest fix is to give each writer its own field, a note from the person and a reply from the café, so ownership holds again. If one field must stay shared, the server should keep a version per field and refuse a change based on an older version, and the app should show the person both texts and let them choose.</li>
 <li>Both phones have a queued note based on version 1. The first to sync wins at the server (version 2). The second pushes a note based on version 1; the server answers with a conflict instead of overwriting, and returns its current note. The second phone marks the order as conflicting, keeps both texts, and asks the person (“Your other phone changed this note”). The test: one fake server, two local stores, two engines; edit offline on both, sync A, sync B, and expect A’s note on the server, a conflict on B with both notes, and no silent loss.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 7</h2>
+<ol class="exercises">
+<li>Nowhere, and that is the lesson: the catalogue lists the spaces by hand, <code>[('xs', Space.xs), …]</code>, so a new token is invisible until someone remembers to add it. Give <code>Space</code> one list of every value, <code>static const all = {'xs': xs, 's': s, 'm': m, 'l': l, 'xl': xl, 'xxl': xxl}</code>, and let the catalogue loop over it; from then on every new token appears by itself, in every theme.</li>
+<li>Everything that comes from Material’s <code>ColorScheme</code> turns blue: the filled Order buttons, the selected navigation item, the switch, and the tints of surfaces and cards. The prices and the tags stay as they were, because they come from the <code>Brand</code> extension, which the seed does not touch. That split is deliberate: Material’s roles follow the seed, and the brand’s own colours are chosen and tested by hand.</li>
+<li><code>brand.dart</code> gets <code>info</code> and <code>onInfo</code>, with values in <code>light</code> and <code>dark</code> and a line in <code>lerp</code>; <code>components.dart</code> gets a case in the <code>StatusTag</code> switch, which the compiler demands as soon as the enum grows; the catalogue shows the new tag. The contrast test must check the new pair in both themes. No screen changes until one decides to use the new tag.</li>
+<li>The first to break is the card’s header row: a long drink name in large text and a tag share one line, and the name wraps into a narrow column or overflows. Buttons keep working because their height is a minimum, not a fixed size. The tokens help because the fix is made once, in the component: the header becomes a <code>Wrap</code> (or the tag moves under the name when space is short), and every screen that uses <code>MenuCard</code> is fixed together. Test it with <code>MediaQuery(data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(2)))</code> in a widget test.</li>
+<li>Add <code>'a hand-made text style': RegExp(r'TextStyle\(')</code> to the rules; the screens already use <code>context.text.titleLarge</code> and friends. A <code>copyWith</code> on a theme style is acceptable for a role colour from the theme, as the price does with <code>context.brand.accent</code>, because the size, weight and line height still come from the design system. When the same <code>copyWith</code> appears in two places, it has become a style of its own: give it a name in the design system (<code>priceStyle</code>).</li>
 </ol>
 
 </section>
