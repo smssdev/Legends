@@ -1,0 +1,216 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/riverpod/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>State Management with Riverpod</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>declare dependencies and state as providers, and let them build each other</li>
+<li>hold changing state in a <code>Notifier</code>, as immutable values</li>
+<li>load data with <code>FutureProvider</code>, and show every state of an <code>AsyncValue</code></li>
+<li>run actions with an <code>AsyncNotifier</code>, and refresh what they made stale</li>
+<li>rebuild only what changed with <code>select</code>, and know when Riverpod retries for you</li>
+<li>replace any dependency, in tests and in different builds, with one override</li>
+</ul>
+</div>
+
+<p class="lead">Chapter {{n-1}} wired the orders feature by hand in <code>main</code> and handed a <code>ChangeNotifier</code> to the screen with Provider. It works, and it has three weak points that grow with the app: dependencies are passed by hand through constructors, a missing provider is found only when the screen opens, and every loading or error state is written by hand. Riverpod answers all three. This chapter keeps Chapter {{n-1}}’s domain and data layers exactly as they were, and rewrites only the presentation.</p>
+
+<aside class="bit" data-mood="happy"><p>The domain and data files of this chapter are copied unchanged from Chapter {{n-1}} by the script that builds the examples. If Riverpod had needed a change in them, the layers of Chapter {{n-1}} would have been wrong.</p></aside>
+
+<h2>{{n}}.1 Providers</h2>
+
+<p>A <dfn>provider</dfn> is a declaration: “here is how to make this value”. It is a top-level constant, so any code can name it, and the compiler checks the name and the type. The values themselves do not live in the providers; they live in a <dfn>container</dfn>, which creates each one the first time it is asked for, and keeps it. In an app the container is a <code>ProviderScope</code> at the root; in a test, a <code>ProviderContainer</code>.</p>
+
+<pre data-term="pub-add.sh"></pre>
+
+<p>The feature’s dependencies become providers too. Each one builds itself from the others with <code>ref.watch</code>:</p>
+
+<pre data-code="lib/features/orders/providers.dart" data-from="^// " data-title="lib/features/orders/providers.dart (part)"></pre>
+
+<ul>
+<li>This file replaces the hand wiring of Chapter {{n-1}}’s <code>main</code>. It is the only file of the feature that knows the data layer; the screens see providers that give domain types.</li>
+<li><code>ref.watch</code> records a dependency. If <code>ordersSourceProvider</code> is replaced, the repository, the use case and the history above it are rebuilt automatically.</li>
+<li>Nothing is created until someone asks: a screen that never shows the history never loads it.</li>
+</ul>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>Riverpod is an anagram of Provider, and is written by the same author, Remi Rousselet, as its successor. Riverpod can also generate providers from annotated functions and classes (<code>@riverpod</code>, with the <code>riverpod_generator</code> package). This book writes them by hand, which shows exactly what exists; generated providers are the same objects underneath.</p></aside>
+
+<h2>{{n}}.2 State that changes: Notifier</h2>
+
+<p>The basket changes as the person taps. A <code>Notifier</code> holds it, with the methods that change it:</p>
+
+<pre data-code="lib/features/orders/presentation/basket.dart" data-from="^class BasketNotifier" data-title="lib/features/orders/presentation/basket.dart (part)"></pre>
+
+<ul>
+<li><code>build</code> returns the first state. <code>state = …</code> replaces it and notifies everything that watches it.</li>
+<li>The state is never changed in place. <code>add</code> builds a <em>new</em> map; writing <code>state[item] = 1</code> would change the old map, and Riverpod, comparing the old state with the “new” one, would see the same object and tell nobody.</li>
+<li><code>basketCountProvider</code> is <dfn>derived</dfn> state: a provider that watches another and computes from it. It is recomputed only when the basket changes, and the screens that need only the count watch only the count.</li>
+</ul>
+
+<h2>{{n}}.3 Data that loads: AsyncValue</h2>
+
+<p><code>historyProvider</code> is a <code>FutureProvider</code>. Whoever watches it receives an <dfn>AsyncValue</dfn>: loading, data, or an error, and sometimes both at once, such as old data while new data loads. A switch with patterns covers every case, and the compiler checks that it does:</p>
+
+<pre data-code="lib/features/orders/presentation/orders_page.dart" data-from="^          // " data-to="^          }," data-title="lib/features/orders/presentation/orders_page.dart (part)"></pre>
+
+<p>The order of the cases matters. Data first: if there is any, show it, even while a refresh is running. Then the error. The spinner only when there is nothing else to show.</p>
+
+<p>Riverpod 3 also <dfn>retries</dfn> a provider that fails, waiting a little longer each time. While it retries, the value is still loading, but carries the error. The test shows both behaviours with a source that always fails:</p>
+
+<pre data-code="test/retry_test.dart" data-from="  test(" data-to="^  });" data-title="test/retry_test.dart (part)"></pre>
+<pre data-term="retry-test.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Automatic retries are good for a phone on a bad connection and confusing in tests, where a failing provider never settles into an error. Turn them off in tests that check errors, with <code>retry: (count, error) =&gt; null</code> on the container, or for one provider with its own <code>retry</code> parameter. And never show only a spinner when <code>hasError</code> is true: the person deserves to know something is wrong, and to have a Retry button.</p></aside>
+
+<h2>{{n}}.4 Actions: AsyncNotifier</h2>
+
+<p>Placing an order takes time and can fail. An <code>AsyncNotifier</code> holds its state, loading or a result, and the method that runs it:</p>
+
+<pre data-code="lib/features/orders/presentation/place_controller.dart" data-from="^// " data-title="lib/features/orders/presentation/place_controller.dart (part)"></pre>
+
+<ul>
+<li>Inside methods, <code>ref.read</code> takes a value once. <code>ref.watch</code> belongs in <code>build</code>, where a change should rebuild.</li>
+<li>After the <code>await</code>, <code>ref.mounted</code> says whether the provider is still alive; if the screen was closed meanwhile, there is nobody to tell.</li>
+<li><code>ref.invalidate(historyProvider)</code> throws the history away. Whoever watches it receives a loading state, then the new list with the order just placed. No screen had to be told to refresh.</li>
+</ul>
+
+<div class="phones">
+<figure data-img="shots/placed.png" data-frame="phone">
+<figcaption>Placed: the history reloaded by itself</figcaption>
+</figure>
+<figure data-img="shots/closed.png" data-frame="phone">
+<figcaption>One override: 23:00</figcaption>
+</figure>
+<figure data-img="shots/offline.png" data-frame="phone">
+<figcaption>One override: offline</figcaption>
+</figure>
+</div>
+
+<h2>{{n}}.5 Rebuild only what changed</h2>
+
+<p>A widget that watches the whole basket rebuilds whenever anything in it changes. Often it needs much less: the Place button only needs to know whether the basket is empty. <code>select</code> watches one value computed from a provider, and rebuilds only when <em>that</em> value changes. The test adds three items and counts the builds of two widgets:</p>
+
+<pre data-code="test/select_test.dart" data-from="              Consumer(#2" data-to="^              )," data-title="test/select_test.dart (part)"></pre>
+<pre data-term="select-test.sh"></pre>
+
+<p>Four builds for the whole basket, once at the start and once per item. Two for <code>isEmpty</code>: at the start, and when the basket stopped being empty. The basket badge in the bar does the same with a provider: it watches <code>basketCountProvider</code>, not the basket.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where do you use <code>ref.watch</code>, and where <code>ref.read</code>?</li><li>Why does <code>add</code> build a new map instead of changing <code>state</code>?</li><li>What does the history show while Riverpod retries a failing request?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 One override</h2>
+
+<p>Because every dependency is a provider, any of them can be replaced at the root of a container, with <dfn>overrides</dfn>. The three screens above are the same app, and differ only in this:</p>
+
+<pre data-code="lib/orders_closed.dart" data-from="^void main" data-title="lib/orders_closed.dart (part)"></pre>
+
+<p>In a test, the same line runs the rules without a network. The source counts what reached it: nothing, because the café was closed, and the basket was kept for later:</p>
+
+<pre data-code="test/override_test.dart" data-from="    final container" data-to="^  });" data-title="test/override_test.dart (part)"></pre>
+<pre data-term="override-test.sh"></pre>
+
+<p>And the whole screen, tapped as a person would, with the history refreshing itself after the order:</p>
+
+<pre data-term="page-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Make everything that touches the outside world a provider: the clock, the network client, storage, the device’s locale, a random number generator. Then every test starts from a container with exactly the world it needs, and every build (demo, staging, production) is a different list of overrides, not a different app.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>ref.read</code> in <code>build</code></td><td>The widget never updates</td><td><code>ref.watch</code> in <code>build</code>; <code>read</code> in callbacks</td></tr>
+<tr><td><code>ref.watch</code> in a callback</td><td>Rebuilds and subscriptions in the wrong place</td><td><code>ref.read</code> in callbacks and methods</td></tr>
+<tr><td>Changing state in place</td><td>Nobody is notified</td><td>Assign a new value to <code>state</code></td></tr>
+<tr><td>Only a spinner while <code>hasError</code></td><td>The person waits forever during retries</td><td>Show the error and a Retry button</td></tr>
+<tr><td>Refreshing screens by hand after an action</td><td>Forgotten screens show stale data</td><td><code>ref.invalidate</code> the provider that became stale</td></tr>
+<tr><td>A provider created inside <code>build</code></td><td>A new provider, and lost state, on every build</td><td>Top-level providers; <code>family</code> for parameters</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Providers are top-level declarations; values live in a container (<code>ProviderScope</code>, <code>ProviderContainer</code>) and are created on first use.</li>
+<li>Dependencies are providers that <code>ref.watch</code> each other; one file per feature wires them.</li>
+<li><code>Notifier</code> holds changing state as immutable values; derived providers compute from it.</li>
+<li><code>FutureProvider</code> and <code>AsyncNotifier</code> give <code>AsyncValue</code>: switch on data, error and loading, in that order. Riverpod retries failures unless told not to.</li>
+<li><code>select</code> and derived providers rebuild only what changed; <code>ref.invalidate</code> refreshes what an action made stale.</li>
+<li>Overrides replace any dependency, in one line, for tests and for different builds.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>ref.watch</code> in <code>build</code> methods (of widgets and providers), where a change should rebuild; <code>ref.read</code> in callbacks and notifier methods, to use a value once. 2. Because Riverpod notifies when <code>state</code> becomes a different object; changing the same map in place leaves it the same object, so nobody would be told. 3. A value that is still loading but carries the error, so the screen can show the error and a Retry button instead of a spinner.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project adds a Riverpod tool the chapter only mentioned. The tests are the point: each one proves the behaviour the tool promises.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>One provider per order</h3>
+<p class="project-goal">A provider that gives one order by its id, built from the history, and cached per id.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>FutureProvider.family</code>, <code>ref.watch</code> of another provider’s <code>future</code>, and caching.</p>
+<ol class="steps">
+<li>Declare <code>orderProvider = FutureProvider.family&lt;Order?, int&gt;((ref, id) async {…})</code>.</li>
+<li>Inside, await <code>ref.watch(historyProvider.future)</code> and return the order with that id, or <code>null</code> (<code>firstWhereOrNull</code> from the <code>collection</code> package).</li>
+<li>In a test, place two orders, read <code>orderProvider(1)</code> and <code>orderProvider(2)</code>, check their totals, check that id 3 gives <code>null</code>, and that reading id 1 again gives the very same object.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because <code>orderProvider</code> watches the history, invalidating the history after a new order refreshes every order provider too. Nothing has to remember to update them.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/family-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A search that cancels itself</h3>
+<p class="project-goal">Search the menu as the person types, without searching for every letter.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>autoDispose</code>, <code>family</code>, <code>ref.onDispose</code>, and a debounce without a timer.</p>
+<ol class="steps">
+<li>A <code>Notifier</code> holds the query; the text field’s <code>onChanged</code> sets it.</li>
+<li><code>searchProvider</code> is <code>FutureProvider.autoDispose.family</code> on the query. It registers <code>ref.onDispose</code>, waits 300 milliseconds, and searches only if it was not disposed meanwhile.</li>
+<li>Typing a new letter makes the page watch a new query: the old one has no watcher left, is disposed, and never searches.</li>
+<li>Test by typing three letters 100 milliseconds apart, and check that only the empty query and the last one were searched.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is Book 5’s debounce without a <code>Timer</code> to cancel: <code>autoDispose</code> does the cancelling. For a real network request, also cancel the request in <code>onDispose</code>, so that it does not finish uselessly.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/search.png" data-frame="phone">
+<figcaption>Project {{n}}.2: one search, for the last text.</figcaption>
+</figure>
+<pre data-term="projects/search-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Undo, for free</h3>
+<p class="project-goal">A basket that can undo any number of changes, one at a time.</p>
+<p class="project-skills"><strong>You will practise:</strong> immutable state, a history of states in a notifier, and <code>container.listen</code> in tests.</p>
+<ol class="steps">
+<li>Every change goes through one private method that pushes the current state onto a list, then sets the new one.</li>
+<li><code>undo</code> pops the last state back; <code>canUndo</code> says whether there is one.</li>
+<li>Test a sequence: add, add, add, remove; then undo four times, checking the basket after each, and that eight states were announced.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this only works because states are never changed in place: each old map is still exactly what it was. With a mutable basket, the “history” would be four references to the same, latest map.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/undo-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>BasketNotifier.add</code> to change the map in place (<code>state[item] = …</code>). Which tests fail, and what does the screen do when you tap?</li>
+<li><span class="level">Easy</span> Remove <code>ref.invalidate(historyProvider)</code> from <code>place</code>. What does the page show after an order, and when does it catch up?</li>
+<li><span class="level">Medium</span> Show a snack bar when an order is placed, using <code>ref.listen</code> in the page’s <code>build</code>. Why <code>listen</code> and not <code>watch</code>?</li>
+<li><span class="level">Medium</span> Turn off retries for <code>historyProvider</code> only, with its <code>retry</code> parameter, and check the offline screen. When would you choose that in a real app?</li>
+<li><span class="level">Challenge</span> Write a fourth composition root that overrides <code>historyProvider</code> itself with three fixed orders. What does that skip that overriding the source does not?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The orders feature lives on one screen. A real app has dozens, with links into them from notifications and the web, a back button that must make sense, and screens that only signed-in people may open. The next chapter does it with go_router.</p>
+</div>
+</section>

@@ -1198,7 +1198,8 @@
             },
             {
               "en": "State Management with Riverpod",
-              "ar": "إدارة الحالة بـ Riverpod"
+              "ar": "إدارة الحالة بـ Riverpod",
+              "src": "b6/riverpod"
             },
             {
               "en": "Navigation at Scale with go_router",
