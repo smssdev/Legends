@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: الاختبار: الوحدات والـ Widget واللقطات والتكامل"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "الفصل 11: الوصول على الموبايل"; } }
+@page ch11:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -159,7 +161,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">193</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p">193</span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">213</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -4680,6 +4682,489 @@ all                            56/64   88%</pre></div>
 <p>التطبيق ينجح في اختباراته. لكن هل يعمل لمن لا يرى الشاشة، أو يستخدم نصاً كبيراً، أو يتنقل بمفتاح واحد؟ والفصل القادم يجعل التطبيق متاحاً للجميع، ويثبت ذلك بالأدوات نفسها: الدلالات والاختبارات وقارئات الشاشة الحقيقية.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b6/accessibility/ar">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">الفصل 11</p><h1>الوصول على الموبايل</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقرأ تطبيقك كما يقرؤه قارئ الشاشة، عبر شجرة الدلالات في Flutter</li>
+<li>تسمّي كل عنصر تحكم، وتدمج ما يتكامل، وتخفي ما هو زينة</li>
+<li>تحوّل إرشادات الإتاحة في Flutter إلى اختبارات، وتعرف ما لا تراه</li>
+<li>تجعل ترتيب القراءة في الشاشة العربية من اليمين إلى اليسار، لا تخطيطها فقط</li>
+<li>تصمد أمام نص بضعف حجمه، وتُعلن التغييرات التي لا تُرى</li>
+</ul>
+</div>
+
+<p class="lead">نحو شخص من كل ستة يعيش مع إعاقة ما، وكل الناس تقريباً يمرّون بيوم سيئ: شاشة مشروخة، أو شمس ساطعة، أو ذراع مكسورة، أو هاتف في يد واحدة في حافلة مزدحمة. يستخدم الناس قارئات الشاشة (TalkBack في Android وVoiceOver في iOS)، والنص الأكبر، ولوحة المفاتيح أو مفتاحاً واحداً، والتباين الأعلى. والتطبيق المتاح ليس تطبيقاً منفصلاً لهم. إنه التطبيق نفسه، مبنياً بحيث يكون ما تعرضه الشاشة متاحاً أيضاً أسماءً وأدواراً وأفعالاً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>نتيجتان في هذا الفصل فاجأتا المؤلف، وأُبقيتا كلتاهما: إرشاد نجّح لوناً رمادياً راسباً، وشاشة عربية تبدو من اليمين إلى اليسار لكنها تُقرأ من اليسار إلى اليمين. ويعرض القسمان 11.3 و11.4 الاختبارين اللذين وجداهما.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>شجرة الدلالات</span></h2>
+
+<p>Flutter يرسم كل بكسل بنفسه، فلا يستطيع نظام التشغيل أن ينظر داخل الصورة ليجد الأزرار والنصوص. وبجانب شجرة الـ Widgets وشجرة الرسم، يبني Flutter شجرة ثالثة، <dfn>شجرة الدلالات</dfn> (semantics tree): عُقد لها تسمية («أضف لاتيه»)، ودور (زر، عنوان، حقل نص)، وحالة (مختار، مؤشَّر عليه)، وأفعال (ضغط، تمرير). والمنصة تسلّم هذه الشجرة إلى TalkBack أو VoiceOver؛ وعلى الويب يحوّلها Flutter إلى عناصر HTML بأدوار ARIA تقرؤها شجرة الإتاحة في المتصفح.</p>
+
+<p>معظم الـ Widgets تملأ الشجرة جيداً وحدها: <code>Text</code> يعطي كلماته، و<code>ElevatedButton</code> يقول إنه زر، و<code>TextField</code> يعطي تسميته. والمشكلة تبدأ بما نبنيه بأنفسنا من <code>GestureDetector</code> وأيقونات وحاويات.</p>
+
+<h2><span class="sec">11.2</span> <span>ما يسمعه قارئ الشاشة</span></h2>
+
+<p>هذه قائمة كُتبت على عجل. في كل صف صورة واسم ووصف وسعر، وقلب لحفظ المشروب، وزائد لإضافته. والأيقونتان مرسومتان باليد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu_hurried.dart (جزء)</div><pre class="code">                        Text(<span class="s">&#x27;$price جنيه&#x27;</span>),
+                        GestureDetector(
+                          onTap: () {},
+                          child: <span class="k">const</span> Icon(Icons.favorite_border, size: <span class="n">20</span>),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            width: <span class="n">28</span>,
+                            height: <span class="n">28</span>,
+                            decoration: BoxDecoration(
+                              color: colors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.add,</pre></div>
+
+<p>ولسماع ما تقوله، طلبت أداة لقطات الكتاب من المتصفح شجرة الإتاحة، الشجرة نفسها التي يقرؤها قارئ الشاشة، من التطبيق الحقيقي مبنياً للويب:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>- heading &quot;القائمة&quot; [level=2]
+- group:
+  - group &quot;لاتيه إسبريسو وحليب مبخّر 45 جنيه&quot;:
+    - button
+    - button
+  - group &quot;شاي بالنعناع نعناع طازج، محلّى قليلاً 30 جنيه&quot;:
+    - button
+    - button
+  - group &quot;كيك الكرز مخبوز هذا الصباح 55 جنيه&quot;:
+    - button
+    - button
+- text: &quot;المجموع: 90 جنيه&quot;
+- button &quot;إتمام الطلب&quot;</pre></div>
+
+<p>مستخدم قارئ الشاشة يسمع كل مشروب، ثم «زر»، «زر». أيهما يحفظ وأيهما يضيف؟ لا شيء يقول. والنسخة المتأنية تسمّي كل زر بما يفعله ولأي مشروب، وتدمج الصورة والاسم والوصف والسعر في وقفة واحدة، وتخفي الصورة التي يحمل الاسمُ معناها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu_careful.dart (جزء)</div><pre class="code">                          child: MergeSemantics(
+                            child: Row(
+                              spacing: <span class="n">12</span>,
+                              children: [
+                                <span class="c line-bidi">// الصورة زينة: الاسم يقول ما هي.</span>
+                                ExcludeSemantics(
+                                  child: Container(
+                                    width: <span class="n">56</span>,
+                                    height: <span class="n">56</span>,
+                                    decoration: BoxDecoration(
+                                      color: Colors.brown,
+                                      borderRadius: BorderRadius.circular(<span class="n">12</span>),
+                                    ),
+                                    child: <span class="k">const</span> Icon(
+                                      Icons.local_cafe,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(name, style: text.titleMedium),
+                                      Text(
+                                        about,
+                                        style: text.bodySmall!.copyWith(
+                                          color: colors.onSurfaceVariant,
+                                        ),
+                                      ),
+                                      <span class="c line-bidi">// تحت الاسم لا بجانبه: في الأحجام الكبيرة لا يبقى في الصف عرض زائد.</span>
+                                      Text(
+                                        <span class="s">&#x27;$price جنيه&#x27;</span>,
+                                        style: text.labelLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        <span class="c line-bidi">// كل زر أيقونة يقول ما يفعل، ولأي مشروب.</span>
+                        IconButton(
+                          tooltip: <span class="s">&#x27;احفظ $name&#x27;</span>,
+                          onPressed: () {},
+                          icon: <span class="k">const</span> Icon(Icons.favorite_border),
+                        ),
+                        IconButton.filled(
+                          tooltip: <span class="s">&#x27;أضف $name&#x27;</span>,
+                          onPressed: () {},
+                          icon: <span class="k">const</span> Icon(Icons.add),</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>- heading &quot;القائمة&quot; [level=2]
+- group:
+  - text: لاتيه إسبريسو وحليب مبخّر 45 جنيه
+  - button &quot;احفظ لاتيه&quot;
+  - button &quot;أضف لاتيه&quot;
+  - text: شاي بالنعناع نعناع طازج، محلّى قليلاً 30 جنيه
+  - button &quot;احفظ شاي بالنعناع&quot;
+  - button &quot;أضف شاي بالنعناع&quot;
+  - text: كيك الكرز مخبوز هذا الصباح 55 جنيه
+  - button &quot;احفظ كيك الكرز&quot;
+  - button &quot;أضف كيك الكرز&quot;
+- text: &quot;المجموع: 90 جنيه&quot;
+- button &quot;إتمام الطلب&quot;</pre></div>
+
+<ul>
+<li><code>tooltip</code> في <code>IconButton</code> هو اسمه المتاح، وهو أيضاً التسمية التي تظهر بالضغط المطوّل: نص واحد يخدم الاثنين.</li>
+<li><code>MergeSemantics</code> تحوّل شجرتها الفرعية إلى عقدة واحدة تُقرأ دفعة واحدة. استخدمها لما هو فكرة واحدة، كعنصر في القائمة؛ لا لما هو أفعال منفصلة.</li>
+<li><code>ExcludeSemantics</code> تحذف الزينة. أما الصورة التي تحمل معلومة فتحتاج <code>semanticLabel</code> بدلاً من ذلك.</li>
+</ul>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-ar-shots-hurried.png" alt=""></div>
+<figcaption>القائمة المستعجلة: أيقونات صغيرة بلا أسماء</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-ar-shots-careful.png" alt=""></div>
+<figcaption>القائمة المتأنية: الشاشة نفسها، بأسماء</figcaption>
+</figure>
+</div>
+
+<p>للعين، الشاشتان متطابقتان تقريباً. ولقارئ الشاشة، هما تطبيقان مختلفان.</p>
+
+<h2><span class="sec">11.3</span> <span>الإرشادات اختبارات</span></h2>
+
+<p>حزمة الاختبار في Flutter فيها إرشادات إتاحة تفحص الشاشة المعروضة: كل عقدة قابلة للضغط لها تسمية، وكل هدف للمس لا يقل عن 48 × 48 (Android) أو 44 × 44 (iOS)، والنص له تباين كافٍ. واختبار يشغّل الأربعة على القائمتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/guidelines_test.dart (جزء)</div><pre class="code"><span class="k">const</span> guidelines = {
+  <span class="s">&#x27;labeled tap targets&#x27;</span>: labeledTapTargetGuideline,
+  <span class="s">&#x27;Android tap targets (48 x 48)&#x27;</span>: androidTapTargetGuideline,
+  <span class="s">&#x27;iOS tap targets (44 x 44)&#x27;</span>: iOSTapTargetGuideline,
+  <span class="s">&#x27;text contrast&#x27;</span>: textContrastGuideline,
+};
+
+<span class="k">Future</span>&lt;<span class="k">int</span>&gt; check(WidgetTester tester, <span class="k">String</span> name, Widget menu) <span class="k">async</span> {
+  <span class="k">final</span> semantics = tester.ensureSemantics();
+  <span class="k">await</span> tester.pumpWidget(cafe(menu));
+  <span class="k">var</span> failed = <span class="n">0</span>;
+  debugPrint(<span class="s">&#x27;$name menu:&#x27;</span>);
+  <span class="k">for</span> (<span class="k">final</span> MapEntry(key: rule, value: guideline) <span class="k">in</span> guidelines.entries) {
+    <span class="k">final</span> result = <span class="k">await</span> guideline.evaluate(tester);
+    <span class="k">if</span> (!result.passed) {
+      failed++;
+    }
+    <span class="k">final</span> first = result.reason?.split(<span class="s">&#x27;\n&#x27;</span>).first ?? <span class="s">&#x27;&#x27;</span>;
+    debugPrint(
+      <span class="s">&#x27;  ${result.passed ? &#x27;</span>pass<span class="s">&#x27; : &#x27;</span>FAIL<span class="s">&#x27;}  ${rule.padRight(30)}${first.length &gt; 70 ? &#x27;</span>${first.substring(<span class="n">0</span>, <span class="n">70</span>)}...<span class="s">&#x27; : first}&#x27;</span>,
+    );
+  }
+  semantics.dispose();
+  <span class="k">return</span> failed;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/guidelines_test.dart</span>
+00:00 +0: loading test/guidelines_test.dart
+00:00 +0: أربعة إرشادات للإتاحة، القائمتان المستعجلة والمتأنية
+hurried menu:
+  FAIL  labeled tap targets           SemanticsNode#6(Rect.fromLTRB(52.0, 30.0, 72.0, 50.0), actions: [tap])...
+  FAIL  Android tap targets (48 x 48) SemanticsNode#6(Rect.fromLTRB(52.0, 30.0, 72.0, 50.0), actions: [tap])...
+  FAIL  iOS tap targets (44 x 44)     SemanticsNode#6(Rect.fromLTRB(52.0, 30.0, 72.0, 50.0), actions: [tap])...
+  pass  text contrast                 
+careful menu:
+  pass  labeled tap targets           
+  pass  Android tap targets (48 x 48) 
+  pass  iOS tap targets (44 x 44)     
+  pass  text contrast                 
+00:01 +1: All tests passed!</pre></div>
+
+<p>القائمة المستعجلة ترسب في ثلاثة: قلبها ذو العشرين بكسلاً بلا تسمية، وأصغر من أن يُصاب بثقة. والمتأنية تنجح في الأربعة. لكن انظر إلى السطر الأخير من القائمة المستعجلة: تباين النص <em>ينجح</em>، لوصف مرسوم برمادي فاتح صعب القراءة بوضوح. ومفحوصاً وحده، يرسب الرمادي نفسه بجلاء:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/contrast_alone_test.dart</span>
+00:00 +0: loading test/contrast_alone_test.dart
+00:00 +0: الوصف الرمادي، مفحوصاً وحده
+text contrast: FAIL
+Expected contrast ratio of at least 4.5 but found 1.79 for a font size of 12.0.
+00:00 +1: All tests passed!</pre></div>
+
+<p>لماذا نجح في القائمة؟ إرشاد التباين يبحث عن تسمية كل عقدة دلالات بين الـ <code>Text</code> المعروضة، ويقيس ذلك النص. وفي القائمة كان Flutter قد جمع اسم كل صف ووصفه وسعره في عقدة واحدة، فصارت تسميتها الأسطر الثلاثة معاً، ولم يطابقها <code>Text</code> واحد، فلم يُقس شيء. الإرشاد لم يكذب؛ لم يفحص شيئاً فلم يبلّغ عن رسوب.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>نجاح إرشاد الإتاحة يعني «لم توجد مشكلة»، لا «لا توجد مشكلة». استخدم الإرشادات لكشف التسميات الناقصة والأهداف الصغيرة، وهي تفعل ذلك بثقة، وافحص تباين الألوان حيث يمكن حسابه يقيناً: على رموز التصميم نفسها، كما يفعل اختبار التباين في الفصل 7 لكل زوج في الثيم. والوصف في القائمة المتأنية يستخدم <code>onSurfaceVariant</code> على السطح، وهو زوج بُني نظام ألوان Material ليُبقيه مقروءاً، ويستطيع اختبار رموز كاختبار الفصل 7 أن يفحصه في كل ثيم.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>ترتيب القراءة من اليمين إلى اليسار</span></h2>
+
+<p>قارئ الشاشة يتنقل في شجرة الدلالات بـ<dfn>ترتيب التنقل</dfn> (traversal order): من أعلى إلى أسفل، وداخل السطر باتجاه القراءة. وفي تطبيق عربي يكون اسم المشروب على اليمين وأزراره على اليسار، فيجب أن يُقرأ الاسم أولاً. واختبار يطبع الصف الأول كما يزوره قارئ الشاشة، للقائمة المتأنية مُعدّة بطريقتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/reading_order_test.dart (جزء)</div><pre class="code">    <span class="k">await</span> firstRow(
+      tester,
+      <span class="s">&#x27;Directionality only:&#x27;</span>,
+      MaterialApp(
+        key: <span class="k">const</span> ValueKey(<span class="n">1</span>),
+        builder: (context, child) =&gt;
+            Directionality(textDirection: TextDirection.rtl, child: child!),
+        home: <span class="k">const</span> CarefulMenu(),
+      ),
+    );
+    <span class="k">await</span> firstRow(
+      tester,
+      <span class="s">&#x27;Arabic locale:&#x27;</span>,
+      <span class="k">const</span> MaterialApp(
+        key: ValueKey(<span class="n">2</span>),
+        locale: Locale(<span class="s">&#x27;ar&#x27;</span>),
+        supportedLocales: [Locale(<span class="s">&#x27;ar&#x27;</span>)],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        home: CarefulMenu(),
+      ),
+    );
+    semantics.dispose();</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/reading_order_test.dart</span>
+00:00 +0: loading test/reading_order_test.dart
+00:00 +0: ترتيب القراءة في قائمة من اليمين إلى اليسار
+Directionality only:  أضف لاتيه  -&gt;  احفظ لاتيه  -&gt;  لاتيه
+Arabic locale:        لاتيه  -&gt;  احفظ لاتيه  -&gt;  أضف لاتيه
+00:00 +1: All tests passed!</pre></div>
+
+<p>مع <code>Directionality</code> وحدها، الشاشة <em>تبدو</em> من اليمين إلى اليسار، لكنها <em>تُقرأ</em> من اليسار إلى اليمين: «أضف لاتيه» قبل أن يسمع المستخدم ما اللاتيه. فاتجاه شجرة الدلالات يأتي من مستوى أعلى، من لغة التطبيق (locale). ومع اللغة العربية وترجماتها يصير التخطيط وترتيب القراءة كلاهما من اليمين إلى اليسار. وهذا إعداد تطبيقات هذا الفصل في النسخة العربية، وهو نفسه الذي استخدمه الفصل 13 من الكتاب الخامس:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/cafe.dart (جزء)</div><pre class="code">Widget cafe(Widget home, {<span class="k">double</span> textScale = <span class="n">1</span>}) =&gt; MaterialApp(
+  debugShowCheckedModeBanner: <span class="k">false</span>,
+  <span class="c line-bidi">// العربية لغة التطبيق: فيصير التخطيط وترتيب القراءة كلاهما من اليمين (القسم 11.4).</span>
+  locale: <span class="k">const</span> Locale(<span class="s">&#x27;ar&#x27;</span>),
+  supportedLocales: <span class="k">const</span> [Locale(<span class="s">&#x27;ar&#x27;</span>)],
+  localizationsDelegates: GlobalMaterialLocalizations.delegates,
+  theme: ThemeData(colorSchemeSeed: Colors.brown),
+  builder: (context, child) =&gt; MediaQuery(
+    data: MediaQuery.of(context)
+        .copyWith(textScaler: TextScaler.linear(textScale)),
+    child: child!,
+  ),
+  home: home,
+);</pre></div>
+
+<p>وهذا درس خاص بنا نحن من نكتب العربية: كثير من الأمثلة والدروس يقلب الاتجاه بـ <code>Directionality</code> ويكتفي بما تراه العين، فيخرج تطبيق يقرؤه قارئ الشاشة مقلوباً.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>ماذا تفعل <code>MergeSemantics</code>، ومتى لا تستخدمها؟</li><li>لماذا نجّح إرشاد التباين النص الرمادي في القائمة المستعجلة؟</li><li>ما الذي يحدد ترتيب القراءة في شاشة من اليمين إلى اليسار؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">11.5</span> <span>النص الكبير</span></h2>
+
+<p>Android وiOS كلاهما يتيح تكبير النص، حتى ضعف حجمه وأكثر، وFlutter يحترم ذلك عبر <code>MediaQuery.textScalerOf</code>. والتخطيطات المكتوبة للحجم الافتراضي تنكسر: الصفوف ينفد عرضها، والارتفاعات الثابتة تقطع الكلمات نصفين. وتطبيقات العرض في الكتاب تأخذ مقياساً للنص، فيجرّب الاختبار واللقطة 200%:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/large_text_test.dart</span>
+00:00 +0: loading test/large_text_test.dart
+00:00 +0: القائمتان والنص بضعف حجمه
+hurried menu at 200%: A RenderFlex overflowed by 678 pixels on the right.
+careful menu at 200%: fits
+00:00 +1: All tests passed!</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-ar-shots-hurried-large.png" alt=""></div>
+<figcaption>المستعجلة بحجم 200%: شريط المجموع يخرج من الشاشة</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-ar-shots-careful-large.png" alt=""></div>
+<figcaption>المتأنية بحجم 200%: كل شيء ينتقل إلى سطر جديد</figcaption>
+</figure>
+</div>
+
+<p>تغييران جعلا القائمة المتأنية تتسع. شريط المجموع <code>Wrap</code> بلا ارتفاع ثابت، فينتقل الزر إلى سطر ثانٍ حين يمتلئ السطر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu_careful.dart (جزء)</div><pre class="code">            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              runSpacing: <span class="n">8</span>,
+              children: [
+                Text(<span class="s">&#x27;المجموع: 90 جنيه&#x27;</span>, style: text.titleLarge),
+                FilledButton(
+                  onPressed: () {},
+                  child: <span class="k">const</span> Text(<span class="s">&#x27;إتمام الطلب&#x27;</span>),
+                ),
+              ],</pre></div>
+
+<p>والسعر انتقل من جانب الاسم إلى تحته. النسخة المتأنية الأولى أبقته بجانب الاسم؛ فاتسع في الإنجليزية، أما في العربية، وكلماتها أعرض في هذا الحجم، فأبلغ الاختبار: «A RenderFlex overflowed by 6.5 pixels on the right». اختبر النص الكبير في كل لغة تنشر بها.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>مرة لكل ميزة، استخدمها كما يستخدمها جمهورك: مع TalkBack أو VoiceOver وعيناك مغمضتان، وبأكبر حجم نص، وبلوحة المفاتيح وحدها. عشر دقائق تجد ما لا يجده أي إرشاد: شاشة مفهومة للعين لا للأذن، وزراً يُبلغ ولا يُفهم، وترتيباً لا يعمل إلا بالإصبع.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>أيقونات مرسومة بـ <code>GestureDetector</code></td><td>«زر، زر»: بلا أسماء، وأهداف صغيرة</td><td><code>IconButton</code> مع <code>tooltip</code></td></tr>
+<tr><td>صور زخرفية في الشجرة</td><td>ضجيج يُقرأ مع كل صف</td><td><code>ExcludeSemantics</code>، أو <code>semanticLabel</code> إن كانت تُخبر</td></tr>
+<tr><td>الثقة بإرشاد تباين ناجح</td><td>نص غير مقروء «نجح»</td><td>اختبارات تباين على رموز التصميم</td></tr>
+<tr><td><code>Directionality</code> بدل اللغة</td><td>عربية تُخطَّط من اليمين وتُقرأ من اليسار</td><td>اللغة العربية بترجماتها</td></tr>
+<tr><td>ارتفاعات ثابتة وصفوف مزدحمة</td><td>نص كبير مقطوع أو فائض</td><td><code>Wrap</code>، وبلا ارتفاعات ثابتة، واختبار بـ 200%</td></tr>
+<tr><td>تغييرات تُعرض بصرياً فقط</td><td>مستخدم قارئ الشاشة لا يعرف أن الطلب تغيّر</td><td>إعلان (المشروع 11.1)</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>Flutter يبني شجرة دلالات من التسميات والأدوار والحالات والأفعال؛ وقارئات الشاشة والمتصفح يقرؤونها.</li>
+<li>سمِّ كل عنصر تحكم (<code>tooltip</code> والتسميات)، وادمج ما هو فكرة واحدة، وأخفِ الزينة.</li>
+<li>إرشادات الإتاحة تكشف التسميات الناقصة والأهداف الصغيرة؛ والتباين يُفحص يقيناً على الرموز.</li>
+<li>ترتيب القراءة من اليمين إلى اليسار يأتي من لغة التطبيق، لا من <code>Directionality</code>.</li>
+<li>اختبر بنص 200% في كل لغة، ودع التخطيطات تنتقل إلى أسطر جديدة بدل تثبيت الأحجام.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. تجمع شجرتها الفرعية كلها في عقدة دلالات واحدة تُقرأ دفعة واحدة، كصورة عنصر القائمة واسمه وسعره. ولا تستخدمها حول ما هو أفعال منفصلة، كزرين: إن دُمجا صارا عقدة واحدة ولم يستطع المستخدم بلوغ كل منهما وحده. 2. لأن الإرشاد يقيس الـ <code>Text</code> الذي تطابق كلماته تسمية العقدة، وكان Flutter قد دمج نصوص كل صف في عقدة واحدة لا تطابق تسميتها أي <code>Text</code> منفرد؛ فلم يُقس شيء، فلم يرسب شيء. 3. لغة التطبيق: مع اللغة العربية وترجماتها تُقرأ شجرة الدلالات من اليمين إلى اليسار. أما <code>Directionality</code> وحدها فتعكس التخطيط وتترك ترتيب القراءة من اليسار إلى اليمين.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تغطي ما تراه العين ولا تسمعه الأذن: تغييراً على الشاشة، وترتيب نموذج، ومكوّناً مصنوعاً باليد.</p>
+
+<div class="project">
+<p class="project-label">المشروع 11.1 · سهل</p>
+<h3>أعلِن ما تغيّر</h3>
+<p class="project-goal">حين يُضاف مشروب تتغير الشارة على الكوب، ومستخدم قارئ الشاشة لا يراها. أعلن التغيير، وأثبت ذلك باختبار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>SemanticsService.sendAnnouncement</code>، و<code>tester.takeAnnouncements</code>.</p>
+<ol class="steps">
+<li>بعد تغيّر الحالة، أرسل إعلاناً بالمشروب والعدد الجديد، باتجاه نص الشاشة.</li>
+<li>في اختبار، اضغط مرتين وخذ الإعلانات.</li>
+<li>اطبعها، وتوقّع اثنين.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/announce.dart (جزء)</div><pre class="code">  <span class="k">void</span> add() {
+    setState(() =&gt; count++);
+    <span class="c line-bidi">// أخبر مستخدمي قارئ الشاشة بما تغيّر، فهم لا يرون الشارة.</span>
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      <span class="s">&#x27;لاتيه أُضيف, $count قطع في طلبك&#x27;</span>,
+      Directionality.of(context),
+    );
+  }</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/announce_test.dart</span>
+00:00 +0: loading test/announce_test.dart
+00:00 +0: إضافة مشروب تُعلَن
+announced (polite): &quot;لاتيه أُضيف, 1 قطع في طلبك&quot;
+announced (polite): &quot;لاتيه أُضيف, 2 قطع في طلبك&quot;
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> أعلن النتائج لا الأفعال: «أُضيف لاتيه، 2 قطع في طلبك»، لا «ضُغط زر». وأبقِ الإعلانات مهذبة (polite، وهو الافتراضي)، فتنتظر قارئ الشاشة حتى ينهي ما يقوله.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 11.2 · متوسط</p>
+<h3>ترتيب مفتاح Tab</h3>
+<p class="project-goal">زر «ادفع» في صفحة إتمام الطلب موجود في شريط التطبيق، في الأعلى، فيبلغه مستخدمو لوحة المفاتيح والمفتاح الواحد قبل الحقول التي يجب ملؤها. اجعل Tab يمر بالاسم ثم الهاتف ثم «ادفع».</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تنقل التركيز، و<code>FocusTraversalGroup</code> و<code>OrderedTraversalPolicy</code> و<code>NumericFocusOrder</code>، وأحداث المفاتيح في الاختبارات.</p>
+<ol class="steps">
+<li>أعطِ كل Widget قابل للتركيز <code>FocusNode</code> بـ <code>debugLabel</code>، ليقول الاختبار أيها يملك التركيز.</li>
+<li>اضغط Tab ثلاث مرات في اختبار واطبع التسميات، قبل الإصلاح وبعده.</li>
+<li>غلّف الصفحة بـ <code>FocusTraversalGroup</code> مع <code>OrderedTraversalPolicy</code>، ورقّم العناصر الثلاثة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/checkout.dart (جزء)</div><pre class="code">        actions: [
+          ordered
+              ? FocusTraversalOrder(
+                  order: <span class="k">const</span> NumericFocusOrder(<span class="n">3</span>),
+                  child: pay,
+                )
+              : pay,
+        ],
+      ),
+      body: Padding(
+        padding: <span class="k">const</span> EdgeInsets.all(<span class="n">16</span>),
+        child: Column(
+          spacing: <span class="n">16</span>,
+          children: [
+            FocusTraversalOrder(
+              order: <span class="k">const</span> NumericFocusOrder(<span class="n">1</span>),
+              child: TextField(
+                focusNode: FocusNode(debugLabel: <span class="s">&#x27;name&#x27;</span>),
+                decoration: <span class="k">const</span> InputDecoration(labelText: <span class="s">&#x27;اسمك&#x27;</span>),
+              ),
+            ),
+            FocusTraversalOrder(
+              order: <span class="k">const</span> NumericFocusOrder(<span class="n">2</span>),
+              child: TextField(
+                focusNode: FocusNode(debugLabel: <span class="s">&#x27;phone&#x27;</span>),
+                decoration: <span class="k">const</span> InputDecoration(labelText: <span class="s">&#x27;الهاتف&#x27;</span>),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    <span class="k">return</span> ordered</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/focus_order_test.dart</span>
+00:00 +0: loading test/focus_order_test.dart
+00:00 +0: ترتيب مفتاح Tab
+by position: pay -&gt; name -&gt; phone
+in order:    name -&gt; phone -&gt; pay
+00:01 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 11.3 · تحدٍّ</p>
+<h3>منتقي حجم الكوب الذي يشرح نفسه</h3>
+<p class="project-goal">منتقٍ مصنوع من ثلاث رقائق مستديرة مبنية بـ <code>GestureDetector</code>. اجعل كل رقاقة زراً، في مجموعة واحد منها مختار، بتسمية واضحة، وكبيرة بما يكفي للمس، وأثبت ذلك.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الـ Widget ‏<code>Semantics</code>، و<code>isSemantics</code>، و<code>tester.semantics.tap</code>، والإرشادات على مكوّن مصنوع.</p>
+<ol class="steps">
+<li>غلّف كل رقاقة بـ <code>Semantics</code> مع <code>button</code> و<code>selected</code> و<code>inMutuallyExclusiveGroup</code> وتسمية و<code>onTap</code>، واستبعد نص الرقاقة نفسه من الشجرة.</li>
+<li>في اختبار، افحص علامات الرقاقة المختارة وغير المختارة بـ <code>isSemantics</code>.</li>
+<li>اضغط «كبير» عبر شجرة الدلالات، كما يفعل النقر المزدوج لقارئ الشاشة، وتحقق أن الاختيار انتقل؛ ثم شغّل إرشادَي هدف اللمس والتباين.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/cup_size.dart (جزء)</div><pre class="code">          Semantics(
+            button: <span class="k">true</span>,
+            selected: i == chosen,
+            inMutuallyExclusiveGroup: <span class="k">true</span>,
+            label: <span class="s">&#x27;حجم الكوب: $size&#x27;</span>,
+            excludeSemantics: <span class="k">true</span>,
+            onTap: () =&gt; setState(() =&gt; chosen = i),</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-accessibility-ar-shots-cup-size.png" alt=""></div>
+<figcaption>المشروع 11.3: ثلاث رقائق، كل منها زر مسمّى</figcaption>
+</figure>
+</div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/cup_size_test.dart</span>
+00:00 +0: loading test/cup_size_test.dart
+00:00 +0: أحجام الكوب أزرار في مجموعة، واحد منها مختار
+a screen reader double-tap on كبير selected it, and وسط is no longer selected
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> قبل كتابة مكوّن مصنوع، تحقق إن كان مكوّن من Material يؤدي المهمة: <code>SegmentedButton</code> مجموعة أزرار قابلة للاختيار، وكل هذه الدلالات مبنية فيها.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أعطِ صورة القائمة المستعجلة معنى: لنقل إنها تُظهر المشروب في كوبه الحقيقي. ماذا يجب أن تكون دلالاتها الآن؟</li>
+<li><span class="level">سهل</span> زر الزائد في القائمة المتأنية يقول «أضف لاتيه». لماذا لا تكفي «أضف» وحدها، مع أنه في صف اللاتيه؟</li>
+<li><span class="level medium">متوسط</span> شجرة المتصفح تُظهر «القائمة» عنواناً (heading)، مع أن الكود لم يطلب ذلك. من جعله عنواناً؟ ثم اجعل المجموع منطقة حية (live region). ماذا يغيّر ذلك لمستخدم قارئ الشاشة؟</li>
+<li><span class="level medium">متوسط</span> اكتب اختباراً يفشل إن كان أي <code>IconButton</code> في التطبيق بلا tooltip. لماذا قد يكون أشد من <code>labeledTapTargetGuideline</code>؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب اختباراً يطبع القائمة المتأنية كلها كما يزورها قارئ الشاشة، بالعربية وبالإنجليزية، وقارن الترتيبين. أي العقد ينتقل، وأيها يبقى مكانه؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 12</p>
+<p>التطبيق الآن يعمل لكل من يفتحه. والفصل القادم عن اللحظات التي يكون فيها مغلقاً: إشعارات تعيد الناس إليه، وعمل يجري في الخلفية، ضمن الحدود الصارمة التي يضعها Android وiOS.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4795,6 +5280,16 @@ all                            56/64   88%</pre></div>
 <li>اعرض الشاشة ببديل <code>FakeMenu</code> لا يكتمل <code>Completer</code> فيه أبداً، ثم <code>expect(find.textContaining('Total'), findsNothing)</code> و<code>expect(find.byType(CircularProgressIndicator), findsOneWidget)</code> (والنص «المجموع» في النسخة العربية). وهو ينجح اليوم لأن المجموع يُبنى داخل فرع البيانات؛ والاختبار يضمن ألا ينقله أحد من هناك دون أن يلاحظ.</li>
 <li>حمّل ملف خط قبل أن يرسم الاختبار، واستخدمه في الثيم: <code>final loader = FontLoader('Roboto')..addFont(rootBundle.load('assets/fonts/Roboto-Regular.ttf')); await loader.load();</code>، مع <code>ThemeData(fontFamily: 'Roboto')</code>، والشيء نفسه لخط الأيقونات. فتكسب صوراً يراجعها المصمم، وتكشف مشكلات كنص يفيض أو ينكسر سطره. وتخاطر بصور ذهبية تختلف بين الأجهزة، لأن الخطوط الحقيقية تُرسم بتنعيم حواف يعتمد على المنصة: فولّد هذه الصور وقارنها على نوع واحد من الأجهزة، عادة جهاز CI.</li>
 <li>جهاز CI بنظام Linux يستطيع تشغيله كما فعل هذا الفصل: يحتاج Flutter، وأدوات سطح مكتب Linux (<code>clang</code> و<code>cmake</code> و<code>ninja-build</code> و<code>pkg-config</code> و<code>libgtk-3-dev</code>)، وشاشة افتراضية، ثم <code>xvfb-run flutter test integration_test -d linux</code>. البناء الأول يأخذ دقيقة أو اثنتين، وكل رحلة ثوانيَ قليلة؛ فأبقِ مجموعة طلب الدمج تحت عشر دقائق تقريباً، وشغّل الرحلات الأطول، أو الاختبارات نفسها على محاكي Android، بعد الدمج أو كل ليلة.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 11</h2>
+<ol class="exercises">
+<li>صارت تحمل معلومة، فيجب أن تبقى في الشجرة بوصف: <code>Image.asset('assets/latte.jpg', semanticLabel: 'لاتيه في كوبه الزجاجي الطويل')</code>، أو لصورة مرسومة كالتي في القائمة المستعجلة <code>Semantics(image: true, label: '…', child: …)</code> بدل <code>ExcludeSemantics</code>. صِف ما تضيفه الصورة، لا أنها صورة: قارئات الشاشة تقول «صورة» أصلاً.</li>
+<li>لأن مستخدمي قارئ الشاشة كثيراً ما يتنقلون حسب نوع العنصر لا حسب الصف: دوّار VoiceOver وتنقل TalkBack يقفزان من زر إلى زر، وAndroid وiOS يستطيعان عرض قائمة بكل أزرار الشاشة. وخارج صفوفها لا يمكن التمييز بين ثلاثة أزرار اسمها «أضف»؛ أما «أضف لاتيه» و«أضف شاي بالنعناع» و«أضف كيك الكرز» فيمكن.</li>
+<li><code>AppBar</code> هو من فعل ذلك: يعلّم عنوانه عنواناً يسمّي الصفحة، فحوّلته نسخة الويب إلى heading. وللمجموع، غلّفه بـ <code>Semantics(liveRegion: true, child: …)</code>: في Android يقرؤه TalkBack من جديد كلما تغيّر نصه، دون أن ينتقل المستخدم إليه. والمناطق الحية لا تُحترم بالطريقة نفسها في كل منصة، فللتغيير المهم أرسل إعلاناً أيضاً، كما في المشروع 11.1.</li>
+<li>اعثر على كل <code>IconButton</code> بـ <code>find.byType(IconButton)</code>، واقرأ <code>tester.widget&lt;IconButton&gt;(…).tooltip</code>، وأفشل الاختبار بقائمة ما ليس له tooltip. وهو أشد لأن <code>labeledTapTargetGuideline</code> يقبل أي تسمية من أي مصدر، وللأهداف المعروضة في ذلك الاختبار فقط؛ أما قاعدة الـ tooltip فتضمن أيضاً التسمية التي يراها المبصرون بالضغط المطوّل، وتشمل كل زر أيقونة يعرضه الاختبار، بثبات، قاعدةً للفريق.</li>
+<li>مرّ على الشجرة بترتيب التنقل (كما تفعل <code>heard</code> في اختبار ترتيب القراءة) واطبع كل اسم. لا شيء ينتقل: في اللغتين يُقرأ كل صف هكذا: المشروب، ثم «احفظ»، ثم «أضف»، والمجموع قبل «إتمام الطلب»، كما تُظهر أشجار المتصفح في هذا الفصل بالضبط. ففي العربية يُعكس الصف ويُقرأ بالاتجاه المعكوس، فيبقى الترتيب للسامع هو نفسه، وهذا ما يجب أن يعطيه إعداد صحيح من اليمين إلى اليسار. ومع <code>Directionality</code> وحدها كان كل صف سيُقرأ معكوساً.</li>
 </ol>
 
 </section>

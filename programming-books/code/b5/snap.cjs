@@ -69,6 +69,12 @@ async function serve() {
       const [kind, ...rest] = t.split('=');
       const name = rest.join('=');
       if (kind === 'wait') { await sleep(+name); continue; }
+      // aria=1: what a screen reader is given, as the browser's accessibility tree, saved as <out>-aria.txt.
+      if (kind === 'aria') {
+        fs.mkdirSync(path.dirname(out), { recursive: true });
+        fs.writeFileSync(out.replace(/\.png$/, '-aria.txt'), (await page.locator('body').ariaSnapshot()) + '\n');
+        continue;
+      }
       // film=6:300: six screenshots, one every 300 ms, saved as <out>-1.png … <out>-6.png (a filmstrip of a motion).
       // film=0,200,500: one screenshot at each of those moments, in ms after the step before it.
       if (kind === 'film') {
