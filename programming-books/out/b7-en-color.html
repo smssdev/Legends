@@ -1,0 +1,1175 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>AI for Developers</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "AI for Developers"; font: 700 8pt 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: How Large Language Models Work"; } }
+@page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: The AI Toolbox for Developers"; } }
+@page ch02:first { @top-center { content: none; } }
+@page preface { @top-center { content: "How to Use This Book"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "Answers to the Exercises"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">From Zero to Senior · Book 7</p>
+  <h1 class="cv-title">AI for Developers</h1>
+  <p class="cv-sub">Working Faster and Better with AI Tools, from Code to Daily Tasks</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="s"></span><span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+  contextSequence: context.getSequence(),
+});
+
+<span class="k">const</span> answer = <span class="k">await</span> session.prompt(
+  <span class="s">&quot;Explain this error in one line.&quot;</span>,
+  {temperature: <span class="n">0</span>});</pre></div><div class="cv-tracks"><span>AI</span><span>Prompts</span><span>Agents</span><span>Automation</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">All levels</span><span class="cv-author">Soliman Maged Saeed Salah</span></div>
+</div></section><section class="front half-title"><p class="ht">AI for Developers</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 7</p>
+          <h1 class="tp-title">AI for Developers</h1>
+          <p class="tp-sub">Working Faster and Better with AI Tools, from Code to Daily Tasks</p>
+          <p class="tp-level">All levels</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>AI for Developers</strong><br>Working Faster and Better with AI Tools, from Code to Daily Tasks</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
+          <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p"></span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">43</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">AI tools are now part of how software is made: they write first drafts of code, explain programs nobody remembers, find bugs, summarize meetings and answer questions at three in the morning. They are also confidently wrong, in ways that cost hours when nobody checks. This book teaches both halves: how to get real work out of these tools, and how to know when not to trust them. It is written for developers who finished <em>Code from Zero</em>, the first book of this series, and for anyone who works in a software team.</p>
+
+<h2 class="plain-h">What you need</h2>
+<ul>
+<li>Node.js 22, as in Book 1, and a code editor.</li>
+<li>A computer with 8 GB of memory and 4 GB of free disk space. That is enough to run the book’s AI model on your own machine: no graphics card, no account and no subscription.</li>
+<li>Optionally, the AI tools you already use (a chat assistant, an assistant in your editor, a coding agent). Every technique in the book applies to them, and the chapters say where they differ.</li>
+</ul>
+
+<h2 class="plain-h">Why a model on your own computer</h2>
+<p>Every example in this book talks to an open model, Qwen3-4B-Instruct, through the free <code>node-llama-cpp</code> package. It is downloaded once (2.5 GB) and then runs offline. That choice has four reasons. It is free, so you can run every example as often as you like. It is private: nothing you type leaves your computer. It lets you look inside, at tokens and probabilities that hosted services hide. And it is small, so it makes mistakes often enough to teach you to catch them. The large hosted models are stronger, but they work the same way and fail in the same ways, only less often, which makes their mistakes harder to notice.</p>
+
+<h2 class="plain-h">How the book is organised</h2>
+<p>The seventeen chapters are grouped in four parts. Read Part I first; the others can be read in any order after it.</p>
+<ul>
+<li><strong>Understanding AI</strong> explains what a language model really does, the kinds of tools built on it, and how to write instructions that work.</li>
+<li><strong>AI in your code</strong> covers the daily work of a developer: writing code with an assistant, reading unfamiliar code, debugging, tests, refactoring, review, documentation and commit messages.</li>
+<li><strong>AI in your work</strong> goes beyond code: turning ideas into specifications and tasks, meetings and reports, automating repetitive work, and agents that carry out several steps.</li>
+<li><strong>Building with AI</strong> puts a model inside your own programs: calling models, giving them your data, security, privacy and licensing, judgement, and a capstone assistant for your team.</li>
+</ul>
+
+<h2 class="plain-h">Every chapter</h2>
+<p>Each chapter follows the pattern of the series: what you will learn; explanations built on real examples; a quick check; boxes with tips, traps and professional habits; common mistakes; a summary; three practice projects (easy, medium and challenge); and exercises with answers at the end of the book.</p>
+
+<h2 class="plain-h">Real code, real answers</h2>
+<p>Every listing is a real file, and every answer the model gives in this book is the answer it really gave, recorded while the book was made, mistakes included. Most examples use temperature 0, so the model picks its most likely answer and you should see the same text with the same versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>node-llama-cpp</td><td>3.22.3</td></tr>
+<tr><td>Model</td><td>Qwen3-4B-Instruct-2507, 4-bit (Q4_K_M), Apache 2.0</td></tr>
+</tbody>
+</table>
+<p>On a different processor, a long answer can still differ in a word or two from the book’s; the lessons do not.</p>
+
+<h2 class="plain-h">Reading the examples</h2>
+<ul>
+<li>A dark tab above a listing gives the file’s path in the project.</li>
+<li>A box with three coloured dots is a terminal: a line starting with <code>$</code> is a command, the lines below are its answer.</li>
+<li>Every example imports <code>loadModel</code> from <code>lib/model.mjs</code>, the same ten lines in every chapter, shown in Chapter 1.</li>
+<li>Every example, project and exercise answer is in the book’s code repository, with the script that produced its output. Run them, change the prompts, and compare what you get.</li>
+</ul>
+
+<h2 class="plain-h">A word from the author</h2>
+<p>AI will not replace developers who understand their work. It will make those developers much faster, and it will make developers who stop thinking much more dangerous. This book is about being the first kind. Bit, the purple robot, has a new colleague in these pages: a model that talks well and is sometimes wrong. Learn to work with it the way you would with any clever, overconfident colleague: give it clear tasks, check its work, and keep the decisions for yourself.</p>
+
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b7/llm/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>How Large Language Models Work</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>run a real language model on your own computer from JavaScript</li>
+<li>see what a model actually computes: a probability for every possible next token</li>
+<li>count tokens, and know why the same sentence costs more in Arabic than in English</li>
+<li>control randomness with temperature and seeds</li>
+<li>read what a model file contains: parameters, vocabulary and context window</li>
+<li>recognise an invented answer, and know why models invent</li>
+</ul>
+</div>
+
+<p class="lead">A chat assistant feels like a person who has read everything. It is not, and the difference matters every time you use one. Under the conversation is a single, simple operation repeated very fast: look at the text so far, and score every possible next piece of text. Everything good about these tools comes from that operation, and so does everything that goes wrong. This chapter runs a real model, looks at its numbers, and builds the intuition the rest of the book relies on.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every answer in this chapter was produced by the book’s model, on an ordinary four-core processor with no graphics card, while the book was being made. Nothing was edited, including the answer at the end of Section 1.6 that I would rather the model had not given.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>A model on your computer</span></h2>
+
+<p>Create a folder, and install one package:</p>
+
+<pre class="plain" dir="ltr">npm init -y
+npm pkg set type=module
+npm install node-llama-cpp@3.22.3</pre>
+
+<p><code>node-llama-cpp</code> runs open models with <em>llama.cpp</em>, a fast engine written in C++, and gives them a JavaScript interface. Every example in the book loads its model through the same small file:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/model.mjs</div><pre class="code"><span class="c line-bidi">// The book&#x27;s model: Qwen3 4B Instruct (2507), an open model under the</span>
+<span class="c line-bidi">// Apache 2.0 license, quantized to 4 bits by Unsloth (2.5 GB). It is</span>
+<span class="c line-bidi">// downloaded once, the first time an example runs, into</span>
+<span class="c line-bidi">// ~/.node-llama-cpp/models; then everything runs on your computer, offline.</span>
+<span class="k">import</span> {getLlama, LlamaLogLevel, resolveModelFile} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> MODEL = <span class="s">&quot;hf:unsloth/Qwen3-4B-Instruct-2507-GGUF:Q4_K_M&quot;</span>;
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> loadModel() {
+  <span class="k">const</span> llama = <span class="k">await</span> getLlama({gpu: <span class="k">false</span>, logLevel: LlamaLogLevel.error});
+  <span class="k">return</span> llama.loadModel({modelPath: <span class="k">await</span> resolveModelFile(MODEL)});
+}</pre></div>
+
+<p><code>resolveModelFile</code> downloads the model from Hugging Face, a public library of open models, the first time, and finds it on disk after that. <code>gpu: false</code> runs on the processor, so the book’s numbers do not depend on a graphics card; if you have one, removing that option makes everything faster and changes nothing else.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>“Open model” means the trained numbers are published and you may run them yourself. Each one comes with a license, and they are not all alike: some forbid commercial use, some limit large companies, and some, like Apache 2.0, allow nearly anything. The book’s model was chosen for that license. Read it before you put any model in a product.</p></aside>
+
+<h2><span class="sec">1.2</span> <span>The only thing a model does</span></h2>
+
+<p>Give a model some text and it returns one thing: for every token it knows, the probability that it comes next. This program asks for those probabilities after an unfinished sentence and prints the eight highest:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">next.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">512</span>});
+<span class="k">const</span> sequence = context.getSequence();
+
+<span class="c line-bidi">// Everything a model does is this: given the tokens so far, a probability</span>
+<span class="c line-bidi">// for every possible next token.</span>
+<span class="k">const</span> prompt = <span class="s">&quot;The café sells coffee and&quot;</span>;
+<span class="k">const</span> tokens = model.tokenize(prompt);
+<span class="k">const</span> options = {probabilities: <span class="k">true</span>};
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> output <span class="k">of</span> sequence.evaluateWithMetadata(tokens, options)) {
+  <span class="k">const</span> {probabilities} = output;
+  console.log(<span class="s">`&quot;${prompt}&quot; ... 8 likely tokens, of ${probabilities.size}:`</span>);
+  <span class="k">for</span> (<span class="k">const</span> [token, probability] <span class="k">of</span> [...probabilities].slice(<span class="n">0</span>, <span class="n">8</span>)) {
+    <span class="k">const</span> piece = JSON.stringify(model.detokenize([token])).padEnd(<span class="n">14</span>);
+    <span class="k">const</span> percent = (probability * <span class="n">100</span>).toFixed(<span class="n">1</span>).padStart(<span class="n">5</span>);
+    <span class="k">const</span> bar = <span class="s">&quot;#&quot;</span>.repeat(Math.round(probability * <span class="n">40</span>));
+    console.log(<span class="s">`  ${piece} ${percent}%  ${bar}`</span>);
+  }
+  <span class="k">break</span>;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node next.mjs</span>
+&quot;The café sells coffee and&quot; ... 8 likely tokens, of 151936:
+  &quot; tea&quot;          40.4%  ################
+  &quot; past&quot;         14.9%  ######
+  &quot; don&quot;           9.2%  ####
+  &quot; cakes&quot;         5.9%  ##
+  &quot; milk&quot;          4.8%  ##
+  &quot; muff&quot;          4.1%  ##
+  &quot; cookies&quot;       2.6%  #
+  &quot; sandwiches&quot;    1.5%  #</pre></div>
+
+<p>Read the table slowly; most of this book is in it. The model does not know what this café sells. It has seen an enormous amount of text, and in that text “coffee and” is followed by “tea” far more often than by anything else. “ past” is the start of “pastries”, “ don” of “donuts”, “ muff” of “muffins”: the model scores pieces of words, not words. And it scores all 151,936 of them, every time. Nothing in the table is a fact about the café; it is a fact about text.</p>
+
+<p>A chat assistant is this, in a loop. It picks a token, appends it, asks for the probabilities again, and stops when it picks a special token that means “end”. A ten-line answer is a few hundred of these steps. The fluency comes from being very good at this one step; the mistakes come from the same place, because a fluent continuation and a true one are not the same thing.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>When an assistant gives an answer you did not expect, ask yourself: “what text usually follows a question like mine?” A vague question is followed, in the world’s text, by a generic answer. A question that contains your actual code, error and constraints is followed by something specific. Chapter 3 is built on that idea.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>Tokens</span></h2>
+
+<p>A model does not read letters or words. Its tokenizer cuts text into tokens from a fixed vocabulary: common words become one token, rare words several, and anything can always be spelled out piece by piece. This program cuts the same sentence in English and in Arabic:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tokens.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+
+<span class="c line-bidi">// The same sentence in two languages, and how the model cuts each into</span>
+<span class="c line-bidi">// tokens.</span>
+<span class="k">const</span> sentences = [
+  <span class="s">&quot;The café opens at 8:30 and closes at 22:00.&quot;</span>,
+  <span class="s">&quot;يفتح المقهى في 8:30 ويغلق في 22:00.&quot;</span>,
+];
+<span class="k">for</span> (<span class="k">const</span> sentence <span class="k">of</span> sentences) {
+  <span class="k">const</span> tokens = model.tokenize(sentence);
+  <span class="k">const</span> pieces = tokens.map((token) =&gt; model.detokenize([token]));
+  <span class="k">const</span> words = sentence.split(<span class="s">&quot; &quot;</span>).length;
+  <span class="k">const</span> size = <span class="s">`${sentence.length} characters, ${tokens.length} tokens`</span>;
+  console.log(<span class="s">`${words} words, ${size}`</span>);
+  console.log(<span class="s">&quot;  &quot;</span> + pieces.map((piece) =&gt; <span class="s">`[${piece}]`</span>).join(<span class="s">&quot;&quot;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node tokens.mjs</span>
+9 words, 43 characters, 19 tokens
+  [The][ café][ opens][ at][ ][8][:][3][0][ and][ closes][ at][ ][2][2][:][0][0][.]
+7 words, 35 characters, 22 tokens
+  [يف][تح][ الم][قه][ى][ في][ ][8][:][3][0][ وي][غل][ق][ في][ ][2][2][:][0][0][.]</pre></div>
+
+<p>Three things are worth seeing. Most English words are one token with their leading space. Numbers are cut into single digits: to this model, 22:00 is five tokens. And the Arabic sentence, two words shorter, takes more tokens: “يفتح” is two pieces and “المقهى” three. The vocabulary was built from text that is mostly English and Chinese, so Arabic words are less often whole entries.</p>
+
+<p>That matters because tokens are the unit of everything. Hosted models are priced per token; the context window, how much text a model can consider at once, is measured in tokens; and speed is tokens per second. Project 1.1 measures the difference on a full sentence: 1.18 tokens per English word, 2.63 per Arabic word. The same conversation in Arabic costs more, fills the window sooner and takes longer, with this model. Other models have other vocabularies, so measure the ones you use.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Counting letters, reversing words and doing arithmetic on long numbers are hard for models for the reason you just saw: the model never sees the letters, only the pieces. When you need an exact count, a sort or a sum, ask the model to write code that does it, and run the code.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does “ past” appear in a list of things a café sells?</li><li>A text has 1,000 English words. Roughly how many tokens is it for this model, and how many if it were 1,000 Arabic words?</li><li>Why is “how many letters are in this word?” harder for a model than “what does this word mean?”</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">1.4</span> <span>Temperature</span></h2>
+
+<p>The probabilities are fixed; how the next token is chosen from them is up to you. At temperature 0 the most likely token always wins. Higher temperatures flatten the probabilities and then draw at random, so less likely tokens get a chance. The seed fixes the random draw, so the same seed repeats the same choices:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">temperature.mjs</div><pre class="code"><span class="k">import</span> {LlamaCompletion} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">512</span>});
+<span class="k">const</span> completion = <span class="k">new</span> LlamaCompletion({
+  contextSequence: context.getSequence(),
+});
+
+<span class="c line-bidi">// Temperature 0 always takes the most likely token; higher temperatures</span>
+<span class="c line-bidi">// sample, so the answer changes with the seed.</span>
+<span class="k">const</span> request = <span class="s">&quot;A short, friendly name for a new café:&quot;</span>;
+<span class="k">for</span> (<span class="k">const</span> temperature <span class="k">of</span> [<span class="n">0</span>, <span class="n">1.2</span>]) {
+  console.log(<span class="s">`temperature ${temperature}:`</span>);
+  <span class="k">for</span> (<span class="k">const</span> seed <span class="k">of</span> [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>]) {
+    <span class="k">const</span> text = <span class="k">await</span> completion.generateCompletion(request, {
+      temperature,
+      seed,
+      maxTokens: <span class="n">12</span>,
+    });
+    console.log(<span class="s">`  seed ${seed}: ${text.trim().split(&quot;\n&quot;)[0]}`</span>);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node temperature.mjs</span>
+temperature 0:
+  seed 1: &quot;Brew &amp; Co.&quot;
+  seed 2: &quot;Brew &amp; Co.&quot;
+  seed 3: &quot;Brew &amp; Co.&quot;
+temperature 1.2:
+  seed 1: Coffee Bliss
+  seed 2: &quot;Quick Bites&quot;
+  seed 3: &quot;Penny&quot; — a nod to the famous &quot;P</pre></div>
+
+<p>At 0, three seeds give one name: the seed has nothing to decide. At 1.2, each seed gives a different name, and the third wanders off into an explanation. That is the trade-off in one screen. Low temperature is repeatable and safe; high temperature is varied and occasionally strange. For code, data extraction and anything a program will read, use 0 or close to it. For names, slogans and first ideas, a higher temperature gives you more to choose from.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>When an AI feature is part of your product, record the model, its version, the temperature and the prompt with every result you keep. When a user reports a strange answer, those four things are the difference between reproducing it in a minute and guessing for a day.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>What is inside the file</span></h2>
+
+<p>The model file carries a description of itself:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">model-info.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+
+<span class="c line-bidi">// What the model file says about itself.</span>
+<span class="k">const</span> {general, tokenizer} = model.fileInfo.metadata;
+console.log(<span class="s">`name:            ${general.name}`</span>);
+console.log(<span class="s">`size label:      ${general.size_label} parameters`</span>);
+<span class="k">const</span> gigabytes = (model.size / 1e9).toFixed(<span class="n">2</span>);
+console.log(<span class="s">`file:            ${gigabytes} GB (4-bit quantized)`</span>);
+console.log(<span class="s">`vocabulary:      ${tokenizer.ggml.tokens.length} tokens`</span>);
+console.log(<span class="s">`context window:  ${model.trainContextSize} tokens`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node model-info.mjs</span>
+name:            Qwen3-4B-Instruct-2507
+size label:      4B parameters
+file:            2.49 GB (4-bit quantized)
+vocabulary:      151936 tokens
+context window:  262144 tokens</pre></div>
+
+<ul>
+<li><strong>Parameters</strong> are the numbers learned in training: here about four billion. Training showed the model trillions of tokens of text and adjusted those numbers, again and again, so that its predictions of the next token got better. Everything the model “knows” is in them, as patterns, not as a list of facts it can look up.</li>
+<li><strong>4-bit quantized</strong> means each number is stored in about four bits instead of sixteen. The file is four times smaller and much faster, and a little less precise. That is why a 4-billion-parameter model fits in 2.5 GB.</li>
+<li><strong>The vocabulary</strong> is the tokenizer’s list: 151,936 pieces, the same number you saw in Section 1.2.</li>
+<li><strong>The context window</strong> is the most tokens the model can consider at once: the instructions, the conversation, any documents you paste and the answer, together. Anything outside it does not exist for the model. Our examples use small windows (512 or 2,048 tokens) because memory grows with the window.</li>
+</ul>
+
+<p>Two more facts follow from the training. A model’s knowledge stops at the date its training text was collected: it can be fluent about a library’s old version and know nothing of the current one. And a model has no memory between conversations: a chat assistant seems to remember because the application sends the earlier messages again, inside the context window, every time.</p>
+
+<h2><span class="sec">1.6</span> <span>Confident and wrong</span></h2>
+
+<p>The paper “Brewing Tokens” by Layla Hassan does not exist; it was made up for this section. This program asks the model to summarize it, once plainly and once with permission to say it is not sure:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">invent.mjs</div><pre class="code"><span class="k">import</span> {LlamaChatSession} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">2048</span>});
+
+<span class="k">const</span> ask =
+  <span class="s">&quot;Summarize the 2019 paper “Brewing Tokens” by Layla Hassan &quot;</span> +
+  <span class="s">&quot;in two sentences.&quot;</span>;
+<span class="k">const</span> doubt = <span class="s">&quot;If you are not sure the paper exists, say so.&quot;</span>;
+<span class="k">const</span> questions = [ask, <span class="s">`${ask} ${doubt}`</span>];
+<span class="k">for</span> (<span class="k">const</span> question <span class="k">of</span> questions) {
+  <span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+    contextSequence: context.getSequence(),
+    autoDisposeSequence: <span class="k">true</span>,
+  });
+  <span class="k">const</span> answer = <span class="k">await</span> session.prompt(question, {
+    temperature: <span class="n">0</span>,
+    maxTokens: <span class="n">120</span>,
+  });
+  console.log(<span class="s">`&gt; ${question}\n${answer}\n`</span>);
+  session.dispose();
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node invent.mjs</span>
+<span class="c">&gt; </span><span class="k">Summarize the 2019 paper “Brewing Tokens” by Layla Hassan in two sentences.</span>
+There is no known paper titled “Brewing Tokens” by Layla Hassan from 2019. It is possible that the title or author is misremembered or fictional. I recommend verifying the details of the paper with a reliable academic database or source.
+
+<span class="c">&gt; </span><span class="k">Summarize the 2019 paper “Brewing Tokens” by Layla Hassan in two sentences. If you are not sure the paper exists, say so.</span>
+There is no known paper titled “Brewing Tokens” by Layla Hassan from 2019. It is possible that the title or author is misremembered or fictional. I recommend verifying the details with a reliable academic database or source.</pre></div>
+
+<p>In English, the model did well: it said, both times, that it knows no such paper. Then the same question was asked in Arabic, for the Arabic edition of this book, with the same model at the same temperature. The first time, it wrote a fluent two-sentence summary of the paper’s findings, about how symbols are “fermented” through context and personal experience, with nothing to say it was invented. Only the second question, the one that gave it permission to doubt, got the honest answer.</p>
+
+<p>This is what people call a <em>hallucination</em>, and Section 1.2 already explained it. The model is not looking anything up. It is producing the most likely continuation of the text, and the most likely continuation of “summarize this paper” is a summary. Whether it refuses depends on whether refusing was common, in its training, after text like yours: in English, where it was trained on more examples of “there is no such paper”, it refused; in Arabic it did not. The model gave no sign of which answer was true. It never does: a wrong answer comes out as fluently as a right one.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The most dangerous inventions are the plausible ones: a function that sounds like it belongs to a library, a configuration option with the right naming style, a reference to a real-looking source. Before you rely on any name, number, quotation or link from a model, check it where it is defined: the documentation, the code, the source itself.</p></aside>
+
+<p>Larger hosted models invent less often, and many can now search the web or read your files, which helps a great deal. None of that changes the mechanism. Throughout this book, you will use three defences, and this section has already shown two of them: give the model the facts instead of asking it to remember them (Chapter 14), allow and ask for “I don’t know” (Chapter 3), and check what matters (every chapter).</p>
+
+<h2><span class="sec">1.7</span> <span>What this means for a developer</span></h2>
+
+<table>
+<thead><tr><th>Because a model…</th><th>…you should</th></tr></thead>
+<tbody>
+<tr><td>continues text the way text usually continues</td><td>give it specific text to continue: your code, your error, your constraints</td></tr>
+<tr><td>sees tokens, not letters</td><td>ask for code to count, sort and calculate, and run that code</td></tr>
+<tr><td>only knows what was in its training and its context</td><td>paste the current documentation and code; do not trust its memory of versions</td></tr>
+<tr><td>has no memory between conversations</td><td>put everything it needs in the conversation, every time</td></tr>
+<tr><td>samples at random above temperature 0</td><td>use temperature 0 for anything a program reads, and record your settings</td></tr>
+<tr><td>sounds equally sure when it is wrong</td><td>check names, numbers and claims against their source</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Treating the model as a database</td><td>Invented facts, versions and references</td><td>Give it the facts in the prompt, and check what it returns</td></tr>
+<tr><td>Judging cost by words</td><td>Arabic text costs twice what you planned</td><td>Count tokens with the model’s own tokenizer</td></tr>
+<tr><td>Asking a model to count or calculate</td><td>Answers that are close but wrong</td><td>Ask for code, and run it</td></tr>
+<tr><td>High temperature for structured output</td><td>Output that breaks a parser one run in ten</td><td>Temperature 0, and a schema (Chapter 13)</td></tr>
+<tr><td>Assuming the model remembers yesterday</td><td>Instructions that silently disappear</td><td>Resend what matters; keep it in a file you paste</td></tr>
+<tr><td>Ignoring the model’s license</td><td>A product built on a model you may not sell</td><td>Read the license before you choose a model</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A language model does one thing: given the tokens so far, it gives a probability to every possible next token. Generation repeats that, one token at a time.</li>
+<li>Tokens are pieces of words from a fixed vocabulary. They are the unit of price, context and speed, and the same text can need very different numbers of them in different languages.</li>
+<li>Temperature decides how the next token is chosen: 0 for the most likely, higher for variety. A seed makes random choices repeatable.</li>
+<li>Parameters hold what the model learned, as patterns. Its knowledge stops at its training date, and it remembers nothing between conversations.</li>
+<li>Models invent fluent answers when the likely continuation is not the true one. Give them facts, let them say “I don’t know”, and check what matters.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It is the first token of “pastries”: the model scores pieces of words, and “ past” starts a likely word. 2. About 1,180 tokens for English (1.18 per word) and about 2,630 for Arabic (2.63 per word), with this model; other models differ. 3. The model never sees letters, only tokens that may hold several letters each; meaning, on the other hand, is exactly what it learned from seeing words in context.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The three projects measure tokens, watch generation step by step, and build a tiny language model with no neural network at all.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>A token counter</h3>
+<p class="project-goal">A command that tells you how many tokens a text is, per word, and what it would cost.</p>
+<p class="project-skills"><strong>You will practise:</strong> the tokenizer, command-line arguments, and the price of a prompt.</p>
+<ol class="steps">
+<li>Join the command’s arguments into one text and tokenize it with the model.</li>
+<li>Print the words, the tokens and the ratio, and a price at an example rate.</li>
+<li>Run it on the same sentence in English and in Arabic.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">count.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+
+<span class="c line-bidi">// An example price per million input tokens, to compare; real prices</span>
+<span class="c line-bidi">// differ by provider and model.</span>
+<span class="k">const</span> dollarsPerMillion = <span class="n">3</span>;
+
+<span class="c line-bidi">// Tokens are what you pay for and what fills the context: count them</span>
+<span class="c line-bidi">// before you send.</span>
+<span class="k">const</span> text = process.argv.slice(<span class="n">2</span>).join(<span class="s">&quot; &quot;</span>);
+<span class="k">const</span> tokens = model.tokenize(text).length;
+<span class="k">const</span> words = text.trim().split(/\s+/).length;
+<span class="k">const</span> perWord = (tokens / words).toFixed(<span class="n">2</span>);
+<span class="k">const</span> price = ((tokens * dollarsPerMillion) / 1e6).toFixed(<span class="n">6</span>);
+console.log(<span class="s">`${words} words -&gt; ${tokens} tokens (${perWord} per word)`</span>);
+console.log(<span class="s">`at $${dollarsPerMillion} per million tokens: $${price}`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node count.mjs &quot;The café opens at eight and sells coffee, tea and cake.&quot; &amp;&amp; node count.mjs &quot;يفتح المقهى في الثامنة ويبيع القهوة والشاي والكيك.&quot;</span>
+11 words -&gt; 13 tokens (1.18 per word)
+at $3 per million tokens: $0.000039
+8 words -&gt; 21 tokens (2.63 per word)
+at $3 per million tokens: $0.000063</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.2 · Medium</p>
+<h3>Watch the loop</h3>
+<p class="project-goal">Let the model continue a sentence for eight tokens, and print each choice with the probability it had.</p>
+<p class="project-skills"><strong>You will practise:</strong> evaluating a sequence token by token, and reading the model’s confidence.</p>
+<ol class="steps">
+<li>Tokenize the prompt and pass it to <code>evaluateWithMetadata</code> with <code>confidence: true</code>.</li>
+<li>Each value the loop gives you is the token chosen next; print it and its probability.</li>
+<li>Stop after eight steps.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">generate.mjs</div><pre class="code"><span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">512</span>});
+<span class="k">const</span> sequence = context.getSequence();
+
+<span class="c line-bidi">// Generation is a loop: predict, choose, append, repeat. Here each choice</span>
+<span class="c line-bidi">// is shown with its probability.</span>
+<span class="k">const</span> prompt = model.tokenize(<span class="s">&quot;The café sells coffee and&quot;</span>);
+<span class="k">let</span> step = <span class="n">0</span>;
+<span class="k">const</span> options = {confidence: <span class="k">true</span>};
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> output <span class="k">of</span> sequence.evaluateWithMetadata(prompt, options)) {
+  <span class="k">const</span> piece = JSON.stringify(model.detokenize([output.token])).padEnd(<span class="n">14</span>);
+  <span class="k">const</span> percent = (output.confidence * <span class="n">100</span>).toFixed(<span class="n">1</span>);
+  console.log(<span class="s">`step ${++step}: ${piece} ${percent}%`</span>);
+  <span class="k">if</span> (step === <span class="n">8</span>) {
+    <span class="k">break</span>;
+  }
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node generate.mjs</span>
+step 1: &quot; tea&quot;         40.4%
+step 2: &quot;.&quot;            74.4%
+step 3: &quot; The&quot;         32.4%
+step 4: &quot; coffee&quot;      32.2%
+step 5: &quot; is&quot;          67.2%
+step 6: &quot; priced&quot;      48.6%
+step 7: &quot; at&quot;          99.7%
+step 8: &quot; $&quot;           94.5%</pre></div>
+<p class="hint"><strong>Hint:</strong> look at the probabilities. “ tea” was chosen at 40%, an open choice; “ at” after “is priced” was 99.7%, no choice at all. A model is most likely to go wrong at the low-probability steps, and that is where a different temperature changes the answer.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 1.3 · Challenge</p>
+<h3>A language model in thirty lines</h3>
+<p class="project-goal">Count which word follows which in a small text, then generate sentences by picking each next word from those counts.</p>
+<p class="project-skills"><strong>You will practise:</strong> maps of counts, weighted random choice, and a seeded random generator.</p>
+<ol class="steps">
+<li>Split the text into words; for each word, count the words that follow it.</li>
+<li>Print the followers of the start word as percentages: that is your model’s “next-token table”.</li>
+<li>Generate three sentences, choosing each word in proportion to its count, until a full stop.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">bigram.mjs (part)</div><pre class="code"><span class="k">const</span> next = <span class="k">new</span> Map();
+<span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; words.length - <span class="n">1</span>; i++) {
+  <span class="k">const</span> followers = next.get(words[i]) ?? <span class="k">new</span> Map();
+  followers.set(words[i + <span class="n">1</span>], (followers.get(words[i + <span class="n">1</span>]) ?? <span class="n">0</span>) + <span class="n">1</span>);
+  next.set(words[i], followers);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node bigram.mjs</span>
+after &quot;the&quot;: café 50%, barista 33%, morning 17%
+the café opens at night .
+the café sells cake .
+the café opens at eight .</pre></div>
+<p class="hint"><strong>Hint:</strong> “the café opens at night” is not in the text. Your thirty-line model invented it from two true sentences, exactly as Section 1.6’s model invented a paper. The real model looks at thousands of tokens instead of one word, which makes its inventions far more convincing.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change the prompt in <code>next.mjs</code> to “The café sells coffee and tea. It opens at”. Before you run it, write the three tokens you expect at the top.</li>
+<li><span class="level">Easy</span> Run <code>count.mjs</code> on a function from your own code. Is code cheaper or more expensive per word than English prose, and why?</li>
+<li><span class="level medium">Medium</span> In <code>temperature.mjs</code>, try temperatures 0.3 and 0.7 with the same three seeds. At what temperature do the names start to differ?</li>
+<li><span class="level medium">Medium</span> Ask the model, at temperature 0, for the default port of a well-known tool you use, and for the default port of a made-up one. Compare the two answers. What would let you tell which is real without knowing in advance?</li>
+<li><span class="level hard">Challenge</span> Change <code>bigram.mjs</code> to use the two previous words instead of one. What happens to the sentences, and what does that tell you about why real models look at so much context?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+<p>You know what is inside every AI tool. The next chapter surveys the tools themselves, from chat assistants to editor completions to agents that run commands, and shows what each is good at, what it costs and what it sees of your code.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b7/tools/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>The AI Toolbox for Developers</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise the three shapes every AI tool takes: a chat, a completion in your editor, and an agent</li>
+<li>see what a chat really sends each time, and why a new conversation forgets everything</li>
+<li>build a fill-in-the-middle completion, the way an editor assistant does</li>
+<li>give a model tools, and watch it decide when to use them</li>
+<li>measure speed and size: time to the first token, tokens per second, and how much code fits</li>
+<li>choose the right tool for a task, and know what each one sends out of your computer</li>
+</ul>
+</div>
+
+<p class="lead">There are hundreds of AI products for developers, and new ones every month. Their names change faster than any book. What does not change is how they are built: each one is a language model, like the one in Chapter 1, wrapped in one of three shapes. Learn the shapes and you can judge any new tool in an afternoon: what it is good at, what it costs, and what it can see. This chapter builds a small version of each shape with the book’s model, so that nothing about them is magic.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The agent in this chapter failed the first time I ran it, in an instructive way, and the model got a multiplication wrong in one language and right in the other. Both runs are in the chapter, unedited.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>Three shapes</span></h2>
+
+<table>
+<thead><tr><th>Shape</th><th>What you give it</th><th>What it gives back</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td>Chat</td><td>A conversation</td><td>The next message</td><td>ChatGPT, Claude, Gemini</td></tr>
+<tr><td>Completion</td><td>The code around your cursor</td><td>The code that goes there</td><td>Suggestions in your editor, as in GitHub Copilot</td></tr>
+<tr><td>Agent</td><td>A goal, and tools</td><td>Actions, then an answer</td><td>Claude Code, coding agents in editors and on the command line</td></tr>
+</tbody>
+</table>
+
+<p>Many products offer two or all three: a chat panel, completions while you type, and an agent mode. Underneath, each is the same loop from Chapter 1, predicting one token at a time. What differs is what is put into the context, and what is done with the answer.</p>
+
+<h2><span class="sec">2.2</span> <span>Chat: the whole conversation, every time</span></h2>
+
+<p>A chat session in <code>node-llama-cpp</code> keeps the conversation for you. This program asks two questions in one session, prints how many tokens the context holds after each answer, and then asks the second question again, in a new session:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">chat.mjs</div><pre class="code"><span class="k">import</span> {LlamaChatSession} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">2048</span>});
+<span class="k">const</span> options = {temperature: <span class="n">0</span>, maxTokens: <span class="n">120</span>};
+<span class="k">const</span> systemPrompt = <span class="s">&quot;You are a concise assistant for JavaScript developers. Answer in at most two lines.&quot;</span>;
+
+<span class="c line-bidi">// The model remembers nothing: every turn, the whole conversation is sent</span>
+<span class="c line-bidi">// again.</span>
+<span class="k">const</span> sequence = context.getSequence();
+<span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({contextSequence: sequence, systemPrompt});
+<span class="k">for</span> (<span class="k">const</span> question <span class="k">of</span> [<span class="s">&quot;How do I read a JSON file in Node?&quot;</span>, <span class="s">&quot;And how do I write one?&quot;</span>]) {
+  <span class="k">const</span> answer = <span class="k">await</span> session.prompt(question, options);
+  <span class="c line-bidi">// How many tokens the conversation now takes in the context.</span>
+  console.log(<span class="s">`&gt; ${question}\n${answer}\n[${sequence.nextTokenIndex} tokens]\n`</span>);
+}
+
+sequence.dispose();
+console.log(<span class="s">&quot;A new conversation, asked only the second question:&quot;</span>);
+<span class="k">const</span> fresh = <span class="k">new</span> LlamaChatSession({
+  contextSequence: context.getSequence(),
+  systemPrompt,
+});
+console.log(<span class="s">`&gt; And how do I write one?\n${await fresh.prompt(&quot;And how do I write one?&quot;, options)}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node chat.mjs</span>
+<span class="c">&gt; </span><span class="k">How do I read a JSON file in Node?</span>
+Use `fs.readFileSync()` to read the file and `JSON.parse()` to parse it:  
+`const data = JSON.parse(fs.readFileSync(&#x27;file.json&#x27;, &#x27;utf8&#x27;));`
+[75 tokens]
+
+<span class="c">&gt; </span><span class="k">And how do I write one?</span>
+Use `fs.writeFileSync()` to write JSON data:  
+`fs.writeFileSync(&#x27;file.json&#x27;, JSON.stringify(data, null, 2));`
+[120 tokens]
+
+A new conversation, asked only the second question:
+<span class="c">&gt; </span><span class="k">And how do I write one?</span>
+Use `const myVariable = value;` to declare a variable.  
+For functions, use `function name() { /* code */ }` or `const name = () =&gt; { /* code */ }`.</pre></div>
+
+<p>“And how do I write one?” only makes sense after the first question, and in the first session the model understood it: write a JSON file. The context had grown from 75 to 120 tokens, because the system prompt, the first question, the first answer and the second question were all in it. In the new session, the same five words meant nothing in particular, and the model answered a different question with confidence: how to write a variable.</p>
+
+<p>Every chat product works this way. The model remembers nothing; the application sends the conversation again with each message. Three practical rules follow:</p>
+<ul>
+<li>A long conversation gets slower and, with hosted models, more expensive with every message, because every message resends all the earlier ones.</li>
+<li>When the conversation outgrows the context window, the application must drop or summarise the oldest messages, and the model then forgets what you said at the start.</li>
+<li>When an assistant starts to confuse an old task with a new one, start a new conversation. It is not rude; it is a clean context.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>The <em>system prompt</em> is the instruction placed before the conversation: here, “a concise assistant for JavaScript developers, at most two lines”. Chat products let you set one, often called custom instructions or a project prompt. Put there what is true for every question: your language, your framework and versions, how long answers should be. Then you do not repeat it in every message.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>Completion: the code around your cursor</span></h2>
+
+<p>An editor assistant does not chat. As you type, it sends the code before the cursor and the code after it, and asks the model for the piece in between. This is called <em>fill in the middle</em>, and some models, like the book’s, were trained for it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">complete.mjs</div><pre class="code"><span class="k">import</span> {LlamaCompletion} <span class="k">from</span> <span class="s">&quot;node-llama-cpp&quot;</span>;
+<span class="k">import</span> {loadModel} <span class="k">from</span> <span class="s">&quot;./lib/model.mjs&quot;</span>;
+
+<span class="k">const</span> model = <span class="k">await</span> loadModel();
+<span class="k">const</span> context = <span class="k">await</span> model.createContext({contextSize: <span class="n">1024</span>});
+<span class="k">const</span> completion = <span class="k">new</span> LlamaCompletion({
+  contextSequence: context.getSequence(),
+});
+
+<span class="c line-bidi">// An editor sends the code before and after the cursor, and asks for the</span>
+<span class="c line-bidi">// middle.</span>
+<span class="k">const</span> before = <span class="s">`// Total price of an order, with tax.
+export function total(items, taxRate) {
+`</span>;
+<span class="k">const</span> after = <span class="s">`
+}
+
+export const TAX_RATE = 0.14;
+`</span>;
+
+<span class="c line-bidi">// Raw, the model keeps writing past the function; an editor stops at the</span>
+<span class="c line-bidi">// end of the block.</span>
+<span class="k">for</span> (<span class="k">const</span> stop <span class="k">of</span> [[], [<span class="s">&quot;\n}&quot;</span>]]) {
+  <span class="k">const</span> middle = <span class="k">await</span> completion.generateInfillCompletion(before, after, {
+    temperature: <span class="n">0</span>,
+    maxTokens: <span class="n">60</span>,
+    customStopTriggers: stop,
+  });
+  console.log(stop.length ? <span class="s">&quot;--- stopped at the block&#x27;s end:&quot;</span> : <span class="s">&quot;--- raw:&quot;</span>);
+  console.log(middle.replace(/^\n/, <span class="s">&quot;&quot;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node complete.mjs</span>
+--- raw:
+  let total = 0;
+  for (const item of items) {
+    total += item.price * item.quantity;
+  }
+  return total * (1 + taxRate);
+}
+
+--- stopped at the block&#x27;s end:
+  let total = 0;
+  for (const item of items) {
+    total += item.price * item.quantity;
+  }
+  return total * (1 + taxRate);</pre></div>
+
+<p>The middle is reasonable code, but look at the end of the raw answer: a closing brace. The code after the cursor already has one, so accepting the raw text would leave two and break the file. The second run stops when the model writes a newline and a brace at the start of a line, which is what an editor does in its own way: it trims, checks the brackets, and shows only what fits.</p>
+
+<p>Notice also what the model assumed. The comment says “total price of an order” and nothing more, so it invented the shape of an item: <code>item.price</code> and <code>item.quantity</code>. If your items have <code>count</code>, the suggestion is wrong, and it looks exactly like right code. A completion knows only what is near the cursor, plus whatever other files the editor chose to send. Open the files it should know about, and name things clearly: the clearer the code around the cursor, the better the suggestion.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Completions arrive one Tab away, many times an hour. That is what makes them useful, and what makes them easy to accept without reading. Read each one as you would read a colleague’s code in review: the names, the edge cases, the units. A wrong field name accepted at 4 p.m. is a bug report at 9 a.m.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did the fresh session answer a different question?</li><li>Why can a chat with a hosted model get more expensive with every message?</li><li>What two pieces of text does an editor send for a completion?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>Agents: a model that uses tools</span></h2>
+
+<p>An agent is a model that can ask your program to do things. You describe some functions; the model may answer with a call instead of text; your program runs the call and gives the result back; and the model continues, until it answers. Here the agent may list and read the files of a small project, and every call is printed:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">agent.mjs (part)</div><pre class="code"><span class="k">const</span> functions = {
+  listFiles: defineChatSessionFunction({
+    description: <span class="s">&quot;List the files of the project&quot;</span>,
+    handler() {
+      <span class="k">return</span> show(<span class="s">&quot;listFiles&quot;</span>, {}, fs.readdirSync(<span class="s">&quot;cafe&quot;</span>, {recursive: <span class="k">true</span>}));
+    },
+  }),
+  readFile: defineChatSessionFunction({
+    description: <span class="s">&quot;Read one file of the project&quot;</span>,
+    params: {<span class="k">type</span>: <span class="s">&quot;object&quot;</span>, properties: {path: {<span class="k">type</span>: <span class="s">&quot;string&quot;</span>}}},
+    handler({path}) {
+      <span class="k">return</span> show(<span class="s">&quot;readFile&quot;</span>, {path}, fs.readFileSync(<span class="s">`cafe/${path}`</span>, <span class="s">&quot;utf8&quot;</span>));
+    },
+  }),
+};
+
+<span class="c line-bidi">// Show every call, so we can see what the agent did, not only what it</span>
+<span class="c line-bidi">// said.</span>
+<span class="k">function</span> show(name, params, result) {
+  console.log(<span class="s">`[tool] ${name}(${JSON.stringify(params)})`</span>);
+  <span class="k">return</span> result;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">agent.mjs (part)</div><pre class="code"><span class="k">const</span> tries = [
+  [<span class="k">undefined</span>, <span class="s">&quot;What does a large latte cost, and which file sets that price?&quot;</span>],
+  [<span class="s">&quot;You work inside a software project. Use the tools to look at its files before you answer.&quot;</span>, <span class="s">&quot;In this project, what does a large latte cost, and which file sets that price?&quot;</span>],
+];
+<span class="k">for</span> (<span class="k">const</span> [systemPrompt, question] <span class="k">of</span> tries) {
+  <span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+    contextSequence: context.getSequence(),
+    autoDisposeSequence: <span class="k">true</span>,
+    systemPrompt,
+  });
+  console.log(<span class="s">`--- system prompt: ${systemPrompt ?? &quot;(default)&quot;}`</span>);
+  console.log(<span class="s">`&gt; ${question}`</span>);
+  console.log(<span class="k">await</span> session.prompt(question, {functions, temperature: <span class="n">0</span>}));
+  session.dispose();
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node agent.mjs</span>
+--- system prompt: (default)
+<span class="c">&gt; </span><span class="k">What does a large latte cost, and which file sets that price?</span>
+I cannot determine the cost of a large latte or identify which file contains that information, as no relevant data or files have been provided. Please provide more context or specific files to analyze.
+--- system prompt: You work inside a software project. Use the tools to look at its files before you answer.
+<span class="c">&gt; </span><span class="k">In this project, what does a large latte cost, and which file sets that price?</span>
+[tool] listFiles({})
+[tool] readFile({&quot;path&quot;:&quot;menu.json&quot;})
+[tool] readFile({&quot;path&quot;:&quot;src/prices.mjs&quot;})
+I need to find information about the cost of a large latte in this project. Let me start by listing the files to see what we&#x27;re working with.
+
+I see the project has several files. Since we&#x27;re looking for the price of a large latte, I should check the menu-related files. Let me examine the menu.json file first, as it&#x27;s likely to contain pricing information.
+
+I see that the menu.json file contains information about available drinks and sizes, but it doesn&#x27;t include specific prices. Let me check the prices.mjs file in the src directory, as it&#x27;s likely to contain the actual pricing information.
+
+Based on the prices.mjs file, a large latte costs $4.50. This pricing information is set in the src/prices.mjs file, which contains the complete price structure for various drinks and sizes.</pre></div>
+
+<p>The first attempt is the instructive failure. The tools were there, and the model did not use them: nothing in the question said it was about a project, so the most likely answer was “I have no data”. The second attempt changed two things, a system prompt that says what the tools are for and a question that says “in this project”, and the model went to work: it listed the files, read <code>menu.json</code> because it looked promising, found no prices there, read <code>src/prices.mjs</code>, and answered correctly, naming the file.</p>
+
+<p>That is the whole idea of every coding agent, from the small one here to the products that edit whole repositories. The model plans; your program acts; the results go back into the context. Three consequences matter more than any feature list:</p>
+<ul>
+<li><strong>An agent can only be as good as its instructions and tools.</strong> The same model failed and succeeded with the same tools; only the words changed. Chapter 3 is about those words.</li>
+<li><strong>Tools are permissions.</strong> This agent can only read, inside one folder. An agent that can write files, run commands or call services can do damage when it is wrong. Give it the least it needs, and review what it did. Chapter 12 goes further.</li>
+<li><strong>Show the calls.</strong> The <code>[tool]</code> lines are how you know the answer came from the file, not from the model’s imagination. Good agent products show every step for the same reason.</li>
+</ul>
+
+<h2><span class="sec">2.5</span> <span>Speed</span></h2>
+
+<p>Two numbers describe how fast a model feels: how long until the first token appears, and how many tokens follow per second.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">speed.mjs (part)</div><pre class="code"><span class="k">const</span> start = performance.now();
+<span class="k">let</span> first = <span class="n">0</span>;
+<span class="k">let</span> tokens = <span class="n">0</span>;
+<span class="k">await</span> completion.generateCompletion(<span class="s">&quot;A short story about a café robot:&quot;</span>, {
+  temperature: <span class="n">0</span>,
+  maxTokens: <span class="n">64</span>,
+  onToken(chunk) {
+    first ||= performance.now();
+    tokens += chunk.length;
+  },
+});
+<span class="k">const</span> seconds = (performance.now() - first) / <span class="n">1000</span>;
+console.log(<span class="s">`first token after ${Math.round(first - start)} ms`</span>);
+console.log(<span class="s">`${tokens} tokens at ${(tokens / seconds).toFixed(1)} tokens/s`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node speed.mjs</span>
+first token after 278 ms
+64 tokens at 7.7 tokens/s</pre></div>
+
+<p>On the book’s computer, a four-core processor with no graphics card, the first token comes in about a quarter of a second, and then eight tokens a second follow: a two-line answer in a few seconds, a full page in a couple of minutes. That is enough to learn with and to run small tasks, and it is why the book’s examples ask for short answers. Hosted models run on racks of accelerators and are usually many times faster, and a graphics card speeds a local model up a great deal. For completions in an editor, speed is everything: a suggestion that arrives after you have typed the line is useless, which is why editor tools use small, fast models and only a little context.</p>
+
+<h2><span class="sec">2.6</span> <span>What the tool can see</span></h2>
+
+<p>An assistant can only use what is in its context. How much is that, against a real code base? This program counts the tokens in one library, <code>node-llama-cpp</code> itself:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">context.mjs (part)</div><pre class="code"><span class="c line-bidi">// How much text a real library is, against the size of a context window.</span>
+<span class="k">const</span> folder = <span class="s">&quot;node_modules/node-llama-cpp/dist&quot;</span>;
+<span class="k">let</span> files = <span class="n">0</span>;
+<span class="k">let</span> tokens = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> name <span class="k">of</span> fs.readdirSync(folder, {recursive: <span class="k">true</span>})) {
+  <span class="k">if</span> (name.endsWith(<span class="s">&quot;.js&quot;</span>)) {
+    <span class="k">const</span> text = fs.readFileSync(path.join(folder, name), <span class="s">&quot;utf8&quot;</span>);
+    files++;
+    tokens += model.tokenize(text).length;
+  }
+}
+console.log(<span class="s">`node-llama-cpp: ${files} JavaScript files, ${tokens} tokens`</span>);
+<span class="k">for</span> (<span class="k">const</span> window <span class="k">of</span> [8_192, 128_000, 1_000_000]) {
+  <span class="k">const</span> share = Math.min(<span class="n">100</span>, (<span class="n">100</span> * window) / tokens).toFixed(<span class="n">0</span>);
+  console.log(<span class="s">`a ${window}-token window holds ${share}% of it`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node context.mjs</span>
+node-llama-cpp: 290 JavaScript files, 410493 tokens
+a 8192-token window holds 2% of it
+a 128000-token window holds 31% of it
+a 1000000-token window holds 100% of it</pre></div>
+
+<p>One mid-sized library is about 410,000 tokens. An 8,000-token window holds 2% of it; even a 128,000-token window, common in hosted models, holds less than a third. Your application, with its dependencies, is far larger. So every tool that works with code must <em>choose</em> what to send: the open files, files with similar names, the results of a search, the files an agent decided to read. When an assistant gets your code wrong, the first question is not “is the model clever enough?” but “did it see the right files?”</p>
+
+<p>And whatever a hosted tool sends leaves your computer. Before you use one at work, find out three things: what it sends (the current file, open files, the whole repository), where it goes and whether it is kept, and whether your company allows it. Chapter 15 covers this in detail; the short rule is that a secret in a file is a secret sent to the tool.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Keep secrets out of the files an assistant can see: in environment variables or a secret manager, never in the code, and never in a file you paste into a chat. Most tools also let you exclude files or folders; exclude anything that holds keys, customer data or configuration for production.</p></aside>
+
+<h2><span class="sec">2.7</span> <span>Choosing a tool</span></h2>
+
+<table>
+<thead><tr><th>Task</th><th>Best shape</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Writing the next few lines</td><td>Completion</td><td>It sees the code around the cursor and answers instantly</td></tr>
+<tr><td>Understanding an error or an idea</td><td>Chat</td><td>You can ask, read, and ask again</td></tr>
+<tr><td>A change across several files</td><td>Agent</td><td>It can find and read the files itself, and make the edits</td></tr>
+<tr><td>A question about your own project</td><td>Agent, or chat with the files pasted</td><td>The answer is in your files, not in the model’s training</td></tr>
+<tr><td>Exact arithmetic, counts, sorting</td><td>A tool the model calls, or code you run</td><td>Models predict text; programs calculate (Project 2.3)</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>One endless chat for every task</td><td>Slow, costly answers mixed up with old tasks</td><td>A new conversation for each new task</td></tr>
+<tr><td>A follow-up in a new conversation</td><td>An answer to a different question</td><td>Give the full question, or continue the old conversation</td></tr>
+<tr><td>Accepting completions unread</td><td>Wrong field names and units that look right</td><td>Read each suggestion like code in review</td></tr>
+<tr><td>Tools without instructions</td><td>An agent that never uses them</td><td>Say what the tools are for, and what the question is about</td></tr>
+<tr><td>Giving an agent every permission</td><td>Damage when the model is wrong</td><td>The fewest tools it needs; review its actions</td></tr>
+<tr><td>Assuming the tool sees your project</td><td>Answers about code it never read</td><td>Open or paste the relevant files; ask what it read</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Every AI tool is a model in one of three shapes: a chat, a completion, or an agent with tools.</li>
+<li>A chat resends the whole conversation each time; the model remembers nothing, so a new conversation starts from zero.</li>
+<li>An editor completion fills the middle between the code before and after the cursor, and must be trimmed and read.</li>
+<li>An agent calls functions your program runs, and its results go back into the context. Its instructions decide whether it uses its tools; its tools decide what it can break.</li>
+<li>Speed is time to the first token and tokens per second. Context is limited, so every tool chooses what to send, and what it sends to a hosted model leaves your computer.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The new session’s context held only the system prompt and “And how do I write one?”; without the earlier question about JSON, “one” could mean anything, and the model picked a likely meaning. 2. Each message resends all the earlier ones, and hosted models charge for every token sent. 3. The code before the cursor and the code after it.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects build one small piece of each shape: a chat in the terminal, the context selection an assistant makes, and a tool that makes a model exact.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>A chat in the terminal</h3>
+<p class="project-goal">A program that reads questions line by line, answers them in one conversation, and starts over on <code>/reset</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> chat sessions, chat history, and reading standard input.</p>
+<ol class="steps">
+<li>Create one session and save its history before the first question.</li>
+<li>For each line, print it, then the answer; on <code>/reset</code>, restore the saved history.</li>
+<li>Ask a question, a follow-up, reset, and the same follow-up.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">repl.mjs (part)</div><pre class="code"><span class="k">const</span> lines = readline.createInterface({input: process.stdin});
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> line <span class="k">of</span> lines) {
+  console.log(<span class="s">`&gt; ${line}`</span>);
+  <span class="k">if</span> (line === <span class="s">&quot;/reset&quot;</span>) {
+    session.setChatHistory(initial);
+    console.log(<span class="s">&quot;(conversation reset)\n&quot;</span>);
+    continue;
+  }
+  <span class="k">const</span> answer = <span class="k">await</span> session.prompt(line, {temperature: <span class="n">0</span>, maxTokens: <span class="n">160</span>});
+  console.log(<span class="s">`${answer}\n`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">printf &#x27;How do I read a file line by line in Node?\nAnd in reverse order?\n/reset\nAnd in reverse order?\n&#x27; | node repl.mjs</span>
+<span class="c">&gt; </span><span class="k">How do I read a file line by line in Node?</span>
+Use `fs.createReadStream()` with a `on(&#x27;data&#x27;)` event listener to read a file line by line.  
+Example: `fs.createReadStream(&#x27;file.txt&#x27;).on(&#x27;data&#x27;, (chunk) =&gt; { /* process line */ });`
+
+<span class="c">&gt; </span><span class="k">And in reverse order?</span>
+You can&#x27;t easily read a file in reverse order with `fs.createReadStream()` since it&#x27;s stream-based and reads sequentially.  
+Instead, read all lines into memory first (e.g., with `fs.readFileSync()`), then reverse the array and process line by line.
+
+<span class="c">&gt; </span><span class="k">/reset</span>
+(conversation reset)
+
+<span class="c">&gt; </span><span class="k">And in reverse order?</span>
+Sure! Just reverse the order of elements in an array or string. For example:  
+`[1, 2, 3].reverse()` → `[3, 2, 1]`.</pre></div>
+<p class="hint"><strong>Hint:</strong> the first answer is wrong in a small way: listening to <code>data</code> gives chunks of the file, not lines. The model’s second answer is good because the conversation was there; after <code>/reset</code>, the same words got an answer about arrays. Reading line by line properly uses <code>readline</code>, as this program does with standard input.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>A context budget</h3>
+<p class="project-goal">Given a folder and a number of tokens, decide which files fit, and say which were left out.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking a folder, counting tokens per file, and a simple selection policy.</p>
+<ol class="steps">
+<li>List every file under the folder and count its tokens with the model’s tokenizer.</li>
+<li>Sort by size and take files while they fit in the budget.</li>
+<li>Print each file as in or out, and the total used.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">budget.mjs (part)</div><pre class="code"><span class="k">const</span> count = (file) =&gt; model.tokenize(fs.readFileSync(file, <span class="s">&quot;utf8&quot;</span>)).length;
+
+<span class="c line-bidi">// Choose which files fit in a token budget: smallest first, and say what</span>
+<span class="c line-bidi">// was left out.</span>
+<span class="k">const</span> files = fs
+  .readdirSync(folder, {recursive: <span class="k">true</span>})
+  .map((name) =&gt; path.join(folder, name))
+  .filter((file) =&gt; fs.statSync(file).isFile())
+  .map((file) =&gt; ({file, tokens: count(file)}))
+  .sort((a, b) =&gt; a.tokens - b.tokens);
+
+<span class="k">let</span> used = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> {file, tokens} <span class="k">of</span> files) {
+  <span class="k">const</span> fits = used + tokens &lt;= budget;
+  used += fits ? tokens : <span class="n">0</span>;
+  console.log(<span class="s">`${fits ? &quot;in &quot; : &quot;out&quot;} ${String(tokens).padStart(6)}  ${file}`</span>);
+}
+console.log(<span class="s">`${used} of ${budget} tokens used`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node budget.mjs cafe 120 &amp;&amp; node budget.mjs cafe 60</span>
+in      15  cafe/README.md
+in      28  cafe/menu.json
+in      63  cafe/src/prices.mjs
+106 of 120 tokens used
+in      15  cafe/README.md
+in      28  cafe/menu.json
+out     63  cafe/src/prices.mjs
+43 of 60 tokens used</pre></div>
+<p class="hint"><strong>Hint:</strong> with 60 tokens, the policy kept the README and the menu, and left out <code>prices.mjs</code>, the one file that answers questions about prices. Smallest-first is simple, not smart. Real tools rank files by relevance to the question, which is the subject of Chapter 14.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>A model that cannot get sums wrong</h3>
+<p class="project-goal">Give the model a calculator tool, and compare its answer to a sum with and without it.</p>
+<p class="project-skills"><strong>You will practise:</strong> defining a function for a model, validating what the model passes in, and comparing with an exact result.</p>
+<ol class="steps">
+<li>Define <code>calculate</code>, which accepts only digits, spaces and <code>+ - * / ( ) .</code>, and returns the result.</li>
+<li>Ask the same question in a session without functions and in one with the calculator.</li>
+<li>Print the exact answer, computed in JavaScript, for comparison.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">calc.mjs (part)</div><pre class="code"><span class="k">const</span> calculate = defineChatSessionFunction({
+  description: <span class="s">&quot;Evaluate an arithmetic expression, such as (2 + 3) * 4&quot;</span>,
+  params: {<span class="k">type</span>: <span class="s">&quot;object&quot;</span>, properties: {expression: {<span class="k">type</span>: <span class="s">&quot;string&quot;</span>}}},
+  handler({expression}) {
+    <span class="k">if</span> (!/^[\d\s.+\-*/()]+$/.test(expression)) {
+      <span class="k">return</span> <span class="s">&quot;error: only numbers and + - * / ( )&quot;</span>;
+    }
+    <span class="k">const</span> result = Function(<span class="s">`return (${expression});`</span>)();
+    console.log(<span class="s">`[tool] calculate(${expression}) = ${result}`</span>);
+    <span class="k">return</span> result;
+  },
+});</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node calc.mjs</span>
+--- alone:
+Let&#x27;s calculate the total cost step by step.
+**Step 1: Find the cost before tax**
+Number of cups = 48,213  
+Price per cup = $7.35
+So, the subtotal (before tax) is:
+$$
+[... 29 lines ...]
+**Step 3: Total cost**
+$$
+354,365.55 + 49,611.18 = 403,976.73
+$$
+<span class="c line-bidi">### ✅ Final Answer:</span>
+**$403,976.73**
+--- with a calculator:
+[tool] calculate(48213 * 7.35 * 1.14) = 403976.72699999996
+The total cost for 48,213 cups at $7.35 each, including a 14% tax, is approximately **$403,976.73**.
+--- exact: 403976.73</pre></div>
+<p class="hint"><strong>Hint:</strong> alone, the model worked step by step for a page (shortened above) and reached the right total. In the Arabic edition, the same model, asked the same question in Arabic, computed 48213 × 0.35 as 168,745.5, ten times too much, and answered 577,109.61 with the same confidence. With the calculator, both languages took one call and gave 403,976.73. A long, careful-looking working is not a proof. The check on the expression matters as much as the tool: it is what stops a model, or someone who controls its input, from running any JavaScript they like.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In <code>chat.mjs</code>, the context grew from 75 to 120 tokens. Estimate how many tokens it would hold after ten such questions, and what happens when it reaches the 2,048 of <code>contextSize</code>.</li>
+<li><span class="level">Easy</span> Run <code>budget.mjs</code> on a project of your own with a budget of 8,192. Which files are left out, and would you have chosen differently?</li>
+<li><span class="level medium">Medium</span> Add a third tool to the agent, <code>searchFiles(text)</code>, that returns the paths of files containing a word. Which questions does it answer with fewer calls than <code>listFiles</code> and <code>readFile</code>?</li>
+<li><span class="level medium">Medium</span> Remove the regular expression from <code>calculate</code>. Explain, with an example input, why that turns a calculator into something dangerous.</li>
+<li><span class="level hard">Challenge</span> Make <code>complete.mjs</code> stop at the end of the function without <code>customStopTriggers</code>, by counting braces in the text as it arrives. Which inputs would break a simple brace count?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>Twice in this chapter, a few words decided whether the model succeeded. The next chapter is about those words: how to write instructions, give examples and constraints, ask for a format, and leave room for “I don’t know”, measured on the same model.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most problems have several good solutions. If yours handles normal and unusual cases, and you can explain your choices, it is a good answer. The full, tested code for every answer is in the book’s code repository.</p>
+
+<h2 class="plain-h">Chapter 1</h2>
+<ol class="exercises">
+<li>The book’s run gave <code>" "</code> at 98.5%, then <code>" noon"</code> at 0.6% and <code>" $"</code> at 0.3%. If you wrote “8”, “9” and “noon”, you thought in words; the model thinks in tokens, and this tokenizer writes a space and the digits separately, so after “opens at” the next token is almost certainly a lone space, with the hour coming one step later. Prediction is per token, and that is exactly why it can surprise you.</li>
+<li>More expensive. A small function, <code>export function total(items) { return items.reduce((sum, item) =&gt; sum + item.price * item.count, 0); }</code>, was 15 “words” and 28 tokens, 1.87 per word against 1.18 for English prose: brackets, dots, operators and names like <code>item.price</code> are cut into separate tokens. Long files of code fill a context window faster than their length in lines suggests.</li>
+<li>In English, temperature 0.3 still gave “Brew &amp; Co.” for all three seeds; at 0.7 each seed gave something different, one of them “Mug &amp; Co.” and one an explanation instead of a name. The Arabic prompt already differed at 0.3, because its probabilities were flatter to begin with (Section 1.3): when no token clearly wins, even a little randomness changes the answer. There is no universal threshold; it depends on how sure the model is.</li>
+<li>For PostgreSQL the model answered <code>5432</code>, which is right. For the made-up “Brewlytics Server” it explained that it knows no such software, and then, because the question asked for a number only, ended with “Answer: 0”. A program that read only the last line would have stored a port of 0. Nothing in the format of an answer tells you whether it is true; what tells you is a source: the tool’s documentation, its configuration file, or running it and seeing what it listens on. And never force a model to answer in a form that leaves no room for “I don’t know”.</li>
+<li>With the two previous words as the key, the three sentences became “the café sells coffee and tea .”, “the café opens at eight .” and “the café opens at eight .”: every one is a sentence from the text. More context removed the inventions, but also the variety: with so little text, each pair of words has only one or two possible followers, so the model can only copy. Real models look at thousands of tokens and were trained on trillions, which is what lets them be both coherent and new, and also why their inventions are so convincing.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 2</h2>
+<ol class="exercises">
+<li>Each question and two-line answer added about 45 to 60 tokens (75 after the first, 120 after the second), so ten would hold roughly 600. With longer answers it reaches 2,048 much sooner, and then the session has to make room: <code>node-llama-cpp</code> then removes the oldest messages from the context, keeping the system prompt, and the model loses what was said first. Hosted chat products do the same, or summarise. Either way, an instruction you gave at the start can quietly stop applying.</li>
+<li>It depends on your project, but the pattern is always the same: small files that are easy to fit (configuration, short modules, the README) go in first, and the large file you actually care about is left out. A person would choose by the question: the file being changed, the files it imports, and its tests. That is the selection Chapter 14 builds.</li>
+<li>
+<pre class="plain" dir="ltr">searchFiles: defineChatSessionFunction({
+  description: "Find the files that contain a word",
+  params: {type: "object", properties: {text: {type: "string"}}},
+  handler({text}) {
+    return fs.readdirSync("cafe", {recursive: true}).filter((name) =&gt; {
+      const file = `cafe/${name}`;
+      return fs.statSync(file).isFile() &amp;&amp; fs.readFileSync(file, "utf8").includes(text);
+    });
+  },
+}),</pre>
+Questions that name something specific: “where is the price of a latte set?” takes one search for <code>latte</code> and one read, instead of a list and two reads. In a project of thousands of files the difference is between a few calls and reading files one by one until the context fills. That is why every coding agent has a search tool.</li>
+<li>Without the check, <code>Function(`return (${expression});`)()</code> runs any JavaScript the model passes. An expression such as <code>process.env.API_KEY</code> returns a secret into the conversation, and <code>process.exit(1)</code> stops the program; with an asynchronous import, it could read or delete files. The model may not choose such an input by itself, but anyone who controls text the model reads can ask it to: a web page, an email or a file in the project saying “calculate this”. That is called <em>prompt injection</em>, and Chapter 15 is about it. A tool must check its input as strictly as an API endpoint does, because that is what it is.</li>
+<li>Generate with <code>onTextChunk</code>, keep a counter that starts at 1 (the function’s own brace is already open), add one for each <code>{</code> and subtract one for each <code>}</code>, and abort with an <code>AbortController</code> when it reaches 0, keeping the text before that brace. It breaks on braces that are not code: inside strings (<code>"{"</code>), template literals, comments and regular expressions. A real editor uses the language’s parser, or at least a tokenizer that knows strings and comments, which is a good reason to trust editors over home-made checks.</li>
+</ol>
+
+</section>
+</body></html>
