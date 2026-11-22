@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "الفصل 5: الشبكة والأخطاء وإعادة المحاولة"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "الفصل 6: تطبيقات تعمل بلا اتصال أولاً"; } }
+@page ch06:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -149,7 +151,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">103</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">119</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -2459,6 +2461,410 @@ without a key, tapped twice: orders on the server: [1, 2]
 <p>إعادة المحاولة تساعد حين تعود الشبكة في ثانية. أما حين تغيب ساعة، فما زال الناس يريدون قراءة طلباتهم والإضافة إلى سلتهم. والفصل القادم يجعل التطبيق يعمل بلا اتصال أولاً: قاعدة بيانات محلية مصدراً للحقيقة، ومزامنة حين تعود الشبكة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b6/offline/ar">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">الفصل 6</p><h1>تطبيقات تعمل بلا اتصال أولاً</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تجعل مخزناً محلياً مصدر الحقيقة لكل شاشة</li>
+<li>تحفظ التغييرات غير المرسلة في صندوق صادر، وترسلها حين تعود الشبكة</li>
+<li>تكتب محرك مزامنة يرسل، ثم يجلب ما تغيّر وحده</li>
+<li>تحل التعارضات حقلاً حقلاً، بمالك واضح لكل حقل</li>
+<li>تنجو من الأجوبة الضائعة والرفض دون تكرار ولا إعادة محاولة بلا نهاية</li>
+</ul>
+</div>
+
+<p class="lead">جعل الفصل 5 التطبيق صبوراً حين ترمش الشبكة. وهذا الفصل يجعله مفيداً حين تغيب: في المترو، وفي قبو، وفي طائرة، وعلى طريق ريفي. والفكرة بسيطة وتغيّر كل شيء: الشاشات لا تنتظر الخادم أبداً. بل تقرأ وتكتب في مخزن على الجوال يجيب فوراً، ومحرك منفصل يُبقي هذا المخزن والخادم على اتفاق، كلما استطاع.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الخادم المزيف في هذا الفصل قاسٍ عمداً: ينقطع، ويضيّع جواباً بعد حفظ طلب، ويرفض الأصناف التي نفدت، ويغيّر الحالات من وراء ظهر التطبيق. وكل ذلك سيفعله بتطبيقك خادم حقيقي يوماً ما.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>المخزن المحلي هو الحقيقة</span></h2>
+
+<pre class="plain" dir="ltr">screens  ──watch / write──▶  local store  ◀──push / pull──▶  server
+                              (outbox)        sync engine</pre>
+
+<ul>
+<li>الشاشات <em>تشاهد</em> المخزن المحلي: تيار يعطي الطلبات الحالية، ثم كل تغيير. ولا تستدعي الخادم أبداً.</li>
+<li>كتابة طلب تكتبه محلياً، معلَّماً بأنه <dfn>ينتظر</dfn> (queued): فيظهر على الشاشة فوراً، متصلاً كان الجوال أم لا.</li>
+<li>و<dfn>محرك المزامنة</dfn> يرسل التغييرات المنتظرة إلى الخادم ويجلب ما تغيّر هناك، كلما عمل: بعد كتابة، أو بزر، أو حين تعود الشبكة.</li>
+</ul>
+
+<p>وكل طلب يحمل إلى أين وصل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/order.dart (جزء)</div><pre class="code"><span class="c line-bidi">// طلب واحد كما يعرفه هذا الجوال، ومعه إلى أين وصل في طريقه إلى الخادم.</span>
+<span class="k">class</span> Order {
+  <span class="k">const</span> Order({
+    <span class="k">required</span> <span class="k">this</span>.id,
+    <span class="k">required</span> <span class="k">this</span>.title,
+    <span class="k">this</span>.note = <span class="s">&#x27;&#x27;</span>,
+    <span class="k">this</span>.status = <span class="s">&#x27;new&#x27;</span>,
+    <span class="k">this</span>.<span class="k">sync</span> = SyncState.queued,
+    <span class="k">this</span>.version = <span class="n">0</span>,
+    <span class="k">this</span>.error,
+  });
+
+  <span class="k">final</span> <span class="k">String</span> id;
+  <span class="k">final</span> <span class="k">String</span> title;
+  <span class="c line-bidi">// من يملك أي حقل: الشخص يكتب الملاحظة؛ والمقهى يكتب الحالة.</span>
+  <span class="k">final</span> <span class="k">String</span> note;
+  <span class="k">final</span> <span class="k">String</span> status;
+  <span class="k">final</span> SyncState <span class="k">sync</span>;
+  <span class="k">final</span> <span class="k">int</span> version;
+  <span class="k">final</span> <span class="k">String</span>? error;
+
+  Order copyWith({
+    <span class="k">String</span>? note,
+    <span class="k">String</span>? status,
+    SyncState? <span class="k">sync</span>,
+    <span class="k">int</span>? version,
+    <span class="k">String</span>? error,
+  }) =&gt; Order(
+    id: id,
+    title: title,
+    note: note ?? <span class="k">this</span>.note,
+    status: status ?? <span class="k">this</span>.status,
+    <span class="k">sync</span>: <span class="k">sync</span> ?? <span class="k">this</span>.<span class="k">sync</span>,
+    version: version ?? <span class="k">this</span>.version,
+    error: error ?? <span class="k">this</span>.error,
+  );
+}</pre></div>
+
+<p>ولحقلين فيه مالكان مختلفان. فالشخص يكتب <code>note</code>؛ والمقهى وحده يغيّر <code>status</code>. وقول ذلك صراحة، لكل حقل، هو ما يجعل التعارضات قابلة للحل لاحقاً.</p>
+
+<h2><span class="sec">6.2</span> <span>المخزن وصندوق صادره</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/local_store.dart (جزء)</div><pre class="code"><span class="c line-bidi">// مصدر الحقيقة لكل شاشة. الشاشات تشاهده؛ ولا تنتظر الشبكة أبداً.</span>
+<span class="k">abstract</span> <span class="k">interface</span> <span class="k">class</span> LocalStore {
+  <span class="k">Stream</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; watch();
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; all();
+  <span class="k">Future</span>&lt;Order?&gt; <span class="k">get</span>(<span class="k">String</span> id);
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; put(Order order);
+  <span class="c line-bidi">// صندوق الصادر: كل طلب فيه تغييرات لم يؤكدها الخادم بعد، الأقدم أولاً.</span>
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; outbox();
+  <span class="k">Future</span>&lt;<span class="k">int</span>&gt; cursor();
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; setCursor(<span class="k">int</span> version);
+}</pre></div>
+
+<ul>
+<li><code>watch</code> تيار: فتُعاد بناء الشاشات حين يتغير أي شيء، أياً كان من غيّره، الشخص أم محرك المزامنة.</li>
+<li>و<dfn>صندوق الصادر</dfn> (outbox) كل طلب فيه تغيير لم يؤكده الخادم، الأقدم أولاً. وهو هنا حالة على كل طلب؛ أما التطبيقات التي فيها أنواع كثيرة من التغييرات فتحفظ جدولاً منفصلاً للعمليات.</li>
+<li>و<dfn>المؤشر</dfn> (cursor) يتذكر أحدث إصدار من الخادم جُلب من قبل، فلا يسأل الجلب التالي إلا عما هو أحدث.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>كتبت النسخة الأولى من هذا المخزن <code>watch</code> بـ <code dir="ltr">async*</code>: <code dir="ltr">yield await all();</code> ثم <code dir="ltr">yield* _changes.stream;</code>. تبدو صحيحة، وهي تضيّع تغييرات: فلا يُستمع إلى تيار التغييرات إلا بعد تسليم القائمة الأولى، وأي طلب يُكتب في تلك اللحظة لا يُعلن أبداً. والتقط ذلك اختبار المشروع 6.1، إذ عدّ طلباً منتظراً واحداً بدل اثنين. أما <code>Stream.multi</code> فترسل القائمة الأولى وتشترك في الخطوة نفسها، فلا يسقط شيء بينهما.</p></aside>
+
+<p>ويحفظ الفصل المخزن في الذاكرة، لتعمل صوره في متصفح؛ ويضع المشروع 6.3 الواجهة نفسها على SQLite، ولا يتغير شيء آخر.</p>
+
+<h2><span class="sec">6.3</span> <span>محرك المزامنة</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/sync_engine.dart (جزء)</div><pre class="code"><span class="c line-bidi">// أرسل ما ينتظر، ثم اجلب ما تغيّر. ويتوقف بهدوء بلا اتصال؛ ويحاول من جديد في المرة القادمة.</span>
+<span class="k">class</span> SyncEngine {
+  SyncEngine(<span class="k">this</span>.local, <span class="k">this</span>.remote);
+
+  <span class="k">final</span> LocalStore local;
+  <span class="k">final</span> FakeRemote remote;
+
+  <span class="k">Future</span>&lt;SyncReport&gt; <span class="k">sync</span>() <span class="k">async</span> {
+    <span class="k">final</span> report = SyncReport();
+    <span class="k">try</span> {
+      <span class="k">for</span> (<span class="k">final</span> order <span class="k">in</span> <span class="k">await</span> local.outbox()) {
+        <span class="k">try</span> {
+          <span class="c line-bidi">// لا تُرسل إلا حقول الشخص؛ والجواب يقول كم صارت نسخة الخادم حديثة.</span>
+          <span class="k">final</span> version = <span class="k">await</span> remote.push(order);
+          <span class="k">await</span> local.put(
+            order.copyWith(<span class="k">sync</span>: SyncState.synced, version: version),
+          );
+          report.sent++;
+        } <span class="k">on</span> Refused <span class="k">catch</span> (e) {
+          <span class="c line-bidi">// الرفض لا يتغير بإعادة المحاولة: علّمه وتابع.</span>
+          <span class="k">await</span> local.put(
+            order.copyWith(<span class="k">sync</span>: SyncState.failed, error: e.reason),
+          );
+          report.refused++;
+        }
+      }
+      <span class="c line-bidi">// فقط ما تغيّر منذ آخر مزامنة: والمؤشر أعلى إصدار رأيناه.</span>
+      <span class="k">var</span> cursor = <span class="k">await</span> local.cursor();
+      <span class="k">for</span> (<span class="k">final</span> change <span class="k">in</span> <span class="k">await</span> remote.changesSince(cursor)) {
+        <span class="k">await</span> _merge(change);
+        cursor = max(cursor, change[<span class="s">&#x27;version&#x27;</span>]! <span class="k">as</span> <span class="k">int</span>);
+        report.pulled++;
+      }
+      <span class="k">await</span> local.setCursor(cursor);
+    } <span class="k">on</span> Offline {
+      report.offline = <span class="k">true</span>;
+    }
+    <span class="k">return</span> report;
+  }</pre></div>
+
+<ul>
+<li>الإرسال أولاً، بالترتيب: فيجب أن يرى الخادم تغييرات الشخص قبل أن يسأل التطبيق عما يراه الخادم.</li>
+<li>وحين تغيب الشبكة يتوقف المحرك بهدوء. ولا يضيع شيء: فصندوق الصادر باقٍ للتشغيل التالي.</li>
+<li>والرفض، مثل «نفد»، يُعلَّم على الطلب ويخرج من صندوق الصادر. فإعادة محاولته كل دقيقة إلى الأبد لن تفعل إلا استنزاف البطارية.</li>
+<li>والجلب لا يسأل إلا عن الإصدارات فوق المؤشر، ويدمج كل تغيير، ويحرّك المؤشر.</li>
+</ul>
+
+<p>والاختبار يمر على كل ما يستطيع الخادم فعله بالتطبيق:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/sync_test.dart (جزء)</div><pre class="code">    <span class="k">final</span> local = MemoryLocalStore();
+    <span class="k">final</span> remote = FakeRemote()..online = <span class="k">false</span>;
+    <span class="k">final</span> engine = SyncEngine(local, remote);
+
+    <span class="k">await</span> local.put(<span class="k">const</span> Order(id: <span class="s">&#x27;a&#x27;</span>, title: <span class="s">&#x27;Latte&#x27;</span>));
+    <span class="k">await</span> local.put(<span class="k">const</span> Order(id: <span class="s">&#x27;b&#x27;</span>, title: <span class="s">&#x27;Cherry cake&#x27;</span>));
+    debugPrint(
+      <span class="s">&#x27;offline:           ${await engine.sync()}, waiting: ${(await local.outbox()).length}&#x27;</span>,
+    );
+
+    remote
+      ..online = <span class="k">true</span>
+      ..loseNextAnswer = <span class="k">true</span>;
+    debugPrint(
+      <span class="s">&#x27;answer lost:       ${await engine.sync()}, waiting: ${(await local.outbox()).length}&#x27;</span>,
+    );
+    debugPrint(
+      <span class="s">&#x27;next sync:         ${await engine.sync()}, waiting: ${(await local.outbox()).length}&#x27;</span>,
+    );
+    debugPrint(<span class="s">&#x27;orders on server:  ${remote.orders.length}&#x27;</span>);
+    expect(remote.orders.length, <span class="n">2</span>);
+
+    remote.soldOut.add(<span class="s">&#x27;Muffin&#x27;</span>);
+    <span class="k">await</span> local.put(<span class="k">const</span> Order(id: <span class="s">&#x27;c&#x27;</span>, title: <span class="s">&#x27;Muffin&#x27;</span>));
+    debugPrint(<span class="s">&#x27;sold out:          ${await engine.sync()}&#x27;</span>);
+    debugPrint(<span class="s">&#x27;again:             ${await engine.sync()}&#x27;</span>);
+    expect((<span class="k">await</span> local.<span class="k">get</span>(<span class="s">&#x27;c&#x27;</span>))!.<span class="k">sync</span>, SyncState.failed);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/sync_test.dart</span>
+00:00 +0: loading test/sync_test.dart
+00:00 +0: الطلبات تنتظر بلا اتصال، وتُرسل مرة، والرفض لا يُعاد
+offline:           offline (sent 0), waiting: 2
+answer lost:       offline (sent 0), waiting: 2
+next sync:         sent 2, refused 0, pulled 2, waiting: 0
+orders on server:  2
+sold out:          sent 0, refused 1, pulled 0
+again:             sent 0, refused 0, pulled 0
+00:00 +1: All tests passed!</pre></div>
+
+<p>بلا اتصال ينتظر الطلبان. ثم يحفظ الخادم الطلب الأول لكن جوابه يضيع: فيرى المحرك خطأ، ويتوقف، ويُبقي الطلبين منتظرين. والمزامنة التالية ترسل الاثنين من جديد، ويبقى على الخادم طلبان لا ثلاثة، لأن رقم كل طلب هو مفتاح عدم تكراره، كما في الفصل 5. والمافن الذي نفد يُرفض مرة، ولا تحاوله المزامنة التالية من جديد.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>الأرقام التي يصنعها الخادم لا تعمل بلا اتصال: فالطلب يحتاج رقماً لحظة كتابته على الجوال، ويجب أن يبقى الرقم نفسه في كل إعادة محاولة. فأنشئه على الجوال، بعشوائية كافية كي لا يتصادم جوالان أبداً: UUID، أو كما هنا ستة عشر حرفاً ستة عشرياً عشوائياً.</p></aside>
+
+<h2><span class="sec">6.4</span> <span>التعارضات</span></h2>
+
+<p><dfn>التعارض</dfn> تغييران على الشيء نفسه، حدثا بعيداً عن بعضهما. فبلا اتصال يضيف الشخص ملاحظة، «بلا سكر»، إلى طلب؛ وفي الأثناء يعلّمه عامل المقهى جاهزاً. فحين يعود الجوال، أيهما يغلب؟ مع مالكين واضحين يغلب الاثنان: فالملاحظة للشخص، والحالة للمقهى.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/sync_engine.dart (جزء)</div><pre class="code">  <span class="c line-bidi">// ادمج حقلاً حقلاً: حالة المقهى تغلب دائماً؛ وملاحظة الخادم فقط إن لم يكن لملاحظتنا تغيير لم يُرسل.</span>
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; _merge(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>&gt; change) <span class="k">async</span> {
+    <span class="k">final</span> id = change[<span class="s">&#x27;id&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>;
+    <span class="k">final</span> mine = <span class="k">await</span> local.<span class="k">get</span>(id);
+    <span class="k">final</span> status = change[<span class="s">&#x27;status&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>;
+    <span class="k">final</span> version = change[<span class="s">&#x27;version&#x27;</span>]! <span class="k">as</span> <span class="k">int</span>;
+    <span class="k">if</span> (mine == <span class="k">null</span>) {
+      <span class="k">await</span> local.put(
+        Order(
+          id: id,
+          title: change[<span class="s">&#x27;title&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>,
+          note: change[<span class="s">&#x27;note&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>,
+          status: status,
+          <span class="k">sync</span>: SyncState.synced,
+          version: version,
+        ),
+      );
+    } <span class="k">else</span> <span class="k">if</span> (mine.<span class="k">sync</span> == SyncState.queued) {
+      <span class="k">await</span> local.put(mine.copyWith(status: status));
+    } <span class="k">else</span> {
+      <span class="k">await</span> local.put(
+        mine.copyWith(
+          status: status,
+          note: change[<span class="s">&#x27;note&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>,
+          version: version,
+        ),
+      );
+    }
+  }
+}</pre></div>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/merge_test.dart</span>
+00:00 +0: loading test/merge_test.dart
+00:00 +0: ملاحظة كُتبت بلا اتصال وحالة المقهى الجديدة تبقيان معاً
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>للتعارضات أجوبة كلاسيكية قليلة. <dfn>آخر كتابة تغلب</dfn> تُبقي التغيير الأحدث: بسيطة، وتُضيّع الآخر بصمت. و<dfn>ملكية الحقول</dfn>، كما هنا، تعطي كل حقل كاتباً واحداً، فتختفي أكثر التعارضات. و<dfn>الخادم يقرر</dfn> تدع الخادم يرفض التغيير القديم ويسأل التطبيق الشخص. وللمستندات المشتركة التي يعدّلها كثيرون معاً، مثل قائمة مشتريات، توجد <dfn>CRDTs</dfn>، أنواع بيانات مصممة بحيث يمكن دائماً دمج أي مجموعتين من التغييرات.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا تشاهد الشاشات المخزن المحلي بدل انتظار الخادم؟</li><li>حفظ الخادم الطلب لكن الجواب ضاع. لماذا يبقى طلب واحد بعد المزامنة التالية؟</li><li>لماذا يخرج الطلب المرفوض من صندوق الصادر؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">6.5</span> <span>الشاشة</span></h2>
+
+<p>إرسال الطلب يكتبه محلياً، ثم يجرّب مزامنة. فيظهر الطلب على الشاشة قبل أن تُجرَّب الشبكة أصلاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/providers.dart (جزء)</div><pre class="code">  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; place(<span class="k">String</span> title) <span class="k">async</span> {
+    <span class="c line-bidi">// اكتب محلياً أولاً: الطلب على الشاشة قبل أن تُجرَّب الشبكة أصلاً.</span>
+    <span class="k">await</span> ref.read(localProvider).put(Order(id: newId(), title: title));
+    <span class="c line-bidi">// إن كانت الشبكة موجودة فأرسله الآن؛ وإلا فهو ينتظر في صندوق الصادر.</span>
+    <span class="k">await</span> ref.read(lastSyncProvider.notifier).run();
+  }</pre></div>
+
+<p>وفي العرض مفتاح يقطع الشبكة المتخيلة، وزر يؤدي دور المقهى، فيعلّم أول طلب جاهزاً على الخادم:</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-offline-ar-shots-offline.png" alt=""></div>
+<figcaption>بلا اتصال: طلبان ينتظران</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-offline-ar-shots-synced.png" alt=""></div>
+<figcaption>متصل من جديد: أُرسلا</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-offline-ar-shots-ready.png" alt=""></div>
+<figcaption>المقهى علّم واحداً جاهزاً</figcaption>
+</figure>
+</div>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/screen_test.dart</span>
+00:00 +0: loading test/screen_test.dart
+00:00 +0: بلا اتصال يظهر الطلب، معلَّماً بأنه ينتظر
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>قل للناس الحقيقة عن كل عنصر، دون أن تُخيفهم: «ينتظر الإرسال» هادئة وصادقة؛ أما نافذة خطأ مع كل لمسة بلا اتصال فلا. ولا تدع شخصاً يظن أن شيئاً وصل إلى الخادم وهو لم يصل: فالمدفوعات خاصة لا توضع في الانتظار بلا اتصال إلا إن قبل العمل ذلك، وبكلمات واضحة.</p></aside>
+
+<h2><span class="sec">6.6</span> <span>ما يحتاجه التطبيق الذي يعمل بلا اتصال أيضاً</span></h2>
+
+<ul>
+<li><strong>الحذف</strong> يجب أن يُزامَن أيضاً. فالطلب المحذوف يصير <dfn>شاهد قبر</dfn> (tombstone)، صفاً معلَّماً بأنه محذوف، حتى يؤكد الخادم؛ وإلا أعاده الجلب التالي.</li>
+<li><strong>الحجم.</strong> قرّر ما تحفظه وإلى متى: طلبات الشهر الأخير، لا كل طلب منذ 2019.</li>
+<li><strong>تغييرات البنية.</strong> قاعدة البيانات المحلية تعيش أطول من إصدارات التطبيق، فتحتاج ترحيلات، كما في الكتاب الخامس.</li>
+<li><strong>الخصوصية.</strong> البيانات على الجوال يمكن قراءتها من النسخ الاحتياطية والجوالات المسروقة؛ ويتناول الفصل 14 التشفير وما لا يجب حفظه أصلاً.</li>
+</ul>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>شاشات تنتظر الخادم</td><td>مؤشرات دوّارة وأخطاء كلما ضعفت الشبكة</td><td>الشاشات تشاهد المخزن المحلي</td></tr>
+<tr><td>أرقام من الخادم</td><td>لا رقم بلا اتصال؛ وتكرار بعد إعادة المحاولة</td><td>أرقام عشوائية تُصنع على الجوال، وتُستخدم مفاتيح عدم تكرار</td></tr>
+<tr><td>إعادة محاولة الرفض</td><td>مزامنات فاشلة بلا نهاية، وبطاريات مستنزفة</td><td>علّمها فاشلة وأخرجها من صندوق الصادر</td></tr>
+<tr><td>جلب كل شيء في كل مرة</td><td>مزامنات بطيئة وبيانات مهدرة</td><td>مؤشر: فقط الإصدارات بعد آخر ما رُئي</td></tr>
+<tr><td>آخر كتابة تغلب في كل شيء</td><td>ضياع تغييرات الشخص بصمت</td><td>مالك لكل حقل</td></tr>
+<tr><td>حذف الصفوف محلياً</td><td>العناصر المحذوفة تعود مع الجلب التالي</td><td>شواهد قبور حتى يؤكد الخادم</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>المخزن المحلي مصدر الحقيقة؛ والشاشات تشاهده ولا تنتظر الشبكة أبداً.</li>
+<li>الكتابات تذهب إلى المخزن منتظرة؛ وصندوق الصادر يحفظها حتى يؤكد الخادم.</li>
+<li>محرك المزامنة يرسل أولاً، ثم يجلب التغييرات بعد المؤشر؛ ويتوقف بهدوء بلا اتصال ويحاول لاحقاً.</li>
+<li>الأرقام تُصنع على الجوال وتعمل مفاتيح عدم تكرار؛ والرفض يُعلَّم ولا يُعاد.</li>
+<li>التعارضات تُحل بإعطاء كل حقل مالكاً، والدمج حقلاً حقلاً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن المخزن المحلي يجيب فوراً دائماً، متصلاً كان الجوال أم لا؛ أما الخادم فقد يبطئ أو لا يمكن الوصول إليه، والشاشة التي تنتظره معطلة كلما تعطلت الشبكة. 2. لأن رقم الطلب، المصنوع على الجوال، يسافر مع كل محاولة ويعمل مفتاح عدم تكرار: فيجده الخادم محفوظاً من قبل فيحدّثه بدل إنشاء آخر. 3. لأن الرفض لا يتغير بإعادة المحاولة؛ وإبقاؤه في صندوق الصادر سيُفشل كل مزامنة إلى الأبد، فيُعلَّم فاشلاً ويُعرض على الشخص بدلاً من ذلك.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تضيف ما تركه العرض: عدد التغييرات المنتظرة، والمزامنة بلا زر، ومخزناً ينجو من إغلاق التطبيق.</p>
+
+<div class="project">
+<p class="project-label">المشروع 6.1 · سهل</p>
+<h3>كم طلباً ينتظر؟</h3>
+<p class="project-goal">provider يعدّ الطلبات التي تنتظر الإرسال، لشارة على الشاشة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الـ providers المشتقة من <code>StreamProvider</code>، واختبارها بحاوية.</p>
+<ol class="steps">
+<li>شاهد <code>ordersProvider</code> وعُدّ الطلبات التي حالة مزامنتها <code>queued</code>.</li>
+<li>اختبر: اقطع الاتصال، وأرسل طلبين، وتوقع 2؛ ثم اتصل، وزامن، وتوقع 0، وكل الطلبات مُزامَنة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> القيم تمر عبر تيار المخزن ثم الـ provider قبل أن تصل إلى العدد: فبعد الكتابة أعطها لحظة، <code dir="ltr">await Future.delayed(const Duration(milliseconds: 50))</code>، قبل قراءته. ومع <code dir="ltr">Duration.zero</code> يقرأ الاختبار مبكراً.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/pending_test.dart</span>
+00:00 +0: loading test/pending_test.dart
+00:00 +0: الشارة تعدّ ما ينتظر
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 6.2 · متوسط</p>
+<h3>زامن حين تعود الشبكة</h3>
+<p class="project-goal">أرسل ما كان ينتظر فور عودة التطبيق إلى الاتصال، دون أن يلمس الشخص شيئاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>ref.listen</code> للآثار الجانبية، ومقارنة القيمة السابقة بالجديدة.</p>
+<ol class="steps">
+<li>provider يستمع إلى <code>onlineProvider</code> ويشغّل مزامنة حين تتغير القيمة من <code>false</code> إلى <code>true</code>.</li>
+<li>أبقِ الـ provider حياً بالاستماع إليه من جذر التطبيق (أو من الاختبار).</li>
+<li>اختبر: بلا اتصال أرسل طلباً؛ ثم اتصل؛ وبعد توقف قصير يكون صندوق الصادر فارغاً والطلب على الخادم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> على الجوال الحقيقي تأتي إشارة الاتصال من حزمة مثل <code>connectivity_plus</code>، وهي لا تقول إلا إن واجهة شبكة موجودة، لا إن الخادم يمكن الوصول إليه. فعاملها تلميحاً لتجربة مزامنة، لا وعداً أبداً.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/auto_sync_test.dart</span>
+00:00 +0: loading test/auto_sync_test.dart
+00:00 +0: العودة إلى الاتصال ترسل ما كان ينتظر
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 6.3 · تحدٍّ</p>
+<h3>مخزن ينجو من إغلاق التطبيق</h3>
+<p class="project-goal">نفّذ <code>LocalStore</code> على SQLite، وشغّل محرك المزامنة عليه دون تغيير.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تنفيذ واجهة بـ <code>sqflite</code>، والحفاظ على ترتيب الإنشاء، وصنع تيار من قاعدة بيانات.</p>
+<ol class="steps">
+<li>جدولان: <code>orders</code>، فيه عمود <code>created</code> ليحفظ صندوق الصادر ترتيبه؛ و<code>meta</code> للمؤشر.</li>
+<li><code>put</code> تُدخل أو تستبدل، محافظة على <code>created</code> الأصلي، ثم تعلن القائمة الجديدة على تيار بث.</li>
+<li>اختبر المحرك عليه: بلا اتصال، طلبان بترتيب إنشائهما في صندوق الصادر؛ ومتصلاً، أُرسلا؛ وحالة تغيّرت على الخادم، جُلبت؛ والمؤشر 3.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لا يخبر SQLite أحداً أن جدولاً تغيّر، فيعلن المخزن عن كتاباته بنفسه. وحزم مثل <code>drift</code> تفعل ذلك عنك، باستعلامات هي تيارات.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/sqlite_store_test.dart</span>
+00:00 +0: loading test/sqlite_store_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: المزامنة نفسها تعمل على SQLite
+00:00 +1: (tearDownAll)
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> لماذا يرسل المحرك قبل أن يجلب؟ وما الذي قد يسوء بالعكس؟</li>
+<li><span class="level">سهل</span> أضف فعل «أعد المحاولة» للطلبات الفاشلة. ماذا يجب أن يغيّر في الطلب، وأين؟</li>
+<li><span class="level medium">متوسط</span> أضف حذف طلب لم يُرسل بعد، وطلب أُرسل. لماذا يختلفان؟</li>
+<li><span class="level medium">متوسط</span> صار المقهى يستطيع أيضاً تعديل الملاحظات («لا يوجد حليب شوفان»). أي قاعدة ملكية تنكسر، وكيف تغيّر الدمج؟</li>
+<li><span class="level hard">تحدٍّ</span> جوالان للشخص نفسه يعدّلان ملاحظة الطلب نفسه بلا اتصال. صمّم ما يحدث حين يعود الاثنان، واكتب الاختبار.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 7</p>
+<p>أعطى الجزء الأول التطبيق هيكله: الرسم، والطبقات، والحالة، والتنقل، والشبكة، والبيانات بلا اتصال. والجزء الثاني عن الجودة، ويبدأ بما يراه الناس أولاً: نظام تصميم، لتبدو خمسون شاشة تطبيقاً واحداً.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2524,6 +2930,16 @@ without a key, tapped twice: orders on the server: [1, 2]
 <li>أعطِ الطلبات رمز إلغاء اختيارياً (كائناً فيه علامة <code>cancelled</code>، أو <code>Future</code> يكتمل عند الإلغاء)، تُنشئه الشاشة وتلغيه في <code>dispose</code>. ويتحقق العميل منه في مكانين: قبل كل محاولة، وبعد كل انتظار، رامياً <code>Cancelled</code>. والشاشات تتجاهل <code>Cancelled</code>: فلا أحد هناك ليراه. وبدونه يبقى الشخص الذي غادر الشاشة سبباً في أربعة طلبات وأربعة انتظارات.</li>
 <li>غلّف العميل (بـ <code>http.BaseClient</code> مثل المشروع 5.3) أو سجّل في <code>_send</code>: <code dir="ltr">'$method $path -&gt; $status in ${watch.elapsedMilliseconds} ms'</code>. ولا تسجّل ترويسة <code>Authorization</code> أبداً: فالسجلات تُنسخ إلى أدوات تقارير الأعطال وتذاكر الدعم وصور الشاشة، والتوكن في سجل يسمح لكل من يقرؤه أن يتصرف باسم الشخص. ولا الجسم أبداً: ففيه بيانات شخصية (أسماء، وعناوين، ورسائل)، وجمعها في السجلات خطر على الخصوصية، ومخالف للقانون في بلدان كثيرة.</li>
 <li>بلا عشوائية تصل الأعداد في قمم عالية: العملاء المئة كلهم عند 0 و200 و600 و1400 جزء من الثانية، ولا شيء بينها، فيقابل الخادم الذي يتعافى للتو جداراً من الطلبات عند كل قمة، وقد يسقط من جديد. ومع العشوائية الكاملة تتوزع الطلبات نفسها على كل الفترات، قليلاً في كل 100 جزء من الثانية، فيرى الخادم المتعافي تدفقاً هادئاً. والعدد الكلي للطلبات واحد؛ لا يتغير إلا شكلها في الزمن، وهذا الشكل هو ما يقرر هل يتعافى الخادم.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 6</h2>
+<ol class="exercises">
+<li>ليعرف الخادم تغييرات الشخص قبل أن يقارن التطبيق ملاحظاته به. وللجلب أولاً كلفتان. فالجلب يأتي بنسخة الخادم الأقدم من أشياء غيّرها الشخص للتو؛ ودمج هذا الفصل يحمي الملاحظة المنتظرة، لكن مع قاعدة أبسط مثل «آخر كتابة تغلب» سيُكتب فوق التغيير غير المرسل. وكل إرسال يصنع إصدارات جديدة فوق المؤشر، فيجلب الجلب التالي تغييرات التطبيق نفسه من جديد. أرسل أولاً ثم اجلب، فيغطيها المؤشر من قبل.</li>
+<li>يعيد الطلب إلى صندوق الصادر: <code dir="ltr">order.copyWith(sync: SyncState.queued)</code>، مع مسح الخطأ، ثم يشغّل مزامنة. والمسح يحتاج انتباهاً: فـ <code>copyWith</code> المكتوبة بـ <code dir="ltr">error ?? this.error</code> لا تستطيع أبداً أن تعيد <code>error</code> إلى <code>null</code>. فأعطها طريقة منفصلة للمسح (علامة <code>clearError</code>، أو دالة <code>retried()</code> تبني الطلب الجديد)، وضع الفعل في متحكم الطلبات بجانب <code>place</code>، فلا تفعل الشاشات إلا استدعاءه.</li>
+<li>الطلب الذي لم يُرسل قط لم يره الخادم قط: فيمكن حذفه من المخزن ببساطة، ومن صندوق الصادر بالتالي (ما لم يكن إرساله جارياً في تلك اللحظة، وهو ما يجب أن يحترس منه المحرك). أما الطلب الذي أُرسل فموجود على الخادم أيضاً: وحذفه محلياً سيعيده مع الجلب التالي. فعلّمه محذوفاً ومنتظراً (شاهد قبر)، وأرسل الحذف، ولا تحذف الصف إلا حين يؤكد الخادم.</li>
+<li>تنكسر قاعدة «الملاحظة ملك الشخص»: فصار كاتبان يتشاركان حقلاً واحداً، ولم تعد ملكية الحقول تستطيع أن تقرر. وأنظف حل أن تعطي كل كاتب حقله، ملاحظة من الشخص ورداً من المقهى، فتعود الملكية صحيحة. وإن وجب أن يبقى الحقل مشتركاً، فيجب أن يحفظ الخادم إصداراً لكل حقل ويرفض التغيير المبني على إصدار أقدم، وأن يعرض التطبيق على الشخص النصين ويدعه يختار.</li>
+<li>لكلا الجوالين ملاحظة منتظرة مبنية على الإصدار 1. فأول من يزامن يغلب على الخادم (الإصدار 2). والثاني يرسل ملاحظة مبنية على الإصدار 1؛ فيجيب الخادم بتعارض بدل الكتابة فوقها، ويعيد ملاحظته الحالية. فيعلّم الجوال الثاني الطلب متعارضاً، ويحفظ النصين، ويسأل الشخص («جوالك الآخر غيّر هذه الملاحظة»). والاختبار: خادم مزيف واحد، ومخزنان محليان، ومحركان؛ عدّل بلا اتصال على الاثنين، وزامن أ، ثم ب، وتوقع ملاحظة أ على الخادم، وتعارضاً على ب بالنصين، ولا ضياع صامت.</li>
 </ol>
 
 </section>

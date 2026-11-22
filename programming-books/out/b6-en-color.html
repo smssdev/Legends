@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "Chapter 5: Networking, Errors and Retries"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "Chapter 6: Offline-First Apps"; } }
+@page ch06:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -149,7 +151,7 @@ Widget build(context, ref) =&gt;
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">88</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">102</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -2457,6 +2459,410 @@ without a key, tapped twice: orders on the server: [1, 2]
 <p>Retries help when the network comes back in a second. When it is gone for an hour, people still want to read their orders and add to their basket. The next chapter makes the app work offline first: a local database as the source of truth, and synchronisation when the network returns.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b6/offline/en">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">Chapter 6</p><h1>Offline-First Apps</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>make a local store the source of truth for every screen</li>
+<li>keep unsent changes in an outbox, and send them when the network returns</li>
+<li>write a sync engine that pushes, then pulls only what changed</li>
+<li>resolve conflicts field by field, with a clear owner for each field</li>
+<li>survive lost answers and refusals without duplicates or endless retries</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 5 made the app patient when the network blinks. This chapter makes it useful when the network is gone: in the metro, in a basement, on a plane, in a country road. The idea is simple and changes everything: screens never wait for the server. They read and write a store on the phone, which answers at once, and a separate engine keeps that store and the server in agreement, whenever it can.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The fake server in this chapter is unkind on purpose: it goes offline, loses an answer after saving an order, refuses sold-out items, and changes statuses behind the app’s back. Every one of those is something a real server will do to your app eventually.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>The local store is the truth</span></h2>
+
+<pre class="plain" dir="ltr">screens  ──watch / write──▶  local store  ◀──push / pull──▶  server
+                              (outbox)        sync engine</pre>
+
+<ul>
+<li>Screens <em>watch</em> the local store: a stream that gives the current orders, then every change. They never call the server.</li>
+<li>Writing an order writes it locally, marked as <dfn>queued</dfn>: it appears on the screen at once, online or not.</li>
+<li>The <dfn>sync engine</dfn> pushes queued changes to the server and pulls what changed there, whenever it runs: after a write, on a button, when the network returns.</li>
+</ul>
+
+<p>Each order carries how far it got:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/order.dart (part)</div><pre class="code"><span class="c line-bidi">// One order as this phone knows it, with how far it got in reaching the server.</span>
+<span class="k">class</span> Order {
+  <span class="k">const</span> Order({
+    <span class="k">required</span> <span class="k">this</span>.id,
+    <span class="k">required</span> <span class="k">this</span>.title,
+    <span class="k">this</span>.note = <span class="s">&#x27;&#x27;</span>,
+    <span class="k">this</span>.status = <span class="s">&#x27;new&#x27;</span>,
+    <span class="k">this</span>.<span class="k">sync</span> = SyncState.queued,
+    <span class="k">this</span>.version = <span class="n">0</span>,
+    <span class="k">this</span>.error,
+  });
+
+  <span class="k">final</span> <span class="k">String</span> id;
+  <span class="k">final</span> <span class="k">String</span> title;
+  <span class="c line-bidi">// Who owns which field: the person writes the note; the café writes the status.</span>
+  <span class="k">final</span> <span class="k">String</span> note;
+  <span class="k">final</span> <span class="k">String</span> status;
+  <span class="k">final</span> SyncState <span class="k">sync</span>;
+  <span class="k">final</span> <span class="k">int</span> version;
+  <span class="k">final</span> <span class="k">String</span>? error;
+
+  Order copyWith({
+    <span class="k">String</span>? note,
+    <span class="k">String</span>? status,
+    SyncState? <span class="k">sync</span>,
+    <span class="k">int</span>? version,
+    <span class="k">String</span>? error,
+  }) =&gt; Order(
+    id: id,
+    title: title,
+    note: note ?? <span class="k">this</span>.note,
+    status: status ?? <span class="k">this</span>.status,
+    <span class="k">sync</span>: <span class="k">sync</span> ?? <span class="k">this</span>.<span class="k">sync</span>,
+    version: version ?? <span class="k">this</span>.version,
+    error: error ?? <span class="k">this</span>.error,
+  );
+}</pre></div>
+
+<p>Two of its fields have different owners. The person writes the <code>note</code>; only the café changes the <code>status</code>. Saying this out loud, for every field, is what makes conflicts solvable later.</p>
+
+<h2><span class="sec">6.2</span> <span>The store and its outbox</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/local_store.dart (part)</div><pre class="code"><span class="c line-bidi">// The source of truth for every screen. Screens watch it; they never wait for the network.</span>
+<span class="k">abstract</span> <span class="k">interface</span> <span class="k">class</span> LocalStore {
+  <span class="k">Stream</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; watch();
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; all();
+  <span class="k">Future</span>&lt;Order?&gt; <span class="k">get</span>(<span class="k">String</span> id);
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; put(Order order);
+  <span class="c line-bidi">// The outbox: every order with changes the server has not confirmed yet, oldest first.</span>
+  <span class="k">Future</span>&lt;<span class="k">List</span>&lt;Order&gt;&gt; outbox();
+  <span class="k">Future</span>&lt;<span class="k">int</span>&gt; cursor();
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; setCursor(<span class="k">int</span> version);
+}</pre></div>
+
+<ul>
+<li><code>watch</code> is a stream: the screens rebuild when anything changes, whoever changed it, the person or the sync engine.</li>
+<li>The <dfn>outbox</dfn> is every order with a change the server has not confirmed, oldest first. Here it is a state on each order; apps with many kinds of changes keep a separate table of operations.</li>
+<li>The <dfn>cursor</dfn> remembers the newest server version already pulled, so the next pull asks only for what is newer.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The first version of this store wrote <code>watch</code> as <code>async*</code>: <code>yield await all();</code> then <code>yield* _changes.stream;</code>. It looks right, and it loses changes: the stream of changes is listened to only after the first list has been delivered, and any order written in that moment is never announced. Project 6.1’s test caught it, counting one waiting order instead of two. <code>Stream.multi</code> sends the first list and subscribes in the same step, so nothing can fall between them.</p></aside>
+
+<p>The chapter keeps the store in memory, so that its screenshots can run in a browser; Project 6.3 puts the same interface on SQLite, and nothing else changes.</p>
+
+<h2><span class="sec">6.3</span> <span>The sync engine</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/sync_engine.dart (part)</div><pre class="code"><span class="c line-bidi">// Push what is waiting, then pull what changed. Stops quietly when offline; tries again next time.</span>
+<span class="k">class</span> SyncEngine {
+  SyncEngine(<span class="k">this</span>.local, <span class="k">this</span>.remote);
+
+  <span class="k">final</span> LocalStore local;
+  <span class="k">final</span> FakeRemote remote;
+
+  <span class="k">Future</span>&lt;SyncReport&gt; <span class="k">sync</span>() <span class="k">async</span> {
+    <span class="k">final</span> report = SyncReport();
+    <span class="k">try</span> {
+      <span class="k">for</span> (<span class="k">final</span> order <span class="k">in</span> <span class="k">await</span> local.outbox()) {
+        <span class="k">try</span> {
+          <span class="c line-bidi">// Only the person&#x27;s fields are sent; the answer says how new the server&#x27;s copy now is.</span>
+          <span class="k">final</span> version = <span class="k">await</span> remote.push(order);
+          <span class="k">await</span> local.put(
+            order.copyWith(<span class="k">sync</span>: SyncState.synced, version: version),
+          );
+          report.sent++;
+        } <span class="k">on</span> Refused <span class="k">catch</span> (e) {
+          <span class="c line-bidi">// A refusal will not change by retrying: mark it and move on.</span>
+          <span class="k">await</span> local.put(
+            order.copyWith(<span class="k">sync</span>: SyncState.failed, error: e.reason),
+          );
+          report.refused++;
+        }
+      }
+      <span class="c line-bidi">// Only what changed since the last sync: the cursor is the highest version seen.</span>
+      <span class="k">var</span> cursor = <span class="k">await</span> local.cursor();
+      <span class="k">for</span> (<span class="k">final</span> change <span class="k">in</span> <span class="k">await</span> remote.changesSince(cursor)) {
+        <span class="k">await</span> _merge(change);
+        cursor = max(cursor, change[<span class="s">&#x27;version&#x27;</span>]! <span class="k">as</span> <span class="k">int</span>);
+        report.pulled++;
+      }
+      <span class="k">await</span> local.setCursor(cursor);
+    } <span class="k">on</span> Offline {
+      report.offline = <span class="k">true</span>;
+    }
+    <span class="k">return</span> report;
+  }</pre></div>
+
+<ul>
+<li>Push first, in order: the server must see the person’s changes before the app asks what the server thinks.</li>
+<li>When the network is gone, the engine stops quietly. Nothing is lost: the outbox is still there for the next run.</li>
+<li>A refusal, such as “Sold out”, is marked on the order and taken out of the outbox. Retrying it every minute forever would only drain the battery.</li>
+<li>The pull asks only for versions above the cursor, merges each change, and moves the cursor.</li>
+</ul>
+
+<p>The test walks through everything the server can do to the app:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/sync_test.dart (part)</div><pre class="code">    <span class="k">final</span> local = MemoryLocalStore();
+    <span class="k">final</span> remote = FakeRemote()..online = <span class="k">false</span>;
+    <span class="k">final</span> engine = SyncEngine(local, remote);
+
+    <span class="k">await</span> local.put(<span class="k">const</span> Order(id: <span class="s">&#x27;a&#x27;</span>, title: <span class="s">&#x27;Latte&#x27;</span>));
+    <span class="k">await</span> local.put(<span class="k">const</span> Order(id: <span class="s">&#x27;b&#x27;</span>, title: <span class="s">&#x27;Cherry cake&#x27;</span>));
+    debugPrint(
+      <span class="s">&#x27;offline:           ${await engine.sync()}, waiting: ${(await local.outbox()).length}&#x27;</span>,
+    );
+
+    remote
+      ..online = <span class="k">true</span>
+      ..loseNextAnswer = <span class="k">true</span>;
+    debugPrint(
+      <span class="s">&#x27;answer lost:       ${await engine.sync()}, waiting: ${(await local.outbox()).length}&#x27;</span>,
+    );
+    debugPrint(
+      <span class="s">&#x27;next sync:         ${await engine.sync()}, waiting: ${(await local.outbox()).length}&#x27;</span>,
+    );
+    debugPrint(<span class="s">&#x27;orders on server:  ${remote.orders.length}&#x27;</span>);
+    expect(remote.orders.length, <span class="n">2</span>);
+
+    remote.soldOut.add(<span class="s">&#x27;Muffin&#x27;</span>);
+    <span class="k">await</span> local.put(<span class="k">const</span> Order(id: <span class="s">&#x27;c&#x27;</span>, title: <span class="s">&#x27;Muffin&#x27;</span>));
+    debugPrint(<span class="s">&#x27;sold out:          ${await engine.sync()}&#x27;</span>);
+    debugPrint(<span class="s">&#x27;again:             ${await engine.sync()}&#x27;</span>);
+    expect((<span class="k">await</span> local.<span class="k">get</span>(<span class="s">&#x27;c&#x27;</span>))!.<span class="k">sync</span>, SyncState.failed);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/sync_test.dart</span>
+00:00 +0: loading test/sync_test.dart
+00:00 +0: orders wait offline, are sent once, and refusals are not retried
+offline:           offline (sent 0), waiting: 2
+answer lost:       offline (sent 0), waiting: 2
+next sync:         sent 2, refused 0, pulled 2, waiting: 0
+orders on server:  2
+sold out:          sent 0, refused 1, pulled 0
+again:             sent 0, refused 0, pulled 0
+00:00 +1: All tests passed!</pre></div>
+
+<p>Offline, both orders wait. Then the server saves the first order but its answer is lost: the engine sees an error, stops, and keeps both orders queued. The next sync sends both again, and the server still has two orders, not three, because each order’s id is its idempotency key, as in Chapter 5. The sold-out muffin is refused once, and the next sync does not try it again.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Ids made by the server cannot work offline: the order needs an id the moment it is written on the phone, and that id must stay the same through every retry. Generate it on the phone, randomly enough that two phones never collide: a UUID, or as here, sixteen random hexadecimal characters.</p></aside>
+
+<h2><span class="sec">6.4</span> <span>Conflicts</span></h2>
+
+<p>A <dfn>conflict</dfn> is two changes to the same thing, made apart. Offline, the person adds a note, “No sugar”, to an order; meanwhile the barista marks it ready. When the phone returns, which wins? With clear owners, both do: the note is the person’s, the status is the café’s.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/sync_engine.dart (part)</div><pre class="code">  <span class="c line-bidi">// Merge field by field: the café&#x27;s status always wins; the note from the server only if ours has no unsent change.</span>
+  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; _merge(<span class="k">Map</span>&lt;<span class="k">String</span>, <span class="k">Object</span>&gt; change) <span class="k">async</span> {
+    <span class="k">final</span> id = change[<span class="s">&#x27;id&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>;
+    <span class="k">final</span> mine = <span class="k">await</span> local.<span class="k">get</span>(id);
+    <span class="k">final</span> status = change[<span class="s">&#x27;status&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>;
+    <span class="k">final</span> version = change[<span class="s">&#x27;version&#x27;</span>]! <span class="k">as</span> <span class="k">int</span>;
+    <span class="k">if</span> (mine == <span class="k">null</span>) {
+      <span class="k">await</span> local.put(
+        Order(
+          id: id,
+          title: change[<span class="s">&#x27;title&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>,
+          note: change[<span class="s">&#x27;note&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>,
+          status: status,
+          <span class="k">sync</span>: SyncState.synced,
+          version: version,
+        ),
+      );
+    } <span class="k">else</span> <span class="k">if</span> (mine.<span class="k">sync</span> == SyncState.queued) {
+      <span class="k">await</span> local.put(mine.copyWith(status: status));
+    } <span class="k">else</span> {
+      <span class="k">await</span> local.put(
+        mine.copyWith(
+          status: status,
+          note: change[<span class="s">&#x27;note&#x27;</span>]! <span class="k">as</span> <span class="k">String</span>,
+          version: version,
+        ),
+      );
+    }
+  }
+}</pre></div>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/merge_test.dart</span>
+00:00 +0: loading test/merge_test.dart
+00:00 +0: an offline note and the new status from the café both survive
+00:00 +1: All tests passed!</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>There are a few classic answers to conflicts. <dfn>Last write wins</dfn> keeps whichever change is newer: simple, and silently loses the other. <dfn>Field ownership</dfn>, as here, gives each field one writer, so most conflicts disappear. <dfn>Server decides</dfn> lets the server reject a stale change and the app ask the person. And for shared documents edited by many people at once, such as a shopping list, there are <dfn>CRDTs</dfn>, data types designed so that any two sets of changes can always be merged.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why do screens watch the local store instead of awaiting the server?</li><li>The server saved an order but the answer was lost. Why is there still only one order after the next sync?</li><li>Why is a refused order taken out of the outbox?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">6.5</span> <span>The screen</span></h2>
+
+<p>Placing an order writes it locally, then tries a sync. The order is on the screen before the network has even been tried:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/offline/providers.dart (part)</div><pre class="code">  <span class="k">Future</span>&lt;<span class="k">void</span>&gt; place(<span class="k">String</span> title) <span class="k">async</span> {
+    <span class="c line-bidi">// Write locally first: the order is on the screen before the network is even tried.</span>
+    <span class="k">await</span> ref.read(localProvider).put(Order(id: newId(), title: title));
+    <span class="c line-bidi">// If the network is there, send it now; if not, it waits in the outbox.</span>
+    <span class="k">await</span> ref.read(lastSyncProvider.notifier).run();
+  }</pre></div>
+
+<p>The demo has a switch that cuts the pretend network, and a button that plays the café’s side, marking the first order ready on the server:</p>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-offline-en-shots-offline.png" alt=""></div>
+<figcaption>Offline: two orders waiting</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-offline-en-shots-synced.png" alt=""></div>
+<figcaption>Online again: sent</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-offline-en-shots-ready.png" alt=""></div>
+<figcaption>The café marked one ready</figcaption>
+</figure>
+</div>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/screen_test.dart</span>
+00:00 +0: loading test/screen_test.dart
+00:00 +0: offline, the order still appears, marked as waiting
+00:01 +1: All tests passed!</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Tell people the truth about each item, without alarming them: “waiting to send” is calm and honest; an error dialog for every offline tap is not. And never let a person believe something reached the server when it did not: payments in particular should be offline-queued only if the business accepts it, with clear words.</p></aside>
+
+<h2><span class="sec">6.6</span> <span>What else an offline app needs</span></h2>
+
+<ul>
+<li><strong>Deletes</strong> must be synced too. A deleted order becomes a <dfn>tombstone</dfn>, a row marked deleted, until the server confirms; otherwise the next pull brings it back.</li>
+<li><strong>Size.</strong> Decide what to keep and for how long: the last month of orders, not every order since 2019.</li>
+<li><strong>Schema changes.</strong> The local database outlives app versions, so it needs migrations, as in Book 5.</li>
+<li><strong>Privacy.</strong> Data on the phone can be read from backups and stolen phones; Chapter 14 covers encryption and what not to store at all.</li>
+</ul>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Screens that await the server</td><td>Spinners and errors whenever the network is weak</td><td>Screens watch the local store</td></tr>
+<tr><td>Ids from the server</td><td>No id offline; duplicates after retries</td><td>Random ids made on the phone, used as idempotency keys</td></tr>
+<tr><td>Retrying refusals</td><td>Endless failed syncs, drained batteries</td><td>Mark them failed and leave the outbox</td></tr>
+<tr><td>Pulling everything every time</td><td>Slow syncs and wasted data</td><td>A cursor: only versions after the last one seen</td></tr>
+<tr><td>Last write wins on everything</td><td>Silent loss of the person’s changes</td><td>An owner for each field</td></tr>
+<tr><td>Deleting rows locally</td><td>Deleted items come back on the next pull</td><td>Tombstones until the server confirms</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>The local store is the source of truth; screens watch it and never wait for the network.</li>
+<li>Writes go to the store as queued; the outbox holds them until the server confirms.</li>
+<li>The sync engine pushes first, then pulls changes after a cursor; it stops quietly offline and tries again later.</li>
+<li>Ids are made on the phone and double as idempotency keys; refusals are marked, not retried.</li>
+<li>Conflicts are solved by giving every field an owner, and merging field by field.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the local store always answers at once, online or not; the server may be slow or unreachable, and a screen that waits for it is broken whenever the network is. 2. Because the order’s id, made on the phone, travels with every attempt and works as an idempotency key: the server finds it already saved and updates it instead of creating another. 3. Because a refusal will not change by retrying; keeping it in the outbox would fail on every sync forever, so it is marked failed and shown to the person instead.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects add what the demo leaves out: a count of waiting changes, syncing without a button, and a store that survives closing the app.</p>
+
+<div class="project">
+<p class="project-label">Project 6.1 · Easy</p>
+<h3>How many are waiting?</h3>
+<p class="project-goal">A provider that counts the orders waiting to be sent, for a badge on the screen.</p>
+<p class="project-skills"><strong>You will practise:</strong> derived providers from a <code>StreamProvider</code>, and testing them with a container.</p>
+<ol class="steps">
+<li>Watch <code>ordersProvider</code> and count the orders whose sync state is <code>queued</code>.</li>
+<li>Test: go offline, place two orders, expect 2; go online, sync, expect 0, and every order synced.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> stream values travel through the store’s stream and the provider before they reach the count: after writing, give them a moment, <code>await Future.delayed(const Duration(milliseconds: 50))</code>, before reading it. With <code>Duration.zero</code> the test reads too early.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/pending_test.dart</span>
+00:00 +0: loading test/pending_test.dart
+00:00 +0: the badge counts what is waiting
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 6.2 · Medium</p>
+<h3>Sync when the network returns</h3>
+<p class="project-goal">Send what was waiting as soon as the app is online again, without the person tapping anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>ref.listen</code> for side effects, and comparing the previous and new values.</p>
+<ol class="steps">
+<li>A provider listens to <code>onlineProvider</code> and runs a sync when the value changes from <code>false</code> to <code>true</code>.</li>
+<li>Keep the provider alive by listening to it from the app’s root (or the test).</li>
+<li>Test: offline, place an order; go online; after a short pause the outbox is empty and the server has the order.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> on a real phone, the online signal comes from a package such as <code>connectivity_plus</code>, and it only says that a network interface exists, not that the server is reachable. Treat it as a hint to try a sync, never as a promise.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/auto_sync_test.dart</span>
+00:00 +0: loading test/auto_sync_test.dart
+00:00 +0: coming back online sends what was waiting
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 6.3 · Challenge</p>
+<h3>A store that survives closing the app</h3>
+<p class="project-goal">Implement <code>LocalStore</code> on SQLite, and run the sync engine against it unchanged.</p>
+<p class="project-skills"><strong>You will practise:</strong> implementing an interface with <code>sqflite</code>, keeping creation order, and making a stream from a database.</p>
+<ol class="steps">
+<li>Two tables: <code>orders</code>, with a <code>created</code> column so that the outbox keeps its order; and <code>meta</code> for the cursor.</li>
+<li><code>put</code> inserts or replaces, keeping the original <code>created</code>, and then announces the new list on a broadcast stream.</li>
+<li>Test the engine on it: offline, two orders in creation order in the outbox; online, sent; a status changed on the server, pulled; cursor 3.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> SQLite does not tell anyone that a table changed, so the store announces its own writes. Packages such as <code>drift</code> do this for you, with queries that are streams.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/sqlite_store_test.dart</span>
+00:00 +0: loading test/sqlite_store_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: the same sync works on SQLite
+00:00 +1: (tearDownAll)
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Why does the engine push before it pulls? What could go wrong the other way round?</li>
+<li><span class="level">Easy</span> Add a “Try again” action for failed orders. What should it change on the order, and where?</li>
+<li><span class="level medium">Medium</span> Add deleting an order that has not been sent yet, and one that has. Why are they different?</li>
+<li><span class="level medium">Medium</span> The café can now also edit notes (“we have no oat milk”). Which owner rule breaks, and how would you change the merge?</li>
+<li><span class="level hard">Challenge</span> Two phones of the same person edit the same order’s note offline. Design what happens when both come back, and write the test.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 7</p>
+<p>Part I gave the app its skeleton: rendering, layers, state, navigation, network and offline data. Part II is about quality, and starts with what people see first: a design system, so that fifty screens look like one app.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2522,6 +2928,16 @@ without a key, tapped twice: orders on the server: [1, 2]
 <li>Give requests an optional cancel token (an object with a <code>cancelled</code> flag, or a <code>Future</code> that completes on cancel), created by the screen and cancelled in <code>dispose</code>. The client checks it in two places: before each attempt, and after each wait, throwing <code>Cancelled</code>. Screens ignore <code>Cancelled</code>: nobody is there to see it. Without it, a person who left the screen still causes four requests and four waits.</li>
 <li>Wrap the client (an <code>http.BaseClient</code> like Project 5.3) or log in <code>_send</code>: <code>'$method $path -&gt; $status in ${watch.elapsedMilliseconds} ms'</code>. Never the <code>Authorization</code> header: logs are copied to crash reporters, support tickets and screenshots, and a token in a log lets anyone who reads it act as the person. Never the body: it holds personal data (names, addresses, messages), and collecting it in logs is both a privacy risk and, in many countries, against the law.</li>
 <li>Without jitter, the counts arrive in tall spikes: all one hundred clients at 0, at 200, at 600 and at 1400 milliseconds, and nothing in between, so the server that is just recovering meets a wall of requests at each spike and may fall over again. With full jitter the same requests spread across every bucket, a few per 100 milliseconds, and the recovering server sees a steady trickle. The total number of requests is the same; only their shape in time changes, and that shape decides whether the server recovers.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 6</h2>
+<ol class="exercises">
+<li>So that the server knows the person’s changes before the app compares notes with it. Pulling first has two costs. The pull brings the server’s older copy of things the person has just changed; with this chapter’s merge the queued note is protected, but with a simpler rule such as last write wins the unsent change would be overwritten. And every push creates new versions above the cursor, so the next pull fetches the app’s own changes back. Push first, then pull, and the cursor already covers them.</li>
+<li>It puts the order back in the outbox: <code>order.copyWith(sync: SyncState.queued)</code>, with the error cleared, then runs a sync. Clearing needs care: <code>copyWith</code> written with <code>error ?? this.error</code> can never set <code>error</code> back to <code>null</code>. Give it a separate way to clear (a <code>clearError</code> flag, or a method <code>retried()</code> that builds the new order), and put the action in the orders controller, next to <code>place</code>, so that screens only call it.</li>
+<li>An order that was never sent has never been seen by the server: it can simply be removed from the store and therefore from the outbox (unless a push for it is running at that moment, which the engine should guard against). An order that was sent exists on the server too: removing it locally would bring it back with the next pull. Mark it deleted and queued (a tombstone), push the delete, and remove the row only when the server confirms.</li>
+<li>The rule “the note belongs to the person” breaks: now two writers share one field, and field ownership can no longer decide. The cleanest fix is to give each writer its own field, a note from the person and a reply from the café, so ownership holds again. If one field must stay shared, the server should keep a version per field and refuse a change based on an older version, and the app should show the person both texts and let them choose.</li>
+<li>Both phones have a queued note based on version 1. The first to sync wins at the server (version 2). The second pushes a note based on version 1; the server answers with a conflict instead of overwriting, and returns its current note. The second phone marks the order as conflicting, keeps both texts, and asks the person (“Your other phone changed this note”). The test: one fake server, two local stores, two engines; edit offline on both, sync A, sync B, and expect A’s note on the server, a conflict on B with both notes, and no silent loss.</li>
 </ol>
 
 </section>
