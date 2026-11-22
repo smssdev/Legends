@@ -1,0 +1,208 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/offline/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Offline-First Apps</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>make a local store the source of truth for every screen</li>
+<li>keep unsent changes in an outbox, and send them when the network returns</li>
+<li>write a sync engine that pushes, then pulls only what changed</li>
+<li>resolve conflicts field by field, with a clear owner for each field</li>
+<li>survive lost answers and refusals without duplicates or endless retries</li>
+</ul>
+</div>
+
+<p class="lead">Chapter {{n-1}} made the app patient when the network blinks. This chapter makes it useful when the network is gone: in the metro, in a basement, on a plane, in a country road. The idea is simple and changes everything: screens never wait for the server. They read and write a store on the phone, which answers at once, and a separate engine keeps that store and the server in agreement, whenever it can.</p>
+
+<aside class="bit" data-mood="happy"><p>The fake server in this chapter is unkind on purpose: it goes offline, loses an answer after saving an order, refuses sold-out items, and changes statuses behind the app’s back. Every one of those is something a real server will do to your app eventually.</p></aside>
+
+<h2>{{n}}.1 The local store is the truth</h2>
+
+<pre class="plain" dir="ltr">screens  ──watch / write──▶  local store  ◀──push / pull──▶  server
+                              (outbox)        sync engine</pre>
+
+<ul>
+<li>Screens <em>watch</em> the local store: a stream that gives the current orders, then every change. They never call the server.</li>
+<li>Writing an order writes it locally, marked as <dfn>queued</dfn>: it appears on the screen at once, online or not.</li>
+<li>The <dfn>sync engine</dfn> pushes queued changes to the server and pulls what changed there, whenever it runs: after a write, on a button, when the network returns.</li>
+</ul>
+
+<p>Each order carries how far it got:</p>
+
+<pre data-code="lib/offline/order.dart" data-from="^// " data-title="lib/offline/order.dart (part)"></pre>
+
+<p>Two of its fields have different owners. The person writes the <code>note</code>; only the café changes the <code>status</code>. Saying this out loud, for every field, is what makes conflicts solvable later.</p>
+
+<h2>{{n}}.2 The store and its outbox</h2>
+
+<pre data-code="lib/offline/local_store.dart" data-from="^// " data-to="^}" data-title="lib/offline/local_store.dart (part)"></pre>
+
+<ul>
+<li><code>watch</code> is a stream: the screens rebuild when anything changes, whoever changed it, the person or the sync engine.</li>
+<li>The <dfn>outbox</dfn> is every order with a change the server has not confirmed, oldest first. Here it is a state on each order; apps with many kinds of changes keep a separate table of operations.</li>
+<li>The <dfn>cursor</dfn> remembers the newest server version already pulled, so the next pull asks only for what is newer.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The first version of this store wrote <code>watch</code> as <code>async*</code>: <code>yield await all();</code> then <code>yield* _changes.stream;</code>. It looks right, and it loses changes: the stream of changes is listened to only after the first list has been delivered, and any order written in that moment is never announced. Project {{n}}.1’s test caught it, counting one waiting order instead of two. <code>Stream.multi</code> sends the first list and subscribes in the same step, so nothing can fall between them.</p></aside>
+
+<p>The chapter keeps the store in memory, so that its screenshots can run in a browser; Project {{n}}.3 puts the same interface on SQLite, and nothing else changes.</p>
+
+<h2>{{n}}.3 The sync engine</h2>
+
+<pre data-code="lib/offline/sync_engine.dart" data-from="^// " data-to="^  }" data-title="lib/offline/sync_engine.dart (part)"></pre>
+
+<ul>
+<li>Push first, in order: the server must see the person’s changes before the app asks what the server thinks.</li>
+<li>When the network is gone, the engine stops quietly. Nothing is lost: the outbox is still there for the next run.</li>
+<li>A refusal, such as “Sold out”, is marked on the order and taken out of the outbox. Retrying it every minute forever would only drain the battery.</li>
+<li>The pull asks only for versions above the cursor, merges each change, and moves the cursor.</li>
+</ul>
+
+<p>The test walks through everything the server can do to the app:</p>
+
+<pre data-code="test/sync_test.dart" data-from="    final local" data-to="^  });" data-title="test/sync_test.dart (part)"></pre>
+<pre data-term="sync-test.sh"></pre>
+
+<p>Offline, both orders wait. Then the server saves the first order but its answer is lost: the engine sees an error, stops, and keeps both orders queued. The next sync sends both again, and the server still has two orders, not three, because each order’s id is its idempotency key, as in Chapter {{n-1}}. The sold-out muffin is refused once, and the next sync does not try it again.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Ids made by the server cannot work offline: the order needs an id the moment it is written on the phone, and that id must stay the same through every retry. Generate it on the phone, randomly enough that two phones never collide: a UUID, or as here, sixteen random hexadecimal characters.</p></aside>
+
+<h2>{{n}}.4 Conflicts</h2>
+
+<p>A <dfn>conflict</dfn> is two changes to the same thing, made apart. Offline, the person adds a note, “No sugar”, to an order; meanwhile the barista marks it ready. When the phone returns, which wins? With clear owners, both do: the note is the person’s, the status is the café’s.</p>
+
+<pre data-code="lib/offline/sync_engine.dart" data-from="^  // " data-to="^}" data-title="lib/offline/sync_engine.dart (part)"></pre>
+
+<pre data-term="merge-test.sh"></pre>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>There are a few classic answers to conflicts. <dfn>Last write wins</dfn> keeps whichever change is newer: simple, and silently loses the other. <dfn>Field ownership</dfn>, as here, gives each field one writer, so most conflicts disappear. <dfn>Server decides</dfn> lets the server reject a stale change and the app ask the person. And for shared documents edited by many people at once, such as a shopping list, there are <dfn>CRDTs</dfn>, data types designed so that any two sets of changes can always be merged.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why do screens watch the local store instead of awaiting the server?</li><li>The server saved an order but the answer was lost. Why is there still only one order after the next sync?</li><li>Why is a refused order taken out of the outbox?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 The screen</h2>
+
+<p>Placing an order writes it locally, then tries a sync. The order is on the screen before the network has even been tried:</p>
+
+<pre data-code="lib/offline/providers.dart" data-from="  Future<void> place" data-to="^  }" data-title="lib/offline/providers.dart (part)"></pre>
+
+<p>The demo has a switch that cuts the pretend network, and a button that plays the café’s side, marking the first order ready on the server:</p>
+
+<div class="phones">
+<figure data-img="shots/offline.png" data-frame="phone">
+<figcaption>Offline: two orders waiting</figcaption>
+</figure>
+<figure data-img="shots/synced.png" data-frame="phone">
+<figcaption>Online again: sent</figcaption>
+</figure>
+<figure data-img="shots/ready.png" data-frame="phone">
+<figcaption>The café marked one ready</figcaption>
+</figure>
+</div>
+
+<pre data-term="screen-test.sh"></pre>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Tell people the truth about each item, without alarming them: “waiting to send” is calm and honest; an error dialog for every offline tap is not. And never let a person believe something reached the server when it did not: payments in particular should be offline-queued only if the business accepts it, with clear words.</p></aside>
+
+<h2>{{n}}.6 What else an offline app needs</h2>
+
+<ul>
+<li><strong>Deletes</strong> must be synced too. A deleted order becomes a <dfn>tombstone</dfn>, a row marked deleted, until the server confirms; otherwise the next pull brings it back.</li>
+<li><strong>Size.</strong> Decide what to keep and for how long: the last month of orders, not every order since 2019.</li>
+<li><strong>Schema changes.</strong> The local database outlives app versions, so it needs migrations, as in Book 5.</li>
+<li><strong>Privacy.</strong> Data on the phone can be read from backups and stolen phones; Chapter 14 covers encryption and what not to store at all.</li>
+</ul>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Screens that await the server</td><td>Spinners and errors whenever the network is weak</td><td>Screens watch the local store</td></tr>
+<tr><td>Ids from the server</td><td>No id offline; duplicates after retries</td><td>Random ids made on the phone, used as idempotency keys</td></tr>
+<tr><td>Retrying refusals</td><td>Endless failed syncs, drained batteries</td><td>Mark them failed and leave the outbox</td></tr>
+<tr><td>Pulling everything every time</td><td>Slow syncs and wasted data</td><td>A cursor: only versions after the last one seen</td></tr>
+<tr><td>Last write wins on everything</td><td>Silent loss of the person’s changes</td><td>An owner for each field</td></tr>
+<tr><td>Deleting rows locally</td><td>Deleted items come back on the next pull</td><td>Tombstones until the server confirms</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>The local store is the source of truth; screens watch it and never wait for the network.</li>
+<li>Writes go to the store as queued; the outbox holds them until the server confirms.</li>
+<li>The sync engine pushes first, then pulls changes after a cursor; it stops quietly offline and tries again later.</li>
+<li>Ids are made on the phone and double as idempotency keys; refusals are marked, not retried.</li>
+<li>Conflicts are solved by giving every field an owner, and merging field by field.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the local store always answers at once, online or not; the server may be slow or unreachable, and a screen that waits for it is broken whenever the network is. 2. Because the order’s id, made on the phone, travels with every attempt and works as an idempotency key: the server finds it already saved and updates it instead of creating another. 3. Because a refusal will not change by retrying; keeping it in the outbox would fail on every sync forever, so it is marked failed and shown to the person instead.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects add what the demo leaves out: a count of waiting changes, syncing without a button, and a store that survives closing the app.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>How many are waiting?</h3>
+<p class="project-goal">A provider that counts the orders waiting to be sent, for a badge on the screen.</p>
+<p class="project-skills"><strong>You will practise:</strong> derived providers from a <code>StreamProvider</code>, and testing them with a container.</p>
+<ol class="steps">
+<li>Watch <code>ordersProvider</code> and count the orders whose sync state is <code>queued</code>.</li>
+<li>Test: go offline, place two orders, expect 2; go online, sync, expect 0, and every order synced.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> stream values travel through the store’s stream and the provider before they reach the count: after writing, give them a moment, <code>await Future.delayed(const Duration(milliseconds: 50))</code>, before reading it. With <code>Duration.zero</code> the test reads too early.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/pending-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Sync when the network returns</h3>
+<p class="project-goal">Send what was waiting as soon as the app is online again, without the person tapping anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>ref.listen</code> for side effects, and comparing the previous and new values.</p>
+<ol class="steps">
+<li>A provider listens to <code>onlineProvider</code> and runs a sync when the value changes from <code>false</code> to <code>true</code>.</li>
+<li>Keep the provider alive by listening to it from the app’s root (or the test).</li>
+<li>Test: offline, place an order; go online; after a short pause the outbox is empty and the server has the order.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> on a real phone, the online signal comes from a package such as <code>connectivity_plus</code>, and it only says that a network interface exists, not that the server is reachable. Treat it as a hint to try a sync, never as a promise.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/auto-sync-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A store that survives closing the app</h3>
+<p class="project-goal">Implement <code>LocalStore</code> on SQLite, and run the sync engine against it unchanged.</p>
+<p class="project-skills"><strong>You will practise:</strong> implementing an interface with <code>sqflite</code>, keeping creation order, and making a stream from a database.</p>
+<ol class="steps">
+<li>Two tables: <code>orders</code>, with a <code>created</code> column so that the outbox keeps its order; and <code>meta</code> for the cursor.</li>
+<li><code>put</code> inserts or replaces, keeping the original <code>created</code>, and then announces the new list on a broadcast stream.</li>
+<li>Test the engine on it: offline, two orders in creation order in the outbox; online, sent; a status changed on the server, pulled; cursor 3.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> SQLite does not tell anyone that a table changed, so the store announces its own writes. Packages such as <code>drift</code> do this for you, with queries that are streams.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/sqlite-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Why does the engine push before it pulls? What could go wrong the other way round?</li>
+<li><span class="level">Easy</span> Add a “Try again” action for failed orders. What should it change on the order, and where?</li>
+<li><span class="level">Medium</span> Add deleting an order that has not been sent yet, and one that has. Why are they different?</li>
+<li><span class="level">Medium</span> The café can now also edit notes (“we have no oat milk”). Which owner rule breaks, and how would you change the merge?</li>
+<li><span class="level">Challenge</span> Two phones of the same person edit the same order’s note offline. Design what happens when both come back, and write the test.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Part I gave the app its skeleton: rendering, layers, state, navigation, network and offline data. Part II is about quality, and starts with what people see first: a design system, so that fifty screens look like one app.</p>
+</div>
+</section>
