@@ -1274,15 +1274,18 @@
             },
             {
               "en": "CI/CD, Flavors and Signing",
-              "ar": "التكامل المستمر والنسخ المتعددة والتوقيع"
+              "ar": "التكامل المستمر والنسخ المتعددة والتوقيع",
+              "src": "b6/release"
             },
             {
               "en": "Crash Reporting and Analytics",
-              "ar": "تقارير الأعطال والتحليلات"
+              "ar": "تقارير الأعطال والتحليلات",
+              "src": "b6/observability"
             },
             {
               "en": "Capstone: A Production App",
-              "ar": "المشروع الختامي: تطبيق للإنتاج"
+              "ar": "المشروع الختامي: تطبيق للإنتاج",
+              "src": "b6/capstone"
             }
           ]
         }
@@ -1305,6 +1308,26 @@
           "en": "Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.",
           "ar": "Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط."
         }
+      },
+      "blurb": {
+        "en": "You can build a Flutter app; now build one a team can ship and keep. This book takes you from the render tree to the store: clean architecture, Riverpod, routing, resilient networking and offline data, a design system, motion, performance, tests at every level, accessibility, notifications, native code, security, CI and crash reporting. Every claim is measured: tests print the numbers, real builds run on Linux and Android, and the bugs they found are kept in the text. It ends with one production app that brings everything together.",
+        "ar": "تستطيع بناء تطبيق Flutter؛ والآن ابنِ تطبيقاً يشحنه فريق ويحافظ عليه. يأخذك هذا الكتاب من شجرة الرسم إلى المتجر: معمارية نظيفة، وRiverpod، والتوجيه، وشبكة متينة وبيانات دون اتصال، ونظام تصميم، وحركة، وأداء، واختبارات على كل مستوى، وإتاحة، وإشعارات، وكود أصلي، وأمان، وCI، وتقارير أعطال. كل ادعاء فيه مقيس: الاختبارات تطبع الأرقام، والنسخ الحقيقية تعمل على Linux وAndroid، والأخطاء التي وجدتها محفوظة في النص. وينتهي بتطبيق إنتاج واحد يجمع كل شيء."
+      },
+      "learn": {
+        "en": [
+          "Structure apps in layers and features, with Riverpod and go_router",
+          "Build networking that survives failures, and data that works offline",
+          "Make apps fast, accessible, beautiful and native-feeling, and prove it with tests",
+          "Use platform channels, notifications, background work and secure storage",
+          "Ship with flavors, signing, CI and crash reporting"
+        ],
+        "ar": [
+          "تبني التطبيقات بطبقات وميزات، مع Riverpod وgo_router",
+          "تبني شبكة تصمد أمام الأعطال، وبيانات تعمل دون اتصال",
+          "تجعل التطبيقات سريعة ومتاحة وجميلة وأصيلة الإحساس، وتثبت ذلك بالاختبارات",
+          "تستخدم قنوات المنصة والإشعارات والعمل في الخلفية والتخزين الآمن",
+          "تشحن بالنكهات والتوقيع وCI وتقارير الأعطال"
+        ]
       }
     },
     {

@@ -1,0 +1,5 @@
+{
+  "FLAVOR": "dev",
+  "API_URL": "https://dev.api.bitcafe.online",
+  "SHOW_DEBUG": true
+}

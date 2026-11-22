@@ -1,0 +1,16 @@
+# On every push and pull request, on a fresh Linux machine: the same script as on your computer.
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.50.1
+          cache: true
+      - run: flutter pub get
+      - run: sh tool/ci.sh
