@@ -69,6 +69,13 @@ async function serve() {
       const [kind, ...rest] = t.split('=');
       const name = rest.join('=');
       if (kind === 'wait') { await sleep(+name); continue; }
+      // storage=1: everything the page keeps in localStorage, saved as <out>-storage.json.
+      if (kind === 'storage') {
+        fs.mkdirSync(path.dirname(out), { recursive: true });
+        const kept = await page.evaluate(() => JSON.stringify(Object.fromEntries(Object.entries(localStorage)), null, 2));
+        fs.writeFileSync(out.replace(/\.png$/, '-storage.json'), kept + '\n');
+        continue;
+      }
       // aria=1: what a screen reader is given, as the browser's accessibility tree, saved as <out>-aria.txt.
       if (kind === 'aria') {
         fs.mkdirSync(path.dirname(out), { recursive: true });
