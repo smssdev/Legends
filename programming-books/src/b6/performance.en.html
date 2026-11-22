@@ -1,0 +1,196 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/performance/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Performance: Jank, Memory and Startup</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>think in frames: 16 milliseconds at 60 Hz, 8 at 120, and what happens when a frame is late</li>
+<li>rebuild only what changed, and prove it by counting rebuilds in a test</li>
+<li>decode images at the size they are shown, and measure the memory you save</li>
+<li>start an app faster by running independent work together and showing something at once</li>
+<li>keep heavy work off the main isolate, and keep repaints in their own layer</li>
+</ul>
+</div>
+
+<p class="lead">People rarely say an app is slow. They say it “feels cheap”, “stutters”, “heats my phone”, “takes forever to open”. Each of those has a cause that can be measured: a frame that took too long, a picture that filled the memory, a startup that waited for things one by one. This chapter measures each cause with a test that prints numbers, fixes it, and measures again.</p>
+
+<aside class="bit" data-mood="think"><p>The tests in this chapter count things: rebuilds, paints, bytes, frames. Counts are the same on every machine, so they make good tests. Milliseconds depend on the phone: section {{n}}.5 shows how to measure those on a real device, where they mean something.</p></aside>
+
+<h2>{{n}}.1 The frame budget</h2>
+
+<p>A screen at 60 Hz shows a new picture every 16.7 milliseconds; at 120 Hz, every 8.3. For each picture, Flutter does its work in two places. On the <dfn>UI thread</dfn>, the main isolate where your Dart code runs, it builds widgets, lays them out and records what to paint. On the <dfn>raster thread</dfn>, the engine turns those records into pixels on the GPU. If either side misses the deadline, the screen shows the previous picture again, and the eye sees a stutter: <dfn>jank</dfn>.</p>
+
+<p>Three rules follow from this:</p>
+<ul>
+<li><strong>Do less per frame.</strong> Every widget rebuilt, every row built, every layer painted costs time in the frame that needs it.</li>
+<li><strong>Do heavy work elsewhere.</strong> While your Dart code parses a large JSON on the UI thread, no frame can be built at all.</li>
+<li><strong>Measure in profile mode.</strong> Debug builds are many times slower than release builds, on purpose, to support hot reload and assertions. Never judge speed in debug; use <code>flutter run --profile</code> on a real phone.</li>
+</ul>
+
+<h2>{{n}}.2 Rebuild less</h2>
+
+<p>The order page has thirty drinks and a badge with the number of items. The first version keeps the number in the page’s state:</p>
+
+<pre data-code="lib/order_slow.dart" data-from="^class _SlowOrderPageState" data-to="^}" data-title="lib/order_slow.dart (part)"></pre>
+
+<p>It looks harmless. But <code>setState</code> rebuilds the whole <code>build</code> method, and the rows are new objects each time, so each one is built again. Each row counts its builds, and a test taps the button once:</p>
+
+<pre data-code="test/rebuilds_test.dart" data-from="^Future<int> rowsRebuiltByOneTap" data-to="^}" data-title="test/rebuilds_test.dart (part)"></pre>
+<pre data-term="rebuilds-test.sh"></pre>
+
+<p>Thirty rows rebuilt to change one number. The fast version makes two changes:</p>
+
+<pre data-code="lib/order_fast.dart" data-from="actions: [" data-to="floatingActionButton" data-title="lib/order_fast.dart (part)"></pre>
+<pre data-code="lib/order_fast.dart" data-from="^class DrinkColumn" data-title="lib/order_fast.dart (part)"></pre>
+
+<ul>
+<li>The count is a <code>ValueNotifier</code>, and only a <code>ValueListenableBuilder</code> around the badge listens to it. The page itself never rebuilds. (A Riverpod provider watched only by the badge, as in Chapter 3, does the same.)</li>
+<li>The rows live in their own widget, created with <code>const</code>. A <code>const</code> widget is the same object every time, and Flutter skips rebuilding a widget that has not changed.</li>
+</ul>
+
+<p>Zero rows rebuilt. Thirty rows are nothing for a phone; but the same mistake at the top of a large screen, with images, charts and text, is how apps start to stutter. The habit is cheap: keep state as low in the tree as the widgets that use it, and make what does not depend on it <code>const</code>.</p>
+
+<h2>{{n}}.3 Images and memory</h2>
+
+<p>A phone camera takes photos of 4032 by 3024 pixels. The menu shows them at 56 by 56. The file is small because JPEG compresses well, but to draw it, Flutter must <em>decode</em> it into raw pixels, four bytes each, and those bytes stay in memory while the image is cached. A test decodes the menu’s photo both ways:</p>
+
+<pre data-code="test/image_test.dart" data-from="^Future<ui.Image> decode" data-to="^}" data-title="test/image_test.dart (part)"></pre>
+<pre data-term="image-test.sh"></pre>
+
+<p>A file of a third of a megabyte becomes 46.5 MB of memory when decoded at full size: more than many phones will give an app for all its images. Decoded at the size it is shown, it takes 0.08 MB, almost six hundred times less. In a widget, <code>cacheWidth</code> does this, computed from the size on screen and the phone’s pixel density:</p>
+
+<pre data-code="lib/menu.dart" data-from="final width" data-to="title: Text(" data-title="lib/menu.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/menu.png" data-frame="phone">
+<figcaption>A thousand drinks, each photo decoded at 168 pixels wide</figcaption>
+</figure>
+</div>
+
+<p>On this phone the density is 3, so 56 logical pixels are 168 real ones: the picture is as sharp as it can be on that screen, and no sharper. Too much memory does not show up as jank at first; it shows up as the app being killed in the background, or the phone getting hot and slow after a few minutes of scrolling.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p><code>cacheWidth</code> is in real pixels, not logical ones. Writing <code>cacheWidth: 56</code> would decode a picture of 56 pixels and stretch it over 168: blurry on every modern phone. Always multiply by <code>MediaQuery.devicePixelRatioOf(context)</code>.</p></aside>
+
+<h2>{{n}}.4 Starting fast</h2>
+
+<p>An app is judged in its first second. A common <code>main</code> reads the settings, then opens the database, then fetches the menu, then shows something. The three steps here are stand-ins that wait as long as the real ones might:</p>
+
+<pre data-code="lib/startup.dart" data-from="^Future<void> startOneByOne" data-to="^}#2" data-title="lib/startup.dart (part)"></pre>
+<pre data-term="startup-test.sh"></pre>
+
+<p>One by one, the waits add up: 300 + 200 + 400, about 900 ms. The steps do not need each other, so <code>Future.wait</code> starts them together, and the app is ready when the slowest is: about 400 ms. And <code>runApp</code> is not kept waiting at all: a splash screen (or, better, the menu from the last visit, as in Chapter 6) appears on the first frame, and the real screen replaces it when the work is done.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does one <code>setState</code> at the top of a page rebuild every row, and how does <code>const</code> prevent it?</li><li>How much memory does a 4032 × 3024 photo take once decoded, and why?</li><li>When can three startup steps run with <code>Future.wait</code>, and when can they not?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Measuring on a real phone</h2>
+
+<p>Counts tell you that a change does less work. How long that work takes depends on the phone, so the milliseconds must be measured on one, ideally a mid-range Android phone a few years old, because that is the phone many of your users have:</p>
+
+<ul>
+<li><code>flutter run --profile</code> builds the app almost like a release, but keeps the hooks that tools need. Open <strong>DevTools</strong> from the link it prints.</li>
+<li>The <strong>Performance</strong> page draws every frame as two bars, UI and raster, against the frame budget. Slow frames are red; selecting one shows which builds, layouts and paints filled it. Turn on “Track widget builds” to see the rebuilds of section {{n}}.2 by name.</li>
+<li>The <strong>Memory</strong> page shows the app’s memory over time; scrolling the menu with full-size photos makes the line climb in steps of tens of megabytes.</li>
+<li><code>flutter run --profile --trace-startup</code> writes the time to the first frame into <code>build/start_up_info.json</code>.</li>
+<li><code>showPerformanceOverlay: true</code> on <code>MaterialApp</code> draws the two frame graphs on the phone’s screen itself, which is useful when testing in someone else’s hands.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Turn each performance fix into a test that counts, as this chapter does: rows rebuilt by a tap, rows created by a list, bytes per thumbnail. Counts never flake, so they can run on every pull request and catch the regression on the day it is written. Keep the millisecond measurements for the phone, before each release, with the same phone each time so that the numbers can be compared.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Judging speed in debug mode</td><td>Fixing problems that do not exist, missing real ones</td><td><code>flutter run --profile</code> on a real phone</td></tr>
+<tr><td><code>setState</code> at the top of a big screen</td><td>Everything rebuilt for one small change</td><td>State as low as its users; <code>const</code> for the rest</td></tr>
+<tr><td>Full-size images in thumbnails</td><td>Tens of megabytes per photo; the app is killed in the background</td><td><code>cacheWidth</code> times the pixel density</td></tr>
+<tr><td>Startup steps awaited one by one</td><td>A first second spent waiting</td><td><code>Future.wait</code>, and a first frame at once</td></tr>
+<tr><td>Parsing large data on the UI thread</td><td>Frozen screen while it runs</td><td><code>Isolate.run</code> (Project {{n}}.2)</td></tr>
+<tr><td>An animation sharing a layer with a heavy painting</td><td>The painting is repainted every frame</td><td><code>RepaintBoundary</code> (Project {{n}}.3)</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Each frame has 16 ms at 60 Hz, 8 at 120; work on the UI thread or the raster thread that misses it is jank.</li>
+<li>Keep state low and the rest <code>const</code>: a tap that rebuilt 30 rows rebuilds none.</li>
+<li>Decode images at their size on screen: 46.5 MB becomes 0.08 MB.</li>
+<li>Run independent startup work together and show a first frame at once: 900 ms becomes 400.</li>
+<li>Count work in tests; measure time in profile mode on a real phone, with DevTools.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>setState</code> runs the page’s whole <code>build</code>, which creates new row widgets, and Flutter rebuilds every widget that is a new object. A <code>const</code> widget is created once by the compiler and is the same object every time, so Flutter sees that it has not changed and skips it. 2. 4032 × 3024 × 4 bytes, about 46.5 MB, because a decoded image keeps four bytes (red, green, blue, alpha) for every pixel, whatever the size of the compressed file. 3. When none of them needs the result of another; a step that needs another’s result must wait for it, though it can still run alongside the steps that do not.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects measure three more causes of jank: long lists, heavy work on the UI thread, and repaints that spread.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>What a long list really costs</h3>
+<p class="project-goal">A list of 1000 drinks, written two ways. Count the rows that are created and the rows that are built in each, then scroll and count again.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>ListView</code> and <code>ListView.builder</code>, counters in tests, and <code>tester.drag</code>.</p>
+<ol class="steps">
+<li>Count creations with a function that makes each row, and builds with the counter inside <code>DrinkRow</code>.</li>
+<li>Pump <code>ListView(children: [...])</code> and <code>ListView.builder</code> with 1000 rows each and print both counts.</li>
+<li>Drag the builder list 3000 pixels and print how many rows are alive and how many were created in all.</li>
+</ol>
+<pre data-code="test/list_test.dart" data-from="^var created" data-to="^}#2" data-title="test/list_test.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/list-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the result surprised the author: both lists <em>build</em> only the 16 rows near the screen, because <code>ListView</code> is lazy either way. The difference is the 1000 widgets that <code>ListView(children:)</code> <em>creates</em> before showing anything, and keeps; with data from a server, that also means 1000 rows of work up front. After scrolling, the builder has created 69 rows in all and keeps only 12 alive.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Parse off the main isolate</h3>
+<p class="project-goal">The day’s orders arrive as 15 MB of JSON. Total them on the main isolate and with <code>Isolate.run</code>, and count how many frames could be drawn while the work ran.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Isolate.run</code>, periodic timers as a frame clock, and records.</p>
+<ol class="steps">
+<li>Generate 200,000 orders as JSON, and write <code>total(json)</code>, which decodes them and adds up the prices.</li>
+<li>Start a timer that ticks every 16 ms, as frames would, and count the ticks while the work runs.</li>
+<li>Run <code>total</code> directly, then inside <code>Isolate.run</code>, and compare the time, the frames due and the frames drawn.</li>
+</ol>
+<pre data-code="test/isolate_test.dart" data-from="^// A frame is due" data-to="^}" data-title="test/isolate_test.dart (part)"></pre>
+<p><strong>Your result should look like this</strong> (the milliseconds change a little on each run):</p>
+<pre data-term="projects/isolate-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> on the main isolate not a single tick fires: for 400 ms the app could not have drawn anything, animated anything or answered a tap. With <code>Isolate.run</code>, the work takes about as long, but nearly every frame is drawn; the one or two missing are the moments the main isolate spends starting the isolate and receiving its answer. Send the isolate the raw text and get back the small result (here a total); sending large objects between isolates costs copying time of its own.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Keep a chart out of the spinner’s frames</h3>
+<p class="project-goal">A dashboard shows a progress bar that animates and, under it, a sales chart that never changes. Prove that the chart is painted in every frame of the animation, then stop it with a <code>RepaintBoundary</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>CustomPainter</code>, layers and <code>RepaintBoundary</code>, and counting paints.</p>
+<ol class="steps">
+<li>Make the chart a <code>CustomPainter</code> that counts its <code>paint</code> calls, with <code>shouldRepaint</code> returning <code>false</code>.</li>
+<li>Pump the dashboard and 60 frames of 16 ms, with and without a <code>RepaintBoundary</code> around the chart, and print the paints.</li>
+<li>Expect no paints at all with the boundary, once the first frame is done.</li>
+</ol>
+<pre data-code="lib/repaint.dart" data-from="final chart" data-to="if (boundary)" data-title="lib/repaint.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/repaint-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> <code>shouldRepaint: false</code> is not enough, and that is the lesson. It only answers “has the painter changed?”; when the layer the chart shares with the progress bar is repainted, every painting in it is painted again. A <code>RepaintBoundary</code> gives the chart its own layer, which the engine reuses as long as the chart does not change.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Why can’t the slow page be fixed by writing <code>const DrinkRow(n: n)</code> inside its loop?</li>
+<li><span class="level">Easy</span> On a phone with a pixel density of 2, what <code>cacheWidth</code> does the menu use, and how many bytes does each decoded thumbnail take?</li>
+<li><span class="level">Medium</span> The menu shows the same photo a thousand times. How many times is it decoded while you scroll, and why?</li>
+<li><span class="level">Medium</span> Fetching the menu now needs the language from the settings. Rewrite <code>startTogether</code> so that it still runs as much as possible in parallel. How long does it take?</li>
+<li><span class="level">Challenge</span> Write a “rebuild budget” test for the fast order page: it fails if one tap rebuilds any row, and prints which widget type was rebuilt most. Why is a test like this more useful in CI than a test that measures milliseconds?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Every chapter so far has proved its claims with tests. The next one is about the tests themselves: unit, widget and integration tests, golden images, fakes and mocks, and a test suite that a team trusts enough to ship on a green build.</p>
+</div>
+</section>

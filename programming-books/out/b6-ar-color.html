@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: حركات تبدو أصيلة"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "الفصل 9: الأداء: التقطّع والذاكرة وسرعة الفتح"; } }
+@page ch09:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -155,7 +157,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">157</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">173</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -3786,6 +3788,392 @@ halfway through the push: normal 0.95, reduced motion: no fade at all
 <p>الحركة الناعمة تحتاج كل إطار في وقته: 16 ميلي ثانية في 60 Hz، و8 في 120. والفصل القادم يقيس الإطارات، ويجد العمل الذي يؤخرها، ويصلحه: إعادة البناء، والتخطيط، والصور، والقوائم، بـ DevTools وبالاختبارات.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b6/performance/ar">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">الفصل 9</p><h1>الأداء: التقطّع والذاكرة وسرعة الفتح</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفكر بالإطارات: 16 ميلي ثانية في 60 Hz، و8 في 120، وماذا يحدث حين يتأخر إطار</li>
+<li>تعيد بناء ما تغيّر فقط، وتثبت ذلك بعدّ مرات البناء في اختبار</li>
+<li>تفك الصور بالحجم الذي تُعرض به، وتقيس الذاكرة التي توفرها</li>
+<li>تُسرّع بدء التطبيق بتشغيل الأعمال المستقلة معاً وعرض شيء فوراً</li>
+<li>تُبعد العمل الثقيل عن الـ isolate الرئيسي، وتحصر إعادة الرسم في طبقتها</li>
+</ul>
+</div>
+
+<p class="lead">نادراً ما يقول الناس إن التطبيق بطيء. يقولون إنه «يبدو رخيصاً»، أو «يتقطع»، أو «يسخّن الهاتف»، أو «يأخذ دهراً ليفتح». ولكل واحدة منها سبب يمكن قياسه: إطار أخذ وقتاً أطول مما يجب، أو صورة ملأت الذاكرة، أو بدء انتظر الأشياء واحداً واحداً. ويقيس هذا الفصل كل سبب باختبار يطبع أرقاماً، ثم يصلحه، ثم يقيس مرة أخرى.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الاختبارات في هذا الفصل تعدّ الأشياء: مرات البناء، ومرات الرسم، والبايتات، والإطارات. والأعداد واحدة على كل جهاز، فتصلح اختبارات جيدة. أما الميلي ثانية فتعتمد على الهاتف: ويعرض القسم 9.5 كيف تُقاس على جهاز حقيقي، حيث يكون لها معنى.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>ميزانية الإطار</span></h2>
+
+<p>الشاشة في 60 Hz تعرض صورة جديدة كل 16.7 ميلي ثانية؛ وفي 120 Hz كل 8.3. ولكل صورة يعمل Flutter في مكانين. في <dfn>خيط الواجهة</dfn> (UI thread)، الـ isolate الرئيسي الذي يجري فيه كود Dart، يبني الـ Widgets ويخطط أماكنها ويسجل ما سيُرسم. وفي <dfn>خيط الرسم</dfn> (raster thread) يحوّل المحرك تلك التسجيلات إلى بكسلات على معالج الرسوم. وإن فات أيَّهما الموعد، تعرض الشاشة الصورة السابقة مرة أخرى، وترى العين تقطّعاً: <dfn>jank</dfn>.</p>
+
+<p>وينتج عن هذا ثلاث قواعد:</p>
+<ul>
+<li><strong>اعمل أقل في كل إطار.</strong> كل Widget يُعاد بناؤه، وكل صف يُبنى، وكل طبقة تُرسم، تكلّف وقتاً من الإطار الذي يحتاجها.</li>
+<li><strong>اعمل العمل الثقيل في مكان آخر.</strong> ما دام كود Dart يحلل JSON كبيراً في خيط الواجهة، لا يمكن بناء أي إطار إطلاقاً.</li>
+<li><strong>قِس في وضع profile.</strong> نسخ التطوير (debug) أبطأ بكثير من نسخ الإصدار، عمداً، لتدعم إعادة التحميل السريع والتأكيدات. فلا تحكم على السرعة في debug أبداً؛ استخدم <code>flutter run --profile</code> على هاتف حقيقي.</li>
+</ul>
+
+<h2><span class="sec">9.2</span> <span>أعد البناء أقل</span></h2>
+
+<p>صفحة الطلب فيها ثلاثون مشروباً وشارة بعدد القطع. والنسخة الأولى تحفظ العدد في حالة الصفحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_slow.dart (جزء)</div><pre class="code"><span class="k">class</span> _SlowOrderPageState <span class="k">extends</span> State&lt;SlowOrderPage&gt; {
+  <span class="k">var</span> count = <span class="n">0</span>;
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(
+        title: <span class="k">const</span> Text(<span class="s">&#x27;طلبك&#x27;</span>),
+        actions: [
+          Badge.count(count: count, child: <span class="k">const</span> Icon(Icons.local_cafe)),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(children: [<span class="k">for</span> (<span class="k">var</span> n = <span class="n">1</span>; n &lt;= <span class="n">30</span>; n++) DrinkRow(n: n)]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =&gt; setState(() =&gt; count++),
+        child: <span class="k">const</span> Icon(Icons.add),
+      ),
+    );
+  }
+}</pre></div>
+
+<p>تبدو بريئة. لكن <code>setState</code> تعيد تشغيل <code>build</code> كلها، والصفوف كائنات جديدة في كل مرة، فيُعاد بناء كل واحد منها. وكل صف يعدّ مرات بنائه، واختبار يضغط الزر مرة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/rebuilds_test.dart (جزء)</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">int</span>&gt; rowsRebuiltByOneTap(WidgetTester tester, Widget page) <span class="k">async</span> {
+  <span class="k">await</span> tester.pumpWidget(MaterialApp(home: page));
+  rowBuilds = <span class="n">0</span>;
+  <span class="k">await</span> tester.tap(find.byType(FloatingActionButton));
+  <span class="k">await</span> tester.pump();
+  expect(find.text(<span class="s">&#x27;1&#x27;</span>), findsOneWidget);
+  <span class="k">return</span> rowBuilds;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/rebuilds_test.dart</span>
+00:00 +0: loading test/rebuilds_test.dart
+00:00 +0: ضغطة واحدة، كم صفاً يُعاد بناؤه
+rows rebuilt by one tap: slow page 30, fast page 0
+00:01 +1: All tests passed!</pre></div>
+
+<p>ثلاثون صفاً أُعيد بناؤها لتغيير رقم واحد. والنسخة السريعة تغيّر شيئين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_fast.dart (جزء)</div><pre class="code">        actions: [
+          ValueListenableBuilder(
+            valueListenable: count,
+            builder: (context, value, child) =&gt;
+                Badge.count(count: value, child: child),
+            child: <span class="k">const</span> Icon(Icons.local_cafe),
+          ),
+        ],
+      ),
+      body: <span class="k">const</span> DrinkColumn(),
+      floatingActionButton: FloatingActionButton(</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_fast.dart (جزء)</div><pre class="code"><span class="k">class</span> DrinkColumn <span class="k">extends</span> StatelessWidget {
+  <span class="k">const</span> DrinkColumn({<span class="k">super</span>.key});
+
+  @override
+  Widget build(BuildContext context) =&gt; SingleChildScrollView(
+    child: Column(children: [<span class="k">for</span> (<span class="k">var</span> n = <span class="n">1</span>; n &lt;= <span class="n">30</span>; n++) DrinkRow(n: n)]),
+  );
+}</pre></div>
+
+<ul>
+<li>العدد صار <code>ValueNotifier</code>، ولا يستمع إليه إلا <code>ValueListenableBuilder</code> حول الشارة. والصفحة نفسها لا يُعاد بناؤها أبداً. (ومزوّد Riverpod لا يراقبه إلا الشارة، كما في الفصل 3، يفعل الشيء نفسه.)</li>
+<li>الصفوف في Widget خاص بها، يُصنع بـ <code>const</code>. والـ Widget الثابت هو الكائن نفسه في كل مرة، وFlutter يتخطى إعادة بناء Widget لم يتغير.</li>
+</ul>
+
+<p>صفر صفوف أُعيد بناؤها. ثلاثون صفاً لا شيء بالنسبة إلى الهاتف؛ لكن الخطأ نفسه في أعلى شاشة كبيرة، فيها صور ورسوم بيانية ونصوص، هو بداية تقطّع التطبيقات. والعادة رخيصة: أبقِ الحالة منخفضة في الشجرة بقدر انخفاض الـ Widgets التي تستخدمها، واجعل ما لا يعتمد عليها <code>const</code>.</p>
+
+<h2><span class="sec">9.3</span> <span>الصور والذاكرة</span></h2>
+
+<p>كاميرا الهاتف تلتقط صوراً بحجم 4032 في 3024 بكسل. والقائمة تعرضها بحجم 56 في 56. والملف صغير لأن JPEG يضغط جيداً، لكن ليرسمه Flutter عليه أن <em>يفكّه</em> إلى بكسلات خام، أربعة بايتات لكل بكسل، وتبقى تلك البايتات في الذاكرة ما دامت الصورة محفوظة. واختبار يفك صورة القائمة بالطريقتين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/image_test.dart (جزء)</div><pre class="code"><span class="k">Future</span>&lt;ui.Image&gt; decode(Uint8List bytes, {<span class="k">int</span>? width}) <span class="k">async</span> {
+  <span class="k">final</span> codec = <span class="k">await</span> ui.instantiateImageCodec(bytes, targetWidth: width);
+  <span class="k">return</span> (<span class="k">await</span> codec.getNextFrame()).image;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/image_test.dart</span>
+00:00 +0: loading test/image_test.dart
+00:00 +0: ذاكرة صورة مفكوكة
+file on disk:            0.32 MB
+decoded, full size:      4032 x 3024, 46.51 MB
+decoded, cacheWidth 168: 168 x 126, 0.08 MB
+00:00 +1: All tests passed!</pre></div>
+
+<p>ملف بثلث ميغابايت يصير 46.5 MB من الذاكرة حين يُفك بحجمه الكامل: أكثر مما تعطيه هواتف كثيرة لتطبيق من أجل كل صوره. وإذا فُك بالحجم الذي يُعرض به أخذ 0.08 MB، أي أقل بستمئة مرة تقريباً. وفي الـ Widget تفعل هذا <code>cacheWidth</code>، محسوبة من الحجم على الشاشة وكثافة بكسلات الهاتف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/menu.dart (جزء)</div><pre class="code">    <span class="k">final</span> width = (<span class="n">56</span> * MediaQuery.devicePixelRatioOf(context)).round();
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(title: <span class="k">const</span> Text(<span class="s">&#x27;القائمة&#x27;</span>)),
+      <span class="c line-bidi">// لا يُبنى إلا ما على الشاشة من صفوف، وقليل حولها.</span>
+      body: ListView.builder(
+        itemCount: <span class="n">1000</span>,
+        itemExtent: <span class="n">72</span>,
+        itemBuilder: (context, i) =&gt; ListTile(
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(<span class="n">12</span>),
+            <span class="c line-bidi">// فُكّ الصورة بالحجم الذي تُعرض به، لا بالحجم الذي التُقطت به.</span>
+            child: Image.asset(
+              <span class="s">&#x27;assets/photos/latte.jpg&#x27;</span>,
+              width: <span class="n">56</span>,
+              height: <span class="n">56</span>,
+              fit: BoxFit.cover,
+              cacheWidth: width,
+            ),
+          ),
+          title: Text(<span class="s">&#x27;مشروب ${i + 1}&#x27;</span>),</pre></div>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-performance-ar-shots-menu.png" alt=""></div>
+<figcaption>ألف مشروب، وكل صورة مفكوكة بعرض 168 بكسل</figcaption>
+</figure>
+</div>
+
+<p>الكثافة في هذا الهاتف 3، فالـ 56 بكسلاً منطقياً هي 168 بكسلاً حقيقياً: الصورة حادة بأقصى ما تسمح به الشاشة، لا أكثر. وزيادة الذاكرة لا تظهر تقطّعاً في البداية؛ بل تظهر تطبيقاً يُقتل في الخلفية، أو هاتفاً يسخن ويبطؤ بعد دقائق من التمرير.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p><code>cacheWidth</code> بالبكسلات الحقيقية لا المنطقية. فكتابة <code>cacheWidth: 56</code> تفك صورة بعرض 56 بكسل وتمطّها على 168: ضبابية على كل هاتف حديث. اضرب دائماً في <code>MediaQuery.devicePixelRatioOf(context)</code>.</p></aside>
+
+<h2><span class="sec">9.4</span> <span>بدء سريع</span></h2>
+
+<p>يُحكم على التطبيق في ثانيته الأولى. ودالة <code>main</code> شائعة تقرأ الإعدادات، ثم تفتح قاعدة البيانات، ثم تجلب القائمة، ثم تعرض شيئاً. والخطوات الثلاث هنا بدائل تنتظر قدر ما قد تنتظره الحقيقية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/startup.dart (جزء)</div><pre class="code"><span class="k">Future</span>&lt;<span class="k">void</span>&gt; startOneByOne() <span class="k">async</span> {
+  <span class="k">await</span> readSettings();
+  <span class="k">await</span> openDatabase();
+  <span class="k">await</span> fetchMenu();
+}
+
+<span class="c line-bidi">// الخطوات الثلاث لا تعتمد على بعضها: ابدأها معاً.</span>
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; startTogether() =&gt;
+    <span class="k">Future</span>.wait([readSettings(), openDatabase(), fetchMenu()]).then((_) {});
+
+<span class="c line-bidi">// اعرض شيئاً فوراً؛ وحمّل الباقي خلفه.</span>
+<span class="k">void</span> main() {
+  <span class="k">final</span> ready = startTogether();
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: <span class="k">false</span>,
+      <span class="c line-bidi">// من اليمين إلى اليسار، كما في الفصل 13 من الكتاب الخامس.</span>
+      builder: (context, child) =&gt;
+          Directionality(textDirection: TextDirection.rtl, child: child!),
+
+      theme: ThemeData(colorSchemeSeed: Colors.brown),
+      home: FutureBuilder(
+        future: ready,
+        builder: (context, snapshot) =&gt;
+            snapshot.connectionState == ConnectionState.done
+            ? <span class="k">const</span> MenuPage()
+            : <span class="k">const</span> Splash(),
+      ),
+    ),
+  );
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/startup_test.dart</span>
+00:00 +0: loading test/startup_test.dart
+00:00 +0: ثلاث خطوات، واحدة بعد الأخرى أو معاً
+one by one: 904 ms
+together:   401 ms
+00:01 +1: All tests passed!</pre></div>
+
+<p>واحدة بعد الأخرى تتراكم الانتظارات: 300 + 200 + 400، أي نحو 900 ms. والخطوات لا يحتاج بعضها بعضاً، فـ <code>Future.wait</code> تبدأها معاً، ويجهز التطبيق حين تنتهي أبطؤها: نحو 400 ms. و<code>runApp</code> لا تنتظر إطلاقاً: شاشة ترحيب (أو، وهو أفضل، القائمة من آخر زيارة، كما في الفصل 6) تظهر في الإطار الأول، والشاشة الحقيقية تحل محلها حين ينتهي العمل.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يعيد <code>setState</code> واحد في أعلى الصفحة بناء كل الصفوف، وكيف تمنع <code>const</code> ذلك؟</li><li>كم تأخذ صورة 4032 × 3024 من الذاكرة بعد فكّها، ولماذا؟</li><li>متى يمكن تشغيل ثلاث خطوات بدء بـ <code>Future.wait</code>، ومتى لا يمكن؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">9.5</span> <span>القياس على هاتف حقيقي</span></h2>
+
+<p>الأعداد تقول لك إن التغيير يعمل أقل. أما كم يستغرق ذلك العمل فيعتمد على الهاتف، فالميلي ثانية تُقاس على هاتف، والأفضل هاتف Android متوسط عمره بضع سنوات، لأنه الهاتف الذي في أيدي كثير من مستخدميك:</p>
+
+<ul>
+<li><code>flutter run --profile</code> يبني التطبيق كنسخة إصدار تقريباً، لكنه يُبقي الخطاطيف التي تحتاجها الأدوات. وافتح <strong>DevTools</strong> من الرابط الذي يطبعه.</li>
+<li>صفحة <strong>Performance</strong> ترسم كل إطار عمودين، للواجهة وللرسم، مقابل ميزانية الإطار. والإطارات البطيئة حمراء؛ واختيار واحد منها يعرض ما ملأه من بناء وتخطيط ورسم. وفعّل «Track widget builds» لترى إعادات البناء في القسم 9.2 بأسمائها.</li>
+<li>صفحة <strong>Memory</strong> تعرض ذاكرة التطبيق عبر الزمن؛ وتمرير القائمة بصور كاملة الحجم يجعل الخط يصعد بقفزات من عشرات الميغابايت.</li>
+<li><code>flutter run --profile --trace-startup</code> يكتب الوقت حتى الإطار الأول في <code>build/start_up_info.json</code>.</li>
+<li><code>showPerformanceOverlay: true</code> على <code>MaterialApp</code> يرسم منحنيي الإطار على شاشة الهاتف نفسها، وهو مفيد حين يجرّب التطبيقَ شخصٌ آخر.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>حوّل كل إصلاح أداء إلى اختبار يعدّ، كما يفعل هذا الفصل: صفوف يعيد الضغط بناءها، وصفوف تصنعها القائمة، وبايتات لكل صورة مصغرة. فالأعداد لا تتذبذب، فتعمل مع كل طلب دمج وتكشف التراجع في يوم كتابته. واحفظ قياسات الميلي ثانية للهاتف، قبل كل إصدار، وبالهاتف نفسه كل مرة لتُقارن الأرقام.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>الحكم على السرعة في وضع debug</td><td>إصلاح مشكلات غير موجودة، وتفويت الحقيقية</td><td><code>flutter run --profile</code> على هاتف حقيقي</td></tr>
+<tr><td><code>setState</code> في أعلى شاشة كبيرة</td><td>كل شيء يُعاد بناؤه لتغيير صغير</td><td>الحالة منخفضة بقدر مستخدميها؛ و<code>const</code> للباقي</td></tr>
+<tr><td>صور كاملة الحجم في المصغرات</td><td>عشرات الميغابايت لكل صورة؛ والتطبيق يُقتل في الخلفية</td><td><code>cacheWidth</code> مضروبة في كثافة البكسلات</td></tr>
+<tr><td>خطوات البدء تُنتظر واحدة بعد الأخرى</td><td>ثانية أولى تضيع في الانتظار</td><td><code>Future.wait</code>، وإطار أول فوراً</td></tr>
+<tr><td>تحليل بيانات كبيرة في خيط الواجهة</td><td>شاشة متجمدة أثناء ذلك</td><td><code>Isolate.run</code> (المشروع 9.2)</td></tr>
+<tr><td>حركة تشارك طبقة مع رسم ثقيل</td><td>الرسم يُعاد في كل إطار</td><td><code>RepaintBoundary</code> (المشروع 9.3)</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>لكل إطار 16 ms في 60 Hz، و8 في 120؛ والعمل في خيط الواجهة أو خيط الرسم الذي يتجاوزها تقطّع.</li>
+<li>أبقِ الحالة منخفضة والباقي <code>const</code>: ضغطة كانت تعيد بناء 30 صفاً لا تعيد بناء أي صف.</li>
+<li>فُك الصور بحجمها على الشاشة: 46.5 MB تصير 0.08 MB.</li>
+<li>شغّل أعمال البدء المستقلة معاً واعرض إطاراً أول فوراً: 900 ms تصير 400.</li>
+<li>عُدّ العمل في الاختبارات؛ وقِس الوقت في وضع profile على هاتف حقيقي، بـ DevTools.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>setState</code> تشغّل <code>build</code> الصفحة كلها، فتصنع Widgets صفوف جديدة، وFlutter يعيد بناء كل Widget هو كائن جديد. أما الـ Widget الثابت (<code>const</code>) فيصنعه المترجم مرة، وهو الكائن نفسه كل مرة، فيرى Flutter أنه لم يتغير ويتخطاه. 2. 4032 × 3024 × 4 بايتات، نحو 46.5 MB، لأن الصورة المفكوكة تحفظ أربعة بايتات (أحمر وأخضر وأزرق وشفافية) لكل بكسل، أياً كان حجم الملف المضغوط. 3. حين لا تحتاج أي منها نتيجة غيرها؛ والخطوة التي تحتاج نتيجة أخرى يجب أن تنتظرها، وإن ظلت تستطيع أن تجري بجانب الخطوات التي لا تحتاجها.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تقيس ثلاثة أسباب أخرى للتقطّع: القوائم الطويلة، والعمل الثقيل في خيط الواجهة، وإعادة الرسم التي تنتشر.</p>
+
+<div class="project">
+<p class="project-label">المشروع 9.1 · سهل</p>
+<h3>كم تكلّف القائمة الطويلة حقاً</h3>
+<p class="project-goal">قائمة من 1000 مشروب، مكتوبة بطريقتين. عُدّ الصفوف التي تُصنع والصفوف التي تُبنى في كل منهما، ثم مرّر وعُدّ مرة أخرى.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>ListView</code> و<code>ListView.builder</code>، والعدادات في الاختبارات، و<code>tester.drag</code>.</p>
+<ol class="steps">
+<li>عُدّ مرات الصنع بدالة تصنع كل صف، ومرات البناء بالعداد داخل <code>DrinkRow</code>.</li>
+<li>اعرض <code>ListView(children: [...])</code> و<code>ListView.builder</code> بألف صف لكل منهما، واطبع العددين.</li>
+<li>اسحب قائمة الـ builder مسافة 3000 بكسل، واطبع كم صفاً حياً وكم صُنع إجمالاً.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/list_test.dart (جزء)</div><pre class="code"><span class="k">var</span> created = <span class="n">0</span>;
+
+DrinkRow row(<span class="k">int</span> n) {
+  created++;
+  <span class="k">return</span> DrinkRow(n: n);
+}
+
+<span class="k">Future</span>&lt;<span class="k">void</span>&gt; measure(
+  WidgetTester tester,
+  <span class="k">String</span> name,
+  Widget <span class="k">Function</span>() list,
+) <span class="k">async</span> {
+  created = <span class="n">0</span>;
+  rowBuilds = <span class="n">0</span>;
+  <span class="k">await</span> tester.pumpWidget(MaterialApp(home: Scaffold(body: list())));
+  debugPrint(<span class="s">&#x27;${name.padRight(21)}$created rows created, $rowBuilds built&#x27;</span>);
+}</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/list_test.dart</span>
+00:00 +0: loading test/list_test.dart
+00:00 +0: قائمة من 1000 مشروب، كم صفاً يُبنى
+ListView(children:)  1000 rows created, 16 built
+ListView.builder     16 rows created, 16 built
+after scrolling 3000 pixels: 12 rows alive, 69 created in all
+00:01 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> النتيجة فاجأت المؤلف: القائمتان كلتاهما لا <em>تبنيان</em> إلا الصفوف الـ 16 القريبة من الشاشة، لأن <code>ListView</code> كسولة في الحالتين. والفرق هو الألف Widget التي <em>تصنعها</em> <code>ListView(children:)</code> قبل أن تعرض شيئاً، وتحتفظ بها؛ ومع بيانات من خادم، يعني ذلك أيضاً عمل ألف صف مقدماً. وبعد التمرير، صنعت الـ builder ‏69 صفاً إجمالاً ولا تُبقي حياً إلا 12.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 9.2 · متوسط</p>
+<h3>التحليل خارج الـ isolate الرئيسي</h3>
+<p class="project-goal">طلبات اليوم تصل في 15 MB من JSON. اجمعها في الـ isolate الرئيسي وبـ <code>Isolate.run</code>، وعُدّ كم إطاراً كان يمكن رسمه أثناء العمل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Isolate.run</code>، والمؤقتات الدورية ساعةً للإطارات، والسجلات (records).</p>
+<ol class="steps">
+<li>ولّد 200,000 طلب بصيغة JSON، واكتب <code>total(json)</code> التي تحللها وتجمع الأسعار.</li>
+<li>شغّل مؤقتاً يدق كل 16 ms، كما تفعل الإطارات، وعُدّ دقاته أثناء العمل.</li>
+<li>شغّل <code>total</code> مباشرة، ثم داخل <code>Isolate.run</code>، وقارن الوقت والإطارات المستحقة والإطارات المرسومة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/isolate_test.dart (جزء)</div><pre class="code"><span class="c line-bidi">// A frame is due every 16 ms: count how many times the main isolate was free to draw one.</span>
+<span class="k">Future</span>&lt;(<span class="k">int</span>, <span class="k">int</span>, <span class="k">int</span>)&gt; whileWorking(FutureOr&lt;<span class="k">int</span>&gt; <span class="k">Function</span>() work) <span class="k">async</span> {
+  <span class="k">var</span> frames = <span class="n">0</span>;
+  <span class="k">final</span> ticker = Timer.periodic(
+    <span class="k">const</span> Duration(milliseconds: <span class="n">16</span>),
+    (_) =&gt; frames++,
+  );
+  <span class="k">final</span> watch = Stopwatch()..start();
+  <span class="k">final</span> result = <span class="k">await</span> work();
+  <span class="k">final</span> ms = watch.elapsedMilliseconds;
+  ticker.cancel();
+  <span class="k">return</span> (result, ms, frames);
+}</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا</strong> (الميلي ثانية تتغير قليلاً في كل تشغيل):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/isolate_test.dart</span>
+00:00 +0: loading test/isolate_test.dart
+00:00 +0: الإطارات الضائعة أثناء تحليل JSON كبير
+JSON: 15.0 MB, 200000 orders
+on the main isolate: 429 ms, 26 frames due, 0 drawn
+with Isolate.run:    436 ms, 27 frames due, 25 drawn
+00:01 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> في الـ isolate الرئيسي لا تدق دقة واحدة: طوال نحو 400 ms لم يكن التطبيق يستطيع رسم شيء، ولا تحريك شيء، ولا الرد على لمسة. ومع <code>Isolate.run</code> يأخذ العمل وقتاً قريباً، لكن تُرسم الإطارات كلها تقريباً؛ والإطار أو الإطاران الناقصان هما اللحظات التي يقضيها الـ isolate الرئيسي في بدء الـ isolate واستلام جوابه. أرسل إليه النص الخام واستلم النتيجة الصغيرة (هنا مجموع)؛ فإرسال كائنات كبيرة بين الـ isolates له وقت نسخ خاص به.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 9.3 · تحدٍّ</p>
+<h3>أبعد الرسم البياني عن إطارات المؤشر</h3>
+<p class="project-goal">لوحة فيها شريط تقدّم يتحرك، وتحته رسم بياني للمبيعات لا يتغير أبداً. أثبت أن الرسم البياني يُرسم في كل إطار من الحركة، ثم أوقف ذلك بـ <code>RepaintBoundary</code>.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>CustomPainter</code>، والطبقات و<code>RepaintBoundary</code>، وعدّ مرات الرسم.</p>
+<ol class="steps">
+<li>اجعل الرسم البياني <code>CustomPainter</code> يعدّ مرات <code>paint</code>، و<code>shouldRepaint</code> فيه تعيد <code>false</code>.</li>
+<li>اعرض اللوحة و60 إطاراً من 16 ms، مع <code>RepaintBoundary</code> حول الرسم البياني وبدونه، واطبع مرات الرسم.</li>
+<li>توقّع ألا يُرسم إطلاقاً مع الحد، بعد انتهاء الإطار الأول.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/repaint.dart (جزء)</div><pre class="code">    <span class="k">final</span> chart = CustomPaint(
+      size: <span class="k">const</span> Size(<span class="n">300</span>, <span class="n">160</span>),
+      painter: SalesChart(),
+    );
+    <span class="k">return</span> Scaffold(
+      body: Column(
+        children: [
+          <span class="k">const</span> LinearProgressIndicator(),
+          <span class="c line-bidi">// المؤشر يُعاد رسمه ستين مرة في الثانية؛ والحد يُبقي الرسم البياني خارج ذلك.</span>
+          <span class="k">if</span> (boundary) RepaintBoundary(child: chart) <span class="k">else</span> chart,</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/repaint_test.dart</span>
+00:00 +0: loading test/repaint_test.dart
+00:00 +0: ستون إطاراً لمؤشر، كم مرة يُرسم الرسم البياني
+chart painted in 60 frames: without a boundary 60, with one 0
+00:01 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> <code>shouldRepaint: false</code> لا تكفي، وهذا هو الدرس. فهي تجيب فقط عن «هل تغيّر الرسّام؟»؛ أما حين تُعاد رسم الطبقة التي يشاركها الرسم البياني مع شريط التقدم، فكل رسم فيها يُرسم من جديد. و<code>RepaintBoundary</code> تعطي الرسم البياني طبقته الخاصة، التي يعيد المحرك استخدامها ما دام الرسم البياني لم يتغير.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> لماذا لا يمكن إصلاح الصفحة البطيئة بكتابة <code>const DrinkRow(n: n)</code> داخل الحلقة؟</li>
+<li><span class="level">سهل</span> في هاتف كثافة بكسلاته 2، ما قيمة <code>cacheWidth</code> التي تستخدمها القائمة، وكم بايتاً تأخذ كل صورة مصغرة مفكوكة؟</li>
+<li><span class="level medium">متوسط</span> القائمة تعرض الصورة نفسها ألف مرة. كم مرة تُفك أثناء التمرير، ولماذا؟</li>
+<li><span class="level medium">متوسط</span> جلب القائمة صار يحتاج اللغة من الإعدادات. أعد كتابة <code>startTogether</code> لتظل تشغّل أكبر قدر ممكن بالتوازي. كم تستغرق؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب اختبار «ميزانية إعادة البناء» لصفحة الطلب السريعة: يفشل إن أعادت ضغطة واحدة بناء أي صف، ويطبع نوع الـ Widget الذي أُعيد بناؤه أكثر. لماذا يفيد اختبار كهذا في CI أكثر من اختبار يقيس الميلي ثانية؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 10</p>
+<p>كل فصل حتى الآن أثبت ادعاءاته باختبارات. والفصل القادم عن الاختبارات نفسها: اختبارات الوحدة والـ Widgets والتكامل، والصور الذهبية، والبدائل المزيفة والمحاكية، ومجموعة اختبارات يثق بها الفريق بما يكفي لينشر على بناء أخضر.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3881,6 +4269,16 @@ halfway through the push: normal 0.95, reduced motion: no fade at all
 <li>أوقف التكرار وأكمل الدورة الحالية: <code>turns.stop(); turns.animateTo(1, curve: Motion.enter)</code>، فتأخذ الحلقة من حيث هي إلى نهاية الدورة وتتوقف هناك. و<code>stop()</code> وحدها تجمّدها في منتصف الدورة؛ و<code>reset()</code> تقفز بها إلى البداية. وحين يبدأ الطلب التالي، <code>turns.repeat()</code> من جديد.</li>
 <li><code>flightShuttleBuilder: (context, animation, direction, from, to) =&gt; ClipOval(child: to.widget)</code> على البطلين. ويلزم حين لا يكون للطرفين الشكل نفسه، كصورة مربعة في القائمة ومستديرة في الصفحة، أو حين يعتمد Widget الوجهة على شيء غائب أثناء الطيران (سلف <code>Material</code>، أو أنماط نص). ومع دائرتين، كما هنا، الطائر الافتراضي صحيح أصلاً.</li>
 <li>اقرأ كل ملف <code>.dart</code> تحت <code>lib/</code> إلا <code>lib/motion/</code>، وأبلغ عن كل سطر يطابق <code>RegExp(r'Duration\(\s*milliseconds:')</code> بصيغة <code>file:line</code>، وتوقّع ألا يوجد شيء. إنه يحمي رموز الحركة كما يحمي حارس الفصل 7 الألوان والمسافات: لا تخترع الشاشات الجديدة سرعاتها. ويجب أن يسمح بالمدد التي ليست حركة، كمهلة الشبكة أو التأخير قبل البحث، فإما أن تبقى في ثابت له اسم في طبقتها (<code>lib/data/</code>، المستثناة من الفحص)، أو يُسمح بها سطراً سطراً بقائمة قصيرة مراجَعة.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 9</h2>
+<ol class="exercises">
+<li>لأن <code>n</code> تتغير في كل دورة من الحلقة، فـ <code>DrinkRow(n: n)</code> ليست تعبيراً ثابتاً، ويرفض المترجم <code>const</code> هناك. و<code>const</code> تعمل مستوى أعلى: تنتقل القائمة كلها إلى Widget خاص بها، <code>DrinkColumn</code>، لا يأخذ معاملات ويمكن أن يكون <code>const</code>. وصفوفه ما زالت تُبنى في حلقة، لكن مرة واحدة فقط، لأن لا شيء يطلب من <code>DrinkColumn</code> أن يُعاد بناؤه.</li>
+<li><code>(56 × 2).round()</code> = 112. والصورة تحتفظ بنسبة 4:3، فتُفك بحجم 112 × 84 بكسل: 112 × 84 × 4 = 37,632 بايتاً، نحو 0.04 MB.</li>
+<li>مرة واحدة. كل الصفوف تستخدم المزوّد نفسه، <code>AssetImage</code> للملف نفسه داخل <code>ResizeImage</code> بالعرض نفسه، فتشترك في مفتاح واحد في <code>ImageCache</code> الخاص بـ Flutter: الصف الأول يفك الصورة، والـ 999 الباقية تعيد استخدام الصورة المفكوكة. ولا تُفك مرة أخرى إلا إن أخرجها الكاش، وهذا يحدث بعد 1000 صورة أو 100 MB افتراضياً (<code>PaintingBinding.instance.imageCache.maximumSize</code> و<code>maximumSizeBytes</code>).</li>
+<li><code>Future&lt;void&gt; startTogether() =&gt; Future.wait([readSettings().then((settings) =&gt; fetchMenu(settings.language)), openDatabase()]).then((_) {});</code>. القائمة ما زالت تنتظر الإعدادات، 300 + 400 = 700 ms، لكن قاعدة البيانات تُفتح في الوقت نفسه، فيستغرق البدء كله نحو 700 ms بدل 900.</li>
+<li>احفظ خريطة لمرات البناء حسب نوع الـ Widget (كل Widget معدود يضيف <code>runtimeType</code> الخاص به)، وصفّرها بعد الإطار الأول، واضغط مرة، وتوقّع <code>expect(rowBuilds, 0)</code>، مع طباعة الخريطة مرتبة بالعدد عند الفشل لتسمّي الرسالة المتسبب. والعدد في CI حتمي: الكود نفسه يعطي الرقم نفسه على حاسوب محمول، وعلى جهاز CI مثقل، وعلى حاسوب مكتبي سريع، فيفشل الاختبار بالضبط حين يسوء الكود. أما اختبار الميلي ثانية فيقيس الجهاز بقدر ما يقيس الكود: إما يتذبذب، وإما يُعطى هامشاً واسعاً حتى لا يكشف شيئاً.</li>
 </ol>
 
 </section>
