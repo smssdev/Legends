@@ -1208,7 +1208,8 @@
             },
             {
               "en": "Networking, Errors and Retries",
-              "ar": "الشبكة والأخطاء وإعادة المحاولة"
+              "ar": "الشبكة والأخطاء وإعادة المحاولة",
+              "src": "b6/network"
             },
             {
               "en": "Offline-First Apps",
