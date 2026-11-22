@@ -1264,7 +1264,8 @@
             },
             {
               "en": "Platform Channels and Native Code",
-              "ar": "قنوات المنصة والكود الأصلي"
+              "ar": "قنوات المنصة والكود الأصلي",
+              "src": "b6/platform"
             },
             {
               "en": "Security on the Device",
