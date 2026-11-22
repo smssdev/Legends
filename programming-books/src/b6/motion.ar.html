@@ -1,0 +1,215 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/motion/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>حركات تبدو أصيلة</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تحوّل الحركة إلى رموز: مدد قليلة ومنحنيات قليلة، تُختار مرة واحدة</li>
+<li>تقرأ المنحنى أرقاماً، وتختار واحداً لما يصل وما يغادر وما يتحرك</li>
+<li>تحرّك الأشياء بتغيير قيمة، بالـ Widgets الضمنية، وتقود الحركة بنفسك بمتحكم</li>
+<li>تطير بـ Widget بين صفحتين بـ <code>Hero</code>، وتُدرّج قائمة بمتحكم واحد</li>
+<li>تحترم من يطلب حركة أقل، وتثبت ذلك باختبار</li>
+</ul>
+</div>
+
+<p class="lead">الحركة هي الطريقة التي يشرح بها التطبيق نفسه. بطاقة تكبر تقول «أُضيف شيء هنا»؛ وصورة تطير من القائمة إلى صفحة تقول «هذا المشروب نفسه، عن قرب». وحين تُتقن لا يلاحظها أحد. وحين تُسيء تكون أول ما يُلاحظ: قفزة، أو تقطّع، أو تلاشٍ يطول وأنت مستعجل. يعامل هذا الفصل الحركة كما عامل الفصل {{n-1}} الألوان: قرارات قليلة لها أسماء، ومكونات تستخدمها، واختبارات تفحصها.</p>
+
+<aside class="bit" data-mood="happy"><p>كل رقم في هذا الفصل طبعه اختبار، إطاراً إطاراً، وأشرطة الصور لقطات حقيقية أُخذت والحركة تجري. ولكي يلحق بها المتصفح، تعمل تلك التطبيقات أبطأ عشر مرات؛ ويعرض القسم {{n}}.5 السطر الوحيد الذي يفعل ذلك.</p></aside>
+
+<h2>{{n}}.1 رموز الحركة</h2>
+
+<p>كل حركة تحتاج قرارين: كم تطول، وكيف تتغير سرعتها في الطريق، أي <dfn>المنحنى</dfn>. وكلاهما يصير رمزاً:</p>
+
+<pre data-code="lib/motion/motion.dart" data-title="lib/motion/motion.dart"></pre>
+
+<ul>
+<li>ثلاث مدد تكفي معظم التطبيقات: <code>short</code> للأشياء الصغيرة (شارة، مفتاح)، و<code>medium</code> لبطاقة أو صفحة، و<code>long</code> للحركات الكبيرة عبر الشاشة.</li>
+<li>المنحنيات من <code>Easing</code> في Material 3. ما <em>يصل</em> يبدأ سريعاً ويستقر برفق، فيظهر فوراً ويهبط بنعومة؛ وما <em>يغادر</em> يبدأ ببطء ثم يسرع مبتعداً؛ وما <em>يتحرك</em> على الشاشة يأخذ المنحنى القياسي.</li>
+<li><code>motion(context, duration)</code> تعيد صفراً حين يطلب الشخص من النظام حركة أقل. وكل حركة في التطبيق تطلب مدتها عن طريقها.</li>
+</ul>
+
+<p>المنحنى يحوّل الوقت المنقضي، من 0 إلى 1، إلى المسافة التي قطعتها الحركة. واختبار يطبع أربعة منها:</p>
+
+<pre data-term="curves-test.sh"></pre>
+
+<p>بعد ربع الوقت يكون <code>linear</code> قد قطع ربع الحركة، و<code>easeInOut</code> ‏13% فقط؛ أما <code>emphasizedDecelerate</code> من Material فقد قطع 83%. ولهذا يبدو الوصول به سريعاً حتى في 300 ms: يحدث كل شيء تقريباً في الربع الأول، والباقي هبوط. والحركة الخطية تبدو آلية للسبب المعاكس: لا شيء في العالم الحقيقي يبدأ ويتوقف بأقصى سرعته.</p>
+
+<h2>{{n}}.2 الحركة الضمنية</h2>
+
+<p>أسهل حركة في Flutter ألا تكتبها. الـ Widgets التي تبدأ أسماؤها بـ <code>Animated</code> تراقب قيمها بنفسها؛ فإذا أعطاها إعادة البناء قيمة جديدة تحركت إليها وحدها. فبطاقة الطلب تكبر ويتغير لونها وتستدير زواياها حين يُضاف أول لاتيه، ويظهر المجموع تدريجياً:</p>
+
+<pre data-code="lib/order_card.dart" data-from="AnimatedContainer(" data-to="const SizedBox(height: 16)" data-title="lib/order_card.dart (جزء)"></pre>
+
+<p>الشاشة تنادي <code>setState(() =&gt; count++)</code> فقط. واختبار يضغط الزر ويطبع شفافية المجموع وارتفاع البطاقة كل 50 ms:</p>
+
+<pre data-term="implicit-test.sh"></pre>
+
+<p>العمودان يتبعان منحنييهما: بعد 50 ms صار المجموع ظاهراً بنسبة 74% (وصول، بـ <code>Motion.enter</code>)، بينما قطع الارتفاع 40% من طريقه (<code>Motion.move</code>). وهذه اللحظة نفسها في المتصفح، مبطَّأة:</p>
+
+<figure data-img="shots/card-film.png">
+<figcaption>البطاقة في ست لحظات بعد الضغط (من اليسار إلى اليمين، ثم السطر الثاني): تكبر وتستدير، ويظهر المجموع، وتصغر الشارة القديمة بينما تكبر الجديدة.</figcaption>
+</figure>
+
+<p>الشارة تستخدم <code>AnimatedSwitcher</code>، الذي يحرّك بين ابنين <em>مختلفين</em>. ويعرف أنهما مختلفان من مفتاحيهما: <code>ValueKey(count)</code> تجعل شارة الرقم 1 Widget جديداً، لا شارة الصفر بنص جديد. ولولا المفتاح لحدّث Flutter النص في مكانه، ولم يتحرك شيء. ويثبت المشروع {{n}}.1 أن الرقمين على الشاشة معاً وهما يتقاطعان.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>النسخة الأولى من هذه البطاقة كانت <code>Column</code> والمجموع تحت <code>Spacer</code>. وفي ارتفاع 96 لم يكن هناك مكان للمجموع المخفي، ففشل الاختبار برسالة «A RenderFlex overflowed by 12 pixels on the bottom»: الـ Widget غير المرئي يأخذ مكانه مع ذلك. والبطاقة الآن تضع المجموع بـ <code>Stack</code> وتقص أبناءها (<code>clipBehavior: Clip.hardEdge</code>)، فينكشف المجموع والبطاقة تكبر بدل أن يدفعها.</p></aside>
+
+<h2>{{n}}.3 الحركة الصريحة</h2>
+
+<p>الـ Widgets الضمنية تتحرك من قيمة إلى أخرى. وبعض الحركة بلا قيمة نهائية: حلقة تدور والقهوة تُحضَّر، أو نبضة على طلب حي. ولهذه تمسك الساعة بنفسك، أي <code>AnimationController</code>:</p>
+
+<pre data-code="lib/brewing.dart" data-from="^class _BrewingPageState" data-to="^}" data-title="lib/brewing.dart (جزء)"></pre>
+
+<ul>
+<li>المتحكم يحتاج <code>vsync</code>، مؤقتاً (ticker) يناديه مرة في كل إطار. و<code>SingleTickerProviderStateMixin</code> يعطي الحالة واحداً، ويوقفه حين لا تكون الصفحة ظاهرة، فلا تكلّف الحلقة المخفية شيئاً.</li>
+<li><code>..repeat()</code> يشغّله من 0 إلى 1 كل ثانيتين، إلى الأبد، و<code>dispose</code> يوقفه. ونسيان <code>dispose</code> يترك المؤقت يعمل بعد إغلاق الصفحة؛ وفي نسخ التطوير يتوقف Flutter بخطأ يسمّي الحالة صاحبة المؤقت النشط.</li>
+<li><code>AnimatedBuilder</code> يعيد بناء <code>builder</code> في كل إطار. وكل ما لا يتحرك يوضع في <code>child</code>: يُبنى مرة ويُسلَّم إلى الـ builder في كل مرة.</li>
+</ul>
+
+<div class="phones">
+<figure data-img="shots/brewing.png" data-frame="phone">
+<figcaption>الحلقة تدور؛ والكوب يُبنى مرة واحدة.</figcaption>
+</figure>
+</div>
+
+<p>الكوب يعدّ مرات بنائه، واختبار يشغّل 60 إطاراً:</p>
+
+<pre data-term="child-test.sh"></pre>
+
+<p>بناء واحد لستين إطاراً. ولو كُتب الكوب داخل الـ builder لبُني 61 مرة: لا ضرر لأيقونة واحدة، ومكلف لبطاقة مليئة بالنصوص والصور. ويقيس الفصل {{n+1}} كم يكلف ذلك.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>لماذا يأخذ الوصول منحنى يبدأ سريعاً ثم يبطئ؟</li><li>ماذا يفعل <code>key</code> في ابن <code>AnimatedSwitcher</code>؟</li><li>ما الذي مكانه <code>child</code> في <code>AnimatedBuilder</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.4 الأبطال (Heroes)</h2>
+
+<p>حين يفتح الشخص مشروباً، يجب أن تنتقل صورته من القائمة إلى الصفحة لتتبعها العين. ويسمي Flutter هذا <code>Hero</code>: أعطِ الوسم (<code>tag</code>) نفسه لـ Widget في كل صفحة، وأثناء التنقل يرفعه Flutter من الصفحة الأولى ويطير به إلى مكانه في الثانية.</p>
+
+<pre data-code="lib/hero_menu.dart" data-from="leading: Hero(" data-to="title: Text(name)" data-title="lib/hero_menu.dart، القائمة (جزء)"></pre>
+<pre data-code="lib/hero_menu.dart" data-from="Hero(#2" data-to="textAlign" data-title="lib/hero_menu.dart، الصفحة (جزء)"></pre>
+
+<figure data-img="shots/hero-film.png">
+<figcaption>الضغط على «لاتيه» (اللحظات من اليسار إلى اليمين): الدائرة البنية تطير من القائمة وتكبر إلى الصفحة، والصفحتان تتبدلان حولها.</figcaption>
+</figure>
+
+<p>لم يلزم شيء آخر: لا متحكم ولا مواضع. وقاعدتان تُبقيان الأبطال سليمة. الوسم فريد في الصفحة (بطلان بالوسم <code>latte</code> في قائمة واحدة خطأ)، فالأوسمة من المعرّفات لا الأسماء. والـ Widget يجب أن يبدو متشابهاً في الطرفين، لأن Flutter يطير بـ Widget الوجهة بعد تغيير حجمه؛ ودائرة تصير مربعاً في منتصف الطيران تبدو عطلاً.</p>
+
+<h2>{{n}}.5 إبطاء الزمن</h2>
+
+<p>أشرطة الصور في هذا الفصل أُخذت من نسخ من التطبيقات تبدأ بسطر واحد زائد:</p>
+
+<pre data-code="lib/hero_menu_slow.dart" data-title="lib/hero_menu_slow.dart"></pre>
+
+<p><code>timeDilation</code> يمطّ كل حركة في التطبيق. وهو للناس لا للتطبيق: اجعله 5 أو 10 وأنت تعمل على انتقال، فترى ما يحدث في كل إطار بدل ومضة ضبابية. وهكذا أيضاً يجب أن تُراجَع الحركة مع المصممين. ولا تنشره أبداً.</p>
+
+<h2>{{n}}.6 حركة أقل</h2>
+
+<p>عند بعض الناس تسبب الحركة على الشاشة دواراً أو غثياناً؛ وآخرون يفضلون هاتفاً أهدأ فقط. وفي Android إعداد («إزالة الصور المتحركة»)، وفي iOS آخر («تقليل الحركة»)، ويبلغه Flutter بـ <code>MediaQuery.disableAnimationsOf(context)</code>. ولأن كل حركة هنا تأخذ مدتها من <code>motion()</code>، يفحص اختبار واحد البطاقة كلها:</p>
+
+<pre data-code="test/reduce_test.dart" data-from="await tester.pumpWidget" data-to="expect(height, 180)" data-title="test/reduce_test.dart (جزء)"></pre>
+<pre data-term="reduce-test.sh"></pre>
+
+<p>بعد إطار واحد من الضغط تكون البطاقة في ارتفاعها النهائي. والحركة الأقل لا تعني غياب الاستجابة: البطاقة ما زالت تكبر والمجموع ما زال يظهر، بلا رحلة فقط. والحركة التي تحمل معنى (حلقة تقدّم، مؤشر تحميل) تبقى تتحرك؛ أما الزينة فتتوقف.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>راجع الحركة كما تراجع التخطيط: بالنسخة المبطَّأة، وعلى هاتف حقيقي متوسط، ومرة مع «إزالة الصور المتحركة». فمعظم أعطال الحركة لا تظهر إلا في واحدة من الثلاث: قفزة يخفيها الانتقال السريع، وتقطّع يخفيه حاسوب سريع، وشاشة تنتظر حركة لا تأتي.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>مدد ومنحنيات تختارها كل شاشة</td><td>تطبيق يتحرك كل جزء فيه بسرعته</td><td>رموز الحركة</td></tr>
+<tr><td>منحنيات خطية</td><td>حركة تبدو آلية</td><td>منحنيات Material حسب الدور</td></tr>
+<tr><td>لا مفتاح في <code>AnimatedSwitcher</code></td><td>النص يتغير في مكانه؛ لا شيء يتحرك</td><td>مفتاح من القيمة</td></tr>
+<tr><td>متحكم بلا <code>dispose</code></td><td>مؤقت يعمل بعد إغلاق الصفحة</td><td><code>dispose()</code> في الحالة</td></tr>
+<tr><td>Widgets ثابتة داخل الـ builder</td><td>تُبنى في كل إطار</td><td>مرّرها <code>child</code></td></tr>
+<tr><td>تجاهل الحركة الأقل</td><td>بعض الناس لا يستخدمون التطبيق براحة</td><td>كل مدة عبر <code>motion()</code>، واختبار</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>للحركة رموز أيضاً: مدد قليلة وثلاثة منحنيات، للوصول والمغادرة والتحرك.</li>
+<li>المنحنى يحوّل الوقت إلى تقدّم؛ والوصول يقطع معظم حركته مبكراً ويهبط برفق.</li>
+<li>الـ Widgets الضمنية <code>Animated…</code> تتحرك إلى القيم الجديدة وحدها؛ و<code>AnimatedSwitcher</code> يحتاج مفتاحاً ليرى ابناً جديداً.</li>
+<li><code>AnimationController</code> يقود الحركة التي بلا قيمة نهائية؛ والأجزاء الثابتة في <code>child</code> الخاص بـ <code>AnimatedBuilder</code>.</li>
+<li><code>Hero</code> يطير بـ Widget بين الصفحات بوسمه؛ و<code>timeDilation</code> يبطئ كل شيء للمراجعة.</li>
+<li>كل مدة تمر عبر <code>motion()</code>، فالحركة الأقل اختبار واحد.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ليظهر ما يصل فوراً ثم يستقر برفق: معظم الحركة يحدث في الربع الأول من الوقت (83% مع <code>emphasizedDecelerate</code>)، فيبدو سريعاً، والنهاية البطيئة تبدو هبوطاً لا توقفاً. 2. يخبر <code>AnimatedSwitcher</code> أن الابن Widget جديد؛ ولولاه لحُدّث الابن القديم في مكانه ولم يكن هناك ما يُحرَّك بينهما. 3. كل جزء من الصورة لا يتغير من إطار إلى إطار؛ يُبنى مرة ويُمرَّر إلى الـ builder في كل إطار.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تختبر ما قد تفوته العين، ثم تستخدم متحكماً واحداً لقائمة كاملة وثيماً واحداً لكل الصفحات.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>الرقمان معاً</h3>
+<p class="project-goal">أثبت باختبار أن الرقم القديم والجديد على الشاشة معاً في منتصف حركة الشارة، وأن الجديد وحده يبقى في النهاية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>pump</code> بمدة، و<code>pumpAndSettle</code>، والباحثات التي تعدّ.</p>
+<ol class="steps">
+<li>اعرض صفحة الطلب، واضغط الزر، وشغّل إطاراً واحداً لتبدأ الحركة.</li>
+<li>شغّل 150 ms، نصف <code>Motion.medium</code>، وتوقّع «0» واحداً و«1» واحداً.</li>
+<li>نادِ <code>pumpAndSettle</code> وتوقّع أن «0» اختفى.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> احذف <code>key</code> من الشارة وشغّل الاختبار مرة أخرى: يفشل في المنتصف، لأن هناك شارة واحدة فقط.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/badge-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>قائمة متدرجة</h3>
+<p class="project-goal">عناصر القائمة تصل واحداً بعد الآخر، صاعدة ومتلاشية إلى الظهور، يقودها كلها متحكم واحد، مع زر لإعادة الحركة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>Interval</code> و<code>CurvedAnimation</code> و<code>FadeTransition</code> و<code>SlideTransition</code>.</p>
+<ol class="steps">
+<li>أعطِ الصفحة متحكماً واحداً مدته 800 ms، يبدأ حين تظهر الصفحة، ومدته من <code>motion()</code>.</li>
+<li>أعطِ العنصر <em>i</em> الشريحة <code>Interval(i × 0.15, 0.4 + i × 0.15)</code> من المتحكم، مع <code>Motion.enter</code>.</li>
+<li>أضف زر «أعد الحركة» ينادي <code>controller.forward(from: 0)</code>، واختباراً يطبع شفافية كل عنصر كل 200 ms.</li>
+</ol>
+<pre data-code="lib/stagger.dart" data-from="for (final (i, name)" data-to="ListTile(title" data-title="lib/stagger.dart (جزء)"></pre>
+<p class="hint"><strong>تلميح:</strong> الـ <code>CurvedAnimation</code> تُصنع في <code>build</code>، وهذا مقبول هنا لأن الصفحة تُبنى مرة والانتقالات تستمع إلى المتحكم بنفسها. ولو كانت الصفحة تُعاد بناؤها كثيراً لكان مكانها الحالة، تُصنع مرة وتُتخلص منها.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<figure data-img="shots/stagger-film.png">
+<figcaption>المشروع {{n}}.2: بعد «أعد الحركة» تصل العناصر الأربعة واحداً بعد الآخر (اللحظات من اليسار إلى اليمين).</figcaption>
+</figure>
+<pre data-term="projects/stagger-test.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>انتقال واحد لكل الصفحات</h3>
+<p class="project-goal">استبدل انتقال الصفحات الخاص بالمنصة بانتقال التطبيق نفسه، تلاشٍ وانزلاق قصيران، على Android وiOS، في الثيم؛ ومع الحركة الأقل تظهر الصفحات فوراً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>PageTransitionsBuilder</code> و<code>PageTransitionsTheme</code>، واختبار تنقل في منتصفه.</p>
+<ol class="steps">
+<li>اكتب <code>PageTransitionsBuilder</code> يعيد الابن كما هو حين تكون الحركة أقل، وإلا <code>FadeTransition</code> حول <code>SlideTransition</code>، بمنحنيي الوصول والمغادرة من رموز الحركة.</li>
+<li>ضعه في <code>pageTransitionsTheme</code> في الثيم للمنصتين.</li>
+<li>اختبر الانتقال في منتصفه، مرة عادية ومرة مع الحركة الأقل، واطبع شفافية الصفحة الجديدة.</li>
+</ol>
+<pre data-code="lib/transitions.dart" data-from="^class FadeSlide" data-to="^}" data-title="lib/transitions.dart (جزء)"></pre>
+<p class="hint"><strong>تلميح:</strong> اعرض الحالتين تطبيقين مختلفين (<code>key</code> مختلف على <code>MaterialApp</code>)؛ وإلا بدأت الحالة الثانية وصفحات الأولى ما زالت في المكدس.</p>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/transition-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> غيّر منحنى البطاقة من <code>Motion.move</code> إلى <code>Curves.linear</code>، وشغّل اختبار الحركة الضمنية مرة أخرى، وقارن الارتفاعات عند 50 ms.</li>
+<li><span class="level">سهل</span> اجعل الشارة تنزلق إلى أعلى بدل أن تكبر. أي سطر واحد يتغير؟</li>
+<li><span class="level">متوسط</span> حين يجهز الطلب، يجب أن تُكمل حلقة التحضير الدورة التي تقوم بها ثم تتوقف، بدل أن تتجمد حيث هي. أي دوال المتحكم تستخدم؟</li>
+<li><span class="level">متوسط</span> أعطِ الأبطال <code>flightShuttleBuilder</code> يُبقي الدائرة مستديرة أثناء الطيران، أياً كان شكل الطرفين. متى يلزم ذلك؟</li>
+<li><span class="level">تحدٍّ</span> اكتب اختباراً يفشل إن صنع أي ملف تحت <code>lib/</code> مدة <code>Duration</code> بـ <code>milliseconds:</code> خارج <code>lib/motion/</code>. ماذا يحمي، وماذا يجب أن يسمح به؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>الحركة الناعمة تحتاج كل إطار في وقته: 16 ميلي ثانية في 60 Hz، و8 في 120. والفصل القادم يقيس الإطارات، ويجد العمل الذي يؤخرها، ويصلحه: إعادة البناء، والتخطيط، والصور، والقوائم، بـ DevTools وبالاختبارات.</p>
+</div>
+</section>

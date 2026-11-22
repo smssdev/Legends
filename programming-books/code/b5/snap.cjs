@@ -52,7 +52,7 @@ async function serve() {
     await page.evaluate(() => document.querySelector('flt-semantics-placeholder')?.click());
     await sleep(800);
   };
-  const needsTree = (ts) => ts.some((t) => !/^(at|keys|wait|reload)=/.test(t));
+  const needsTree = (ts) => ts.some((t) => !/^(at|keys|wait|reload|film)=/.test(t));
   const tokens = a3.split(byLabel ? '|' : ' ').filter(Boolean);
   // The tree is turned on again after each reload, only if a later tap needs it.
   const untilReload = (from) => {
@@ -69,6 +69,19 @@ async function serve() {
       const [kind, ...rest] = t.split('=');
       const name = rest.join('=');
       if (kind === 'wait') { await sleep(+name); continue; }
+      // film=6:300: six screenshots, one every 300 ms, saved as <out>-1.png … <out>-6.png (a filmstrip of a motion).
+      // film=0,200,500: one screenshot at each of those moments, in ms after the step before it.
+      if (kind === 'film') {
+        const times = name.includes(',')
+          ? name.split(',').map(Number)
+          : Array.from({ length: +name.split(':')[0] }, (_, k) => k * +name.split(':')[1]);
+        const start = Date.now();
+        for (const [k, at] of times.entries()) {
+          await sleep(Math.max(0, start + at - Date.now()));
+          await page.screenshot({ path: out.replace(/\.png$/, `-${k + 1}.png`) });
+        }
+        continue;
+      }
       // reload=1: close the app and open it again, as a person would; what it saved must still be there.
       if (kind === 'reload') {
         await page.reload();
@@ -96,7 +109,8 @@ async function serve() {
       const target = page.getByRole(kind === 'text' ? 'button' : kind, { name: starts });
       await target.first().click();
     }
-    await sleep(700);
+    // A filmstrip starts right after the step that starts the motion.
+    if (!(tokens[i + 1] || '').startsWith('film=')) await sleep(700);
   }
   await page.mouse.move(1, 1);
   await sleep(byLabel ? 2500 : 800);

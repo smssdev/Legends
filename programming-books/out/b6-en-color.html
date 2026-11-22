@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Design Systems in Flutter"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "Chapter 8: Animations That Feel Native"; } }
+@page ch08:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -153,7 +155,7 @@ Widget build(context, ref) =&gt;
           <p>The code in this book is tested with Flutter 3.50.1 and Dart 3.14. Every listing, terminal session and screenshot is produced from the files in the book’s code repository.</p>
           <p>Flutter, Dart, Firebase, Android and Google Play are trademarks of Google LLC. iOS, Xcode and App Store are trademarks of Apple Inc. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">117</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Architecture</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Flutter Really Renders</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Clean Architecture for Flutter</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">State Management with Riverpod</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Navigation at Scale with go_router</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Networking, Errors and Retries</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Offline-First Apps</span><span class="toc-p">88</span></li><li class="toc-part">Part 2: Quality</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Design Systems in Flutter</span><span class="toc-p">102</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Animations That Feel Native</span><span class="toc-p">117</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Performance: Jank, Memory and Startup</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Testing: Unit, Widget, Golden and Integration</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility on Mobile</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Push Notifications and Background Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Platform Channels and Native Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Security on the Device</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">CI/CD, Flavors and Signing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Crash Reporting and Analytics</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production App</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">136</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -3312,6 +3314,476 @@ bakery  text on primary   6.5 : 1
 <p>The app now looks like one app. The next chapter makes it move like one: implicit and explicit animations, hero transitions, and motion that feels native on both Android and iOS, without dropping a frame.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b6/motion/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Animations That Feel Native</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>turn motion into tokens: a few durations and a few curves, chosen once</li>
+<li>read a curve as numbers, and choose one for things that arrive, leave and move</li>
+<li>animate by changing a value, with implicit widgets, and drive a motion yourself with a controller</li>
+<li>fly a widget between two pages with a <code>Hero</code>, and stagger a list with one controller</li>
+<li>respect people who ask for less motion, and prove it with a test</li>
+</ul>
+</div>
+
+<p class="lead">Motion is how an app explains itself. A card that grows says “something was added here”; a picture that flies from a list to a page says “this is the same drink, closer”. Done well, nobody notices it. Done badly, it is the first thing people notice: a jump, a stutter, a fade that takes too long when you are in a hurry. This chapter treats motion like Chapter 7 treated colour: a few named decisions, components that use them, and tests that check them.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every number in this chapter was printed by a test, frame by frame, and the filmstrips are real screenshots taken while the motion ran. To make the browser fast enough to catch them, those apps run ten times slower; section 8.5 shows the one line that does it.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>Motion tokens</span></h2>
+
+<p>An animation needs two decisions: how long, and how the speed changes along the way, the <dfn>curve</dfn>. Both become tokens:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/motion/motion.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:material_ui/material_ui.dart&#x27;</span>;
+
+<span class="c line-bidi">// Motion tokens: three durations and three curves, like the spacing scale of Chapter 7.</span>
+<span class="k">abstract</span> <span class="k">final</span> <span class="k">class</span> Motion {
+  <span class="k">static</span> <span class="k">const</span> short = Duration(milliseconds: <span class="n">150</span>);
+  <span class="k">static</span> <span class="k">const</span> medium = Duration(milliseconds: <span class="n">300</span>);
+  <span class="k">static</span> <span class="k">const</span> long = Duration(milliseconds: <span class="n">500</span>);
+
+  <span class="c line-bidi">// Things that arrive slow down at the end; things that leave speed up.</span>
+  <span class="k">static</span> <span class="k">const</span> enter = Easing.emphasizedDecelerate;
+  <span class="k">static</span> <span class="k">const</span> exit = Easing.emphasizedAccelerate;
+  <span class="k">static</span> <span class="k">const</span> move = Easing.standard;
+}
+
+<span class="c line-bidi">// People who turn on reduced motion get the result at once.</span>
+Duration motion(BuildContext context, Duration duration) =&gt;
+    MediaQuery.disableAnimationsOf(context) ? Duration.zero : duration;</pre></div>
+
+<ul>
+<li>Three durations are enough for most apps: <code>short</code> for small things (a badge, a switch), <code>medium</code> for a card or a page, <code>long</code> for large movements across the screen.</li>
+<li>The curves come from Material 3’s <code>Easing</code>. Things that <em>arrive</em> start fast and settle gently, so they appear at once and land softly; things that <em>leave</em> start slowly and speed away; things that <em>move</em> on screen use the standard curve.</li>
+<li><code>motion(context, duration)</code> returns zero when the person has asked the system for less motion. Every animation in the app asks for its duration through it.</li>
+</ul>
+
+<p>A curve maps the time that has passed, from 0 to 1, to how far the animation has gone. A test prints four of them:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/curves_test.dart</span>
+00:00 +0: loading test/curves_test.dart
+00:00 +0: the curves, step by step
+time                    0.00  0.25  0.50  0.75  1.00
+linear                  0.00  0.25  0.50  0.75  1.00
+easeInOut               0.00  0.13  0.50  0.87  1.00
+standard                0.00  0.61  0.88  0.98  1.00
+emphasizedDecelerate    0.00  0.83  0.95  0.99  1.00
+00:00 +1: All tests passed!</pre></div>
+
+<p>A quarter of the way through the time, <code>linear</code> has done a quarter of the movement and <code>easeInOut</code> only 13%; Material’s <code>emphasizedDecelerate</code> has done 83%. That is why arrivals with it feel quick even at 300 ms: almost everything happens in the first quarter, and the rest is the landing. A linear animation feels mechanical for the opposite reason: nothing in the real world starts and stops at full speed.</p>
+
+<h2><span class="sec">8.2</span> <span>Implicit animations</span></h2>
+
+<p>The easiest animation in Flutter is not to write one. Widgets whose names start with <code>Animated</code> watch their own values; when a rebuild gives them a new value, they move to it by themselves. The order card grows, changes colour and rounds its corners when the first latte is added, and the total fades in:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/order_card.dart (part)</div><pre class="code">            AnimatedContainer(
+              key: <span class="k">const</span> ValueKey(<span class="s">&#x27;card&#x27;</span>),
+              duration: motion(context, Motion.medium),
+              curve: Motion.move,
+              height: full ? <span class="n">180</span> : <span class="n">96</span>,
+              padding: <span class="k">const</span> EdgeInsets.all(<span class="n">16</span>),
+              decoration: BoxDecoration(
+                color: full
+                    ? colors.primaryContainer
+                    : colors.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(full ? <span class="n">28</span> : <span class="n">12</span>),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: Stack(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          <span class="s">&#x27;Your order&#x27;</span>,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                      <span class="c line-bidi">// A new key is a new child: the old number leaves while the new one arrives.</span>
+                      AnimatedSwitcher(
+                        duration: motion(context, Motion.medium),
+                        transitionBuilder: (child, animation) =&gt;
+                            ScaleTransition(scale: animation, child: child),
+                        child: CircleAvatar(
+                          key: ValueKey(count),
+                          child: Text(<span class="s">&#x27;$count&#x27;</span>),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    bottom: <span class="n">0</span>,
+                    child: AnimatedOpacity(
+                      opacity: full ? <span class="n">1</span> : <span class="n">0</span>,
+                      duration: motion(context, Motion.medium),
+                      curve: Motion.enter,
+                      child: Text(
+                        <span class="s">&#x27;${count * 45} EGP&#x27;</span>,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            <span class="k">const</span> SizedBox(height: <span class="n">16</span>),</pre></div>
+
+<p>The screen only calls <code>setState(() =&gt; count++)</code>. A test taps the button and prints the total’s opacity and the card’s height every 50 ms:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/implicit_test.dart</span>
+00:00 +0: loading test/implicit_test.dart
+00:00 +0: AnimatedOpacity, frame by frame
+0 ms    opacity 0.00   height 96
+50 ms   opacity 0.74   height 130
+100 ms  opacity 0.89   height 157
+150 ms  opacity 0.95   height 170
+200 ms  opacity 0.98   height 176
+250 ms  opacity 1.00   height 179
+300 ms  opacity 1.00   height 180
+00:00 +1: All tests passed!</pre></div>
+
+<p>The two columns follow their curves: after 50 ms the total is already at 74% opacity (an arrival, with <code>Motion.enter</code>), while the height has done 40% of its way (<code>Motion.move</code>). And here is the same moment in the browser, slowed down:</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/card-film.png</span><b>560px</b></div><img src="img/b6-motion-en-shots-card-film.png" alt="">
+<figcaption>The card, six moments after the tap, left to right and then the second row: it grows and rounds, the total fades in, and the old badge shrinks while the new one grows.</figcaption>
+</figure>
+
+<p>The badge uses <code>AnimatedSwitcher</code>, which animates between two <em>different</em> children. It knows they are different by their keys: <code>ValueKey(count)</code> makes the badge for 1 a new widget, not the badge for 0 with new text. Without the key, Flutter would update the text in place, and nothing would move. Project 8.1 proves that both numbers are on screen while they cross.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The first version of this card was a <code>Column</code> with the total under a <code>Spacer</code>. At 96 pixels high there was no room for the invisible total, and the test failed with “A RenderFlex overflowed by 12 pixels on the bottom”: an invisible widget still takes its space. The card now places the total with a <code>Stack</code> and clips its children (<code>clipBehavior: Clip.hardEdge</code>), so the total is revealed as the card grows instead of pushing against it.</p></aside>
+
+<h2><span class="sec">8.3</span> <span>Explicit animations</span></h2>
+
+<p>Implicit widgets animate from one value to another. Some motion has no end value: a ring that turns while the coffee is brewing, a pulse on a live order. For those you hold the clock yourself, an <code>AnimationController</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/brewing.dart (part)</div><pre class="code"><span class="k">class</span> _BrewingPageState <span class="k">extends</span> State&lt;BrewingPage&gt;
+    <span class="k">with</span> SingleTickerProviderStateMixin {
+  <span class="k">late</span> <span class="k">final</span> turns = AnimationController(
+    vsync: <span class="k">this</span>,
+    duration: <span class="k">const</span> Duration(seconds: <span class="n">2</span>),
+  )..repeat();
+
+  @override
+  <span class="k">void</span> dispose() {
+    turns.dispose();
+    <span class="k">super</span>.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    <span class="k">final</span> color = Theme.of(context).colorScheme.primary;
+    <span class="k">return</span> Scaffold(
+      appBar: AppBar(title: <span class="k">const</span> Text(<span class="s">&#x27;Brewing your latte&#x27;</span>)),
+      body: Center(
+        child: AnimatedBuilder(
+          animation: turns,
+          <span class="c line-bidi">// The cup is built once and passed in; only the ring is rebuilt on each frame.</span>
+          child: <span class="k">const</span> Cup(),
+          builder: (context, child) =&gt; CustomPaint(
+            painter: Ring(turns.value, color),
+            child: SizedBox.square(dimension: <span class="n">180</span>, child: Center(child: child)),
+          ),
+        ),
+      ),
+    );
+  }
+}</pre></div>
+
+<ul>
+<li>A controller needs a <code>vsync</code>, a ticker that calls it once per frame. <code>SingleTickerProviderStateMixin</code> gives the state one, and stops it when the page is not visible, so a hidden ring costs nothing.</li>
+<li><code>..repeat()</code> runs it from 0 to 1 every two seconds, for ever, and <code>dispose</code> stops it. Forgetting <code>dispose</code> leaves a ticker running after the page has closed; in debug builds Flutter stops with an error that names the state with the active ticker.</li>
+<li><code>AnimatedBuilder</code> rebuilds its <code>builder</code> on every frame. Anything that does not move goes in <code>child</code>: it is built once and handed to the builder each time.</li>
+</ul>
+
+<div class="phones">
+<figure class="phone-shot"><div class="phone"><img src="img/b6-motion-en-shots-brewing.png" alt=""></div>
+<figcaption>The ring turns; the cup is built once.</figcaption>
+</figure>
+</div>
+
+<p>The cup counts its own builds, and a test runs 60 frames:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/child_test.dart</span>
+00:00 +0: loading test/child_test.dart
+00:00 +0: the child of an AnimatedBuilder is built once
+60 frames of the ring, the cup was built 1 time
+00:00 +1: All tests passed!</pre></div>
+
+<p>One build for 60 frames. Had the cup been written inside the builder, it would have been built 61 times: harmless for one icon, expensive for a card full of text and pictures. Chapter 9 measures what that costs.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why do arrivals use a curve that starts fast and slows down?</li><li>What does the <code>key</code> do in <code>AnimatedSwitcher</code>’s child?</li><li>What belongs in <code>AnimatedBuilder</code>’s <code>child</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">8.4</span> <span>Heroes</span></h2>
+
+<p>When a person opens a drink, its picture should travel from the list to the page, so the eye follows it. Flutter calls this a <code>Hero</code>: give the same <code>tag</code> to a widget on each page, and during the navigation Flutter lifts it out of the first page and flies it to its place on the second.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/hero_menu.dart, the list (part)</div><pre class="code">              leading: Hero(
+                tag: id,
+                child: CircleAvatar(
+                  backgroundColor: color,
+                  child: <span class="k">const</span> Icon(Icons.local_cafe, color: Colors.white),
+                ),
+              ),
+              title: Text(name),</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/hero_menu.dart, the page (part)</div><pre class="code">            Hero(
+              tag: id,
+              child: CircleAvatar(
+                radius: <span class="n">100</span>,
+                backgroundColor: color,
+                child: <span class="k">const</span> Icon(
+                  Icons.local_cafe,
+                  color: Colors.white,
+                  size: <span class="n">96</span>,
+                ),
+              ),
+            ),
+            Text(
+              <span class="s">&#x27;Espresso and steamed milk, in a big cup.&#x27;</span>,
+              textAlign: TextAlign.center,</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/hero-film.png</span><b>560px</b></div><img src="img/b6-motion-en-shots-hero-film.png" alt="">
+<figcaption>Tapping “Latte”: the brown circle flies from the list and grows into the page, while the pages change around it.</figcaption>
+</figure>
+
+<p>Nothing else was needed: no controller, no positions. Two rules keep heroes working. A tag must be unique on a page (two heroes with the tag <code>latte</code> on one list is an error), so tags come from ids, not names. And the two widgets should look alike at both ends, because Flutter flies the destination’s widget, resized; a circle that becomes a square mid-flight looks like a glitch.</p>
+
+<h2><span class="sec">8.5</span> <span>Slowing time</span></h2>
+
+<p>The filmstrips in this chapter were taken from versions of the apps that start with one extra line:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/hero_menu_slow.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:flutter/scheduler.dart&#x27;</span>;
+
+<span class="k">import</span> <span class="s">&#x27;hero_menu.dart&#x27;</span> <span class="k">as</span> app;
+
+<span class="c line-bidi">// Slowed down for the book&#x27;s filmstrips: every animation takes ten times longer.</span>
+<span class="k">void</span> main() {
+  timeDilation = <span class="n">10</span>;
+  app.main();
+}</pre></div>
+
+<p><code>timeDilation</code> stretches every animation in the app. It is for people, not for the app: set it to 5 or 10 while you work on a transition, and you see what happens in each frame instead of a blur. It is also how a design review should look at motion. Never ship it.</p>
+
+<h2><span class="sec">8.6</span> <span>Less motion</span></h2>
+
+<p>For some people, movement on screen causes dizziness or nausea; others simply prefer a calmer phone. Both Android (“Remove animations”) and iOS (“Reduce Motion”) have a setting, and Flutter reports it as <code>MediaQuery.disableAnimationsOf(context)</code>. Because every animation here takes its duration from <code>motion()</code>, one test checks the whole card:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">test/reduce_test.dart (part)</div><pre class="code">    <span class="k">await</span> tester.pumpWidget(
+      <span class="k">const</span> MediaQuery(
+        data: MediaQueryData(disableAnimations: <span class="k">true</span>),
+        child: MaterialApp(home: OrderPage()),
+      ),
+    );
+    <span class="k">await</span> tester.tap(find.byType(FilledButton));
+    <span class="k">await</span> tester.pump();
+    <span class="k">await</span> tester.pump();
+    <span class="k">final</span> height = tester.getSize(find.byKey(<span class="k">const</span> ValueKey(<span class="s">&#x27;card&#x27;</span>))).height;
+    debugPrint(<span class="s">&#x27;one frame after the tap: height ${height.toStringAsFixed(0)}&#x27;</span>);
+    expect(height, <span class="n">180</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/reduce_test.dart</span>
+00:00 +0: loading test/reduce_test.dart
+00:00 +0: with reduced motion, the change is immediate
+one frame after the tap: height 180
+00:00 +1: All tests passed!</pre></div>
+
+<p>One frame after the tap, the card is already at its final height. Less motion does not mean no feedback: the card still grows and the total still appears, just without the journey. Animations that carry meaning (a progress ring, a loading indicator) should keep moving; decoration should stop.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Review motion like you review layout: with the slowed-down build, on a real mid-range phone, and once with “Remove animations” turned on. Most motion bugs are visible only in one of those three: a jump that a fast transition hides, a stutter that a fast laptop hides, and a screen that waits for an animation that never comes.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Durations and curves chosen per screen</td><td>An app where every part moves at its own speed</td><td>Motion tokens</td></tr>
+<tr><td>Linear curves</td><td>Motion that feels mechanical</td><td>Material’s easing curves, by role</td></tr>
+<tr><td>No key in <code>AnimatedSwitcher</code></td><td>The text changes in place; nothing animates</td><td>A key from the value</td></tr>
+<tr><td>A controller without <code>dispose</code></td><td>A ticker that runs after the page closes</td><td><code>dispose()</code> in the state</td></tr>
+<tr><td>Static widgets inside the builder</td><td>Rebuilt on every frame</td><td>Pass them as <code>child</code></td></tr>
+<tr><td>Ignoring reduced motion</td><td>Some people cannot use the app comfortably</td><td>Every duration through <code>motion()</code>, and a test</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Motion has tokens too: a few durations and three curves, for arriving, leaving and moving.</li>
+<li>A curve maps time to progress; arrivals do most of their movement early and land softly.</li>
+<li>Implicit <code>Animated…</code> widgets move to new values by themselves; <code>AnimatedSwitcher</code> needs a key to see a new child.</li>
+<li>An <code>AnimationController</code> drives motion that has no end value; static parts go in <code>AnimatedBuilder</code>’s <code>child</code>.</li>
+<li>A <code>Hero</code> flies a widget between pages by its tag; <code>timeDilation</code> slows everything down for review.</li>
+<li>Every duration passes through <code>motion()</code>, so reduced motion is one test.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that what arrives is visible at once and then settles gently: most of the movement happens in the first quarter of the time (83% with <code>emphasizedDecelerate</code>), which feels quick, and the slow end feels like a landing rather than a stop. 2. It tells <code>AnimatedSwitcher</code> that the child is a new widget; without it, the old child would be updated in place and there would be nothing to animate between. 3. Every part of the picture that does not change from frame to frame; it is built once and passed to the builder on each frame.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects test what the eye can miss, then use one controller for a whole list and one theme for every page.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>Both numbers at once</h3>
+<p class="project-goal">Prove with a test that, halfway through the badge’s animation, the old number and the new one are both on screen, and that only the new one remains at the end.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>pump</code> with a duration, <code>pumpAndSettle</code>, and finders that count.</p>
+<ol class="steps">
+<li>Pump the order page, tap the button, and pump one frame to start the animation.</li>
+<li>Pump 150 ms, half of <code>Motion.medium</code>, and expect one “0” and one “1”.</li>
+<li>Call <code>pumpAndSettle</code> and expect that “0” is gone.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> remove the <code>key</code> from the badge and run the test again: it fails at the halfway point, because there is only one badge.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/badge_test.dart</span>
+00:00 +0: loading test/badge_test.dart
+00:00 +0: both numbers are on screen while they cross
+halfway: &quot;0&quot; 1, &quot;1&quot; 1
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>A staggered menu</h3>
+<p class="project-goal">The items of the menu arrive one after the other, sliding up and fading in, all driven by one controller, with a button to play it again.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>Interval</code>, <code>CurvedAnimation</code>, <code>FadeTransition</code> and <code>SlideTransition</code>.</p>
+<ol class="steps">
+<li>Give the page one controller of 800 ms, started when the page appears, with its duration from <code>motion()</code>.</li>
+<li>Give item <em>i</em> the slice <code>Interval(i × 0.15, 0.4 + i × 0.15)</code> of the controller, with <code>Motion.enter</code>.</li>
+<li>Add a “Play again” button that calls <code>controller.forward(from: 0)</code>, and a test that prints each item’s opacity every 200 ms.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/stagger.dart (part)</div><pre class="code">          <span class="k">for</span> (<span class="k">final</span> (i, name) <span class="k">in</span> items.indexed)
+            Builder(
+              builder: (context) {
+                <span class="c line-bidi">// Each item starts a little later: Interval gives each one its slice of the same controller.</span>
+                <span class="k">final</span> slice = CurvedAnimation(
+                  parent: controller,
+                  curve: Interval(
+                    i * <span class="n">0.15</span>,
+                    <span class="n">0.4</span> + i * <span class="n">0.15</span>,
+                    curve: Motion.enter,
+                  ),
+                );
+                <span class="k">return</span> FadeTransition(
+                  opacity: slice,
+                  child: SlideTransition(
+                    position: Tween(
+                      begin: <span class="k">const</span> Offset(<span class="n">0</span>, <span class="n">0.6</span>),
+                      end: Offset.zero,
+                    ).animate(slice),
+                    child: Card(
+                      margin: <span class="k">const</span> EdgeInsets.fromLTRB(<span class="n">16</span>, <span class="n">8</span>, <span class="n">16</span>, <span class="n">0</span>),
+                      child: ListTile(title: Text(name)),</pre></div>
+<p class="hint"><strong>Hint:</strong> the <code>CurvedAnimation</code>s are made in <code>build</code>, which is fine here because the page builds once and the transitions listen to the controller themselves. If the page rebuilt often, they would belong in the state, made once and disposed.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/stagger-film.png</span><b>560px</b></div><img src="img/b6-motion-en-shots-stagger-film.png" alt="">
+<figcaption>Project 8.2: after “Play again”, the four items arrive one after the other.</figcaption>
+</figure>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/stagger_test.dart</span>
+00:00 +0: loading test/stagger_test.dart
+00:00 +0: each item arrives a little after the one before
+0 ms      0.00  0.00  0.00  0.00
+200 ms    0.98  0.83  0.00  0.00
+400 ms    1.00  1.00  0.95  0.68
+600 ms    1.00  1.00  1.00  0.99
+800 ms    1.00  1.00  1.00  1.00
+00:00 +1: All tests passed!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>One transition for every page</h3>
+<p class="project-goal">Replace the platform’s page transition with the app’s own, a short fade and slide, on Android and iOS, in the theme; with reduced motion, pages appear at once.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>PageTransitionsBuilder</code>, <code>PageTransitionsTheme</code>, and testing a navigation halfway through.</p>
+<ol class="steps">
+<li>Write a <code>PageTransitionsBuilder</code> that returns the child unchanged when motion is reduced, and otherwise a <code>FadeTransition</code> around a <code>SlideTransition</code>, with the motion tokens’ curves for arriving and leaving.</li>
+<li>Put it in the theme’s <code>pageTransitionsTheme</code> for both platforms.</li>
+<li>Test a push halfway through, once normally and once with reduced motion, and print the opacity of the new page.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/transitions.dart (part)</div><pre class="code"><span class="k">class</span> FadeSlideTransitions <span class="k">extends</span> PageTransitionsBuilder {
+  <span class="k">const</span> FadeSlideTransitions();
+
+  @override
+  Widget buildTransitions&lt;T&gt;(
+    PageRoute&lt;T&gt; route,
+    BuildContext context,
+    Animation&lt;<span class="k">double</span>&gt; animation,
+    Animation&lt;<span class="k">double</span>&gt; secondary,
+    Widget child,
+  ) {
+    <span class="k">if</span> (MediaQuery.disableAnimationsOf(context)) {
+      <span class="k">return</span> child;
+    }
+    <span class="k">final</span> curved = CurvedAnimation(
+      parent: animation,
+      curve: Motion.enter,
+      reverseCurve: Motion.exit,
+    );
+    <span class="k">return</span> FadeTransition(
+      opacity: curved,
+      child: SlideTransition(
+        position: Tween(
+          begin: <span class="k">const</span> Offset(<span class="n">0.15</span>, <span class="n">0</span>),
+          end: Offset.zero,
+        ).animate(curved),
+        child: child,
+      ),
+    );
+  }
+}</pre></div>
+<p class="hint"><strong>Hint:</strong> pump the two cases as two different apps (a different <code>key</code> on <code>MaterialApp</code>); otherwise the second case starts with the pages of the first still on the stack.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">flutter test test/transition_test.dart</span>
+00:00 +0: loading test/transition_test.dart
+00:00 +0: the page transition fades and slides, unless motion is reduced
+halfway through the push: normal 0.95, reduced motion: no fade at all
+00:00 +1: All tests passed!</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change the card’s curve from <code>Motion.move</code> to <code>Curves.linear</code>, run the implicit test again, and compare the heights at 50 ms.</li>
+<li><span class="level">Easy</span> Make the badge slide up instead of growing. Which single line changes?</li>
+<li><span class="level medium">Medium</span> When the order is ready, the brewing ring should finish the turn it is making and stop, instead of freezing wherever it is. Which methods of the controller do you use?</li>
+<li><span class="level medium">Medium</span> Give the heroes a <code>flightShuttleBuilder</code> that keeps the circle round during the flight, whatever the two ends look like. When is that needed?</li>
+<li><span class="level hard">Challenge</span> Write a test that fails if any file under <code>lib/</code> creates a <code>Duration</code> with <code>milliseconds:</code> outside <code>lib/motion/</code>. What does it protect, and what should it allow?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>Smooth motion needs every frame on time: 16 milliseconds at 60 Hz, 8 at 120. The next chapter measures frames, finds the work that makes them late, and fixes it: rebuilds, layouts, images and lists, with DevTools and with tests.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3397,6 +3869,16 @@ bakery  text on primary   6.5 : 1
 <li><code>brand.dart</code> gets <code>info</code> and <code>onInfo</code>, with values in <code>light</code> and <code>dark</code> and a line in <code>lerp</code>; <code>components.dart</code> gets a case in the <code>StatusTag</code> switch, which the compiler demands as soon as the enum grows; the catalogue shows the new tag. The contrast test must check the new pair in both themes. No screen changes until one decides to use the new tag.</li>
 <li>The first to break is the card’s header row: a long drink name in large text and a tag share one line, and the name wraps into a narrow column or overflows. Buttons keep working because their height is a minimum, not a fixed size. The tokens help because the fix is made once, in the component: the header becomes a <code>Wrap</code> (or the tag moves under the name when space is short), and every screen that uses <code>MenuCard</code> is fixed together. Test it with <code>MediaQuery(data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(2)))</code> in a widget test.</li>
 <li>Add <code>'a hand-made text style': RegExp(r'TextStyle\(')</code> to the rules; the screens already use <code>context.text.titleLarge</code> and friends. A <code>copyWith</code> on a theme style is acceptable for a role colour from the theme, as the price does with <code>context.brand.accent</code>, because the size, weight and line height still come from the design system. When the same <code>copyWith</code> appears in two places, it has become a style of its own: give it a name in the design system (<code>priceStyle</code>).</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 8</h2>
+<ol class="exercises">
+<li>With <code>Curves.linear</code> the height at 50 ms is about 110 (a sixth of the way from 96 to 180), against 130 with <code>Motion.move</code>; at 150 ms it is 138 against 170. The linear card starts slower and arrives at full speed, which is why it feels like it hits a wall at the end.</li>
+<li>The <code>transitionBuilder</code>: <code>(child, animation) =&gt; SlideTransition(position: Tween(begin: const Offset(0, 1), end: Offset.zero).animate(animation), child: child)</code>. Wrap it in a <code>ClipRect</code> so that the numbers do not slide over the card’s title. Nothing else changes: the key still makes each number a new child.</li>
+<li>Stop the repetition and finish the current turn: <code>turns.stop(); turns.animateTo(1, curve: Motion.enter)</code>, which takes the ring from where it is to the end of the turn and stops there. Calling <code>stop()</code> alone freezes it mid-turn; calling <code>reset()</code> makes it jump back to the start. When the next order begins, <code>turns.repeat()</code> again.</li>
+<li><code>flightShuttleBuilder: (context, animation, direction, from, to) =&gt; ClipOval(child: to.widget)</code> on both heroes. It is needed when the two ends do not have the same shape, for example a square photo in the list and a round one on the page, or when the destination widget depends on something that is not there during the flight (a <code>Material</code> ancestor, text styles). With two circles, as here, the default shuttle is already right.</li>
+<li>Read every <code>.dart</code> file under <code>lib/</code> except <code>lib/motion/</code>, and report each line that matches <code>RegExp(r'Duration\(\s*milliseconds:')</code> as <code>file:line</code>, expecting none. It protects the motion tokens the way Chapter 7’s guard protects colours and spacing: new screens cannot invent their own speeds. It should allow durations that are not motion, such as a network timeout or a debounce, so either keep those in a named constant in their own layer (<code>lib/data/</code>, excluded from the check) or allow them line by line with a short, reviewed list.</li>
 </ol>
 
 </section>
