@@ -26,7 +26,8 @@ WORDS = {
     "ar": {"book": "الكتاب", "learn": "ماذا ستتعلم", 
            "code": "كل مثال كود حقيقي مُختبر، وكلها في مستودع الكتاب."},
 }
-ORDINAL_AR = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس"]
+ORDINAL_AR = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع", "العاشر",
+              "الحادي عشر", "الثاني عشر", "الثالث عشر", "الرابع عشر", "الخامس عشر", "السادس عشر", "السابع عشر", "الثامن عشر"]
 
 CODE_BG = """const age = 9;
 let price;
@@ -94,6 +95,14 @@ STYLE = """
 
 # The code on each front cover: a few lines in the language of the book (Book 1's are its first example).
 CARDS = {
+    "b7": """const model = await loadModel();
+const session = new LlamaChatSession({
+  contextSequence: context.getSequence(),
+});
+
+const answer = await session.prompt(
+  "Explain this error in one line.",
+  {temperature: 0});""",
     "b6": """final notes = FutureProvider((ref) =>
     ref.watch(repository).load());
 

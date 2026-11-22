@@ -1,0 +1,55 @@
+<section class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+<p class="chapter-kicker">Before you begin</p>
+<h1>How to Use This Book</h1>
+
+<p class="lead">AI tools are now part of how software is made: they write first drafts of code, explain programs nobody remembers, find bugs, summarize meetings and answer questions at three in the morning. They are also confidently wrong, in ways that cost hours when nobody checks. This book teaches both halves: how to get real work out of these tools, and how to know when not to trust them. It is written for developers who finished <em>Code from Zero</em>, the first book of this series, and for anyone who works in a software team.</p>
+
+<h2>What you need</h2>
+<ul>
+<li>Node.js 22, as in Book 1, and a code editor.</li>
+<li>A computer with 8 GB of memory and 4 GB of free disk space. That is enough to run the book’s AI model on your own machine: no graphics card, no account and no subscription.</li>
+<li>Optionally, the AI tools you already use (a chat assistant, an assistant in your editor, a coding agent). Every technique in the book applies to them, and the chapters say where they differ.</li>
+</ul>
+
+<h2>Why a model on your own computer</h2>
+<p>Every example in this book talks to an open model, Qwen3-4B-Instruct, through the free <code>node-llama-cpp</code> package. It is downloaded once (2.5 GB) and then runs offline. That choice has four reasons. It is free, so you can run every example as often as you like. It is private: nothing you type leaves your computer. It lets you look inside, at tokens and probabilities that hosted services hide. And it is small, so it makes mistakes often enough to teach you to catch them. The large hosted models are stronger, but they work the same way and fail in the same ways, only less often, which makes their mistakes harder to notice.</p>
+
+<h2>How the book is organised</h2>
+<p>The seventeen chapters are grouped in four parts. Read Part I first; the others can be read in any order after it.</p>
+<ul>
+<li><strong>Understanding AI</strong> explains what a language model really does, the kinds of tools built on it, and how to write instructions that work.</li>
+<li><strong>AI in your code</strong> covers the daily work of a developer: writing code with an assistant, reading unfamiliar code, debugging, tests, refactoring, review, documentation and commit messages.</li>
+<li><strong>AI in your work</strong> goes beyond code: turning ideas into specifications and tasks, meetings and reports, automating repetitive work, and agents that carry out several steps.</li>
+<li><strong>Building with AI</strong> puts a model inside your own programs: calling models, giving them your data, security, privacy and licensing, judgement, and a capstone assistant for your team.</li>
+</ul>
+
+<h2>Every chapter</h2>
+<p>Each chapter follows the pattern of the series: what you will learn; explanations built on real examples; a quick check; boxes with tips, traps and professional habits; common mistakes; a summary; three practice projects (easy, medium and challenge); and exercises with answers at the end of the book.</p>
+
+<h2>Real code, real answers</h2>
+<p>Every listing is a real file, and every answer the model gives in this book is the answer it really gave, recorded while the book was made, mistakes included. Most examples use temperature 0, so the model picks its most likely answer and you should see the same text with the same versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>node-llama-cpp</td><td>3.22.3</td></tr>
+<tr><td>Model</td><td>Qwen3-4B-Instruct-2507, 4-bit (Q4_K_M), Apache 2.0</td></tr>
+</tbody>
+</table>
+<p>On a different processor, a long answer can still differ in a word or two from the book’s; the lessons do not.</p>
+
+<h2>Reading the examples</h2>
+<ul>
+<li>A dark tab above a listing gives the file’s path in the project.</li>
+<li>A box with three coloured dots is a terminal: a line starting with <code>$</code> is a command, the lines below are its answer.</li>
+<li>Every example imports <code>loadModel</code> from <code>lib/model.mjs</code>, the same ten lines in every chapter, shown in Chapter 1.</li>
+</ul>
+
+<h2>The code repository</h2>
+<p>Every example, project and exercise answer is in the book’s code repository, with the script that produced its output. Run them, change the prompts, and compare what you get.</p>
+
+<h2>A word from the author</h2>
+<p>AI will not replace developers who understand their work. It will make those developers much faster, and it will make developers who stop thinking much more dangerous. This book is about being the first kind. Bit, the purple robot, has a new colleague in these pages: a model that talks well and is sometimes wrong. Learn to work with it the way you would with any clever, overconfident colleague: give it clear tasks, check its work, and keep the decisions for yourself.</p>
+
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>

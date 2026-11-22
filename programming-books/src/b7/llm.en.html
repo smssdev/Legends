@@ -1,0 +1,216 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/llm/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>How Large Language Models Work</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>run a real language model on your own computer from JavaScript</li>
+<li>see what a model actually computes: a probability for every possible next token</li>
+<li>count tokens, and know why the same sentence costs more in Arabic than in English</li>
+<li>control randomness with temperature and seeds</li>
+<li>read what a model file contains: parameters, vocabulary and context window</li>
+<li>recognise an invented answer, and know why models invent</li>
+</ul>
+</div>
+
+<p class="lead">A chat assistant feels like a person who has read everything. It is not, and the difference matters every time you use one. Under the conversation is a single, simple operation repeated very fast: look at the text so far, and score every possible next piece of text. Everything good about these tools comes from that operation, and so does everything that goes wrong. This chapter runs a real model, looks at its numbers, and builds the intuition the rest of the book relies on.</p>
+
+<aside class="bit" data-mood="happy"><p>Every answer in this chapter was produced by the book’s model, on an ordinary four-core processor with no graphics card, while the book was being made. Nothing was edited, including the answer at the end of Section {{n}}.6 that I would rather the model had not given.</p></aside>
+
+<h2>{{n}}.1 A model on your computer</h2>
+
+<p>Create a folder, and install one package:</p>
+
+<pre class="plain" dir="ltr">npm init -y
+npm pkg set type=module
+npm install node-llama-cpp@3.22.3</pre>
+
+<p><code>node-llama-cpp</code> runs open models with <em>llama.cpp</em>, a fast engine written in C++, and gives them a JavaScript interface. Every example in the book loads its model through the same small file:</p>
+
+<pre data-code="lib/model.mjs" data-title="lib/model.mjs"></pre>
+
+<p><code>resolveModelFile</code> downloads the model from Hugging Face, a public library of open models, the first time, and finds it on disk after that. <code>gpu: false</code> runs on the processor, so the book’s numbers do not depend on a graphics card; if you have one, removing that option makes everything faster and changes nothing else.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>“Open model” means the trained numbers are published and you may run them yourself. Each one comes with a license, and they are not all alike: some forbid commercial use, some limit large companies, and some, like Apache 2.0, allow nearly anything. The book’s model was chosen for that license. Read it before you put any model in a product.</p></aside>
+
+<h2>{{n}}.2 The only thing a model does</h2>
+
+<p>Give a model some text and it returns one thing: for every token it knows, the probability that it comes next. This program asks for those probabilities after an unfinished sentence and prints the eight highest:</p>
+
+<pre data-code="next.mjs" data-title="next.mjs"></pre>
+<pre data-term="next.sh"></pre>
+
+<p>Read the table slowly; most of this book is in it. The model does not know what this café sells. It has seen an enormous amount of text, and in that text “coffee and” is followed by “tea” far more often than by anything else. “ past” is the start of “pastries”, “ don” of “donuts”, “ muff” of “muffins”: the model scores pieces of words, not words. And it scores all 151,936 of them, every time. Nothing in the table is a fact about the café; it is a fact about text.</p>
+
+<p>A chat assistant is this, in a loop. It picks a token, appends it, asks for the probabilities again, and stops when it picks a special token that means “end”. A ten-line answer is a few hundred of these steps. The fluency comes from being very good at this one step; the mistakes come from the same place, because a fluent continuation and a true one are not the same thing.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>When an assistant gives an answer you did not expect, ask yourself: “what text usually follows a question like mine?” A vague question is followed, in the world’s text, by a generic answer. A question that contains your actual code, error and constraints is followed by something specific. Chapter 3 is built on that idea.</p></aside>
+
+<h2>{{n}}.3 Tokens</h2>
+
+<p>A model does not read letters or words. Its tokenizer cuts text into tokens from a fixed vocabulary: common words become one token, rare words several, and anything can always be spelled out piece by piece. This program cuts the same sentence in English and in Arabic:</p>
+
+<pre data-code="tokens.mjs" data-title="tokens.mjs"></pre>
+<pre data-term="tokens.sh"></pre>
+
+<p>Three things are worth seeing. Most English words are one token with their leading space. Numbers are cut into single digits: to this model, 22:00 is five tokens. And the Arabic sentence, two words shorter, takes more tokens: “يفتح” is two pieces and “المقهى” three. The vocabulary was built from text that is mostly English and Chinese, so Arabic words are less often whole entries.</p>
+
+<p>That matters because tokens are the unit of everything. Hosted models are priced per token; the context window, how much text a model can consider at once, is measured in tokens; and speed is tokens per second. Project {{n}}.1 measures the difference on a full sentence: 1.18 tokens per English word, 2.63 per Arabic word. The same conversation in Arabic costs more, fills the window sooner and takes longer, with this model. Other models have other vocabularies, so measure the ones you use.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Counting letters, reversing words and doing arithmetic on long numbers are hard for models for the reason you just saw: the model never sees the letters, only the pieces. When you need an exact count, a sort or a sum, ask the model to write code that does it, and run the code.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does “ past” appear in a list of things a café sells?</li><li>A text has 1,000 English words. Roughly how many tokens is it for this model, and how many if it were 1,000 Arabic words?</li><li>Why is “how many letters are in this word?” harder for a model than “what does this word mean?”</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Temperature</h2>
+
+<p>The probabilities are fixed; how the next token is chosen from them is up to you. At temperature 0 the most likely token always wins. Higher temperatures flatten the probabilities and then draw at random, so less likely tokens get a chance. The seed fixes the random draw, so the same seed repeats the same choices:</p>
+
+<pre data-code="temperature.mjs" data-title="temperature.mjs"></pre>
+<pre data-term="temperature.sh"></pre>
+
+<p>At 0, three seeds give one name: the seed has nothing to decide. At 1.2, each seed gives a different name, and the third wanders off into an explanation. That is the trade-off in one screen. Low temperature is repeatable and safe; high temperature is varied and occasionally strange. For code, data extraction and anything a program will read, use 0 or close to it. For names, slogans and first ideas, a higher temperature gives you more to choose from.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>When an AI feature is part of your product, record the model, its version, the temperature and the prompt with every result you keep. When a user reports a strange answer, those four things are the difference between reproducing it in a minute and guessing for a day.</p></aside>
+
+<h2>{{n}}.5 What is inside the file</h2>
+
+<p>The model file carries a description of itself:</p>
+
+<pre data-code="model-info.mjs" data-title="model-info.mjs"></pre>
+<pre data-term="model-info.sh"></pre>
+
+<ul>
+<li><strong>Parameters</strong> are the numbers learned in training: here about four billion. Training showed the model trillions of tokens of text and adjusted those numbers, again and again, so that its predictions of the next token got better. Everything the model “knows” is in them, as patterns, not as a list of facts it can look up.</li>
+<li><strong>4-bit quantized</strong> means each number is stored in about four bits instead of sixteen. The file is four times smaller and much faster, and a little less precise. That is why a 4-billion-parameter model fits in 2.5 GB.</li>
+<li><strong>The vocabulary</strong> is the tokenizer’s list: 151,936 pieces, the same number you saw in Section {{n}}.2.</li>
+<li><strong>The context window</strong> is the most tokens the model can consider at once: the instructions, the conversation, any documents you paste and the answer, together. Anything outside it does not exist for the model. Our examples use small windows (512 or 2,048 tokens) because memory grows with the window.</li>
+</ul>
+
+<p>Two more facts follow from the training. A model’s knowledge stops at the date its training text was collected: it can be fluent about a library’s old version and know nothing of the current one. And a model has no memory between conversations: a chat assistant seems to remember because the application sends the earlier messages again, inside the context window, every time.</p>
+
+<h2>{{n}}.6 Confident and wrong</h2>
+
+<p>The paper “Brewing Tokens” by Layla Hassan does not exist; it was made up for this section. This program asks the model to summarize it, once plainly and once with permission to say it is not sure:</p>
+
+<pre data-code="invent.mjs" data-title="invent.mjs"></pre>
+<pre data-term="invent.sh"></pre>
+
+<p>In English, the model did well: it said, both times, that it knows no such paper. Then the same question was asked in Arabic, for the Arabic edition of this book, with the same model at the same temperature. The first time, it wrote a fluent two-sentence summary of the paper’s findings, about how symbols are “fermented” through context and personal experience, with nothing to say it was invented. Only the second question, the one that gave it permission to doubt, got the honest answer.</p>
+
+<p>This is what people call a <em>hallucination</em>, and Section {{n}}.2 already explained it. The model is not looking anything up. It is producing the most likely continuation of the text, and the most likely continuation of “summarize this paper” is a summary. Whether it refuses depends on whether refusing was common, in its training, after text like yours: in English, where it was trained on more examples of “there is no such paper”, it refused; in Arabic it did not. The model gave no sign of which answer was true. It never does: a wrong answer comes out as fluently as a right one.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The most dangerous inventions are the plausible ones: a function that sounds like it belongs to a library, a configuration option with the right naming style, a reference to a real-looking source. Before you rely on any name, number, quotation or link from a model, check it where it is defined: the documentation, the code, the source itself.</p></aside>
+
+<p>Larger hosted models invent less often, and many can now search the web or read your files, which helps a great deal. None of that changes the mechanism. Throughout this book, you will use three defences, and this section has already shown two of them: give the model the facts instead of asking it to remember them (Chapter 14), allow and ask for “I don’t know” (Chapter 3), and check what matters (every chapter).</p>
+
+<h2>{{n}}.7 What this means for a developer</h2>
+
+<table>
+<thead><tr><th>Because a model…</th><th>…you should</th></tr></thead>
+<tbody>
+<tr><td>continues text the way text usually continues</td><td>give it specific text to continue: your code, your error, your constraints</td></tr>
+<tr><td>sees tokens, not letters</td><td>ask for code to count, sort and calculate, and run that code</td></tr>
+<tr><td>only knows what was in its training and its context</td><td>paste the current documentation and code; do not trust its memory of versions</td></tr>
+<tr><td>has no memory between conversations</td><td>put everything it needs in the conversation, every time</td></tr>
+<tr><td>samples at random above temperature 0</td><td>use temperature 0 for anything a program reads, and record your settings</td></tr>
+<tr><td>sounds equally sure when it is wrong</td><td>check names, numbers and claims against their source</td></tr>
+</tbody>
+</table>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Treating the model as a database</td><td>Invented facts, versions and references</td><td>Give it the facts in the prompt, and check what it returns</td></tr>
+<tr><td>Judging cost by words</td><td>Arabic text costs twice what you planned</td><td>Count tokens with the model’s own tokenizer</td></tr>
+<tr><td>Asking a model to count or calculate</td><td>Answers that are close but wrong</td><td>Ask for code, and run it</td></tr>
+<tr><td>High temperature for structured output</td><td>Output that breaks a parser one run in ten</td><td>Temperature 0, and a schema (Chapter 13)</td></tr>
+<tr><td>Assuming the model remembers yesterday</td><td>Instructions that silently disappear</td><td>Resend what matters; keep it in a file you paste</td></tr>
+<tr><td>Ignoring the model’s license</td><td>A product built on a model you may not sell</td><td>Read the license before you choose a model</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A language model does one thing: given the tokens so far, it gives a probability to every possible next token. Generation repeats that, one token at a time.</li>
+<li>Tokens are pieces of words from a fixed vocabulary. They are the unit of price, context and speed, and the same text can need very different numbers of them in different languages.</li>
+<li>Temperature decides how the next token is chosen: 0 for the most likely, higher for variety. A seed makes random choices repeatable.</li>
+<li>Parameters hold what the model learned, as patterns. Its knowledge stops at its training date, and it remembers nothing between conversations.</li>
+<li>Models invent fluent answers when the likely continuation is not the true one. Give them facts, let them say “I don’t know”, and check what matters.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It is the first token of “pastries”: the model scores pieces of words, and “ past” starts a likely word. 2. About 1,180 tokens for English (1.18 per word) and about 2,630 for Arabic (2.63 per word), with this model; other models differ. 3. The model never sees letters, only tokens that may hold several letters each; meaning, on the other hand, is exactly what it learned from seeing words in context.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The three projects measure tokens, watch generation step by step, and build a tiny language model with no neural network at all.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A token counter</h3>
+<p class="project-goal">A command that tells you how many tokens a text is, per word, and what it would cost.</p>
+<p class="project-skills"><strong>You will practise:</strong> the tokenizer, command-line arguments, and the price of a prompt.</p>
+<ol class="steps">
+<li>Join the command’s arguments into one text and tokenize it with the model.</li>
+<li>Print the words, the tokens and the ratio, and a price at an example rate.</li>
+<li>Run it on the same sentence in English and in Arabic.</li>
+</ol>
+<pre data-code="count.mjs" data-title="count.mjs"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/count.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Watch the loop</h3>
+<p class="project-goal">Let the model continue a sentence for eight tokens, and print each choice with the probability it had.</p>
+<p class="project-skills"><strong>You will practise:</strong> evaluating a sequence token by token, and reading the model’s confidence.</p>
+<ol class="steps">
+<li>Tokenize the prompt and pass it to <code>evaluateWithMetadata</code> with <code>confidence: true</code>.</li>
+<li>Each value the loop gives you is the token chosen next; print it and its probability.</li>
+<li>Stop after eight steps.</li>
+</ol>
+<pre data-code="generate.mjs" data-title="generate.mjs"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/generate.sh"></pre>
+<p class="hint"><strong>Hint:</strong> look at the probabilities. “ tea” was chosen at 40%, an open choice; “ at” after “is priced” was 99.7%, no choice at all. A model is most likely to go wrong at the low-probability steps, and that is where a different temperature changes the answer.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A language model in thirty lines</h3>
+<p class="project-goal">Count which word follows which in a small text, then generate sentences by picking each next word from those counts.</p>
+<p class="project-skills"><strong>You will practise:</strong> maps of counts, weighted random choice, and a seeded random generator.</p>
+<ol class="steps">
+<li>Split the text into words; for each word, count the words that follow it.</li>
+<li>Print the followers of the start word as percentages: that is your model’s “next-token table”.</li>
+<li>Generate three sentences, choosing each word in proportion to its count, until a full stop.</li>
+</ol>
+<pre data-code="bigram.mjs" data-from="^const next" data-to="^}" data-title="bigram.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/bigram.sh"></pre>
+<p class="hint"><strong>Hint:</strong> “the café opens at night” is not in the text. Your thirty-line model invented it from two true sentences, exactly as Section {{n}}.6’s model invented a paper. The real model looks at thousands of tokens instead of one word, which makes its inventions far more convincing.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change the prompt in <code>next.mjs</code> to “The café sells coffee and tea. It opens at”. Before you run it, write the three tokens you expect at the top.</li>
+<li><span class="level">Easy</span> Run <code>count.mjs</code> on a function from your own code. Is code cheaper or more expensive per word than English prose, and why?</li>
+<li><span class="level">Medium</span> In <code>temperature.mjs</code>, try temperatures 0.3 and 0.7 with the same three seeds. At what temperature do the names start to differ?</li>
+<li><span class="level">Medium</span> Ask the model, at temperature 0, for the default port of a well-known tool you use, and for the default port of a made-up one. Compare the two answers. What would let you tell which is real without knowing in advance?</li>
+<li><span class="level">Challenge</span> Change <code>bigram.mjs</code> to use the two previous words instead of one. What happens to the sentences, and what does that tell you about why real models look at so much context?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You know what is inside every AI tool. The next chapter surveys the tools themselves, from chat assistants to editor completions to agents that run commands, and shows what each is good at, what it costs and what it sees of your code.</p>
+</div>
+</section>
