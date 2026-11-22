@@ -1,0 +1,187 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/design/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Design Systems in Flutter</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>turn design decisions into tokens: one scale for spacing, one for corners, named colours</li>
+<li>carry the brand’s own colours in the theme with a <code>ThemeExtension</code>, in light and dark</li>
+<li>build components that take every value from the theme, so screens never choose one</li>
+<li>prove that every colour pair is readable, with the WCAG contrast ratio</li>
+<li>keep raw values out of screens with a test, and change the whole brand by changing the tokens</li>
+</ul>
+</div>
+
+<p class="lead">The first screen of an app is designed carefully. The fiftieth is built on a Friday afternoon, with a padding of 12 because 16 looked too big, a brown that is almost the brand’s brown, and white text on yellow because it looked fine on one monitor. Multiply by a team and two years, and the app looks like many apps. A <dfn>design system</dfn> prevents this: decisions are made once, as named values and components, and screens only combine them.</p>
+
+<aside class="bit" data-mood="happy"><p>Every contrast ratio in this chapter was computed by a test from the real colours of the theme, and one of them failed on purpose: the first idea for a tag. Section {{n}}.4 shows the numbers.</p></aside>
+
+<h2>{{n}}.1 Tokens</h2>
+
+<p>A <dfn>token</dfn> is a design decision with a name: not “16 pixels”, but “the medium space”. Spacing and corners are plain constants:</p>
+
+<pre data-code="lib/design/tokens.dart" data-title="lib/design/tokens.dart"></pre>
+
+<p>Five spaces and three corners sound limiting, and that is the point. When every gap in the app is one of five sizes, screens line up with each other without anyone measuring, and a designer can change “medium” everywhere by changing one number.</p>
+
+<h2>{{n}}.2 The brand in the theme</h2>
+
+<p>Material gives every app a <code>ColorScheme</code>, built from one seed colour into a full set of roles: primary, surface, error and the colours written on each. A brand usually needs a few more: an accent for prices, a green for “ready”, an amber for warnings. A <code>ThemeExtension</code> adds them to the theme, so that they follow it into dark mode and through every animation:</p>
+
+<pre data-code="lib/design/brand.dart" data-from="^// " data-to="static const dark" data-title="lib/design/brand.dart (part)"></pre>
+
+<ul>
+<li>Every colour comes with its <code>on</code> colour, the colour of text and icons drawn on it. A component never picks a text colour by itself.</li>
+<li><code>lerp</code> says how to move between two brands. When the person switches to dark mode, <code>MaterialApp</code> animates the theme, and with <code>lerp</code> the brand colours animate with it instead of jumping:</li>
+</ul>
+
+<pre data-term="lerp-test.sh"></pre>
+
+<p>The theme puts everything together, once:</p>
+
+<pre data-code="lib/design/theme.dart" data-from="^ThemeData" data-title="lib/design/theme.dart (part)"></pre>
+
+<h2>{{n}}.3 Components</h2>
+
+<p>Screens should not know how a button looks, only what it means. A small set of components takes every value from the tokens and the theme:</p>
+
+<pre data-code="lib/design/components.dart" data-from="^// #2" data-to="^}#2" data-title="lib/design/components.dart (part)"></pre>
+
+<p>An extension on <code>BuildContext</code> keeps screens short: <code>context.brand</code>, <code>context.colors</code>, <code>context.text</code>. A catalogue page shows every component in one place, in both themes, so that designers and developers review the same thing:</p>
+
+<div class="phones">
+<figure data-img="shots/catalog-light.png" data-frame="phone">
+<figcaption>The catalogue, light</figcaption>
+</figure>
+<figure data-img="shots/catalog-dark.png" data-frame="phone">
+<figcaption>The same components, dark</figcaption>
+</figure>
+</div>
+
+<p>A real screen then contains no decision of its own, only components, tokens and theme values:</p>
+
+<pre data-code="lib/screens/menu_screen.dart" data-from="^class MenuCard" data-to="^}" data-title="lib/screens/menu_screen.dart (part)"></pre>
+
+<div class="phones">
+<figure data-img="shots/menu-light.png" data-frame="phone">
+<figcaption>The menu, light</figcaption>
+</figure>
+<figure data-img="shots/menu-dark.png" data-frame="phone">
+<figcaption>Dark: every colour changed, no screen code did</figcaption>
+</figure>
+</div>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The first version of this screen built each card inside the list’s <code>itemBuilder</code>, reading the theme with the <code>context</code> the builder received. In dark mode the drink names were invisible: those cards kept the colours of the light theme. A widget test that printed the painted colour of “Latte” showed it: dark brown text on a dark card. Making each card its own widget, <code>MenuCard</code>, which reads the theme in its own <code>build</code>, fixed it, and is the right shape anyway: every widget that depends on the theme should ask for it with its own context.</p></aside>
+
+<h2>{{n}}.4 Readable colours</h2>
+
+<p>A colour pair is readable when its <dfn>contrast ratio</dfn> is high enough. The ratio comes from the relative luminance of the two colours, from 1:1 (the same colour) to 21:1 (black on white); the WCAG guidelines ask for at least 4.5:1 for normal text. Flutter computes the luminance; a test computes every pair of the design system, in both themes:</p>
+
+<pre data-code="test/contrast_test.dart" data-from="^double contrast" data-to="^}" data-title="test/contrast_test.dart (part)"></pre>
+<pre data-term="contrast-test.sh"></pre>
+
+<p>Every pair passes, the lowest at 6.2:1, the green tag in dark mode. Project {{n}}.1 shows this test catching the first idea for the warning tag.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does every brand colour come with an <code>on</code> colour?</li><li>What would happen to the brand colours when switching to dark mode if <code>lerp</code> returned <code>this</code>?</li><li>What contrast ratio does normal text need, and what are the two extremes of the scale?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Keep the design system in its own folder, or its own package in larger teams, and review changes to it like changes to an API: a new token or component affects every screen. And give designers the catalogue page, running on a real phone: it is the fastest way to agree on what “medium” and “warning” mean.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Hex colours in screens</td><td>Fifty browns, and a dark mode that misses half of them</td><td>Theme roles and a <code>ThemeExtension</code></td></tr>
+<tr><td>Spacing chosen per screen</td><td>Screens that almost line up</td><td>A spacing scale, and <code>Gap</code></td></tr>
+<tr><td>A colour without its <code>on</code> colour</td><td>Each screen guesses the text colour, some badly</td><td>Pairs of colours, chosen and tested together</td></tr>
+<tr><td>No <code>lerp</code> in an extension</td><td>Brand colours jump while the rest animates</td><td>Implement <code>lerp</code> with <code>Color.lerp</code></td></tr>
+<tr><td>Theme read with someone else’s context</td><td>Parts of a screen keep the old theme</td><td>Each widget reads the theme in its own <code>build</code></td></tr>
+<tr><td>Trusting the eye for contrast</td><td>Unreadable text in sunlight or for many people</td><td>A contrast test on every pair</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Tokens name design decisions: a scale for spacing, a few corner sizes, named colours.</li>
+<li><code>ColorScheme.fromSeed</code> gives Material’s roles; a <code>ThemeExtension</code> adds the brand’s own colours, with <code>lerp</code> for animation and light and dark values.</li>
+<li>Components take every value from tokens and the theme; screens only combine components.</li>
+<li>Every colour pair is tested for a WCAG contrast of at least 4.5:1, in both themes.</li>
+<li>A guard test keeps raw values out of screens; a new brand is a new set of tokens.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that the colour of text and icons drawn on it is decided, and tested for contrast, once, with the colour itself, instead of guessed by each component. 2. The brand colours would not animate with the rest of the theme: during the switch they would stay light and then jump to dark at the end. 3. At least 4.5:1; the scale goes from 1:1, the same colour twice, to 21:1, black on white.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects turn the design system’s promises into tests, then use it to make a second brand.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Catch an unreadable tag</h3>
+<p class="project-goal">The first idea for “Almost sold out” was white text on amber. Prove with the contrast function that it is unreadable, then choose a better text colour.</p>
+<p class="project-skills"><strong>You will practise:</strong> the contrast formula, failing tests with clear reasons, and choosing colour pairs.</p>
+<ol class="steps">
+<li>Write a test that computes <code>contrast(white, amber)</code> and expects at least 4.5, with a <code>reason</code> that prints the ratio.</li>
+<li>Run it and read the failure.</li>
+<li>Try a very dark brown for the text on amber, and add the pair to the main contrast test.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> bright colours (yellow, amber, light green, cyan) need dark text; deep colours need light text. The contrast function settles every argument about it in a second.</p>
+<p><strong>Your result should look like this</strong> (the first idea, failing):</p>
+<pre data-term="contrast-bad.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>No raw values in screens</h3>
+<p class="project-goal">A test that fails when a screen contains a raw colour, a numeric padding or a font size, and says where.</p>
+<p class="project-skills"><strong>You will practise:</strong> regular expressions over source files, line numbers, and testing a check against a fixture.</p>
+<ol class="steps">
+<li>For every Dart file under <code>lib/screens</code>, look at each line for <code>Color(0x</code> or <code>Colors.</code>, for <code>EdgeInsets…(</code> with a digit, and for <code>fontSize:</code>.</li>
+<li>Report each as <code>file:line: what</code>, and expect no reports.</li>
+<li>Write a “hurried” screen in a fixture folder, with all three, and check that the same function reports each one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the same idea as Chapter 2’s architecture test: rules that a team keeps forgetting become tests that never forget. Allow exceptions explicitly (here <code>Colors.transparent</code>), and keep the list short.</p>
+<p><strong>Your result should look like this</strong> (the screens pass; the fixture is caught):</p>
+<pre data-term="guard-test.sh"></pre>
+<pre data-term="guard-bad.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A second brand</h3>
+<p class="project-goal">Bit Bakery opens next door. Give it its own colours, using the same components and screens, and prove that its pairs are readable too.</p>
+<p class="project-skills"><strong>You will practise:</strong> theming by tokens, seed colours, and reusing tests across brands.</p>
+<ol class="steps">
+<li>Define a second <code>Brand</code> with a raspberry accent and a pale pink for muted surfaces, and a seed colour for Material’s scheme.</li>
+<li>Let <code>buildTheme</code> accept a brand and a seed; the menu screen does not change at all.</li>
+<li>Run the contrast checks on the bakery’s pairs.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if any screen needs to change for the second brand, a decision was hiding in that screen. Move it into a token.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-img="shots/bakery.png" data-frame="phone">
+<figcaption>Project {{n}}.3: the same menu, the bakery’s colours.</figcaption>
+</figure>
+<pre data-term="projects/brands-test.sh"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>Space.xxl</code> of 48. Where in the catalogue does it appear without any change to the catalogue page, and why?</li>
+<li><span class="level">Easy</span> Change the seed colour to a blue. Which parts of the menu change, and which stay brown? Why?</li>
+<li><span class="level">Medium</span> Add a <code>TagKind.info</code> with its own pair in <code>Brand</code>, for light and dark. Which files change, and which tests must grow?</li>
+<li><span class="level">Medium</span> Give the app a text scale setting (large text). Which components break first, and how do the tokens help fix them?</li>
+<li><span class="level">Challenge</span> Make the guard test also forbid <code>TextStyle(</code> in screens, and fix the screens so that they use only the theme’s text styles. When is a <code>copyWith</code> on a theme style acceptable?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The app now looks like one app. The next chapter makes it move like one: implicit and explicit animations, hero transitions, and motion that feels native on both Android and iOS, without dropping a frame.</p>
+</div>
+</section>

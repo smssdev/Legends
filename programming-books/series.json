@@ -1226,7 +1226,8 @@
           "chapters": [
             {
               "en": "Design Systems in Flutter",
-              "ar": "أنظمة التصميم في Flutter"
+              "ar": "أنظمة التصميم في Flutter",
+              "src": "b6/design"
             },
             {
               "en": "Animations That Feel Native",
