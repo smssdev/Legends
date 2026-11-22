@@ -37,6 +37,8 @@ class TransfersTest extends TestCase
         $this->owner = User::factory()->create(['name' => 'سليمان']);
         $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString()]);
         $this->mine = $this->league['my_club_id'];
+        // [X105] The squads of 18 here test the other limits; each line's floor is SquadFloorTest's.
+        config(['game.economy.min_lines' => []]);
         $this->coach = $this->approvedCoach($this->owner, $this->league);
         $this->theirs = $this->botClub($this->league['id']);
         $this->actingAs($this->coach)->postJson("/api/v1/leagues/{$this->league['id']}/clubs/{$this->theirs}/claim")->assertCreated();

@@ -40,6 +40,7 @@ class Transfers
         abort_unless($p, 404, 'اللاعب ليس في فريقك.');
         $leagueId = (int) DB::table('clubs')->where('id', $clubId)->value('league_id');
         Market::assertOpen($leagueId);
+        SquadFloor::assert($clubId, [$playerId]);   // [X105] never listed if his going would break a line's floor
         if (DB::table('transfer_listings')->where('player_id', $playerId)->exists()) {
             throw new HttpException(409, 'هذا اللاعب معروض للبيع بالفعل. اسحبه من قائمة الانتقالات أولاً إن أردت سعراً آخر.');
         }
@@ -273,6 +274,8 @@ class Transfers
                 throw new HttpException(409, 'لا يمكن أن ينزل أي فريق عن 16 لاعباً.');
             }
         }
+        SquadFloor::assert((int) $from->id, $out, $in);   // [X105] and each line's floor, on both sides
+        SquadFloor::assert((int) $to->id, $in, $out);
         // 5. The buyer can pay.
         if ($money > 0 && (int) $from->balance < $money) {
             throw new HttpException(409, 'رصيد النادي لا يكفي.');

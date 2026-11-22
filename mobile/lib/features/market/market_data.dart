@@ -81,6 +81,7 @@ class MyPlayer {
     required this.waitCap,
     this.listedPrice,
     this.sellsAt,
+    this.held,
   });
 
   /// [Sprint 59 F1] From the generated model (`Market.mine`).
@@ -100,6 +101,7 @@ class MyPlayer {
     waitCap: p.waitHours.cap,
     listedPrice: p.listed?.price,
     sellsAt: DateTime.tryParse(p.listed?.sellsAt ?? ''),
+    held: p.held,
   );
 
   final int id, overall, value, cost, floor, cap, quickPays, waitValue, waitCap;
@@ -107,6 +109,9 @@ class MyPlayer {
   final ({String currency, int amount}) quickFee;
   final int? listedPrice;
   final DateTime? sellsAt;
+
+  /// [X105] Why he cannot be sold now (his line at the squad's floor), the server's words; null: he can.
+  final String? held;
 
   bool get listed => listedPrice != null;
 }

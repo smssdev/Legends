@@ -32,6 +32,9 @@ class FakeTeamRepository implements TeamRepository {
   @override
   Future<TeamData> team(int league, {void Function()? onNewer}) async => sample;
   @override
+  Future<RivalSquad> rival(int league, int club) async =>
+      RivalSquad(id: club, name: 'Rivals FC', code: 'RIV', crestUrl: '', team: sample, coach: 'Coach');
+  @override
   Future<List<Formation>> formations() async => [
     Formation(name: sample.lineup.formation, label: sample.lineup.formation, slots: sample.lineup.slots),
   ];
@@ -106,6 +109,22 @@ void main() {
     await t.tap(find.text(first.name));
     await t.pumpAndSettle();
     expect(find.text('المهارات'), findsOneWidget);
+    // [X105] My player is sold from his card, as on the site, not from the market only.
+    expect(find.text('بيع اللاعب'), findsOneWidget);
+  });
+
+  testWidgets('[X105] another club of the league in the same table: its name and players, an offer from a card, no sale', (t) async {
+    await pump(t, const SquadScreen(leagueId: 1, clubId: 7), FakeTeamRepository());
+    expect(find.text('Rivals FC'), findsWidgets);
+    expect(find.text('المدرب Coach'), findsOneWidget);
+    expect(find.text('فريقي'), findsOneWidget);
+    expect(find.text('فرق الخصوم'), findsOneWidget);
+    final first = sample.players.first;
+    await t.scrollUntilVisible(find.text(first.name), 300, scrollable: find.byType(Scrollable).first);
+    await t.tap(find.text(first.name));
+    await t.pumpAndSettle();
+    expect(find.text('اطلبه بعرض'), findsOneWidget);
+    expect(find.text('بيع اللاعب'), findsNothing);
   });
 
   testWidgets('[Sprint 60 F4] landscape: the card is a panel beside the table, another row swaps it', (t) async {

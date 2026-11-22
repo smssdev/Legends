@@ -159,6 +159,50 @@ class Taker {
   final List<({int id, int skill, bool on})> candidates;
 }
 
+/// [X105, the owner's request 2026-11-22] Another club of the league as the squad's table reads it: its name, crest,
+/// coach (none: a bot runs it) and its players. Never its tactics (the server sends none).
+class RivalSquad {
+  const RivalSquad({required this.id, required this.name, required this.code, required this.crestUrl, required this.team, this.coach});
+
+  factory RivalSquad.of(api.LeaguesClubsByClubAnswer c) => RivalSquad(
+    id: c.id,
+    name: c.name,
+    code: c.code,
+    crestUrl: c.crestUrl,
+    coach: c.coach?.name,
+    team: TeamData(
+      players: [
+        for (final p in c.players)
+          if (p.id != null)
+            Player(
+              id: p.id!,
+              name: p.name ?? '',
+              position: p.position ?? '',
+              line: p.line ?? 'mid',
+              age: p.age ?? 0,
+              overall: p.overall ?? 0,
+              potential: p.potential ?? 0,
+              value: p.value ?? 0,
+              fitness: p.fitness ?? 0,
+              available: (p.injuredMatches ?? 0) == 0 && (p.suspendedMatches ?? 0) == 0,
+              role: 'reserve',
+              injured: p.injuredMatches ?? 0,
+              suspended: p.suspendedMatches ?? 0,
+              nationality: p.nationality,
+            ),
+      ],
+      lineup: const Lineup(formation: '', auto: true, slots: [], starters: [], bench: []),
+      morale: 0,
+      squadValue: c.squadValue,
+    ),
+  );
+
+  final int id;
+  final String name, code, crestUrl;
+  final String? coach;
+  final TeamData team;
+}
+
 class Formation {
   const Formation({required this.name, required this.label, required this.slots});
 
@@ -233,6 +277,10 @@ class TeamRepository {
   /// [Sprint 60 F4] The four roles at once ([roles]: each role's player, or null for the server's own pick).
   Future<TeamData> saveTakers(int league, Map<String, int?> roles) async =>
       TeamData.fromJson(await _api.put('/leagues/$league/team/takers', roles));
+
+  /// [X105] Another club's squad in the league (`/leagues/{league}/clubs/{club}`): the opponent's players as the table shows mine.
+  Future<RivalSquad> rival(int league, int club) async =>
+      RivalSquad.of(api.LeaguesClubsByClubAnswer.fromJson(await _api.get('/leagues/$league/clubs/$club')));
   Future<TeamData> autoLineup(int league) async => TeamData.fromJson(await _api.delete('/leagues/$league/team/lineup'));
   Future<Tactics> tactics(int league) async => Tactics.fromJson(await _api.get('/leagues/$league/team/tactics'));
   Future<Tactics> saveTactics(int league, Map<String, Object> changes) async =>
@@ -250,4 +298,11 @@ final tacticsProvider = FutureProvider.autoDispose.family<Tactics, int>((ref, le
   final tactics = await ref.read(teamRepositoryProvider).tactics(league);
   ref.staysFor(); // [Sprint 74 P8]
   return tactics;
+});
+
+/// [X105] An opponent's squad, by (league, club).
+final rivalSquadProvider = FutureProvider.autoDispose.family<RivalSquad, (int, int)>((ref, k) async {
+  final rival = await ref.read(teamRepositoryProvider).rival(k.$1, k.$2);
+  ref.staysFor(); // [Sprint 74 P8]
+  return rival;
 });

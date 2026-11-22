@@ -968,5 +968,13 @@
   "reactFocus": "Focus",
   "cheerSide": "Cheer {club}",
   "booSide": "Boo {club}",
-  "brokenPart": "This part couldn't be shown. Go back and open the screen again."
+  "brokenPart": "This part couldn't be shown. Go back and open the screen again.",
+  "rivalSquads": "Rival squads",
+  "mySquad": "My squad",
+  "nextRival": "Next opponent",
+  "sellPlayer": "Sell player",
+  "askForPlayer": "Make an offer",
+  "runByComputer": "Run by the computer",
+  "coachedBy": "Coach {name}",
+  "@coachedBy": { "placeholders": { "name": { "type": "String" } } }
 }

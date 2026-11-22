@@ -66,8 +66,16 @@ List<String> contrastShort(Map<String, dynamic> t, Map<String, dynamic> night, M
 
 void main() {
   final t = jsonDecode(File('../docs/design/tokens.json').readAsStringSync()) as Map<String, dynamic>;
-  final night = Map<String, dynamic>.from(t['color'] as Map<dynamic, dynamic>);
-  final day = {...night, ...Map<String, dynamic>.from(t['colorLight'] as Map<dynamic, dynamic>)..remove(r'$comment')};
+  // [X105] The app's night is the web's with tokens.json app.color over it (softer on the eyes); the web never reads it.
+  final app = (t['app'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+  final night = {
+    ...Map<String, dynamic>.from(t['color'] as Map<dynamic, dynamic>),
+    ...Map<String, dynamic>.from((app['color'] as Map<dynamic, dynamic>?) ?? const {}),
+  };
+  final day = {
+    ...Map<String, dynamic>.from(t['color'] as Map<dynamic, dynamic>),
+    ...Map<String, dynamic>.from(t['colorLight'] as Map<dynamic, dynamic>)..remove(r'$comment'),
+  };
   final ink = Map<String, dynamic>.from(t['ink'] as Map<dynamic, dynamic>)..remove(r'$comment');
   final short = contrastShort(t, night, day, ink);
   if (short.isNotEmpty) {
@@ -110,7 +118,7 @@ void main() {
     ..writeln()
     ..writeln('/// [Sprint 47] The app\'s stage in the approved design: the night ground, the navy cards, the mint accent, the pills.')
     ..writeln('abstract final class GlmStage {');
-  (t['stage'] as Map<dynamic, dynamic>).forEach((k, v) {
+  <dynamic, dynamic>{...(t['stage'] as Map<dynamic, dynamic>), ...((app['stage'] as Map<dynamic, dynamic>?) ?? const {})}.forEach((k, v) {
     if (!(k as String).startsWith(r'$')) b.writeln('  static const ${ident(k)} = Color(${hex(v as String)});');
   });
   b

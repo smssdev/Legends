@@ -5785,6 +5785,48 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'تعذّر عرض هذا الجزء. ارجع وافتح الشاشة من جديد.'**
   String get brokenPart;
+
+  /// No description provided for @rivalSquads.
+  ///
+  /// In ar, this message translates to:
+  /// **'فرق الخصوم'**
+  String get rivalSquads;
+
+  /// No description provided for @mySquad.
+  ///
+  /// In ar, this message translates to:
+  /// **'فريقي'**
+  String get mySquad;
+
+  /// No description provided for @nextRival.
+  ///
+  /// In ar, this message translates to:
+  /// **'خصمك القادم'**
+  String get nextRival;
+
+  /// No description provided for @sellPlayer.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيع اللاعب'**
+  String get sellPlayer;
+
+  /// No description provided for @askForPlayer.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلبه بعرض'**
+  String get askForPlayer;
+
+  /// No description provided for @runByComputer.
+  ///
+  /// In ar, this message translates to:
+  /// **'يديره الحاسوب'**
+  String get runByComputer;
+
+  /// No description provided for @coachedBy.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدرب {name}'**
+  String coachedBy(String name);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

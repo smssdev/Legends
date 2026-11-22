@@ -458,5 +458,10 @@
   "الدرجة": "Tier",
   "أعلى نقاط بلغتها": "Your highest points",
   "خسارة": "Loss",
-  "لا توجد أندية كافية للمباراة التعريفية.": "Not enough clubs for the intro match."
+  "لا توجد أندية كافية للمباراة التعريفية.": "Not enough clubs for the intro match.",
+  "لا بد أن يبقى في فريقك %d %s على الأقل.": "Your squad must keep at least %d %s.",
+  "حراس مرمى": "goalkeepers",
+  "مدافعين": "defenders",
+  "لاعبي وسط": "midfielders",
+  "مهاجمين": "forwards"
 }

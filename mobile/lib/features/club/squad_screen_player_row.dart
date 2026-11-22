@@ -112,22 +112,39 @@ class PlayerRow extends StatelessWidget {
 
 /// A player's card: his numbers and each attribute as a bar. [Sprint 60 F4] One card, as the site's PlayerCard: beside
 /// the squad's table as a panel ([PlayerCardPanel]), in a sheet where there is no table to keep in view.
-Future<void> showPlayerCard(BuildContext context, Player p) => showModalBottomSheet<void>(
+/// [X105] [action] under the card (a sale, an offer), built in the sheet's own context.
+Future<void> showPlayerCard(BuildContext context, Player p, {Widget? Function(BuildContext context)? action}) => showModalBottomSheet<void>(
   context: context,
   showDragHandle: true,
+  isScrollControlled: true,
   backgroundColor: context.palette.panel,
-  builder: (context) => SafeArea(
-    child: Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 20), child: PlayerCardBody(p)),
-  ),
+  builder: (context) {
+    final a = action?.call(context);
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PlayerCardBody(p),
+            if (a != null) ...[const SizedBox(height: GlmSpace.md), a],
+          ],
+        ),
+      ),
+    );
+  },
 );
 
 /// [Sprint 60 F4] The card beside the squad's table (the approved draft's side panel): the table stays in view, and a
 /// tap on another row puts that player here.
 class PlayerCardPanel extends StatelessWidget {
-  const PlayerCardPanel({super.key, required this.player, required this.close});
+  const PlayerCardPanel({super.key, required this.player, required this.close, this.action});
 
   final Player player;
   final VoidCallback close;
+
+  /// [X105] Under the card, kept in sight: his sale (mine) or an offer for him (another coach's).
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) => Material(
@@ -145,6 +162,7 @@ class PlayerCardPanel extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), child: PlayerCardBody(player)),
           ),
+          if (action != null) Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 12), child: action),
         ],
       ),
     ),

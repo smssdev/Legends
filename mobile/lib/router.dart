@@ -130,7 +130,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/leagues/:id/squad',
-            builder: (_, s) => _withId(s, (id) => SquadScreen(leagueId: id)),
+            builder: (_, s) => _withId(s, (id) => SquadScreen(leagueId: id, clubId: int.tryParse(s.uri.queryParameters['club'] ?? ''))),
           ),
           GoRoute(
             path: '/leagues/:id/lineup',

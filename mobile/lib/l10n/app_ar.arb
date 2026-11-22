@@ -2182,5 +2182,13 @@
   "@cheerSide": {"placeholders": {"club": {"type": "String"}}},
   "booSide": "استهجان {club}",
   "@booSide": {"placeholders": {"club": {"type": "String"}}},
-  "brokenPart": "تعذّر عرض هذا الجزء. ارجع وافتح الشاشة من جديد."
+  "brokenPart": "تعذّر عرض هذا الجزء. ارجع وافتح الشاشة من جديد.",
+  "rivalSquads": "فرق الخصوم",
+  "mySquad": "فريقي",
+  "nextRival": "خصمك القادم",
+  "sellPlayer": "بيع اللاعب",
+  "askForPlayer": "اطلبه بعرض",
+  "runByComputer": "يديره الحاسوب",
+  "coachedBy": "المدرب {name}",
+  "@coachedBy": { "placeholders": { "name": { "type": "String" } } }
 }

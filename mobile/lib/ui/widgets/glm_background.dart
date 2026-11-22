@@ -27,14 +27,14 @@ class GlmBackground extends StatelessWidget {
           );
     final body = safe ? SafeArea(top: false, bottom: false, child: inner) : inner;
     // [Sprint 47] The approved design: by night the web's ink, flat, with an emerald glow from the top as from the
-    // floodlights; by day the warm paper as before.
+    // floodlights; by day the warm paper as before. [X105] The glow a third as strong: easier on the eyes.
     if (!context.glm.day) {
       return DecoratedBox(
         decoration: BoxDecoration(
           gradient: RadialGradient(
             center: const Alignment(0, -1.25),
             radius: 1.2,
-            colors: [Color.lerp(p.bg, p.brand, .22)!, p.bg, p.bg],
+            colors: [Color.lerp(p.bg, p.brand, .08)!, p.bg, p.bg],
             stops: const [0, .6, 1],
           ),
         ),

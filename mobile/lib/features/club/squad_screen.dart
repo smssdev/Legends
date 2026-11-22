@@ -24,18 +24,33 @@ import '../leagues/shell.dart';
 import '../../ui/widgets/target.dart';
 import '../../ui/widgets/player_name.dart';
 import '../../ui/size_class.dart';
+import '../../ui/widgets/action_bar.dart';
+import '../../ui/widgets/glm_button.dart';
+
+import 'package:go_router/go_router.dart';
+
+import '../leagues/leagues_repository.dart' show leagueClubsProvider;
+import '../market/offer_screen.dart';
+import '../market/sell_sheet.dart' show sellFromSquad;
 
 part 'squad_screen_header_delegate.dart';
 part 'squad_screen_hero_strip.dart';
 part 'squad_screen_player_row.dart';
+part 'squad_screen_rival.dart';
 
 /// [Sprint 17 F1, Sprint 45 M3] The squad as the manager games show it, a table: the position in its line's colour,
 /// the name, age, rating, potential, fitness as a bar, value and who cannot play; a tap on a column sorts by it (again:
 /// the other way), the lines filter it, and a tap on a player opens his card.
+///
+/// [X105, the owner's request 2026-11-22] Any other club of the league in the same table ([clubId], from «Rival squads»
+/// in the bar), its players' numbers only (never its tactics); and a player of mine sold from his card, as on the site.
 class SquadScreen extends ConsumerStatefulWidget {
-  const SquadScreen({super.key, required this.leagueId});
+  const SquadScreen({super.key, required this.leagueId, this.clubId});
 
   final int leagueId;
+
+  /// Another club of the league; null is mine.
+  final int? clubId;
 
   @override
   ConsumerState<SquadScreen> createState() => _SquadScreenState();
@@ -87,20 +102,43 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
+    final rivalId = widget.clubId;
+    final rivalValue = rivalId == null ? null : ref.watch(rivalSquadProvider((widget.leagueId, rivalId)));
+    final rival = rivalValue?.value;
+    final AsyncValue<TeamData> value = rivalValue == null ? ref.watch(teamProvider(widget.leagueId)) : rivalValue.whenData((r) => r.team);
     return Scaffold(
-      appBar: GameBar(title: Text(l.squad)),
+      appBar: GameBar(title: Text(rivalId == null ? l.squad : rival?.name ?? l.rivalSquads)),
+      // [X105] The screen's actions in its bar: the rival squads, and back to mine from one.
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: GlmActionBar(
+          actions: [
+            if (rivalId != null)
+              GlmActionItem(
+                icon: const GlmIcon(GlmIcons.team),
+                label: l.mySquad,
+                onTap: () => context.canPop() ? context.pop() : context.go('/leagues/${widget.leagueId}/squad'),
+              ),
+            GlmActionItem(icon: const GlmIcon(GlmIcons.eye), label: l.rivalSquads, onTap: () => _pickRival(context)),
+          ],
+        ),
+      ),
       body: GlmBackground(
         wide: true,
         child: RefreshIndicator(
-          onRefresh: () => ref.refresh(teamProvider(widget.leagueId).future),
+          onRefresh: () => rivalId == null
+              ? ref.refresh(teamProvider(widget.leagueId).future)
+              : ref.refresh(rivalSquadProvider((widget.leagueId, rivalId)).future),
           child: AsyncView(
-            value: ref.watch(teamProvider(widget.leagueId)),
-            onRetry: () => ref.invalidate(teamProvider(widget.leagueId)),
+            value: value,
+            onRetry: () => rivalId == null
+                ? ref.invalidate(teamProvider(widget.leagueId))
+                : ref.invalidate(rivalSquadProvider((widget.leagueId, rivalId))),
             data: (team) {
               final summary = ref.watch(clubSummaryProvider(widget.leagueId)).value;
               final rows = _rows(team);
               final short = GlmFit.shortOf(context);
-              final heroOpen = _hero ?? !short;
+              final heroOpen = rival == null && (_hero ?? !short);
               final groups = [('att', l.groupAtt), ('mid', l.groupMid), ('def', l.groupDef), ('gk', l.groupGk)];
               // [Sprint 46, the owner's screenshots] The squad as the manager games show it: a band of the club's facts, the
               // team's rating with each line's over a little pitch and its key players, then the white table by line.
@@ -108,7 +146,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: _Fit(
-                      child: _InfoBand(team: team, summary: summary),
+                      child: rival != null ? _RivalBand(rival: rival) : _InfoBand(team: team, summary: summary),
                     ),
                   ),
                   // [Sprint 73 D2] The players first on a phone held sideways (the band, the hero and the table's head took
@@ -120,7 +158,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                         child: _TeamHero(team: team, summary: summary),
                       ),
                     ),
-                  if (short)
+                  if (short && rival == null)
                     SliverToBoxAdapter(
                       child: _HeroStrip(open: heroOpen, onTap: () => setState(() => _hero = !heroOpen)),
                     ),
@@ -139,7 +177,9 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                               pl,
                               captain: team.captain == pl.id,
                               // [Sprint 60 F4] Beside the table on a landscape screen; a sheet where there is no room.
-                              onTap: () => _narrow ? showPlayerCard(context, pl) : setState(() => _card = pl),
+                              onTap: () => _narrow
+                                  ? showPlayerCard(context, pl, action: (context) => _cardAction(context, pl, rival))
+                                  : setState(() => _card = pl),
                             ),
                           );
                         },
@@ -159,7 +199,11 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                       if (card != null && !_narrow)
                         SizedBox(
                           width: (box.maxWidth * .46).clamp(0.0, 340.0),
-                          child: PlayerCardPanel(player: card, close: () => setState(() => _card = null)),
+                          child: PlayerCardPanel(
+                            player: card,
+                            close: () => setState(() => _card = null),
+                            action: _cardAction(context, card, rival),
+                          ),
                         ),
                     ],
                   );
@@ -215,7 +259,7 @@ class _InfoBand extends StatelessWidget {
               child: Text(
                 label,
                 maxLines: 2,
-                style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700, height: 1.15),
+                style: glmText(GlmType.body, color: glmNight.text, fontWeight: FontWeight.w700, height: 1.15),
               ),
             ),
             const SizedBox(width: 8),
@@ -313,7 +357,7 @@ class _TeamHero extends StatelessWidget {
                               GlmType.display,
                               fontFamily: GlmFonts.numbers,
                               fontWeight: FontWeight.w800,
-                              color: Colors.white,
+                              color: glmNight.text,
                               height: 1,
                             ),
                           ),
@@ -330,7 +374,7 @@ class _TeamHero extends StatelessWidget {
                               width: 92,
                               child: Text(
                                 label,
-                                style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700),
+                                style: glmText(GlmType.body, color: glmNight.text, fontWeight: FontWeight.w700),
                               ),
                             ),
                             Expanded(
@@ -349,7 +393,7 @@ class _TeamHero extends StatelessWidget {
                                           GlmType.bodyLg,
                                           fontFamily: GlmFonts.numbers,
                                           fontWeight: FontWeight.w800,
-                                          color: Colors.white,
+                                          color: glmNight.text,
                                         ),
                                       ),
                                     ),
@@ -423,48 +467,4 @@ class _TeamHero extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Pin extends CustomPainter {
-  @override
-  void paint(Canvas c, Size s) => c.drawPath(
-    Path()
-      ..moveTo(0, 0)
-      ..lineTo(s.width, 0)
-      ..lineTo(s.width / 2, s.height)
-      ..close(),
-    Paint()..color = GlmArt.skyGlow,
-  );
-
-  @override
-  bool shouldRepaint(_Pin old) => false;
-}
-
-/// A little pitch in perspective, its grass, lines and edge.
-class _MiniPitch extends CustomPainter {
-  _MiniPitch(this.grass, this.dark);
-
-  final Color grass, dark;
-
-  @override
-  void paint(Canvas c, Size s) {
-    final top = Path()
-      ..moveTo(s.width * .12, 0)
-      ..lineTo(s.width, 0)
-      ..lineTo(s.width * .88, s.height * .82)
-      ..lineTo(0, s.height * .82)
-      ..close();
-    c.drawPath(top.shift(Offset(0, s.height * .12)), Paint()..color = GlmArt.earth);
-    c.drawPath(top, Paint()..shader = LinearGradient(colors: [Color.lerp(grass, Colors.white, .15)!, dark]).createShader(Offset.zero & s));
-    final line = Paint()
-      ..color = Colors.white.withValues(alpha: .6)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4;
-    c.drawPath(top, line);
-    c.drawLine(Offset(s.width * .56, 0), Offset(s.width * .44, s.height * .82), line);
-    c.drawOval(Rect.fromCenter(center: Offset(s.width * .5, s.height * .41), width: s.width * .16, height: s.height * .4), line);
-  }
-
-  @override
-  bool shouldRepaint(_MiniPitch old) => false;
 }

@@ -19,6 +19,7 @@ import 'buy_controller.dart';
 import 'market_data.dart';
 import '../console/market_console.dart';
 import 'offer_screen.dart';
+import 'sell_sheet.dart';
 
 part 'market_screen_buy_sheet.dart';
 part 'market_screen_offers_tab.dart';
