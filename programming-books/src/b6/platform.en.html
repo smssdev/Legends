@@ -1,0 +1,195 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/platform/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Platform Channels and Native Code</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain how Dart and the platform talk: channels, codecs and the platform thread</li>
+<li>write a method channel by hand, on both sides, and handle every way it can fail</li>
+<li>replace hand-written channels with Pigeon, which generates typed code for every platform</li>
+<li>stream values from native code with an event channel</li>
+<li>test the Dart side with mocks, and the native side on a real platform</li>
+</ul>
+</div>
+
+<p class="lead">Flutter draws everything itself, but it cannot read the battery, open the camera or talk to a payment terminal by itself. Those belong to the platform: Kotlin and Java on Android, Swift and Objective-C on iOS, C and C++ on Linux. Every plugin you have used so far crosses that border through a <dfn>platform channel</dfn>. This chapter crosses it with our own code.</p>
+
+<aside class="bit" data-mood="happy"><p>The native code in this chapter really runs: this book’s machine builds and runs Flutter apps on Linux, so the C++ side is compiled, run and tested there, and the Kotlin side is compiled into a real Android app. Swift needs a Mac; it is generated here but not compiled.</p></aside>
+
+<h2>{{n}}.1 How a channel works</h2>
+
+<p>A channel is a name, both sides agree on it, and a <dfn>codec</dfn> that turns values into bytes and back. Dart sends a message on the channel; the engine hands the bytes to the platform side registered under the same name; that side answers, and the answer comes back to Dart as a <code>Future</code>. The standard codec carries <code>null</code>, booleans, numbers, strings, byte arrays, lists and maps of those: a small, common language that Kotlin, Swift and C all understand.</p>
+
+<p>Three kinds of channel cover everything:</p>
+<ul>
+<li>a <code>MethodChannel</code> for calls: a method name and arguments, a result or an error;</li>
+<li>an <code>EventChannel</code> for streams: native code sends values for as long as Dart listens;</li>
+<li>a <code>BasicMessageChannel</code> for plain messages, which is what Pigeon builds on.</li>
+</ul>
+
+<p>On the native side, handlers run on the platform’s main thread, the same thread that draws the platform’s own windows. A handler that blocks that thread freezes the app.</p>
+
+<h2>{{n}}.2 A channel by hand</h2>
+
+<p>The café’s kiosk wants to know what it runs on. The Dart side names the channel and the method, and turns the answer, a map, into a class:</p>
+
+<pre data-code="lib/device/device_channel.dart" data-from="^class DeviceChannel" data-to="^}" data-title="lib/device/device_channel.dart (part)"></pre>
+
+<p>The Linux side answers in C++, with the GObject API of Flutter’s Linux embedder. It reads the system’s name and version with <code>uname</code>, the memory with <code>sysinfo</code>, and answers with a map:</p>
+
+<pre data-code="linux/runner/cafe_channels.cc" data-from="^static FlMethodChannel" data-to="^}" data-title="linux/runner/cafe_channels.cc (part)"></pre>
+
+<p>The handlers are registered once, when the window’s Flutter view exists. In the runner that <code>flutter create</code> made, that is two lines in <code>my_application.cc</code>, and the new file in the runner’s <code>CMakeLists.txt</code>:</p>
+
+<pre data-code="linux/runner/my_application.cc" data-from="fl_register_plugins" data-to="cafe_channels_register" data-title="linux/runner/my_application.cc (part)"></pre>
+<pre data-code="linux/runner/CMakeLists.txt" data-from="add_executable" data-to="^)" data-title="linux/runner/CMakeLists.txt (part)"></pre>
+
+<p>An integration test runs the real app on Linux and asks:</p>
+
+<pre data-code="integration_test/native_test.dart" data-from="testWidgets(" data-to="^  });" data-title="integration_test/native_test.dart (part)"></pre>
+<pre data-term="native-test.sh"></pre>
+
+<p>The first line is the channel by hand, answered by the C++ above, on the machine that built this book. The second comes from Pigeon, next.</p>
+
+<h2>{{n}}.3 Pigeon: one definition, typed code everywhere</h2>
+
+<p>The channel by hand works, but nothing checks it. If the Kotlin side calls the field <code>memory</code> and Dart reads <code>memoryMb</code>, the app compiles on both sides and fails at run time. <dfn>Pigeon</dfn> removes that whole class of bug: you describe the API once, in Dart, and it generates the code for each side.</p>
+
+<pre data-code="pigeons/device.dart" data-title="pigeons/device.dart"></pre>
+<pre data-term="pigeon.sh"></pre>
+
+<p>One run writes five files: Dart, Kotlin, Swift, and a C header and source for Linux. The Linux side receives a table of functions to fill in, one per method:</p>
+
+<pre data-code="linux/runner/device_api.g.h" data-from="^typedef struct {" data-to="CafeDeviceApiVTable;" data-title="linux/runner/device_api.g.h (part, generated)"></pre>
+<pre data-code="linux/runner/cafe_channels.cc" data-from="^static CafeDeviceApiInfoResponse" data-to="static const CafeDeviceApiVTable" data-title="linux/runner/cafe_channels.cc (part)"></pre>
+
+<p>A missing battery is not a crash: it is an error with a code, <code>UNAVAILABLE</code>, that reaches Dart as a <code>PlatformException</code>. The machine that built this book has no battery, so that is exactly what the integration test printed: <code>battery: UNAVAILABLE</code>.</p>
+
+<p>On the Dart side, the generated class is wrapped in a small interface, so that screens and tests do not depend on the channel, and every error becomes something the screen can say:</p>
+
+<pre data-code="lib/device/device_source.dart" data-from="^abstract interface" data-title="lib/device/device_source.dart (part)"></pre>
+<pre data-term="report-test.sh"></pre>
+
+<div class="phones">
+<figure data-img="shots/linux.png">
+<figcaption>The real app on Linux, answered by C++</figcaption>
+</figure>
+<figure data-img="shots/web.png" data-frame="phone">
+<figcaption>The same app on the web, where no native side exists</figcaption>
+</figure>
+</div>
+
+<p>On the web, nothing answers on the channel. The generated Dart code reports it as a <code>PlatformException</code> with the code <code>channel-error</code>, and the screen says so instead of failing.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The first Arabic run of this app showed the kernel version as <code>fc-v726-6.18.44</code>. The string was right; its display was not: in a right-to-left line, the Unicode bidirectional algorithm moved the pieces around the hyphens. The first fix, <code>textDirection: TextDirection.ltr</code> on that <code>Text</code>, put the pieces in order but moved the whole line to the left edge, away from its label. The right tool is an <em>isolate</em>: wrapping the version in the characters U+2066 and U+2069 keeps the line right to left and reads only the version left to right. Use it for versions, codes, emails and file names inside any text that may be Arabic.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which types can the standard codec carry?</li><li>What kind of bug does Pigeon prevent that a hand-written channel allows?</li><li>How does a missing battery on Linux reach Dart?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Threads and costs</h2>
+
+<p>A channel call is cheap but not free: the arguments are encoded, copied across, decoded, and the answer makes the same trip back. It is fine for a call per tap; it is wrong for sixty calls per second carrying images. For large data, pass a file path or a texture, not the bytes.</p>
+
+<p>The native handler runs on the platform thread. Reading <code>uname</code> takes microseconds, but reading a large file, querying a database or calling a slow system service there freezes the app’s window. Do that work on a background thread (a <code>GTask</code> on Linux, a coroutine on Android, a dispatch queue on iOS) and answer when it finishes: the Dart side is already waiting on a <code>Future</code>, so nothing else has to change.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Before writing native code, look for a plugin; before writing a plugin, look again. When you do write native code, keep it thin: gather the data, translate it, answer. Every decision that can live in Dart should, where it is tested once for every platform, instead of three times in three languages.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Channel or field names typed twice by hand</td><td>A typo that compiles everywhere and fails at run time</td><td>Pigeon</td></tr>
+<tr><td>Not handling <code>MissingPluginException</code></td><td>The web build or a test crashes</td><td>A fallback, or a clear message</td></tr>
+<tr><td>Throwing exceptions in native code</td><td>A crash instead of an answer</td><td>Return an error with a code</td></tr>
+<tr><td>Slow work in a native handler</td><td>A frozen window</td><td>A background thread, then answer</td></tr>
+<tr><td>Large data through the codec</td><td>Copies on every call, dropped frames</td><td>Files, textures or shared memory</td></tr>
+<tr><td>Technical strings in right-to-left text</td><td>Versions and codes shown scrambled</td><td>Isolate them with U+2066 and U+2069</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Channels carry messages between Dart and the platform by name, through a codec; handlers run on the platform thread.</li>
+<li>A method channel by hand needs matching names on both sides and care with every failure.</li>
+<li>Pigeon generates typed Dart, Kotlin, Swift and GObject code from one definition.</li>
+<li>Native errors travel as codes and arrive as <code>PlatformException</code>; no native side at all is <code>MissingPluginException</code> or <code>channel-error</code>.</li>
+<li>Test the Dart side with mocks and fakes, and the native side with integration tests on the platform.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>null</code>, booleans, integers, doubles, strings, byte arrays (and typed lists of numbers), and lists and maps of those values; Pigeon adds its own classes on top of it. 2. A mismatch between the two sides, such as a field or method named differently in Dart and in Kotlin, which compiles everywhere and fails only at run time; with Pigeon both sides are generated from one definition and checked by each compiler. 3. The C++ handler returns <code>cafe_device_api_battery_level_response_new_error("UNAVAILABLE", …)</code>; the generated code sends it as an error, and Dart’s <code>batteryLevel()</code> throws a <code>PlatformException</code> whose code is <code>UNAVAILABLE</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects test the Dart side without a platform, stream values from C++, and give the same API a Kotlin implementation.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Test the channel without a platform</h3>
+<p class="project-goal">Test <code>DeviceChannel</code> in all three situations: the platform answers, the platform reports an error, and there is no platform side at all.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>setMockMethodCallHandler</code>, <code>PlatformException</code> and <code>MissingPluginException</code>.</p>
+<ol class="steps">
+<li>Give the test’s binary messenger a mock handler for <code>bitcafe/device</code> that records the method and returns a map.</li>
+<li>Replace it with one that throws <code>PlatformException(code: 'BUSY')</code>, and expect that error in Dart.</li>
+<li>Remove the handler, and expect <code>info()</code> to return <code>null</code>.</li>
+</ol>
+<pre data-code="test/channel_test.dart" data-from="^void main" data-title="test/channel_test.dart"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/channel-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> this test uses <code>test</code>, not <code>testWidgets</code>. The first version used <code>testWidgets</code>, and the call with no handler never finished: <code>testWidgets</code> runs in a fake clock, and the missing-handler answer waited on real time. It hit the ten-minute timeout.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Stream from C++</h3>
+<p class="project-goal">An event channel that sends the free memory every half second while Dart listens, and stops when it stops.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>EventChannel</code>, <code>FlEventChannel</code>, GLib timers, and integration tests on Linux.</p>
+<ol class="steps">
+<li>In C++, start a 500 ms timer when Dart listens and remove it when Dart cancels; each tick sends the free memory.</li>
+<li>In Dart, expose <code>receiveBroadcastStream()</code> as a <code>Stream&lt;int&gt;</code>.</li>
+<li>In an integration test on Linux, take four values and print them with the time it took.</li>
+</ol>
+<pre data-code="linux/runner/cafe_channels.cc" data-from="^static FlEventChannel" data-to="^}#3" data-title="linux/runner/cafe_channels.cc (part)"></pre>
+<pre data-code="lib/device/device_channel.dart" data-from="^const _memory" data-title="lib/device/device_channel.dart (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/memory-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> four values took about two seconds, one every half second, as the timer says. They barely move, because little else was running on that machine; on a phone in use, they change all the time. Taking four values cancels the subscription, which runs <code>on_cancel</code> and removes the timer: a stream that is not cancelled keeps native work running for nobody.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>The same API, in Kotlin</h3>
+<p class="project-goal">Implement the Pigeon <code>DeviceApi</code> for Android: the system version, the total memory, and the battery level, with the same <code>UNAVAILABLE</code> error, and build the app.</p>
+<p class="project-skills"><strong>You will practise:</strong> Kotlin, <code>FlutterActivity.configureFlutterEngine</code>, Android system services, and generated interfaces.</p>
+<ol class="steps">
+<li>Implement the generated interface in a class that takes a <code>Context</code>.</li>
+<li>Read the memory from <code>ActivityManager</code> and the battery from <code>BatteryManager</code>; throw the generated <code>FlutterError</code> for no battery.</li>
+<li>Register it in <code>configureFlutterEngine</code> with <code>DeviceApi.setUp</code>, and build the APK.</li>
+</ol>
+<pre data-code="projects/DeviceApi.g.kt.part" data-title="DeviceApi.g.kt (part, generated)"></pre>
+<pre data-code="android/app/src/main/kotlin/com/example/bit_app/MainActivity.kt" data-from="^class AndroidDevice" data-title="MainActivity.kt (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/android-build.sh"></pre>
+<p class="hint"><strong>Hint:</strong> if the Kotlin class forgot <code>batteryLevel</code>, or returned an <code>Int</code> instead of a <code>Long</code>, this build would fail: that is Pigeon’s promise kept by the Kotlin compiler. The iOS side is the same exercise in Swift, against the generated <code>DeviceApi.g.swift</code>, with <code>UIDevice.current.batteryLevel</code>; it needs a Mac to compile.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a method <code>uptimeMinutes()</code> to the Pigeon API. Which files do you edit by hand, and which are regenerated?</li>
+<li><span class="level">Easy</span> What does Dart receive if the C++ handler answers <code>info</code> with <code>fl_method_not_implemented_response_new()</code>?</li>
+<li><span class="level">Medium</span> Reading the battery on some devices takes a slow system call. Rewrite the Linux battery handler so it does not block the platform thread.</li>
+<li><span class="level">Medium</span> Make the memory stream send nothing when the value has not changed. Where should that decision live, in C++ or in Dart, and why?</li>
+<li><span class="level">Challenge</span> Turn the device API into a plugin package that other apps can depend on. What moves where, and what does the app keep?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Native code can read the battery; it can also read whatever an app leaves lying around. The next chapter is about security on the device: where secrets end up, what an attacker can read from your build, and how to keep tokens and traffic safe.</p>
+</div>
+</section>

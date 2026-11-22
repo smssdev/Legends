@@ -31,6 +31,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "الفصل 12: الإشعارات والعمل في الخلفية"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "الفصل 13: قنوات المنصة والكود الأصلي"; } }
+@page ch13:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -163,7 +165,7 @@ Widget build(context, ref) =&gt;
           <p>اختُبر الكود في هذا الكتاب على Flutter 3.50.1 وDart 3.14، وكل مثال وجلسة طرفية وصورة شاشة منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Flutter وDart وFirebase وAndroid وGoogle Play علامات تجارية لشركة Google LLC، وiOS وXcode وApp Store علامات تجارية لشركة Apple Inc. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p">193</span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p">213</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">234</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: المعمارية</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف يرسم Flutter فعلاً</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المعمارية النظيفة في Flutter</span><span class="toc-p">29</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">إدارة الحالة بـ Riverpod</span><span class="toc-p">48</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">التنقل على نطاق واسع بـ go_router</span><span class="toc-p">65</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">الشبكة والأخطاء وإعادة المحاولة</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تطبيقات تعمل بلا اتصال أولاً</span><span class="toc-p">103</span></li><li class="toc-part">الجزء 2: الجودة</li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">أنظمة التصميم في Flutter</span><span class="toc-p">119</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">حركات تبدو أصيلة</span><span class="toc-p">136</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأداء: التقطّع والذاكرة وسرعة الفتح</span><span class="toc-p">157</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاختبار: الوحدات والـ Widget واللقطات والتكامل</span><span class="toc-p">173</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول على الموبايل</span><span class="toc-p">193</span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الإشعارات والعمل في الخلفية</span><span class="toc-p">213</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">قنوات المنصة والكود الأصلي</span><span class="toc-p">234</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأمان على الجهاز</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكامل المستمر والنسخ المتعددة والتوقيع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">تقارير الأعطال والتحليلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: تطبيق للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">253</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b6/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -5683,6 +5685,464 @@ network answers in 45 s: retry; in 2 s: done; notified [42]
 <p>إضافات كالتي في هذا الفصل تتحدث مع Android وiOS عبر كود لم تكتبه. والفصل القادم يكتب ذلك الكود: قنوات المنصة، وPigeon، ونداء Kotlin وSwift من Dart.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b6/platform/ar">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">الفصل 13</p><h1>قنوات المنصة والكود الأصلي</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح كيف يتحدث Dart مع المنصة: القنوات، والمرمِّزات (codecs)، وخيط المنصة</li>
+<li>تكتب قناة دوال باليد، في الطرفين، وتعالج كل طريقة قد تفشل بها</li>
+<li>تستبدل القنوات المكتوبة باليد بـ Pigeon، الذي يولّد كوداً بأنواع لكل منصة</li>
+<li>تبث قيماً من الكود الأصلي بقناة أحداث</li>
+<li>تختبر جانب Dart ببدائل، والجانب الأصلي على منصة حقيقية</li>
+</ul>
+</div>
+
+<p class="lead">Flutter يرسم كل شيء بنفسه، لكنه لا يستطيع وحده قراءة البطارية، أو فتح الكاميرا، أو التحدث إلى جهاز دفع. هذه ملك المنصة: Kotlin وJava في Android، وSwift وObjective-C في iOS، وC وC++ في Linux. وكل إضافة استخدمتها حتى الآن تعبر تلك الحدود عبر <dfn>قناة منصة</dfn> (platform channel). وهذا الفصل يعبرها بكودنا نحن.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الكود الأصلي في هذا الفصل يجري حقاً: جهاز هذا الكتاب يبني تطبيقات Flutter ويشغّلها على Linux، فجانب C++ يُترجم ويُشغَّل ويُختبر هناك، وجانب Kotlin يُترجم داخل تطبيق Android حقيقي. أما Swift فيحتاج جهاز Mac؛ فهو مولَّد هنا لكنه لا يُترجم.</p></div></div>
+
+<h2><span class="sec">13.1</span> <span>كيف تعمل القناة</span></h2>
+
+<p>القناة اسم يتفق عليه الطرفان، و<dfn>مرمِّز</dfn> (codec) يحوّل القيم إلى بايتات وبالعكس. يرسل Dart رسالة على القناة؛ فيسلّم المحرك البايتات إلى جانب المنصة المسجَّل بالاسم نفسه؛ فيجيب ذلك الجانب، ويعود الجواب إلى Dart في <code>Future</code>. والمرمِّز القياسي يحمل <code>null</code> والقيم المنطقية والأرقام والنصوص ومصفوفات البايتات، والقوائم والخرائط منها: لغة صغيرة مشتركة يفهمها Kotlin وSwift وC كلها.</p>
+
+<p>وثلاثة أنواع من القنوات تغطي كل شيء:</p>
+<ul>
+<li><code>MethodChannel</code> للنداءات: اسم دالة ومعاملات، ونتيجة أو خطأ؛</li>
+<li><code>EventChannel</code> للمجاري: يرسل الكود الأصلي قيماً ما دام Dart يستمع؛</li>
+<li><code>BasicMessageChannel</code> للرسائل البسيطة، وعليها يبني Pigeon.</li>
+</ul>
+
+<p>وفي الجانب الأصلي تجري المعالِجات على الخيط الرئيسي للمنصة، الخيط نفسه الذي يرسم نوافذ المنصة. والمعالج الذي يحجز ذلك الخيط يجمّد التطبيق.</p>
+
+<h2><span class="sec">13.2</span> <span>قناة باليد</span></h2>
+
+<p>جهاز الطلبات في المقهى يريد أن يعرف على ماذا يعمل. جانب Dart يسمّي القناة والدالة، ويحوّل الجواب، وهو خريطة، إلى صنف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/device/device_channel.dart (جزء)</div><pre class="code"><span class="k">class</span> DeviceChannel {
+  <span class="k">static</span> <span class="k">const</span> _channel = MethodChannel(<span class="s">&#x27;bitcafe/device&#x27;</span>);
+
+  <span class="k">Future</span>&lt;HostInfo?&gt; info() <span class="k">async</span> {
+    <span class="k">try</span> {
+      <span class="k">final</span> map = <span class="k">await</span> _channel.invokeMapMethod&lt;<span class="k">String</span>, <span class="k">Object</span>?&gt;(<span class="s">&#x27;info&#x27;</span>);
+      <span class="k">return</span> HostInfo(
+        map![<span class="s">&#x27;system&#x27;</span>] <span class="k">as</span> <span class="k">String</span>,
+        map[<span class="s">&#x27;version&#x27;</span>] <span class="k">as</span> <span class="k">String</span>,
+        map[<span class="s">&#x27;memoryMb&#x27;</span>] <span class="k">as</span> <span class="k">int</span>,
+      );
+    } <span class="k">on</span> MissingPluginException {
+      <span class="c line-bidi">// لا معالج على هذه المنصة (الويب مثلاً): ليس خطأً في التطبيق.</span>
+      <span class="k">return</span> <span class="k">null</span>;
+    }
+  }
+}</pre></div>
+
+<p>وجانب Linux يجيب بـ C++، بواجهة GObject في مضمِّن Flutter لـ Linux. يقرأ اسم النظام وإصداره بـ <code>uname</code>، والذاكرة بـ <code>sysinfo</code>، ويجيب بخريطة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">linux/runner/cafe_channels.cc (جزء)</div><pre class="code">static FlMethodChannel* device_channel = nullptr;
+
+static void on_device_call(FlMethodChannel* channel, FlMethodCall* call, gpointer user_data) {
+  g_autoptr(FlMethodResponse) response = nullptr;
+  if (strcmp(fl_method_call_get_name(call), &quot;info&quot;) == 0) {
+    struct utsname name;
+    uname(&amp;name);
+    struct sysinfo memory;
+    sysinfo(&amp;memory);
+    g_autoptr(FlValue) result = fl_value_new_map();
+    fl_value_set_string_take(result, &quot;system&quot;, fl_value_new_string(name.sysname));
+    fl_value_set_string_take(result, &quot;version&quot;, fl_value_new_string(name.release));
+    fl_value_set_string_take(result, &quot;memoryMb&quot;, fl_value_new_int(megabytes(memory.totalram, memory.mem_unit)));
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
+  } else {
+    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  }
+  g_autoptr(GError) error = nullptr;
+  if (!fl_method_call_respond(call, response, &amp;error)) {
+    g_warning(&quot;Failed to answer %s: %s&quot;, fl_method_call_get_name(call), error-&gt;message);
+  }
+}</pre></div>
+
+<p>والمعالِجات تُسجَّل مرة، حين يوجد عرض Flutter في النافذة. وفي المشغّل الذي صنعه <code>flutter create</code> هما سطران في <code>my_application.cc</code>، والملف الجديد في <code>CMakeLists.txt</code> الخاص بالمشغّل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">linux/runner/my_application.cc (جزء)</div><pre class="code">  fl_register_plugins(FL_PLUGIN_REGISTRY(view));
+  cafe_channels_register(fl_engine_get_binary_messenger(fl_view_get_engine(view)));</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">linux/runner/CMakeLists.txt (جزء)</div><pre class="code">add_executable(${BINARY_NAME}
+  &quot;main.cc&quot;
+  &quot;my_application.cc&quot;
+  &quot;cafe_channels.cc&quot;
+  &quot;device_api.g.cc&quot;
+  &quot;${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc&quot;
+)</pre></div>
+
+<p>واختبار تكامل يشغّل التطبيق الحقيقي على Linux ويسأل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">integration_test/native_test.dart (جزء)</div><pre class="code">  testWidgets(<span class="s">&#x27;الجانب الأصلي يجيب، على Linux&#x27;</span>, (tester) <span class="k">async</span> {
+    <span class="k">final</span> byHand = (<span class="k">await</span> DeviceChannel().info())!;
+    debugPrint(
+      <span class="s">&#x27;by hand: ${byHand.system} ${byHand.version}, ${byHand.memoryMb} MB&#x27;</span>,
+    );
+    <span class="k">final</span> report = <span class="k">await</span> readDevice(PigeonDevice());
+    <span class="k">final</span> info = report.info!;
+    debugPrint(
+      <span class="s">&#x27;pigeon:  ${info.system} ${info.version}, ${info.memoryMb} MB, battery: ${report.battery ?? report.problem}&#x27;</span>,
+    );
+
+    app.main();
+    <span class="k">await</span> tester.pumpAndSettle();
+    expect(find.text(info.system), findsOneWidget);
+    expect(find.text(<span class="s">&#x27;لا بطارية&#x27;</span>), findsOneWidget);
+  });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test integration_test/native_test.dart -d linux</span>
+00:00 +0: loading integration_test/native_test.dart
+Building Linux application...                                   
+✓ Built build/linux/x64/debug/bundle/bit_app
+00:00 +0: الجانب الأصلي يجيب، على Linux
+by hand: Linux 6.18.44-fc-v726, 16087 MB
+pigeon:  Linux 6.18.44-fc-v726, 16087 MB, battery: UNAVAILABLE
+00:01 +1: (tearDownAll)
+00:01 +1: All tests passed!</pre></div>
+
+<p>السطر الأول من القناة المكتوبة باليد، أجاب عنه كود C++ أعلاه، على الجهاز الذي بنى هذا الكتاب. والثاني من Pigeon، وهو التالي.</p>
+
+<h2><span class="sec">13.3</span> <span>Pigeon: تعريف واحد، وكود بأنواع في كل مكان</span></h2>
+
+<p>القناة المكتوبة باليد تعمل، لكن لا شيء يفحصها. فإن سمّى جانب Kotlin الحقل <code>memory</code> وقرأ Dart ‏<code>memoryMb</code>، تُرجم التطبيق في الطرفين وفشل وقت التشغيل. و<dfn>Pigeon</dfn> يزيل هذا الصنف كله من الأخطاء: تصف الواجهة مرة، بـ Dart، فيولّد الكود لكل جانب.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">pigeons/device.dart</div><pre class="code"><span class="k">import</span> <span class="s">&#x27;package:pigeon/pigeon.dart&#x27;</span>;
+
+<span class="c line-bidi">// تعريف واحد؛ ويكتب Pigeon منه كود Dart وKotlin وSwift وGObject.</span>
+@ConfigurePigeon(
+  PigeonOptions(
+    dartOut: <span class="s">&#x27;lib/device/device_api.g.dart&#x27;</span>,
+    kotlinOut: <span class="s">&#x27;android/app/src/main/kotlin/com/example/bit_app/DeviceApi.g.kt&#x27;</span>,
+    kotlinOptions: KotlinOptions(package: <span class="s">&#x27;com.example.bit_app&#x27;</span>),
+    swiftOut: <span class="s">&#x27;ios/Runner/DeviceApi.g.swift&#x27;</span>,
+    gobjectHeaderOut: <span class="s">&#x27;linux/runner/device_api.g.h&#x27;</span>,
+    gobjectSourceOut: <span class="s">&#x27;linux/runner/device_api.g.cc&#x27;</span>,
+    gobjectOptions: GObjectOptions(module: <span class="s">&#x27;Cafe&#x27;</span>),
+  ),
+)
+<span class="k">class</span> DeviceInfo {
+  DeviceInfo({
+    <span class="k">required</span> <span class="k">this</span>.system,
+    <span class="k">required</span> <span class="k">this</span>.version,
+    <span class="k">required</span> <span class="k">this</span>.memoryMb,
+  });
+
+  <span class="k">String</span> system;
+  <span class="k">String</span> version;
+  <span class="k">int</span> memoryMb;
+}
+
+@HostApi()
+<span class="k">abstract</span> <span class="k">class</span> DeviceApi {
+  DeviceInfo info();
+  <span class="k">int</span> batteryLevel();
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">dart run pigeon --input pigeons/device.dart</span></pre></div>
+
+<p>تشغيل واحد يكتب خمسة ملفات: Dart وKotlin وSwift، وملف رأس وملف مصدر بـ C لـ Linux. ويستلم جانب Linux جدول دوال يملؤه، دالة لكل نداء:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">linux/runner/device_api.g.h (جزء، مولَّد)</div><pre class="code">typedef struct {
+  CafeDeviceApiInfoResponse* (*info)(gpointer user_data);
+  CafeDeviceApiBatteryLevelResponse* (*battery_level)(gpointer user_data);
+} CafeDeviceApiVTable;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">linux/runner/cafe_channels.cc (جزء)</div><pre class="code">static CafeDeviceApiInfoResponse* info(gpointer user_data) {
+  struct utsname name;
+  uname(&amp;name);
+  struct sysinfo memory;
+  sysinfo(&amp;memory);
+  g_autoptr(CafeDeviceInfo) device =
+      cafe_device_info_new(name.sysname, name.release, megabytes(memory.totalram, memory.mem_unit));
+  return cafe_device_api_info_response_new(device);
+}
+
+static CafeDeviceApiBatteryLevelResponse* battery_level(gpointer user_data) {
+  g_autofree gchar* text = nullptr;
+  if (!g_file_get_contents(&quot;/sys/class/power_supply/BAT0/capacity&quot;, &amp;text, nullptr, nullptr)) {
+    // غياب البطارية جواب أيضاً: خطأ برمز يستطيع Dart فحصه.
+    return cafe_device_api_battery_level_response_new_error(&quot;UNAVAILABLE&quot;, &quot;This device has no battery.&quot;, nullptr);
+  }
+  return cafe_device_api_battery_level_response_new(g_ascii_strtoll(text, nullptr, 10));
+}
+
+static const CafeDeviceApiVTable device_api = {info, battery_level};</pre></div>
+
+<p>غياب البطارية ليس انهياراً: إنه خطأ برمز، <code>UNAVAILABLE</code>، يصل إلى Dart بصورة <code>PlatformException</code>. والجهاز الذي بنى هذا الكتاب بلا بطارية، فهذا بالضبط ما طبعه اختبار التكامل: <code>battery: UNAVAILABLE</code>.</p>
+
+<p>وفي جانب Dart يُغلَّف الصنف المولَّد بواجهة صغيرة، فلا تعتمد الشاشات والاختبارات على القناة، ويصير كل خطأ شيئاً تستطيع الشاشة قوله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/device/device_source.dart (جزء)</div><pre class="code"><span class="k">abstract</span> <span class="k">interface</span> <span class="k">class</span> DeviceSource {
+  <span class="k">Future</span>&lt;DeviceInfo&gt; info();
+  <span class="k">Future</span>&lt;<span class="k">int</span>&gt; batteryLevel();
+}
+
+<span class="k">class</span> PigeonDevice <span class="k">extends</span> DeviceApi <span class="k">implements</span> DeviceSource {}
+
+<span class="k">class</span> DeviceReport {
+  <span class="k">const</span> DeviceReport({<span class="k">this</span>.info, <span class="k">this</span>.battery, <span class="k">this</span>.problem});
+
+  <span class="k">final</span> DeviceInfo? info;
+  <span class="k">final</span> <span class="k">int</span>? battery;
+  <span class="k">final</span> <span class="k">String</span>? problem;
+}
+
+<span class="c line-bidi">// كل خطأ من المنصة يصير شيئاً تستطيع الشاشة قوله.</span>
+<span class="k">Future</span>&lt;DeviceReport&gt; readDevice(DeviceSource source) <span class="k">async</span> {
+  <span class="k">final</span> DeviceInfo info;
+  <span class="k">try</span> {
+    info = <span class="k">await</span> source.info();
+  } <span class="k">on</span> PlatformException <span class="k">catch</span> (error) {
+    <span class="k">return</span> DeviceReport(problem: error.code);
+  }
+  <span class="k">try</span> {
+    <span class="k">return</span> DeviceReport(info: info, battery: <span class="k">await</span> source.batteryLevel());
+  } <span class="k">on</span> PlatformException <span class="k">catch</span> (error) {
+    <span class="k">return</span> DeviceReport(info: info, problem: error.code);
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/report_test.dart</span>
+00:00 +0: loading test/report_test.dart
+00:00 +0: غياب البطارية يصير جملة
+00:00 +1: غياب الجانب الأصلي يصير جملة
+00:00 +2: All tests passed!</pre></div>
+
+<div class="phones">
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shots/linux.png</span><b>560px</b></div><img src="img/b6-platform-ar-shots-linux.png" alt="">
+<figcaption>التطبيق الحقيقي على Linux، وجوابه من C++</figcaption>
+</figure>
+<figure class="phone-shot"><div class="phone"><img src="img/b6-platform-ar-shots-web.png" alt=""></div>
+<figcaption>التطبيق نفسه على الويب، حيث لا جانب أصلياً</figcaption>
+</figure>
+</div>
+
+<p>على الويب لا يجيب أحد على القناة. فيبلّغ كود Dart المولَّد ذلك بـ <code>PlatformException</code> رمزه <code>channel-error</code>، وتقوله الشاشة بدل أن تفشل.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>أول تشغيل عربي لهذا التطبيق أظهر إصدار النواة هكذا: <code>fc-v726-6.18.44</code>. النص كان صحيحاً؛ أما عرضه فلا: في سطر من اليمين إلى اليسار نقلت خوارزمية Unicode ثنائية الاتجاه القطع حول الشرطات. والإصلاح الأول، <code>textDirection: TextDirection.ltr</code> على ذلك الـ <code>Text</code>، رتّب القطع لكنه نقل السطر كله إلى الحافة اليسرى، بعيداً عن تسميته. والأداة الصحيحة هي <em>العزل</em> (isolate): تغليف الإصدار بالحرفين U+2066 وU+2069 يُبقي السطر من اليمين إلى اليسار، ولا يقرأ من اليسار إلى اليمين إلا الإصدار. استخدمه لأرقام الإصدارات والرموز والبريد وأسماء الملفات داخل أي نص قد يكون عربياً.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي الأنواع يستطيع المرمِّز القياسي حملها؟</li><li>أي نوع من الأخطاء يمنعه Pigeon وتسمح به القناة المكتوبة باليد؟</li><li>كيف يصل غياب البطارية في Linux إلى Dart؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">13.4</span> <span>الخيوط والتكاليف</span></h2>
+
+<p>نداء القناة رخيص لكنه ليس مجانياً: المعاملات تُرمَّز وتُنسخ عبر الحدود وتُفك، والجواب يقطع الرحلة نفسها عائداً. وهذا مناسب لنداء مع كل ضغطة؛ وخاطئ لستين نداءً في الثانية تحمل صوراً. وللبيانات الكبيرة مرّر مسار ملف أو texture، لا البايتات.</p>
+
+<p>والمعالج الأصلي يجري على خيط المنصة. قراءة <code>uname</code> تأخذ أجزاء من الميلي ثانية، لكن قراءة ملف كبير، أو سؤال قاعدة بيانات، أو نداء خدمة نظام بطيئة هناك يجمّد نافذة التطبيق. فاعمل ذلك على خيط في الخلفية (<code>GTask</code> في Linux، وcoroutine في Android، وdispatch queue في iOS) وأجب حين ينتهي: جانب Dart ينتظر <code>Future</code> أصلاً، فلا يلزم تغيير شيء آخر.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>قبل كتابة كود أصلي ابحث عن إضافة؛ وقبل كتابة إضافة ابحث مرة أخرى. وحين تكتب كوداً أصلياً فاجعله رقيقاً: اجمع البيانات، وترجمها، وأجب. وكل قرار يمكن أن يعيش في Dart يجب أن يعيش فيه، حيث يُختبر مرة لكل المنصات، بدل ثلاث مرات بثلاث لغات.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>أسماء القناة أو الحقول مكتوبة مرتين باليد</td><td>خطأ مطبعي يُترجم في كل مكان ويفشل وقت التشغيل</td><td>Pigeon</td></tr>
+<tr><td>عدم معالجة <code>MissingPluginException</code></td><td>نسخة الويب أو الاختبار ينهار</td><td>بديل احتياطي، أو رسالة واضحة</td></tr>
+<tr><td>رمي استثناءات في الكود الأصلي</td><td>انهيار بدل جواب</td><td>أعد خطأً برمز</td></tr>
+<tr><td>عمل بطيء في معالج أصلي</td><td>نافذة متجمدة</td><td>خيط في الخلفية، ثم الجواب</td></tr>
+<tr><td>بيانات كبيرة عبر المرمِّز</td><td>نسخ مع كل نداء، وإطارات ضائعة</td><td>ملفات أو textures أو ذاكرة مشتركة</td></tr>
+<tr><td>نصوص تقنية داخل نص من اليمين إلى اليسار</td><td>إصدارات ورموز تُعرض مبعثرة</td><td>اعزلها بـ U+2066 وU+2069</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>القنوات تحمل الرسائل بين Dart والمنصة بالاسم، عبر مرمِّز؛ والمعالِجات تجري على خيط المنصة.</li>
+<li>قناة الدوال المكتوبة باليد تحتاج أسماء متطابقة في الطرفين، وعناية بكل فشل.</li>
+<li>Pigeon يولّد كود Dart وKotlin وSwift وGObject بأنواع، من تعريف واحد.</li>
+<li>الأخطاء الأصلية تسافر رموزاً وتصل <code>PlatformException</code>؛ وغياب الجانب الأصلي كلياً هو <code>MissingPluginException</code> أو <code>channel-error</code>.</li>
+<li>اختبر جانب Dart ببدائل، والجانب الأصلي باختبارات تكامل على المنصة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ‏<code>null</code> والقيم المنطقية والأعداد الصحيحة والعشرية والنصوص ومصفوفات البايتات (والقوائم المحددة النوع من الأرقام)، والقوائم والخرائط من هذه القيم؛ ويضيف Pigeon أصنافه فوق ذلك. 2. عدم التطابق بين الطرفين، كحقل أو دالة باسم مختلف في Dart وفي Kotlin، وهو يُترجم في كل مكان ولا يفشل إلا وقت التشغيل؛ ومع Pigeon يُولَّد الطرفان من تعريف واحد ويفحصهما مترجم كل منهما. 3. معالج C++ يعيد <code>cafe_device_api_battery_level_response_new_error("UNAVAILABLE", …)</code>؛ والكود المولَّد يرسله خطأً، فترمي <code>batteryLevel()</code> في Dart ‏<code>PlatformException</code> رمزه <code>UNAVAILABLE</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تختبر جانب Dart بلا منصة، وتبث قيماً من C++، وتعطي الواجهة نفسها تنفيذاً بـ Kotlin.</p>
+
+<div class="project">
+<p class="project-label">المشروع 13.1 · سهل</p>
+<h3>اختبر القناة بلا منصة</h3>
+<p class="project-goal">اختبر <code>DeviceChannel</code> في الحالات الثلاث: المنصة تجيب، والمنصة تبلّغ عن خطأ، ولا جانب للمنصة إطلاقاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>setMockMethodCallHandler</code>، و<code>PlatformException</code> و<code>MissingPluginException</code>.</p>
+<ol class="steps">
+<li>أعطِ رسول الاختبار الثنائي معالجاً بديلاً لـ <code>bitcafe/device</code> يسجل الدالة ويعيد خريطة.</li>
+<li>استبدله بآخر يرمي <code>PlatformException(code: 'BUSY')</code>، وتوقّع هذا الخطأ في Dart.</li>
+<li>احذف المعالج، وتوقّع أن تعيد <code>info()</code> القيمة <code>null</code>.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">test/channel_test.dart</div><pre class="code"><span class="k">void</span> main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  test(<span class="s">&#x27;القناة باليد، مع بديل&#x27;</span>, () <span class="k">async</span> {
+    <span class="k">const</span> channel = MethodChannel(<span class="s">&#x27;bitcafe/device&#x27;</span>);
+    <span class="k">final</span> messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    <span class="k">final</span> calls = &lt;<span class="k">String</span>&gt;[];
+
+    messenger.setMockMethodCallHandler(channel, (call) <span class="k">async</span> {
+      calls.add(call.method);
+      <span class="k">return</span> {<span class="s">&#x27;system&#x27;</span>: <span class="s">&#x27;Linux&#x27;</span>, <span class="s">&#x27;version&#x27;</span>: <span class="s">&#x27;6.1.0&#x27;</span>, <span class="s">&#x27;memoryMb&#x27;</span>: <span class="n">15872</span>};
+    });
+    <span class="k">final</span> info = (<span class="k">await</span> DeviceChannel().info())!;
+    debugPrint(
+      <span class="s">&#x27;answered: ${info.system} ${info.version}, ${info.memoryMb} MB, after calls $calls&#x27;</span>,
+    );
+
+    messenger.setMockMethodCallHandler(
+      channel,
+      (call) <span class="k">async</span> =&gt; <span class="k">throw</span> PlatformException(code: <span class="s">&#x27;BUSY&#x27;</span>),
+    );
+    <span class="k">await</span> expectLater(
+      DeviceChannel().info(),
+      throwsA(isA&lt;PlatformException&gt;().having((e) =&gt; e.code, <span class="s">&#x27;code&#x27;</span>, <span class="s">&#x27;BUSY&#x27;</span>)),
+    );
+    debugPrint(
+      <span class="s">&#x27;an error from the platform reaches Dart as PlatformException(BUSY)&#x27;</span>,
+    );
+
+    messenger.setMockMethodCallHandler(channel, <span class="k">null</span>);
+    debugPrint(<span class="s">&#x27;no handler at all: ${await DeviceChannel().info()}&#x27;</span>);
+  });
+}</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test test/channel_test.dart</span>
+00:00 +0: loading test/channel_test.dart
+00:00 +0: القناة باليد، مع بديل
+answered: Linux 6.1.0, 15872 MB, after calls [info]
+an error from the platform reaches Dart as PlatformException(BUSY)
+no handler at all: null
+00:00 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> هذا الاختبار يستخدم <code>test</code> لا <code>testWidgets</code>. النسخة الأولى استخدمت <code>testWidgets</code>، فلم ينتهِ النداء الذي بلا معالج أبداً: <code>testWidgets</code> يجري بساعة مزيّفة، وجواب غياب المعالج كان ينتظر وقتاً حقيقياً. فبلغ مهلة العشر دقائق.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 13.2 · متوسط</p>
+<h3>بثّ من C++</h3>
+<p class="project-goal">قناة أحداث ترسل الذاكرة الحرة كل نصف ثانية ما دام Dart يستمع، وتتوقف حين يتوقف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>EventChannel</code> و<code>FlEventChannel</code>، ومؤقتات GLib، واختبارات التكامل على Linux.</p>
+<ol class="steps">
+<li>في C++ ابدأ مؤقتاً كل 500 ms حين يستمع Dart، واحذفه حين يلغي Dart؛ وكل دقة ترسل الذاكرة الحرة.</li>
+<li>في Dart اعرض <code>receiveBroadcastStream()</code> بصورة <code>Stream&lt;int&gt;</code>.</li>
+<li>في اختبار تكامل على Linux خذ أربع قيم واطبعها مع الوقت الذي أخذته.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">linux/runner/cafe_channels.cc (جزء)</div><pre class="code">static FlEventChannel* memory_channel = nullptr;
+static guint memory_timer = 0;
+
+static gboolean send_free_memory(gpointer user_data) {
+  struct sysinfo memory;
+  sysinfo(&amp;memory);
+  g_autoptr(FlValue) value = fl_value_new_int(megabytes(memory.freeram, memory.mem_unit));
+  fl_event_channel_send(memory_channel, value, nullptr, nullptr);
+  return G_SOURCE_CONTINUE;
+}
+
+static FlMethodErrorResponse* on_listen(FlEventChannel* channel, FlValue* args, gpointer user_data) {
+  memory_timer = g_timeout_add(500, send_free_memory, nullptr);
+  return nullptr;
+}
+
+static FlMethodErrorResponse* on_cancel(FlEventChannel* channel, FlValue* args, gpointer user_data) {
+  g_clear_handle_id(&amp;memory_timer, g_source_remove);
+  return nullptr;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/device/device_channel.dart (جزء)</div><pre class="code"><span class="k">const</span> _memory = EventChannel(<span class="s">&#x27;bitcafe/memory&#x27;</span>);
+
+<span class="k">Stream</span>&lt;<span class="k">int</span>&gt; freeMemoryMb() =&gt; _memory.receiveBroadcastStream().cast&lt;<span class="k">int</span>&gt;();</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter test integration_test/memory_test.dart -d linux</span>
+00:00 +0: loading integration_test/memory_test.dart
+Building Linux application...                                   
+✓ Built build/linux/x64/debug/bundle/bit_app
+00:00 +0: الذاكرة الحرة، تتدفق من C++
+free memory: 4513 MB, 4521 MB, 4521 MB, 4529 MB in 2010 ms
+00:02 +1: (tearDownAll)
+00:02 +1: All tests passed!</pre></div>
+<p class="hint"><strong>تلميح:</strong> أخذت القيم الأربع نحو ثانيتين، واحدة كل نصف ثانية، كما يقول المؤقت. وهي لا تكاد تتحرك، لأن قليلاً غيرها كان يجري على ذلك الجهاز؛ وعلى هاتف قيد الاستخدام تتغير طوال الوقت. وأخذ أربع قيم يلغي الاشتراك، فيجري <code>on_cancel</code> ويحذف المؤقت: والمجرى الذي لا يُلغى يُبقي عملاً أصلياً يجري لأجل لا أحد.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 13.3 · تحدٍّ</p>
+<h3>الواجهة نفسها، بـ Kotlin</h3>
+<p class="project-goal">نفّذ واجهة Pigeon ‏<code>DeviceApi</code> لـ Android: إصدار النظام، والذاكرة الكلية، ومستوى البطارية، مع خطأ <code>UNAVAILABLE</code> نفسه، وابنِ التطبيق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> Kotlin، و<code>FlutterActivity.configureFlutterEngine</code>، وخدمات نظام Android، والواجهات المولَّدة.</p>
+<ol class="steps">
+<li>نفّذ الواجهة المولَّدة في صنف يأخذ <code>Context</code>.</li>
+<li>اقرأ الذاكرة من <code>ActivityManager</code> والبطارية من <code>BatteryManager</code>؛ وارمِ <code>FlutterError</code> المولَّد عند غياب البطارية.</li>
+<li>سجّله في <code>configureFlutterEngine</code> بـ <code>DeviceApi.setUp</code>، وابنِ ملف APK.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">DeviceApi.g.kt (جزء، مولَّد)</div><pre class="code">interface DeviceApi {
+  fun info(): DeviceInfo
+  fun batteryLevel(): Long
+
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">MainActivity.kt (جزء)</div><pre class="code">class AndroidDevice(private val context: Context) : DeviceApi {
+    override fun info(): DeviceInfo {
+        val memory = ActivityManager.MemoryInfo()
+        (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memory)
+        return DeviceInfo(system = &quot;Android&quot;, version = Build.VERSION.RELEASE, memoryMb = memory.totalMem / (1024 * 1024))
+    }
+
+    override fun batteryLevel(): Long {
+        val battery = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+        val level = battery.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+        if (level &lt;= 0) {
+            throw FlutterError(&quot;UNAVAILABLE&quot;, &quot;This device has no battery.&quot;, null)
+        }
+        return level.toLong()
+    }
+}</pre></div>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">flutter build apk --debug -t lib/device_app.dart</span>
+✓ Built build/app/outputs/flutter-apk/app-debug.apk</pre></div>
+<p class="hint"><strong>تلميح:</strong> لو نسي صنف Kotlin الدالة <code>batteryLevel</code>، أو أعاد <code>Int</code> بدل <code>Long</code>، لفشل هذا البناء: هذا وعد Pigeon يحفظه مترجم Kotlin. وجانب iOS التمرين نفسه بـ Swift، مقابل <code>DeviceApi.g.swift</code> المولَّد، مع <code>UIDevice.current.batteryLevel</code>؛ ويحتاج جهاز Mac ليُترجم.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف دالة <code>uptimeMinutes()</code> إلى واجهة Pigeon. أي الملفات تعدّلها باليد، وأيها يُعاد توليده؟</li>
+<li><span class="level">سهل</span> ماذا يستقبل Dart إن أجاب معالج C++ عن <code>info</code> بـ <code>fl_method_not_implemented_response_new()</code>؟</li>
+<li><span class="level medium">متوسط</span> قراءة البطارية في بعض الأجهزة نداء نظام بطيء. أعد كتابة معالج البطارية في Linux فلا يحجز خيط المنصة.</li>
+<li><span class="level medium">متوسط</span> اجعل مجرى الذاكرة لا يرسل شيئاً حين لا تتغير القيمة. أين يجب أن يعيش هذا القرار، في C++ أم في Dart، ولماذا؟</li>
+<li><span class="level hard">تحدٍّ</span> حوّل واجهة الجهاز إلى حزمة إضافة تعتمد عليها تطبيقات أخرى. ما الذي ينتقل وإلى أين، وماذا يبقى في التطبيق؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 14</p>
+<p>الكود الأصلي يستطيع قراءة البطارية؛ ويستطيع أيضاً قراءة كل ما يتركه التطبيق مكشوفاً. والفصل القادم عن الأمان على الجهاز: أين تنتهي الأسرار، وما الذي يستطيع المهاجم قراءته من نسختك، وكيف تحفظ الرموز والاتصالات.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b6/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -5818,6 +6278,16 @@ network answers in 45 s: retry; in 2 s: done; notified [42]
 <li>بعد تسجيل دخول المستخدم (يجب أن يعرف الخادم لمن الرمز)، وكلما أصدرت المنصة رمزاً جديداً، وحين يُعاد تثبيت التطبيق أو تُمسح بياناته. أضف <code>Stream&lt;String&gt; get tokens</code> إلى <code>PushSource</code>، منفذاً بـ <code>getToken()</code> ثم <code>FirebaseMessaging.instance.onTokenRefresh</code>؛ وفي اختبار يطلق البديل المزيّف رمزين، وتسجل API مزيّفة أن الاثنين أُرسلا، وأن لا شيء أُرسل قبل تسجيل الدخول.</li>
 <li>يستطيع المستخدم إسكات العروض من إعدادات النظام والإبقاء على تحديثات الطلب؛ ومع قناة واحدة يكون خياره الكل أو لا شيء، وكثيرون يختارون لا شيء. والقنوات تظهر في ثلاثة أماكن: تُنشأ مرة عند البدء بـ <code>createNotificationChannel</code> في تنفيذ Android للإضافة، وتُختار بمعرّفها في كل <code>AndroidNotificationDetails</code>، وتُسمّى في رسالة FCM ‏(<code>android.notification.channel_id</code>) للإشعارات التي يعرضها النظام وحده.</li>
 <li><code>initialize(onDidReceiveNotificationResponse: …)</code> تستقبل الضغطات والتطبيق يعمل، في المقدمة أو الخلفية، ويجب أن تنادي <code>router.go</code>؛ و<code>getNotificationAppLaunchDetails()</code>، تُقرأ عند البدء، تقول هل شغّل إشعارٌ التطبيقَ وبأي payload؛ و<code>onDidReceiveBackgroundNotificationResponse</code>، دالة في أعلى الملف بـ <code>@pragma('vm:entry-point')</code>، تعالج أفعال الإشعار دون فتح التطبيق. ضع معرّف الطلب وحده في الـ payload، وحلّله بالعناية نفسها التي تحلل بها رسالة الدفع: إنه يعود من خارج التطبيق.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 13</h2>
+<ol class="exercises">
+<li>‏<code>pigeons/device.dart</code> فقط (أضف <code>int uptimeMinutes();</code>) والتنفيذات: دالة C++ ومكانها في جدول الدوال، ودالتا Kotlin وSwift، وغلاف Dart إن استخدمته الشاشة. و<code>dart run pigeon --input pigeons/device.dart</code> يعيد توليد الملفات الخمسة المولَّدة؛ ثم يرفض مترجم Kotlin البناء حتى ينفّذ <code>AndroidDevice</code> الدالة الجديدة، ويحذّر مترجم C++ إن نقصت من جدول الدوال.</li>
+<li>‏<code>MissingPluginException</code>، كما لو لم يكن هناك معالج إطلاقاً: «غير منفّذ» تعني «هذا الطرف لا يعرف هذه الدالة». و<code>DeviceChannel.info()</code> تلتقطه وتعيد <code>null</code>، فتلجأ الشاشة إلى البديل كما على الويب.</li>
+<li>ابدأ العمل بـ <code>g_task_run_in_thread</code> (أو <code>GThreadPool</code>)، واحتفظ بالنداء لتجيب لاحقاً، وارجع دون أن تجيب؛ وحين ينتهي الخيط أجب من الخيط الرئيسي بـ <code>g_main_context_invoke</code>. ومع Pigeon علّم الدالة بـ <code>@async</code> في التعريف: فيعطي كود GObject المولَّد المعالجَ مقبضاً يجيب به لاحقاً، بدل أن يتوقع الجواب قيمةً مُعادة.</li>
+<li>في C++: المقصود تجنب إرسال رسائل لا تحمل جديداً، والطرف المرسِل وحده يستطيع ألا يرسل. احفظ آخر قيمة في متغير ثابت، ولا تنادِ <code>fl_event_channel_send</code> إلا إن اختلفت القراءة الجديدة. ويستطيع Dart أن يستخدم <code>distinct()</code> احتياطاً، لكن عمل الترميز والإرسال يكون قد تم حينها.</li>
+<li>أنشئ إضافة بـ <code>flutter create --template=plugin --platforms=android,ios,linux cafe_device</code>؛ وانقل إليها <code>pigeons/device.dart</code> والملفات المولَّدة والتنفيذات الأصلية، وسجّل جانبي Linux وAndroid في دوال تسجيل الإضافة نفسها بدل <code>my_application.cc</code> و<code>MainActivity</code> في التطبيق. ولا يبقى في التطبيق إلا الاعتماد وكود Dart الذي يستخدم <code>DeviceSource</code>؛ ثم تسجّلها <code>fl_register_plugins</code> ومسجّل إضافات Android تلقائياً.</li>
 </ol>
 
 </section>

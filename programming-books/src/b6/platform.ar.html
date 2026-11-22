@@ -1,0 +1,195 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b6/platform/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>قنوات المنصة والكود الأصلي</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح كيف يتحدث Dart مع المنصة: القنوات، والمرمِّزات (codecs)، وخيط المنصة</li>
+<li>تكتب قناة دوال باليد، في الطرفين، وتعالج كل طريقة قد تفشل بها</li>
+<li>تستبدل القنوات المكتوبة باليد بـ Pigeon، الذي يولّد كوداً بأنواع لكل منصة</li>
+<li>تبث قيماً من الكود الأصلي بقناة أحداث</li>
+<li>تختبر جانب Dart ببدائل، والجانب الأصلي على منصة حقيقية</li>
+</ul>
+</div>
+
+<p class="lead">Flutter يرسم كل شيء بنفسه، لكنه لا يستطيع وحده قراءة البطارية، أو فتح الكاميرا، أو التحدث إلى جهاز دفع. هذه ملك المنصة: Kotlin وJava في Android، وSwift وObjective-C في iOS، وC وC++ في Linux. وكل إضافة استخدمتها حتى الآن تعبر تلك الحدود عبر <dfn>قناة منصة</dfn> (platform channel). وهذا الفصل يعبرها بكودنا نحن.</p>
+
+<aside class="bit" data-mood="happy"><p>الكود الأصلي في هذا الفصل يجري حقاً: جهاز هذا الكتاب يبني تطبيقات Flutter ويشغّلها على Linux، فجانب C++ يُترجم ويُشغَّل ويُختبر هناك، وجانب Kotlin يُترجم داخل تطبيق Android حقيقي. أما Swift فيحتاج جهاز Mac؛ فهو مولَّد هنا لكنه لا يُترجم.</p></aside>
+
+<h2>{{n}}.1 كيف تعمل القناة</h2>
+
+<p>القناة اسم يتفق عليه الطرفان، و<dfn>مرمِّز</dfn> (codec) يحوّل القيم إلى بايتات وبالعكس. يرسل Dart رسالة على القناة؛ فيسلّم المحرك البايتات إلى جانب المنصة المسجَّل بالاسم نفسه؛ فيجيب ذلك الجانب، ويعود الجواب إلى Dart في <code>Future</code>. والمرمِّز القياسي يحمل <code>null</code> والقيم المنطقية والأرقام والنصوص ومصفوفات البايتات، والقوائم والخرائط منها: لغة صغيرة مشتركة يفهمها Kotlin وSwift وC كلها.</p>
+
+<p>وثلاثة أنواع من القنوات تغطي كل شيء:</p>
+<ul>
+<li><code>MethodChannel</code> للنداءات: اسم دالة ومعاملات، ونتيجة أو خطأ؛</li>
+<li><code>EventChannel</code> للمجاري: يرسل الكود الأصلي قيماً ما دام Dart يستمع؛</li>
+<li><code>BasicMessageChannel</code> للرسائل البسيطة، وعليها يبني Pigeon.</li>
+</ul>
+
+<p>وفي الجانب الأصلي تجري المعالِجات على الخيط الرئيسي للمنصة، الخيط نفسه الذي يرسم نوافذ المنصة. والمعالج الذي يحجز ذلك الخيط يجمّد التطبيق.</p>
+
+<h2>{{n}}.2 قناة باليد</h2>
+
+<p>جهاز الطلبات في المقهى يريد أن يعرف على ماذا يعمل. جانب Dart يسمّي القناة والدالة، ويحوّل الجواب، وهو خريطة، إلى صنف:</p>
+
+<pre data-code="lib/device/device_channel.dart" data-from="^class DeviceChannel" data-to="^}" data-title="lib/device/device_channel.dart (جزء)"></pre>
+
+<p>وجانب Linux يجيب بـ C++، بواجهة GObject في مضمِّن Flutter لـ Linux. يقرأ اسم النظام وإصداره بـ <code>uname</code>، والذاكرة بـ <code>sysinfo</code>، ويجيب بخريطة:</p>
+
+<pre data-code="linux/runner/cafe_channels.cc" data-from="^static FlMethodChannel" data-to="^}" data-title="linux/runner/cafe_channels.cc (جزء)"></pre>
+
+<p>والمعالِجات تُسجَّل مرة، حين يوجد عرض Flutter في النافذة. وفي المشغّل الذي صنعه <code>flutter create</code> هما سطران في <code>my_application.cc</code>، والملف الجديد في <code>CMakeLists.txt</code> الخاص بالمشغّل:</p>
+
+<pre data-code="linux/runner/my_application.cc" data-from="fl_register_plugins" data-to="cafe_channels_register" data-title="linux/runner/my_application.cc (جزء)"></pre>
+<pre data-code="linux/runner/CMakeLists.txt" data-from="add_executable" data-to="^)" data-title="linux/runner/CMakeLists.txt (جزء)"></pre>
+
+<p>واختبار تكامل يشغّل التطبيق الحقيقي على Linux ويسأل:</p>
+
+<pre data-code="integration_test/native_test.dart" data-from="testWidgets(" data-to="^  });" data-title="integration_test/native_test.dart (جزء)"></pre>
+<pre data-term="native-test.sh"></pre>
+
+<p>السطر الأول من القناة المكتوبة باليد، أجاب عنه كود C++ أعلاه، على الجهاز الذي بنى هذا الكتاب. والثاني من Pigeon، وهو التالي.</p>
+
+<h2>{{n}}.3 Pigeon: تعريف واحد، وكود بأنواع في كل مكان</h2>
+
+<p>القناة المكتوبة باليد تعمل، لكن لا شيء يفحصها. فإن سمّى جانب Kotlin الحقل <code>memory</code> وقرأ Dart ‏<code>memoryMb</code>، تُرجم التطبيق في الطرفين وفشل وقت التشغيل. و<dfn>Pigeon</dfn> يزيل هذا الصنف كله من الأخطاء: تصف الواجهة مرة، بـ Dart، فيولّد الكود لكل جانب.</p>
+
+<pre data-code="pigeons/device.dart" data-title="pigeons/device.dart"></pre>
+<pre data-term="pigeon.sh"></pre>
+
+<p>تشغيل واحد يكتب خمسة ملفات: Dart وKotlin وSwift، وملف رأس وملف مصدر بـ C لـ Linux. ويستلم جانب Linux جدول دوال يملؤه، دالة لكل نداء:</p>
+
+<pre data-code="linux/runner/device_api.g.h" data-from="^typedef struct {" data-to="CafeDeviceApiVTable;" data-title="linux/runner/device_api.g.h (جزء، مولَّد)"></pre>
+<pre data-code="linux/runner/cafe_channels.cc" data-from="^static CafeDeviceApiInfoResponse" data-to="static const CafeDeviceApiVTable" data-title="linux/runner/cafe_channels.cc (جزء)"></pre>
+
+<p>غياب البطارية ليس انهياراً: إنه خطأ برمز، <code>UNAVAILABLE</code>، يصل إلى Dart بصورة <code>PlatformException</code>. والجهاز الذي بنى هذا الكتاب بلا بطارية، فهذا بالضبط ما طبعه اختبار التكامل: <code>battery: UNAVAILABLE</code>.</p>
+
+<p>وفي جانب Dart يُغلَّف الصنف المولَّد بواجهة صغيرة، فلا تعتمد الشاشات والاختبارات على القناة، ويصير كل خطأ شيئاً تستطيع الشاشة قوله:</p>
+
+<pre data-code="lib/device/device_source.dart" data-from="^abstract interface" data-title="lib/device/device_source.dart (جزء)"></pre>
+<pre data-term="report-test.sh"></pre>
+
+<div class="phones">
+<figure data-img="shots/linux.png">
+<figcaption>التطبيق الحقيقي على Linux، وجوابه من C++</figcaption>
+</figure>
+<figure data-img="shots/web.png" data-frame="phone">
+<figcaption>التطبيق نفسه على الويب، حيث لا جانب أصلياً</figcaption>
+</figure>
+</div>
+
+<p>على الويب لا يجيب أحد على القناة. فيبلّغ كود Dart المولَّد ذلك بـ <code>PlatformException</code> رمزه <code>channel-error</code>، وتقوله الشاشة بدل أن تفشل.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>أول تشغيل عربي لهذا التطبيق أظهر إصدار النواة هكذا: <code>fc-v726-6.18.44</code>. النص كان صحيحاً؛ أما عرضه فلا: في سطر من اليمين إلى اليسار نقلت خوارزمية Unicode ثنائية الاتجاه القطع حول الشرطات. والإصلاح الأول، <code>textDirection: TextDirection.ltr</code> على ذلك الـ <code>Text</code>، رتّب القطع لكنه نقل السطر كله إلى الحافة اليسرى، بعيداً عن تسميته. والأداة الصحيحة هي <em>العزل</em> (isolate): تغليف الإصدار بالحرفين U+2066 وU+2069 يُبقي السطر من اليمين إلى اليسار، ولا يقرأ من اليسار إلى اليمين إلا الإصدار. استخدمه لأرقام الإصدارات والرموز والبريد وأسماء الملفات داخل أي نص قد يكون عربياً.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>أي الأنواع يستطيع المرمِّز القياسي حملها؟</li><li>أي نوع من الأخطاء يمنعه Pigeon وتسمح به القناة المكتوبة باليد؟</li><li>كيف يصل غياب البطارية في Linux إلى Dart؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2>{{n}}.4 الخيوط والتكاليف</h2>
+
+<p>نداء القناة رخيص لكنه ليس مجانياً: المعاملات تُرمَّز وتُنسخ عبر الحدود وتُفك، والجواب يقطع الرحلة نفسها عائداً. وهذا مناسب لنداء مع كل ضغطة؛ وخاطئ لستين نداءً في الثانية تحمل صوراً. وللبيانات الكبيرة مرّر مسار ملف أو texture، لا البايتات.</p>
+
+<p>والمعالج الأصلي يجري على خيط المنصة. قراءة <code>uname</code> تأخذ أجزاء من الميلي ثانية، لكن قراءة ملف كبير، أو سؤال قاعدة بيانات، أو نداء خدمة نظام بطيئة هناك يجمّد نافذة التطبيق. فاعمل ذلك على خيط في الخلفية (<code>GTask</code> في Linux، وcoroutine في Android، وdispatch queue في iOS) وأجب حين ينتهي: جانب Dart ينتظر <code>Future</code> أصلاً، فلا يلزم تغيير شيء آخر.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>قبل كتابة كود أصلي ابحث عن إضافة؛ وقبل كتابة إضافة ابحث مرة أخرى. وحين تكتب كوداً أصلياً فاجعله رقيقاً: اجمع البيانات، وترجمها، وأجب. وكل قرار يمكن أن يعيش في Dart يجب أن يعيش فيه، حيث يُختبر مرة لكل المنصات، بدل ثلاث مرات بثلاث لغات.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>أسماء القناة أو الحقول مكتوبة مرتين باليد</td><td>خطأ مطبعي يُترجم في كل مكان ويفشل وقت التشغيل</td><td>Pigeon</td></tr>
+<tr><td>عدم معالجة <code>MissingPluginException</code></td><td>نسخة الويب أو الاختبار ينهار</td><td>بديل احتياطي، أو رسالة واضحة</td></tr>
+<tr><td>رمي استثناءات في الكود الأصلي</td><td>انهيار بدل جواب</td><td>أعد خطأً برمز</td></tr>
+<tr><td>عمل بطيء في معالج أصلي</td><td>نافذة متجمدة</td><td>خيط في الخلفية، ثم الجواب</td></tr>
+<tr><td>بيانات كبيرة عبر المرمِّز</td><td>نسخ مع كل نداء، وإطارات ضائعة</td><td>ملفات أو textures أو ذاكرة مشتركة</td></tr>
+<tr><td>نصوص تقنية داخل نص من اليمين إلى اليسار</td><td>إصدارات ورموز تُعرض مبعثرة</td><td>اعزلها بـ U+2066 وU+2069</td></tr>
+</tbody>
+</table>
+
+<h2>الملخص</h2>
+
+<ul class="summary">
+<li>القنوات تحمل الرسائل بين Dart والمنصة بالاسم، عبر مرمِّز؛ والمعالِجات تجري على خيط المنصة.</li>
+<li>قناة الدوال المكتوبة باليد تحتاج أسماء متطابقة في الطرفين، وعناية بكل فشل.</li>
+<li>Pigeon يولّد كود Dart وKotlin وSwift وGObject بأنواع، من تعريف واحد.</li>
+<li>الأخطاء الأصلية تسافر رموزاً وتصل <code>PlatformException</code>؛ وغياب الجانب الأصلي كلياً هو <code>MissingPluginException</code> أو <code>channel-error</code>.</li>
+<li>اختبر جانب Dart ببدائل، والجانب الأصلي باختبارات تكامل على المنصة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ‏<code>null</code> والقيم المنطقية والأعداد الصحيحة والعشرية والنصوص ومصفوفات البايتات (والقوائم المحددة النوع من الأرقام)، والقوائم والخرائط من هذه القيم؛ ويضيف Pigeon أصنافه فوق ذلك. 2. عدم التطابق بين الطرفين، كحقل أو دالة باسم مختلف في Dart وفي Kotlin، وهو يُترجم في كل مكان ولا يفشل إلا وقت التشغيل؛ ومع Pigeon يُولَّد الطرفان من تعريف واحد ويفحصهما مترجم كل منهما. 3. معالج C++ يعيد <code>cafe_device_api_battery_level_response_new_error("UNAVAILABLE", …)</code>؛ والكود المولَّد يرسله خطأً، فترمي <code>batteryLevel()</code> في Dart ‏<code>PlatformException</code> رمزه <code>UNAVAILABLE</code>.</p>
+
+<!-- projects -->
+<h2>مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع تختبر جانب Dart بلا منصة، وتبث قيماً من C++، وتعطي الواجهة نفسها تنفيذاً بـ Kotlin.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>اختبر القناة بلا منصة</h3>
+<p class="project-goal">اختبر <code>DeviceChannel</code> في الحالات الثلاث: المنصة تجيب، والمنصة تبلّغ عن خطأ، ولا جانب للمنصة إطلاقاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>setMockMethodCallHandler</code>، و<code>PlatformException</code> و<code>MissingPluginException</code>.</p>
+<ol class="steps">
+<li>أعطِ رسول الاختبار الثنائي معالجاً بديلاً لـ <code>bitcafe/device</code> يسجل الدالة ويعيد خريطة.</li>
+<li>استبدله بآخر يرمي <code>PlatformException(code: 'BUSY')</code>، وتوقّع هذا الخطأ في Dart.</li>
+<li>احذف المعالج، وتوقّع أن تعيد <code>info()</code> القيمة <code>null</code>.</li>
+</ol>
+<pre data-code="test/channel_test.dart" data-from="^void main" data-title="test/channel_test.dart"></pre>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/channel-test.sh"></pre>
+<p class="hint"><strong>تلميح:</strong> هذا الاختبار يستخدم <code>test</code> لا <code>testWidgets</code>. النسخة الأولى استخدمت <code>testWidgets</code>، فلم ينتهِ النداء الذي بلا معالج أبداً: <code>testWidgets</code> يجري بساعة مزيّفة، وجواب غياب المعالج كان ينتظر وقتاً حقيقياً. فبلغ مهلة العشر دقائق.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>بثّ من C++</h3>
+<p class="project-goal">قناة أحداث ترسل الذاكرة الحرة كل نصف ثانية ما دام Dart يستمع، وتتوقف حين يتوقف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>EventChannel</code> و<code>FlEventChannel</code>، ومؤقتات GLib، واختبارات التكامل على Linux.</p>
+<ol class="steps">
+<li>في C++ ابدأ مؤقتاً كل 500 ms حين يستمع Dart، واحذفه حين يلغي Dart؛ وكل دقة ترسل الذاكرة الحرة.</li>
+<li>في Dart اعرض <code>receiveBroadcastStream()</code> بصورة <code>Stream&lt;int&gt;</code>.</li>
+<li>في اختبار تكامل على Linux خذ أربع قيم واطبعها مع الوقت الذي أخذته.</li>
+</ol>
+<pre data-code="linux/runner/cafe_channels.cc" data-from="^static FlEventChannel" data-to="^}#3" data-title="linux/runner/cafe_channels.cc (جزء)"></pre>
+<pre data-code="lib/device/device_channel.dart" data-from="^const _memory" data-title="lib/device/device_channel.dart (جزء)"></pre>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/memory-test.sh"></pre>
+<p class="hint"><strong>تلميح:</strong> أخذت القيم الأربع نحو ثانيتين، واحدة كل نصف ثانية، كما يقول المؤقت. وهي لا تكاد تتحرك، لأن قليلاً غيرها كان يجري على ذلك الجهاز؛ وعلى هاتف قيد الاستخدام تتغير طوال الوقت. وأخذ أربع قيم يلغي الاشتراك، فيجري <code>on_cancel</code> ويحذف المؤقت: والمجرى الذي لا يُلغى يُبقي عملاً أصلياً يجري لأجل لا أحد.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>الواجهة نفسها، بـ Kotlin</h3>
+<p class="project-goal">نفّذ واجهة Pigeon ‏<code>DeviceApi</code> لـ Android: إصدار النظام، والذاكرة الكلية، ومستوى البطارية، مع خطأ <code>UNAVAILABLE</code> نفسه، وابنِ التطبيق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> Kotlin، و<code>FlutterActivity.configureFlutterEngine</code>، وخدمات نظام Android، والواجهات المولَّدة.</p>
+<ol class="steps">
+<li>نفّذ الواجهة المولَّدة في صنف يأخذ <code>Context</code>.</li>
+<li>اقرأ الذاكرة من <code>ActivityManager</code> والبطارية من <code>BatteryManager</code>؛ وارمِ <code>FlutterError</code> المولَّد عند غياب البطارية.</li>
+<li>سجّله في <code>configureFlutterEngine</code> بـ <code>DeviceApi.setUp</code>، وابنِ ملف APK.</li>
+</ol>
+<pre data-code="projects/DeviceApi.g.kt.part" data-title="DeviceApi.g.kt (جزء، مولَّد)"></pre>
+<pre data-code="android/app/src/main/kotlin/com/example/bit_app/MainActivity.kt" data-from="^class AndroidDevice" data-title="MainActivity.kt (جزء)"></pre>
+<p><strong>يجب أن تكون نتيجتك هكذا:</strong></p>
+<pre data-term="projects/android-build.sh"></pre>
+<p class="hint"><strong>تلميح:</strong> لو نسي صنف Kotlin الدالة <code>batteryLevel</code>، أو أعاد <code>Int</code> بدل <code>Long</code>، لفشل هذا البناء: هذا وعد Pigeon يحفظه مترجم Kotlin. وجانب iOS التمرين نفسه بـ Swift، مقابل <code>DeviceApi.g.swift</code> المولَّد، مع <code>UIDevice.current.batteryLevel</code>؛ ويحتاج جهاز Mac ليُترجم.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف دالة <code>uptimeMinutes()</code> إلى واجهة Pigeon. أي الملفات تعدّلها باليد، وأيها يُعاد توليده؟</li>
+<li><span class="level">سهل</span> ماذا يستقبل Dart إن أجاب معالج C++ عن <code>info</code> بـ <code>fl_method_not_implemented_response_new()</code>؟</li>
+<li><span class="level">متوسط</span> قراءة البطارية في بعض الأجهزة نداء نظام بطيء. أعد كتابة معالج البطارية في Linux فلا يحجز خيط المنصة.</li>
+<li><span class="level">متوسط</span> اجعل مجرى الذاكرة لا يرسل شيئاً حين لا تتغير القيمة. أين يجب أن يعيش هذا القرار، في C++ أم في Dart، ولماذا؟</li>
+<li><span class="level">تحدٍّ</span> حوّل واجهة الجهاز إلى حزمة إضافة تعتمد عليها تطبيقات أخرى. ما الذي ينتقل وإلى أين، وماذا يبقى في التطبيق؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب، وفي مستودع كود الكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>الكود الأصلي يستطيع قراءة البطارية؛ ويستطيع أيضاً قراءة كل ما يتركه التطبيق مكشوفاً. والفصل القادم عن الأمان على الجهاز: أين تنتهي الأسرار، وما الذي يستطيع المهاجم قراءته من نسختك، وكيف تحفظ الرموز والاتصالات.</p>
+</div>
+</section>
