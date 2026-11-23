@@ -264,7 +264,7 @@ RUNS = [
     ("spec.sh", "node spec.mjs"),
     ("tasks.sh", "node tasks.mjs"),
     ("projects/vague.sh", "node vague.mjs requirements.md spec.md"),
-    ("projects/todo.sh", "node todo.mjs && node --test loyalty.test.mjs 2>&1 | grep -E '^ℹ (tests|todo|pass|fail)'"),
+    ("projects/todo.sh", "node todo.mjs && node --test --test-reporter=spec loyalty.test.mjs 2>&1 | grep -E '^ℹ (tests|todo|pass|fail)'"),
     ("projects/spread.sh", "node spread.mjs"),
 ]
 
