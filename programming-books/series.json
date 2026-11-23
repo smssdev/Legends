@@ -1400,7 +1400,8 @@
             },
             {
               "en": "Debugging with AI",
-              "ar": "تتبّع الأخطاء مع الذكاء الاصطناعي"
+              "ar": "تتبّع الأخطاء مع الذكاء الاصطناعي",
+              "src": "b7/debugging"
             },
             {
               "en": "Tests, Refactoring and Code Review",

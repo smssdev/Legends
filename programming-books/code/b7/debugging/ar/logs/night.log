@@ -1,0 +1,9 @@
+2026-11-20T02:00:01Z INFO  nightly report started
+2026-11-20T02:00:01Z INFO  loaded 3 orders
+2026-11-20T02:00:02Z INFO  order 41: 900
+2026-11-20T02:00:02Z ERROR TypeError: Cannot read properties of undefined (reading 'price')
+    at priceOf (file:///srv/shop/orders.mjs:5:16)
+    at file:///srv/shop/orders.mjs:9:52
+    at Array.reduce (<anonymous>)
+    at total (file:///srv/shop/orders.mjs:9:22)
+2026-11-20T02:00:02Z INFO  nightly report stopped
