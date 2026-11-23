@@ -1471,20 +1471,41 @@
             },
             {
               "en": "Capstone: An AI-Powered Assistant for Your Team",
-              "ar": "المشروع الختامي: مساعد ذكي لفريقك"
+              "ar": "المشروع الختامي: مساعد ذكي لفريقك",
+              "src": "b7/capstone"
             }
           ]
         }
       ],
       "notes": {
         "code": {
-          "en": "The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer, and, in Chapter 14, the embedding model Qwen3-Embedding-0.6B (Apache 2.0). Every listing and terminal session is produced from the files in the book’s code repository.",
-          "ar": "الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 وnode-llama-cpp 3.22.3، ويتحدث مع النموذج المفتوح Qwen3-4B-Instruct-2507 (برخصة Apache 2.0) يعمل على حاسوب المؤلف، ومعه في الفصل 14 نموذج التضمينات Qwen3-Embedding-0.6B (برخصة Apache 2.0). وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب."
+          "en": "The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer, and, in Chapters 14 and 17, the embedding model Qwen3-Embedding-0.6B (Apache 2.0). Every listing and terminal session is produced from the files in the book’s code repository.",
+          "ar": "الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 وnode-llama-cpp 3.22.3، ويتحدث مع النموذج المفتوح Qwen3-4B-Instruct-2507 (برخصة Apache 2.0) يعمل على حاسوب المؤلف، ومعه في الفصلين 14 و17 نموذج التضمينات Qwen3-Embedding-0.6B (برخصة Apache 2.0). وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب."
         },
         "trademarks": {
           "en": "Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.",
           "ar": "Qwen علامة تجارية لـ Alibaba Cloud، وChatGPT وOpenAI علامتان تجاريتان لـ OpenAI، وClaude وAnthropic علامتان تجاريتان لـ Anthropic، وGitHub Copilot علامة تجارية لـ GitHub, Inc.، وGemini علامة تجارية لـ Google LLC، وLlama علامة تجارية لـ Meta Platforms, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط."
         }
+      },
+      "blurb": {
+        "en": "AI tools write code, explain it, test it and plan the work around it, and they are confidently wrong often enough to matter. This book teaches you to use them well, from the first prompt to applications a team can trust. Every example runs on a free open model on your own computer, and every answer, right or wrong, is printed as it came: wrong tests, invented numbers, a successful prompt injection, an evaluation that marked right answers wrong. Each chapter shows the mistake and the check that catches it. It ends with an assistant for your team, built from the parts of every chapter and measured honestly.",
+        "ar": "أدوات الذكاء الاصطناعي تكتب الكود وتشرحه وتختبره وتخطط للعمل حوله، وتخطئ بثقة بما يكفي ليهمّ ذلك. وهذا الكتاب يعلّمك أن تستخدمها جيداً، من أول أمر إلى تطبيقات يثق بها فريق. كل مثال فيه يعمل على نموذج مفتوح مجاني على حاسوبك، وكل جواب، صحيحاً كان أم خاطئاً، مطبوع كما جاء: اختبارات خاطئة، وأرقام مخترعة، وحقن أوامر نجح، وتقييم علّم الأجوبة الصحيحة خاطئة. وكل فصل يُريك الخطأ والفحص الذي يلتقطه. وينتهي بمساعد لفريقك، مبني من أجزاء كل فصل ومقيس بأمانة."
+      },
+      "learn": {
+        "en": [
+          "Understand how language models work, and prompt them for results you can check",
+          "Pair with AI to write, read, debug, test and document code",
+          "Use AI for specifications, meetings, automation and agents with permissions",
+          "Build applications on models: providers, retrieval with citations, security and privacy",
+          "Judge when to trust a model, and measure it with evaluations you also check"
+        ],
+        "ar": [
+          "تفهم كيف تعمل النماذج اللغوية، وتكتب لها أوامر نتائجها قابلة للفحص",
+          "تعمل مع الذكاء الاصطناعي لتكتب الكود وتقرأه وتصلحه وتختبره وتوثّقه",
+          "تستخدمه في المواصفات والاجتماعات والأتمتة والوكلاء بصلاحيات",
+          "تبني تطبيقات على النماذج: المزوّدون، والاسترجاع بالاستشهادات، والأمان والخصوصية",
+          "تحكم متى تثق بالنموذج، وتقيسه بتقييمات تفحصها هي أيضاً"
+        ]
       }
     },
     {

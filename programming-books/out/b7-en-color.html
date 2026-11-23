@@ -39,6 +39,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "Chapter 16: Judgement: When Not to Trust the AI"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "Chapter 17: Capstone: An AI-Powered Assistant for Your Team"; } }
+@page ch17:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -168,10 +170,10 @@ if (isMember && day === "Tuesday") {
           <p><strong>AI for Developers</strong><br>Working Faster and Better with AI Tools, from Code to Daily Tasks</p>
           <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
           <p>First edition, 2026</p>
-          <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer, and, in Chapter 14, the embedding model Qwen3-Embedding-0.6B (Apache 2.0). Every listing and terminal session is produced from the files in the book’s code repository.</p>
+          <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer, and, in Chapters 14 and 17, the embedding model Qwen3-Embedding-0.6B (Apache 2.0). Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">161</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p">183</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p">202</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">212</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">161</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p">183</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p">202</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p">212</span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">227</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -5787,7 +5789,425 @@ deciding a customer&#x27;s refund           do not rely on it: a person decides<
 
 <div class="next">
 <p class="next-title">Coming up in Chapter 17</p>
-<p>The last chapter puts the whole book together: an assistant for a development team, built from the parts of every chapter (a provider, retrieval over the team’s own documents, tools with permissions, checks on every answer) and measured the way this book has measured everything.</p>
+<p>The last chapter puts the whole book together: an assistant for a development team, built from the parts of every chapter (retrieval over the team’s own documents, a rule with citations, checks on every answer, an audit log without personal data) and measured the way this book has measured everything.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b7/capstone/en">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">Chapter 17</p><h1>Capstone: An AI-Powered Assistant for Your Team</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>build an assistant that answers a team’s questions from the team’s own documents</li>
+<li>write its evaluation before its prompt, and keep the two apart</li>
+<li>check every answer in code: citations, numbers, secrets</li>
+<li>log every question without storing who asked or their personal data</li>
+<li>change the assistant by measurement, and check the measurement too</li>
+</ul>
+</div>
+
+<p class="lead">A development team answers the same questions every week. How do I run the tests? Can I deploy today? Who is on call? The answers are written down somewhere, and people still ask, because asking is faster than searching. This chapter builds the assistant that answers them, from the parts of the book: retrieval from Chapter 14, a rule with citations from Chapters 3 and 14, checks on the output from Chapters 14 and 15, an audit log from Chapter 15, and the habit of every chapter, measuring before believing.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every answer the evaluation marked wrong in this chapter was right. The assistant was fine; the test was not. Reading the failures, not the score, is what found it, and that is the last lesson of the book.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>The plan</span></h2>
+
+<p>Before any code, the three things from Chapter 16’s professional habit:</p>
+
+<table>
+<thead><tr><th>Question</th><th>The team assistant</th></tr></thead>
+<tbody>
+<tr><td>What does a wrong answer cost?</td><td>A mistake in someone’s work: a deploy on a Friday, a key in a commit. Real, but usually caught by a colleague or a test.</td></tr>
+<tr><td>What checks it automatically?</td><td>Every answer cites a document that was given; every number in it is in that document; no secret leaves; outside the documents, it says so in a fixed sentence.</td></tr>
+<tr><td>Who looks at what the checks cannot see?</td><td>The person who asked, who sees the source of every answer, and the owner of the documents, who reads the audit log of refusals and failed checks.</td></tr>
+</tbody>
+</table>
+
+<p>And what it may not do: it reads the team’s documents and nothing else, has no tools that change anything, and never sees a secret, because the documents hold none (the vault does). By Chapter 16’s rule, that puts it in the middle row: use it, and verify before acting, with the verification built in.</p>
+
+<p>The parts, and where each one comes from:</p>
+
+<table>
+<thead><tr><th>Part</th><th>File</th><th>From</th></tr></thead>
+<tbody>
+<tr><td>Search by meaning over the documents</td><td><code>lib/embed.mjs</code></td><td>Chapter 14</td></tr>
+<tr><td>A fixed rule: one sentence, cited, or a fixed refusal</td><td><code>lib/assistant.mjs</code></td><td>Chapters 3 and 14</td></tr>
+<tr><td>Checks on every answer, and an audit line</td><td><code>lib/checks.mjs</code></td><td>Chapters 14 and 15</td></tr>
+<tr><td>Questions with known answers, scored</td><td><code>eval.mjs</code></td><td>Chapters 7 and 16</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">17.2</span> <span>The documents, and the test first</span></h2>
+
+<p>The team’s handbook is six short documents, each with an id: <code>conventions</code> (ES modules, tests with <code>node --test</code>), <code>reviews</code> (one approval, never merge your own), <code>deploy</code> (Tuesdays and Thursdays at 11:00, never on Fridays), <code>oncall</code> (Omar this week), <code>secrets</code> (keys in the vault) and <code>commits</code> (Conventional Commits). A real team has dozens; six are enough to see every part work.</p>
+
+<p>Before the prompt, the evaluation. Each case is a question, the document that answers it, and a word the right answer must contain. The last case has no document: the right answer is the refusal.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">data.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">const</span> EVAL = [
+ [
+  <span class="s">&quot;How do I run the tests?&quot;</span>,
+  <span class="s">&quot;conventions&quot;</span>,
+  <span class="s">&quot;node --test&quot;</span>
+ ],
+ [
+  <span class="s">&quot;Can I deploy on a Friday?&quot;</span>,
+  <span class="s">&quot;deploy&quot;</span>,
+  <span class="s">&quot;no&quot;</span>
+ ],
+ [
+  <span class="s">&quot;On which days do we deploy?&quot;</span>,
+  <span class="s">&quot;deploy&quot;</span>,
+  <span class="s">&quot;tuesday&quot;</span>
+ ],
+ [
+  <span class="s">&quot;May I merge my own pull request?&quot;</span>,
+  <span class="s">&quot;reviews&quot;</span>,
+  <span class="s">&quot;no&quot;</span>
+ ],
+ [
+  <span class="s">&quot;Who is on call this week?&quot;</span>,
+  <span class="s">&quot;oncall&quot;</span>,
+  <span class="s">&quot;omar&quot;</span>
+ ],
+ [
+  <span class="s">&quot;Where should I keep an API key?&quot;</span>,
+  <span class="s">&quot;secrets&quot;</span>,
+  <span class="s">&quot;vault&quot;</span>
+ ],
+ [
+  <span class="s">&quot;What format do commit messages use?&quot;</span>,
+  <span class="s">&quot;commits&quot;</span>,
+  <span class="s">&quot;conventional&quot;</span>
+ ],
+ [
+  <span class="s">&quot;How many vacation days do we get?&quot;</span>,
+  <span class="k">null</span>,
+  <span class="k">null</span>
+ ]
+];</pre></div>
+
+<p>Writing the cases first does what writing the tests first did in Chapter 7: it makes you decide what “right” means before you see an answer that might talk you into it. And keeping the expected document separate from the expected word lets the evaluation say <em>where</em> a failure happened: search missed the document, or the model misread it.</p>
+
+<h2><span class="sec">17.3</span> <span>Search</span></h2>
+
+<p>The index embeds every document once, with the embedding model of Chapter 14, and returns the <var>k</var> nearest to each question:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/embed.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> index(docs) {
+  <span class="k">const</span> embed = <span class="k">await</span> embedder();
+  <span class="k">const</span> vectors = <span class="k">await</span> Promise.all(docs.map(([, text]) =&gt; embed(text)));
+  <span class="k">return</span> <span class="k">async</span> (question, k = <span class="n">2</span>) =&gt; {
+    <span class="k">const</span> q = <span class="k">await</span> embed(question);
+    <span class="k">return</span> vectors
+      .map((v, i) =&gt; ({id: docs[i][<span class="n">0</span>], text: docs[i][<span class="n">1</span>], score: cosine(q, v)}))
+      .sort((a, b) =&gt; b.score - a.score)
+      .slice(<span class="n">0</span>, k);
+  };
+}</pre></div>
+
+<p>Two documents per question, not one: a question about deploying on Friday is near <code>deploy</code>, but a question can fall between two documents, and the second costs a line of prompt. Not all six either: Chapter 14 showed that a model given everything is more easily distracted, and a real handbook will not fit.</p>
+
+<h2><span class="sec">17.4</span> <span>The answer and its checks</span></h2>
+
+<p>The assistant searches, puts the sources in the prompt with their ids, asks under a fixed rule, and then checks the answer before anyone sees it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/assistant.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> assistant(docs, {rule = RULE, k = <span class="n">2</span>} = {}) {
+  <span class="k">const</span> search = <span class="k">await</span> index(docs);
+  <span class="k">return</span> <span class="k">async</span> <span class="k">function</span> answer(question, user = <span class="s">&quot;anonymous&quot;</span>) {
+    <span class="k">const</span> sources = <span class="k">await</span> search(question, k);
+    <span class="k">const</span> given = sources.map((s) =&gt; <span class="s">`[${s.id}] ${s.text}`</span>).join(<span class="s">&quot;\n&quot;</span>);
+    <span class="k">const</span> prompt = <span class="s">`${given}\n\n${question}`</span>;
+    <span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+      contextSequence: context.getSequence(),
+      autoDisposeSequence: <span class="k">true</span>,
+      systemPrompt: rule,
+    });
+    <span class="k">const</span> reply = <span class="k">await</span> session.prompt(prompt, {temperature: <span class="n">0</span>, maxTokens: <span class="n">150</span>});
+    <span class="k">const</span> text = reply.trim();
+    session.dispose();
+    <span class="k">const</span> refused = text.includes(<span class="s">&quot;Not in our documents&quot;</span>);
+    <span class="k">const</span> {cited, problems} = citations(text, sources);
+    problems.push(...secrets(text));
+    <span class="k">if</span> (!refused &amp;&amp; cited.length === <span class="n">0</span>) {
+      problems.push(<span class="s">&quot;no citation&quot;</span>);
+    }
+    <span class="k">const</span> ok = problems.length === <span class="n">0</span>;
+    <span class="k">const</span> result = {text, sources, refused, cited, problems, ok};
+    audit(user, question, result);
+    <span class="k">return</span> result;
+  };
+}</pre></div>
+
+<p>The checks are plain code, and the model cannot argue with them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/checks.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> citations(answer, sources) {
+  <span class="k">const</span> cited = [...answer.matchAll(/\[([\w-]+)\]/g)].map((m) =&gt; m[<span class="n">1</span>]);
+  <span class="k">const</span> problems = cited
+    .filter((id) =&gt; !sources.some((s) =&gt; s.id === id))
+    .map((id) =&gt; <span class="s">`[${id}] was not given`</span>);
+  <span class="k">for</span> (<span class="k">const</span> id <span class="k">of</span> cited) {
+    <span class="k">const</span> source = sources.find((s) =&gt; s.id === id);
+    <span class="k">const</span> numbers = answer.match(/\d+/g) ?? [];
+    <span class="k">for</span> (<span class="k">const</span> n <span class="k">of</span> numbers.filter((n) =&gt; source &amp;&amp; !source.text.includes(n))) {
+      problems.push(<span class="s">`${n} is not in [${id}]`</span>);
+    }
+  }
+  <span class="k">return</span> {cited, problems};
+}</pre></div>
+
+<p>Every citation must name a document that was actually given; every number in a cited answer must appear in that document, the check that caught invented numbers in Chapter 14; no API key or private key may appear in an answer, the check of Chapter 15; and an answer that is not the refusal must cite something. The result keeps the problems as data, so the caller decides what to do: show the answer with a warning, or hold it back.</p>
+
+<p>Run it on three questions, as a teammate with an email address for a user name:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node demo.mjs &amp;&amp; tail -n 3 audit.log</span>
+<span class="c">&gt; </span><span class="k">How do I run the tests?</span>
+  To run the tests, use the command `node --test` on the adjacent `.test.mjs` file next to the code [conventions].
+  sources: conventions, reviews; checks: ok
+<span class="c">&gt; </span><span class="k">Can I deploy on a Friday?</span>
+  No, you cannot deploy on a Friday because deployments are only scheduled on Tuesdays and Thursdays at 11:00 [deploy].
+  sources: deploy, oncall; checks: ok
+<span class="c">&gt; </span><span class="k">How many vacation days do we get?</span>
+  Not in our documents.
+  sources: oncall, deploy; checks: ok
+{&quot;user&quot;:&quot;f0dbf78531&quot;,&quot;question&quot;:&quot;How do I run the tests?&quot;,&quot;sources&quot;:[&quot;conventions&quot;,&quot;reviews&quot;],&quot;ok&quot;:true}
+{&quot;user&quot;:&quot;f0dbf78531&quot;,&quot;question&quot;:&quot;Can I deploy on a Friday?&quot;,&quot;sources&quot;:[&quot;deploy&quot;,&quot;oncall&quot;],&quot;ok&quot;:true}
+{&quot;user&quot;:&quot;f0dbf78531&quot;,&quot;question&quot;:&quot;How many vacation days do we get?&quot;,&quot;sources&quot;:[&quot;oncall&quot;,&quot;deploy&quot;],&quot;ok&quot;:true}</pre></div>
+
+<p>Each answer is one sentence, with its source in brackets, and the checks passed. The third question is not in the documents, and the assistant said so in exactly the agreed words, which is what lets code recognise a refusal. Look at the audit lines too: the user is a hash, not the email address, so the log can count one person’s questions without knowing who they are, and the questions are kept, because the refusals in them are the list of documents the team has not written yet.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The search found <code>oncall</code> and <code>deploy</code> for the vacation question: search always returns its <var>k</var> nearest, even when nothing is near. If the prompt says “answer from the documents” and nothing more, a model can build a confident answer from the wrong ones. The fixed refusal, and a check that an answer cites something, are what make “nothing found” safe.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does the evaluation record the expected document separately from the expected word?</li><li>Why must the refusal be one fixed sentence?</li><li>What does the audit log keep, and what does it not keep?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">17.5</span> <span>Measuring it</span></h2>
+
+<p>The evaluation runs every case through the assistant and scores three things separately: did search find the right document, is the answer right, and did any check fail:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">eval.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> evaluate(answer, cases = EVAL) {
+  <span class="k">const</span> score = {found: <span class="n">0</span>, right: <span class="n">0</span>, refusals: <span class="n">0</span>, problems: <span class="n">0</span>};
+  <span class="k">const</span> lines = [];
+  <span class="k">for</span> (<span class="k">const</span> [question, doc, expected] <span class="k">of</span> cases) {
+    <span class="k">const</span> result = <span class="k">await</span> answer(question);
+    <span class="k">const</span> found = doc === <span class="k">null</span> || result.sources.some((s) =&gt; s.id === doc);
+    <span class="k">const</span> words = [expected].flat();
+    <span class="k">const</span> right = expected === <span class="k">null</span> ? result.refused : words.some((w) =&gt; result.text.toLowerCase().includes(w));
+    score.found += found ? <span class="n">1</span> : <span class="n">0</span>;
+    score.right += right ? <span class="n">1</span> : <span class="n">0</span>;
+    score.refusals += expected === <span class="k">null</span> &amp;&amp; result.refused ? <span class="n">1</span> : <span class="n">0</span>;
+    score.problems += result.problems.length ? <span class="n">1</span> : <span class="n">0</span>;
+    lines.push(<span class="s">`${right ? &quot;right&quot; : &quot;WRONG&quot;} ${found ? &quot;found&quot; : &quot;MISSED&quot;} ${result.problems.join(&quot;; &quot;).padEnd(14)} ${question}`</span>);
+  }
+  <span class="k">return</span> {score, lines};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node eval.mjs</span>
+right found                How do I run the tests?
+right found                Can I deploy on a Friday?
+right found                On which days do we deploy?
+right found                May I merge my own pull request?
+right found                Who is on call this week?
+right found                Where should I keep an API key?
+right found                What format do commit messages use?
+right found                How many vacation days do we get?
+--- found 8/8, right 8/8, answers with a problem 0</pre></div>
+
+<p>Eight of eight, found and right, with no failed check. In the Arabic edition, six of eight, with two answers marked WRONG. Before believing either number, read the two answers. Asked where to keep an API key, the assistant said “in the team’s vault”, cited <code>secrets</code>: right, but the case expected the Arabic for “the vault”, and Arabic joins the article to its word and drops it before “the team’s”, so the right answer did not contain the expected word. Asked about commit messages, it gave the format, <code>type(scope):</code> and at most 72 characters, cited <code>commits</code>: right again, without naming Conventional Commits. The assistant was right twice; the evaluation was wrong twice.</p>
+
+<p>Eight of eight is also worth exactly what eight questions are worth: it says the parts are joined correctly, not that the assistant is right about everything your team will ask. Every question it gets wrong in real use becomes a new case, and the set grows into the team’s best description of what the assistant must do.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Run the evaluation on every change to the documents, the prompt, the model or the number of sources, the way you run tests on every change to code. A change that improves one answer and breaks two others looks like progress until you count.</p></aside>
+
+<h2><span class="sec">17.6</span> <span>Changing it by measurement</span></h2>
+
+<p>Two changes a team will make in the first week. The first is a new document. The vacation question was refused, correctly; the owner of the documents reads the refusals in the audit log, writes the missing page, and asks again (Project 17.2):</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node grow.mjs</span>
+6 documents: Not in our documents.  (no citation)
+7 documents: We get 21 days of paid vacation a year [vacation].  (vacation)</pre></div>
+
+<p>Same code, same prompt: the refusal became a cited answer, because the knowledge lives in the documents, not in the model. That is the main reason to build an assistant this way rather than to fine-tune a model on the handbook: the team changes a page, and the next answer changes with it.</p>
+
+<p>The second change is a prompt that ought to be better. A common recommendation is to have the model quote the sentence it relies on before it answers, so the answer is anchored in the source. Run both prompts on the same evaluation (Project 17.3):</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node ab.mjs</span>
+rule         right 8/8, found 8/8, problems 0
+quote first  right 7/8, found 8/8, problems 0
+  WRONG found                May I merge my own pull request?</pre></div>
+
+<p>In this edition the recommended prompt scored worse, seven to eight; in the Arabic edition it scored better, seven to six. Two editions, two opposite verdicts, and a team would have adopted or rejected the prompt on either. Now read the line under the score. Asked whether they may merge their own pull request, the assistant quoted “Never merge your own pull request.”, cited <code>reviews</code>: a right answer, marked WRONG because the case expected the word “no”. In Arabic, the quoting prompt happened to name Conventional Commits, so one false failure disappeared and the vault remained. Every difference between the two prompts, in both editions, came from the scorer.</p>
+
+<h2><span class="sec">17.7</span> <span>Checking the evaluation</span></h2>
+
+<p>An evaluation is code, and code has bugs. This one had a single word per case, and a right answer can be phrased many ways. The fix is the one a person would make after reading the failures: for each document, the other words a right answer may use.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">data.mjs (part)</div><pre class="code"><span class="c line-bidi">// Other words a right answer may use, by document.</span>
+<span class="k">export</span> <span class="k">const</span> MORE_WORDS = {<span class="s">&quot;reviews&quot;</span>: [<span class="s">&quot;never&quot;</span>], <span class="s">&quot;commits&quot;</span>: [<span class="s">&quot;type(scope)&quot;</span>]};</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">fair.mjs (part)</div><pre class="code"><span class="k">const</span> fair = EVAL.map(([q, doc, word]) =&gt; [q, doc, word === <span class="k">null</span> ? <span class="k">null</span> : [word, ...(MORE_WORDS[doc] ?? [])]]);
+<span class="k">for</span> (<span class="k">const</span> [name, rule] <span class="k">of</span> [[<span class="s">&quot;rule&quot;</span>, RULE], [<span class="s">&quot;quote first&quot;</span>, QUOTE_FIRST]]) {
+  <span class="k">const</span> {score} = <span class="k">await</span> evaluate(<span class="k">await</span> assistant(DOCS, {rule}), fair);
+  console.log(<span class="s">`${name.padEnd(12)} right ${score.right}/8, found ${score.found}/8, problems ${score.problems}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node fair.mjs</span>
+rule         right 8/8, found 8/8, problems 0
+quote first  right 8/8, found 8/8, problems 0</pre></div>
+
+<p>Both prompts, eight of eight, in both editions. The honest conclusion of the experiment is that on this model and these documents the recommended prompt makes no difference, so the simpler one stays. And notice what the widening did <em>not</em> do: it did not turn a wrong answer into a right one. Every word added came from reading an answer that a person judged right. Widening the words until the score is perfect, without reading, is how an evaluation stops measuring anything.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>A failure in an evaluation is a claim, not a fact, like a model’s answer. Read every failure before you act on a score, especially when the score is the reason for a change. Matching words is cheap and brittle; asking a model to judge is flexible and has its own errors (Chapter 16). Whatever scores your cases, check it on answers you have judged yourself.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Treat the prompt, the documents and the model as code: changed in reviewed commits, measured by the evaluation before they are merged, with the scores in the pull request. “It answered my three questions better” is a demo, not a measurement.</p></aside>
+
+<h2><span class="sec">17.8</span> <span>Taking it to a team</span></h2>
+
+<p>What the chapter built runs on one machine with a local model. Before a team relies on it:</p>
+
+<ul>
+<li><strong>Provider.</strong> To use a hosted model, wrap the call behind the provider interface of Chapter 13, with retries and a deadline; redact personal data first and scan for secrets (Chapter 15); and read the provider’s terms about your data.</li>
+<li><strong>Documents.</strong> Give the handbook an owner, keep it in the repository next to the code, and rebuild the index when it changes. An assistant is only as current as its documents.</li>
+<li><strong>Licenses.</strong> Both models here are Apache 2.0. Check the license of any model you change to, and keep the list (Chapter 15).</li>
+<li><strong>Feedback.</strong> A button for “wrong answer” that adds the question to a list someone reads. Those questions are your next evaluation cases.</li>
+<li><strong>Limits.</strong> No tools that act, until each action has a check outside the model and a person approving what cannot be undone (Chapter 12).</li>
+</ul>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Writing the prompt before the evaluation</td><td>“Right” is decided by the answers you happen to see</td><td>Cases first: question, document, expected word</td></tr>
+<tr><td>Scoring only the final answer</td><td>A failure you cannot place</td><td>Score search and answer separately</td></tr>
+<tr><td>A refusal in the model’s own words</td><td>Code cannot tell a refusal from an answer</td><td>One fixed sentence, checked in code</td></tr>
+<tr><td>Trusting citations without checking them</td><td>Invented sources and numbers, nicely bracketed</td><td>Check ids and numbers against the sources</td></tr>
+<tr><td>Logging who asked and what they wrote</td><td>A log full of personal data</td><td>Hash the user; mask emails and phones</td></tr>
+<tr><td>Adopting a prompt because it sounds better</td><td>A change shipped on reputation</td><td>Change it only when the evaluation says so</td></tr>
+<tr><td>Trusting a score without reading the failures</td><td>Decisions made on the scorer’s bugs</td><td>Read every WRONG; fix the evaluation when it is wrong</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A team assistant is search over the team’s documents, a fixed rule with citations and a fixed refusal, checks in code on every answer, and an audit log without personal data.</li>
+<li>The evaluation comes first, scores search and answer separately, and runs on every change.</li>
+<li>Knowledge lives in the documents: a new page turned a refusal into a cited answer without touching code.</li>
+<li>Every answer the evaluation marked wrong was right: an evaluation is code with bugs, and its failures must be read before its score is believed.</li>
+<li>With the evaluation fixed, a recommended prompt made no difference; prompts are changed by measurement, not by reputation.</li>
+<li>Every part came from an earlier chapter; what made it trustworthy was the same work around the model that every chapter did.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that a failure can be placed: if the document was not found, the fix is in search (the documents, the embeddings, <var>k</var>); if it was found and the answer is still wrong, the fix is in the prompt or the model. 2. So that code can recognise it: the evaluation scores it, the checks skip the citation rule for it, and the audit log can list the questions the documents do not answer. 3. A hash of the user, the question with emails and phone numbers masked, the ids of the sources and whether the checks passed. It does not keep who asked, their contact details, or the answer.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects use the assistant as a team would: from the terminal, by improving its documents, and by testing a change to its prompt.</p>
+
+<div class="project">
+<p class="project-label">Project 17.1 · Easy</p>
+<h3>The assistant on the command line</h3>
+<p class="project-goal">Ask a question from the terminal and get the answer with its sources, or a warning when a check failed.</p>
+<p class="project-skills"><strong>You will practise:</strong> putting an evaluated component behind a small interface.</p>
+<ol class="steps">
+<li>Join the command-line arguments into a question.</li>
+<li>Ask the assistant, with the system user as the user.</li>
+<li>Print the answer, then its sources or the failed checks.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">ask.mjs (part)</div><pre class="code"><span class="k">const</span> question = process.argv.slice(<span class="n">2</span>).join(<span class="s">&quot; &quot;</span>);
+<span class="k">const</span> {text, cited, ok, problems} = <span class="k">await</span> (<span class="k">await</span> assistant(DOCS))(question, process.env.USER);
+console.log(text);
+console.log(ok ? <span class="s">`(sources: ${cited.join(&quot;, &quot;) || &quot;none&quot;})`</span> : <span class="s">`(not checked: ${problems.join(&quot;; &quot;)})`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node ask.mjs &quot;How many vacation days do we get?&quot;</span>
+Not in our documents.
+(sources: none)</pre></div>
+<p class="hint"><strong>Hint:</strong> “sources: none” for a refusal is correct: nothing was cited, because nothing answered. A teammate who sees it knows to ask a person, and the audit log has recorded a page to write.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 17.2 · Medium</p>
+<h3>A new document</h3>
+<p class="project-goal">Ask the vacation question with the six documents and again with a seventh that answers it.</p>
+<p class="project-skills"><strong>You will practise:</strong> improving an assistant through its documents rather than its code.</p>
+<ol class="steps">
+<li>Write the missing document, with an id.</li>
+<li>Build the assistant with and without it.</li>
+<li>Ask the same question of both, and compare.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">grow.mjs (part)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;How many vacation days do we get?&quot;</span>;
+<span class="k">for</span> (<span class="k">const</span> docs <span class="k">of</span> [DOCS, [...DOCS, [<span class="s">&quot;vacation&quot;</span>, <span class="s">&quot;Every developer gets 21 days of paid vacation a year, booked in the team calendar.&quot;</span>]]]) {
+  <span class="k">const</span> {text, cited} = <span class="k">await</span> (<span class="k">await</span> assistant(docs))(question);
+  console.log(<span class="s">`${docs.length} documents: ${text}  (${cited.join(&quot;, &quot;) || &quot;no citation&quot;})`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node grow.mjs</span>
+6 documents: Not in our documents.  (no citation)
+7 documents: We get 21 days of paid vacation a year [vacation].  (vacation)</pre></div>
+<p class="hint"><strong>Hint:</strong> the 21 in the answer passed the number check because it is in the vacation document. Change the document to say 25 and the answer follows; write 21 in the question and an answer of 25, and the check catches it. Add the vacation case to the evaluation, so the page stays answered.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 17.3 · Challenge</p>
+<h3>Two prompts, one evaluation</h3>
+<p class="project-goal">Run the evaluation with the current rule and with a “quote first” rule, and decide by the scores.</p>
+<p class="project-skills"><strong>You will practise:</strong> A/B testing a prompt on a fixed set of cases.</p>
+<ol class="steps">
+<li>Write the second rule as a constant beside the first.</li>
+<li>Run the same evaluation with each.</li>
+<li>Print the scores, and the cases that were not right and found, so you can read them.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">ab.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [name, rule] <span class="k">of</span> [[<span class="s">&quot;rule&quot;</span>, RULE], [<span class="s">&quot;quote first&quot;</span>, QUOTE_FIRST]]) {
+  <span class="k">const</span> {score, lines} = <span class="k">await</span> evaluate(<span class="k">await</span> assistant(DOCS, {rule}));
+  console.log(<span class="s">`${name.padEnd(12)} right ${score.right}/8, found ${score.found}/8, problems ${score.problems}`</span>);
+  lines.filter((line) =&gt; !line.startsWith(<span class="s">&quot;right found&quot;</span>)).forEach((line) =&gt; console.log(<span class="s">`  ${line}`</span>));
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node ab.mjs</span>
+rule         right 8/8, found 8/8, problems 0
+quote first  right 7/8, found 8/8, problems 0
+  WRONG found                May I merge my own pull request?</pre></div>
+<p class="hint"><strong>Hint:</strong> the case it printed is the one to read, and Section 17.7 did: the answer was right. Before you conclude that one prompt is better than another, read the cases that differ, and add cases until one case is not the whole difference. Eight is a small sample.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add three questions your own team asks every week to the evaluation, with the documents that answer them. What is the score now?</li>
+<li><span class="level">Easy</span> Set <var>k</var> to 1 and run the evaluation. Which cases change, and in which column, “found” or “right”?</li>
+<li><span class="level medium">Medium</span> Add a document that contains a fake API key, such as <code>sk-test-0000000000000000</code>, and ask for it. Which check stops it, and what should the team do about the document?</li>
+<li><span class="level medium">Medium</span> Write a report from <code>audit.log</code>: the number of questions, the refusals, and the failed checks, with the questions that were refused. Who on the team should read it, and how often?</li>
+<li><span class="level hard">Challenge</span> Put the assistant behind a small HTTP endpoint with the provider interface of Chapter 13, so it can use a local or a hosted model, and redact personal data before a hosted call (Chapter 15). Run the evaluation against both providers with the fake server.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You have used a model to write, read, test, debug and document code, to plan and to report, and you have built applications on it that a team can trust. The tools will change faster than any book: the models will be larger, the interfaces new. The habits will not. Give the model what it needs, check what it gives you, measure before you believe, and decide by what a wrong answer would cost. The next book in the series, <em>Mastering Claude</em>, applies them to one family of tools in depth.</p>
 </div>
 </section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
@@ -6010,6 +6430,16 @@ Add the known rows of Project 11.3, plus the two that failed, as a <code>node:te
 <li>Flag when <code>agreement &lt; 4</code> or <code>!verdict.correct</code>. On the book’s ten questions this flags the wrong multiplication (both signals) and also some right answers (the doubted 1,048,576, and text-agreement below four). Some false alarms are the price of catching the real error; the flags go to a person, who is fast at confirming a right answer.</li>
 <li>Ask “Which is bigger, 9.11 or 9.9?”, “Sort 9.9 and 9.11 from small to large”, “Is 9.11 greater than 9.9?”, and two more. A model that answers one phrasing right and another wrong does not know the comparison; it knows the phrasing. Consistency across phrasings is a stronger signal than agreement on one.</li>
 <li>For example, for the team assistant: a wrong answer about a team rule costs a mistake in someone’s work; it is checked automatically by citations against the documents; a person looks at answers flagged with no citation. Writing this before reading the next chapter lets you compare your design with the one built there, and see what each of you missed.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 17</h2>
+<ol class="exercises">
+<li>Each new case is a question, the id of the document that answers it, and a word the right answer must contain; write the documents first if they do not exist. If the score drops, read the lines: “MISSED” means search did not bring the document, often because the question uses words the document does not (“ship” for “deploy”); “WRONG” with “found” means the model had the document and misread it, or the expected word is too narrow, as in Section 17.7. Read the answer before you judge.</li>
+<li>With one source, questions that fall between two documents are the first to change, and they change in the “found” column: the one nearest document is not always the one that answers. If the right document is still found, the answers usually stay right, and the prompt is shorter. The evaluation tells you whether the saving is worth it; two sources cost a line of prompt.</li>
+<li>The <code>secrets</code> check in <code>lib/checks.mjs</code>, if the model repeats the key: the answer contains a string shaped like a key, so the result has the problem “a secret” and <code>ok</code> is false, whatever the model wrote around it. The team should remove the key from the document, rotate it, because it has been in a shared file, and add a scan for secrets to the place where documents are committed, as in Chapter 15. The check is the last line of defence, not the first.</li>
+<li>Read the file line by line with <code>JSON.parse</code>, and count the lines and the lines with <code>ok: false</code>. The log as built does not record refusals, so add a <code>refused</code> field to the entry first; then count them, and list their questions. The owner of the documents should read it weekly: refusals are missing pages, failed checks are answers to look at, and a question asked by many hashed users is a page to make easier to find.</li>
+<li>Give <code>assistant</code> a <code>provider</code> option and call <code>provider.complete({system: rule, prompt})</code> where it now prompts the session; for the hosted provider, pass the prompt through <code>redact</code> before sending and <code>restore</code> on the answer, and run the secret scan on the prompt too. Start the fake server of Chapter 13, run the evaluation against each provider, and compare the scores. With the fake server the hosted scores test your wiring, not a model: the point is that the same evaluation runs unchanged against any provider you choose.</li>
 </ol>
 
 </section>
