@@ -40,6 +40,8 @@
 
 <p>Its narration, shortened here, is worth a look. It wrote out the original code as if it were the fix, worked through the numbers, wrote the original code again, and only on the third try reached <code>&gt;=</code>. The log shows one write, the right one; the story shows a model thinking aloud. When you use an agent, read the log and the diff; skim the story.</p>
 
+<p>The Arabic edition ran the same agent with its instructions and task in Arabic, and it did nothing at all. Its first reply was a tool call written as text, <code>&lt;tool_call&gt; {"name": "listFiles"} &lt;/tool_call&gt;</code>, instead of a call the library could run, so the loop ended at once and the tests still failed. With English instructions and an Arabic task, the agent listed and read the files, announced “Let me fix the code:”, and stopped without writing. Tool use is a skill a model learns from examples, and this small model learned it mostly in English. Before you trust an agent in a language or a setting, run it there, and check the tests, not the words.</p>
+
 <aside class="box tip"><p class="box-title">Tip</p><p>Give an agent a way to check its own work, here <code>runTests</code>, and a task stated as something checkable: “make the tests pass”, not “fix the pricing”. An agent with a test can tell when it is done; an agent without one stops when it runs out of ideas, and reports success either way.</p></aside>
 
 <h2>{{n}}.3 Orders hidden in the project</h2>
