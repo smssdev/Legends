@@ -113,8 +113,11 @@ export function failures(tests, source, dir) {
   fs.writeFileSync(`${dir}/price.mjs`, source);
   fs.writeFileSync(`${dir}/price.test.mjs`, tests);
   try {
-    execFileSync("node", ["--test", "--test-reporter=tap", `${dir}/price.test.mjs`], {stdio: "pipe"});
-    return "";
+    const output = execFileSync("node", ["--test", "--test-reporter=tap", `${dir}/price.test.mjs`], {
+      encoding: "utf8",
+    });
+    // A file with no tests passes too: that is not a passing test suite.
+    return /^# tests 0$/m.test(output) ? "no tests ran" : "";
   } catch (error) {
     const lines = `${error.stdout}`.split("\\n");
     return lines
@@ -123,6 +126,12 @@ export function failures(tests, source, dir) {
       .slice(0, 20)
       .join("\\n") || "the test file does not run";
   }
+}
+
+// The code block of an answer that contains tests (an answer may also quote the module).
+export function testsOf(answer) {
+  const blocks = [...answer.matchAll(/```(?:\\w+)?\\n([\\s\\S]*?)```/g)].map((m) => m[1]);
+  return blocks.find((block) => /\\btest\\(/.test(block)) ?? null;
 }
 
 export function passes(tests, source, dir) {
@@ -193,11 +202,11 @@ FILES = {
     "legacy/package.json": '{"type": "commonjs"}\n',
     "changes/save-order.diff": DIFF,
     "tests.mjs": """import fs from "node:fs";
-import {ask, codeOf} from "./lib/ask.mjs";
-import {MUTANTS, failures, score} from "./lib/mutants.mjs";
+import {ask} from "./lib/ask.mjs";
+import {MUTANTS, failures, score, testsOf} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
-let tests = codeOf(await ask(`{w_tests}\\n\\n${source}`)) ?? "";
+let tests = testsOf(await ask(`{w_tests}\\n\\n${source}`)) ?? "";
 console.log(`tests written: ${tests.match(/\\btest\\(|\\bit\\(/g)?.length ?? 0}`);
 
 // {w_c_real}
@@ -207,7 +216,7 @@ console.log(`on the real code: ${failed ? `FAIL\\n${failed}` : "pass"}`);
 // {w_c_wrong}
 if (failed) {
   const request = `{w_fix_tests}\\n\\n${source}\\n\\n${tests}\\n\\n${failed}`;
-  tests = codeOf(await ask(request, {maxTokens: 1400})) ?? tests;
+  tests = testsOf(await ask(request, {maxTokens: 1400})) ?? tests;
   const again = failures(tests, source, "mutants/real");
   console.log(`after one fix: ${again ? `FAIL\\n${again}` : "pass"}`);
 }
@@ -268,7 +277,7 @@ console.log(review);
 const planted = {
   "secret in the log": /password|secret|credential|DB_PASSWORD/i,
   "off by one (<=)": /<=|off-by-one|off by one|out of bounds|undefined item/i,
-  "insert not awaited": /await.*insert|insert.*await|not awaited|promise/i,
+  "insert not awaited": /insert[^.]*(await|promise)|(await|promise)[^.]*insert|not awaited/i,
 };
 console.log("--- planted problems");
 for (const [name, pattern] of Object.entries(planted)) {
@@ -325,7 +334,7 @@ const problems = JSON.parse(await ask(`{w_review_json}\\n\\n${diff}`, {grammar})
 const planted = [
   /password|secret|credential|DB_PASSWORD/i,
   /<=|off-by-one|off by one|out of bounds|undefined/i,
-  /await|promise|async/i,
+  /insert[^.]*(await|promise)|(await|promise)[^.]*insert|not awaited/i,
 ];
 const found = new Set();
 for (const {severity, line, problem} of problems) {
@@ -338,8 +347,8 @@ for (const {severity, line, problem} of problems) {
 console.log(`--- ${found.size} of 3 planted problems, ${problems.length} reported`);
 """,
     "improve.mjs": """import fs from "node:fs";
-import {ask, codeOf} from "./lib/ask.mjs";
-import {MUTANTS, passes, score} from "./lib/mutants.mjs";
+import {ask} from "./lib/ask.mjs";
+import {MUTANTS, passes, score, testsOf} from "./lib/mutants.mjs";
 
 // {w_c_loop}
 const source = fs.readFileSync("price.mjs", "utf8");
@@ -353,7 +362,7 @@ const broken = first.survivors
   .map(([from, to]) => `--- ${from} changed to ${to}:\\n${source.replace(from, to)}`)
   .join("\\n");
 const request = `{w_survivors}\\n\\n--- price.mjs:\\n${source}\\n\\n${broken}\\n\\n--- price.test.mjs:\\n${tests}`;
-const better = codeOf(await ask(request, {maxTokens: 1400})) ?? tests;
+const better = testsOf(await ask(request, {maxTokens: 1400})) ?? tests;
 const real = passes(better, source, "mutants/real2");
 const second = score(better, source);
 console.log(`after:  ${second.killed} of ${MUTANTS.length} caught; on the real code: ${real ? "pass" : "FAIL"}`);
