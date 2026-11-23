@@ -1,15 +1,10 @@
 $ node tests.mjs
-tests written: 6
+tests written: 0
 on the real code: FAIL
-not ok 1 - linePrice should return correct price for normal cases
-not ok 2 - linePrice should apply 10% off from the 10th cup
-not ok 3 - linePrice should not exceed 5000 off discount
-not ok 4 - linePrice should throw RangeError for invalid quantity
-not ok 5 - linePrice should handle edge cases with zero unit price
-not ok 6 - linePrice should handle large quantities with capped discount
+no tests in the file
 after one fix: FAIL
-# ReferenceError: test is not defined
-not ok 1 - mutants/real/price.test.mjs
+no tests in the file
+kept 0 of 1 tests: the ones that pass on the real code
 mutants caught: 0 of 5
   survived: >= 10  ->  > 10
   survived: Math.min(  ->  Math.max(

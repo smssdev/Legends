@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import {ask} from "./lib/ask.mjs";
-import {MUTANTS, failures, score, testsOf} from "./lib/mutants.mjs";
+import {MUTANTS, failures, keepPassing, score, testsOf} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
 let tests = testsOf(await ask(`اكتب اختبارات لهذه الوحدة، مستورداً test من node:test وassert من node:assert/strict وlinePrice من ./price.mjs. غطِّ الحالات العادية وكل حد. أعِد الكود فقط، في كتلة كود واحدة.\n\n${source}`)) ?? "";
@@ -17,6 +17,11 @@ if (failed) {
   const again = failures(tests, source, "mutants/real");
   console.log(`after one fix: ${again ? `FAIL\n${again}` : "pass"}`);
 }
+
+// ثم احتفظ بالاختبارات الصحيحة وحدها، وقِس ما تكشفه.
+const kept = keepPassing(tests, source);
+console.log(`kept ${kept.kept} of ${kept.total} tests: the ones that pass on the real code`);
+tests = kept.tests;
 fs.writeFileSync("price.test.mjs", tests);
 
 // ثم على كل نسخة متحوّرة: مجموعة الاختبارات الجيدة تفشل على كل واحدة
