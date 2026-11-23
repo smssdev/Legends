@@ -89,9 +89,11 @@ export function run(file) {
   return {code: result.status, output: `${result.stdout}${result.stderr}`};
 }
 
-// The "Name: message" line of the first error in an output.
+// The "Name: message" of the first error in an output, anywhere on its line
+// (a log line starts with a time and a level).
 export function errorLine(output) {
-  return output.match(/^\\w*Error: .*$/m)?.[0] ?? "(no error)";
+  const found = output.match(/\\b(\\w*Error): (.*)$/m);
+  return found ? `${found[1]}: ${found[2]}` : "(no error)";
 }
 """
 
@@ -158,7 +160,7 @@ const answer = await ask(`{w_trace}\\n\\n${trace.join("\\n")}\\n\\n${files}`);
 console.log(`\\n--- the model:\\n${answer}`);
 
 // {w_c_check}
-const named = answer.match(/BUG AT\\s*`?([\\w/.]+):(\\d+)/);
+const named = answer.match(/BUG AT\\s*`?(?:file:\\s*)?([\\w/.]+):(\\d+)/);
 console.log(`\\nnamed: ${named ? `${named[1]}:${named[2]}` : "(none)"}`);
 console.log("the crash: shop/orders.mjs:5 (drink is undefined)");
 console.log("the cause: shop/report.mjs:5 (a drink that is not on the menu)");
