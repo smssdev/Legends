@@ -1,0 +1,191 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/pair/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Pair Programming with AI</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>work with an assistant in small steps: specification, plan, tests, code</li>
+<li>check that new tests fail for the right reason before any code exists</li>
+<li>send real test failures back, and know when to stop</li>
+<li>get code in your project’s style by showing the model your project</li>
+<li>read what the assistant wrote, including its explanation, with a reviewer’s eye</li>
+<li>keep the decisions, and the examples that define “correct”, for yourself</li>
+</ul>
+</div>
+
+<p class="lead">In pair programming, two developers share one task: one types, the other watches, questions and thinks ahead, and they swap. With an assistant, you are always the second developer, even while it types. This chapter builds a small feature with the book’s model in the steps a careful pair would follow, runs the real tests at every step, and shows what happened the first three times I tried: the failures taught more than the success.</p>
+
+<aside class="bit" data-mood="think"><p>The final run of this chapter went smoothly in English. It took three versions of my own loop to get there, and the Arabic edition, with the same model, struggled much longer. Section {{n}}.6 tells that story, because it is the part you will meet at work.</p></aside>
+
+<h2>{{n}}.1 Start with a specification</h2>
+
+<p>The feature is small and real: split a café bill between friends, in whole piastres, with a tip. Before asking for anything, write down what correct means, including examples you worked out yourself:</p>
+
+<pre class="plain" dir="ltr">splitBill(total, people, tipPercent) splits a café bill. total is in piastres (an integer), people is a whole number of at least 1, tipPercent is a whole number such as 10. The tip is total * tipPercent / 100, rounded to the nearest piastre. It returns an array with one integer amount per person, adding up exactly to total plus tip; when it does not divide evenly, the first people pay one piastre more. It throws a RangeError if people is less than 1. Examples: splitBill(1000, 3, 10) is [367, 367, 366]; splitBill(995, 2, 15) is [572, 572]; splitBill(1000, 4, 0) is [250, 250, 250, 250].</pre>
+
+<p>The examples matter most. “splitBill(1000, 3, 10) is [367, 367, 366]” settles questions that words leave open: is the tip rounded before or after the split, who pays the extra piastre, are amounts integers. An early version of this chapter had no examples, and the model’s tests expected <code>[27, 27, 27, 27]</code> for a bill that adds up to 110: confident, specific and wrong. The model can write tests; it cannot know what your business means by correct. That knowledge is yours, and the examples are where you put it.</p>
+
+<h2>{{n}}.2 Small steps</h2>
+
+<p>The program asks for one thing at a time, each in a fresh request with exactly what that step needs: a plan, then tests, then code.</p>
+
+<pre data-code="pair.mjs" data-from="^console.log(&quot;== plan" data-to="console.log(`== tests" data-title="pair.mjs (part)"></pre>
+
+<p>Small steps are not ceremony. Each one is small enough to read in a minute, so you can catch a misunderstanding while it is still one line in a plan instead of forty lines in a file. And each fresh request keeps the context clean: the code step sees the specification, not the model’s earlier musings.</p>
+
+<h2>{{n}}.3 Tests that fail for the right reason</h2>
+
+<p>New tests must fail before the code exists; otherwise they test nothing. But they must fail <em>on their assertions</em>, not because the test file itself is broken. So, before asking for any code, the program runs the tests against an empty function:</p>
+
+<pre data-code="pair.mjs" data-from="^const empty" data-to="^}" data-title="pair.mjs (part)"></pre>
+<pre data-code="lib/tests.mjs" data-from="^export function broken" data-to="^}" data-title="lib/tests.mjs (part)"></pre>
+
+<p>This step exists because the first version of this chapter did not have it. The model’s tests imported <code>assert</code> from <code>node:test</code>, where it is not, so every test failed with “<code>assert.deepEqual is not a function</code>”. My loop then asked the model to fix the code “and not the tests”, and the model, unable to fix a problem that was not in the code, eventually replied with an explanation instead of code, which the loop wrote into <code>bill.mjs</code>. Two lessons came out of that, and both are in the code now: tests are checked before they are trusted, and an answer without a code block is never written over a file.</p>
+
+<h2>{{n}}.4 Send back the real failure</h2>
+
+<p>Then the code, and the loop: run the real tests; if they fail, send the failures back and ask for a fix; stop after a few rounds.</p>
+
+<pre data-code="pair.mjs" data-from="^for (let round = 1; ; round++) {#2" data-to="^}" data-title="pair.mjs (part)"></pre>
+<pre data-term="pair.sh"></pre>
+
+<p>This run needed no fix: the tests failed on their assertions against the empty function, and the first version of the code passed all six. Here is the code and the tests, as the model wrote them:</p>
+
+<pre data-code="bill/bill.mjs" data-title="bill/bill.mjs"></pre>
+<pre data-code="bill/bill.test.mjs" data-from="  test(&apos;tip that needs rounding" data-to="^  });" data-title="bill/bill.test.mjs (part)"></pre>
+<pre data-term="tests.sh"></pre>
+
+<p>Notice that the model added two tests of its own, for one person and for a one-percent tip. Read them as carefully as the code: <code>splitBill(100, 2, 1)</code> is <code>[51, 50]</code> because the tip rounds to 1 and the extra piastre goes to the first person. Correct. A test you did not check is a second opinion you did not read.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>When you send failures back, send the failure itself: the test’s name, the expected and actual values, the error message. “It doesn’t work” gives the model nothing to reason from. The helper <code>failures</code> in <code>lib/tests.mjs</code> picks exactly those lines out of the test output.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why run new tests against an empty function first?</li><li>What decides whether <code>splitBill(1000, 3, 10)</code> is right: the model, the tests, or the specification?</li><li>Why does the loop keep the old code when an answer has no code block?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Show it your project</h2>
+
+<p>An assistant writes in the style it saw most often, unless you show it yours. This program asks for the same small function twice, alone and with one file from the project:</p>
+
+<pre data-code="style.mjs" data-from="^const task" data-title="style.mjs (part)"></pre>
+<pre data-code="house/tables.mjs" data-title="house/tables.mjs"></pre>
+<pre data-term="style.sh"></pre>
+
+<p>Alone, the request got Python, again, with errors printed and swallowed. With the house file, it got an exported async function in the same shape: a default path, an empty result for a missing file, and every other error thrown, not hidden. That is most of what a code reviewer would ask for, obtained by pasting one file.</p>
+
+<p>Most of it. The new function calls <code>readFile</code> and does not import it: the model copied the body’s style and dropped the line above it. It would fail the first time it ran. Matching style is not the same as being complete, which is why the tests of Section {{n}}.3 come before the style, not after it.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Keep a short file of conventions for your project, with one or two real examples, and give it to the assistant at the start of a task: modules or not, how errors are handled, how files are named, which libraries to use. Many tools read such a file automatically. It saves you from correcting the same habits in every answer.</p></aside>
+
+<h2>{{n}}.6 When the pair struggles</h2>
+
+<p>The same chapter, run for the Arabic edition with the Arabic specification, went differently. The model’s test file used <code>require</code>, which does not work in a JavaScript module, and the run stopped before testing anything. The loop sent back the real error, “<code>require is not defined in ES module scope, you can use import instead</code>”; the error even said what to do. The model answered with the same mistake. Only a hint from the developer, a sentence naming the convention, moved it on.</p>
+
+<p>This is the part of pair programming with AI that tutorials skip. An assistant can be stuck on something you would see in a second, and asking again in different words often produces the same answer. When the same failure comes back twice, stop the loop and do one of three things: tell it the fact it is missing, show it a correct example, or write those three lines yourself. Project {{n}}.3 builds a loop that stops on its own for exactly that reason.</p>
+
+<h2>{{n}}.7 Read what it explains</h2>
+
+<p>Asking the assistant to explain its code, and how it could fail, is a good habit: it puts a second description next to the code, and differences between the two are where bugs hide. But the explanation is also generated text:</p>
+
+<pre data-code="explain.mjs" data-from="// " data-title="explain.mjs (part)"></pre>
+<pre data-term="explain.sh"></pre>
+
+<p>Most of it is accurate. One note is not: it warns that rounding the tip “is not the same as calculating tip as a percentage of the total with rounding” and “can lead to inaccuracies”. That is exactly what the specification asks for, and the sentence contradicts itself. And the answer ran out of room before it reached the inputs that could make the code fail, the part we asked for. Read an explanation the way you read the code: line by line, against the specification.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>No examples in the specification</td><td>Tests that check the model’s guess</td><td>Worked examples you computed yourself</td></tr>
+<tr><td>Trusting new tests</td><td>Tests that cannot fail, or cannot run</td><td>Run them against an empty function first</td></tr>
+<tr><td>Whole features in one request</td><td>Long answers too big to review</td><td>Plan, tests, code: one small step at a time</td></tr>
+<tr><td>Writing any answer to a file</td><td>Prose in your source code</td><td>Only a code block is written</td></tr>
+<tr><td>Asking again and again</td><td>The same wrong answer, slower</td><td>Stop on a repeated failure; give the missing fact</td></tr>
+<tr><td>Accepting “in our style” at a glance</td><td>Missing imports, missing pieces</td><td>Tests first; then read the whole file</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>You are the senior half of the pair: you write the specification and the examples that define “correct”.</li>
+<li>Work in small steps, each a fresh request with what it needs: plan, tests, code.</li>
+<li>New tests must fail on their assertions before the code exists; a test file that cannot run is the first bug.</li>
+<li>Send back real failures, write only code into files, and stop when the same failure repeats.</li>
+<li>Show the assistant your project to get your style, then check what the style hid.</li>
+<li>An explanation is generated text too: read it against the specification.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. To prove the tests can fail, and that they fail on their assertions rather than because the test file is broken; tests that pass against an empty function, or crash before running, test nothing. 2. The specification, through the examples you worked out; the tests only check what they were told, and the model only guesses. 3. Because an answer without code is usually an explanation or an excuse, and writing it into <code>bill.mjs</code> would replace working code with prose.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects cover the three places where a pair most needs the second developer: reviewing a change, checking the tests, and knowing when to stop.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Explain a diff for a reviewer</h3>
+<p class="project-goal">Give the model a small diff and ask what it does and what could go wrong.</p>
+<p class="project-skills"><strong>You will practise:</strong> reviews with a second reader, and judging the risks it names.</p>
+<ol class="steps">
+<li>Put a real diff in a string: here, a price lookup that returns 0 for an unknown drink.</li>
+<li>Ask for what it does and what could go wrong, in a few lines.</li>
+<li>Decide which of the named risks you agree with.</li>
+</ol>
+<pre data-code="diff.mjs" data-from="^const diff" data-to="^ }`;" data-title="diff.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/diff.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the most important risk is named, if briefly: a price of 0 hides a missing price, so an unknown drink becomes a free drink. That is a bug report waiting to happen, and the model’s other remarks (“unnecessary complexity”) are much weaker. Ranking the risks is your job.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Check the model’s tests against code you trust</h3>
+<p class="project-goal">Run tests written by the model against a correct implementation: any failure is a wrong test.</p>
+<p class="project-skills"><strong>You will practise:</strong> testing the tests, and reading test output.</p>
+<ol class="steps">
+<li>Write a short, correct <code>splitBill</code> yourself.</li>
+<li>Ask the model for tests from the same specification.</li>
+<li>Run them: every failure is a mistake in a test, not in the code.</li>
+</ol>
+<pre data-code="checked.mjs" data-from="^const correct" data-to="^`;" data-title="checked.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/checked.sh"></pre>
+<p class="hint"><strong>Hint:</strong> with the worked examples in the specification, all six tests were right. Without them, an earlier version of this chapter got tests with wrong totals; with a different language, the Arabic edition got a test file that would not load. Running the tests against code you trust is how you tell those cases apart.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A fix loop that knows when to stop</h3>
+<p class="project-goal">Repair a broken file against its tests, stopping on success, on a round limit, or on the same failure twice.</p>
+<p class="project-skills"><strong>You will practise:</strong> loops with clear exits, comparing failures, and never writing a non-answer to a file.</p>
+<ol class="steps">
+<li>Run the tests; return if they pass.</li>
+<li>Stop when the rounds run out, or when the failures are the same as last time.</li>
+<li>Otherwise send the failures back, and write the answer only if it contains code.</li>
+</ol>
+<pre data-code="fixloop.mjs" data-from="^export async function fixLoop" data-to="^}" data-title="fixloop.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/fixloop.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the broken version forgot the rounding and the RangeError, and divided money into fractions; one round fixed it. The “same failure twice” exit is the important one: without it, a loop can spend its whole budget asking the same question, as Section {{n}}.6 showed.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Remove the three examples from the specification and run <code>checked.mjs</code>. How many of the model’s tests are wrong now, and how can you tell which?</li>
+<li><span class="level">Easy</span> Add “the project uses ES modules” to the tests prompt. Which failure of Section {{n}}.6 should that prevent, and why is the prompt a better place for it than a hint after the failure?</li>
+<li><span class="level">Medium</span> Change <code>style.mjs</code> so that the house file and the new function must be complete modules, with their imports. Did the model include <code>readFile</code> this time?</li>
+<li><span class="level">Medium</span> Ask the model for a test that the current <code>splitBill</code> fails. Is the test right, or is the code? Decide using the specification only.</li>
+<li><span class="level">Challenge</span> Add a fourth step to <code>pair.mjs</code>: after the tests pass, ask the model to refactor the code without changing behaviour, and keep the refactor only if all tests still pass. What would you add so that the tests are not changed too?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Pairing on new code is the easy half. Most of a developer’s time goes into code someone else wrote, often long ago. The next chapter uses the model to read, map and explain unfamiliar code, and to check its explanations against the code itself.</p>
+</div>
+</section>
