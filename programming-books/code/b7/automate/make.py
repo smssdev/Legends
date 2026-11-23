@@ -86,6 +86,7 @@ T = {
         w_regex_drink="latte|tea|espresso",
         w_regex_size="small|large",
         w_words='{one: 1, two: 2, three: 3}',
+        w_names='{latte: "latte", tea: "tea", espresso: "espresso", small: "small", large: "large"}',
         w_dates="12/01/2026\n2026-1-3\n3 Jan 2026\n01.02.2026\nJanuary 15, 2026\n2026/02/28",
         w_codegen="Write a JavaScript function toIso(text) that converts dates in these formats to YYYY-MM-DD. "
                   "Day comes before month when both are numbers. Return only the function, in one code block.",
@@ -112,6 +113,7 @@ T = {
         w_regex_drink="لاتيه|شاي|إسبريسو",
         w_regex_size="صغير|كبير",
         w_words='{"واحد": 1, "اثنان": 2, "ثلاثة": 3}',
+        w_names='{"لاتيه": "latte", "شاي": "tea", "إسبريسو": "espresso", "صغير": "small", "كبير": "large"}',
         w_dates="12/01/2026\n2026-1-3\n3 يناير 2026\n01.02.2026\n15 يناير 2026\n2026/02/28",
         w_codegen="اكتب دالة JavaScript باسم toIso(text) تحوّل التواريخ بهذه الصيغ إلى YYYY-MM-DD. "
                   "اليوم قبل الشهر حين يكون الاثنان رقمين. أعِد الدالة فقط، في كتلة كود واحدة.",
@@ -223,10 +225,11 @@ import {NOTES} from "./data/notes.mjs";
 
 // {w_c_regex}
 const WORDS = {w_words};
+const NAMES = {w_names};
 function byRegex(note) {
   const lower = note.toLowerCase();
-  const drink = lower.match(/{w_regex_drink}/)?.[0];
-  const size = lower.match(/{w_regex_size}/)?.[0] ?? "unknown";
+  const drink = NAMES[lower.match(/{w_regex_drink}/)?.[0]];
+  const size = NAMES[lower.match(/{w_regex_size}/)?.[0]] ?? "unknown";
   const digits = lower.match(/\\d+/)?.[0];
   const word = Object.keys(WORDS).find((w) => lower.includes(w));
   return [drink, size, Number(digits ?? WORDS[word] ?? 1)];
