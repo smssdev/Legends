@@ -6,7 +6,10 @@ export function run(file) {
   return {code: result.status, output: `${result.stdout}${result.stderr}`};
 }
 
-// The "Name: message" line of the first error in an output.
+// The "Name: message" of the first error in an output, anywhere on its
+// line
+// (a log line starts with a time and a level).
 export function errorLine(output) {
-  return output.match(/^\w*Error: .*$/m)?.[0] ?? "(no error)";
+  const found = output.match(/\b(\w*Error): (.*)$/m);
+  return found ? `${found[1]}: ${found[2]}` : "(no error)";
 }

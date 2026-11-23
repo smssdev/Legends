@@ -12,6 +12,6 @@ function total() {
 
 total();
 
-wanted: (no error)
+wanted: TypeError: Cannot read properties of undefined (reading 'price')
 got:    (no error)
-same error: a reproduction
+different: not a reproduction yet

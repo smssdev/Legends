@@ -15,7 +15,7 @@ console.log(`\n--- the model:\n${answer}`);
 
 // The model names a line; we check it against the line that really has
 // the bug.
-const named = answer.match(/BUG AT\s*`?([\w/.]+):(\d+)/);
+const named = answer.match(/BUG AT\s*`?(?:file:\s*)?([\w/.]+):(\d+)/);
 console.log(`\nnamed: ${named ? `${named[1]}:${named[2]}` : "(none)"}`);
 console.log("the crash: shop/orders.mjs:5 (drink is undefined)");
 console.log("the cause: shop/report.mjs:5 (a drink that is not on the menu)");

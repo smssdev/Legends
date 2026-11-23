@@ -18,6 +18,6 @@ The error occurs because `drink` is undefined when `MENU.find()` does not find a
 
 BUG AT file:orders.mjs:5
 
-named: (none)
+named: orders.mjs:5
 the crash: shop/orders.mjs:5 (drink is undefined)
 the cause: shop/report.mjs:5 (a drink that is not on the menu)
