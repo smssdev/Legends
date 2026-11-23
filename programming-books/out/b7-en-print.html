@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Tests, Refactoring and Code Review"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "Chapter 8: Documentation and Commit Messages"; } }
+@page ch08:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -53,7 +55,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">86</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">112</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">86</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">112</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">124</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2950,6 +2952,368 @@ after:  4 of 5 caught; on the real code: pass</pre></div>
 <p>Code that works and is tested still needs explaining: to the next developer, to users, and in the history of the project. The next chapter uses the model for documentation and commit messages, and checks that what it writes is true of the code.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b7/docs/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Documentation and Commit Messages</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>have a model draft documentation comments, and run the examples it writes</li>
+<li>draft a README, and look up every option it mentions in the code</li>
+<li>draft commit messages, and check their format with a linter before committing</li>
+<li>find documentation that went stale when the code changed</li>
+</ul>
+</div>
+
+<p class="lead">Documentation is the writing developers put off, and an assistant writes it in seconds. That is genuinely useful: a good first draft of a comment, a README section or a commit message saves real time. But documentation has a property that makes it dangerous to accept unread: nobody runs it. Wrong code fails a test; a wrong comment sits there for years, telling every new reader something false. This chapter treats documentation as something that can be checked, and checks everything the model writes.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>In this chapter the model wrote true examples that test nothing, a README that matches the code, and a commit message that our linter refused twice. In the Arabic edition, one of its documentation examples was simply false. Running things found all of it.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>Documentation comments, with examples that run</span></h2>
+
+<p>Ask for a JSDoc comment with examples in a form a program can read: a call, then <code>// =&gt;</code>, then the result. Then run them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/doctest.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> docExamples(text, exports) {
+  <span class="k">const</span> results = [];
+  <span class="k">for</span> (<span class="k">const</span> match <span class="k">of</span> text.matchAll(/(\w+\([^)]*\))\s*\/\/\s*=&gt;\s*(.+)$/gm)) {
+    <span class="k">const</span> [, call, claimed] = match;
+    <span class="k">let</span> actual;
+    <span class="k">try</span> {
+      actual = Function(...Object.keys(exports), <span class="s">`return ${call};`</span>)(...Object.values(exports));
+    } <span class="k">catch</span> (error) {
+      actual = error.name;
+    }
+    <span class="k">const</span> ok = String(actual) === claimed.trim().replace(/^[<span class="s">&quot;&#x27;]|[&quot;</span>&#x27;]$/g, <span class="s">&quot;&quot;</span>);
+    results.push({call, claimed: claimed.trim(), actual, ok});
+  }
+  <span class="k">return</span> results;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node jsdoc.mjs</span>
+/**
+ * Calculates the final price of a line item with a 10% discount on cups from the 10th cup, capped at a maximum discount of 5000.
+ * @param {number} unit - The price per unit of the item.
+ * @param {number} quantity - The number of units being purchased; must be at least 1.
+ * @returns {number} The final price after applying the discount (at most 5000 off).
+ * @example linePrice(10, 5) // =&gt; 50
+ * @example linePrice(10, 10) // =&gt; 90
+ * @example linePrice(10, 20) // =&gt; 180
+ */
+
+--- the examples, run
+true  linePrice(10, 5) // =&gt; 50   (real: 50)
+true  linePrice(10, 10) // =&gt; 90   (real: 90)
+true  linePrice(10, 20) // =&gt; 180   (real: 180)</pre></div>
+
+<p>Every example is true, and the comment is mostly good. But look at what the examples test: a unit price of 10. The discount on 20 cups is 20 piastres; the cap of 5,000, which the comment mentions twice, is never reached. These are true examples that would stay true for many wrong versions of the function. Ask for examples at the edges: just below the threshold, at it, and at the cap. In the Arabic edition, with the same function, one of the three examples was false: <code>linePrice(100, 15)</code> was documented as 1,400 and is really 1,350. A reader copying that example into a test would have written a failing test, or, worse, “fixed” the function to match.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Keep examples in documentation in a form that can be executed, and execute them in your test suite. Python calls this doctest; in JavaScript the twenty lines of <code>docExamples</code> do the same. Examples that run cannot quietly become false.</p></aside>
+
+<h2><span class="sec">8.2</span> <span>A README, checked against the code</span></h2>
+
+<p>The tool is a small report with three options:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">report.mjs (part)</div><pre class="code"><span class="c line-bidi">// Prints the day&#x27;s orders. Usage: node report.mjs [--date YYYY-MM-DD]</span>
+<span class="c line-bidi">// [--vip] [--json]</span>
+<span class="k">import</span> {parseArgs} <span class="k">from</span> <span class="s">&quot;node:util&quot;</span>;
+
+<span class="k">const</span> {values} = parseArgs({
+  options: {
+    date: {<span class="k">type</span>: <span class="s">&quot;string&quot;</span>, <span class="k">default</span>: <span class="k">new</span> Date().toISOString().slice(<span class="n">0</span>, <span class="n">10</span>)},
+    vip: {<span class="k">type</span>: <span class="s">&quot;boolean&quot;</span>, <span class="k">default</span>: <span class="k">false</span>},
+    json: {<span class="k">type</span>: <span class="s">&quot;boolean&quot;</span>, <span class="k">default</span>: <span class="k">false</span>},
+  },
+});
+
+<span class="k">const</span> orders = [
+  {id: <span class="n">41</span>, date: <span class="s">&quot;2026-11-20&quot;</span>, vip: <span class="k">true</span>, total: <span class="n">8500</span>},
+  {id: <span class="n">42</span>, date: <span class="s">&quot;2026-11-20&quot;</span>, vip: <span class="k">false</span>, total: <span class="n">22500</span>},
+];
+<span class="k">const</span> shown = orders.filter((o) =&gt; o.date === values.date &amp;&amp; (!values.vip || o.vip));
+console.log(values.json ? JSON.stringify(shown) : shown.map((o) =&gt; <span class="s">`${o.id} ${o.total}`</span>).join(<span class="s">&quot;\n&quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node report.mjs --date 2026-11-20 &amp;&amp; node report.mjs --date 2026-11-20 --vip --json</span>
+41 8500
+42 22500
+[{&quot;id&quot;:41,&quot;date&quot;:&quot;2026-11-20&quot;,&quot;vip&quot;:true,&quot;total&quot;:8500}]</pre></div>
+
+<p>Ask for the Usage section, and look up each option it mentions:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">readme.mjs (part)</div><pre class="code"><span class="c line-bidi">// Every option the README mentions must exist in the code.</span>
+console.log(<span class="s">&quot;--- options in the README&quot;</span>);
+<span class="k">const</span> options = <span class="k">new</span> Set(readme.match(/--[a-z][\w-]*/g) ?? []);
+<span class="k">for</span> (<span class="k">const</span> option <span class="k">of</span> options) {
+  <span class="k">const</span> exists = source.includes(<span class="s">`${option.slice(2)}: {`</span>);
+  console.log(<span class="s">`${exists ? &quot;exists &quot; : &quot;INVENTED&quot;} ${option}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node readme.mjs</span>
+<span class="c line-bidi">## Usage</span>
+
+Run the tool with:  
+`node report.mjs [--date YYYY-MM-DD] [--vip] [--json]`
+
+**Options:**  
+- `--date YYYY-MM-DD`: Filter orders by date (default: today).  
+- `--vip`: Show only VIP orders (default: false).  
+- `--json`: Output results in JSON format (default: false).  
+
+**Examples:**  
+1. `node report.mjs --date 2026-11-20 --vip` → Shows VIP orders on that date.  
+2. `node report.mjs --json` → Outputs order totals in JSON format.
+--- options in the README
+exists  --date
+exists  --vip
+exists  --json</pre></div>
+
+<p>A clean result: three options, all real, with the right defaults. Inventing a plausible option, a <code>--format</code> or <code>--output</code>, is a common failure, and this check catches it in a line of code; here there was nothing to catch. There is one subtle problem the check cannot see. The second example, <code>node report.mjs --json</code>, says it “outputs order totals in JSON format”; with no <code>--date</code>, it uses today’s date and prints an empty list on any day but the 20th of November. It is true of the code and misleading to the reader. Run the examples in a README too, and read what they print.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why are the examples <code>linePrice(10, 5)</code>, <code>linePrice(10, 10)</code> and <code>linePrice(10, 20)</code> weak, although true?</li><li>What does the option check look for in the code?</li><li>Why is a wrong documentation example more harmful than no example?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">8.3</span> <span>Commit messages, linted</span></h2>
+
+<p>A commit message is documentation of a change: what changed and why. Many teams use the Conventional Commits format: <code>type(scope): subject</code>, a blank line, then a body. A model drafts these well from a diff. Here the program creates a real repository, makes a real change (the discount cap drops from 5,000 to 3,000), asks for a message, and checks it with a linter before committing:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/lint.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> lintCommit(message) {
+  <span class="k">const</span> [subject = <span class="s">&quot;&quot;</span>, blank, ...body] = message.split(<span class="s">&quot;\n&quot;</span>);
+  <span class="k">const</span> problems = [];
+  <span class="k">if</span> (!/^(feat|fix|docs|refactor|test|chore|perf|build|ci|style)(\([\w-]+\))?!?: \S/.test(subject)) {
+    problems.push(<span class="s">&quot;subject is not type(scope): text&quot;</span>);
+  }
+  <span class="k">if</span> (subject.length &gt; <span class="n">72</span>) {
+    problems.push(<span class="s">`subject is ${subject.length} characters, more than 72`</span>);
+  }
+  <span class="k">if</span> (subject.endsWith(<span class="s">&quot;.&quot;</span>)) {
+    problems.push(<span class="s">&quot;subject ends with a full stop&quot;</span>);
+  }
+  <span class="k">if</span> (blank !== <span class="k">undefined</span> &amp;&amp; blank !== <span class="s">&quot;&quot;</span>) {
+    problems.push(<span class="s">&quot;no blank line after the subject&quot;</span>);
+  }
+  <span class="k">if</span> (/<span class="s">``</span>`|\*\*/.test(message)) {
+    problems.push(<span class="s">&quot;markdown in the message&quot;</span>);
+  }
+  <span class="k">return</span> problems;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">commit.mjs (part)</div><pre class="code"><span class="c line-bidi">// The change: the cap on the discount drops from 5000 to 3000.</span>
+<span class="k">const</span> changed = fs.readFileSync(<span class="s">&quot;price.mjs&quot;</span>, <span class="s">&quot;utf8&quot;</span>).replaceAll(<span class="s">&quot;5000&quot;</span>, <span class="s">&quot;3000&quot;</span>);
+fs.writeFileSync(<span class="s">&quot;repo/price.mjs&quot;</span>, changed);
+git(<span class="s">&quot;add price.mjs&quot;</span>);
+<span class="k">const</span> diff = git(<span class="s">&quot;diff --cached&quot;</span>);
+
+<span class="k">const</span> clean = (text) =&gt; text.replace(/^<span class="s">``</span><span class="s">`\w*\n|`</span><span class="s">``</span>$/g, <span class="s">&quot;&quot;</span>).trim();
+<span class="k">let</span> message = clean(<span class="k">await</span> ask(<span class="s">`Write a git commit message for this change in the Conventional Commits format: type(scope): subject of at most 72 characters, a blank line, then a short body that says why. Return only the message.\n\n${diff}`</span>));
+console.log(message);
+
+<span class="c line-bidi">// The format is checked by code, not by eye.</span>
+<span class="k">let</span> problems = lintCommit(message);
+console.log(<span class="s">`--- lint: ${problems.length ? problems.join(&quot;; &quot;) : &quot;ok&quot;}`</span>);
+<span class="k">if</span> (problems.length) {
+  <span class="k">const</span> request = <span class="s">`Write a git commit message for this change in the Conventional Commits format: type(scope): subject of at most 72 characters, a blank line, then a short body that says why. Return only the message.\n\n${diff}\n\nYour message broke these rules. Write it again:\n${message}\n${problems.join(&quot;\n&quot;)}`</span>;
+  message = clean(<span class="k">await</span> ask(request));
+  problems = lintCommit(message);
+  console.log(<span class="s">`--- once more:\n${message}\n--- lint: ${problems.length ? problems.join(&quot;; &quot;) : &quot;ok&quot;}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node commit.mjs</span>
+refactor(price): reduce maximum discount from 5000 to 3000 off for 10th cup, to align with updated pricing policy
+--- lint: subject is 113 characters, more than 72
+--- once more:
+refactor(price): reduce max discount to 3000 for 10th cup, aligns with updated pricing policy
+--- lint: subject is 93 characters, more than 72</pre></div>
+
+<p>Refused twice, and no commit was made. The first subject was 113 characters; told so, the model shortened it to 93, still over the limit, because the request to keep the reason in the subject outweighed the rule. And there is a problem the linter does not check: the type is <code>refactor</code>, which promises that behaviour did not change, for a change that makes every large order more expensive. Release tools read those types to decide what goes in the changelog and which version number to bump; a wrong type hides a price change from everyone who reads the release notes.</p>
+
+<p>The right message is short, and only a person who knows why the cap changed can write the body:</p>
+
+<pre class="plain" dir="ltr">fix(price): cap the bulk discount at 3000
+
+The 5000 cap let large office orders go below cost. Agreed with the
+café on 2026-11-20.</pre>
+
+<p>That is the general pattern for commit messages with AI: the model summarises <em>what</em> changed, quickly and usually well; the <em>why</em> is in your head, your ticket or your conversation with the café, and the model cannot know it.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Run the commit message linter in a git hook, so it checks every message, written by you or by a model, before the commit exists. A rule that is checked by a machine stops being a matter of discipline.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Accepting documentation unread</td><td>False examples and claims, kept for years</td><td>Examples in a runnable form, and run them</td></tr>
+<tr><td>Examples far from the edges</td><td>True examples that explain nothing</td><td>Ask for examples at thresholds and caps</td></tr>
+<tr><td>Trusting option lists</td><td>Invented flags in the README</td><td>Look up every option in the code</td></tr>
+<tr><td>Letting the model choose the commit type</td><td>Behaviour changes filed as refactors</td><td>Decide the type yourself; lint the rest</td></tr>
+<tr><td>Commit bodies from the diff alone</td><td>A “why” that is guessed</td><td>Write the reason yourself; the model cannot know it</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Assistants draft documentation fast and mostly well; nobody runs documentation, so check it.</li>
+<li>Write examples in a runnable form and run them; ask for examples at the edges.</li>
+<li>Look up every option, file and name a README mentions in the code, and run its examples.</li>
+<li>Lint commit messages by machine; decide the type and write the “why” yourself.</li>
+<li>When code changes, its documentation examples tell you what went stale.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. With a unit price of 10, the discount is a few piastres and never reaches the cap, so the examples would stay true for many wrong versions of the function: a wrong cap, a wrong rounding. 2. That the option is declared in the <code>parseArgs</code> options, as <code>name: {</code>; an option that is only mentioned in a comment does not count. 3. A reader trusts it: they copy it into a test, or “fix” the code to match it. No example sends them to the code; a wrong one sends them the wrong way.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects are the checks of this chapter, as tools you can add to any project: a commit linter, a documentation example runner, and a staleness check.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>A commit message linter</h3>
+<p class="project-goal">Check messages against the Conventional Commits rules, one rule at a time, with a reason for each failure.</p>
+<p class="project-skills"><strong>You will practise:</strong> regular expressions, splitting a message into subject and body, and readable error lists.</p>
+<ol class="steps">
+<li>Split the message into the subject, the second line and the body.</li>
+<li>Check the type and scope, the length, the full stop, the blank line and markdown.</li>
+<li>Run it on good and bad examples.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lint.mjs (part)</div><pre class="code"><span class="k">const</span> messages = [
+  <span class="s">&quot;fix(price): cap the bulk discount at 3000&quot;</span>,
+  <span class="s">&quot;Fixed the price thing.&quot;</span>,
+  <span class="s">&quot;feat: a much longer subject line that keeps going and going past the limit of characters&quot;</span>,
+  <span class="s">&quot;docs(readme): explain --vip\nthe body comes right after the subject&quot;</span>,
+];
+<span class="k">for</span> (<span class="k">const</span> message <span class="k">of</span> messages) {
+  <span class="k">const</span> problems = lintCommit(message);
+  console.log(<span class="s">`${problems.length ? &quot;FAIL&quot; : &quot;ok  &quot;} ${message.split(&quot;\n&quot;)[0]}`</span>);
+  <span class="k">for</span> (<span class="k">const</span> problem <span class="k">of</span> problems) {
+    console.log(<span class="s">`       ${problem}`</span>);
+  }
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node lint.mjs</span>
+ok   fix(price): cap the bulk discount at 3000
+FAIL Fixed the price thing.
+       subject is not type(scope): text
+       subject ends with a full stop
+FAIL feat: a much longer subject line that keeps going and going past the limit of characters
+       subject is 88 characters, more than 72
+FAIL docs(readme): explain --vip
+       no blank line after the subject</pre></div>
+<p class="hint"><strong>Hint:</strong> the last message caught a bug in the first version of this linter: it only complained about a missing blank line when the message had more than two lines. A test case for each rule, good and bad, is the only way to know a checker checks.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>Run the examples in a file’s documentation</h3>
+<p class="project-goal">Find every <code>call // =&gt; value</code> line in a module and run it against the module’s exports.</p>
+<p class="project-skills"><strong>You will practise:</strong> dynamic imports, running text as code safely, and reporting.</p>
+<ol class="steps">
+<li>Import the module named on the command line.</li>
+<li>Run every example with <code>docExamples</code>.</li>
+<li>Print each result and a count.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">doctest.mjs (part)</div><pre class="code"><span class="k">const</span> file = process.argv[<span class="n">2</span>];
+<span class="k">const</span> exports = <span class="k">await</span> <span class="k">import</span>(<span class="s">`./${file}`</span>);
+<span class="k">const</span> results = docExamples(fs.readFileSync(file, <span class="s">&quot;utf8&quot;</span>), exports);
+<span class="k">for</span> (<span class="k">const</span> {call, claimed, actual, ok} <span class="k">of</span> results) {
+  console.log(<span class="s">`${ok ? &quot;pass&quot; : &quot;FAIL&quot;} ${call} // =&gt; ${claimed}${ok ? &quot;&quot; : `</span>   (real: ${actual})<span class="s">`}`</span>);
+}
+console.log(<span class="s">`${results.filter((r) =&gt; r.ok).length} of ${results.length} examples hold`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node doctest.mjs changed/price.mjs</span>
+pass linePrice(1000, 9) // =&gt; 9000
+FAIL linePrice(1000, 10) // =&gt; 9000   (real: 10000)
+FAIL linePrice(6000, 10) // =&gt; 55000   (real: 60000)
+1 of 3 examples hold</pre></div>
+<p class="hint"><strong>Hint:</strong> this module’s documentation was written for the old rules; the code now starts the discount at 12 cups and caps it at 3,000. Two of three examples no longer hold, and the runner says which. In a test suite, that failure would have arrived with the change, not months later.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>Is this documentation still true?</h3>
+<p class="project-goal">Ask the model whether a changed function’s documentation still holds, and compare with running its examples.</p>
+<p class="project-skills"><strong>You will practise:</strong> asking for a verdict, and checking the verdict mechanically.</p>
+<ol class="steps">
+<li>Give the model the changed file and ask: still true, yes or no, and what is wrong.</li>
+<li>Run the examples with <code>docExamples</code>.</li>
+<li>Compare the model’s list with the failing examples.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">stale.mjs (part)</div><pre class="code"><span class="c line-bidi">// The code changed after the comment was written; the examples know</span>
+<span class="c line-bidi">// before the model does.</span>
+<span class="k">const</span> source = fs.readFileSync(<span class="s">&quot;changed/price.mjs&quot;</span>, <span class="s">&quot;utf8&quot;</span>);
+<span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">`Here is a function and its documentation. Is every statement in the documentation still true of the code? Answer yes or no on the first line, then list what is wrong.\n\n${source}`</span>, {maxTokens: <span class="n">300</span>});
+console.log(answer);
+<span class="k">const</span> exports = <span class="k">await</span> <span class="k">import</span>(<span class="s">&quot;./changed/price.mjs&quot;</span>);
+<span class="k">const</span> failing = docExamples(source, exports).filter((r) =&gt; !r.ok);
+console.log(<span class="s">`--- examples run: ${failing.length} no longer true`</span>);
+<span class="k">for</span> (<span class="k">const</span> {call, claimed, actual} <span class="k">of</span> failing) {
+  console.log(<span class="s">`   ${call} // =&gt; ${claimed}   (real: ${actual})`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node stale.mjs</span>
+No
+
+The documentation makes claims about specific examples that are not consistent with the actual code behavior.
+
+Specifically:
+
+1. The first example: `linePrice(1000, 9)` → 9000  
+   - Code: unit=1000, quantity=9 → full = 9000, quantity &lt; 12 → off = 0 → result = 9000 ✅  
+   - This example is correct.
+
+2. The second example: `linePrice(1000, 10)` → 9000  
+   - Code: unit=1000, quantity=10 → full = 10000, quantity ≥ 12? No → off = 0 → result = 10000 ❌  
+   - Expected: 9000, actual: 10000 → **Incorrect**
+
+3. The third example: `linePrice(6000, 10)` → 55000  
+   - Code: unit=6000, quantity=10 → full = 60000, quantity &lt; 12 → off = 0 → result = 60000 ❌  
+   - Expected: 55000, actual: 60000 → **Incorrect**
+
+So, two of the examples in the
+--- examples run: 2 no longer true
+   linePrice(1000, 10) // =&gt; 9000   (real: 10000)
+   linePrice(6000, 10) // =&gt; 55000   (real: 60000)</pre></div>
+<p class="hint"><strong>Hint:</strong> the model got it right, and showed its working: two examples wrong, for the right reason (10 cups no longer get a discount). The runner agreed in a millisecond. Use the model for what the runner cannot see, such as prose that says “10% off from the 10th cup” in a README, and the runner for every example.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change the JSDoc request to ask for one example below 10 cups, one at 10, and one where the cap applies. Run the examples. Are they still all true?</li>
+<li><span class="level">Easy</span> Add a <code>--limit</code> option to <code>report.mjs</code> without documenting it. Write a check that lists options in the code that the README does not mention.</li>
+<li><span class="level medium">Medium</span> Put the type in the request (“the type is fix”) and the limit as a number (“the subject must be under 60 characters”). Does the commit pass the linter now?</li>
+<li><span class="level medium">Medium</span> Install the linter as a <code>commit-msg</code> git hook in the repository that <code>commit.mjs</code> creates, and try to commit the model’s first message by hand.</li>
+<li><span class="level hard">Challenge</span> Write a check that finds numbers in a module’s prose comments (such as “at most 5000 off”) that do not appear in its code. Run it on <code>price.mjs</code> after changing the cap to 3,000 in the code only.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>Part II used the model inside your code. Part III takes it into the rest of your work, starting before any code exists: turning an idea into a specification and a list of tasks a team can build.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3058,6 +3422,23 @@ They are worth more than any explanation because they cannot drift: if someone �
 <li>Run the same 500-order comparison on the new file. The answer is decided by the comparison, not by how the names read: a rename that also “fixes” <code>==</code>, the 20,000 boundary or the case of <code>"VIP"</code> changes the function, and the comparison will show a difference with the exact order that exposes it. Names from the business are worth asking for; they are also an easy place for a model to “improve” a rule.</li>
 <li>For example, <code>full - off</code> changed to <code>full - off + 1</code> when <code>quantity === 1</code>, or the error message changed to another text: if no test checks the price of a single cup or the message, both survive. Each survivor names a behaviour the tests do not pin. Decide whether it matters; if it does, write the test.</li>
 <li>Require two things for a match: the line (<code>i &lt;= order.items.length</code>, <code>DB_PASSWORD</code>, <code>db.insert</code>) and a change (<code>&lt;</code>, remove from the log, <code>await</code>). Scores usually fall, because many reviews mention a problem without saying what to do. For a team, the strict score matters more: a review line that cannot be acted on is read, nodded at and forgotten.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 8</h2>
+<ol class="exercises">
+<li>Ask for “one example with fewer than 10 cups, one with exactly 10, and one where the 5,000 cap applies, such as 6,000 × 10”, then run them with <code>docExamples</code>. Whatever the model writes, the runner tells you; the edge examples are the ones most likely to be wrong, which is exactly why they are worth having. In the book’s Arabic run, even an ordinary example (100 × 15) was false.</li>
+<li>Collect the declared options from the code with <code>/(\w+): \{type:/g</code> inside the <code>options</code> block, collect the <code>--name</code> words from the README, and print the declared ones that are not mentioned. With <code>--limit</code> added, it is the only line printed. Documentation drifts both ways: invented options in the README, and real options missing from it.</li>
+<li>Telling the model the type removes one decision it got wrong; giving the limit as a number helps it measure. Whatever the result, the linter decides, and one more round of feedback with the exact rule broken is cheap. If the subject still comes back long, the fastest fix is yours: shorten it by hand, and keep the model’s body only if its “why” is true.</li>
+<li>Save <code>lint.mjs</code> as <code>.git/hooks/commit-msg</code> with <code>#!/usr/bin/env node</code> at the top, reading the message from the file named in <code>process.argv[2]</code> and exiting with 1 when there are problems; make it executable. Then <code>git commit -F .message</code> with the model’s 113-character subject stops with the reason, and the commit does not exist. A rule in a hook applies to people and models alike.</li>
+<li>Read the comments, drop the <code>@example</code> lines, and look for each number in the code without its comments:
+<pre class="plain" dir="ltr">import fs from "node:fs";
+const text = fs.readFileSync(process.argv[2], "utf8");
+const prose = (text.match(/\/\/.*$|\/\*[\s\S]*?\*\//gm) ?? []).join("\n").replace(/^.*@example.*$/gm, "");
+const code = text.replace(/\/\/.*$|\/\*[\s\S]*?\*\//gm, "");
+const missing = [...new Set(prose.match(/\b\d+\b/g) ?? [])].filter((n) =&gt; !new RegExp(`\\b${n}\\b`).test(code));
+console.log(missing.length ? `in the comments, not in the code: ${missing.join(", ")}` : "every number in the comments is in the code");</pre>
+On <code>price.mjs</code> as it is, every number in the comments is in the code. With the cap changed to 3,000 in the code only, it prints <code>in the comments, not in the code: 5000</code>: the comment “at most 5000 off” is now false, and nothing else would have said so.</li>
 </ol>
 
 </section>

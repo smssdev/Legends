@@ -1,0 +1,14 @@
+<ol class="exercises">
+<li>Ask for “one example with fewer than 10 cups, one with exactly 10, and one where the 5,000 cap applies, such as 6,000 × 10”, then run them with <code>docExamples</code>. Whatever the model writes, the runner tells you; the edge examples are the ones most likely to be wrong, which is exactly why they are worth having. In the book’s Arabic run, even an ordinary example (100 × 15) was false.</li>
+<li>Collect the declared options from the code with <code>/(\w+): \{type:/g</code> inside the <code>options</code> block, collect the <code>--name</code> words from the README, and print the declared ones that are not mentioned. With <code>--limit</code> added, it is the only line printed. Documentation drifts both ways: invented options in the README, and real options missing from it.</li>
+<li>Telling the model the type removes one decision it got wrong; giving the limit as a number helps it measure. Whatever the result, the linter decides, and one more round of feedback with the exact rule broken is cheap. If the subject still comes back long, the fastest fix is yours: shorten it by hand, and keep the model’s body only if its “why” is true.</li>
+<li>Save <code>lint.mjs</code> as <code>.git/hooks/commit-msg</code> with <code>#!/usr/bin/env node</code> at the top, reading the message from the file named in <code>process.argv[2]</code> and exiting with 1 when there are problems; make it executable. Then <code>git commit -F .message</code> with the model’s 113-character subject stops with the reason, and the commit does not exist. A rule in a hook applies to people and models alike.</li>
+<li>Read the comments, drop the <code>@example</code> lines, and look for each number in the code without its comments:
+<pre class="plain" dir="ltr">import fs from "node:fs";
+const text = fs.readFileSync(process.argv[2], "utf8");
+const prose = (text.match(/\/\/.*$|\/\*[\s\S]*?\*\//gm) ?? []).join("\n").replace(/^.*@example.*$/gm, "");
+const code = text.replace(/\/\/.*$|\/\*[\s\S]*?\*\//gm, "");
+const missing = [...new Set(prose.match(/\b\d+\b/g) ?? [])].filter((n) =&gt; !new RegExp(`\\b${n}\\b`).test(code));
+console.log(missing.length ? `in the comments, not in the code: ${missing.join(", ")}` : "every number in the comments is in the code");</pre>
+On <code>price.mjs</code> as it is, every number in the comments is in the code. With the cap changed to 3,000 in the code only, it prints <code>in the comments, not in the code: 5000</code>: the comment “at most 5000 off” is now false, and nothing else would have said so.</li>
+</ol>

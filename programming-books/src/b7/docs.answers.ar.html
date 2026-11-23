@@ -1,0 +1,14 @@
+<ol class="exercises">
+<li>اطلب «مثالاً بأقل من 10 أكواب، وآخر بـ 10 بالضبط، وثالثاً يُطبَّق فيه سقف 5,000، مثل 6,000 × 10»، ثم شغّلها بـ <code>docExamples</code>. وأياً كان ما يكتبه النموذج، يخبرك المشغّل؛ وأمثلة الحواف أرجح أن تكون خاطئة، ولهذا بالضبط تستحق أن تكون موجودة. وفي تشغيل الكتاب العربي، كان حتى مثال عادي (100 × 15) خاطئاً.</li>
+<li>اجمع الخيارات المعرّفة من الكود بـ <code dir="ltr">/(\w+): \{type:/g</code> داخل كتلة <code>options</code>، واجمع كلمات <code>--name</code> من الـ README، واطبع المعرّفة غير المذكورة. ومع إضافة <code>--limit</code>، يكون السطر الوحيد المطبوع. فالتوثيق ينحرف في الاتجاهين: خيارات مخترعة في الـ README، وخيارات حقيقية غائبة عنه.</li>
+<li>المثال الكامل أقوى من الوصف: النموذج الذي تجاهل «سطراً فارغاً» مرتين يرى السطر الفارغ في المثال وينسخ شكله. وأياً كانت النتيجة، تقرر أداة الفحص، وجولة أخرى بالقاعدة المكسورة رخيصة. وإن عادت الرسالة خاطئة، فأسرع إصلاح بيدك: أضف السطر الفارغ، ولا تُبقِ متن النموذج إلا إن كان «لماذا» فيه صحيحاً، وهنا لم يكن.</li>
+<li>احفظ <code>lint.mjs</code> باسم <code>.git/hooks/commit-msg</code> وفي أوله <code dir="ltr">#!/usr/bin/env node</code>، تقرأ الرسالة من الملف المسمى في <code dir="ltr">process.argv[2]</code> وتخرج بـ 1 حين توجد مشكلات؛ واجعله قابلاً للتنفيذ. فيتوقف <code dir="ltr">git commit -F .message</code> برسالة النموذج الأولى مع السبب، ولا يوجد الحفظ. والقاعدة في خطّاف تنطبق على البشر والنماذج سواء.</li>
+<li>اقرأ التعليقات، واحذف أسطر <code>@example</code>، وابحث عن كل رقم في الكود بلا تعليقاته:
+<pre class="plain" dir="ltr">import fs from "node:fs";
+const text = fs.readFileSync(process.argv[2], "utf8");
+const prose = (text.match(/\/\/.*$|\/\*[\s\S]*?\*\//gm) ?? []).join("\n").replace(/^.*@example.*$/gm, "");
+const code = text.replace(/\/\/.*$|\/\*[\s\S]*?\*\//gm, "");
+const missing = [...new Set(prose.match(/\b\d+\b/g) ?? [])].filter((n) =&gt; !new RegExp(`\\b${n}\\b`).test(code));
+console.log(missing.length ? `in the comments, not in the code: ${missing.join(", ")}` : "every number in the comments is in the code");</pre>
+على <code>price.mjs</code> كما هي، كل رقم في التعليقات موجود في الكود. ومع تغيير السقف إلى 3,000 في الكود وحده، يطبع <code dir="ltr">in the comments, not in the code: 5000</code>: فالتعليق «at most 5000 off» صار خاطئاً، ولا شيء آخر كان سيقول ذلك.</li>
+</ol>

@@ -1410,7 +1410,8 @@
             },
             {
               "en": "Documentation and Commit Messages",
-              "ar": "التوثيق ورسائل الحفظ"
+              "ar": "التوثيق ورسائل الحفظ",
+              "src": "b7/docs"
             }
           ]
         },

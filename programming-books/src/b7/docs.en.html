@@ -1,0 +1,162 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/docs/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Documentation and Commit Messages</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>have a model draft documentation comments, and run the examples it writes</li>
+<li>draft a README, and look up every option it mentions in the code</li>
+<li>draft commit messages, and check their format with a linter before committing</li>
+<li>find documentation that went stale when the code changed</li>
+</ul>
+</div>
+
+<p class="lead">Documentation is the writing developers put off, and an assistant writes it in seconds. That is genuinely useful: a good first draft of a comment, a README section or a commit message saves real time. But documentation has a property that makes it dangerous to accept unread: nobody runs it. Wrong code fails a test; a wrong comment sits there for years, telling every new reader something false. This chapter treats documentation as something that can be checked, and checks everything the model writes.</p>
+
+<aside class="bit" data-mood="think"><p>In this chapter the model wrote true examples that test nothing, a README that matches the code, and a commit message that our linter refused twice. In the Arabic edition, one of its documentation examples was simply false. Running things found all of it.</p></aside>
+
+<h2>{{n}}.1 Documentation comments, with examples that run</h2>
+
+<p>Ask for a JSDoc comment with examples in a form a program can read: a call, then <code>// =&gt;</code>, then the result. Then run them:</p>
+
+<pre data-code="lib/doctest.mjs" data-from="^export function" data-to="^}" data-title="lib/doctest.mjs (part)"></pre>
+<pre data-term="jsdoc.sh"></pre>
+
+<p>Every example is true, and the comment is mostly good. But look at what the examples test: a unit price of 10. The discount on 20 cups is 20 piastres; the cap of 5,000, which the comment mentions twice, is never reached. These are true examples that would stay true for many wrong versions of the function. Ask for examples at the edges: just below the threshold, at it, and at the cap. In the Arabic edition, with the same function, one of the three examples was false: <code>linePrice(100, 15)</code> was documented as 1,400 and is really 1,350. A reader copying that example into a test would have written a failing test, or, worse, “fixed” the function to match.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Keep examples in documentation in a form that can be executed, and execute them in your test suite. Python calls this doctest; in JavaScript the twenty lines of <code>docExamples</code> do the same. Examples that run cannot quietly become false.</p></aside>
+
+<h2>{{n}}.2 A README, checked against the code</h2>
+
+<p>The tool is a small report with three options:</p>
+
+<pre data-code="report.mjs" data-to="^});" data-title="report.mjs (part)"></pre>
+<pre data-term="report.sh"></pre>
+
+<p>Ask for the Usage section, and look up each option it mentions:</p>
+
+<pre data-code="readme.mjs" data-from="// " data-title="readme.mjs (part)"></pre>
+<pre data-term="readme.sh"></pre>
+
+<p>A clean result: three options, all real, with the right defaults. Inventing a plausible option, a <code>--format</code> or <code>--output</code>, is a common failure, and this check catches it in a line of code; here there was nothing to catch. There is one subtle problem the check cannot see. The second example, <code>node report.mjs --json</code>, says it “outputs order totals in JSON format”; with no <code>--date</code>, it uses today’s date and prints an empty list on any day but the 20th of November. It is true of the code and misleading to the reader. Run the examples in a README too, and read what they print.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why are the examples <code>linePrice(10, 5)</code>, <code>linePrice(10, 10)</code> and <code>linePrice(10, 20)</code> weak, although true?</li><li>What does the option check look for in the code?</li><li>Why is a wrong documentation example more harmful than no example?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 Commit messages, linted</h2>
+
+<p>A commit message is documentation of a change: what changed and why. Many teams use the Conventional Commits format: <code>type(scope): subject</code>, a blank line, then a body. A model drafts these well from a diff. Here the program creates a real repository, makes a real change (the discount cap drops from 5,000 to 3,000), asks for a message, and checks it with a linter before committing:</p>
+
+<pre data-code="lib/lint.mjs" data-from="^export function" data-to="^}" data-title="lib/lint.mjs (part)"></pre>
+<pre data-code="commit.mjs" data-from="// " data-to="^}" data-title="commit.mjs (part)"></pre>
+<pre data-term="commit.sh"></pre>
+
+<p>Refused twice, and no commit was made. The first subject was 113 characters; told so, the model shortened it to 93, still over the limit, because the request to keep the reason in the subject outweighed the rule. And there is a problem the linter does not check: the type is <code>refactor</code>, which promises that behaviour did not change, for a change that makes every large order more expensive. Release tools read those types to decide what goes in the changelog and which version number to bump; a wrong type hides a price change from everyone who reads the release notes.</p>
+
+<p>The right message is short, and only a person who knows why the cap changed can write the body:</p>
+
+<pre class="plain" dir="ltr">fix(price): cap the bulk discount at 3000
+
+The 5000 cap let large office orders go below cost. Agreed with the
+café on 2026-11-20.</pre>
+
+<p>That is the general pattern for commit messages with AI: the model summarises <em>what</em> changed, quickly and usually well; the <em>why</em> is in your head, your ticket or your conversation with the café, and the model cannot know it.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Run the commit message linter in a git hook, so it checks every message, written by you or by a model, before the commit exists. A rule that is checked by a machine stops being a matter of discipline.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Accepting documentation unread</td><td>False examples and claims, kept for years</td><td>Examples in a runnable form, and run them</td></tr>
+<tr><td>Examples far from the edges</td><td>True examples that explain nothing</td><td>Ask for examples at thresholds and caps</td></tr>
+<tr><td>Trusting option lists</td><td>Invented flags in the README</td><td>Look up every option in the code</td></tr>
+<tr><td>Letting the model choose the commit type</td><td>Behaviour changes filed as refactors</td><td>Decide the type yourself; lint the rest</td></tr>
+<tr><td>Commit bodies from the diff alone</td><td>A “why” that is guessed</td><td>Write the reason yourself; the model cannot know it</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Assistants draft documentation fast and mostly well; nobody runs documentation, so check it.</li>
+<li>Write examples in a runnable form and run them; ask for examples at the edges.</li>
+<li>Look up every option, file and name a README mentions in the code, and run its examples.</li>
+<li>Lint commit messages by machine; decide the type and write the “why” yourself.</li>
+<li>When code changes, its documentation examples tell you what went stale.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. With a unit price of 10, the discount is a few piastres and never reaches the cap, so the examples would stay true for many wrong versions of the function: a wrong cap, a wrong rounding. 2. That the option is declared in the <code>parseArgs</code> options, as <code>name: {</code>; an option that is only mentioned in a comment does not count. 3. A reader trusts it: they copy it into a test, or “fix” the code to match it. No example sends them to the code; a wrong one sends them the wrong way.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects are the checks of this chapter, as tools you can add to any project: a commit linter, a documentation example runner, and a staleness check.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A commit message linter</h3>
+<p class="project-goal">Check messages against the Conventional Commits rules, one rule at a time, with a reason for each failure.</p>
+<p class="project-skills"><strong>You will practise:</strong> regular expressions, splitting a message into subject and body, and readable error lists.</p>
+<ol class="steps">
+<li>Split the message into the subject, the second line and the body.</li>
+<li>Check the type and scope, the length, the full stop, the blank line and markdown.</li>
+<li>Run it on good and bad examples.</li>
+</ol>
+<pre data-code="lint.mjs" data-from="^const messages" data-title="lint.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/lint.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the last message caught a bug in the first version of this linter: it only complained about a missing blank line when the message had more than two lines. A test case for each rule, good and bad, is the only way to know a checker checks.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Run the examples in a file’s documentation</h3>
+<p class="project-goal">Find every <code>call // =&gt; value</code> line in a module and run it against the module’s exports.</p>
+<p class="project-skills"><strong>You will practise:</strong> dynamic imports, running text as code safely, and reporting.</p>
+<ol class="steps">
+<li>Import the module named on the command line.</li>
+<li>Run every example with <code>docExamples</code>.</li>
+<li>Print each result and a count.</li>
+</ol>
+<pre data-code="doctest.mjs" data-from="^const file" data-title="doctest.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/doctest.sh"></pre>
+<p class="hint"><strong>Hint:</strong> this module’s documentation was written for the old rules; the code now starts the discount at 12 cups and caps it at 3,000. Two of three examples no longer hold, and the runner says which. In a test suite, that failure would have arrived with the change, not months later.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Is this documentation still true?</h3>
+<p class="project-goal">Ask the model whether a changed function’s documentation still holds, and compare with running its examples.</p>
+<p class="project-skills"><strong>You will practise:</strong> asking for a verdict, and checking the verdict mechanically.</p>
+<ol class="steps">
+<li>Give the model the changed file and ask: still true, yes or no, and what is wrong.</li>
+<li>Run the examples with <code>docExamples</code>.</li>
+<li>Compare the model’s list with the failing examples.</li>
+</ol>
+<pre data-code="stale.mjs" data-from="// " data-title="stale.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/stale.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the model got it right, and showed its working: two examples wrong, for the right reason (10 cups no longer get a discount). The runner agreed in a millisecond. Use the model for what the runner cannot see, such as prose that says “10% off from the 10th cup” in a README, and the runner for every example.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change the JSDoc request to ask for one example below 10 cups, one at 10, and one where the cap applies. Run the examples. Are they still all true?</li>
+<li><span class="level">Easy</span> Add a <code>--limit</code> option to <code>report.mjs</code> without documenting it. Write a check that lists options in the code that the README does not mention.</li>
+<li><span class="level">Medium</span> Put the type in the request (“the type is fix”) and the limit as a number (“the subject must be under 60 characters”). Does the commit pass the linter now?</li>
+<li><span class="level">Medium</span> Install the linter as a <code>commit-msg</code> git hook in the repository that <code>commit.mjs</code> creates, and try to commit the model’s first message by hand.</li>
+<li><span class="level">Challenge</span> Write a check that finds numbers in a module’s prose comments (such as “at most 5000 off”) that do not appear in its code. Run it on <code>price.mjs</code> after changing the cap to 3,000 in the code only.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Part II used the model inside your code. Part III takes it into the rest of your work, starting before any code exists: turning an idea into a specification and a list of tasks a team can build.</p>
+</div>
+</section>
