@@ -77,10 +77,13 @@ export async function ask(prompt, options = {}) {
   const answer = await session.prompt(prompt, {
     temperature: 0,
     maxTokens: options.maxTokens ?? 400,
+    grammar: options.grammar,
   });
   session.dispose();
   return answer.trim();
 }
+
+export {model};
 
 // Every file of a folder as "--- path" followed by its text.
 export function readProject(folder) {
@@ -229,10 +232,14 @@ for (const name of fs.readdirSync(folder, {recursive: true}).sort()) {
 }
 """,
     "checker.mjs": """import {createRequire} from "node:module";
-import {ask} from "./lib/ask.mjs";
+import {ask, model} from "./lib/ask.mjs";
 
 const require = createRequire(import.meta.url);
 const {calc} = require("./legacy/lib/calc.js");
+const numbers = await model.llama.createGrammarForJsonSchema({
+  type: "array",
+  items: {type: "number"},
+});
 
 // {w_c_check}
 export async function checkExplanation(explanation, calls) {
@@ -240,7 +247,7 @@ export async function checkExplanation(explanation, calls) {
   const prompt =
     `{w_chk1}\\n${explanation}\\n\\n` +
     `{w_chk2}\\n${written.join("\\n")}`;
-  const predicted = JSON.parse((await ask(prompt)).match(/\\[[^\\]]*\\]/)[0]);
+  const predicted = JSON.parse(await ask(prompt, {grammar: numbers}));
   return calls.map(([o, d], i) => [predicted[i], calc(o, d)]);
 }
 
@@ -257,12 +264,16 @@ for (const [name, text] of Object.entries(explanations)) {
 }
 console.log(`actual: ${JSON.stringify(calls.map(([o, d]) => calc(o, d)))}`);
 """,
-    "glossary.mjs": """import fs from "node:fs";
-import {ask, readProject} from "./lib/ask.mjs";
+    "glossary.mjs": """import {ask, model, readProject} from "./lib/ask.mjs";
 
 const project = readProject("legacy/lib") + readProject("legacy/data");
-const answer = await ask(`{w_glossary}\\n\\n${project}`, {maxTokens: 600});
-const terms = JSON.parse(answer.match(/\\[[\\s\\S]*\\]/)[0]);
+const text = {type: "string"};
+const grammar = await model.llama.createGrammarForJsonSchema({
+  type: "array",
+  items: {type: "object", properties: {term: text, inCode: text, meaning: text}},
+});
+const answer = await ask(`{w_glossary}\\n\\n${project}`, {maxTokens: 800, grammar});
+const terms = JSON.parse(answer);
 
 // {w_c_glossary}
 for (const {term, inCode, meaning} of terms) {
