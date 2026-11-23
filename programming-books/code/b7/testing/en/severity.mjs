@@ -11,6 +11,7 @@ const grammar = await model.llama.createGrammarForJsonSchema({
       problem: {type: "string"},
     },
   },
+  minItems: 1,
   maxItems: 8,
 });
 const diff = fs.readFileSync("changes/save-order.diff", "utf8");
