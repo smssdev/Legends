@@ -1,0 +1,2 @@
+$ node diff.mjs
+This change safely returns 0 if a drink size price is missing, avoiding undefined errors. It improves robustness by handling missing entries gracefully. What could go wrong: it might mask legitimate missing data (e.g., a drink size not available), leading to incorrect assumptions about pricing. It also adds unnecessary complexity for cases where prices are always defined. The behavior is now more defensive but less transparent. No runtime errors are introduced, but data integrity may be compromised.
