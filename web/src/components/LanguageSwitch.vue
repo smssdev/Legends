@@ -7,6 +7,8 @@ import { locale, setLocale, type Locale } from '../lib/i18n'
 import { setNamesLang } from '../lib/names'
 import { useAuth } from '../stores/auth'
 
+// [Sprint 75 W11, WEB-11] Compact on the visitor's bar (the home page's header): each language's own short name.
+defineProps<{ compact?: boolean }>()
 const auth = useAuth()
 async function choose(l: Locale) {
   if (l === locale.value) return
@@ -26,20 +28,21 @@ async function choose(l: Locale) {
 <template>
   <div class="inline-flex rounded-lg bg-surface-sunk p-1" role="radiogroup" :aria-label="$t('اللغة')">
     <button
-      v-for="[l, label] in [
-        ['ar', 'العربية'],
-        ['en', 'English'],
+      v-for="[l, label, short] in [
+        ['ar', 'العربية', 'ع'],
+        ['en', 'English', 'EN'],
       ] as const"
       :key="l"
       type="button"
       role="radio"
       :aria-checked="locale === l"
-      class="h-touch rounded-md px-4 text-sm font-bold"
-      :class="locale === l ? 'bg-gold text-on-gold' : 'text-text-soft'"
+      :aria-label="compact ? label : undefined"
+      class="h-touch rounded-md text-sm font-bold"
+      :class="[locale === l ? 'bg-gold text-on-gold' : 'text-text-soft', compact ? 'min-w-touch px-2' : 'px-4']"
       :lang="l"
       @click="choose(l)"
     >
-      {{ $t(label) }}
+      {{ compact ? short : $t(label) }}
     </button>
   </div>
 </template>

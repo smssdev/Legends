@@ -31,6 +31,34 @@ class LocaleTest extends TestCase
             ->assertStatus(404)->assertJsonPath('message', 'لا يوجد دوري بهذا الكود.');
     }
 
+    /** [Sprint 75 W2, WEB-02] The guide is public for ten minutes: a browser must keep one copy per language. */
+    public function test_the_guide_varies_with_the_language(): void
+    {
+        $ar = $this->getJson('/api/v1/guide')->assertOk();
+        $this->assertStringContainsString('Accept-Language', (string) $ar->headers->get('Vary'));
+        $this->assertSame('البداية والحساب', $ar->json('sections.0.title'));
+        $en = $this->withHeader('Accept-Language', 'en')->getJson('/api/v1/guide')->assertOk();
+        $this->assertStringContainsString('Accept-Language', (string) $en->headers->get('Vary'));
+        $this->assertSame('Getting started', $en->json('sections.0.title'));
+        foreach ($en->json('sections') as $section) {
+            foreach ($section['topics'] as $topic) {
+                $this->assertDoesNotMatchRegularExpression('/\p{Arabic}/u', $topic['q'].$topic['a'], $topic['id']);
+            }
+        }
+    }
+
+    /** [Sprint 75 W12, WEB-12] The sign-in takes the email or the username, and its empty field says so. */
+    public function test_an_empty_sign_in_asks_for_the_email_or_the_username(): void
+    {
+        $web = ['Origin' => 'http://localhost:5173', 'Referer' => 'http://localhost:5173/'];
+        $this->withHeaders($web)->postJson('/api/v1/auth/login', ['email' => '', 'password' => ''])->assertStatus(422)
+            ->assertJsonPath('errors.email.0', 'اكتب بريدك أو اسم المستخدم.');
+        $this->withHeaders($web + ['Accept-Language' => 'en'])->postJson('/api/v1/auth/login', ['email' => '', 'password' => ''])->assertStatus(422)
+            ->assertJsonPath('errors.email.0', 'Enter your email or username.');
+        $this->withHeader('Accept-Language', 'ar')->postJson('/api/v1/auth/token', ['email' => '', 'password' => 'x', 'device_name' => 'phone'])->assertStatus(422)
+            ->assertJsonPath('errors.email.0', 'اكتب بريدك أو اسم المستخدم.');
+    }
+
     public function test_every_english_message_is_a_message_of_the_game(): void
     {
         $en = json_decode(file_get_contents(lang_path('en.json')), true);

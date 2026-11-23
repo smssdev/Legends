@@ -13,6 +13,8 @@ export const useBoard = defineStore('board', () => {
   const league = ref<number | null>(null)
   /** [Sprint 58 W7] The last load failed for a reason other than having no club here (the server, the network). */
   const error = ref(false)
+  /** [Sprint 75 W1, WEB-01] A request is on its way: an empty board is a wait now, not «no club here». */
+  const loading = ref(false)
   let fetched = 0
   let timer: ReturnType<typeof setInterval> | undefined
   // [Sprint 58] One request at a time per league: the shell and the club's screen asking together share it.
@@ -30,6 +32,7 @@ export const useBoard = defineStore('board', () => {
     if (league.value !== leagueId) board.value = null
     league.value = leagueId
     fetched = Date.now()
+    loading.value = true
     const done = (async () => {
       try {
         board.value = (await api.GET('/leagues/{league}/team/summary', { params: { path: { league: leagueId } } })).data ?? null
@@ -43,7 +46,9 @@ export const useBoard = defineStore('board', () => {
     })()
     inflight = { league: leagueId, done }
     await done.finally(() => {
-      if (inflight?.done === done) inflight = null
+      if (inflight?.done !== done) return
+      inflight = null
+      loading.value = false
     })
     timer ??= setInterval(() => document.visibilityState === 'visible' && league.value && load(league.value, true), 60000)
   }
@@ -64,5 +69,5 @@ export const useBoard = defineStore('board', () => {
     })
   }
 
-  return { board, league, error, load, pause, refresh: () => load(league.value, true) }
+  return { board, league, error, loading, load, pause, refresh: () => load(league.value, true) }
 })

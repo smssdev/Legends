@@ -59,7 +59,7 @@ async function submit() {
   <p v-if="notice" class="rounded-lg bg-surface px-4 py-3 text-sm" role="status">{{ $t(notice) }}</p>
   <GoogleButton :label="$t('المتابعة بحساب Google')" />
   <div class="flex items-center gap-3 text-sm text-text-muted">
-    <span class="h-px flex-1 bg-text/10" />{{ $t('أو بالبريد') }}<span class="h-px flex-1 bg-text/10" />
+    <span class="h-px flex-1 bg-text/10" />{{ $t('أو ببيانات حسابك') }}<span class="h-px flex-1 bg-text/10" />
   </div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
     <UiInput

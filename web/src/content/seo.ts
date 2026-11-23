@@ -192,9 +192,11 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').repl
 /** A page's address in a language: Arabic is the page itself, English adds ?lang=en (src/lib/i18n.ts reads it). */
 export const urlOf = (path: string, l: 'ar' | 'en') => SITE_URL + path + (l === 'en' ? '?lang=en' : '')
 
-/** The tags of a page's <head> in Arabic, written into its HTML by the build (between <!-- seo --> and <!-- /seo -->). */
-export function seoHead(page: PageSeo): string {
-  const l = 'ar'
+/**
+ * The tags of a page's <head>, written into its HTML by the build (between <!-- seo --> and <!-- /seo -->). [Sprint 75
+ * W9, WEB-09] In each language: the English page (index.en.html, sent for ?lang=en) is its own canonical.
+ */
+export function seoHead(page: PageSeo, l: 'ar' | 'en' = 'ar'): string {
   const title = page.title[l]
   const description = page.description[l]
   return [
@@ -202,21 +204,21 @@ export function seoHead(page: PageSeo): string {
     `<meta name="description" content="${esc(description)}" />`,
     `<meta name="keywords" content="${esc(keywordsOf(page, l))}" />`,
     `<meta name="robots" content="index, follow" />`,
-    `<link rel="canonical" href="${urlOf(page.path, 'ar')}" />`,
+    `<link rel="canonical" href="${urlOf(page.path, l)}" />`,
     `<link rel="alternate" hreflang="ar" href="${urlOf(page.path, 'ar')}" />`,
     `<link rel="alternate" hreflang="en" href="${urlOf(page.path, 'en')}" />`,
     `<link rel="alternate" hreflang="x-default" href="${urlOf(page.path, 'ar')}" />`,
     `<meta property="og:type" content="website" />`,
-    `<meta property="og:site_name" content="${esc(BRAND.ar)}" />`,
+    `<meta property="og:site_name" content="${esc(BRAND[l])}" />`,
     `<meta property="og:title" content="${esc(title)}" />`,
     `<meta property="og:description" content="${esc(description)}" />`,
-    `<meta property="og:url" content="${urlOf(page.path, 'ar')}" />`,
+    `<meta property="og:url" content="${urlOf(page.path, l)}" />`,
     `<meta property="og:image" content="${SITE_URL}/brand/og-invite.png" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:alt" content="Game Legend Manager" />`,
-    `<meta property="og:locale" content="ar_AR" />`,
-    `<meta property="og:locale:alternate" content="en_GB" />`,
+    `<meta property="og:locale" content="${l === 'ar' ? 'ar_AR' : 'en_GB'}" />`,
+    `<meta property="og:locale:alternate" content="${l === 'ar' ? 'en_GB' : 'ar_AR'}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(title)}" />`,
     `<meta name="twitter:description" content="${esc(description)}" />`,
@@ -229,15 +231,14 @@ export function seoHead(page: PageSeo): string {
  * other public pages (written into <div id="app"> by the build; the app replaces it when it mounts, so a visitor sees
  * it only for the instant the game loads). The same words as the page itself, nothing hidden.
  */
-export function seoBody(page: PageSeo): string {
-  const l = 'ar'
+export function seoBody(page: PageSeo, l: 'ar' | 'en' = 'ar'): string {
   const links = Object.values(PAGES)
     .filter((p) => p.sitemap && p.path !== page.path)
-    .map((p) => `<a href="${p.path}">${esc(p.title[l].split(/ \| |: /)[0])}</a>`)
+    .map((p) => `<a href="${l === 'en' ? p.path + '?lang=en' : p.path}">${esc(p.title[l].split(/ \| |: /)[0])}</a>`)
     .join(' · ')
   return [
     `<main class="seo-static">`,
-    `<img src="/icon-192.png" alt="المدرب الأسطورة · Game Legend Manager" width="96" height="96" />`,
+    `<img src="/icon-192.png" alt="${esc(BRAND[l])}" width="96" height="96" />`,
     `<h1>${esc((page.heading ?? page.title)[l])}</h1>`,
     `<p>${esc(page.description[l])}</p>`,
     `<nav>${links}</nav>`,

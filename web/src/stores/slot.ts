@@ -18,6 +18,8 @@ export const useSlot = defineStore('slot', () => {
   let loadedFor = 0
   /** [Sprint 58 W7] The slots could not be loaded (the server, the network): not the same as having none. */
   const error = ref(false)
+  /** [Sprint 75 W1, WEB-01] The first answer came (or failed): only then is «no club» an answer, not a wait. */
+  const ready = ref(false)
 
   async function load(userId: number, force = false) {
     if (!force && loadedFor === userId) return pick()
@@ -33,6 +35,7 @@ export const useSlot = defineStore('slot', () => {
       error.value = true
       loadedFor = 0
     }
+    ready.value = true
     pick()
   }
 
@@ -45,5 +48,5 @@ export const useSlot = defineStore('slot', () => {
     current.value = clubs.find((s) => s.league?.id === saved) ?? clubs[0] ?? null
   }
 
-  return { slots, current, coach, error, load, pick }
+  return { slots, current, coach, error, ready, load, pick }
 })

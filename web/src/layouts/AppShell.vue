@@ -14,6 +14,7 @@ import { storage } from '../lib/storage'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BrandMark from '../components/BrandMark.vue'
+import LanguageSwitch from '../components/LanguageSwitch.vue'
 import ShellBar from '../components/shell/ShellBar.vue'
 import ShellDock, { type DockEntry } from '../components/shell/ShellDock.vue'
 import type { MoreGroup } from '../components/shell/ShellMore.vue'
@@ -82,7 +83,15 @@ const clubSections = computed(() => SECTIONS.filter((s) => s.club && (!s.dev || 
 const byName = (n: string) => clubSections.value.find((s) => s.name === n)
 // '/league' must not light up on '/leagues': a section owns its path and what is under it.
 const active = (path: string) => (path === '/' ? route.path === '/' : route.path === path || route.path.startsWith(path + '/'))
-const inSlot = computed(() => clubSections.value.some((s) => active(pathOf(s))))
+// [Sprint 75 W6, WEB-06] A section open on this page. A league's own section with no league yet links to «دورياتي»: it
+// is never the open one, or «أخبار الدوري» named the create-league screen and every /leagues page put a coach with no
+// club inside a club's dock (the office a tap away, empty).
+const opened = (s: Section) => {
+  const p = pathOf(s)
+  if (p === '/leagues' && s.path !== '/leagues') return false
+  return active(p) && (p !== '/leagues' || route.path === '/leagues')
+}
+const inSlot = computed(() => clubSections.value.some(opened))
 const unread = computed(() => (inbox.unread > 99 ? '99+' : inbox.unread ? String(inbox.unread) : ''))
 // [Sprint 20 B1] The board of the slot: the money, the timers and the to-do list.
 const board = useBoard()
@@ -149,9 +158,12 @@ const more = computed<MoreGroup[]>(() => {
 })
 // The screen's name on the bar: its section's page, else the dock's or «المزيد»'s link that is open.
 const title = computed(() => {
-  const s = SECTIONS.find((x) => (x.club || x.path !== '/') && active(pathOf(x)) && (x.path !== '/leagues' || route.path === '/leagues'))
+  const s = SECTIONS.find((x) => (x.club || x.path !== '/') && opened(x))
   if (s) return s.label
-  return [...DOCK_OUTSIDE, ...MORE_ALWAYS].find((l) => route.path === l.path)?.label ?? ''
+  // A league's page before the coach has a club in it (its home, the team to pick): under «دورياتي».
+  return (
+    [...DOCK_OUTSIDE, ...MORE_ALWAYS].find((l) => route.path === l.path)?.label ?? (route.path.startsWith('/leagues/') ? 'دورياتي' : '')
+  )
 })
 
 // The screen scrolls inside the frame: back to its top on a new page.
@@ -332,6 +344,8 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
       <div class="mx-auto flex max-w-7xl items-center gap-2 px-3 py-1.5 md:px-6">
         <RouterLink to="/" :aria-label="$t('الرئيسية')" class="flex min-h-touch shrink-0 items-center"><BrandMark size="sm" /></RouterLink>
         <span class="flex-1" />
+        <!-- [Sprint 75 W11, WEB-11] The language from the first page a visitor sees, kept on this device. -->
+        <LanguageSwitch compact />
         <template v-if="auth.loaded">
           <UiButton to="/login" size="sm">{{ $t('دخول') }}</UiButton>
           <UiButton to="/register" size="sm" variant="outline" class="max-sm:hidden">{{ $t('إنشاء حساب') }}</UiButton>

@@ -20,6 +20,16 @@ const missing = (k, f) => lost.push(`${f}: ${k}`)
 for (const m of readFileSync('src/layouts/nav.ts', 'utf8').matchAll(/label: '([^']*)'/g))
   if (!en.has(m[1])) missing(m[1], 'src/layouts/nav.ts')
 
+// [Sprint 75 W7, WEB-07] A screen's own lists (the footer's links, a page's tabs), shown through $t(x.label): their
+// labels need their English too (the footer's «حمّل التطبيق» stayed Arabic in the English pages).
+for (const f of files.filter((f) => f.endsWith('.vue'))) {
+  for (const script of readFileSync(f, 'utf8').match(/<script[\s\S]*?<\/script>/g) ?? [])
+    for (const m of script.matchAll(/\blabel: '((?:[^'\\]|\\.)*)'/g)) {
+      const k = unq(m[1])
+      if (ARABIC.test(k) && !en.has(k)) missing(k, f)
+    }
+}
+
 for (const f of files) {
   if (f.endsWith(join('i18n', 'en.ts')) || f.endsWith('.test.ts')) continue // a test's Arabic is its data, not a screen's
   const src = readFileSync(f, 'utf8')

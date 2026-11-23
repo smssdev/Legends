@@ -42,6 +42,9 @@ class AuthController extends Controller
 {
     private const WRONG = 'البريد أو كلمة المرور غير صحيحة.';
 
+    /** [Sprint 75 W12, WEB-12] The sign-in's one field takes the email or the username: its empty message says both. */
+    private const LOGIN_EMPTY = 'اكتب بريدك أو اسم المستخدم.';
+
     /** [UP5] Simple and the coach's own: no symbols, no mixed case, no long minimum (the owner's spec, 1). */
     private function passwordRule(): PasswordRule
     {
@@ -77,9 +80,9 @@ class AuthController extends Controller
     {
         abort_unless($request->hasSession(), 400, 'الدخول بالجلسة للويب فقط. التطبيق يستخدم /auth/token.');
         // The email or the username [X4]. [UP5] The session lasts unless the coach asks otherwise.
-        $data = $request->validate(['email' => ['required', 'string', 'max:190'], 'password' => ['required', 'string'], 'remember' => ['sometimes', 'boolean']]);
+        $data = $request->validate(['email' => ['required', 'string', 'max:190'], 'password' => ['required', 'string'], 'remember' => ['sometimes', 'boolean']], ['email.required' => __(self::LOGIN_EMPTY)]);
         if (! Auth::guard('web')->attempt([$this->loginField($data['email']) => Str::lower(trim($data['email'])), 'password' => $data['password']], (bool) ($data['remember'] ?? true))) {
-            throw ValidationException::withMessages(['email' => self::WRONG]);
+            throw ValidationException::withMessages(['email' => __(self::WRONG)]);
         }
 
         return response()->json($this->signIn($request, Auth::guard('web')->user()));
@@ -299,10 +302,10 @@ class AuthController extends Controller
     /** The app's sign-in: a token that expires after game.app.token_ttl_days. */
     public function token(Request $request): JsonResponse
     {
-        $data = $request->validate(['email' => ['required', 'string', 'max:190'], 'password' => ['required', 'string'], 'device_name' => ['required', 'string', 'max:100']]);
+        $data = $request->validate(['email' => ['required', 'string', 'max:190'], 'password' => ['required', 'string'], 'device_name' => ['required', 'string', 'max:100']], ['email.required' => __(self::LOGIN_EMPTY)]);
         $user = User::where($this->loginField($data['email']), Str::lower(trim($data['email'])))->first();
         if (! $user || ! $user->hasPassword() || ! Hash::check($data['password'], $user->password)) {
-            throw ValidationException::withMessages(['email' => self::WRONG]);
+            throw ValidationException::withMessages(['email' => __(self::WRONG)]);
         }
 
         return response()->json($this->signIn($request, $user, $data['device_name']));
