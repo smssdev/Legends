@@ -35,8 +35,8 @@ T = {
               "block.",
         w_fix_tests="These tests do not run: they fail before testing anything, with this output. Fix the test file. "
                     "Return only the code, in one code block.",
-        w_hint="A hint from the developer: assert is the default export of node:assert/strict; node:test does "
-               "not provide it.",
+        w_hint="A hint from the developer: this project uses ES modules, so import, never require; and assert "
+               "is the default export of node:assert/strict.",
         w_c_hint="If the model cannot fix its own tests, the developer adds what they know, as a pair would.",
         w_c_red="Before any code: run the tests against an empty splitBill. They must fail on their assertions, "
                 "not because the test file itself is broken.",
@@ -63,7 +63,8 @@ T = {
         w_fix="فشلت الاختبارات بهذه المخرجات. أصلح bill.mjs (لا الاختبارات). أعِد الكود فقط، في كتلة كود واحدة.",
         w_fix_tests="هذه الاختبارات لا تعمل: تفشل قبل أن تختبر شيئاً، بهذه المخرجات. أصلح ملف الاختبارات. "
                     "أعِد الكود فقط، في كتلة كود واحدة.",
-        w_hint="تلميح من المطور: assert هو التصدير الافتراضي لـ node:assert/strict؛ وnode:test لا يقدّمه.",
+        w_hint="تلميح من المطور: هذا المشروع يستخدم وحدات ES، فاستخدم import لا require أبداً؛ وassert هو "
+               "التصدير الافتراضي لـ node:assert/strict.",
         w_c_hint="إن لم يستطع النموذج إصلاح اختباراته، يضيف المطور ما يعرفه، كما يفعل الزميل في البرمجة الثنائية.",
         w_c_red="قبل أي كود: شغّل الاختبارات على splitBill فارغة. يجب أن تفشل في تأكيداتها، "
                 "لا لأن ملف الاختبارات نفسه معطوب.",

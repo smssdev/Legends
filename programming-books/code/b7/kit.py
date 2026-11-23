@@ -1,3 +1,4 @@
+import os
 import re
 """Book 7's examples are JavaScript (Node 22) that talk to a free, open model running on the reader's own
 computer, through the node-llama-cpp package. This kit writes a chapter's files in each language, runs them
@@ -98,7 +99,10 @@ def chapter(here, words_by_lang, files, runs, made=()):
     """files: {path: text} with {w_...} words; runs: [(transcript, command[, keep])], keep(lines) -> lines;
     made: files the examples write (code from the model), copied to the book's folder after the runs."""
     modules = deps()
+    only = os.environ.get("B7_LANG")  # B7_LANG=ar runs one edition
     for lang, words in words_by_lang.items():
+        if only and lang != only:
+            continue
         out = here / lang
         shutil.rmtree(out, ignore_errors=True)
         base = WORK / here.name / lang
