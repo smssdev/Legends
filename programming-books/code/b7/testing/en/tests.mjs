@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import {ask} from "./lib/ask.mjs";
-import {MUTANTS, failures, score, testsOf} from "./lib/mutants.mjs";
+import {MUTANTS, failures, keepPassing, score, testsOf} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
 let tests = testsOf(await ask(`Write tests for this module, importing test from node:test, assert from node:assert/strict and linePrice from ./price.mjs. Cover normal cases and every boundary. Return only the code, in one code block.\n\n${source}`)) ?? "";
@@ -19,6 +19,11 @@ if (failed) {
   const again = failures(tests, source, "mutants/real");
   console.log(`after one fix: ${again ? `FAIL\n${again}` : "pass"}`);
 }
+
+// Then keep only the tests that are right, and measure what they catch.
+const kept = keepPassing(tests, source);
+console.log(`kept ${kept.kept} of ${kept.total} tests: the ones that pass on the real code`);
+tests = kept.tests;
 fs.writeFileSync("price.test.mjs", tests);
 
 // Then on each mutant: a good test suite fails on every one of them.

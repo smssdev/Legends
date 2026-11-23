@@ -43,6 +43,25 @@ export function passes(tests, source, dir) {
   return failures(tests, source, dir) === "";
 }
 
+// Keeps the tests that pass on the real code, each run on its own, after
+// adding
+// any import the file forgot (the two-line fix a developer makes in
+// seconds).
+export function keepPassing(tests, source) {
+  let header = tests.split("\n").filter((line) => /^import /.test(line));
+  if (!header.some((line) => line.includes("node:test"))) {
+    header = ['import {test} from "node:test";', ...header];
+  }
+  if (!header.some((line) => line.includes("node:assert"))) {
+    header = ['import assert from "node:assert/strict";', ...header];
+  }
+  const blocks = tests.split(/\n(?=test\()/).filter((block) => block.startsWith("test("));
+  const kept = blocks.filter((block, i) => {
+    return passes(`${header.join("\n")}\n\n${block}`, source, `mutants/one${i}`);
+  });
+  return {tests: `${header.join("\n")}\n\n${kept.join("\n")}\n`, total: blocks.length, kept: kept.length};
+}
+
 // How many mutants the tests catch, and which survive. Tests that fail on
 // the
 // real code would "catch" every mutant, so they score nothing.
