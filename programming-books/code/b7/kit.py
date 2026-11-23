@@ -31,6 +31,10 @@ def env():
 
 b5kit.env = env  # every command of the kit finds Node
 
+# A model answers at a few tokens a second on a plain processor: allow an hour per command.
+_sh = b5kit.sh
+b5kit.sh = lambda cmd, cwd, timeout=3600: _sh(cmd, cwd, timeout)
+
 MODEL_NOTE = {
     "en": """// The book's model: Qwen3 4B Instruct (2507), an open model under the
 // Apache 2.0 license, quantized to 4 bits by Unsloth (2.5 GB). It is
