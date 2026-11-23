@@ -1,0 +1,61 @@
+[
+  {
+    "id": "T1",
+    "title": "Implement loyalty card creation and account binding",
+    "estimate": 8,
+    "dependsOn": []
+  },
+  {
+    "id": "T2",
+    "title": "Track paid hot drink purchases and increment stamp counter",
+    "estimate": 10,
+    "dependsOn": [
+      "T1"
+    ]
+  },
+  {
+    "id": "T3",
+    "title": "Validate drink eligibility: hot drink and price below large latte threshold",
+    "estimate": 6,
+    "dependsOn": [
+      "T2"
+    ]
+  },
+  {
+    "id": "T4",
+    "title": "Handle refund logic: remove stamp when a drink is refunded",
+    "estimate": 6,
+    "dependsOn": [
+      "T2"
+    ]
+  },
+  {
+    "id": "T5",
+    "title": "Ensure loyalty card is valid across both branches",
+    "estimate": 4,
+    "dependsOn": [
+      "T1"
+    ]
+  },
+  {
+    "id": "T6",
+    "title": "Enforce one active card per account (reject duplicate cards)",
+    "estimate": 6,
+    "dependsOn": [
+      "T1"
+    ]
+  },
+  {
+    "id": "T7",
+    "title": "Unit tests for all loyalty card rules and edge cases",
+    "estimate": 8,
+    "dependsOn": [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6"
+    ]
+  }
+]
