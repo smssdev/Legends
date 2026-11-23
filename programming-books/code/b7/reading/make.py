@@ -196,7 +196,8 @@ const code = fs.readFileSync("legacy/lib/calc.js", "utf8");
 // {w_c_claims}
 const written = calls.map(([o, d]) => `calc(${JSON.stringify(o)}, ${d})`).join("\\n");
 const answer = await ask(`${code}\\n\\n{w_predict}\\n${written}`);
-const predicted = JSON.parse(answer.match(/\\[[^\\]]*\\]/)[0]);
+// The first array of numbers in the answer (it may also quote code such as o.l[i]).
+const predicted = JSON.parse(answer.match(/\\[[-\\d.,\\s]+\\]/)[0]);
 let right = 0;
 calls.forEach(([o, d], i) => {
   const actual = calc(o, d);
