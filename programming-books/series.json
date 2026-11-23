@@ -1395,7 +1395,8 @@
             },
             {
               "en": "Reading and Explaining Unfamiliar Code",
-              "ar": "قراءة الكود الغريب وشرحه"
+              "ar": "قراءة الكود الغريب وشرحه",
+              "src": "b7/reading"
             },
             {
               "en": "Debugging with AI",
