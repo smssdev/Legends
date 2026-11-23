@@ -1476,8 +1476,8 @@
       ],
       "notes": {
         "code": {
-          "en": "The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.",
-          "ar": "الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 وnode-llama-cpp 3.22.3، ويتحدث مع النموذج المفتوح Qwen3-4B-Instruct-2507 (برخصة Apache 2.0) يعمل على حاسوب المؤلف. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب."
+          "en": "The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer, and, in Chapter 14, the embedding model Qwen3-Embedding-0.6B (Apache 2.0). Every listing and terminal session is produced from the files in the book’s code repository.",
+          "ar": "الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 وnode-llama-cpp 3.22.3، ويتحدث مع النموذج المفتوح Qwen3-4B-Instruct-2507 (برخصة Apache 2.0) يعمل على حاسوب المؤلف، ومعه في الفصل 14 نموذج التضمينات Qwen3-Embedding-0.6B (برخصة Apache 2.0). وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب."
         },
         "trademarks": {
           "en": "Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.",
