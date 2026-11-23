@@ -15,7 +15,7 @@
 
 <p class="lead">Most code a developer touches was written by someone else: a colleague who left, a library, yourself three years ago. Reading it is slow, and this is where assistants shine: they read fast, never get bored, and explain in plain words. They also explain with the same confidence whether they understood or not. This chapter reads a small legacy project with the book’s model, and checks every claim it makes against the only authority there is: the code, running.</p>
 
-<aside class="bit" data-mood="think"><p>The model’s explanation in this chapter reads well and is mostly right. Its predictions from that same understanding were right three times out of six. The gap between those two numbers is what this chapter is about.</p></aside>
+<aside class="bit" data-mood="think"><p>The model’s explanation in this chapter reads well and is mostly right. Its predictions, with the code in front of it, were right three times out of six. The gap between those two numbers is what this chapter is about.</p></aside>
 
 <h2>{{n}}.1 The project</h2>
 
@@ -46,7 +46,7 @@
 <pre data-code="predict.mjs" data-from="^const calls" data-title="predict.mjs (part)"></pre>
 <pre data-term="predict.sh"></pre>
 
-<p>Three of six. With the code in front of it, the model missed the 10% discount on the 25,000 order, the floor at zero for a small VIP order, and the fact that <code>"vip"</code> in small letters is not <code>"VIP"</code>. The cases were chosen on purpose: the boundary (exactly 20,000), the flag off, the floor, the spelling. Those are the places where unfamiliar code hides its rules, and where explanations go soft.</p>
+<p>Three of six. With the code in front of it, the model missed the 10% discount on the 25,000 order, the floor at zero for a small VIP order (it said 2,500), and the boundary: it gave the order of exactly 20,000 a discount, but <code>t &gt; 20000</code> is false there. It did get <code>"vip"</code> in small letters right, and the Arabic edition’s run did not: it predicted 1 of 6. The cases were chosen on purpose: the boundary (exactly 20,000), the flag off, the floor, the spelling. Those are the places where unfamiliar code hides its rules, and where explanations go soft.</p>
 
 <aside class="box tip"><p class="box-title">Tip</p><p>When you need to understand a function, do not stop at an explanation. Write five calls that probe its edges, predict the results from the explanation, and run them. Where the prediction fails, the explanation was wrong or incomplete, and you now know exactly where to read.</p></aside>
 
@@ -140,7 +140,7 @@
 <pre data-code="glossary.mjs" data-from="^const text" data-title="glossary.mjs (part)"></pre>
 <p><strong>Your result should look like this:</strong></p>
 <pre data-term="projects/glossary.sh"></pre>
-<p class="hint"><strong>Hint:</strong> every term is “missing”, and the check is right: the model put <code>"Yes"</code> in every <code>inCode</code> field. It read <code>inCode</code> as a question, “is it in the code?”, not as “the text in the code”. The schema guaranteed the shape and could not guarantee the meaning of a badly named field. The meanings themselves are mostly good, apart from the “$20,000” and “$500” again. Rename the field to <code>exactText</code> and say “copied exactly from the code” in the prompt, and run it again.</p>
+<p class="hint"><strong>Hint:</strong> every term is “missing”, and the check is right: the model put <code>"Yes"</code> in every <code>inCode</code> field. It read <code>inCode</code> as a question, “is it in the code?”, not as “the text in the code”. The schema guaranteed the shape and could not guarantee the meaning of a badly named field. The meanings themselves are mostly good, apart from the “$20,000” and “$500” again. In the Arabic edition, the same schema and an Arabic prompt got five terms, each quoted correctly (<code>t &gt; 20000</code>, <code>x.p</code>…), and all five were found. Rename the field to <code>exactText</code>, say “copied exactly from the code” in the prompt, and run it again.</p>
 </div>
 <!-- /projects -->
 
