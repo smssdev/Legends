@@ -31,6 +31,10 @@ T = {
         w_code="Write bill.mjs, exporting splitBill. Return only the code, in one code block.",
         w_fix="The tests failed with this output. Fix bill.mjs (not the tests). Return only the code, in one code "
               "block.",
+        w_fix_tests="These tests do not run: they fail before testing anything, with this output. Fix the test file. "
+                    "Return only the code, in one code block.",
+        w_c_red="Before any code: run the tests against an empty splitBill. They must fail on their assertions, "
+                "not because the test file itself is broken.",
         w_task="Write a function that loads the menu from menu.json.",
         w_house="This is a file from our project. Write the new function in the same style.",
         w_explain="Explain this code line by line, then say which inputs could make it fail.",
@@ -52,6 +56,10 @@ T = {
                 "أعِد الكود فقط، في كتلة كود واحدة.",
         w_code="اكتب bill.mjs، مصدّراً splitBill. أعِد الكود فقط، في كتلة كود واحدة.",
         w_fix="فشلت الاختبارات بهذه المخرجات. أصلح bill.mjs (لا الاختبارات). أعِد الكود فقط، في كتلة كود واحدة.",
+        w_fix_tests="هذه الاختبارات لا تعمل: تفشل قبل أن تختبر شيئاً، بهذه المخرجات. أصلح ملف الاختبارات. "
+                    "أعِد الكود فقط، في كتلة كود واحدة.",
+        w_c_red="قبل أي كود: شغّل الاختبارات على splitBill فارغة. يجب أن تفشل في تأكيداتها، "
+                "لا لأن ملف الاختبارات نفسه معطوب.",
         w_task="اكتب دالة تحمّل القائمة من menu.json.",
         w_house="هذا ملف من مشروعنا. اكتب الدالة الجديدة بالأسلوب نفسه.",
         w_explain="اشرح هذا الكود سطراً سطراً، ثم قل أي المدخلات قد تجعله يفشل.",
@@ -88,9 +96,9 @@ export async function ask(prompt, options = {}) {
   return answer.trim();
 }
 
-// The first code block of an answer.
+// The first code block of an answer, or null when there is none.
 export function codeOf(answer) {
-  return answer.match(/```(?:\\w+)?\\n([\\s\\S]*?)```/)?.[1] ?? answer;
+  return answer.match(/```(?:\\w+)?\\n([\\s\\S]*?)```/)?.[1] ?? null;
 }
 """
 
@@ -114,13 +122,28 @@ function summarize(output) {
   return `${count("pass")} passed, ${count("fail")} failed`;
 }
 
-// The names of the failing tests and their first error line.
+// Each failing test, with the first line of its error, expected and actual.
 export function failures(output) {
-  return output
-    .split("\\n")
-    .filter((line) => /^\\s*not ok|^\\s*(error|expected|actual):/.test(line))
-    .slice(0, 12)
-    .join("\\n");
+  const lines = output.split("\\n");
+  const kept = [];
+  lines.forEach((line, i) => {
+    if (/^\\s*not ok/.test(line)) {
+      kept.push(line.trim());
+    }
+    const field = line.match(/^\\s*(error|expected|actual): (.*)$/);
+    if (field) {
+      const value = field[2] === "|-" ? lines[i + 1].trim() : field[2];
+      kept.push(`  ${field[1]}: ${value}`);
+    }
+  });
+  return kept.slice(0, 16).join("\\n");
+}
+
+// True when the test file fails before it tests anything.
+export function broken(output) {
+  return /is not a function|SyntaxError|Cannot find|ReferenceError|not ok \\d+ - \\S+\\.test\\.mjs/.test(
+    output,
+  );
 }
 """
 
@@ -145,7 +168,7 @@ FILES = {
     "house/tables.mjs": HOUSE,
     "pair.mjs": """import fs from "node:fs";
 import {ask, codeOf} from "./lib/ask.mjs";
-import {failures, runTests} from "./lib/tests.mjs";
+import {broken, failures, runTests} from "./lib/tests.mjs";
 
 // {w_c_spec}
 const spec = "{w_spec}";
@@ -153,10 +176,25 @@ const spec = "{w_spec}";
 // {w_c_steps}
 console.log("== plan\\n" + (await ask(`{w_plan}\\n\\n${spec}`)));
 
-const tests = codeOf(await ask(`${spec}\\n\\n{w_tests}`));
-fs.writeFileSync("bill/bill.test.mjs", tests);
+let tests = codeOf(await ask(`${spec}\\n\\n{w_tests}`));
 const count = tests.match(/\\btest\\(|\\bit\\(/g)?.length ?? 0;
 console.log(`== tests: bill/bill.test.mjs, ${count} tests`);
+
+// {w_c_red}
+const empty = "export function splitBill() {\\n  return [];\\n}\\n";
+for (let round = 1; ; round++) {
+  fs.writeFileSync("bill/bill.mjs", empty);
+  fs.writeFileSync("bill/bill.test.mjs", tests);
+  const result = runTests("bill/bill.test.mjs");
+  const fine = !broken(result.output);
+  console.log(`== tests against an empty splitBill: ${result.summary}`);
+  console.log(fine ? "   they fail on their assertions: good" : failures(result.output));
+  if (fine || round === 3) {
+    break;
+  }
+  const request = `${spec}\\n\\nbill.test.mjs:\\n${tests}\\n\\n{w_fix_tests}\\n${result.output.slice(0, 1500)}`;
+  tests = codeOf(await ask(request)) ?? tests;
+}
 
 let code = codeOf(await ask(`${spec}\\n\\n{w_code}`));
 
@@ -170,9 +208,9 @@ for (let round = 1; ; round++) {
   }
   console.log(failures(result.output));
   const request = `${spec}\\n\\nbill.mjs:\\n${code}\\n\\n{w_fix}\\n${failures(result.output)}`;
-  code = codeOf(await ask(request));
+  // An answer without code is not written over the file.
+  code = codeOf(await ask(request)) ?? code;
 }
-console.log("== bill/bill.mjs\\n" + code);
 """,
     "bill/.keep": "",
     "style.mjs": """import fs from "node:fs";
@@ -227,7 +265,7 @@ const correct = `export function splitBill(total, people, tipPercent) {
 fs.mkdirSync("checked", {recursive: true});
 fs.writeFileSync("checked/bill.mjs", correct);
 const spec = "{w_spec}";
-const tests = codeOf(await ask(`${spec}\\n\\n{w_tests}`));
+const tests = codeOf(await ask(`${spec}\\n\\n{w_tests}`)) ?? "";
 fs.writeFileSync("checked/bill.test.mjs", tests);
 const result = runTests("checked/bill.test.mjs");
 console.log(`tests written by the model, against a correct splitBill: ${result.summary}`);
@@ -255,7 +293,7 @@ export async function fixLoop({spec, file, testFile, rounds = 3}) {
     }
     last = failed;
     const request = `${spec}\\n\\n${file}:\\n${code}\\n\\n{w_fix}\\n${failed}`;
-    code = codeOf(await ask(request));
+    code = codeOf(await ask(request)) ?? code;
     fs.writeFileSync(file, code);
   }
 }
@@ -286,7 +324,7 @@ RUNS = [
 
 
 def main():
-    chapter(HERE, T, FILES, RUNS)
+    chapter(HERE, T, FILES, RUNS, made=["bill/bill.mjs", "bill/bill.test.mjs"])
 
 
 if __name__ == "__main__":

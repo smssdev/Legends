@@ -94,8 +94,9 @@ def wrap_comments(text):
     return "\n".join(out)
 
 
-def chapter(here, words_by_lang, files, runs):
-    """files: {path: text} with {w_...} words; runs: [(transcript, command[, keep])], keep(lines) -> lines."""
+def chapter(here, words_by_lang, files, runs, made=()):
+    """files: {path: text} with {w_...} words; runs: [(transcript, command[, keep])], keep(lines) -> lines;
+    made: files the examples write (code from the model), copied to the book's folder after the runs."""
     modules = deps()
     for lang, words in words_by_lang.items():
         out = here / lang
@@ -113,4 +114,8 @@ def chapter(here, words_by_lang, files, runs):
             s = Session(base)
             s.run(fill(command, words), keep=keep[0] if keep else None)
             s.save(out / transcript)
+        for name in made:
+            if (base / name).exists():
+                (out / name).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(base / name, out / name)
         print("wrote", out)
