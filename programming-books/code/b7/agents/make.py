@@ -230,9 +230,10 @@ console.log(log.join("\\n"));
 for (const {file, content} of writes) {
   fs.writeFileSync("proposed.tmp", content);
   try {
-    execFileSync("diff", ["-u", `cafe4/${file}`, "proposed.tmp"], {encoding: "utf8"});
+    const labels = ["--label", file, "--label", `${file} (proposed)`];
+    execFileSync("diff", ["-u", ...labels, `cafe4/${file}`, "proposed.tmp"], {encoding: "utf8"});
   } catch (error) {
-    console.log(error.stdout.replace("proposed.tmp", `${file} (proposed)`));
+    console.log(error.stdout);
   }
 }
 console.log(`--- ${writes.length} change(s) proposed, none applied`);
@@ -242,7 +243,8 @@ console.log(`--- ${writes.length} change(s) proposed, none applied`);
 // {w_c_review}
 const before = "cafe4/src/price.mjs";
 try {
-  execFileSync("diff", ["-u", before, "cafe/src/price.mjs"], {encoding: "utf8"});
+  const labels = ["--label", "before", "--label", "after the agent"];
+  execFileSync("diff", ["-u", ...labels, before, "cafe/src/price.mjs"], {encoding: "utf8"});
   console.log("no change");
 } catch (error) {
   console.log(error.stdout);
@@ -250,11 +252,24 @@ try {
 """,
 }
 
+def short(lines):
+    """The agent narrates every step at length; keep the log, and the first and last lines of what it said."""
+    start = next((i for i, line in enumerate(lines) if line.startswith("--- the agent:")), None)
+    end = next((i for i, line in enumerate(lines) if i > (start or 0) and line.startswith("--- ")
+                and not line.startswith("--- the agent:")), len(lines))
+    if start is None:
+        return lines
+    said = [line for line in lines[start:end] if line.strip()]
+    if len(said) <= 6:
+        return lines
+    return lines[:start] + said[:2] + [f"[... {len(said) - 4} lines ...]"] + said[-2:] + lines[end:]
+
+
 RUNS = [
     ("tests.sh", "cd cafe && node --test --test-reporter=tap | grep -E '^(not ok|ok|# (pass|fail))'"),
-    ("fix.sh", "node fix.mjs"),
-    ("injected.sh", "node injected.mjs"),
-    ("projects/budget.sh", "node budget.mjs"),
+    ("fix.sh", "node fix.mjs", short),
+    ("injected.sh", "node injected.mjs", short),
+    ("projects/budget.sh", "node budget.mjs", short),
     ("projects/dryrun.sh", "node dryrun.mjs"),
     ("projects/review.sh", "node review.mjs"),
 ]
