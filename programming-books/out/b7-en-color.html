@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Documentation and Commit Messages"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: From Idea to Specification and Tasks"; } }
+@page ch09:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -155,7 +157,7 @@ if (isMember && day === "Tuesday") {
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">125</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">138</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -3414,6 +3416,343 @@ So, two of the examples in the
 <p>Part II used the model inside your code. Part III takes it into the rest of your work, starting before any code exists: turning an idea into a specification and a list of tasks a team can build.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b7/spec/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>From Idea to Specification and Tasks</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>use a model to find the questions an idea leaves open, and see which it misses</li>
+<li>turn answers into a specification with testable acceptance criteria</li>
+<li>check a specification mechanically: vague words, criteria in Given/When/Then form, and contradictions</li>
+<li>break a specification into tasks, and check the plan as a graph</li>
+<li>treat a model’s estimates as a range, not a number</li>
+</ul>
+</div>
+
+<p class="lead">Most software that goes wrong goes wrong before the first line of code: the idea was vague, nobody asked the awkward questions, and the team built something slightly different from what was meant. Assistants are good at the early work: they ask questions, draft specifications and break them into tasks, in minutes. This chapter does that for a small, real feature, and measures each step: which questions were asked, which criteria can be tested, whether the plan holds together.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The specification in this chapter reads well and contradicts the café’s answers in two places. A checker for the form of the criteria caught one kind of problem; only reading the rules against the answers caught the other.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>Questions before a specification</span></h2>
+
+<p>The idea is one sentence: “a loyalty card in our café app: every 10th coffee is free.” Before anyone writes a specification, ask what must be decided:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">questions.mjs (part)</div><pre class="code"><span class="c line-bidi">// First the questions, before any specification.</span>
+<span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">&quot;A loyalty card in our café app: every 10th coffee is free.\n\nBefore anyone writes a specification for this idea, what questions must the café answer? List the ten most important, one line each.&quot;</span>);
+console.log(answer);
+
+<span class="c line-bidi">// The questions that matter for a loyalty card, as patterns; which did</span>
+<span class="c line-bidi">// the model ask?</span>
+<span class="k">const</span> matter = {
+  <span class="s">&quot;which drinks count&quot;</span>:
+    /which (drinks|items|products)|what (counts|qualifies)|eligib|count toward|exclusion|certain drinks|definition <span class="k">of</span>|أي المشروبات|أي مشروب|تُحسب|يُحسب/i,
+  <span class="s">&quot;refunds and cancellations&quot;</span>: /refund|cancel|<span class="k">return</span>|استرد|إلغاء|إرجاع/i,
+  <span class="s">&quot;expiry&quot;</span>: /expir|valid <span class="k">for</span>|time limit|reset|صلاحي|تنتهي|مدة/i,
+  <span class="s">&quot;what the free drink can be&quot;</span>:
+    /free (drink|coffee|item).*(any|which|size|price|limit)|value <span class="k">of</span> the free|المجاني.*(حجم|سعر|أي)/i,
+  <span class="s">&quot;several branches&quot;</span>: /branch|location|store|shop|فرع|فروع/i,
+  <span class="s">&quot;abuse and fraud&quot;</span>: /fraud|abuse|cheat|misuse|share|transfer|احتيال|تلاعب|غش|مشاركة/i,
+  <span class="s">&quot;existing customers and past orders&quot;</span>: /existing|past (orders|purchases)|retroactive|already|الحاليين|السابقة|الجدد/i,
+};
+console.log(<span class="s">&quot;--- the questions that matter&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> [name, pattern] <span class="k">of</span> Object.entries(matter)) {
+  console.log(<span class="s">`${pattern.test(answer) ? &quot;asked &quot; : &quot;MISSED&quot;} ${name}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node questions.mjs</span>
+1. What is the definition of a &quot;coffee&quot; — is it a single drink, or does it include add-ons like milk or sugar?  
+2. How is a customer&#x27;s purchase tracked to ensure they earn the free coffee?  
+3. What is the threshold for eligibility — is it every 10th *individual* coffee, or every 10th *total* purchase?  
+4. Are there any conditions or exclusions (e.g., certain drinks, time of day, or customer types)?  
+5. How will the system handle customers who buy multiple coffees in one transaction?  
+6. What happens if a customer buys 10 coffees in one visit — do they get one free, or is it cumulative?  
+7. How will the free coffee be delivered — automatically, via app notification, or at checkout?  
+8. What is the customer experience for redeeming the free coffee — is it automatic or requires action?  
+9. How will the system prevent abuse or gaming of the loyalty program (e.g., splitting purchases)?  
+10. What is the business goal — is it to increase customer retention, drive volume, or improve satisfaction?
+--- the questions that matter
+asked  which drinks count
+MISSED refunds and cancellations
+MISSED expiry
+MISSED what the free drink can be
+MISSED several branches
+asked  abuse and fraud
+MISSED existing customers and past orders</pre></div>
+
+<p>Ten reasonable questions, and the patterns at the end score them against seven that experience says matter for a loyalty card. The model asked two: what counts as a coffee, and how to prevent abuse. It did not ask about refunds, expiry, what the free drink can be, the second branch, or customers who already bought coffee before the card existed. Each of those becomes a bug report or an angry customer if nobody decides. Instead it asked three variations of “how are purchases counted” and one about the business goal.</p>
+
+<p>So use the model’s questions as a start, not a checklist. It knows what loyalty cards look like in general; you know your café, your systems and the ways your customers surprise you. Keep your own list of questions that matter, as the program does, and check every draft against it.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Ask the model for questions in several passes, each from one point of view: the customer, the cashier, the accountant, the person who handles refunds, an attacker. A single broad request gets the obvious questions; a narrow point of view gets the awkward ones.</p></aside>
+
+<h2><span class="sec">9.2</span> <span>A specification, checked</span></h2>
+
+<p>With the café’s answers (only paid hot drinks count, stamps never expire, a refund removes its stamp, the free drink is any hot drink up to the price of a large latte, both branches share the card), ask for a specification with acceptance criteria as Given / When / Then: the situation, the action, the result. Then check it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/vague.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> criteria(text) {
+  <span class="k">const</span> blocks = text.split(/\n\s*\n|\n(?=\s*[-*\d.]*\s*\**Given\b)/i);
+  <span class="k">return</span> blocks
+    .map((block) =&gt; block.replace(/\s*\n\s*/g, <span class="s">&quot; &quot;</span>).replace(/^[\s*&gt;\-\d.]+/, <span class="s">&quot;&quot;</span>).trim())
+    .filter((line) =&gt; /^\**Given\b/i.test(line))
+    .map((line) =&gt; ({line, ok: /\bGiven\b.*\bWhen\b.*\bThen\b/i.test(line)}));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node spec.mjs</span>
+**Summary:**  
+A loyalty card system where every 10th paid hot drink purchased counts as a free drink, with specific eligibility and card rules.
+
+**Rules:**  
+- Only paid hot drinks count; any size is eligible.  
+- Stamps never expire.  
+- One card per account.  
+- A refunded drink removes its stamp.  
+- The free drink is any hot drink up to the price of a large latte.  
+- Both branches share the card.
+
+**Acceptance Criteria:**  
+Given a user has an account in the café app,  
+When they purchase a paid hot drink,  
+Then the system stamps the loyalty card if it is the 10th such drink.  
+
+Given a user purchases a hot drink that is refunded,  
+Then the system removes the corresponding stamp from the loyalty card.  
+
+Given a user purchases a hot drink priced above the price of a large latte,  
+Then the drink does not count toward the free drink eligibility.  
+
+Given a user purchases a non-hot drink,  
+Then the drink does not count toward the free drink eligibility.  
+
+Given a user has a loyalty card from one branch,  
+Then the card is valid for purchases at both branches.  
+
+Given a user has more than one loyalty card,  
+Then only one card per account is active.
+--- vague words: none
+--- 6 acceptance criteria, 5 not in the form</pre></div>
+
+<p>No vague words, six criteria, and five not in the form: they have a Given and a Then, and no When. “Given a user purchases a non-hot drink, Then the drink does not count” has no action to test; a tester has to guess what to do. That is the mechanical part, and the checker found it.</p>
+
+<p>The checker cannot find the worse problems, which need a person reading the criteria against the answers:</p>
+<ul>
+<li>“Then the system stamps the loyalty card if it is the 10th such drink.” Every paid hot drink gets a stamp; the 10th stamp earns the free drink. As written, a customer gets one stamp per ten drinks, and a free drink after a hundred.</li>
+<li>“A hot drink priced above the price of a large latte does not count.” The café said the <em>free</em> drink is limited to the price of a large latte. The model moved the limit to the wrong rule: expensive drinks would stop earning stamps.</li>
+<li>Nothing says what happens on the 10th stamp: how the free drink is offered, or that the count starts again.</li>
+</ul>
+
+<p>Both errors come from the same place as Chapter 1’s inventions: the specification is the most likely continuation of “loyalty card rules”, and the café’s answers pulled it only part of the way. A specification is where a misunderstanding is cheapest to fix, so it is where to read most carefully.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>A model rewrites your requirements in its own words, and its own words drift toward the typical case. After it drafts a specification, put each rule next to the decision it came from, one by one. A rule that cannot be traced to a decision was invented; a decision with no rule was dropped.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What is missing from “Given a user has a loyalty card from one branch, Then the card is valid at both branches”?</li><li>Which of the café’s answers did the specification apply to the wrong rule?</li><li>Why did the model’s questions miss refunds and expiry?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">9.3</span> <span>Tasks, checked as a graph</span></h2>
+
+<p>A plan is a list of tasks and the order they depend on. Ask for it as structured data, then check what can be checked: every dependency exists, there is no cycle, and there is an order in which everything can be done.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/graph.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> checkTasks(tasks) {
+  <span class="k">const</span> ids = <span class="k">new</span> Set(tasks.map((t) =&gt; t.id));
+  <span class="k">const</span> problems = [];
+  <span class="k">for</span> (<span class="k">const</span> task <span class="k">of</span> tasks) {
+    <span class="k">for</span> (<span class="k">const</span> dep <span class="k">of</span> task.dependsOn) {
+      <span class="k">if</span> (!ids.has(dep)) {
+        problems.push(<span class="s">`${task.id} depends on ${dep}, which does not exist`</span>);
+      }
+      <span class="k">if</span> (dep === task.id) {
+        problems.push(<span class="s">`${task.id} depends on itself`</span>);
+      }
+    }
+  }
+  <span class="k">const</span> order = [];
+  <span class="k">const</span> state = <span class="k">new</span> Map();
+  <span class="k">const</span> visit = (id, path) =&gt; {
+    <span class="k">if</span> (state.get(id) === <span class="s">&quot;done&quot;</span> || !ids.has(id)) {
+      <span class="k">return</span>;
+    }
+    <span class="k">if</span> (state.get(id) === <span class="s">&quot;visiting&quot;</span>) {
+      problems.push(<span class="s">`cycle: ${[...path, id].join(&quot; -&gt; &quot;)}`</span>);
+      <span class="k">return</span>;
+    }
+    state.set(id, <span class="s">&quot;visiting&quot;</span>);
+    <span class="k">for</span> (<span class="k">const</span> dep <span class="k">of</span> tasks.find((t) =&gt; t.id === id).dependsOn) {
+      visit(dep, [...path, id]);
+    }
+    state.set(id, <span class="s">&quot;done&quot;</span>);
+    order.push(id);
+  };
+  tasks.forEach((t) =&gt; visit(t.id, []));
+  <span class="k">return</span> {problems, order};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node tasks.mjs</span>
+T1      8 h  Implement loyalty card creation and account binding  []
+T2     10 h  Track paid hot drink purchases and increment stamp counter  [T1]
+T3      6 h  Validate drink eligibility: hot drink and price below large latte threshold  [T2]
+T4      6 h  Handle refund logic: remove stamp when a drink is refunded  [T2]
+T5      4 h  Ensure loyalty card is valid across both branches  [T1]
+T6      6 h  Enforce one active card per account (reject duplicate cards)  [T1]
+T7      8 h  Unit tests for all loyalty card rules and edge cases  [T1, T2, T3, T4, T5, T6]
+total: 48 hours
+dependencies: ok
+an order: T1 T2 T3 T4 T5 T6 T7</pre></div>
+
+<p>The graph is sound: no missing dependency, no cycle, and a valid order. The content inherits the specification’s errors: T3 checks drink eligibility against “price below large latte threshold”, the wrong rule from Section 9.2, now with six hours of work attached. And it has gaps a team would notice: nothing for the free drink at checkout, nothing for the app screen that shows the stamps, nothing to migrate existing customers. A task list is a specification restated, and it is only as right as the specification.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Before a plan goes to the team, walk one customer through it: the first coffee, the tenth, the free one, a refund, a visit to the other branch. Every step of the walk should land in a task. The steps that land nowhere are the work the plan forgot.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Accepting the model’s questions as complete</td><td>Refunds, expiry and edge cases decided by accident</td><td>Your own list of questions that matter; several points of view</td></tr>
+<tr><td>Criteria without an action</td><td>Tests that guess what to do</td><td>Given, When and Then, checked by a program</td></tr>
+<tr><td>Trusting a fluent specification</td><td>Rules moved, merged or invented</td><td>Trace each rule to a decision</td></tr>
+<tr><td>A task list read only for shape</td><td>A valid graph of the wrong work</td><td>Walk a customer through it</td></tr>
+<tr><td>Quoting one estimate</td><td>False precision in a plan</td><td>Several runs; report a range</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Use the model to find open questions, then check them against your own list: it asks the typical ones.</li>
+<li>Write acceptance criteria as Given / When / Then, and check the form with a program.</li>
+<li>Read every rule of a drafted specification against the decision it came from; drift toward the typical case is the common error.</li>
+<li>Check a task list as a graph, and walk a real case through it to find missing work.</li>
+<li>Model estimates move from run to run; use them as a range for discussion, not a commitment.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The When: an action to perform, such as “When they buy a hot drink at the other branch”. Without it, the tester has to invent the test. 2. The price limit: the café limited the free drink to the price of a large latte; the specification stopped expensive drinks from earning stamps. 3. Because the most likely questions about “every 10th coffee is free” are about counting; refunds and expiry come from experience with real customers, not from the sentence.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects make the chapter’s checks reusable: a vagueness linter for any requirements, acceptance criteria turned into a test list, and a measure of how much estimates move.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>A vagueness linter</h3>
+<p class="project-goal">Count the words in a requirements file that sound like requirements but cannot be tested.</p>
+<p class="project-skills"><strong>You will practise:</strong> word lists, word boundaries, and counting.</p>
+<ol class="steps">
+<li>Keep a list of vague words and phrases.</li>
+<li>Count each in the file, as whole words.</li>
+<li>Run it on a vague requirement and on the model’s specification.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/vague.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> vagueWords(text) {
+  <span class="k">const</span> found = <span class="k">new</span> Map();
+  <span class="k">for</span> (<span class="k">const</span> word <span class="k">of</span> VAGUE) {
+    <span class="c line-bidi">// \b only knows Latin letters, so Arabic words are counted as plain</span>
+    <span class="c line-bidi">// text.</span>
+    <span class="k">const</span> hits = /^[a-z]/i.test(word)
+      ? text.match(<span class="k">new</span> RegExp(<span class="s">`\\b${word}\\b`</span>, <span class="s">&quot;gi&quot;</span>))?.length ?? <span class="n">0</span>
+      : text.split(word).length - <span class="n">1</span>;
+    <span class="k">if</span> (hits) {
+      found.set(word, hits);
+    }
+  }
+  <span class="k">return</span> found;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node vague.mjs requirements.md spec.md</span>
+requirements.md: fast (1), easy (1), properly (1), etc (1), should be able to (1)
+spec.md: no vague words</pre></div>
+<p class="hint"><strong>Hint:</strong> the hand-written requirement has five vague phrases in two sentences; the model’s specification has none, and still had the two errors of Section 9.2. A clean lint means the wording can be tested, not that the rules are right. In Arabic, <code>\b</code> does not work, so the Arabic words are counted as plain text.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>Acceptance criteria as pending tests</h3>
+<p class="project-goal">Turn each acceptance criterion into a pending test, so the specification becomes the test list.</p>
+<p class="project-skills"><strong>You will practise:</strong> generating code from text, and <code>node:test</code>’s <code>todo</code> option.</p>
+<ol class="steps">
+<li>Read the criteria with <code>criteria</code>.</li>
+<li>Write one <code>test(…, {todo: true})</code> per criterion.</li>
+<li>Run the file: every test is pending until someone writes it.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">todo.mjs (part)</div><pre class="code"><span class="c line-bidi">// One pending test per acceptance criterion: the specification becomes</span>
+<span class="c line-bidi">// the test list.</span>
+<span class="k">const</span> lines = criteria(fs.readFileSync(<span class="s">&quot;spec.md&quot;</span>, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> tests = lines.map(({line}) =&gt; <span class="s">`test(${JSON.stringify(line)}, {todo: true});`</span>);
+fs.writeFileSync(<span class="s">&quot;loyalty.test.mjs&quot;</span>, <span class="s">`import {test} from &quot;node:test&quot;;\n\n${tests.join(&quot;\n&quot;)}\n`</span>);
+console.log(<span class="s">`loyalty.test.mjs: ${tests.length} pending tests`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node todo.mjs &amp;&amp; node --test --test-reporter=spec loyalty.test.mjs 2&gt;&amp;1 | grep -E &#x27;^ℹ (tests|todo|pass|fail)&#x27;</span>
+loyalty.test.mjs: 6 pending tests
+ℹ tests 6
+ℹ pass 0
+ℹ fail 0
+ℹ todo 6</pre></div>
+<p class="hint"><strong>Hint:</strong> six pending tests, visible in every run until they are written. The five criteria without a When will be hard to turn into tests, and that difficulty is the signal: rewrite the criterion before the test.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>How much do the estimates move?</h3>
+<p class="project-goal">Ask for the same task list three times at temperature 0.7, and compare the totals.</p>
+<p class="project-skills"><strong>You will practise:</strong> seeds and temperature, and reporting a range instead of a number.</p>
+<ol class="steps">
+<li>Ask for tasks with estimates, with a schema, three times with different seeds.</li>
+<li>Sum the estimates of each run.</li>
+<li>Report the number of tasks and the total for each.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">spread.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> seed <span class="k">of</span> [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>]) {
+  <span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">`Break this specification into development tasks for a small team. Reply with JSON: a list of tasks, each with id (T1, T2...), title, estimate in hours, and dependsOn (a list of ids).\n\n${spec}`</span>, {grammar, temperature: <span class="n">0.7</span>, seed, maxTokens: <span class="n">1000</span>});
+  <span class="k">const</span> tasks = JSON.parse(answer);
+  <span class="k">const</span> total = tasks.reduce((sum, t) =&gt; sum + t.estimate, <span class="n">0</span>);
+  console.log(<span class="s">`seed ${seed}: ${tasks.length} tasks, ${Math.round(total * 10) / 10} hours`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node spread.mjs</span>
+seed 1: 8 tasks, 54 hours
+seed 2: 10 tasks, 54 hours
+seed 3: 10 tasks, 42 hours</pre></div>
+<p class="hint"><strong>Hint:</strong> 42 to 54 hours, and 8 to 10 tasks, for the same specification. At temperature 0 you get one of these answers, always the same, which looks precise and is not. A model’s estimate is a guess about typical projects; use the spread to start a conversation with the people who will do the work.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Ask for questions three more times, as the cashier, the accountant and the person who handles refunds. Which of the seven questions that matter are found now?</li>
+<li><span class="level">Easy</span> Rewrite the five criteria without a When so that each has an action. Run the checker again.</li>
+<li><span class="level medium">Medium</span> Write a check that looks for each of the café’s answers in the specification, by a key phrase (“refund”, “expire”, “large latte”, “both branches”). Which decisions does it find, and does finding a phrase mean the rule is right?</li>
+<li><span class="level medium">Medium</span> Add a task that depends on a task that does not exist, and one that creates a cycle, to <code>tasks.json</code>. Run <code>checkTasks</code> and read its messages.</li>
+<li><span class="level hard">Challenge</span> Write the walk of Section 9.3 as code: a list of customer steps, each with the words a task must contain to cover it. Which steps does the model’s task list miss?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>Specifications come out of conversations: meetings, emails, threads. The next chapter uses the model on that work: summarising a meeting into decisions and actions, drafting emails and status reports, and checking each summary against what was actually said.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3539,6 +3878,16 @@ const code = text.replace(/\/\/.*$|\/\*[\s\S]*?\*\//gm, "");
 const missing = [...new Set(prose.match(/\b\d+\b/g) ?? [])].filter((n) =&gt; !new RegExp(`\\b${n}\\b`).test(code));
 console.log(missing.length ? `in the comments, not in the code: ${missing.join(", ")}` : "every number in the comments is in the code");</pre>
 On <code>price.mjs</code> as it is, every number in the comments is in the code. With the cap changed to 3,000 in the code only, it prints <code>in the comments, not in the code: 5000</code>: the comment “at most 5000 off” is now false, and nothing else would have said so.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 9</h2>
+<ol class="exercises">
+<li>Each point of view pulls different questions out of the same idea: the cashier asks how a free drink is entered at the till and what happens offline; the accountant asks how free drinks are recorded and when the stamp’s cost is counted; the refunds person asks what happens to a stamp, or a free drink, when the paid drinks are refunded. Run the coverage patterns on all four answers together: the union covers far more than one broad request. Keep any question that matters and is still missing for your own list.</li>
+<li>For example: “Given a customer with 3 stamps, When a paid hot drink is refunded, Then the card has 2 stamps”, and “Given a customer whose card was used at one branch, When they buy a hot drink at the other branch, Then a stamp is added to the same card.” Each now names a starting state, one action, and a result you can check, and the checker counts them as in the form.</li>
+<li>Search the specification for one key phrase per decision and print found or missing. In the book’s English run, all six decisions appear, including “large latte”, and two of them are still wrong. Finding the phrase shows the decision was not dropped; it does not show it was applied to the right rule. A check like this catches omissions; only reading catches misplacement.</li>
+<li>With <code>{"id": "T8", "dependsOn": ["T42"]}</code> and a pair <code>T9</code> → <code>T10</code> → <code>T9</code>, <code>checkTasks</code> reports “T8 depends on T42, which does not exist” and “cycle: T9 -&gt; T10 -&gt; T9”. Both are easy to produce when a model edits a plan in several steps, and both are invisible in a long list.</li>
+<li>For example, steps such as “first coffee: stamp”, “10th stamp: free drink offered”, “free drink: redeemed at checkout”, “refund: stamp removed”, “other branch: same card”, “existing customer: card created”, each with words a task title must contain. Run it on <code>tasks.json</code>: in the book’s English run, the free drink at checkout, the app screen and existing customers have no task. A walk turned into code can run again on every new version of the plan.</li>
 </ol>
 
 </section>
