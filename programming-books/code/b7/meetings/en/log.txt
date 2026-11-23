@@ -1,0 +1,4 @@
+a41c2e9 feat(loyalty): stamp a card for every paid hot drink
+7d0f113 feat(loyalty): free drink on the 10th stamp
+c92b801 fix(loyalty): remove the stamp of a refunded drink
+e11a6f0 test(loyalty): both branches share one card
