@@ -3,7 +3,7 @@ import {ask} from "./lib/ask.mjs";
 import {MUTANTS, failures, keepPassing, score, testsOf} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
-let tests = testsOf(await ask(`اكتب اختبارات لهذه الوحدة، مستورداً test من node:test وassert من node:assert/strict وlinePrice من ./price.mjs. غطِّ الحالات العادية وكل حد. أعِد الكود فقط، في كتلة كود واحدة.\n\n${source}`)) ?? "";
+let tests = testsOf(await ask(`اكتب اختبارات لهذه الوحدة، مستورداً test من node:test وassert من node:assert/strict وlinePrice من ./price.mjs. غطِّ الحالات العادية وكل حد. أعِد الكود فقط، في كتلة كود واحدة.\n\n${source}`, {maxTokens: 1400})) ?? "";
 console.log(`tests written: ${tests.match(/\btest\(|\bit\(/g)?.length ?? 0}`);
 
 // أولاً، يجب أن تنجح الاختبارات على الكود الحقيقي: الفشل هنا اختبار خاطئ.
