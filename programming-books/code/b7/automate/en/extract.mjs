@@ -3,10 +3,11 @@ import {NOTES} from "./data/notes.mjs";
 
 // A regular expression for the same notes.
 const WORDS = {one: 1, two: 2, three: 3};
+const NAMES = {latte: "latte", tea: "tea", espresso: "espresso", small: "small", large: "large"};
 function byRegex(note) {
   const lower = note.toLowerCase();
-  const drink = lower.match(/latte|tea|espresso/)?.[0];
-  const size = lower.match(/small|large/)?.[0] ?? "unknown";
+  const drink = NAMES[lower.match(/latte|tea|espresso/)?.[0]];
+  const size = NAMES[lower.match(/small|large/)?.[0]] ?? "unknown";
   const digits = lower.match(/\d+/)?.[0];
   const word = Object.keys(WORDS).find((w) => lower.includes(w));
   return [drink, size, Number(digits ?? WORDS[word] ?? 1)];

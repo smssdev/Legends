@@ -3,10 +3,11 @@ import {NOTES} from "./data/notes.mjs";
 
 // تعبير نمطي للملاحظات نفسها.
 const WORDS = {"واحد": 1, "اثنان": 2, "ثلاثة": 3};
+const NAMES = {"لاتيه": "latte", "شاي": "tea", "إسبريسو": "espresso", "صغير": "small", "كبير": "large"};
 function byRegex(note) {
   const lower = note.toLowerCase();
-  const drink = lower.match(/لاتيه|شاي|إسبريسو/)?.[0];
-  const size = lower.match(/صغير|كبير/)?.[0] ?? "unknown";
+  const drink = NAMES[lower.match(/لاتيه|شاي|إسبريسو/)?.[0]];
+  const size = NAMES[lower.match(/صغير|كبير/)?.[0]] ?? "unknown";
   const digits = lower.match(/\d+/)?.[0];
   const word = Object.keys(WORDS).find((w) => lower.includes(w));
   return [drink, size, Number(digits ?? WORDS[word] ?? 1)];

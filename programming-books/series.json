@@ -1433,7 +1433,8 @@
             },
             {
               "en": "Automating Repetitive Work",
-              "ar": "أتمتة العمل المتكرر"
+              "ar": "أتمتة العمل المتكرر",
+              "src": "b7/automate"
             },
             {
               "en": "AI Agents that Do Multi-Step Work",
