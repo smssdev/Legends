@@ -52,7 +52,7 @@
 
 <p>Without a grammar, the model behaved well: five valid objects. But look at Hassan’s order, which gives no size: the model wrote <code>null</code>, a value the program never planned for. With the schema, it had to choose one of the three allowed sizes, and chose <code>"unknown"</code>. The schema did two jobs: it made the reply valid JSON every time, and it limited each field to values your code handles. Hosted models offer the same thing, under names like structured outputs or JSON mode with a schema; Chapter 13 uses it from an application.</p>
 
-<aside class="box warn"><p class="box-title">Watch out</p><p>A schema guarantees the shape, not the truth. The model can still put the wrong drink in a perfectly valid <code>drink</code> field. Validate the values that matter, as you would any input from outside your program.</p></aside>
+<aside class="box warn"><p class="box-title">Watch out</p><p>A schema guarantees the shape, not the truth. The model can still put the wrong drink in a perfectly valid <code>drink</code> field. In the Arabic edition it did exactly that: with the schema, Sara’s small tea came back as an <code>espresso</code>. Validate the values that matter, as you would any input from outside your program.</p></aside>
 
 <h2>{{n}}.3 Examples</h2>
 
@@ -61,7 +61,7 @@
 <pre data-code="examples.mjs" data-from="^const instruction" data-title="examples.mjs (part)"></pre>
 <pre data-term="examples.sh"></pre>
 
-<p>Eight out of eight both times: the examples added nothing, because the task was already clear and the labels are ordinary words. Examples earn their place when the instructions cannot say everything: a label with a house meaning (“is a refund question <code>billing</code> or <code>question</code>?”), a tone, a format that is easier to show than to describe. They also cost tokens in every request. So add them when a test shows a mistake they would fix, and pick examples that sit on the boundary between labels, not easy ones.</p>
+<p>Eight out of eight both times: the examples added nothing, because the task was already clear and the labels are ordinary English words. In the Arabic edition, the same messages in Arabic scored 6 of 8 with instructions alone and 7 of 8 with examples: the model called a double charge a <code>bug</code>, a reasonable reading, and the examples fixed one of its two mistakes. Examples earn their place when the instructions cannot say everything: a label with a house meaning (“is a refund question <code>billing</code> or <code>question</code>?”), a tone, a format that is easier to show than to describe. They also cost tokens in every request. So add them when a test shows a mistake they would fix, and pick examples that sit on the boundary between labels, not easy ones.</p>
 
 <aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did the vague request get Python?</li><li>What did the schema guarantee in Hassan’s order that the request alone did not?</li><li>When are examples worth their tokens?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
 
@@ -83,7 +83,7 @@
 <pre data-code="steps.mjs" data-from="^for" data-title="steps.mjs (part)"></pre>
 <pre data-term="steps.sh"></pre>
 
-<p>Asked for the result only, the model got all three right. Asked to work step by step, it got both clock times wrong: it added the minutes and the hours correctly in its working and then made a mistake carrying past 60. More steps meant more places to slip, and this small model slipped. A larger model might gain from the same words; the only way to know is to count, on your model, with your kind of problem. And for clock arithmetic, the best prompt is no prompt: Chapter 2’s calculator tool, or a few lines of code.</p>
+<p>Asked for the result only, the model got all three right. Asked to work step by step, it got both clock times wrong, 18:20 and 13:55, after a page of confident working. More steps meant more places to slip, and this small model slipped. The Arabic edition measured the same thing in Arabic: three right directly, one right step by step. A larger model might gain from the same words; the only way to know is to count, on your model, with your kind of problem. And for clock arithmetic, the best prompt is no prompt: Chapter 2’s calculator tool, or a few lines of code.</p>
 
 <h2>{{n}}.6 A prompt is code</h2>
 
@@ -177,7 +177,7 @@
 <ol class="exercises">
 <li><span class="level">Easy</span> Add one sentence to the specific prompt in <code>specific.mjs</code> so that the <code>+20</code> case passes. Run the tests; did anything else change?</li>
 <li><span class="level">Easy</span> Rewrite “Make this code better” as a prompt with context, task, rules and format, for a function of your own.</li>
-<li><span class="level">Medium</span> Add two hard messages to the classification cases, such as “Is a refund possible if my latte was cold?”. Do the instructions alone still score full marks? Do examples help now?</li>
+<li><span class="level">Medium</span> Add one rule to the classification prompt, “Anything about money, charges or fees is billing”, and one hard case, “Is a refund possible if my latte was cold?”. Score it again. Did the rule fix what you expected, and did it change anything else?</li>
 <li><span class="level">Medium</span> Change the schema in <code>format.mjs</code> so that <code>count</code> must be between 1 and 20, and send “a hundred lattes for the office”. What does the model return, and what should your program do with it?</li>
 <li><span class="level">Challenge</span> Extend the harness to run each prompt three times at temperature 0.7 and report the average and the lowest score. Why is the lowest score the more useful number for a prompt in production?</li>
 </ol>

@@ -1377,7 +1377,8 @@
             },
             {
               "en": "Prompting That Works",
-              "ar": "كتابة أوامر تنجح"
+              "ar": "كتابة أوامر تنجح",
+              "src": "b7/prompting"
             }
           ]
         },
