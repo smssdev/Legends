@@ -271,8 +271,9 @@ const text = {type: "string"};
 const grammar = await model.llama.createGrammarForJsonSchema({
   type: "array",
   items: {type: "object", properties: {term: text, inCode: text, meaning: text}},
+  maxItems: 8,
 });
-const answer = await ask(`{w_glossary}\\n\\n${project}`, {maxTokens: 800, grammar});
+const answer = await ask(`{w_glossary}\\n\\n${project}`, {maxTokens: 1200, grammar});
 const terms = JSON.parse(answer);
 
 // {w_c_glossary}
