@@ -10,7 +10,7 @@ $ node questions.mjs
 9. How will the system prevent abuse or gaming of the loyalty program (e.g., splitting purchases)?  
 10. What is the business goal — is it to increase customer retention, drive volume, or improve satisfaction?
 --- the questions that matter
-MISSED which drinks count
+asked  which drinks count
 MISSED refunds and cancellations
 MISSED expiry
 MISSED what the free drink can be

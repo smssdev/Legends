@@ -21,11 +21,13 @@ export function vagueWords(text) {
   return found;
 }
 
-// The acceptance criteria: lines with Given, When and Then in that order.
+// The acceptance criteria: paragraphs that start with Given, read as one
+// line,
+// and whether they have a Given, a When and a Then, in that order.
 export function criteria(text) {
-  const lines = text.split("\n").filter((line) => /\bGiven\b/i.test(line));
-  return lines.map((line) => ({
-    line: line.replace(/^[\s*>\-\d.]+/, "").trim(),
-    ok: /\bGiven\b.*\bWhen\b.*\bThen\b/i.test(line),
-  }));
+  const blocks = text.split(/\n\s*\n|\n(?=\s*[-*\d.]*\s*\**Given\b)/i);
+  return blocks
+    .map((block) => block.replace(/\s*\n\s*/g, " ").replace(/^[\s*>\-\d.]+/, "").trim())
+    .filter((line) => /^\**Given\b/i.test(line))
+    .map((line) => ({line, ok: /\bGiven\b.*\bWhen\b.*\bThen\b/i.test(line)}));
 }

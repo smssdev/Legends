@@ -1,0 +1,161 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/spec/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>From Idea to Specification and Tasks</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>use a model to find the questions an idea leaves open, and see which it misses</li>
+<li>turn answers into a specification with testable acceptance criteria</li>
+<li>check a specification mechanically: vague words, criteria in Given/When/Then form, and contradictions</li>
+<li>break a specification into tasks, and check the plan as a graph</li>
+<li>treat a model’s estimates as a range, not a number</li>
+</ul>
+</div>
+
+<p class="lead">Most software that goes wrong goes wrong before the first line of code: the idea was vague, nobody asked the awkward questions, and the team built something slightly different from what was meant. Assistants are good at the early work: they ask questions, draft specifications and break them into tasks, in minutes. This chapter does that for a small, real feature, and measures each step: which questions were asked, which criteria can be tested, whether the plan holds together.</p>
+
+<aside class="bit" data-mood="think"><p>The specification in this chapter reads well and contradicts the café’s answers in two places. A checker for the form of the criteria caught one kind of problem; only reading the rules against the answers caught the other.</p></aside>
+
+<h2>{{n}}.1 Questions before a specification</h2>
+
+<p>The idea is one sentence: “a loyalty card in our café app: every 10th coffee is free.” Before anyone writes a specification, ask what must be decided:</p>
+
+<pre data-code="questions.mjs" data-from="// " data-title="questions.mjs (part)"></pre>
+<pre data-term="questions.sh"></pre>
+
+<p>Ten reasonable questions, and the patterns at the end score them against seven that experience says matter for a loyalty card. The model asked two: what counts as a coffee, and how to prevent abuse. It did not ask about refunds, expiry, what the free drink can be, the second branch, or customers who already bought coffee before the card existed. Each of those becomes a bug report or an angry customer if nobody decides. Instead it asked three variations of “how are purchases counted” and one about the business goal.</p>
+
+<p>So use the model’s questions as a start, not a checklist. It knows what loyalty cards look like in general; you know your café, your systems and the ways your customers surprise you. Keep your own list of questions that matter, as the program does, and check every draft against it.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Ask the model for questions in several passes, each from one point of view: the customer, the cashier, the accountant, the person who handles refunds, an attacker. A single broad request gets the obvious questions; a narrow point of view gets the awkward ones.</p></aside>
+
+<h2>{{n}}.2 A specification, checked</h2>
+
+<p>With the café’s answers (only paid hot drinks count, stamps never expire, a refund removes its stamp, the free drink is any hot drink up to the price of a large latte, both branches share the card), ask for a specification with acceptance criteria as Given / When / Then: the situation, the action, the result. Then check it:</p>
+
+<pre data-code="lib/vague.mjs" data-from="^export function criteria" data-to="^}" data-title="lib/vague.mjs (part)"></pre>
+<pre data-term="spec.sh"></pre>
+
+<p>No vague words, six criteria, and five not in the form: they have a Given and a Then, and no When. “Given a user purchases a non-hot drink, Then the drink does not count” has no action to test; a tester has to guess what to do. That is the mechanical part, and the checker found it.</p>
+
+<p>The checker cannot find the worse problems, which need a person reading the criteria against the answers:</p>
+<ul>
+<li>“Then the system stamps the loyalty card if it is the 10th such drink.” Every paid hot drink gets a stamp; the 10th stamp earns the free drink. As written, a customer gets one stamp per ten drinks, and a free drink after a hundred.</li>
+<li>“A hot drink priced above the price of a large latte does not count.” The café said the <em>free</em> drink is limited to the price of a large latte. The model moved the limit to the wrong rule: expensive drinks would stop earning stamps.</li>
+<li>Nothing says what happens on the 10th stamp: how the free drink is offered, or that the count starts again.</li>
+</ul>
+
+<p>Both errors come from the same place as Chapter 1’s inventions: the specification is the most likely continuation of “loyalty card rules”, and the café’s answers pulled it only part of the way. A specification is where a misunderstanding is cheapest to fix, so it is where to read most carefully.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>A model rewrites your requirements in its own words, and its own words drift toward the typical case. After it drafts a specification, put each rule next to the decision it came from, one by one. A rule that cannot be traced to a decision was invented; a decision with no rule was dropped.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What is missing from “Given a user has a loyalty card from one branch, Then the card is valid at both branches”?</li><li>Which of the café’s answers did the specification apply to the wrong rule?</li><li>Why did the model’s questions miss refunds and expiry?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 Tasks, checked as a graph</h2>
+
+<p>A plan is a list of tasks and the order they depend on. Ask for it as structured data, then check what can be checked: every dependency exists, there is no cycle, and there is an order in which everything can be done.</p>
+
+<pre data-code="lib/graph.mjs" data-from="^export function checkTasks" data-to="^}" data-title="lib/graph.mjs (part)"></pre>
+<pre data-term="tasks.sh"></pre>
+
+<p>The graph is sound: no missing dependency, no cycle, and a valid order. The content inherits the specification’s errors: T3 checks drink eligibility against “price below large latte threshold”, the wrong rule from Section {{n}}.2, now with six hours of work attached. And it has gaps a team would notice: nothing for the free drink at checkout, nothing for the app screen that shows the stamps, nothing to migrate existing customers. A task list is a specification restated, and it is only as right as the specification.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Before a plan goes to the team, walk one customer through it: the first coffee, the tenth, the free one, a refund, a visit to the other branch. Every step of the walk should land in a task. The steps that land nowhere are the work the plan forgot.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Accepting the model’s questions as complete</td><td>Refunds, expiry and edge cases decided by accident</td><td>Your own list of questions that matter; several points of view</td></tr>
+<tr><td>Criteria without an action</td><td>Tests that guess what to do</td><td>Given, When and Then, checked by a program</td></tr>
+<tr><td>Trusting a fluent specification</td><td>Rules moved, merged or invented</td><td>Trace each rule to a decision</td></tr>
+<tr><td>A task list read only for shape</td><td>A valid graph of the wrong work</td><td>Walk a customer through it</td></tr>
+<tr><td>Quoting one estimate</td><td>False precision in a plan</td><td>Several runs; report a range</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Use the model to find open questions, then check them against your own list: it asks the typical ones.</li>
+<li>Write acceptance criteria as Given / When / Then, and check the form with a program.</li>
+<li>Read every rule of a drafted specification against the decision it came from; drift toward the typical case is the common error.</li>
+<li>Check a task list as a graph, and walk a real case through it to find missing work.</li>
+<li>Model estimates move from run to run; use them as a range for discussion, not a commitment.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The When: an action to perform, such as “When they buy a hot drink at the other branch”. Without it, the tester has to invent the test. 2. The price limit: the café limited the free drink to the price of a large latte; the specification stopped expensive drinks from earning stamps. 3. Because the most likely questions about “every 10th coffee is free” are about counting; refunds and expiry come from experience with real customers, not from the sentence.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects make the chapter’s checks reusable: a vagueness linter for any requirements, acceptance criteria turned into a test list, and a measure of how much estimates move.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A vagueness linter</h3>
+<p class="project-goal">Count the words in a requirements file that sound like requirements but cannot be tested.</p>
+<p class="project-skills"><strong>You will practise:</strong> word lists, word boundaries, and counting.</p>
+<ol class="steps">
+<li>Keep a list of vague words and phrases.</li>
+<li>Count each in the file, as whole words.</li>
+<li>Run it on a vague requirement and on the model’s specification.</li>
+</ol>
+<pre data-code="lib/vague.mjs" data-from="^export function vagueWords" data-to="^}" data-title="lib/vague.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/vague.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the hand-written requirement has five vague phrases in two sentences; the model’s specification has none, and still had the two errors of Section {{n}}.2. A clean lint means the wording can be tested, not that the rules are right. In Arabic, <code>\b</code> does not work, so the Arabic words are counted as plain text.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Acceptance criteria as pending tests</h3>
+<p class="project-goal">Turn each acceptance criterion into a pending test, so the specification becomes the test list.</p>
+<p class="project-skills"><strong>You will practise:</strong> generating code from text, and <code>node:test</code>’s <code>todo</code> option.</p>
+<ol class="steps">
+<li>Read the criteria with <code>criteria</code>.</li>
+<li>Write one <code>test(…, {todo: true})</code> per criterion.</li>
+<li>Run the file: every test is pending until someone writes it.</li>
+</ol>
+<pre data-code="todo.mjs" data-from="// " data-title="todo.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/todo.sh"></pre>
+<p class="hint"><strong>Hint:</strong> six pending tests, visible in every run until they are written. The five criteria without a When will be hard to turn into tests, and that difficulty is the signal: rewrite the criterion before the test.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>How much do the estimates move?</h3>
+<p class="project-goal">Ask for the same task list three times at temperature 0.7, and compare the totals.</p>
+<p class="project-skills"><strong>You will practise:</strong> seeds and temperature, and reporting a range instead of a number.</p>
+<ol class="steps">
+<li>Ask for tasks with estimates, with a schema, three times with different seeds.</li>
+<li>Sum the estimates of each run.</li>
+<li>Report the number of tasks and the total for each.</li>
+</ol>
+<pre data-code="spread.mjs" data-from="^for (const seed" data-to="^}" data-title="spread.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/spread.sh"></pre>
+<p class="hint"><strong>Hint:</strong> 42 to 54 hours, and 8 to 10 tasks, for the same specification. At temperature 0 you get one of these answers, always the same, which looks precise and is not. A model’s estimate is a guess about typical projects; use the spread to start a conversation with the people who will do the work.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Ask for questions three more times, as the cashier, the accountant and the person who handles refunds. Which of the seven questions that matter are found now?</li>
+<li><span class="level">Easy</span> Rewrite the five criteria without a When so that each has an action. Run the checker again.</li>
+<li><span class="level">Medium</span> Write a check that looks for each of the café’s answers in the specification, by a key phrase (“refund”, “expire”, “large latte”, “both branches”). Which decisions does it find, and does finding a phrase mean the rule is right?</li>
+<li><span class="level">Medium</span> Add a task that depends on a task that does not exist, and one that creates a cycle, to <code>tasks.json</code>. Run <code>checkTasks</code> and read its messages.</li>
+<li><span class="level">Challenge</span> Write the walk of Section {{n}}.3 as code: a list of customer steps, each with the words a task must contain to cover it. Which steps does the model’s task list miss?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Specifications come out of conversations: meetings, emails, threads. The next chapter uses the model on that work: summarising a meeting into decisions and actions, drafting emails and status reports, and checking each summary against what was actually said.</p>
+</div>
+</section>

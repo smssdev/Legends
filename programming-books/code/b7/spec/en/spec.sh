@@ -30,4 +30,4 @@ Then the card is valid for purchases at both branches.
 Given a user has more than one loyalty card,  
 Then only one card per account is active.
 --- vague words: none
---- 6 acceptance criteria, 6 not in the form
+--- 6 acceptance criteria, 5 not in the form

@@ -7,7 +7,7 @@ console.log(answer);
 // The questions that matter for a loyalty card, as patterns; which did
 // the model ask?
 const matter = {
-  "which drinks count": /which (drinks|items|products)|what (counts|qualifies)|eligible|count toward/i,
+  "which drinks count": /which (drinks|items|products)|what (counts|qualifies)|eligib|count toward|exclusion|certain drinks|definition of/i,
   "refunds and cancellations": /refund|cancel|return/i,
   "expiry": /expir|valid for|time limit|reset/i,
   "what the free drink can be": /free (drink|coffee|item).*(any|which|size|price|limit)|value of the free/i,
