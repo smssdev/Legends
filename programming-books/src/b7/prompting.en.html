@@ -1,0 +1,191 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/prompting/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Prompting That Works</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>turn a vague request into a specific one, and test what comes back</li>
+<li>get structured output a program can rely on, with a schema</li>
+<li>use examples, and know when they help</li>
+<li>keep a model to the text you gave it, and let it say “not there”</li>
+<li>check whether a technique such as “step by step” helps, instead of assuming it</li>
+<li>treat a prompt like code: build it from parts, test it against cases, and score changes</li>
+</ul>
+</div>
+
+<p class="lead">A <em>prompt</em> is everything you give the model: the instructions, the context, the question. Chapter 1 showed why it matters so much: the model continues your text the way such text usually continues. Vague text is followed by a generic answer; specific text by a specific one. This chapter does not collect magic phrases. It runs each piece of advice on the book’s model and counts what happens, and twice the count says something the advice books do not.</p>
+
+<aside class="bit" data-mood="think"><p>One popular trick made the model worse in this chapter, and a prompt the model wrote for itself scored lower than one I wrote by hand. Both results are here, because the lesson is the same: measure.</p></aside>
+
+<h2>{{n}}.1 Say what correct means</h2>
+
+<p>Here is the same request twice, once as people often write it, and once with everything the answer must satisfy:</p>
+
+<pre data-code="specific.mjs" data-from="^const vague" data-to="^}" data-title="specific.mjs (part)"></pre>
+<pre data-code="lib/ask.mjs" data-from="^export async function" data-to="^}" data-title="lib/ask.mjs (part)"></pre>
+
+<p>The vague request got a long, polite answer in Python, a language nobody mentioned, for American phone formats, and it ran out of room mid-way. Nothing was wrong with the model: “a function that checks a phone number” is followed, in most of the text it learned from, by exactly that. The specific request named the language, the function, the rule, the variants, and the shape of the reply, and got a short JavaScript function.</p>
+
+<pre data-term="specific.sh"></pre>
+
+<p>Then the program ran the function against six cases, and one failed: <code>"+20 101 234 5678"</code>. The prompt said that +20 may replace the first 0, and the model’s code ignores it. The specific prompt produced a much better answer, and still not a correct one. That is not a reason to write vague prompts; it is a reason to write tests. A requirement that matters belongs in the prompt and in a test, and only the test proves it was met.</p>
+
+<table>
+<thead><tr><th>Part</th><th>Question it answers</th><th>In the example</th></tr></thead>
+<tbody>
+<tr><td>Context</td><td>What should the model know first?</td><td>JavaScript; the input is text</td></tr>
+<tr><td>Task</td><td>What exactly must it do?</td><td>A function named <code>isEgyptianMobile</code></td></tr>
+<tr><td>Rules</td><td>What makes the answer right?</td><td>11 digits, four prefixes, +20, spaces and dashes</td></tr>
+<tr><td>Format</td><td>What should the reply look like?</td><td>Only code, in one block</td></tr>
+</tbody>
+</table>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Before you send a prompt, ask: “if a new colleague got this message, could they do the task without asking me anything?” Every question they would ask is something the model will guess instead.</p></aside>
+
+<h2>{{n}}.2 Output a program can read</h2>
+
+<p>When a program reads the answer, “reply with JSON only” is a request, not a guarantee. A <em>grammar</em> is a guarantee: <code>node-llama-cpp</code> can turn a JSON schema into rules that forbid every token that would break it.</p>
+
+<pre data-code="format.mjs" data-from="^const grammar" data-to="^});" data-title="format.mjs (part)"></pre>
+<pre data-term="format.sh"></pre>
+
+<p>Without a grammar, the model behaved well: five valid objects. But look at Hassan’s order, which gives no size: the model wrote <code>null</code>, a value the program never planned for. With the schema, it had to choose one of the three allowed sizes, and chose <code>"unknown"</code>. The schema did two jobs: it made the reply valid JSON every time, and it limited each field to values your code handles. Hosted models offer the same thing, under names like structured outputs or JSON mode with a schema; Chapter 13 uses it from an application.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>A schema guarantees the shape, not the truth. The model can still put the wrong drink in a perfectly valid <code>drink</code> field. Validate the values that matter, as you would any input from outside your program.</p></aside>
+
+<h2>{{n}}.3 Examples</h2>
+
+<p>Showing a few examples of input and answer, called <em>few-shot</em> prompting, is the most recommended technique of all. This program sorts eight messages from café customers into four labels, with instructions only and then with four examples, and counts the right answers:</p>
+
+<pre data-code="examples.mjs" data-from="^const instruction" data-title="examples.mjs (part)"></pre>
+<pre data-term="examples.sh"></pre>
+
+<p>Eight out of eight both times: the examples added nothing, because the task was already clear and the labels are ordinary words. Examples earn their place when the instructions cannot say everything: a label with a house meaning (“is a refund question <code>billing</code> or <code>question</code>?”), a tone, a format that is easier to show than to describe. They also cost tokens in every request. So add them when a test shows a mistake they would fix, and pick examples that sit on the boundary between labels, not easy ones.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did the vague request get Python?</li><li>What did the schema guarantee in Hassan’s order that the request alone did not?</li><li>When are examples worth their tokens?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Answer from the text, or say so</h2>
+
+<p>Chapter 1 showed a model inventing a paper. The same thing happens with your own documentation: ask about something it does not contain, and the model may fill the gap. Here is a short documentation for a configuration file, and a question about an option that is not in it:</p>
+
+<pre data-code="grounded.mjs" data-from="^const doc" data-title="grounded.mjs (part)"></pre>
+<pre data-term="grounded.sh"></pre>
+
+<p>The first answer is honest, and three paragraphs long: it says the option is not mentioned, lists the ones that are, and then adds that it “does not exist in this configuration”, which the documentation does not say either. The second prompt gave the model a rule and a fixed sentence to use, and got exactly that sentence. A fixed answer for “not there” is useful twice over: the person reading knows it means “look elsewhere”, and a program can recognise it.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>When a model answers from your documents, code or data, always include the rule “answer only from the text above” and a fixed reply for when the answer is missing. It costs one line and turns the most dangerous failure, a fluent invention, into a visible one.</p></aside>
+
+<h2>{{n}}.5 Measure the tricks</h2>
+
+<p>“Ask the model to think step by step” is advice you will read everywhere, and for good reason: for large models on multi-step problems it often helps. Here it is measured on three small problems:</p>
+
+<pre data-code="steps.mjs" data-from="^for" data-title="steps.mjs (part)"></pre>
+<pre data-term="steps.sh"></pre>
+
+<p>Asked for the result only, the model got all three right. Asked to work step by step, it got both clock times wrong: it added the minutes and the hours correctly in its working and then made a mistake carrying past 60. More steps meant more places to slip, and this small model slipped. A larger model might gain from the same words; the only way to know is to count, on your model, with your kind of problem. And for clock arithmetic, the best prompt is no prompt: Chapter 2’s calculator tool, or a few lines of code.</p>
+
+<h2>{{n}}.6 A prompt is code</h2>
+
+<p>A prompt that runs inside a program has the same life as the code around it: it is written, changed, broken by a change, and fixed. Treat it the same way. Keep it in a file, build it from named parts, and test it against cases with known answers. Project {{n}}.2 builds that harness; here is what it found:</p>
+
+<pre data-term="projects/harness.sh"></pre>
+
+<p>The short prompt scored zero, not because the model misunderstood the messages but because it answered in sentences, and a sentence is not a label. Every rule you leave out of a prompt is one more way for a correct answer to be unusable.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A request without rules</td><td>A plausible answer to a different question</td><td>Context, task, rules and format, written out</td></tr>
+<tr><td>Trusting a specific prompt</td><td>One requirement silently skipped</td><td>Test the result against cases</td></tr>
+<tr><td>“Reply with JSON” for a program</td><td>Unexpected values, or text around the JSON</td><td>A schema, and validation of the values</td></tr>
+<tr><td>Examples by habit</td><td>Longer, costlier prompts with no gain</td><td>Add examples when a test shows they help</td></tr>
+<tr><td>No rule for missing answers</td><td>Fluent inventions about your own system</td><td>“Only from the text”, and a fixed reply</td></tr>
+<tr><td>Copying tricks without measuring</td><td>A prompt that is worse on your model</td><td>Compare with and without, on real cases</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A good prompt says what correct means: context, task, rules and format. What you leave out, the model guesses.</li>
+<li>Specific prompts give much better answers, and still not guaranteed ones: test what comes back.</li>
+<li>For output a program reads, use a schema: it guarantees the shape and limits the values.</li>
+<li>Examples help when the instructions cannot say everything; add them when a test shows the need.</li>
+<li>Keep the model to your text, with a fixed answer for “not there”.</li>
+<li>Advice is a hypothesis. Measure it on your model, with your cases, before you rely on it.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Nothing in the request named a language, and “a function that checks a phone number” is most often followed, in the text the model learned from, by Python. 2. That <code>size</code> is one of the values the program handles: without the schema the model wrote <code>null</code>; with it, it had to choose, and chose <code>"unknown"</code>. 3. When the instructions cannot fully describe the task (house meanings, tone, a format easier shown than told) and a test shows mistakes that examples fix.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects turn prompts into code: built from parts, tested against cases, and improved with a score instead of a feeling.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A prompt builder</h3>
+<p class="project-goal">A function that builds a prompt from named parts, used with a system prompt for the role.</p>
+<p class="project-skills"><strong>You will practise:</strong> separating role, context, task, format and rules, and leaving out what is not needed.</p>
+<ol class="steps">
+<li>Write <code>buildPrompt</code>, which joins the parts that are present with blank lines.</li>
+<li>Put the role in the system prompt, and everything else in the message.</li>
+<li>Ask for an explanation of one line of code, with a format and a rule.</li>
+</ol>
+<pre data-code="build.mjs" data-from="^export function" data-to="^}" data-title="build.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/build.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A test harness for prompts</h3>
+<p class="project-goal">Score any classification prompt against cases with known answers.</p>
+<p class="project-skills"><strong>You will practise:</strong> exporting a scoring function, test cases as data, and comparing prompts by number.</p>
+<ol class="steps">
+<li>Write <code>score(prompt, cases)</code>: ask each case in a fresh conversation and count exact matches.</li>
+<li>Export the cases, so other programs can reuse them.</li>
+<li>When run directly, score a short prompt and a full one.</li>
+</ol>
+<pre data-code="harness.mjs" data-from="^export async function" data-to="^}" data-title="harness.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/harness.sh"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Let the model improve a prompt, then check</h3>
+<p class="project-goal">Ask the model to rewrite a vague prompt, and score the original and the rewrite with the harness.</p>
+<p class="project-skills"><strong>You will practise:</strong> using a model to write prompts, and keeping the decision with a test.</p>
+<ol class="steps">
+<li>Ask the model to rewrite the vague prompt so that it is clear and specific.</li>
+<li>Score both with <code>score</code> from Project {{n}}.2, on the same cases.</li>
+<li>Compare with the hand-written prompt’s score.</li>
+</ol>
+<pre data-code="rewrite.mjs" data-from="^const vague" data-title="rewrite.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/rewrite.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the rewrite reads much better, and went from 0 to 3, but the hand-written prompt scored 8. The model renamed the labels into “a feature request” and “a billing inquiry”, so its own answers no longer matched the words the program expects. Without the harness, you would have kept the prompt that sounds best. Ask the rewriter to keep the exact labels, and score it again.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add one sentence to the specific prompt in <code>specific.mjs</code> so that the <code>+20</code> case passes. Run the tests; did anything else change?</li>
+<li><span class="level">Easy</span> Rewrite “Make this code better” as a prompt with context, task, rules and format, for a function of your own.</li>
+<li><span class="level">Medium</span> Add two hard messages to the classification cases, such as “Is a refund possible if my latte was cold?”. Do the instructions alone still score full marks? Do examples help now?</li>
+<li><span class="level">Medium</span> Change the schema in <code>format.mjs</code> so that <code>count</code> must be between 1 and 20, and send “a hundred lattes for the office”. What does the model return, and what should your program do with it?</li>
+<li><span class="level">Challenge</span> Extend the harness to run each prompt three times at temperature 0.7 and report the average and the lowest score. Why is the lowest score the more useful number for a prompt in production?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You know how models work, the tools built on them, and how to instruct them. Part II puts them to work in your code, starting with the most common use of all: writing code together with an assistant, in small steps that you understand and test.</p>
+</div>
+</section>
