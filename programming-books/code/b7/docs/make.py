@@ -31,6 +31,7 @@ T = {
         w_c_lint="type(scope): subject, at most 72 characters, no full stop, then a blank line.",
         w_c_doctest="Run every line of the form call // => value and compare.",
         w_c_changed="The code changed after the comment was written; the examples know before the model does.",
+        w_relint="Your message broke these rules. Write it again:",
     ),
     "ar": dict(
         w_jsdoc="اكتب تعليق JSDoc لهذه الدالة: جملة واحدة، و@param و@returns لكل قيمة، وثلاثة أسطر @example "
@@ -48,6 +49,7 @@ T = {
         w_c_lint="type(scope): وموضوع، 72 حرفاً على الأكثر، بلا نقطة في آخره، ثم سطر فارغ.",
         w_c_doctest="شغّل كل سطر بالشكل call // => value وقارن.",
         w_c_changed="تغيّر الكود بعد كتابة التعليق؛ والأمثلة تعرف قبل النموذج.",
+        w_relint="رسالتك خالفت هذه القواعد. اكتبها من جديد:",
     ),
 }
 
@@ -108,7 +110,7 @@ export function lintCommit(message) {
   if (subject.endsWith(".")) {
     problems.push("subject ends with a full stop");
   }
-  if (body.length > 0 && blank !== "") {
+  if (blank !== undefined && blank !== "") {
     problems.push("no blank line after the subject");
   }
   if (/```|\\*\\*/.test(message)) {
@@ -220,12 +222,19 @@ fs.writeFileSync("repo/price.mjs", changed);
 git("add price.mjs");
 const diff = git("diff --cached");
 
-const message = (await ask(`{w_commit}\\n\\n${diff}`)).replace(/^```\\w*\\n|```$/g, "").trim();
+const clean = (text) => text.replace(/^```\\w*\\n|```$/g, "").trim();
+let message = clean(await ask(`{w_commit}\\n\\n${diff}`));
 console.log(message);
 
 // {w_c_format}
-const problems = lintCommit(message);
+let problems = lintCommit(message);
 console.log(`--- lint: ${problems.length ? problems.join("; ") : "ok"}`);
+if (problems.length) {
+  const request = `{w_commit}\\n\\n${diff}\\n\\n{w_relint}\\n${message}\\n${problems.join("\\n")}`;
+  message = clean(await ask(request));
+  problems = lintCommit(message);
+  console.log(`--- once more:\\n${message}\\n--- lint: ${problems.length ? problems.join("; ") : "ok"}`);
+}
 
 // {w_c_commit}
 if (problems.length === 0) {
