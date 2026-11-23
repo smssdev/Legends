@@ -89,14 +89,26 @@ onMounted(async () => {
                 <li>{{ $t('افتح «المدرب الأسطورة» وادخل بحسابك.') }}</li>
               </ol>
               <p v-if="android.notes" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm text-text-muted">{{ android.notes }}</p>
-              <!-- [Sprint 62 F2] The move to the game's fixed key: the signed version does not install over the earlier one. -->
-              <p class="rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-sm text-text-soft">
-                {{
-                  $t(
-                    'ثبّتّ التطبيق من قبل ورفض الجوال التحديث؟ احذف النسخة القديمة مرة واحدة ثم ثبّت هذه: حسابك ودورياتك على الخادم فلا يضيع شيء، وكل نسخة بعدها تُثبَّت فوق التي قبلها.',
-                  )
-                }}
-              </p>
+              <!-- [Sprint 62 F2] The move to the game's fixed key: the signed version does not install over the earlier one.
+                   [Sprint 75 W4, WEB-04] Only when the phone refuses, and a guest keeps the account first: a guest signs in
+                   by a token on the phone, which goes with the old app. -->
+              <div class="flex flex-col gap-1.5 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-sm text-text-soft">
+                <p>
+                  {{
+                    $t(
+                      'ثبّتّ التطبيق من قبل ورفض الجوال التحديث؟ هذا مرة واحدة فقط، حين تغيّر مفتاح توقيع التطبيق: احذف النسخة القديمة ثم ثبّت هذه. حسابك ودورياتك على الخادم، وكل نسخة بعدها تُثبَّت فوق التي قبلها.',
+                    )
+                  }}
+                </p>
+                <p class="font-bold text-text">
+                  {{
+                    $t(
+                      'تلعب كزائر؟ احفظ حسابك أولاً من الرئيسية في التطبيق باسم مستخدم وكلمة مرور أو بحساب Google، وتأكد أنك تدخل به، ثم احذف النسخة القديمة: دخول الزائر محفوظ في التطبيق نفسه ويُحذف معه.',
+                    )
+                  }}
+                </p>
+                <p>{{ $t('وإن فقدت الدخول إلى حسابك فراسلنا من أزرار الدعم أسفل الصفحة.') }}</p>
+              </div>
               <a v-if="android.old_phones_url" :href="android.old_phones_url" download class="text-sm text-text-muted underline">{{
                 $t('جوال قديم لا يقبل التثبيت؟ نزّل نسخة الجوالات القديمة')
               }}</a>

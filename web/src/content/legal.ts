@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-11-16'
+export const UPDATED = '2026-11-23'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -103,6 +103,8 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         h: 'مدة الاحتفاظ',
         p: [
           'نحتفظ ببيانات حسابك ما دام قائماً. وحين تحذفه يُحذف معه كل ما هو خاص بك (المحفظة والرسائل والأجهزة والنشاط)، وتعود أنديتك للبوتات، وتبقى نتائج المباريات والألقاب في سجل الدوري بلا اسمك، ورسائلك في الجروبات لأعضائها بلا اسمك (احذفها قبل حذف الحساب إن شئت).',
+          // [Sprint 75 W3, WEB-03] The inactivity rule, with config('game.inactivity')'s numbers (PublicGuideTest checks them).
+          'والحساب الذي لا يُفتح 14 يوماً متتالية يُحذف نهائياً مع فرقه وكل بياناته كما لو حذفته بنفسك، إلا وهو في إجازة حساب (من «حسابي»). وقبل ذلك، بعد 12 يوماً من الغياب، يصلك تنبيه في «الرسائل» وعلى ما فعّلته من الإشعارات. ويكفي أي دخول أو فتح للعبة على أي جهاز ليبدأ العدّ من جديد. وحساب الزائر الذي لم يُحفظ يُحذف أيضاً بعد 30 يوماً من إنشائه ولو كان يُفتح، كما في أعلاه.',
           'والسجلات التقنية تُحذف تلقائياً بعد مدة قصيرة، والنسخ الاحتياطية تتجدد دورياً.',
         ],
       },
@@ -221,6 +223,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         h: 'How long we keep it',
         p: [
           "We keep your account data while your account exists. When you delete it, everything that is only yours goes with it (wallet, messages, devices, activity), your clubs return to the bots, match results and titles stay in the league's history without your name, and your group messages stay for their members without your name (delete them before deleting the account if you wish).",
+          'An account that is not opened for 14 days in a row is deleted for good, with its teams and all its data, as if you had deleted it yourself, unless it is on an account holiday (in My account). Before that, after 12 days away, a warning reaches your Messages and the notifications you have turned on. Any sign-in, or opening the game on any device, starts the count again. A guest account that is never kept is also deleted 30 days after it was made, even if it is opened, as above.',
           'Technical logs are deleted automatically after a short time, and backups are rotated.',
         ],
       },
@@ -302,7 +305,13 @@ const TERMS: Record<Locale, LegalDoc> = {
           'لا نتحمل أي خسارة غير مباشرة من استخدام اللعبة أو تعذره، وفي حدود ما يسمح به القانون.',
         ],
       },
-      { h: 'إنهاء الحساب', p: ['لك أن تحذف حسابك متى شئت من «حسابي». ولنا أن ننهي حساباً خالف هذه الشروط مخالفة جسيمة أو متكررة.'] },
+      {
+        h: 'إنهاء الحساب',
+        p: [
+          'لك أن تحذف حسابك متى شئت من «حسابي». ولنا أن ننهي حساباً خالف هذه الشروط مخالفة جسيمة أو متكررة.',
+          'والحساب الذي لا يُفتح 14 يوماً متتالية بلا إجازة حساب يُحذف نهائياً مع فرقه، بعد تنبيه في «الرسائل» بعد 12 يوماً من الغياب (التفاصيل في «سياسة الخصوصية» ← مدة الاحتفاظ).',
+        ],
+      },
       {
         h: 'التغييرات والتواصل',
         p: [
@@ -366,6 +375,7 @@ const TERMS: Record<Locale, LegalDoc> = {
         h: 'Ending your account',
         p: [
           'You may delete your account whenever you like from "My account". We may end an account that seriously or repeatedly breaks these terms.',
+          'An account that is not opened for 14 days in a row, with no account holiday, is deleted for good with its teams, after a warning in your Messages at 12 days away (the details are in the Privacy policy, How long we keep it).',
         ],
       },
       {

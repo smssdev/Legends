@@ -43,7 +43,9 @@ class SecurityHeadersTest extends TestCase
         $root = sys_get_temp_dir().'/glm-router-'.uniqid();
         mkdir($root.'/public', 0777, true);
         mkdir($root.'/app/Http/Security', 0777, true);
+        mkdir($root.'/app/Support', 0777, true);
         copy(app_path('Http/Security/SecurityPolicy.php'), $root.'/app/Http/Security/SecurityPolicy.php');
+        copy(app_path('Support/AppPages.php'), $root.'/app/Support/AppPages.php');
         copy(base_path('../deploy/docker/router.php'), $root.'/router.php');
         $theme = "try { document.documentElement.classList.add('x') } catch (e) {}";
         file_put_contents($root.'/public/index.html', "<!doctype html><html><head><script>{$theme}</script><script type=\"application/ld+json\">{}</script></head><body></body></html>");
@@ -83,7 +85,7 @@ class SecurityHeadersTest extends TestCase
         } finally {
             proc_terminate($server);
             proc_close($server);
-            array_map('unlink', glob($root.'/{,public/,public/logos/,public/assets/,app/Http/Security/}*.*', GLOB_BRACE));
+            array_map('unlink', glob($root.'/{,public/,public/logos/,public/assets/,app/Http/Security/,app/Support/}*.*', GLOB_BRACE));
         }
     }
 

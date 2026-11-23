@@ -15,8 +15,10 @@ import AsyncState from '../../components/ui/AsyncState.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiCard from '../../components/ui/UiCard.vue'
 import Explain from '../../components/ui/Explain.vue'
+import { boardState } from '../../lib/boardState'
 import { countdown, useNow } from '../../lib/clock'
 import { REFEREE } from '../../lib/format'
+import { useAuth } from '../../stores/auth'
 import { useBoard } from '../../stores/board'
 import { useSlot } from '../../stores/slot'
 
@@ -25,6 +27,24 @@ const slot = useSlot()
 const now = useNow()
 const b = computed(() => store.board)
 onMounted(() => store.load(slot.current?.league?.id ?? store.league, true))
+// [Sprint 75 W1, WEB-01] No club yet (or none left in this league): «you have no team yet» at once, as the tactics page
+// says; a failure: its message and a retry. Never a skeleton for ever.
+const auth = useAuth()
+const state = computed(() =>
+  boardState({
+    board: !!b.value,
+    loading: store.loading,
+    error: store.error,
+    slotsReady: slot.ready,
+    slotsError: slot.error,
+    slotLeague: slot.current?.league?.id ?? null,
+    boardLeague: store.league,
+  }),
+)
+async function retry() {
+  if (slot.error && auth.user) await slot.load(auth.user.id, true)
+  await store.load(slot.current?.league?.id ?? null, true)
+}
 const strength = (cp: number) => Math.round(cp / 100)
 const FORM: Record<string, [string, string]> = {
   W: ['ف', 'bg-success text-on-gold'],
@@ -44,7 +64,20 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
 <template>
   <div class="office">
     <h1 class="sr-only">{{ $t('لوحة النادي') }}</h1>
-    <AsyncState v-if="!b" loading skeleton="card" :rows="3" class="office-wait" />
+    <AsyncState
+      v-if="!b"
+      :loading="state === 'wait'"
+      :error="state === 'error' ? 'تعذر تحميل لوحة النادي.' : null"
+      :empty="state === 'none'"
+      empty-icon="club"
+      empty-title="ليس لديك فريق بعد."
+      empty-text="أنشئ دورياً وخذ نادياً فيه، أو انضم إلى دوري صديق بكوده."
+      :empty-cta="{ label: 'دورياتي', to: '/leagues' }"
+      skeleton="card"
+      :rows="3"
+      class="office-wait"
+      @retry="retry"
+    />
     <template v-else>
       <!-- The next match. -->
       <section class="office-next" :aria-label="$t('المباراة القادمة')">

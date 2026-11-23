@@ -463,5 +463,7 @@
   "حراس مرمى": "goalkeepers",
   "مدافعين": "defenders",
   "لاعبي وسط": "midfielders",
-  "مهاجمين": "forwards"
+  "مهاجمين": "forwards",
+  "اكتب بريدك أو اسم المستخدم.": "Enter your email or username.",
+  "البريد أو كلمة المرور غير صحيحة.": "The email, username or password is wrong."
 }

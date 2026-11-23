@@ -27,8 +27,12 @@
       <!-- [Sprint 30 Q2] The one «are you sure» window (stores/confirm). -->
       <ConfirmHost v-if="confirmAsked" />
       <!-- [Sprint 48 L1] The whole game is played sideways (the owner's decision 2026-11-08): upright on a phone, the
-       match's card asks to turn it on every game screen (not the public pages; the match page shows its own). -->
-      <TurnPhone game v-if="(auth.signedIn || route.meta.auth) && route.name !== 'sim-match' && route.name !== 'league-match'" />
+       match's card asks to turn it on every game screen (not the public pages; the match page shows its own).
+       [Sprint 75 W14, WEB-14] The public pages to read (meta.reading) never, even for a coach signed in. -->
+      <TurnPhone
+        game
+        v-if="(auth.signedIn || route.meta.auth) && !route.meta.reading && route.name !== 'sim-match' && route.name !== 'league-match'"
+      />
     </TooltipProvider>
   </ConfigProvider>
 </template>

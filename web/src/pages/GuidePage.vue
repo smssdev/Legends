@@ -17,12 +17,16 @@ const sections = ref<Section[] | null>(null)
 const failed = ref(false)
 const query = ref('')
 
+// [Sprint 75 W2, WEB-02] A switch of language while the other is on its way: the last one asked wins.
+let asked = 0
 async function load() {
+  const mine = ++asked
   failed.value = false
   try {
-    sections.value = ((await api.GET('/guide')).data?.sections ?? []) as Section[]
+    const got = ((await api.GET('/guide')).data?.sections ?? []) as Section[]
+    if (mine === asked) sections.value = got
   } catch {
-    failed.value = true
+    if (mine === asked) failed.value = true
   }
 }
 watch(locale, load, { immediate: true })
@@ -35,6 +39,8 @@ const shown = computed(() => {
     .filter((s) => s.topics.length)
 })
 const count = computed(() => sections.value?.reduce((n, s) => n + s.topics.length, 0) ?? 0)
+// [Sprint 75 W13, WEB-13] How many a search found, out of the whole guide.
+const found = computed(() => shown.value.reduce((n, s) => n + s.topics.length, 0))
 </script>
 
 <template>
@@ -59,6 +65,10 @@ const count = computed(() => sections.value?.reduce((n, s) => n + s.topics.lengt
             :placeholder="$t('مثلاً: الضغط، التدريب، الكأس')"
           />
         </label>
+        <p v-if="sections && query.trim()" class="flex flex-wrap items-center gap-x-3 text-sm text-text-muted" aria-live="polite">
+          <span>{{ $t('{n} نتيجة من {total}', { n: found, total: count }) }}</span>
+          <button type="button" class="min-h-touch font-bold text-text underline" @click="query = ''">{{ $t('امسح البحث') }}</button>
+        </p>
       </header>
 
       <p v-if="failed" class="text-danger">
@@ -87,7 +97,7 @@ const count = computed(() => sections.value?.reduce((n, s) => n + s.topics.lengt
           </section>
           <AdSlot v-if="!query && i % 3 === 2 && i < shown.length - 1" />
         </template>
-        <p class="text-sm text-text-muted">{{ $t('{n} شرحاً في الدليل.', { n: count }) }}</p>
+        <p v-if="!query.trim()" class="text-sm text-text-muted">{{ $t('{n} شرحاً في الدليل.', { n: count }) }}</p>
         <div v-if="!auth.user" class="flex flex-col items-center gap-3 rounded-2xl border border-gold/30 bg-surface p-6 text-center">
           <b class="font-display text-2xl">{{ $t('جاهز لتجرب بنفسك؟') }}</b>
           <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-6 font-bold text-on-gold">{{

@@ -189,12 +189,19 @@ export const router = createRouter({
       ],
     },
     // [X57] The privacy policy and the terms, open to everyone (Google AdSense and the stores ask for them)
-    { path: '/privacy', name: 'privacy', component: () => import('./pages/LegalPage.vue'), props: { kind: 'privacy' } },
-    { path: '/terms', name: 'terms', component: () => import('./pages/LegalPage.vue'), props: { kind: 'terms' } },
+    // [Sprint 75 W14, WEB-14] reading: a page to read, held any way (App.vue asks to turn the phone only in the game).
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('./pages/LegalPage.vue'),
+      props: { kind: 'privacy' },
+      meta: { reading: true },
+    },
+    { path: '/terms', name: 'terms', component: () => import('./pages/LegalPage.vue'), props: { kind: 'terms' }, meta: { reading: true } },
     // [Sprint 15 D1] The app to download (Android) or install (iPhone), open to everyone
-    { path: '/download', name: 'download', component: () => import('./pages/DownloadPage.vue') },
+    { path: '/download', name: 'download', component: () => import('./pages/DownloadPage.vue'), meta: { reading: true } },
     // [X59] The game's guide, open to everyone
-    { path: '/guide', name: 'guide', component: () => import('./pages/GuidePage.vue') },
+    { path: '/guide', name: 'guide', component: () => import('./pages/GuidePage.vue'), meta: { reading: true } },
     // The match and its report fill the screen
     // A league match, live from the server (Sprint 18): the simulator's viewer on the league's match
     {

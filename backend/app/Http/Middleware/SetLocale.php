@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * The language of the server's words [UP2]: English when the request asks for it first (Accept-Language, which the web
  * and the app send from the coach's saved choice), Arabic otherwise.
+ *
+ * [Sprint 75 W2, WEB-02] Every answer varies with that header: a browser kept the guide (public for ten minutes) in the
+ * language it first asked in, and the English guide came back Arabic after a switch.
  */
 class SetLocale
 {
@@ -18,7 +21,10 @@ class SetLocale
     {
         app()->setLocale(self::of($request));
 
-        return $next($request);
+        $response = $next($request);
+        $response->setVary('Accept-Language', false);
+
+        return $response;
     }
 
     public static function of(Request $request): string
