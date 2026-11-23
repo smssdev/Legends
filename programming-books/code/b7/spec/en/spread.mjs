@@ -14,5 +14,5 @@ for (const seed of [1, 2, 3]) {
   const answer = await ask(`Break this specification into development tasks for a small team. Reply with JSON: a list of tasks, each with id (T1, T2...), title, estimate in hours, and dependsOn (a list of ids).\n\n${spec}`, {grammar, temperature: 0.7, seed, maxTokens: 1000});
   const tasks = JSON.parse(answer);
   const total = tasks.reduce((sum, t) => sum + t.estimate, 0);
-  console.log(`seed ${seed}: ${tasks.length} tasks, ${total} hours`);
+  console.log(`seed ${seed}: ${tasks.length} tasks, ${Math.round(total * 10) / 10} hours`);
 }

@@ -23,7 +23,7 @@ for (const {id, title, estimate, dependsOn} of tasks) {
   console.log(`${id.padEnd(4)} ${String(estimate).padStart(4)} h  ${title}  [${dependsOn.join(", ")}]`);
 }
 const total = tasks.reduce((sum, t) => sum + t.estimate, 0);
-console.log(`total: ${total} hours`);
+console.log(`total: ${Math.round(total * 10) / 10} hours`);
 
 // كل اعتمادية يجب أن تكون موجودة، ولا حلقة دائرية.
 const {problems, order} = checkTasks(tasks);
