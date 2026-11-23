@@ -129,13 +129,18 @@ function summarize(output) {
   return `${count("pass")} passed, ${count("fail")} failed`;
 }
 
-// Each failing test, with the first line of its error, expected and actual.
+// Each failing test, with the first line of its error, expected and actual,
+// and the error of a test file that does not load.
 export function failures(output) {
   const lines = output.split("\\n");
   const kept = [];
   lines.forEach((line, i) => {
     if (/^\\s*not ok/.test(line)) {
       kept.push(line.trim());
+    }
+    // A file that cannot even load reports its error as a comment.
+    if (/^# \\w*Error: /.test(line)) {
+      kept.push(`  ${line.slice(2)}`);
     }
     const field = line.match(/^\\s*(error|expected|actual): (.*)$/);
     if (field) {
