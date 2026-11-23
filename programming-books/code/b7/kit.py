@@ -1,3 +1,4 @@
+import os
 import re
 """Book 7's examples are JavaScript (Node 22) that talk to a free, open model running on the reader's own
 computer, through the node-llama-cpp package. This kit writes a chapter's files in each language, runs them
@@ -30,6 +31,10 @@ def env():
 
 
 b5kit.env = env  # every command of the kit finds Node
+
+# A model answers at a few tokens a second on a plain processor: allow an hour per command.
+_sh = b5kit.sh
+b5kit.sh = lambda cmd, cwd, timeout=3600: _sh(cmd, cwd, timeout)
 
 MODEL_NOTE = {
     "en": """// The book's model: Qwen3 4B Instruct (2507), an open model under the
@@ -90,10 +95,14 @@ def wrap_comments(text):
     return "\n".join(out)
 
 
-def chapter(here, words_by_lang, files, runs):
-    """files: {path: text} with {w_...} words; runs: [(transcript, command[, keep])], keep(lines) -> lines."""
+def chapter(here, words_by_lang, files, runs, made=()):
+    """files: {path: text} with {w_...} words; runs: [(transcript, command[, keep])], keep(lines) -> lines;
+    made: files the examples write (code from the model), copied to the book's folder after the runs."""
     modules = deps()
+    only = os.environ.get("B7_LANG")  # B7_LANG=ar runs one edition
     for lang, words in words_by_lang.items():
+        if only and lang != only:
+            continue
         out = here / lang
         shutil.rmtree(out, ignore_errors=True)
         base = WORK / here.name / lang
@@ -109,4 +118,8 @@ def chapter(here, words_by_lang, files, runs):
             s = Session(base)
             s.run(fill(command, words), keep=keep[0] if keep else None)
             s.save(out / transcript)
+        for name in made:
+            if (base / name).exists():
+                (out / name).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(base / name, out / name)
         print("wrote", out)
