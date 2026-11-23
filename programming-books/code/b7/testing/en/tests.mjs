@@ -3,7 +3,7 @@ import {ask} from "./lib/ask.mjs";
 import {MUTANTS, failures, keepPassing, score, testsOf} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
-let tests = testsOf(await ask(`Write tests for this module, importing test from node:test, assert from node:assert/strict and linePrice from ./price.mjs. Cover normal cases and every boundary. Return only the code, in one code block.\n\n${source}`)) ?? "";
+let tests = testsOf(await ask(`Write tests for this module, importing test from node:test, assert from node:assert/strict and linePrice from ./price.mjs. Cover normal cases and every boundary. Return only the code, in one code block.\n\n${source}`, {maxTokens: 1400})) ?? "";
 console.log(`tests written: ${tests.match(/\btest\(|\bit\(/g)?.length ?? 0}`);
 
 // First, the tests must pass on the real code: a failure here is a wrong

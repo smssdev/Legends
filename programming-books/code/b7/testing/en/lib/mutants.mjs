@@ -13,6 +13,11 @@ export const MUTANTS = [
 // Runs a test file next to a given price.mjs; "" when every test passes,
 // otherwise the failing tests with their expected and actual values.
 export function failures(tests, source, dir) {
+  // Node counts even an empty file as one passing test: look for tests
+  // first.
+  if (!/\b(test|it)\(/.test(tests)) {
+    return "no tests in the file";
+  }
   fs.mkdirSync(dir, {recursive: true});
   fs.writeFileSync(`${dir}/price.mjs`, source);
   fs.writeFileSync(`${dir}/price.test.mjs`, tests);
@@ -33,10 +38,11 @@ export function failures(tests, source, dir) {
 }
 
 // The code block of an answer that contains tests (an answer may also
-// quote the module).
+// quote the module,
+// and a long answer may stop before its closing fence).
 export function testsOf(answer) {
-  const blocks = [...answer.matchAll(/```(?:\w+)?\n([\s\S]*?)```/g)].map((m) => m[1]);
-  return blocks.find((block) => /\btest\(/.test(block)) ?? null;
+  const blocks = [...answer.matchAll(/```(?:\w+)?\n([\s\S]*?)(?:```|$)/g)].map((m) => m[1]);
+  return blocks.find((block) => /\b(test|it)\(/.test(block)) ?? null;
 }
 
 export function passes(tests, source, dir) {
@@ -49,13 +55,21 @@ export function passes(tests, source, dir) {
 // seconds).
 export function keepPassing(tests, source) {
   let header = tests.split("\n").filter((line) => /^import /.test(line));
+  // assert does not come from node:test, whatever the file says.
+  header = header.map((line) => {
+    return line.includes("node:test") ? line.replace(/,\s*assert\b|\bassert\s*,\s*/, "") : line;
+  });
   if (!header.some((line) => line.includes("node:test"))) {
     header = ['import {test} from "node:test";', ...header];
   }
   if (!header.some((line) => line.includes("node:assert"))) {
     header = ['import assert from "node:assert/strict";', ...header];
   }
-  const blocks = tests.split(/\n(?=test\()/).filter((block) => block.startsWith("test("));
+  let blocks = tests.split(/\n(?=test\()/).filter((block) => block.startsWith("test("));
+  if (blocks.length === 0) {
+    // Tests inside describe(...): keep or drop the file as one block.
+    blocks = [tests.split("\n").filter((line) => !/^import /.test(line)).join("\n")];
+  }
   const kept = blocks.filter((block, i) => {
     return passes(`${header.join("\n")}\n\n${block}`, source, `mutants/one${i}`);
   });
