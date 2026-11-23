@@ -1423,7 +1423,8 @@
           "chapters": [
             {
               "en": "From Idea to Specification and Tasks",
-              "ar": "من الفكرة إلى المواصفات والمهام"
+              "ar": "من الفكرة إلى المواصفات والمهام",
+              "src": "b7/spec"
             },
             {
               "en": "Meetings, Emails and Reports",
