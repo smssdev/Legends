@@ -14,9 +14,10 @@ console.log(log.join("\n"));
 for (const {file, content} of writes) {
   fs.writeFileSync("proposed.tmp", content);
   try {
-    execFileSync("diff", ["-u", `cafe4/${file}`, "proposed.tmp"], {encoding: "utf8"});
+    const labels = ["--label", file, "--label", `${file} (proposed)`];
+    execFileSync("diff", ["-u", ...labels, `cafe4/${file}`, "proposed.tmp"], {encoding: "utf8"});
   } catch (error) {
-    console.log(error.stdout.replace("proposed.tmp", `${file} (proposed)`));
+    console.log(error.stdout);
   }
 }
 console.log(`--- ${writes.length} change(s) proposed, none applied`);

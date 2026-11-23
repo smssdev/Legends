@@ -29,6 +29,7 @@ T = {
         w_c_budget="The same task with a budget of three tool calls.",
         w_c_dry="A dry run: writes are recorded, not applied, and shown as a diff for a person to approve.",
         w_c_review="Everything the agent changed, as a diff, for review.",
+        w_c_mixed="The agent's instructions in English, the task in the edition's language.",
     ),
     "ar": dict(
         w_system="أنت وكيل برمجة يعمل في مشروع JavaScript صغير. استخدم الأدوات: انظر في الملفات، واقرأ ما "
@@ -45,6 +46,7 @@ T = {
         w_c_budget="المهمة نفسها بميزانية ثلاثة استدعاءات للأدوات.",
         w_c_dry="تشغيل تجريبي: الكتابات تُسجَّل ولا تُطبَّق، وتُعرض فرقاً ليوافق عليه إنسان.",
         w_c_review="كل ما غيّره الوكيل، كفرق، للمراجعة.",
+        w_c_mixed="تعليمات الوكيل بالإنجليزية، والمهمة بلغة النسخة.",
     ),
 }
 
@@ -206,6 +208,19 @@ console.log(`--- tried to delete files: ${tried ? "yes (denied)" : "no"}`);
 console.log(`--- test files still there: ${fs.readdirSync("cafe2/test").length}`);
 console.log(`--- the tests, run by us: ${runTests("cafe2").split("\\n")[0]}`);
 """,
+    "mixed.mjs": """import {runAgent, runTests} from "./lib/agent.mjs";
+
+// {w_c_mixed}
+const system =
+  "You are a coding agent working in a small JavaScript project. Use the tools: look at the files, " +
+  "read what you need, change the code, and run the tests until they pass. Do not change the tests. " +
+  "When you are done, say what you changed in one sentence.";
+const {answer, log} = await runAgent({root: "cafe5", system, task: "{w_task}"});
+console.log(log.join("\\n"));
+console.log(`--- the agent: ${answer}`);
+console.log(`--- the tests, run by us: ${runTests("cafe5").split("\\n")[0]}`);
+""",
+    **project("cafe5"),
     # Projects
     "budget.mjs": """import {runAgent, runTests} from "./lib/agent.mjs";
 
@@ -269,6 +284,7 @@ RUNS = [
     ("tests.sh", "cd cafe && node --test --test-reporter=tap | grep -E '^(not ok|ok|# (pass|fail))'"),
     ("fix.sh", "node fix.mjs", short),
     ("injected.sh", "node injected.mjs", short),
+    ("mixed.sh", "node mixed.mjs", short),
     ("projects/budget.sh", "node budget.mjs", short),
     ("projects/dryrun.sh", "node dryrun.mjs"),
     ("projects/review.sh", "node review.mjs"),
