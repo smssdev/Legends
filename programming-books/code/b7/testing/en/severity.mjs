@@ -22,7 +22,7 @@ const problems = JSON.parse(await ask(`Review this change. Reply with JSON: a li
 const planted = [
   /password|secret|credential|DB_PASSWORD/i,
   /<=|off-by-one|off by one|out of bounds|undefined/i,
-  /await|promise|async/i,
+  /insert[^.]*(await|promise)|(await|promise)[^.]*insert|not awaited/i,
 ];
 const found = new Set();
 for (const {severity, line, problem} of problems) {

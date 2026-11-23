@@ -10,7 +10,7 @@ console.log(review);
 const planted = {
   "secret in the log": /password|secret|credential|DB_PASSWORD/i,
   "off by one (<=)": /<=|off-by-one|off by one|out of bounds|undefined item/i,
-  "insert not awaited": /await.*insert|insert.*await|not awaited|promise/i,
+  "insert not awaited": /insert[^.]*(await|promise)|(await|promise)[^.]*insert|not awaited/i,
 };
 console.log("--- planted problems");
 for (const [name, pattern] of Object.entries(planted)) {

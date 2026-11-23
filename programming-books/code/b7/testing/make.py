@@ -38,6 +38,7 @@ T = {
         w_fix_tests="Some of these tests fail on the real module, so they are wrong. Fix the expected values "
                     "(not the module). Return the complete test file, in one code block.",
         w_c_wrong="A test that fails on the real code is a wrong test: send the failures back once.",
+        w_c_keep="Then keep only the tests that are right, and measure what they catch.",
     ),
     "ar": dict(
         w_tests="اكتب اختبارات لهذه الوحدة، مستورداً test من node:test وassert من node:assert/strict وlinePrice من "
@@ -62,6 +63,7 @@ T = {
         w_fix_tests="بعض هذه الاختبارات يفشل على الوحدة الحقيقية، فهي خاطئة. أصلح القيم المتوقعة "
                     "(لا الوحدة). أعِد ملف الاختبارات كاملاً، في كتلة كود واحدة.",
         w_c_wrong="الاختبار الذي يفشل على الكود الحقيقي اختبار خاطئ: أرسل الفشل مرة واحدة.",
+        w_c_keep="ثم احتفظ بالاختبارات الصحيحة وحدها، وقِس ما تكشفه.",
     ),
 }
 
@@ -138,6 +140,23 @@ export function passes(tests, source, dir) {
   return failures(tests, source, dir) === "";
 }
 
+// Keeps the tests that pass on the real code, each run on its own, after adding
+// any import the file forgot (the two-line fix a developer makes in seconds).
+export function keepPassing(tests, source) {
+  let header = tests.split("\\n").filter((line) => /^import /.test(line));
+  if (!header.some((line) => line.includes("node:test"))) {
+    header = ['import {test} from "node:test";', ...header];
+  }
+  if (!header.some((line) => line.includes("node:assert"))) {
+    header = ['import assert from "node:assert/strict";', ...header];
+  }
+  const blocks = tests.split(/\\n(?=test\\()/).filter((block) => block.startsWith("test("));
+  const kept = blocks.filter((block, i) => {
+    return passes(`${header.join("\\n")}\\n\\n${block}`, source, `mutants/one${i}`);
+  });
+  return {tests: `${header.join("\\n")}\\n\\n${kept.join("\\n")}\\n`, total: blocks.length, kept: kept.length};
+}
+
 // How many mutants the tests catch, and which survive. Tests that fail on the
 // real code would "catch" every mutant, so they score nothing.
 export function score(tests, source) {
@@ -153,6 +172,8 @@ export function score(tests, source) {
 
 PRICE = """// Price of an order line in piastres: unit price times quantity,
 // 10% off from the 10th cup, and never more than 5000 off.
+// Examples: linePrice(1000, 9) is 9000; linePrice(1000, 10) is 9000;
+// linePrice(6000, 10) is 55000.
 export function linePrice(unit, quantity) {
   if (quantity < 1) {
     throw new RangeError("quantity must be at least 1");
@@ -203,7 +224,7 @@ FILES = {
     "changes/save-order.diff": DIFF,
     "tests.mjs": """import fs from "node:fs";
 import {ask} from "./lib/ask.mjs";
-import {MUTANTS, failures, score, testsOf} from "./lib/mutants.mjs";
+import {MUTANTS, failures, keepPassing, score, testsOf} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
 let tests = testsOf(await ask(`{w_tests}\\n\\n${source}`)) ?? "";
@@ -220,6 +241,11 @@ if (failed) {
   const again = failures(tests, source, "mutants/real");
   console.log(`after one fix: ${again ? `FAIL\\n${again}` : "pass"}`);
 }
+
+// {w_c_keep}
+const kept = keepPassing(tests, source);
+console.log(`kept ${kept.kept} of ${kept.total} tests: the ones that pass on the real code`);
+tests = kept.tests;
 fs.writeFileSync("price.test.mjs", tests);
 
 // {w_c_mutants}

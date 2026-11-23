@@ -17,8 +17,11 @@ export function failures(tests, source, dir) {
   fs.writeFileSync(`${dir}/price.mjs`, source);
   fs.writeFileSync(`${dir}/price.test.mjs`, tests);
   try {
-    execFileSync("node", ["--test", "--test-reporter=tap", `${dir}/price.test.mjs`], {stdio: "pipe"});
-    return "";
+    const output = execFileSync("node", ["--test", "--test-reporter=tap", `${dir}/price.test.mjs`], {
+      encoding: "utf8",
+    });
+    // A file with no tests passes too: that is not a passing test suite.
+    return /^# tests 0$/m.test(output) ? "no tests ran" : "";
   } catch (error) {
     const lines = `${error.stdout}`.split("\n");
     return lines
@@ -27,6 +30,13 @@ export function failures(tests, source, dir) {
       .slice(0, 20)
       .join("\n") || "the test file does not run";
   }
+}
+
+// The code block of an answer that contains tests (an answer may also
+// quote the module).
+export function testsOf(answer) {
+  const blocks = [...answer.matchAll(/```(?:\w+)?\n([\s\S]*?)```/g)].map((m) => m[1]);
+  return blocks.find((block) => /\btest\(/.test(block)) ?? null;
 }
 
 export function passes(tests, source, dir) {
