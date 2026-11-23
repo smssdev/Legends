@@ -1405,7 +1405,8 @@
             },
             {
               "en": "Tests, Refactoring and Code Review",
-              "ar": "الاختبارات وإعادة الهيكلة ومراجعة الكود"
+              "ar": "الاختبارات وإعادة الهيكلة ومراجعة الكود",
+              "src": "b7/testing"
             },
             {
               "en": "Documentation and Commit Messages",

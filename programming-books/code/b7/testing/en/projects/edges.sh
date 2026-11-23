@@ -1,0 +1,8 @@
+$ node edges.mjs
+  1000 x 9    = 9000       Tests the boundary just below the 10-unit threshold (9 units). Since quantity < 10, no discount applies, so linePrice = unit * quantity = 9000. This confirms the function correctly handles values below the discount threshold.
+  1000 x 10   = 9000       Tests the exact boundary of the discount (10 units). The function applies a 10% discount (1000 * 10 = 10000, 10% off = 1000, so 10000 - 1000 = 9000). This verifies that the discount kicks in at exactly 10 units and is applied correctly.
+  1000 x 11   = 9900       Tests a value just above the 10-unit threshold. The discount applies (10% of 11000 = 1100), so linePrice = 11000 - 1100 = 9900. This confirms the discount is consistently applied beyond 10 units.
+  6000 x 10   = 55000      Tests the maximum discount cap. Full price is 60000. 10% off is 6000, but the function caps the discount at 5000. So linePrice = 60000 - 5000 = 55000. This verifies the 'never more than 5000 off' constraint is enforced.
+     0 x 10   = 0          Tests edge case where unit price is zero. No discount applies (since quantity ≥ 10), so linePrice = 0. This ensures the function handles zero unit price correctly without errors.
+ 10000 x 100  = 995000     Tests a large quantity to ensure the discount cap is respected. Full price = 1,000,000. 10% off = 100,000, but capped at 5000 → discount = 5000. Result = 995,000. This confirms the maximum discount cap is enforced regardless of quantity.
+  1000 x 0    = RangeError Tests the lower boundary of quantity (0). This should trigger a RangeError because quantity must be at least 1. This verifies input validation works as expected.

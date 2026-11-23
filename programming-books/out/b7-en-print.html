@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: Debugging with AI"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Tests, Refactoring and Code Review"; } }
+@page ch07:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -51,7 +53,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">86</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">98</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">86</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">112</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2589,6 +2591,365 @@ reproduced in 1</pre></div>
 <p>Debugging ends with a fix, and a fix is only as good as the tests around it. The next chapter uses the model for the work around a change: writing tests, refactoring safely, and reviewing code, its own included.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b7/testing/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Tests, Refactoring and Code Review</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>measure tests written by a model: right on the real code, and able to catch planted bugs</li>
+<li>check a refactor by comparing old and new code on hundreds of inputs</li>
+<li>use a model as a reviewer, and score its review against problems you planted</li>
+<li>recognise a green test run that proves nothing</li>
+</ul>
+</div>
+
+<p class="lead">Tests, refactoring and review are the work around a change, and they are where assistants are used most after writing code. They are also where a model’s output is hardest to judge by reading: a test file looks like testing whether or not it would catch anything, a refactor looks cleaner whether or not it changed behaviour, and a review sounds thorough whether or not it found the real problem. This chapter replaces judgement by reading with measurement, for all three.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>My first measurement in this chapter reported “pass”, and the model’s tests had caught nothing. The test file it handed back contained no tests at all, and an empty test file passes. Section 7.2 shows the guard that this needed.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>The code under test</span></h2>
+
+<p>A small function with three rules and three edges, and examples in its comment, as Chapter 4 taught:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">price.mjs</div><pre class="code"><span class="c line-bidi">// Price of an order line in piastres: unit price times quantity,</span>
+<span class="c line-bidi">// 10% off from the 10th cup, and never more than 5000 off.</span>
+<span class="c line-bidi">// Examples: linePrice(1000, 9) is 9000; linePrice(1000, 10) is 9000;</span>
+<span class="c line-bidi">// linePrice(6000, 10) is 55000.</span>
+<span class="k">export</span> <span class="k">function</span> linePrice(unit, quantity) {
+  <span class="k">if</span> (quantity &lt; <span class="n">1</span>) {
+    <span class="k">throw</span> <span class="k">new</span> RangeError(<span class="s">&quot;quantity must be at least 1&quot;</span>);
+  }
+  <span class="k">const</span> full = unit * quantity;
+  <span class="k">const</span> off = quantity &gt;= <span class="n">10</span> ? Math.min(Math.floor(full / <span class="n">10</span>), <span class="n">5000</span>) : <span class="n">0</span>;
+  <span class="k">return</span> full - off;
+}</pre></div>
+
+<h2><span class="sec">7.2</span> <span>Tests, measured</span></h2>
+
+<p>A test suite has two jobs: pass when the code is right, and fail when it is wrong. The first is checked by running the tests on the real code. The second is checked with <em>mutants</em>: copies of the code, each with one small planted bug. A good suite fails on every one of them; each mutant that passes is a bug your tests would let through.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/mutants.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">const</span> MUTANTS = [
+  [<span class="s">&quot;&gt;= 10&quot;</span>, <span class="s">&quot;&gt; 10&quot;</span>],
+  [<span class="s">&quot;Math.min(&quot;</span>, <span class="s">&quot;Math.max(&quot;</span>],
+  [<span class="s">&quot;full / 10&quot;</span>, <span class="s">&quot;full / 5&quot;</span>],
+  [<span class="s">&quot;quantity &lt; 1&quot;</span>, <span class="s">&quot;quantity &lt; 0&quot;</span>],
+  [<span class="s">&quot;Math.floor(&quot;</span>, <span class="s">&quot;Math.round(&quot;</span>],
+];</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">tests.mjs (part)</div><pre class="code"><span class="c line-bidi">// First, the tests must pass on the real code: a failure here is a wrong</span>
+<span class="c line-bidi">// test.</span>
+<span class="k">const</span> failed = failures(tests, source, <span class="s">&quot;mutants/real&quot;</span>);
+console.log(<span class="s">`on the real code: ${failed ? `</span>FAIL\n${failed}<span class="s">` : &quot;pass&quot;}`</span>);
+
+<span class="c line-bidi">// A test that fails on the real code is a wrong test: send the failures</span>
+<span class="c line-bidi">// back once.</span>
+<span class="k">if</span> (failed) {
+  <span class="k">const</span> request = <span class="s">`Some of these tests fail on the real module, so they are wrong. Fix the expected values (not the module). Return the complete test file, in one code block.\n\n${source}\n\n${tests}\n\n${failed}`</span>;
+  tests = testsOf(<span class="k">await</span> ask(request, {maxTokens: <span class="n">1400</span>})) ?? tests;
+  <span class="k">const</span> again = failures(tests, source, <span class="s">&quot;mutants/real&quot;</span>);
+  console.log(<span class="s">`after one fix: ${again ? `</span>FAIL\n${again}<span class="s">` : &quot;pass&quot;}`</span>);
+}
+
+<span class="c line-bidi">// Then keep only the tests that are right, and measure what they catch.</span>
+<span class="k">const</span> kept = keepPassing(tests, source);
+console.log(<span class="s">`kept ${kept.kept} of ${kept.total} tests: the ones that pass on the real code`</span>);
+tests = kept.tests;
+fs.writeFileSync(<span class="s">&quot;price.test.mjs&quot;</span>, tests);
+
+<span class="c line-bidi">// Then on each mutant: a good test suite fails on every one of them.</span>
+<span class="k">const</span> {killed, survivors} = score(tests, source);
+console.log(<span class="s">`mutants caught: ${killed} of ${MUTANTS.length}`</span>);
+<span class="k">for</span> (<span class="k">const</span> [<span class="k">from</span>, to] <span class="k">of</span> survivors) {
+  console.log(<span class="s">`  survived: ${from}  -&gt;  ${to}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node tests.mjs</span>
+tests written: 8
+on the real code: FAIL
+not ok 3 - linePrice caps the discount at 5000
+expected: 180000
+actual: 195000
+not ok 6 - linePrice handles large quantities with discount cap
+expected: 95000
+actual: 995000
+not ok 8 - linePrice with very large unit price and quantity
+expected: 9000000
+actual: 9995000
+after one fix: FAIL
+<span class="c line-bidi"># SyntaxError: missing ) after argument list</span>
+not ok 1 - mutants/real/price.test.mjs
+kept 6 of 8 tests: the ones that pass on the real code
+mutants caught: 4 of 5
+  survived: Math.floor(  -&gt;  Math.round(</pre></div>
+
+<p>Read it in order. The model wrote eight tests. Three of them fail on the real code, so they are wrong, and they are all wrong the same way: the model expected the discount to grow past the cap. For 10,000 × 100 it expected 95,000, as if the discount were 90%; the comment says “never more than 5,000 off”, so the answer is 995,000. Sent back once with the exact failures, the model returned a file that does not even parse: a parenthesis is missing.</p>
+
+<p>So the program does what a developer would: it runs each test on its own against the real code and keeps the ones that pass, six of eight, and measures them against the mutants. They catch four of five. The survivor is <code>Math.floor</code> changed to <code>Math.round</code>: no test uses a price whose discount has a fraction above one half, so rounding up and rounding down give the same results on every test. That is a real gap, found by a mechanical check, and it is exactly the kind a review by eye would miss.</p>
+
+<p>Two guards made these numbers honest, and both were added after the first runs lied. A test file that fails on the real code would “catch” every mutant, because it fails everywhere; so the score counts only tests that pass on the real code. And a file with no tests passes; the first version of this program accepted the model’s “fixed” test file, which turned out to be a copy of <code>price.mjs</code>, and reported success with zero tests. The fix needed two attempts. Checking the runner’s count of tests was not enough: in the Arabic run, the model’s answer contained no test file at all, the program ran an empty file, and Node reported one passing test, the file itself. Now a file without a single <code>test(</code> or <code>it(</code> is a failure before it is run.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Green means “nothing failed”, not “everything was tested”. Before you trust a suite written by anyone, model or person, check three things: it ran tests (count them), it fails when the code is wrong (break the code on purpose), and its expected values come from the specification, not from the code it tests.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does a test that fails on the real code catch every mutant?</li><li>What would a test need to catch the <code>Math.round</code> mutant?</li><li>Why is an empty test file dangerous in an automated pipeline?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">7.3</span> <span>A refactor, compared</span></h2>
+
+<p>A refactor changes how code reads without changing what it does. The first part is a matter of taste; the second can be checked. Here the model refactors the legacy <code>calc</code> of Chapter 5, and the program compares old and new on 500 random orders, including the edges:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">refactor.mjs (part)</div><pre class="code"><span class="k">let</span> seed = <span class="n">7</span>;
+<span class="k">const</span> random = (n) =&gt; ((seed = (seed * <span class="n">1103515245</span> + <span class="n">12345</span>) % <span class="n">2147483648</span>) % n);
+<span class="k">const</span> types = [<span class="s">&quot;VIP&quot;</span>, <span class="s">&quot;vip&quot;</span>, <span class="s">&quot;STD&quot;</span>];
+<span class="k">let</span> differ = <span class="n">0</span>;
+<span class="k">let</span> example = <span class="s">&quot;&quot;</span>;
+<span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; <span class="n">500</span>; i++) {
+  <span class="k">const</span> lines = Array.<span class="k">from</span>({length: <span class="n">1</span> + random(<span class="n">3</span>)}, () =&gt; ({p: <span class="n">100</span> * random(<span class="n">80</span>), q: <span class="n">1</span> + random(<span class="n">9</span>)}));
+  <span class="k">const</span> order = {c: types[random(<span class="n">3</span>)], l: i &lt; <span class="n">3</span> ? [{p: <span class="n">10000</span>, q: <span class="n">2</span>}] : lines};
+  <span class="k">const</span> d = random(<span class="n">2</span>) === <span class="n">1</span>;
+  <span class="k">const</span> [x, y] = [before(order, d), after(order, d)];
+  <span class="k">if</span> (x !== y) {
+    differ++;
+    example ||= <span class="s">`${JSON.stringify(order)}, ${d}: before ${x}, after ${y}`</span>;
+  }
+}
+console.log(<span class="s">`--- 500 random orders: ${differ} differ`</span>);
+console.log(example || <span class="s">&quot;(none)&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node refactor.mjs</span>
+function calc(options, discount) {
+  let total = 0;
+  for (const item of options.l) {
+    total += item.p * item.q;
+  }
+
+  if (discount &amp;&amp; total &gt; 20000) {
+    total -= Math.floor(total * 0.1);
+  }
+
+  if (options.c === &quot;VIP&quot;) {
+    total -= 500;
+  }
+
+  return total &lt; 0 ? 0 : total;
+}
+
+module.exports = { calc };
+
+--- 500 random orders: 0 differ
+(none)</pre></div>
+
+<p>Not one difference in 500 orders, including the boundary at 20,000 and the customer type in small letters. The model even changed <code>==</code> to <code>===</code>, a change that could alter behaviour in general; the comparison is what tells you it does not here, because <code>c</code> is always a string. As for readability, judge for yourself: <code>options</code> is a strange name for an order, and <code>discount</code> for a flag that switches a discount on. The model made it modern, not necessarily clear.</p>
+
+<p>This technique, running two versions on the same inputs and comparing, is called <em>differential testing</em>, and it is the best friend of a refactor: it needs no expected values, only the old code, which you already have.</p>
+
+<h2><span class="sec">7.4</span> <span>A review, scored</span></h2>
+
+<p>A model reviewer reads a diff and lists problems. To know how good it is, plant problems you know about and count which it finds. This diff has three: a password written to the log, a loop that runs one step too far, and a database insert that is not awaited.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">changes/save-order.diff</div><pre class="code">--- a/src/orders.mjs
++++ b/src/orders.mjs
+@@ -10,3 +10,11 @@ export async function loadOrder(db, id) {
+   return db.get(&quot;orders&quot;, id);
+ }
++
++export async function saveOrder(db, order) {
++  console.log(&quot;saving&quot;, order.id, &quot;with&quot;, process.env.DB_PASSWORD);
++  for (let i = 0; i &lt;= order.items.length; i++) {
++    db.insert(&quot;items&quot;, order.items[i]);
++  }
++  await db.commit();
++  return order.id;
++}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node review.mjs</span>
+1. **Critical: Infinite loop in `saveOrder`** – The loop condition `i &lt;= order.items.length` will run one extra time (when `i === order.items.length + 1`), and since `order.items[i]` accesses an index that may be out of bounds, it will cause an error or crash when `order.items.length` is 0 or negative.
+
+2. **Critical: Incorrect loop bounds** – The loop should be `i &lt; order.items.length`, not `i &lt;=`, to avoid accessing `order.items.length` which is out of bounds.
+
+3. **Security risk: Logging sensitive data** – `process.env.DB_PASSWORD` is logged in plain text, exposing credentials to logs and potential attackers.
+
+4. **Missing input validation** – No validation of `order.items` being an array or having valid items, leading to runtime errors or crashes.
+
+5. **No error handling** – The function does not handle errors from `db.insert` or `db.commit`, so failures will go uncaught and silently fail.
+
+6. **Incorrect data integrity** – The loop iterates over `order.items` but inserts each item into the &quot;items&quot; table, which may not be the intended behavior or schema; unclear if this is correct for the domain.
+
+7. **No return value consistency** – The function returns `order.id`, but if `db.commit()` fails, the return value may be invalid or inconsistent.
+
+8. **Missing transaction or atomicity guarantee** – The function commits after inserting, but without proper error handling or rollback, data may be partially written.
+
+9. **Poor naming and clarity** – `saveOrder` suggests a full save, but the implementation only inserts items and doesn&#x27;t update or validate the order itself.
+
+10. **No type or schema validation** – No checks on `order.id`, `order.items`, or their structure, leading to potential runtime errors.
+--- planted problems
+found  secret in the log
+found  off by one (&lt;=)
+MISSED insert not awaited</pre></div>
+
+<p>Two of three. The secret and the off-by-one were found, though the second appears twice, once wrongly as an “infinite loop”. The missing <code>await</code> before <code>db.insert</code>, the one problem that would lose data silently in production, was not found; point 5 comes near it (“does not handle errors from <code>db.insert</code>”) without seeing that the inserts are never waited for. The rest of the list is generic advice that fits almost any function. A model reviewer is a useful first pass: it is fast, never tired, and good at the problems that look like problems. It is not a substitute for a person who knows how this database behaves.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Before you rely on any review tool, model or linter, run it on a change with problems you planted. It takes ten minutes and tells you what kind of problem it catches and what kind it misses. Then you know what you still have to look for yourself.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Judging tests by reading them</td><td>Suites that look thorough and catch little</td><td>Run them on mutants</td></tr>
+<tr><td>Expected values from the model</td><td>Tests that assert the model’s arithmetic</td><td>Examples from the specification; drop tests that fail on the real code</td></tr>
+<tr><td>Trusting a green run</td><td>Zero tests, reported as success</td><td>Count the tests that ran</td></tr>
+<tr><td>Accepting a refactor that “looks the same”</td><td>A changed edge case, found by users</td><td>Compare old and new on many inputs</td></tr>
+<tr><td>Treating a model review as complete</td><td>The quiet bug ships</td><td>Know what it misses; review the rest yourself</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Measure a test suite twice: it passes on the real code, and it fails on mutants with planted bugs.</li>
+<li>A model’s expected values can be wrong; keep only tests that pass on the real code, and take examples from the specification.</li>
+<li>A green run can mean no tests ran. Count them.</li>
+<li>Check a refactor by running old and new on the same inputs; it needs no expected values.</li>
+<li>Score a model reviewer on planted problems before you rely on it, and review what it misses yourself.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because it fails everywhere, on the real code and on every copy of it; its failure says nothing about the mutant. That is why only tests that pass on the real code are scored. 2. A price whose discount has a fraction of one half or more, so that rounding down and rounding up differ: for example <code>linePrice(155, 10)</code>, where the full price is 1,550 and a tenth of it is exactly 155, does not do it, but <code>linePrice(157, 11)</code> (1,727, a tenth is 172.7) does: 1,555 with <code>floor</code>, 1,554 with <code>round</code>. 3. It passes, so the pipeline reports success, the change is merged, and nothing was tested; the failure is invisible exactly when it matters.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects turn the chapter’s measurements into tools: edge cases run on the real function, a structured review with a score, and a loop that shows the model what its tests missed.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>Edge cases, run</h3>
+<p class="project-goal">Ask for the inputs that test the function’s boundaries, and run each on the real function.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured output with a schema, and turning suggestions into executed checks.</p>
+<ol class="steps">
+<li>Ask for up to eight edge cases as <code>{unit, quantity, why}</code>.</li>
+<li>Call <code>linePrice</code> on each, catching errors.</li>
+<li>Print the input, the real result and the reason.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">edges.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> {unit, quantity, why} <span class="k">of</span> edges) {
+  <span class="k">let</span> result;
+  <span class="k">try</span> {
+    result = linePrice(unit, quantity);
+  } <span class="k">catch</span> (error) {
+    result = error.name;
+  }
+  console.log(<span class="s">`${String(unit).padStart(6)} x ${String(quantity).padEnd(4)} = ${String(result).padEnd(10)} ${why}`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node edges.mjs</span>
+  1000 x 9    = 9000       Tests the boundary just below the 10-unit threshold (9 units). Since quantity &lt; 10, no discount applies, so linePrice = unit * quantity = 9000. This confirms the function correctly handles values below the discount threshold.
+  1000 x 10   = 9000       Tests the exact boundary of the discount (10 units). The function applies a 10% discount (1000 * 10 = 10000, 10% off = 1000, so 10000 - 1000 = 9000). This verifies that the discount kicks in at exactly 10 units and is applied correctly.
+  1000 x 11   = 9900       Tests a value just above the 10-unit threshold. The discount applies (10% of 11000 = 1100), so linePrice = 11000 - 1100 = 9900. This confirms the discount is consistently applied beyond 10 units.
+  6000 x 10   = 55000      Tests the maximum discount cap. Full price is 60000. 10% off is 6000, but the function caps the discount at 5000. So linePrice = 60000 - 5000 = 55000. This verifies the &#x27;never more than 5000 off&#x27; constraint is enforced.
+     0 x 10   = 0          Tests edge case where unit price is zero. No discount applies (since quantity ≥ 10), so linePrice = 0. This ensures the function handles zero unit price correctly without errors.
+ 10000 x 100  = 995000     Tests a large quantity to ensure the discount cap is respected. Full price = 1,000,000. 10% off = 100,000, but capped at 5000 → discount = 5000. Result = 995,000. This confirms the maximum discount cap is enforced regardless of quantity.
+  1000 x 0    = RangeError Tests the lower boundary of quantity (0). This should trigger a RangeError because quantity must be at least 1. This verifies input validation works as expected.</pre></div>
+<p class="hint"><strong>Hint:</strong> a good list: below, at and above the threshold, the cap, zero and an invalid quantity. And it has the same blind spot as the tests: no case where the discount has a fraction, so the <code>Math.round</code> mutant would survive these too. One reason also has a slip worth catching: for <code>0 × 10</code> it says “no discount applies, since quantity ≥ 10”, which is backwards. The results are right because they come from the function, not from the explanation.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>A review with severities, scored</h3>
+<p class="project-goal">Ask for a review as a list of problems with severities, and score it against the planted problems.</p>
+<p class="project-skills"><strong>You will practise:</strong> schemas with enums and a minimum length, and scoring found, missed and extra items.</p>
+<ol class="steps">
+<li>Ask for <code>{severity, line, problem}</code> items, at least one and at most eight.</li>
+<li>Match each against the three planted problems.</li>
+<li>Print each with planted or other, and the totals.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">severity.mjs (part)</div><pre class="code"><span class="k">const</span> planted = [
+  /password|secret|credential|DB_PASSWORD/i,
+  /&lt;=|off-by-one|off by one|out <span class="k">of</span> bounds|<span class="k">undefined</span>/i,
+  /insert[^.]*(<span class="k">await</span>|promise)|(<span class="k">await</span>|promise)[^.]*insert|not awaited/i,
+];
+<span class="k">const</span> found = <span class="k">new</span> Set();
+<span class="k">for</span> (<span class="k">const</span> {severity, line, problem} <span class="k">of</span> problems) {
+  <span class="k">const</span> hit = planted.findIndex((pattern) =&gt; pattern.test(<span class="s">`${line} ${problem}`</span>));
+  <span class="k">if</span> (hit &gt;= <span class="n">0</span>) {
+    found.add(hit);
+  }
+  console.log(<span class="s">`${severity.padEnd(6)} ${hit &gt;= 0 ? &quot;planted&quot; : &quot;other  &quot;} ${problem}`</span>);
+}
+console.log(<span class="s">`--- ${found.size} of 3 planted problems, ${problems.length} reported`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node severity.mjs</span>
+high   planted The loop condition `i &lt;= order.items.length` will cause an out-of-bounds access when `order.items.length` is 0, as it will iterate up to and including the index that exceeds the array length.
+medium planted Logging the database password in the console exposes sensitive information and poses a security risk.
+medium planted The loop should use `i &lt; order.items.length` instead of `i &lt;= order.items.length` to correctly iterate over array elements and avoid index out of bounds errors.
+low    other   The `db.commit()` call may not be properly synchronized with the insert operations, potentially leading to data inconsistency if the database transaction semantics are not correctly handled.
+--- 2 of 3 planted problems, 4 reported</pre></div>
+<p class="hint"><strong>Hint:</strong> the first version of this schema had no minimum, and the model returned an empty list: “no problems”. A schema guarantees a shape, and an empty list is a valid shape. The last item is close to the missing <code>await</code> (“may not be properly synchronized”) but never names it; the check does not count it, and neither should you: “something about synchronization” would not get the bug fixed.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>Show the model what its tests missed</h3>
+<p class="project-goal">Give the model the surviving mutants and its tests, and score the tests it returns.</p>
+<p class="project-skills"><strong>You will practise:</strong> feeding measurements back, and checking that improvement is real.</p>
+<ol class="steps">
+<li>Score the kept tests; stop if no mutant survived.</li>
+<li>Send each surviving mutant, the real module and the tests, and ask for tests that fail on the broken versions.</li>
+<li>Score the answer, and check that it still passes on the real code.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">improve.mjs (part)</div><pre class="code"><span class="k">const</span> broken = first.survivors
+  .map(([<span class="k">from</span>, to]) =&gt; <span class="s">`--- ${from} changed to ${to}:\n${source.replace(from, to)}`</span>)
+  .join(<span class="s">&quot;\n&quot;</span>);
+<span class="k">const</span> request = <span class="s">`These tests pass, but they also pass on each of these broken versions of the module, so they miss real bugs. Add tests that fail on the broken versions and pass on the real one. Return the complete test file, in one code block.\n\n--- price.mjs:\n${source}\n\n${broken}\n\n--- price.test.mjs:\n${tests}`</span>;
+<span class="k">const</span> better = testsOf(<span class="k">await</span> ask(request, {maxTokens: <span class="n">1400</span>})) ?? tests;
+<span class="k">const</span> real = passes(better, source, <span class="s">&quot;mutants/real2&quot;</span>);
+<span class="k">const</span> second = score(better, source);
+console.log(<span class="s">`after:  ${second.killed} of ${MUTANTS.length} caught; on the real code: ${real ? &quot;pass&quot; : &quot;FAIL&quot;}`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node improve.mjs</span>
+before: 4 of 5 caught
+after:  4 of 5 caught; on the real code: pass</pre></div>
+<p class="hint"><strong>Hint:</strong> no improvement: still four of five. Killing this mutant needs one specific idea, a discount with a fraction above one half, and the model did not find it even when shown the exact change. Write that test yourself (Quick check 2 gives an input) and score again. Some gaps take a person who understands why the mutant survived.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a test for <code>linePrice(157, 11)</code> to the kept tests and score them again. Which mutant does it kill?</li>
+<li><span class="level">Easy</span> Add a fourth planted problem to the diff, such as returning before the commit, and run the review. Is it found?</li>
+<li><span class="level medium">Medium</span> Ask the model to refactor <code>calc.js</code> again, this time for clarity with names from the business (order, customer type, bulk discount). Run the 500-order comparison. Is it still the same function?</li>
+<li><span class="level medium">Medium</span> Write two more mutants for <code>price.mjs</code> that the kept tests would let through. What do they tell you about the tests?</li>
+<li><span class="level hard">Challenge</span> Make the review check stricter: a planted problem counts only if the review names the line and says what to change. How do the scores move, and which matters more for a real team?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>Code that works and is tested still needs explaining: to the next developer, to users, and in the history of the project. The next chapter uses the model for documentation and commit messages, and checks that what it writes is true of the code.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2687,6 +3048,16 @@ They are worth more than any explanation because they cannot drift: if someone �
 <li>Expect a much better answer: the narrow question names the symptom (1050 after 250) and the method (<code>.sort()</code>), and the most likely continuation of that text is the explanation of text sorting, which is in countless documents. When a broad question gets a confident wrong cause, narrow it to the line and the values you see. Narrow questions are cheap to ask and easy to check.</li>
 <li>The night log needs a <code>TypeError</code> reading <code>price</code> of <code>undefined</code>; the first attempt in Section 6.3 did not fail at all. With the loop, each new request contains the previous script and “It printed: (no error). It must throw: TypeError…”, which tells the model that the missing value is the point. Count the attempts and read how each script changes: if it does not converge in three, give it the fact (“an item whose name is not on the menu”) as a developer would.</li>
 <li>For example, in <code>test/report.test.mjs</code>: import <code>total</code>, call it with an order for a <code>"flat white"</code>, and expect <code>assert.throws(…, /unknown drink: flat white/)</code>. Today it fails, because the error is a <code>TypeError</code> about <code>price</code>; once <code>priceOf</code> throws the clear error, it passes, and it keeps guarding that behaviour. It lives with the other tests of the shop, not in a scratch folder, because it is now part of what the shop promises.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 7</h2>
+<ol class="exercises">
+<li>It kills the last survivor, <code>Math.floor</code> changed to <code>Math.round</code>: 1,727 has a tenth of 172.7, which rounds down to 172 and up to 173, so the real function returns 1,555 and the mutant 1,554. In the book’s environment, the kept tests plus this one catch five of five. One well-chosen input did what the model could not do in a round of feedback.</li>
+<li>For example, move <code>return order.id;</code> above <code>await db.commit();</code>. A good reviewer flags that the commit never runs, which loses every save, and that is a more serious problem than anything else in the diff. Whether it is found or not, you now know one more thing about the reviewer, which is the point of planting problems.</li>
+<li>Run the same 500-order comparison on the new file. The answer is decided by the comparison, not by how the names read: a rename that also “fixes” <code>==</code>, the 20,000 boundary or the case of <code>"VIP"</code> changes the function, and the comparison will show a difference with the exact order that exposes it. Names from the business are worth asking for; they are also an easy place for a model to “improve” a rule.</li>
+<li>For example, <code>full - off</code> changed to <code>full - off + 1</code> when <code>quantity === 1</code>, or the error message changed to another text: if no test checks the price of a single cup or the message, both survive. Each survivor names a behaviour the tests do not pin. Decide whether it matters; if it does, write the test.</li>
+<li>Require two things for a match: the line (<code>i &lt;= order.items.length</code>, <code>DB_PASSWORD</code>, <code>db.insert</code>) and a change (<code>&lt;</code>, remove from the log, <code>await</code>). Scores usually fall, because many reviews mention a problem without saying what to do. For a team, the strict score matters more: a review line that cannot be acted on is read, nodded at and forgotten.</li>
 </ol>
 
 </section>

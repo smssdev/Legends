@@ -1,0 +1,160 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/testing/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Tests, Refactoring and Code Review</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>measure tests written by a model: right on the real code, and able to catch planted bugs</li>
+<li>check a refactor by comparing old and new code on hundreds of inputs</li>
+<li>use a model as a reviewer, and score its review against problems you planted</li>
+<li>recognise a green test run that proves nothing</li>
+</ul>
+</div>
+
+<p class="lead">Tests, refactoring and review are the work around a change, and they are where assistants are used most after writing code. They are also where a model’s output is hardest to judge by reading: a test file looks like testing whether or not it would catch anything, a refactor looks cleaner whether or not it changed behaviour, and a review sounds thorough whether or not it found the real problem. This chapter replaces judgement by reading with measurement, for all three.</p>
+
+<aside class="bit" data-mood="think"><p>My first measurement in this chapter reported “pass”, and the model’s tests had caught nothing. The test file it handed back contained no tests at all, and an empty test file passes. Section {{n}}.2 shows the guard that this needed.</p></aside>
+
+<h2>{{n}}.1 The code under test</h2>
+
+<p>A small function with three rules and three edges, and examples in its comment, as Chapter 4 taught:</p>
+
+<pre data-code="price.mjs" data-title="price.mjs"></pre>
+
+<h2>{{n}}.2 Tests, measured</h2>
+
+<p>A test suite has two jobs: pass when the code is right, and fail when it is wrong. The first is checked by running the tests on the real code. The second is checked with <em>mutants</em>: copies of the code, each with one small planted bug. A good suite fails on every one of them; each mutant that passes is a bug your tests would let through.</p>
+
+<pre data-code="lib/mutants.mjs" data-from="^export const MUTANTS" data-to="^];" data-title="lib/mutants.mjs (part)"></pre>
+<pre data-code="tests.mjs" data-from="// " data-title="tests.mjs (part)"></pre>
+<pre data-term="tests.sh"></pre>
+
+<p>Read it in order. The model wrote eight tests. Three of them fail on the real code, so they are wrong, and they are all wrong the same way: the model expected the discount to grow past the cap. For 10,000 × 100 it expected 95,000, as if the discount were 90%; the comment says “never more than 5,000 off”, so the answer is 995,000. Sent back once with the exact failures, the model returned a file that does not even parse: a parenthesis is missing.</p>
+
+<p>So the program does what a developer would: it runs each test on its own against the real code and keeps the ones that pass, six of eight, and measures them against the mutants. They catch four of five. The survivor is <code>Math.floor</code> changed to <code>Math.round</code>: no test uses a price whose discount has a fraction above one half, so rounding up and rounding down give the same results on every test. That is a real gap, found by a mechanical check, and it is exactly the kind a review by eye would miss.</p>
+
+<p>Two guards made these numbers honest, and both were added after the first runs lied. A test file that fails on the real code would “catch” every mutant, because it fails everywhere; so the score counts only tests that pass on the real code. And a file with no tests passes; the first version of this program accepted the model’s “fixed” test file, which turned out to be a copy of <code>price.mjs</code>, and reported success with zero tests. The fix needed two attempts. Checking the runner’s count of tests was not enough: in the Arabic run, the model’s answer contained no test file at all, the program ran an empty file, and Node reported one passing test, the file itself. Now a file without a single <code>test(</code> or <code>it(</code> is a failure before it is run.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Green means “nothing failed”, not “everything was tested”. Before you trust a suite written by anyone, model or person, check three things: it ran tests (count them), it fails when the code is wrong (break the code on purpose), and its expected values come from the specification, not from the code it tests.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why does a test that fails on the real code catch every mutant?</li><li>What would a test need to catch the <code>Math.round</code> mutant?</li><li>Why is an empty test file dangerous in an automated pipeline?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 A refactor, compared</h2>
+
+<p>A refactor changes how code reads without changing what it does. The first part is a matter of taste; the second can be checked. Here the model refactors the legacy <code>calc</code> of Chapter 5, and the program compares old and new on 500 random orders, including the edges:</p>
+
+<pre data-code="refactor.mjs" data-from="let seed" data-title="refactor.mjs (part)"></pre>
+<pre data-term="refactor.sh"></pre>
+
+<p>Not one difference in 500 orders, including the boundary at 20,000 and the customer type in small letters. The model even changed <code>==</code> to <code>===</code>, a change that could alter behaviour in general; the comparison is what tells you it does not here, because <code>c</code> is always a string. As for readability, judge for yourself: <code>options</code> is a strange name for an order, and <code>discount</code> for a flag that switches a discount on. The model made it modern, not necessarily clear.</p>
+
+<p>This technique, running two versions on the same inputs and comparing, is called <em>differential testing</em>, and it is the best friend of a refactor: it needs no expected values, only the old code, which you already have.</p>
+
+<h2>{{n}}.4 A review, scored</h2>
+
+<p>A model reviewer reads a diff and lists problems. To know how good it is, plant problems you know about and count which it finds. This diff has three: a password written to the log, a loop that runs one step too far, and a database insert that is not awaited.</p>
+
+<pre data-code="changes/save-order.diff" data-title="changes/save-order.diff"></pre>
+<pre data-term="review.sh"></pre>
+
+<p>Two of three. The secret and the off-by-one were found, though the second appears twice, once wrongly as an “infinite loop”. The missing <code>await</code> before <code>db.insert</code>, the one problem that would lose data silently in production, was not found; point 5 comes near it (“does not handle errors from <code>db.insert</code>”) without seeing that the inserts are never waited for. The rest of the list is generic advice that fits almost any function. A model reviewer is a useful first pass: it is fast, never tired, and good at the problems that look like problems. It is not a substitute for a person who knows how this database behaves.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Before you rely on any review tool, model or linter, run it on a change with problems you planted. It takes ten minutes and tells you what kind of problem it catches and what kind it misses. Then you know what you still have to look for yourself.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Judging tests by reading them</td><td>Suites that look thorough and catch little</td><td>Run them on mutants</td></tr>
+<tr><td>Expected values from the model</td><td>Tests that assert the model’s arithmetic</td><td>Examples from the specification; drop tests that fail on the real code</td></tr>
+<tr><td>Trusting a green run</td><td>Zero tests, reported as success</td><td>Count the tests that ran</td></tr>
+<tr><td>Accepting a refactor that “looks the same”</td><td>A changed edge case, found by users</td><td>Compare old and new on many inputs</td></tr>
+<tr><td>Treating a model review as complete</td><td>The quiet bug ships</td><td>Know what it misses; review the rest yourself</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Measure a test suite twice: it passes on the real code, and it fails on mutants with planted bugs.</li>
+<li>A model’s expected values can be wrong; keep only tests that pass on the real code, and take examples from the specification.</li>
+<li>A green run can mean no tests ran. Count them.</li>
+<li>Check a refactor by running old and new on the same inputs; it needs no expected values.</li>
+<li>Score a model reviewer on planted problems before you rely on it, and review what it misses yourself.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because it fails everywhere, on the real code and on every copy of it; its failure says nothing about the mutant. That is why only tests that pass on the real code are scored. 2. A price whose discount has a fraction of one half or more, so that rounding down and rounding up differ: for example <code>linePrice(155, 10)</code>, where the full price is 1,550 and a tenth of it is exactly 155, does not do it, but <code>linePrice(157, 11)</code> (1,727, a tenth is 172.7) does: 1,555 with <code>floor</code>, 1,554 with <code>round</code>. 3. It passes, so the pipeline reports success, the change is merged, and nothing was tested; the failure is invisible exactly when it matters.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects turn the chapter’s measurements into tools: edge cases run on the real function, a structured review with a score, and a loop that shows the model what its tests missed.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Edge cases, run</h3>
+<p class="project-goal">Ask for the inputs that test the function’s boundaries, and run each on the real function.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured output with a schema, and turning suggestions into executed checks.</p>
+<ol class="steps">
+<li>Ask for up to eight edge cases as <code>{unit, quantity, why}</code>.</li>
+<li>Call <code>linePrice</code> on each, catching errors.</li>
+<li>Print the input, the real result and the reason.</li>
+</ol>
+<pre data-code="edges.mjs" data-from="^for (const" data-to="^}" data-title="edges.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/edges.sh"></pre>
+<p class="hint"><strong>Hint:</strong> a good list: below, at and above the threshold, the cap, zero and an invalid quantity. And it has the same blind spot as the tests: no case where the discount has a fraction, so the <code>Math.round</code> mutant would survive these too. One reason also has a slip worth catching: for <code>0 × 10</code> it says “no discount applies, since quantity ≥ 10”, which is backwards. The results are right because they come from the function, not from the explanation.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A review with severities, scored</h3>
+<p class="project-goal">Ask for a review as a list of problems with severities, and score it against the planted problems.</p>
+<p class="project-skills"><strong>You will practise:</strong> schemas with enums and a minimum length, and scoring found, missed and extra items.</p>
+<ol class="steps">
+<li>Ask for <code>{severity, line, problem}</code> items, at least one and at most eight.</li>
+<li>Match each against the three planted problems.</li>
+<li>Print each with planted or other, and the totals.</li>
+</ol>
+<pre data-code="severity.mjs" data-from="^const planted" data-title="severity.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/severity.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the first version of this schema had no minimum, and the model returned an empty list: “no problems”. A schema guarantees a shape, and an empty list is a valid shape. The last item is close to the missing <code>await</code> (“may not be properly synchronized”) but never names it; the check does not count it, and neither should you: “something about synchronization” would not get the bug fixed.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Show the model what its tests missed</h3>
+<p class="project-goal">Give the model the surviving mutants and its tests, and score the tests it returns.</p>
+<p class="project-skills"><strong>You will practise:</strong> feeding measurements back, and checking that improvement is real.</p>
+<ol class="steps">
+<li>Score the kept tests; stop if no mutant survived.</li>
+<li>Send each surviving mutant, the real module and the tests, and ask for tests that fail on the broken versions.</li>
+<li>Score the answer, and check that it still passes on the real code.</li>
+</ol>
+<pre data-code="improve.mjs" data-from="^const broken" data-title="improve.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/improve.sh"></pre>
+<p class="hint"><strong>Hint:</strong> no improvement: still four of five. Killing this mutant needs one specific idea, a discount with a fraction above one half, and the model did not find it even when shown the exact change. Write that test yourself (Quick check 2 gives an input) and score again. Some gaps take a person who understands why the mutant survived.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a test for <code>linePrice(157, 11)</code> to the kept tests and score them again. Which mutant does it kill?</li>
+<li><span class="level">Easy</span> Add a fourth planted problem to the diff, such as returning before the commit, and run the review. Is it found?</li>
+<li><span class="level">Medium</span> Ask the model to refactor <code>calc.js</code> again, this time for clarity with names from the business (order, customer type, bulk discount). Run the 500-order comparison. Is it still the same function?</li>
+<li><span class="level">Medium</span> Write two more mutants for <code>price.mjs</code> that the kept tests would let through. What do they tell you about the tests?</li>
+<li><span class="level">Challenge</span> Make the review check stricter: a planted problem counts only if the review names the line and says what to change. How do the scores move, and which matters more for a real team?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Code that works and is tested still needs explaining: to the next developer, to users, and in the history of the project. The next chapter uses the model for documentation and commit messages, and checks that what it writes is true of the code.</p>
+</div>
+</section>
