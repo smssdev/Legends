@@ -1451,7 +1451,8 @@
           "chapters": [
             {
               "en": "Calling AI Models from Your Apps",
-              "ar": "استدعاء نماذج الذكاء الاصطناعي من تطبيقاتك"
+              "ar": "استدعاء نماذج الذكاء الاصطناعي من تطبيقاتك",
+              "src": "b7/apps"
             },
             {
               "en": "Retrieval: AI That Knows Your Data",

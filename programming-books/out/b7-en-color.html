@@ -31,6 +31,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "Chapter 12: AI Agents that Do Multi-Step Work"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "Chapter 13: Calling AI Models from Your Apps"; } }
+@page ch13:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -163,7 +165,7 @@ if (isMember && day === "Tuesday") {
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">161</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">172</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">161</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">183</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -4705,6 +4707,327 @@ console.log(<span class="s">`--- the tests, run by us: ${runTests(&quot;cafe3&qu
 <p>Part IV builds with AI: putting a model inside your own applications. The next chapter calls models from an app properly, with streaming, structured output, timeouts, retries and the same code for a local or a hosted model.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b7/apps/en">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">Chapter 13</p><h1>Calling AI Models from Your Apps</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>put a model behind one small interface, so the app does not care which model it is</li>
+<li>stream answers to users, and measure the time to the first words</li>
+<li>handle rate limits and failures with retries, and slowness with deadlines</li>
+<li>get structured data from a model that the app can use directly</li>
+<li>protect the service: input limits and per-user rate limits</li>
+</ul>
+</div>
+
+<p class="lead">Until now the model has been a tool for you, the developer. This part of the book puts it inside your applications, where it serves users who do not read prompts, do not wait patiently and do not forgive errors. The model call itself is one line; the engineering is everything around it: what the user sees while the model thinks, what happens when the provider is busy, how long to wait, what to send and what to refuse. This chapter builds those parts, small and tested, around the book’s model and a stand-in for a hosted one.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>No account or key was used in this chapter. The “hosted” model is a fake server written in thirty lines, which answers with errors on purpose, so that the retry code is tested against something real.</p></div></div>
+
+<h2><span class="sec">13.1</span> <span>One interface, any model</span></h2>
+
+<p>Your app should not know whether its model runs on your server or at a provider. Give every model the same shape, <code>complete({system, prompt, grammar, onText, signal})</code>, and write one implementation per kind:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/providers.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> hostedProvider({url = process.env.AI_URL, key = process.env.AI_KEY, model = <span class="s">&quot;any&quot;</span>} = {}) {
+  <span class="k">return</span> {
+    name: <span class="s">&quot;hosted&quot;</span>,
+    <span class="k">async</span> complete({system, prompt, signal}) {
+      <span class="k">const</span> response = <span class="k">await</span> fetch(<span class="s">`${url}/v1/chat/completions`</span>, {
+        method: <span class="s">&quot;POST&quot;</span>,
+        headers: {<span class="s">&quot;content-type&quot;</span>: <span class="s">&quot;application/json&quot;</span>, authorization: <span class="s">`Bearer ${key}`</span>},
+        body: JSON.stringify({
+          model,
+          temperature: <span class="n">0</span>,
+          messages: [
+            {role: <span class="s">&quot;system&quot;</span>, content: system},
+            {role: <span class="s">&quot;user&quot;</span>, content: prompt},
+          ],
+        }),
+        signal,
+      });
+      <span class="k">if</span> (!response.ok) {
+        <span class="k">const</span> error = <span class="k">new</span> Error(<span class="s">`HTTP ${response.status}`</span>);
+        error.status = response.status;
+        <span class="k">throw</span> error;
+      }
+      <span class="k">return</span> (<span class="k">await</span> response.json()).choices[<span class="n">0</span>].message.content;
+    },
+  };
+}</pre></div>
+
+<p>The hosted provider speaks the HTTP shape most providers accept: a list of messages in, a message out. Its URL and key come from the environment, never from the code. The local provider wraps the book’s model in the same shape. The application code then calls <code>provider.complete</code> and nothing else:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">same.mjs (part)</div><pre class="code"><span class="c line-bidi">// The application code is the same for both.</span>
+<span class="k">for</span> (<span class="k">const</span> provider <span class="k">of</span> providers) {
+  <span class="k">const</span> answer = <span class="k">await</span> withRetry(
+    () =&gt; provider.complete({system: <span class="s">&quot;You answer questions from customers of a café app. Answer in one or two short sentences.&quot;</span>, prompt: <span class="s">&quot;Can I use my loyalty card in both branches?&quot;</span>}),
+    {log: (line) =&gt; console.log(<span class="s">`[${provider.name}] ${line}`</span>)},
+  );
+  console.log(<span class="s">`[${provider.name}] ${answer.trim()}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node same.mjs</span>
+[local] Yes, your loyalty card is valid at both branches. Just show it when you make your purchase.
+[hosted] attempt 1: HTTP 429, waiting 200 ms
+[hosted] attempt 2: HTTP 429, waiting 400 ms
+[hosted] (fake model) you asked: Can I use my loyalty card in both branches?</pre></div>
+
+<p>Two providers, one loop. The hosted one is the fake API, which refuses the first two calls with <code>429 Too Many Requests</code>; the retry code waited 200 ms, then 400 ms, and the third call worked. Switching to a real provider changes two environment variables, not the app.</p>
+
+<p>Look at the local answer too: “Yes, your loyalty card is valid at both branches.” That happens to be true for this café, and the model had no way of knowing it. Nothing in the prompt said so; the model gave the most likely answer to the question. An app that answers customers needs to give the model the facts, which is the next chapter.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Keep the model’s name, the system prompt and the settings in configuration, next to the provider, not scattered through the code. Then trying a new model is a change in one place, and you can run the same test questions against two models to compare them before switching.</p></aside>
+
+<h2><span class="sec">13.2</span> <span>Retries and deadlines</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/retry.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> withRetry(call, {tries = <span class="n">4</span>, firstWait = <span class="n">200</span>, log = () =&gt; {}} = {}) {
+  <span class="k">for</span> (<span class="k">let</span> attempt = <span class="n">1</span>; ; attempt++) {
+    <span class="k">try</span> {
+      <span class="k">return</span> <span class="k">await</span> call();
+    } <span class="k">catch</span> (error) {
+      <span class="k">const</span> temporary = [<span class="n">429</span>, <span class="n">500</span>, <span class="n">502</span>, <span class="n">503</span>].includes(error.status) || error.code === <span class="s">&quot;ECONNRESET&quot;</span>;
+      <span class="k">if</span> (!temporary || attempt === tries) {
+        <span class="k">throw</span> error;
+      }
+      <span class="k">const</span> wait = firstWait * <span class="n">2</span> ** (attempt - <span class="n">1</span>);
+      log(<span class="s">`attempt ${attempt}: ${error.message}, waiting ${wait} ms`</span>);
+      <span class="k">await</span> <span class="k">new</span> Promise((resolve) =&gt; setTimeout(resolve, wait));
+    }
+  }
+}</pre></div>
+
+<p>Retry only what can succeed later: rate limits, temporary server errors, a dropped connection. A request refused for a bad key or a bad input fails the same way every time, and retrying it wastes time and money. Wait longer each time, so a busy provider gets room to recover, and stop after a few tries, so a user is not left waiting forever.</p>
+
+<p>And give every call a deadline. A user will not wait a minute for an answer; after a few seconds, a fallback (“we are busy, please try again”) is better than a spinner:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">timeout.mjs (part)</div><pre class="code"><span class="k">try</span> {
+  <span class="k">await</span> provider.complete({system: <span class="s">&quot;You answer questions from customers of a café app. Answer in one or two short sentences.&quot;</span>, prompt: <span class="s">&quot;Can I use my loyalty card in both branches?&quot;</span>, signal: deadline(<span class="n">500</span>)});
+  console.log(<span class="s">&quot;answered in time&quot;</span>);
+} <span class="k">catch</span> (error) {
+  console.log(<span class="s">`${error.name} after ${Math.round(performance.now() - start)} ms: the app shows a fallback`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node timeout.mjs</span>
+TimeoutError after 638 ms: the app shows a fallback</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Retries multiply cost: a request that is retried three times is paid for up to four times, and a retry loop in every one of a thousand users’ requests can turn a provider’s short outage into a long one. Retry with growing waits, cap the attempts, and never retry a request that changes something (an order, a payment) unless it carries an idempotency key.</p></aside>
+
+<h2><span class="sec">13.3</span> <span>Streaming</span></h2>
+
+<p>A model writes its answer token by token. Sending each piece to the user as it arrives makes a slow model feel fast:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">service.mjs (part)</div><pre class="code"><span class="k">const</span> server = http.createServer(<span class="k">async</span> (request, response) =&gt; {
+  <span class="k">const</span> url = <span class="k">new</span> URL(request.url, <span class="s">&quot;http://x&quot;</span>);
+  <span class="k">const</span> question = url.searchParams.get(<span class="s">&quot;q&quot;</span>) ?? <span class="s">&quot;&quot;</span>;
+  response.writeHead(<span class="n">200</span>, {<span class="s">&quot;content-type&quot;</span>: <span class="s">&quot;text/plain; charset=utf-8&quot;</span>});
+  <span class="k">try</span> {
+    <span class="k">await</span> provider.complete({
+      system,
+      prompt: question,
+      signal: deadline(60_000),
+      onText: (text) =&gt; response.write(text),
+    });
+  } <span class="k">catch</span> (error) {
+    response.write(<span class="s">`\n[error: ${error.message}]`</span>);
+  }
+  response.end();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh demo.sh</span>
+Yes, your loyalty card is valid at both branches. Just show it when you make your purchase.
+--- first piece after 0.7 s, whole answer after 2.8 s</pre></div>
+
+<p>The first words arrived after 0.7 seconds, the whole answer after 2.8. Without streaming, the user stares at nothing for 2.8 seconds; with it, they start reading at once. The answer is the same, and the experience is not.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which errors should be retried, and which should not?</li><li>What does streaming change: the time to the whole answer, or the time to the first words?</li><li>Why did the local model say the card works in both branches?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">13.4</span> <span>Structured answers</span></h2>
+
+<p>When the app, not a person, reads the answer, ask for data. The schema of Chapter 3, through the same interface:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">structured.mjs (part)</div><pre class="code"><span class="k">const</span> answer = <span class="k">await</span> provider.complete({system: <span class="s">&quot;Extract the order as JSON: customer, and items with drink, size and count.&quot;</span>, prompt: <span class="s">&quot;two large lattes and a small tea for Mona&quot;</span>, grammar});
+<span class="k">const</span> order = JSON.parse(answer);
+console.log(JSON.stringify(order, <span class="k">null</span>, <span class="n">2</span>));
+<span class="c line-bidi">// The app works with an object, not with text.</span>
+<span class="k">const</span> cups = order.items.reduce((sum, item) =&gt; sum + item.count, <span class="n">0</span>);
+console.log(<span class="s">`--- ${order.customer}: ${cups} cups`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node structured.mjs</span>
+{
+  &quot;customer&quot;: &quot;Mona&quot;,
+  &quot;items&quot;: [
+    {
+      &quot;drink&quot;: &quot;latte&quot;,
+      &quot;size&quot;: &quot;large&quot;,
+      &quot;count&quot;: 2
+    },
+    {
+      &quot;drink&quot;: &quot;tea&quot;,
+      &quot;size&quot;: &quot;small&quot;,
+      &quot;count&quot;: 1
+    }
+  ]
+}
+--- Mona: 3 cups</pre></div>
+
+<p>The app parsed the answer and added up the cups: an object, not a sentence. Hosted providers offer the same with a JSON schema parameter. Validate the values anyway, as Chapter 3 showed: a schema makes the shape certain, not the content.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Log every model call your app makes: the provider, the model, the prompt’s size in tokens, the time to the first token and to the end, the outcome. Without those numbers you cannot tell whether a complaint is about the model, the provider or your code, and you cannot see what the feature costs.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Provider code throughout the app</td><td>Changing models means changing everything</td><td>One interface; implementations behind it</td></tr>
+<tr><td>Keys in the code</td><td>Secrets in the repository and the logs</td><td>Keys from the environment or a secret manager</td></tr>
+<tr><td>Retrying everything, forever</td><td>Wasted money, longer outages</td><td>Retry temporary errors only, with backoff and a cap</td></tr>
+<tr><td>No deadline</td><td>Users waiting on a hung request</td><td>An abort signal on every call, and a fallback</td></tr>
+<tr><td>Waiting for the whole answer</td><td>A slow feeling, even for fast answers</td><td>Stream the tokens</td></tr>
+<tr><td>Free text for the app to read</td><td>Parsing that breaks</td><td>A schema, and validation of values</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Put every model behind one small interface; local and hosted models then look the same to the app.</li>
+<li>Retry temporary failures with growing waits and a limit; give every call a deadline and a fallback.</li>
+<li>Stream answers: the total time is the same, but users start reading at once.</li>
+<li>Ask for structured output when the app reads the answer, and validate it.</li>
+<li>Protect the service with input limits and per-user rate limits, and log every call.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Retry rate limits (429), temporary server errors (500, 502, 503) and dropped connections; do not retry a bad key (401), a bad request (400) or anything that would change something without an idempotency key. 2. The time to the first words: the whole answer takes as long as before. 3. Because it is the most likely answer to that question in general; nothing told the model the café’s rules. It happened to be true.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects protect a model behind an app: from inputs that are too large, and from users who send too much.</p>
+
+<div class="project">
+<p class="project-label">Project 13.1 · Easy</p>
+<h3>An input guard</h3>
+<p class="project-goal">Refuse input above a token limit before it reaches the model, with a clear error.</p>
+<p class="project-skills"><strong>You will practise:</strong> counting tokens, and refusing early.</p>
+<ol class="steps">
+<li>Count the input’s tokens with the model’s tokenizer.</li>
+<li>Return ok, or an error that says the size and the limit.</li>
+<li>Try a short question and a very long one.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">guard.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> check(text) {
+  <span class="k">const</span> tokens = model.tokenize(text).length;
+  <span class="k">return</span> tokens &lt;= LIMIT ? {ok: <span class="k">true</span>, tokens} : {ok: <span class="k">false</span>, tokens, error: <span class="s">`too long: ${tokens} tokens, limit ${LIMIT}`</span>};
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node guard.mjs</span>
+{&quot;ok&quot;:true,&quot;tokens&quot;:10}
+{&quot;ok&quot;:false,&quot;tokens&quot;:406,&quot;error&quot;:&quot;too long: 406 tokens, limit 200&quot;}</pre></div>
+<p class="hint"><strong>Hint:</strong> count tokens, not characters: the limit that matters is the model’s, and Arabic text takes about twice as many tokens per word (Chapter 1). A hosted provider bills the long input whether or not the answer is useful; refusing it costs nothing.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 13.2 · Medium</p>
+<h3>A streaming client</h3>
+<p class="project-goal">Read the service’s answer as a stream, and measure the first piece and the whole.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading a response body as it arrives, and timing what users feel.</p>
+<ol class="steps">
+<li>Fetch the service and iterate over <code>response.body</code>.</li>
+<li>Record the time of the first chunk.</li>
+<li>Print the answer and both times.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">client.mjs</div><pre class="code"><span class="c line-bidi">// Asks the service, printing the answer as it streams, with the time to</span>
+<span class="c line-bidi">// the first piece.</span>
+<span class="k">const</span> question = process.argv[<span class="n">2</span>];
+<span class="k">const</span> start = performance.now();
+<span class="k">const</span> response = <span class="k">await</span> fetch(<span class="s">`http://localhost:8765/?q=${encodeURIComponent(question)}`</span>);
+<span class="k">let</span> first = <span class="n">0</span>;
+<span class="k">let</span> text = <span class="s">&quot;&quot;</span>;
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> chunk <span class="k">of</span> response.body) {
+  first ||= performance.now() - start;
+  text += <span class="k">new</span> TextDecoder().decode(chunk);
+}
+<span class="k">const</span> total = performance.now() - start;
+console.log(text.trim());
+console.log(<span class="s">`--- first piece after ${(first / 1000).toFixed(1)} s, whole answer after ${(total / 1000).toFixed(1)} s`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh demo.sh</span>
+Yes, your loyalty card is valid at both branches. Just show it when you make your purchase.
+--- first piece after 0.7 s, whole answer after 2.8 s</pre></div>
+<p class="hint"><strong>Hint:</strong> in a browser, the same body can be read with <code>response.body.getReader()</code>, and each piece appended to the page. Most hosted APIs stream in the server-sent events format, a line per piece starting with <code>data:</code>; parse those lines instead of raw text.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 13.3 · Challenge</p>
+<h3>A per-user rate limit</h3>
+<p class="project-goal">Allow each user at most three requests a minute, and answer 429 to the rest.</p>
+<p class="project-skills"><strong>You will practise:</strong> sliding windows, and testing time-based code with a fake clock.</p>
+<ol class="steps">
+<li>Keep, per user, the times of their recent requests.</li>
+<li>Drop the ones older than a minute; refuse if three remain.</li>
+<li>Test with a fake clock, not by waiting.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">limit.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> allow(user, now = Date.now()) {
+  <span class="k">const</span> recent = (seen.get(user) ?? []).filter((t) =&gt; now - t &lt; WINDOW);
+  <span class="k">if</span> (recent.length &gt;= MAX) {
+    seen.set(user, recent);
+    <span class="k">return</span> <span class="k">false</span>;
+  }
+  seen.set(user, [...recent, now]);
+  <span class="k">return</span> <span class="k">true</span>;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node limit.mjs</span>
+  1 s  mona  allowed
+  2 s  mona  allowed
+  3 s  omar  allowed
+  4 s  mona  allowed
+  5 s  mona  429 too many requests
+ 66 s  mona  allowed</pre></div>
+<p class="hint"><strong>Hint:</strong> Mona’s fourth request in a minute is refused, Omar is not affected, and a minute later Mona is allowed again. Passing the time in, rather than reading the clock inside, is what made this testable in a millisecond. On several servers, keep the times in a shared store such as Redis.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Call the fake API with a wrong key (it answers 401). How many attempts does <code>withRetry</code> make, and why?</li>
+<li><span class="level">Easy</span> Add the time of each call and the provider’s name to a log line, as the professional habit suggests.</li>
+<li><span class="level medium">Medium</span> Add streaming to the hosted provider, reading server-sent events from the response. Test it against a fake server that sends three <code>data:</code> lines.</li>
+<li><span class="level medium">Medium</span> Use the guard and the rate limit in <code>service.mjs</code>: refuse long questions with 413 and too many requests with 429.</li>
+<li><span class="level hard">Challenge</span> Add a fallback provider: if the hosted one fails after its retries, answer with the local model, and mark the answer as such. What should the user see?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 14</p>
+<p>The local model answered a question about the café’s rules from nowhere. The next chapter gives it the café’s own documents to answer from: retrieval, embeddings and search, so that an assistant knows your data, and says so when it does not.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4885,6 +5208,16 @@ Add the known rows of Project 11.3, plus the two that failed, as a <code>node:te
 <li>A search tool lets the agent find the line it needs in one call instead of reading files one by one, and a read limit stops an agent that reads the whole project out of uncertainty. Count the steps before and after; then run the tests yourself, as always, to see whether the fix still happens.</li>
 <li>With a test the code cannot pass, the agent writes, runs the tests, sees a failure, writes again, and so on. It may also try to change the test, which <code>allowed</code> refuses. What stops it is the step limit, and the log shows every attempt. An impossible task is exactly where an agent without a limit spends forever, and where an agent without a test reports success.</li>
 <li>Create the branch with <code>git switch -c agent/fix</code>, commit after each successful <code>writeFile</code> with a message naming the file, run the tests at the end, and print <code>git diff main</code>. Before letting it open a pull request on its own: tests that must pass, a policy that limits it to the code it may change, a step and cost budget, a human reviewer required on the pull request, and no access to secrets or to merging. Opening a pull request is safe; merging one is a person’s decision.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 13</h2>
+<ol class="exercises">
+<li>One. A 401 is not in the list of temporary errors, so <code>withRetry</code> throws at once: a wrong key will be just as wrong in 200 milliseconds. Retrying it would multiply the waiting and, at a real provider, could look like an attack and get the key blocked.</li>
+<li>Wrap <code>complete</code>: note the start, await the call, and write one line such as <code>{"provider":"hosted","ms":812,"ok":true}</code>, also on failure, with the error. One structured line per call is enough to answer “is it slow?”, “is it failing?” and “which provider?” later.</li>
+<li>Send <code>stream: true</code>, read <code>response.body</code> as text, split it into lines, take the ones that start with <code>data: </code>, stop at <code>data: [DONE]</code>, parse the JSON of the others and pass each piece of text to <code>onText</code>. A fake server that writes three such lines with small pauses tests it without any account.</li>
+<li>Before calling the provider: if <code>check(question)</code> fails, answer <code>413</code> with its error; if <code>allow(user)</code> is false, answer <code>429</code> with a <code>Retry-After</code> header. Both refusals cost nothing and protect the model for everyone else.</li>
+<li>Wrap the call: try the hosted provider with retries; if it still fails, call the local provider and add <code>fallback: true</code> to the result. The user should see a normal answer, perhaps with a small note (“answered by our backup assistant”) if the backup is noticeably weaker. Log every fallback: many of them mean the main provider needs attention.</li>
 </ol>
 
 </section>
