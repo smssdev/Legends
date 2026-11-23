@@ -1,0 +1,19 @@
+<ol class="exercises">
+<li>With a field whose name says what to put in it (<code>exactText</code>, “copied exactly from the code, such as <code>t &gt; 20000</code>”), the model has one reading instead of two. The Arabic edition’s run shows what to expect: with clear quotes, all five terms were found. Whatever your count, the check stays: a quoted text that does not occur in the code is either a typo or an invention, and both must be fixed before the glossary is used.</li>
+<li>For example: <code>// 500 piastres (5 pounds) off for customer type "VIP", exactly as written (case-sensitive), after the bulk discount; the total never goes below 0.</code> Each part answers one wrong prediction: the unit, the exact spelling, the order of the two discounts, and the floor. A comment is the cheapest place to keep what reading cost you an hour to learn.</li>
+<li>Expect it between the two: it states the four rules, so it is far more useful than the vague one, but it leaves out the flag <code>d</code> and the capitals, so any call with <code>d</code> false or with <code>"vip"</code> is predicted wrong. The omissions that cost most are the ones that change the result for many orders: the flag first, then the boundary. Remember that the checker also measures the model’s arithmetic; a person applying the same explanation would get further.</li>
+<li>Names such as <code>order</code>, <code>bulkDiscount</code>, <code>total</code>, <code>lines</code>, <code>price</code>, <code>quantity</code> and <code>customerType</code> give the model, and the next person, the meaning that one-letter names hid: summaries describe a café order instead of “a weighted sum of values”. Predictions may still fail on the boundary and the floor, because those are rules, not names: renaming improves explanations of <em>what</em>, not the reading of every condition.</li>
+<li>These tests pin all four behaviours, and pass against the code as it is:
+<pre class="plain" dir="ltr">test("10% off only above 20000, and only when d is true", () =&gt; {
+  assert.equal(calc(order("STD", 2500, 10), true), 22500);
+  assert.equal(calc(order("STD", 2500, 10), false), 25000);
+  assert.equal(calc(order("STD", 10000, 2), true), 20000);
+});
+
+test("VIP, in capitals only, takes 500 off, never below 0", () =&gt; {
+  assert.equal(calc(order("VIP", 4500, 2), true), 8500);
+  assert.equal(calc(order("vip", 4500, 2), true), 9000);
+  assert.equal(calc(order("VIP", 300, 1), true), 0);
+});</pre>
+They are worth more than any explanation because they cannot drift: if someone “fixes” the case-sensitivity or the boundary, a test fails and says exactly which rule changed. An explanation is read once; a test is run on every change, for years.</li>
+</ol>

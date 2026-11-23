@@ -1,0 +1,163 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/reading/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Reading and Explaining Unfamiliar Code</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>get a first map of a project you have never seen</li>
+<li>turn an explanation into predictions, and check them by running the code</li>
+<li>check “where is this decided?” answers with a search</li>
+<li>spot the confident details an explanation adds that the code does not say</li>
+<li>build small tools that summarise files and collect a project’s vocabulary, with checks</li>
+</ul>
+</div>
+
+<p class="lead">Most code a developer touches was written by someone else: a colleague who left, a library, yourself three years ago. Reading it is slow, and this is where assistants shine: they read fast, never get bored, and explain in plain words. They also explain with the same confidence whether they understood or not. This chapter reads a small legacy project with the book’s model, and checks every claim it makes against the only authority there is: the code, running.</p>
+
+<aside class="bit" data-mood="think"><p>The model’s explanation in this chapter reads well and is mostly right. Its predictions, with the code in front of it, were right three times out of six. The gap between those two numbers is what this chapter is about.</p></aside>
+
+<h2>{{n}}.1 The project</h2>
+
+<p>A nightly job from an older code base: CommonJS, callbacks, one-letter names, and a comment that says “do not touch”. It reads orders, computes each total, and prints a report. Amounts are in piastres.</p>
+
+<pre data-code="legacy/lib/calc.js" data-title="legacy/lib/calc.js"></pre>
+<pre data-term="run.sh"></pre>
+
+<h2>{{n}}.2 A first map</h2>
+
+<p>The first question about a new project is not “what does this line do?” but “what is here, and where does it start?” Give the model every file, with its path, and ask for a map:</p>
+
+<pre data-code="lib/ask.mjs" data-from="^export function readProject" data-to="^}" data-title="lib/ask.mjs (part)"></pre>
+<pre data-term="map.sh"></pre>
+
+<p>That map is right, and it took seconds. It also contains the first small invention: <code>calc.js</code> does not apply a “tax reduction”; it applies a discount. A map is a starting point for reading, not a substitute for it. And it only works for a project that fits in the context: for a large one, give the model the file list and the files you are asking about, as Chapter 2 showed.</p>
+
+<h2>{{n}}.3 An explanation, then predictions</h2>
+
+<p>Ask for the central function in the words of the people who use it:</p>
+
+<pre data-term="explain.sh"></pre>
+
+<p>It reads well, and most of it is right. Now read it against the code, line by line. “Over $20,000”: the amounts are piastres, so the limit is 200 pounds, and the currency was invented. “If the total is more than 20,000, take away 10%”: only when <code>d</code> is true, which the explanation never mentions. “If it’s a VIP customer”: only if <code>c</code> is exactly <code>"VIP"</code>, in capitals. Each omission is small. Each is a bug report if someone builds on the explanation.</p>
+
+<p>The quickest way to find such gaps is to turn understanding into predictions. This program shows the model the code, asks what six calls return, and then runs them:</p>
+
+<pre data-code="predict.mjs" data-from="^const calls" data-title="predict.mjs (part)"></pre>
+<pre data-term="predict.sh"></pre>
+
+<p>Three of six. With the code in front of it, the model missed the 10% discount on the 25,000 order, the floor at zero for a small VIP order (it said 2,500), and the boundary: it gave the order of exactly 20,000 a discount, but <code>t &gt; 20000</code> is false there. It did get <code>"vip"</code> in small letters right, and the Arabic edition’s run did not: it predicted 1 of 6. The cases were chosen on purpose: the boundary (exactly 20,000), the flag off, the floor, the spelling. Those are the places where unfamiliar code hides its rules, and where explanations go soft.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>When you need to understand a function, do not stop at an explanation. Write five calls that probe its edges, predict the results from the explanation, and run them. Where the prediction fails, the explanation was wrong or incomplete, and you now know exactly where to read.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did the explanation say “$20,000”?</li><li>What did the call with <code>"vip"</code> reveal about the code?</li><li>Why are boundary values like exactly 20,000 good test calls?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Where is it decided?</h2>
+
+<p>A question you will ask a hundred times in an unfamiliar code base: where does this rule live? The model can answer, and the answer can be checked in a second:</p>
+
+<pre data-code="where.mjs" data-from="^console.log(await" data-title="where.mjs (part)"></pre>
+<pre data-term="where.sh"></pre>
+
+<p>The file and the line are right, and <code>grep</code> confirms them. The rest of the answer is long and adds two more inventions: “$500” (it is 500 piastres, five pounds), and “only if the order total is above a certain threshold”, which the line it just quoted plainly does not say. The model quoted the right line and then described a different one.</p>
+
+<p>That is the general shape of these answers: the parts you can check mechanically (a file, a line, a name) are usually right, and the prose around them is where the errors are. So take the pointer, check it, and read the code it points to yourself.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>When you learn something about unfamiliar code, write it down where the next person will find it: a comment on the cryptic line, a test that pins the surprising behaviour (“lowercase vip gets no discount”), a line in the README. The model’s explanation disappears with the conversation; a test stays and keeps checking.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Taking a fluent explanation as understanding</td><td>Conditions and edge cases silently dropped</td><td>Predict results from it, and run the code</td></tr>
+<tr><td>Trusting units and names in an explanation</td><td>Dollars where the code has piastres</td><td>Check every unit and name against the code</td></tr>
+<tr><td>Accepting “where” answers in full</td><td>A right line with a wrong description</td><td>Keep the pointer, check it, read the line</td></tr>
+<tr><td>Mapping a large project by pasting it all</td><td>Files dropped or the context overflows</td><td>The file list first, then the files that matter</td></tr>
+<tr><td>Leaving what you learned in the chat</td><td>The next person starts from zero</td><td>A comment, a test, a line in the README</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>An assistant gives a fast first map of an unfamiliar project; use it to decide where to read.</li>
+<li>An explanation is a set of claims. Turn them into predictions on edge cases, and run the real code.</li>
+<li>Pointers (files, lines, names) are easy to check and usually right; the prose around them is where errors hide.</li>
+<li>Watch for invented details: units, currencies, conditions and thresholds that the code does not contain.</li>
+<li>Keep what you learn in the code base: comments and tests outlive the conversation.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Nothing in the code says what the unit is; “20000” and a discount look like money, and dollars are the most common currency in the text the model learned from. The data are in piastres. 2. That the comparison is case-sensitive: only <code>"VIP"</code> in capitals gets the 500 off, so a customer type typed in small letters silently gets nothing. 3. Because a condition such as <code>t &gt; 20000</code> behaves differently exactly there; an explanation that says “over 20,000” cannot tell you whether 20,000 itself counts.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects turn the chapter’s checks into tools you can run on any project you inherit.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>One line per file</h3>
+<p class="project-goal">Summarise every JavaScript file of a folder in one line, each from its own text only.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking a folder, one request per file, and short answers.</p>
+<ol class="steps">
+<li>List the <code>.js</code> files of the folder, in order.</li>
+<li>Ask for a one-line description of each, in a fresh request.</li>
+<li>Print the path and the first line of the answer.</li>
+</ol>
+<pre data-code="summary.mjs" data-from="^const folder" data-title="summary.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/summary.sh"></pre>
+<p class="hint"><strong>Hint:</strong> “a weighted sum of values” for <code>calc.js</code> is technically true and useless to a newcomer: the one-letter names gave the model nothing to go on. And <code>report.js</code> takes “a discount value”: it is a flag, true or false. Summaries of code with poor names are poor; improving the names helps the next human and the next model.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Check an explanation, not the code</h3>
+<p class="project-goal">Give the model only an explanation, ask it to predict results from it, and compare with the real function.</p>
+<p class="project-skills"><strong>You will practise:</strong> measuring an explanation, structured answers with a schema, and comparing with reality.</p>
+<ol class="steps">
+<li>Write two explanations: a vague one and an exact one.</li>
+<li>For each, ask for the results of the six calls using only that explanation, as an array of numbers.</li>
+<li>Compare each prediction with <code>calc</code> itself.</li>
+</ol>
+<pre data-code="checker.mjs" data-from="^export async function checkExplanation" data-to="^}" data-title="checker.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/checker.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the vague explanation scored 0: it cannot be used to compute anything, so the model just repeated the prices. The exact one did better, 2 of 6, but not 6: with correct rules, the model still made arithmetic slips (18,000 for an order of exactly 20,000, which gets no discount). The checker measures two things at once, the explanation and the model’s arithmetic; to measure only the explanation, have a person, or a calculator tool, apply it.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A glossary, checked against the code</h3>
+<p class="project-goal">Collect the project’s business terms with the exact text that represents each in the code, and check that every quoted text exists.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured extraction with a schema, and mechanical checks of what a model quotes.</p>
+<ol class="steps">
+<li>Give the model the code and data, and a schema: an array of objects with <code>term</code>, <code>inCode</code> and <code>meaning</code>.</li>
+<li>For each term, search the code for the quoted <code>inCode</code>.</li>
+<li>Print found or missing, with the meaning.</li>
+</ol>
+<pre data-code="glossary.mjs" data-from="^const text" data-title="glossary.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/glossary.sh"></pre>
+<p class="hint"><strong>Hint:</strong> every term is “missing”, and the check is right: the model put <code>"Yes"</code> in every <code>inCode</code> field. It read <code>inCode</code> as a question, “is it in the code?”, not as “the text in the code”. The schema guaranteed the shape and could not guarantee the meaning of a badly named field. The meanings themselves are mostly good, apart from the “$20,000” and “$500” again. In the Arabic edition, the same schema and an Arabic prompt got five terms, each quoted correctly (<code>t &gt; 20000</code>, <code>x.p</code>…), and all five were found. Rename the field to <code>exactText</code>, say “copied exactly from the code” in the prompt, and run it again.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Rename the glossary field from <code>inCode</code> to <code>exactText</code>, describe it in the prompt, and run <code>glossary.mjs</code> again. How many terms are found now?</li>
+<li><span class="level">Easy</span> Write a comment for the VIP line of <code>calc.js</code> that would have prevented each of the three wrong predictions about it.</li>
+<li><span class="level">Medium</span> Add the explanation from Section {{n}}.3 to the checker as a third explanation. How does it score against the vague and the exact ones, and which of its omissions cost the most?</li>
+<li><span class="level">Medium</span> Rename the one-letter names in <code>calc.js</code> (<code>o</code>, <code>d</code>, <code>t</code>, <code>l</code>, <code>p</code>, <code>q</code>, <code>c</code>) to meaningful ones, without changing behaviour, and run <code>summary.mjs</code> and <code>predict.mjs</code> again. What changes?</li>
+<li><span class="level">Challenge</span> Write node tests that pin the behaviour Section {{n}}.3 discovered: the boundary at 20,000, the flag, the floor, and the case of <code>"VIP"</code>. Why are those tests worth more to the next developer than the model’s explanation?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Reading code is how you find out what it does. Debugging is how you find out why it does something else. The next chapter debugs real failures with the model: reading stack traces, forming hypotheses, and testing them, with the model as a fast, fallible partner.</p>
+</div>
+</section>
