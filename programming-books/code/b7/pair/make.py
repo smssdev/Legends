@@ -15,11 +15,13 @@ SPEC_EN = ("splitBill(total, people, tipPercent) splits a café bill. total is i
            "a whole number of at least 1, tipPercent is a whole number such as 10. The tip is total * tipPercent / "
            "100, rounded to the nearest piastre. It returns an array with one integer amount per person, adding up "
            "exactly to total plus tip; when it does not divide evenly, the first people pay one piastre more. It "
-           "throws a RangeError if people is less than 1.")
+           "throws a RangeError if people is less than 1. Examples: splitBill(1000, 3, 10) is [367, 367, 366]; "
+           "splitBill(995, 2, 15) is [572, 572]; splitBill(1000, 4, 0) is [250, 250, 250, 250].")
 SPEC_AR = ("الدالة splitBill(total, people, tipPercent) تقسم فاتورة مقهى. total بالقروش (عدد صحيح)، وpeople عدد صحيح "
            "لا يقل عن 1، وtipPercent عدد صحيح مثل 10. البقشيش هو total * tipPercent / 100، مقرّباً لأقرب قرش. وتعيد "
            "مصفوفة فيها مبلغ صحيح لكل شخص، مجموعها بالضبط total مع البقشيش؛ وحين لا تنقسم بالتساوي، يدفع الأوائل "
-           "قرشاً زائداً. وترمي RangeError إن كان people أقل من 1.")
+           "قرشاً زائداً. وترمي RangeError إن كان people أقل من 1. أمثلة: splitBill(1000, 3, 10) تعيد [367, 367, 366]؛ "
+           "وsplitBill(995, 2, 15) تعيد [572, 572]؛ وsplitBill(1000, 4, 0) تعيد [250, 250, 250, 250].")
 
 T = {
     "en": dict(
@@ -33,6 +35,9 @@ T = {
               "block.",
         w_fix_tests="These tests do not run: they fail before testing anything, with this output. Fix the test file. "
                     "Return only the code, in one code block.",
+        w_hint="A hint from the developer: assert is the default export of node:assert/strict; node:test does "
+               "not provide it.",
+        w_c_hint="If the model cannot fix its own tests, the developer adds what they know, as a pair would.",
         w_c_red="Before any code: run the tests against an empty splitBill. They must fail on their assertions, "
                 "not because the test file itself is broken.",
         w_task="Write a function that loads the menu from menu.json.",
@@ -58,6 +63,8 @@ T = {
         w_fix="فشلت الاختبارات بهذه المخرجات. أصلح bill.mjs (لا الاختبارات). أعِد الكود فقط، في كتلة كود واحدة.",
         w_fix_tests="هذه الاختبارات لا تعمل: تفشل قبل أن تختبر شيئاً، بهذه المخرجات. أصلح ملف الاختبارات. "
                     "أعِد الكود فقط، في كتلة كود واحدة.",
+        w_hint="تلميح من المطور: assert هو التصدير الافتراضي لـ node:assert/strict؛ وnode:test لا يقدّمه.",
+        w_c_hint="إن لم يستطع النموذج إصلاح اختباراته، يضيف المطور ما يعرفه، كما يفعل الزميل في البرمجة الثنائية.",
         w_c_red="قبل أي كود: شغّل الاختبارات على splitBill فارغة. يجب أن تفشل في تأكيداتها، "
                 "لا لأن ملف الاختبارات نفسه معطوب.",
         w_task="اكتب دالة تحمّل القائمة من menu.json.",
@@ -176,7 +183,7 @@ const spec = "{w_spec}";
 // {w_c_steps}
 console.log("== plan\\n" + (await ask(`{w_plan}\\n\\n${spec}`)));
 
-let tests = codeOf(await ask(`${spec}\\n\\n{w_tests}`));
+let tests = codeOf(await ask(`${spec}\\n\\n{w_tests}`)) ?? "";
 const count = tests.match(/\\btest\\(|\\bit\\(/g)?.length ?? 0;
 console.log(`== tests: bill/bill.test.mjs, ${count} tests`);
 
@@ -192,7 +199,12 @@ for (let round = 1; ; round++) {
   if (fine || round === 3) {
     break;
   }
-  const request = `${spec}\\n\\nbill.test.mjs:\\n${tests}\\n\\n{w_fix_tests}\\n${result.output.slice(0, 1500)}`;
+  // {w_c_hint}
+  const hint = round > 1 ? "\\n{w_hint}" : "";
+  const request = `${spec}\\n\\nbill.test.mjs:\\n${tests}\\n\\n{w_fix_tests}${hint}\\n${failures(result.output)}`;
+  if (hint) {
+    console.log(`   (the developer adds: {w_hint})`);
+  }
   tests = codeOf(await ask(request)) ?? tests;
 }
 
