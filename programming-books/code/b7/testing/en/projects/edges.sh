@@ -1,0 +1,7 @@
+$ node edges.mjs
+     1 x 1    = 1          This is the minimum valid input (unit=1, quantity=1), which tests the base case where no discount applies. It ensures the function works correctly with the smallest valid inputs and does not trigger the 10% off rule.
+    10 x 10   = 90         This triggers the 10% off discount (quantity >= 10). It tests the boundary where the discount starts to apply. The full price is 100, and the discount is 10 (10% of 100), so the result is 90. This validates the discount logic at the exact threshold.
+  1000 x 10   = 9000       This tests a high unit price with the discount applied. The full price is 10,000, and the discount is min(1000, 5000) = 1000, so the result is 9000. This ensures the 'never more than 5000 off' cap works correctly.
+  1000 x 20   = 18000      This tests a case where the discount exceeds the 10% threshold. The full price is 20,000, and the discount is min(2000, 5000) = 2000, so the result is 18,000. This confirms the discount is capped at 5000 piastres.
+     0 x 10   = 0          This tests edge case where unit price is zero. The full price is zero, so discount is zero. This ensures the function handles zero unit price correctly without errors.
+     1 x 0    = RangeError This triggers the RangeError because quantity must be at least 1. It tests the boundary condition that prevents invalid inputs, ensuring the function enforces the domain constraint.

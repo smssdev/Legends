@@ -14,7 +14,7 @@ from kit import chapter  # noqa: E402
 
 T = {
     "en": dict(
-        w_tests="Write tests for this module with node:test, importing assert from node:assert/strict and "
+        w_tests="Write tests for this module, importing test from node:test, assert from node:assert/strict and "
                 "linePrice from ./price.mjs. Cover normal cases and every boundary. Return only the code, in one "
                 "code block.",
         w_refactor="Refactor this file for readability: modern JavaScript, clear names, no var. It must behave "
@@ -35,9 +35,12 @@ T = {
         w_c_edges="Run each edge case on the real function and show the result.",
         w_c_severity="Score the review: planted problems found, and anything else it reported.",
         w_c_loop="Show the model the mutants its tests missed, and score the new tests.",
+        w_fix_tests="Some of these tests fail on the real module, so they are wrong. Fix the expected values "
+                    "(not the module). Return the complete test file, in one code block.",
+        w_c_wrong="A test that fails on the real code is a wrong test: send the failures back once.",
     ),
     "ar": dict(
-        w_tests="اكتب اختبارات لهذه الوحدة بـ node:test، مستورداً assert من node:assert/strict وlinePrice من "
+        w_tests="اكتب اختبارات لهذه الوحدة، مستورداً test من node:test وassert من node:assert/strict وlinePrice من "
                 "./price.mjs. غطِّ الحالات العادية وكل حد. أعِد الكود فقط، في كتلة كود واحدة.",
         w_refactor="أعد هيكلة هذا الملف ليكون أسهل قراءة: JavaScript حديثة، وأسماء واضحة، وبلا var. ويجب أن "
                    "يتصرف بالضبط كما هو لكل مدخل، وأن يُبقي module.exports = {calc}. أعِد الكود فقط، في كتلة كود "
@@ -56,6 +59,9 @@ T = {
         w_c_edges="شغّل كل حالة حدّية على الدالة الحقيقية واعرض النتيجة.",
         w_c_severity="قيّم المراجعة: المشكلات المزروعة التي وجدتها، وكل ما ذكرته غيرها.",
         w_c_loop="أرِ النموذج النسخ المتحوّرة التي فاتت اختباراته، وقيّم الاختبارات الجديدة.",
+        w_fix_tests="بعض هذه الاختبارات يفشل على الوحدة الحقيقية، فهي خاطئة. أصلح القيم المتوقعة "
+                    "(لا الوحدة). أعِد ملف الاختبارات كاملاً، في كتلة كود واحدة.",
+        w_c_wrong="الاختبار الذي يفشل على الكود الحقيقي اختبار خاطئ: أرسل الفشل مرة واحدة.",
     ),
 }
 
@@ -100,17 +106,27 @@ export const MUTANTS = [
   ["Math.floor(", "Math.round("],
 ];
 
-// Runs a test file next to a given price.mjs; true when every test passes.
-export function passes(tests, source, dir) {
+// Runs a test file next to a given price.mjs; "" when every test passes,
+// otherwise the failing tests with their expected and actual values.
+export function failures(tests, source, dir) {
   fs.mkdirSync(dir, {recursive: true});
   fs.writeFileSync(`${dir}/price.mjs`, source);
   fs.writeFileSync(`${dir}/price.test.mjs`, tests);
   try {
-    execFileSync("node", ["--test", `${dir}/price.test.mjs`], {stdio: "pipe"});
-    return true;
-  } catch {
-    return false;
+    execFileSync("node", ["--test", "--test-reporter=tap", `${dir}/price.test.mjs`], {stdio: "pipe"});
+    return "";
+  } catch (error) {
+    const lines = `${error.stdout}`.split("\\n");
+    return lines
+      .filter((line) => /^\\s*(not ok|expected:|actual:)|^# \\w*Error/.test(line))
+      .map((line) => line.trim())
+      .slice(0, 20)
+      .join("\\n") || "the test file does not run";
   }
+}
+
+export function passes(tests, source, dir) {
+  return failures(tests, source, dir) === "";
 }
 
 // How many mutants the tests catch, and which survive. Tests that fail on the
@@ -178,15 +194,24 @@ FILES = {
     "changes/save-order.diff": DIFF,
     "tests.mjs": """import fs from "node:fs";
 import {ask, codeOf} from "./lib/ask.mjs";
-import {MUTANTS, passes, score} from "./lib/mutants.mjs";
+import {MUTANTS, failures, score} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
-const tests = codeOf(await ask(`{w_tests}\\n\\n${source}`)) ?? "";
-fs.writeFileSync("price.test.mjs", tests);
+let tests = codeOf(await ask(`{w_tests}\\n\\n${source}`)) ?? "";
 console.log(`tests written: ${tests.match(/\\btest\\(|\\bit\\(/g)?.length ?? 0}`);
 
 // {w_c_real}
-console.log(`on the real code: ${passes(tests, source, "mutants/real") ? "pass" : "FAIL"}`);
+const failed = failures(tests, source, "mutants/real");
+console.log(`on the real code: ${failed ? `FAIL\\n${failed}` : "pass"}`);
+
+// {w_c_wrong}
+if (failed) {
+  const request = `{w_fix_tests}\\n\\n${source}\\n\\n${tests}\\n\\n${failed}`;
+  tests = codeOf(await ask(request, {maxTokens: 1400})) ?? tests;
+  const again = failures(tests, source, "mutants/real");
+  console.log(`after one fix: ${again ? `FAIL\\n${again}` : "pass"}`);
+}
+fs.writeFileSync("price.test.mjs", tests);
 
 // {w_c_mutants}
 const {killed, survivors} = score(tests, source);
@@ -290,6 +315,7 @@ const grammar = await model.llama.createGrammarForJsonSchema({
       problem: {type: "string"},
     },
   },
+  minItems: 1,
   maxItems: 8,
 });
 const diff = fs.readFileSync("changes/save-order.diff", "utf8");
