@@ -1,0 +1,161 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/automate/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Automating Repetitive Work</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide, by measuring, whether a repetitive task needs a model or a plain script</li>
+<li>score both against an answer key a person wrote, and time them</li>
+<li>use a model once to write the code, instead of once per item</li>
+<li>cache answers so the same item is never asked twice</li>
+<li>send the items where methods disagree to a person, and test generated code before trusting it</li>
+</ul>
+</div>
+
+<p class="lead">Every team has work that comes back every day: label the customer feedback, pull the orders out of messages, clean up dates in a spreadsheet. A language model can do all of it, and it is tempting to put one in every script. But a model is slow, costs money when it is hosted, and is never exactly predictable; a regular expression is instant, free and does the same thing every time. This chapter does three repetitive tasks both ways, scores both against answers a person wrote, and finds where each belongs.</p>
+
+<aside class="bit" data-mood="think"><p>In this chapter the five-minute keyword rules matched the model on every review, a hundred times faster. That is not a story about weak models. It is a story about easy tasks, and about knowing which kind you have.</p></aside>
+
+<h2>{{n}}.1 Labelling, both ways</h2>
+
+<p>Twelve reviews of the café, each labelled by a person with a topic and a sentiment. That is the answer key, and both methods are scored against it:</p>
+
+<pre data-code="data/reviews.mjs" data-to="^];" data-title="data/reviews.mjs (part)"></pre>
+<pre data-code="label.mjs" data-from="^function rules" data-to="^}" data-title="label.mjs (part)"></pre>
+<pre data-term="label.sh"></pre>
+
+<p>A tie, twelve of twelve, and the rules finished in under a second against 44 seconds for the model. Be fair to the model, though: the keyword lists were written while looking at these twelve reviews, so they fit them perfectly. A thirteenth review (“the waiter forgot my sugar”) has no keyword in any list; the rules would guess “taste” and the model would most likely say “service”. Rules are fast and exact on what you foresaw, and silently wrong on what you did not. In the Arabic edition the model got ten of twelve, and the rules, written the same way, twelve.</p>
+
+<table>
+<thead><tr><th>A script is better when…</th><th>A model is better when…</th></tr></thead>
+<tbody>
+<tr><td>the input has a fixed shape (dates, codes, columns)</td><td>the input is free text, written by people</td></tr>
+<tr><td>the rules can be written down</td><td>the rules are “what a person would understand”</td></tr>
+<tr><td>every item must be handled exactly the same way</td><td>new kinds of items keep appearing</td></tr>
+<tr><td>there are millions of items, or speed matters</td><td>there are hundreds, and a few seconds each is fine</td></tr>
+</tbody>
+</table>
+
+<h2>{{n}}.2 Extraction, both ways</h2>
+
+<p>Order notes typed by staff, turned into drink, size and count. A regular expression with a small word list, against the model with a schema:</p>
+
+<pre data-code="extract.mjs" data-from="^const WORDS" data-to="^}" data-title="extract.mjs (part)"></pre>
+<pre data-term="extract.sh"></pre>
+
+<p>Both perfect. The notes are short and use a dozen words, which is exactly the situation where a regular expression shines. The first Arabic run said otherwise, and the reason was in my script: the regular expression returned “لاتيه” and the answer key said <code>latte</code>, so every Arabic row looked wrong until a small name map translated one to the other. When two methods disagree, check the comparison before blaming either.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Before automating with a model, write the plain script first, even a crude one, and measure it on fifty real items with an answer key. If it gets nearly all of them, you are done, and your automation is instant, free and predictable. If it does not, you now know exactly which items need the model.</p></aside>
+
+<h2>{{n}}.3 Ask once, run forever</h2>
+
+<p>The best use of a model for repetitive work is often not inside the loop at all: ask it once to write the code, then run the code on every row. Here the model writes a function to turn six date formats into ISO dates:</p>
+
+<pre data-code="once.mjs" data-from="// " data-to="^}" data-title="once.mjs (part)"></pre>
+<pre data-term="once.sh"></pre>
+
+<p>Four of six right, and two return <code>null</code>. On a spreadsheet of ten thousand rows, that is a third of the dates silently blank. The first attempt was worse: the answer ran out of room in the middle of a comment, the code block never closed, and the file did not even load. Generated code is like code from a new colleague: often useful, sometimes incomplete, and never to be run on real data before it is tested, which is Project {{n}}.3.</p>
+
+<p>Look at what the generated function is, too: a plain function with regular expressions and a month table. Once it works, it runs a million rows in a second, for free, with no model. The model’s job was to write it faster than you would; your job is to make sure it is right.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>A model in a loop multiplies everything: its cost, its time, and its mistakes. One wrong answer in a hundred is one wrong label in a review list, and a thousand wrong rows in a database. Put a model in a loop only when a plain script cannot do the job, and keep a person or a check on what comes out.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why were the keyword rules perfect on the twelve reviews?</li><li>What was wrong in the first Arabic extraction run?</li><li>Why is asking for the code once better than asking for every row?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A model for a task a regex can do</td><td>Slow, costly, unpredictable automation</td><td>Write and measure the plain script first</td></tr>
+<tr><td>Judging rules on the data they were written for</td><td>Perfect scores, wrong on new items</td><td>Measure on items you did not look at</td></tr>
+<tr><td>No answer key</td><td>No way to know which method is right</td><td>Label fifty real items by hand</td></tr>
+<tr><td>Running generated code on real data</td><td>Silent blanks and wrong values at scale</td><td>Test it on rows with known answers first</td></tr>
+<tr><td>Asking the same thing again</td><td>Paying and waiting twice</td><td>A cache keyed by the request</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Measure both ways: a plain script and a model, against an answer key a person wrote, with timing.</li>
+<li>Scripts are instant, free and exact on what you foresaw; models handle free text and the unforeseen, slowly.</li>
+<li>Often the best use of a model is once: to write the script, which then runs with no model.</li>
+<li>Test generated code on known rows before it touches real data.</li>
+<li>Cache model answers, and send disagreements to a person.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. They were written while looking at those twelve reviews, so every review contains one of their words; on reviews nobody looked at, they would miss. 2. Not the methods: the regular expression returned Arabic words and the answer key used English labels, so correct answers were compared as different. A name map fixed the comparison. 3. The code runs on every row instantly and identically, and can be tested once; a model per row is slow, costs per call, and can answer differently on similar rows.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects are the habits of reliable automation: never ask twice, send disagreements to a person, and test generated code before it runs.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A cache for model answers</h3>
+<p class="project-goal">Keep each answer in a file keyed by a hash of its request, and answer repeated requests from the file.</p>
+<p class="project-skills"><strong>You will practise:</strong> hashing, JSON files as storage, and counting what was saved.</p>
+<ol class="steps">
+<li>Hash the request with SHA-256.</li>
+<li>Return the saved answer if the hash is in the file; otherwise ask, save and return.</li>
+<li>Run the same four requests twice.</li>
+</ol>
+<pre data-code="lib/cache.mjs" data-from="^export async function" data-to="^}" data-title="lib/cache.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/cached.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the second run took no time and cost nothing. The key is the whole request, so a change in the instructions asks again, which is right: a new prompt is a new question. Include the model and its settings in the key too, if they can change.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A queue for a person</h3>
+<p class="project-goal">Label each review with rules and with the model; decide automatically where they agree, and queue the rest for a person.</p>
+<p class="project-skills"><strong>You will practise:</strong> combining two imperfect methods, and measuring what the combination gets wrong.</p>
+<ol class="steps">
+<li>Label each review both ways.</li>
+<li>Where they agree, take the label and check it against the answer key.</li>
+<li>Where they disagree, add the review to a queue with both labels.</li>
+</ol>
+<pre data-code="queue.mjs" data-from="// " data-title="queue.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/queue.sh"></pre>
+<p class="hint"><strong>Hint:</strong> everything decided automatically, nothing for a person, and no wrong agreement. In the Arabic edition, two reviews went to the queue, and in both the rules were right and the model wrong. Agreement between two independent methods is a good reason to trust a label; disagreement is a cheap way to find the items worth a person’s time.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Test the generated code first</h3>
+<p class="project-goal">Run the model’s <code>toIso</code> on rows with known answers, and allow it on the rest only if all pass.</p>
+<p class="project-skills"><strong>You will practise:</strong> a gate between generated code and real data.</p>
+<ol class="steps">
+<li>Load <code>toIso.mjs</code>, and stop if it does not load.</li>
+<li>Run it on four rows whose answers you know.</li>
+<li>Print pass or fail for each, and a verdict.</li>
+</ol>
+<pre data-code="tested.mjs" data-from="^const known" data-title="tested.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/tested.sh"></pre>
+<p class="hint"><strong>Hint:</strong> one failure, and the verdict is “not safe”. The fix is one line: a separator of <code>/</code> in the year-first pattern. Fix it yourself, or give the model the failing row and ask again, then run the gate again. The gate is what makes generated code safe to use; the model only made it fast to write.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write five new reviews the keyword rules have never seen, label them yourself, and score both methods on them. Who wins now?</li>
+<li><span class="level">Easy</span> Add the model’s name to the cache key. Why does a cache that ignores it become wrong when the model changes?</li>
+<li><span class="level">Medium</span> Fix <code>toIso</code> so that all six formats work, and add the four known rows of Project {{n}}.3 as a test file for it.</li>
+<li><span class="level">Medium</span> Time the regular expression and the model on the eight notes, as <code>label.mjs</code> does. How many notes per second can each handle?</li>
+<li><span class="level">Challenge</span> Write a script that labels a review with rules, and asks the model only when no keyword matches. On the twelve reviews plus your five new ones, how many calls does it make, and how many labels are right?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>This chapter’s scripts call the model for one step. The next chapter gives the model the steps themselves: agents that plan, use tools, check their results and try again, and the limits and safeguards they need.</p>
+</div>
+</section>

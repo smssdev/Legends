@@ -1,0 +1,22 @@
+<ol class="exercises">
+<li>Write the reviews in words your keyword lists do not contain (“the waiter forgot my sugar”, “the receipt was wrong”), label them, and score both. The rules fall back to their default topic and to “pos” for anything without a negative word, so expect them to drop sharply; the model reads the meaning and usually keeps most of them. The point of the exercise is the measurement: the twelve reviews told you nothing about reviews you had not seen.</li>
+<li>A cache answers “what did the model say to this request?”. If the model, its version or its settings change, the same request can get a different answer, but a cache keyed only by the request keeps returning the old one, silently. Put everything that shapes the answer in the key: the model file, the temperature, the schema.</li>
+<li>A version that handles all six formats, in both languages, checked in the book’s environment:
+<pre class="plain" dir="ltr">const MONTHS = {jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12,
+  "يناير": 1, "فبراير": 2, "مارس": 3, "أبريل": 4, "مايو": 5, "يونيو": 6,
+  "يوليو": 7, "أغسطس": 8, "سبتمبر": 9, "أكتوبر": 10, "نوفمبر": 11, "ديسمبر": 12};
+const iso = (y, m, d) =&gt; `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+export function toIso(text) {
+  let m;
+  if ((m = text.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/))) return iso(m[1], m[2], m[3]);
+  if ((m = text.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/))) return iso(m[3], m[2], m[1]);
+  if ((m = text.match(/^(\d{1,2})\s+(\S+)\s+(\d{4})$/))) return iso(m[3], MONTHS[m[2].slice(0, 3).toLowerCase()] ?? MONTHS[m[2]], m[1]);
+  if ((m = text.match(/^(\S+)\s+(\d{1,2}),\s*(\d{4})$/))) return iso(m[3], MONTHS[m[1].slice(0, 3).toLowerCase()], m[2]);
+  return null;
+}
+for (const t of ["12/01/2026","2026-1-3","3 Jan 2026","01.02.2026","January 15, 2026","2026/02/28","3 يناير 2026","15 يناير 2026"]) console.log(t, toIso(t));</pre>
+Add the known rows of Project {{n}}.3, plus the two that failed, as a <code>node:test</code> file, and keep it next to the function: the next time someone, or a model, changes the function, the tests say whether it still works.</li>
+<li>Wrap each loop in <code>performance.now()</code> as <code>label.mjs</code> does and divide the count by the seconds. Expect the regular expression to handle hundreds of thousands of notes a second, and the model, on the book’s processor, about one every few seconds: a difference of a million times. That ratio, not accuracy alone, decides what belongs in a nightly job over a large table.</li>
+<li>Try the rules first; if no topic keyword matches, ask the model, and count the calls. On the twelve reviews the rules always match, so it makes no calls; on your five new ones it calls only for those, so you pay for the model exactly where the rules cannot help. This pattern, a cheap method first and an expensive one for what is left, is how most production systems use models.</li>
+</ol>

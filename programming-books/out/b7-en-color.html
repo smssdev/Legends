@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Meetings, Emails and Reports"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "Chapter 11: Automating Repetitive Work"; } }
+@page ch11:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -159,7 +161,7 @@ if (isMember && day === "Tuesday") {
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">151</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">161</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -4089,6 +4091,300 @@ Here is a merged, non-repetitive list of decisions:
 <p>Some of this writing comes back every week: the same report, the same kind of email, the same clean-up of data. The next chapter automates that repetitive work with the model inside small scripts, and asks when a script with no model would do the job better.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b7/automate/en">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">Chapter 11</p><h1>Automating Repetitive Work</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>decide, by measuring, whether a repetitive task needs a model or a plain script</li>
+<li>score both against an answer key a person wrote, and time them</li>
+<li>use a model once to write the code, instead of once per item</li>
+<li>cache answers so the same item is never asked twice</li>
+<li>send the items where methods disagree to a person, and test generated code before trusting it</li>
+</ul>
+</div>
+
+<p class="lead">Every team has work that comes back every day: label the customer feedback, pull the orders out of messages, clean up dates in a spreadsheet. A language model can do all of it, and it is tempting to put one in every script. But a model is slow, costs money when it is hosted, and is never exactly predictable; a regular expression is instant, free and does the same thing every time. This chapter does three repetitive tasks both ways, scores both against answers a person wrote, and finds where each belongs.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>In this chapter the five-minute keyword rules matched the model on every review, a hundred times faster. That is not a story about weak models. It is a story about easy tasks, and about knowing which kind you have.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>Labelling, both ways</span></h2>
+
+<p>Twelve reviews of the café, each labelled by a person with a topic and a sentiment. That is the answer key, and both methods are scored against it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">data/reviews.mjs (part)</div><pre class="code"><span class="c line-bidi">// Labels written by a person: the answer key for both methods.</span>
+<span class="k">export</span> <span class="k">const</span> REVIEWS = [
+  [<span class="s">&quot;The latte was perfect, rich and smooth.&quot;</span>, <span class="s">&quot;taste&quot;</span>, <span class="s">&quot;pos&quot;</span>],
+  [<span class="s">&quot;Too expensive for such a small cup.&quot;</span>, <span class="s">&quot;price&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+  [<span class="s">&quot;The app crashed twice while I was paying.&quot;</span>, <span class="s">&quot;app&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+  [<span class="s">&quot;The barista was so kind and quick.&quot;</span>, <span class="s">&quot;service&quot;</span>, <span class="s">&quot;pos&quot;</span>],
+  [<span class="s">&quot;Cold coffee and a long wait.&quot;</span>, <span class="s">&quot;service&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+  [<span class="s">&quot;Great value, the large size is worth it.&quot;</span>, <span class="s">&quot;price&quot;</span>, <span class="s">&quot;pos&quot;</span>],
+  [<span class="s">&quot;Ordering in the app takes ten seconds, love it.&quot;</span>, <span class="s">&quot;app&quot;</span>, <span class="s">&quot;pos&quot;</span>],
+  [<span class="s">&quot;The cake was dry and tasteless.&quot;</span>, <span class="s">&quot;taste&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+  [<span class="s">&quot;Nobody greeted us and the table was dirty.&quot;</span>, <span class="s">&quot;service&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+  [<span class="s">&quot;I can&#x27;t believe a tea costs 40 pounds now.&quot;</span>, <span class="s">&quot;price&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+  [<span class="s">&quot;Not bad, but the espresso was bitter.&quot;</span>, <span class="s">&quot;taste&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+  [<span class="s">&quot;The loyalty stamps did not show up after my order.&quot;</span>, <span class="s">&quot;app&quot;</span>, <span class="s">&quot;neg&quot;</span>],
+];</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">label.mjs (part)</div><pre class="code"><span class="k">function</span> rules(text) {
+  <span class="k">const</span> lower = text.toLowerCase();
+  <span class="k">const</span> topic = Object.keys(TOPICS).find((t) =&gt; TOPICS[t].some((w) =&gt; lower.includes(w))) ?? <span class="s">&quot;taste&quot;</span>;
+  <span class="k">const</span> sentiment = NEGATIVE.some((w) =&gt; lower.includes(w)) ? <span class="s">&quot;neg&quot;</span> : <span class="s">&quot;pos&quot;</span>;
+  <span class="k">return</span> {topic, sentiment};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node label.mjs</span>
+rules 12 of 12 right, under a second
+model 12 of 12 right, 43 s</pre></div>
+
+<p>A tie, twelve of twelve, and the rules finished in under a second against 44 seconds for the model. Be fair to the model, though: the keyword lists were written while looking at these twelve reviews, so they fit them perfectly. A thirteenth review (“the waiter forgot my sugar”) has no keyword in any list; the rules would guess “taste” and the model would most likely say “service”. Rules are fast and exact on what you foresaw, and silently wrong on what you did not. In the Arabic edition the model got ten of twelve, and the rules, written the same way, twelve.</p>
+
+<table>
+<thead><tr><th>A script is better when…</th><th>A model is better when…</th></tr></thead>
+<tbody>
+<tr><td>the input has a fixed shape (dates, codes, columns)</td><td>the input is free text, written by people</td></tr>
+<tr><td>the rules can be written down</td><td>the rules are “what a person would understand”</td></tr>
+<tr><td>every item must be handled exactly the same way</td><td>new kinds of items keep appearing</td></tr>
+<tr><td>there are millions of items, or speed matters</td><td>there are hundreds, and a few seconds each is fine</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">11.2</span> <span>Extraction, both ways</span></h2>
+
+<p>Order notes typed by staff, turned into drink, size and count. A regular expression with a small word list, against the model with a schema:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">extract.mjs (part)</div><pre class="code"><span class="k">const</span> WORDS = {one: <span class="n">1</span>, two: <span class="n">2</span>, three: <span class="n">3</span>};
+<span class="k">const</span> NAMES = {latte: <span class="s">&quot;latte&quot;</span>, tea: <span class="s">&quot;tea&quot;</span>, espresso: <span class="s">&quot;espresso&quot;</span>, small: <span class="s">&quot;small&quot;</span>, large: <span class="s">&quot;large&quot;</span>};
+<span class="k">function</span> byRegex(note) {
+  <span class="k">const</span> lower = note.toLowerCase();
+  <span class="k">const</span> drink = NAMES[lower.match(/latte|tea|espresso/)?.[<span class="n">0</span>]];
+  <span class="k">const</span> size = NAMES[lower.match(/small|large/)?.[<span class="n">0</span>]] ?? <span class="s">&quot;unknown&quot;</span>;
+  <span class="k">const</span> digits = lower.match(/\d+/)?.[<span class="n">0</span>];
+  <span class="k">const</span> word = Object.keys(WORDS).find((w) =&gt; lower.includes(w));
+  <span class="k">return</span> [drink, size, Number(digits ?? WORDS[word] ?? <span class="n">1</span>)];
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node extract.mjs</span>
+ok  ok   2 large lattes
+ok  ok   one small tea please
+ok  ok   latte x3, large
+ok  ok   a large espresso and nothing else
+ok  ok   3 teas (small)
+ok  ok   espresso
+ok  ok   two small lattes for the office
+ok  ok   LARGE TEA
+(first column: the regular expression; second: the model)</pre></div>
+
+<p>Both perfect. The notes are short and use a dozen words, which is exactly the situation where a regular expression shines. The first Arabic run said otherwise, and the reason was in my script: the regular expression returned “لاتيه” and the answer key said <code>latte</code>, so every Arabic row looked wrong until a small name map translated one to the other. When two methods disagree, check the comparison before blaming either.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Before automating with a model, write the plain script first, even a crude one, and measure it on fifty real items with an answer key. If it gets nearly all of them, you are done, and your automation is instant, free and predictable. If it does not, you now know exactly which items need the model.</p></aside>
+
+<h2><span class="sec">11.3</span> <span>Ask once, run forever</span></h2>
+
+<p>The best use of a model for repetitive work is often not inside the loop at all: ask it once to write the code, then run the code on every row. Here the model writes a function to turn six date formats into ISO dates:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">once.mjs (part)</div><pre class="code"><span class="c line-bidi">// Ask the model for the code once, then run the code on every row: no</span>
+<span class="c line-bidi">// model per row.</span>
+<span class="k">const</span> rows = fs.readFileSync(<span class="s">&quot;data/dates.txt&quot;</span>, <span class="s">&quot;utf8&quot;</span>).trim().split(<span class="s">&quot;\n&quot;</span>);
+<span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">`Write a JavaScript function toIso(text) that converts dates in these formats to YYYY-MM-DD. Day comes before month when both are numbers. Return only the function, in one code block.\n\n${rows.join(&quot;\n&quot;)}`</span>, {maxTokens: <span class="n">1500</span>});
+<span class="c line-bidi">// The code block, even when the answer stopped before closing it.</span>
+<span class="k">const</span> code = answer.match(/<span class="s">``</span><span class="s">`(?:\w+)?\n([\s\S]*?)(?:`</span><span class="s">``</span>|$)/)?.[<span class="n">1</span>] ?? answer;
+fs.writeFileSync(<span class="s">&quot;toIso.mjs&quot;</span>, <span class="s">`${code}\nexport {toIso};\n`</span>);
+<span class="k">let</span> toIso;
+<span class="k">try</span> {
+  ({toIso} = <span class="k">await</span> <span class="k">import</span>(<span class="s">&quot;./toIso.mjs&quot;</span>));
+} <span class="k">catch</span> (error) {
+  console.log(<span class="s">`toIso.mjs does not load: ${error.message}`</span>);
+  process.exit(<span class="n">0</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node once.mjs</span>
+12/01/2026         -&gt; 2026-01-12
+2026-1-3           -&gt; 2026-01-03
+3 Jan 2026         -&gt; 2026-01-03
+01.02.2026         -&gt; 2026-02-01
+January 15, 2026   -&gt; null
+2026/02/28         -&gt; null</pre></div>
+
+<p>Four of six right, and two return <code>null</code>. On a spreadsheet of ten thousand rows, that is a third of the dates silently blank. The first attempt was worse: the answer ran out of room in the middle of a comment, the code block never closed, and the file did not even load. Generated code is like code from a new colleague: often useful, sometimes incomplete, and never to be run on real data before it is tested, which is Project 11.3.</p>
+
+<p>Look at what the generated function is, too: a plain function with regular expressions and a month table. Once it works, it runs a million rows in a second, for free, with no model. The model’s job was to write it faster than you would; your job is to make sure it is right.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>A model in a loop multiplies everything: its cost, its time, and its mistakes. One wrong answer in a hundred is one wrong label in a review list, and a thousand wrong rows in a database. Put a model in a loop only when a plain script cannot do the job, and keep a person or a check on what comes out.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why were the keyword rules perfect on the twelve reviews?</li><li>What was wrong in the first Arabic extraction run?</li><li>Why is asking for the code once better than asking for every row?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A model for a task a regex can do</td><td>Slow, costly, unpredictable automation</td><td>Write and measure the plain script first</td></tr>
+<tr><td>Judging rules on the data they were written for</td><td>Perfect scores, wrong on new items</td><td>Measure on items you did not look at</td></tr>
+<tr><td>No answer key</td><td>No way to know which method is right</td><td>Label fifty real items by hand</td></tr>
+<tr><td>Running generated code on real data</td><td>Silent blanks and wrong values at scale</td><td>Test it on rows with known answers first</td></tr>
+<tr><td>Asking the same thing again</td><td>Paying and waiting twice</td><td>A cache keyed by the request</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Measure both ways: a plain script and a model, against an answer key a person wrote, with timing.</li>
+<li>Scripts are instant, free and exact on what you foresaw; models handle free text and the unforeseen, slowly.</li>
+<li>Often the best use of a model is once: to write the script, which then runs with no model.</li>
+<li>Test generated code on known rows before it touches real data.</li>
+<li>Cache model answers, and send disagreements to a person.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. They were written while looking at those twelve reviews, so every review contains one of their words; on reviews nobody looked at, they would miss. 2. Not the methods: the regular expression returned Arabic words and the answer key used English labels, so correct answers were compared as different. A name map fixed the comparison. 3. The code runs on every row instantly and identically, and can be tested once; a model per row is slow, costs per call, and can answer differently on similar rows.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects are the habits of reliable automation: never ask twice, send disagreements to a person, and test generated code before it runs.</p>
+
+<div class="project">
+<p class="project-label">Project 11.1 · Easy</p>
+<h3>A cache for model answers</h3>
+<p class="project-goal">Keep each answer in a file keyed by a hash of its request, and answer repeated requests from the file.</p>
+<p class="project-skills"><strong>You will practise:</strong> hashing, JSON files as storage, and counting what was saved.</p>
+<ol class="steps">
+<li>Hash the request with SHA-256.</li>
+<li>Return the saved answer if the hash is in the file; otherwise ask, save and return.</li>
+<li>Run the same four requests twice.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lib/cache.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> cachedAsk(prompt, options = {}) {
+  <span class="k">const</span> key = crypto.createHash(<span class="s">&quot;sha256&quot;</span>).update(prompt).digest(<span class="s">&quot;hex&quot;</span>).slice(<span class="n">0</span>, <span class="n">16</span>);
+  <span class="k">if</span> (key <span class="k">in</span> saved) {
+    stats.cached++;
+    <span class="k">return</span> saved[key];
+  }
+  stats.asked++;
+  saved[key] = <span class="k">await</span> ask(prompt, options);
+  fs.writeFileSync(FILE, JSON.stringify(saved, <span class="k">null</span>, <span class="n">1</span>));
+  <span class="k">return</span> saved[key];
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node cached.mjs &amp;&amp; node cached.mjs</span>
+asked the model 4 times, answered from the cache 0 times
+asked the model 0 times, answered from the cache 4 times</pre></div>
+<p class="hint"><strong>Hint:</strong> the second run took no time and cost nothing. The key is the whole request, so a change in the instructions asks again, which is right: a new prompt is a new question. Include the model and its settings in the key too, if they can change.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 11.2 · Medium</p>
+<h3>A queue for a person</h3>
+<p class="project-goal">Label each review with rules and with the model; decide automatically where they agree, and queue the rest for a person.</p>
+<p class="project-skills"><strong>You will practise:</strong> combining two imperfect methods, and measuring what the combination gets wrong.</p>
+<ol class="steps">
+<li>Label each review both ways.</li>
+<li>Where they agree, take the label and check it against the answer key.</li>
+<li>Where they disagree, add the review to a queue with both labels.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">queue.mjs (part)</div><pre class="code"><span class="c line-bidi">// Where model and rules disagree, a person decides.</span>
+<span class="k">let</span> agreed = <span class="n">0</span>;
+<span class="k">const</span> queue = [];
+<span class="k">for</span> (<span class="k">const</span> [text, truth] <span class="k">of</span> REVIEWS) {
+  <span class="k">const</span> {topic} = JSON.parse(<span class="k">await</span> ask(<span class="s">`Label this café review with its topic (price, taste, service or app) and its sentiment (pos or neg).\n\n${text}`</span>, {grammar}));
+  <span class="k">if</span> (topic === rule(text)) {
+    agreed++;
+    <span class="k">if</span> (topic !== truth) {
+      console.log(<span class="s">`agreed and WRONG: ${text}`</span>);
+    }
+  } <span class="k">else</span> {
+    queue.push(<span class="s">`${text}  (model: ${topic}, rules: ${rule(text) ?? &quot;none&quot;}, truth: ${truth})`</span>);
+  }
+}
+console.log(<span class="s">`${agreed} decided automatically, ${queue.length} for a person:`</span>);
+queue.forEach((item) =&gt; console.log(<span class="s">`  ${item}`</span>));</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node queue.mjs</span>
+12 decided automatically, 0 for a person:</pre></div>
+<p class="hint"><strong>Hint:</strong> everything decided automatically, nothing for a person, and no wrong agreement. In the Arabic edition, two reviews went to the queue, and in both the rules were right and the model wrong. Agreement between two independent methods is a good reason to trust a label; disagreement is a cheap way to find the items worth a person’s time.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 11.3 · Challenge</p>
+<h3>Test the generated code first</h3>
+<p class="project-goal">Run the model’s <code>toIso</code> on rows with known answers, and allow it on the rest only if all pass.</p>
+<p class="project-skills"><strong>You will practise:</strong> a gate between generated code and real data.</p>
+<ol class="steps">
+<li>Load <code>toIso.mjs</code>, and stop if it does not load.</li>
+<li>Run it on four rows whose answers you know.</li>
+<li>Print pass or fail for each, and a verdict.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">tested.mjs (part)</div><pre class="code"><span class="k">const</span> known = [
+  [<span class="s">&quot;12/01/2026&quot;</span>, <span class="s">&quot;2026-01-12&quot;</span>],
+  [<span class="s">&quot;2026-1-3&quot;</span>, <span class="s">&quot;2026-01-03&quot;</span>],
+  [<span class="s">&quot;01.02.2026&quot;</span>, <span class="s">&quot;2026-02-01&quot;</span>],
+  [<span class="s">&quot;2026/02/28&quot;</span>, <span class="s">&quot;2026-02-28&quot;</span>],
+];
+<span class="k">let</span> right = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> [input, expected] <span class="k">of</span> known) {
+  <span class="k">let</span> got;
+  <span class="k">try</span> {
+    got = toIso(input);
+  } <span class="k">catch</span> (error) {
+    got = error.name;
+  }
+  right += got === expected ? <span class="n">1</span> : <span class="n">0</span>;
+  console.log(<span class="s">`${got === expected ? &quot;pass&quot; : &quot;FAIL&quot;} ${input} -&gt; ${got} (expected ${expected})`</span>);
+}
+console.log(right === known.length ? <span class="s">&quot;safe to run on the rest&quot;</span> : <span class="s">&quot;not safe: fix the function first&quot;</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node tested.mjs</span>
+pass 12/01/2026 -&gt; 2026-01-12 (expected 2026-01-12)
+pass 2026-1-3 -&gt; 2026-01-03 (expected 2026-01-03)
+pass 01.02.2026 -&gt; 2026-02-01 (expected 2026-02-01)
+FAIL 2026/02/28 -&gt; null (expected 2026-02-28)
+not safe: fix the function first</pre></div>
+<p class="hint"><strong>Hint:</strong> one failure, and the verdict is “not safe”. The fix is one line: a separator of <code>/</code> in the year-first pattern. Fix it yourself, or give the model the failing row and ask again, then run the gate again. The gate is what makes generated code safe to use; the model only made it fast to write.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write five new reviews the keyword rules have never seen, label them yourself, and score both methods on them. Who wins now?</li>
+<li><span class="level">Easy</span> Add the model’s name to the cache key. Why does a cache that ignores it become wrong when the model changes?</li>
+<li><span class="level medium">Medium</span> Fix <code>toIso</code> so that all six formats work, and add the four known rows of Project 11.3 as a test file for it.</li>
+<li><span class="level medium">Medium</span> Time the regular expression and the model on the eight notes, as <code>label.mjs</code> does. How many notes per second can each handle?</li>
+<li><span class="level hard">Challenge</span> Write a script that labels a review with rules, and asks the model only when no keyword matches. On the twelve reviews plus your five new ones, how many calls does it make, and how many labels are right?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 12</p>
+<p>This chapter’s scripts call the model for one step. The next chapter gives the model the steps themselves: agents that plan, use tools, check their results and try again, and the limits and safeguards they need.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4234,6 +4530,31 @@ On <code>price.mjs</code> as it is, every number in the comments is in the code.
 <li>A narrow request (“list only the decisions made in this meeting, one per line”) puts all the model’s attention on one kind of item. Compare the count with four, and read each line: the risk in a decisions-only request is the opposite one, actions and proposals turned into “decisions”, such as the cold brew that was rejected.</li>
 <li>Ask for “each task reported as done, with the hash of the commit that did it”, then check each hash with <code>log.includes(hash)</code>. A task with no hash, or a hash not in the log, is an unsupported claim. In the Arabic edition’s report, T5 and T6 would have had no hash to give; the request itself makes inventing progress harder.</li>
 <li>For each merged decision, collect its numbers and the names of the people and look for each in the meeting; a decision with a number or a name not in the meeting, such as a date, is the model’s own. Run it on both editions. The Arabic merge’s “9 May” passes a number check, because 9 is in the meeting, as an hour; a check of month names catches it, since May was never said. Its “Hassan proposes a review in March” passes every check, because Hassan was in the meeting; it was Mona who said it. That is what is left for reading.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 11</h2>
+<ol class="exercises">
+<li>Write the reviews in words your keyword lists do not contain (“the waiter forgot my sugar”, “the receipt was wrong”), label them, and score both. The rules fall back to their default topic and to “pos” for anything without a negative word, so expect them to drop sharply; the model reads the meaning and usually keeps most of them. The point of the exercise is the measurement: the twelve reviews told you nothing about reviews you had not seen.</li>
+<li>A cache answers “what did the model say to this request?”. If the model, its version or its settings change, the same request can get a different answer, but a cache keyed only by the request keeps returning the old one, silently. Put everything that shapes the answer in the key: the model file, the temperature, the schema.</li>
+<li>A version that handles all six formats, in both languages, checked in the book’s environment:
+<pre class="plain" dir="ltr">const MONTHS = {jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12,
+  "يناير": 1, "فبراير": 2, "مارس": 3, "أبريل": 4, "مايو": 5, "يونيو": 6,
+  "يوليو": 7, "أغسطس": 8, "سبتمبر": 9, "أكتوبر": 10, "نوفمبر": 11, "ديسمبر": 12};
+const iso = (y, m, d) =&gt; `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+export function toIso(text) {
+  let m;
+  if ((m = text.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/))) return iso(m[1], m[2], m[3]);
+  if ((m = text.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/))) return iso(m[3], m[2], m[1]);
+  if ((m = text.match(/^(\d{1,2})\s+(\S+)\s+(\d{4})$/))) return iso(m[3], MONTHS[m[2].slice(0, 3).toLowerCase()] ?? MONTHS[m[2]], m[1]);
+  if ((m = text.match(/^(\S+)\s+(\d{1,2}),\s*(\d{4})$/))) return iso(m[3], MONTHS[m[1].slice(0, 3).toLowerCase()], m[2]);
+  return null;
+}
+for (const t of ["12/01/2026","2026-1-3","3 Jan 2026","01.02.2026","January 15, 2026","2026/02/28","3 يناير 2026","15 يناير 2026"]) console.log(t, toIso(t));</pre>
+Add the known rows of Project 11.3, plus the two that failed, as a <code>node:test</code> file, and keep it next to the function: the next time someone, or a model, changes the function, the tests say whether it still works.</li>
+<li>Wrap each loop in <code>performance.now()</code> as <code>label.mjs</code> does and divide the count by the seconds. Expect the regular expression to handle hundreds of thousands of notes a second, and the model, on the book’s processor, about one every few seconds: a difference of a million times. That ratio, not accuracy alone, decides what belongs in a nightly job over a large table.</li>
+<li>Try the rules first; if no topic keyword matches, ask the model, and count the calls. On the twelve reviews the rules always match, so it makes no calls; on your five new ones it calls only for those, so you pay for the model exactly where the rules cannot help. This pattern, a cheap method first and an expensive one for what is left, is how most production systems use models.</li>
 </ol>
 
 </section>
