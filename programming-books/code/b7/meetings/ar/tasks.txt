@@ -1,0 +1,6 @@
+T1 stamps for paid hot drinks
+T2 free drink on the 10th stamp
+T3 refunds remove stamps
+T4 both branches share the card
+T5 the stamps screen in the app
+T6 the free drink at checkout

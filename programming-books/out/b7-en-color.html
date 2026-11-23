@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "Chapter 9: From Idea to Specification and Tasks"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "Chapter 10: Meetings, Emails and Reports"; } }
+@page ch10:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -157,7 +159,7 @@ if (isMember && day === "Tuesday") {
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">138</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">151</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -3753,6 +3755,340 @@ seed 3: 10 tasks, 42 hours</pre></div>
 <p>Specifications come out of conversations: meetings, emails, threads. The next chapter uses the model on that work: summarising a meeting into decisions and actions, drafting emails and status reports, and checking each summary against what was actually said.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b7/meetings/en">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>Meetings, Emails and Reports</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>summarise a meeting into decisions and actions, and check the summary against what was said</li>
+<li>draft emails and announcements, and check every number against its source</li>
+<li>draft status reports, and check every “done” against the work itself</li>
+<li>change the tone of a text without changing its facts</li>
+<li>summarise text that is too long for one request, in parts</li>
+</ul>
+</div>
+
+<p class="lead">Much of a developer’s week is not code: meetings, emails, updates, reports. It is also where assistants save the most time, because the writing is routine and the readers are busy. And it is where their mistakes travel furthest: a wrong date in a summary becomes a missed deadline; a wrong price in an announcement reaches every customer. This chapter drafts all three kinds of text with the book’s model, and for each one asks the same question: where did this fact come from?</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The meeting summary in this chapter has no decisions in it, though four were made, and dates with a year nobody said. The email changed the currency. The formal rewrite added a year. None of it is malicious; all of it is the model filling gaps with the typical case.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>A meeting, summarised and checked</span></h2>
+
+<p>A short team meeting about the café: the loyalty card, a price change, new Friday hours. Four decisions are made, two proposals are turned down, and three people take on a task. A summary should keep all of that, and add nothing:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">meeting.txt</div><pre class="code">Mona: Thanks for coming. Three things today: the loyalty card, the new prices, and the Friday hours.
+Omar: On the loyalty card, the app work is done except the screen that shows the stamps.
+Mona: When can the screen be ready?
+Omar: Hassan is on it. Hassan?
+Hassan: I can have it by Thursday the 4th of December.
+Mona: Good. Decision then: the loyalty card launches on Monday the 8th of December, in both branches.
+Sara: Can we launch in the Nasr City branch first, to test it?
+Mona: No, both together. Customers move between branches and one card must work everywhere.
+Sara: Fine.
+Mona: Prices. The large latte goes from 45 to 50 pounds on the 1st of January. Everything else stays.
+Omar: Should we tell customers in the app?
+Mona: Yes. Sara, please write the notice and send it to me by the 15th of December.
+Sara: Will do.
+Hassan: What about the cold brew? Some people asked for a lower price.
+Mona: Not this time. We will look at it again in March.
+Mona: Last thing: Friday hours. We open at 9 instead of 8 from next Friday.
+Omar: I will update the hours in the app and on the door.
+Mona: Thank you all.</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">summary.mjs (part)</div><pre class="code"><span class="c line-bidi">// An owner the meeting never named, or a date it never said, is invented.</span>
+console.log(<span class="s">&quot;--- checked against the meeting&quot;</span>);
+console.log(<span class="s">`decisions: ${summary.decisions.length} listed, ${TRUTH.decisions} made`</span>);
+<span class="k">for</span> (<span class="k">const</span> action <span class="k">of</span> summary.actions) {
+  <span class="k">const</span> named = TRUTH.people.some((p) =&gt; action.owner.includes(p));
+  <span class="k">const</span> date = (action.due.match(/\d+/g) ?? []).every((n) =&gt; meeting.includes(n));
+  <span class="k">const</span> problems = [!named &amp;&amp; <span class="s">&quot;owner not in the meeting&quot;</span>, !date &amp;&amp; <span class="s">&quot;date not in the meeting&quot;</span>].filter(Boolean);
+  console.log(<span class="s">`${problems.length ? &quot;WRONG&quot; : &quot;ok   &quot;} ${action.owner}: ${action.task} ${problems.join(&quot;, &quot;)}`</span>);
+}
+<span class="k">for</span> (<span class="k">const</span> {owner} <span class="k">of</span> TRUTH.actions) {
+  <span class="k">if</span> (!summary.actions.some((a) =&gt; a.owner.includes(owner))) {
+    console.log(<span class="s">`MISSED an action for ${owner}`</span>);
+  }
+}
+<span class="k">for</span> (<span class="k">const</span> idea <span class="k">of</span> TRUTH.rejected) {
+  console.log(<span class="s">`(rejected in the meeting: ${idea})`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node summary.mjs</span>
+decisions:
+actions:
+  - Hassan: Deliver the loyalty card screen showing stamps (2023-12-04)
+  - Sara: Write the notice about the price increase for large lattes and send it to Mona (2023-12-15)
+  - Omar: Update the app and door signage for Friday hours to 9 AM (Next Friday)
+--- checked against the meeting
+decisions: 0 listed, 4 made
+WRONG Hassan: Deliver the loyalty card screen showing stamps date not in the meeting
+WRONG Sara: Write the notice about the price increase for large lattes and send it to Mona date not in the meeting
+ok    Omar: Update the app and door signage for Friday hours to 9 AM 
+(rejected in the meeting: launch in one branch first)
+(rejected in the meeting: a lower price for the cold brew)</pre></div>
+
+<p>The actions are right: Hassan, Sara and Omar, with the right tasks. Two of them fail the check, for the same reason: “2023-12-04” and “2023-12-15”. The meeting said “Thursday the 4th of December”; the model turned it into a full date and chose a year, the wrong one. In a calendar, that is a deadline two years in the past.</p>
+
+<p>And the decisions list is empty. The launch date, the price change, the Friday hours, both branches together: four decisions, and the most important part of any meeting summary, and the model returned none, though the schema asked for them. A summary is judged by what it leaves out as much as by what it says, and nobody notices an absence by reading. That is why the program compares the count with what the meeting really decided.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Tell the model to copy dates as they were said (“Thursday the 4th of December”), never to complete them. A date with a year or a weekday the speaker did not give is a guess, and guesses in summaries become commitments.</p></aside>
+
+<h2><span class="sec">10.2</span> <span>An email, with every number checked</span></h2>
+
+<p>An announcement to customers, from three facts. The check is simple and catches the worst mistakes: every number in the email must appear in the facts.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/facts.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> newNumbers(draft, ...sources) {
+  <span class="k">const</span> known = <span class="k">new</span> Set(sources.flatMap((source) =&gt; [...numbers(source)]));
+  <span class="k">return</span> [...numbers(draft)].filter((n) =&gt; !known.has(n));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node email.mjs</span>
+Subject: Happy New Year! A Small Price Change at Our Café 🎉  
+
+Dear Customers,  
+
+From 1st January, our large latte will now cost £50 (up from £45). All other prices remain the same!  
+
+Exciting news: our new loyalty card launches on Monday, 8th December — in both branches!  
+
+Thank you for being part of our café family. We’re excited to serve you with great coffee and great company.  
+
+With warmth,  
+The Café Team 💫☕
+--- 74 words; numbers not in the facts: none</pre></div>
+
+<p>Every number has a source: 50, 45, the 1st, the 8th. The check passes, and the email is still wrong: “£50”. The facts said pounds, and this café is in Cairo; the model chose the pound sign it has seen most, the British one. Customers would read a price in sterling. No number changed, so no number check could see it. Read every unit, currency and name yourself; the check covers digits, not meaning.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Anything sent to customers, partners or the whole company is read by people who will act on it, and cannot be recalled. Draft with a model; send only what a person has read against the facts, every number and every unit, with the facts beside them.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did the date check flag Hassan’s action, though the day and month were right?</li><li>What did the number check miss in the email?</li><li>Why is a missing decision harder to notice than a wrong one?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">10.3</span> <span>A status report, checked against the work</span></h2>
+
+<p>A weekly report from the commit log and the task list. The danger in status reports is optimism: work described as done that is not. So the program sets the report beside the truth from the log:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">report.mjs (part)</div><pre class="code"><span class="c line-bidi">// A task reported as done must have a commit.</span>
+<span class="k">const</span> done = {T1: <span class="s">&quot;stamp a card&quot;</span>, T2: <span class="s">&quot;free drink on the 10th&quot;</span>, T3: <span class="s">&quot;refunded&quot;</span>, T4: <span class="s">&quot;both branches&quot;</span>};
+console.log(<span class="s">&quot;--- the truth, from the log&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> tasks.trim().split(<span class="s">&quot;\n&quot;</span>)) {
+  <span class="k">const</span> id = line.split(<span class="s">&quot; &quot;</span>)[<span class="n">0</span>];
+  <span class="k">const</span> inLog = done[id] ? log.includes(done[id]) : <span class="k">false</span>;
+  console.log(<span class="s">`${id} ${inLog ? &quot;done   &quot; : &quot;not done&quot;} ${line.slice(3)}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node report.mjs</span>
+**Weekly Status Report – Loyalty Card Project**
+
+**Overview:**  
+This week, progress on the loyalty card feature has been focused on core functionality, including stamping for paid hot drinks, handling refunds, and ensuring shared card state across branches. All key tasks have been addressed or are in progress.
+
+---
+
+**Completed Tasks:**
+
+- ✅ **T1 – Stamps for paid hot drinks**  
+  Implemented logic to stamp the loyalty card for every paid hot drink (commit: `a41c2e9`).
+
+- ✅ **T2 – Free drink on the 10th stamp**  
+  Added logic to offer a free drink after the 10th successful stamp (commit: `7d0f113`).
+
+- ✅ **T3 – Refunds remove stamps**  
+  Fixed issue where refunds would not remove stamps; now stamps are removed upon refund (commit: `c92b801`).
+
+- ✅ **T4 – Both branches share the card**  
+  Verified and implemented shared card state between branches (commit: `e11a6f0`).
+
+---
+
+**Remaining Tasks:**
+
+- ⏳ **T5 – The stamps screen in the app**  
+  UI/UX component for viewing and managing stamps is not yet implemented. Requires design and development.
+
+- ⏳ **T6 – The free drink at checkout**  
+  The logic for automatically applying the free drink at checkout still needs integration with the checkout flow. Pending testing and validation.
+
+---
+
+**Next Steps:**  
+- Prioritize development of T5 (stamps screen) to improve user experience.  
+- Integrate T6 with the checkout process and validate that the free drink is correctly applied and visible to the customer.  
+- Conduct end-to-end testing of the full loyalty flow, including edge cases (e.g., refunds, multiple branches).
+
+All core business logic is now in place. The next phase will focus on user-facing features and integration testing.
+--- the truth, from the log
+T1 done    stamps for paid hot drinks
+T2 done    free drink on the 10th stamp
+T3 done    refunds remove stamps
+T4 done    both branches share the card
+T5 not done the stamps screen in the app
+T6 not done the free drink at checkout</pre></div>
+
+<p>The report agrees with the log on every task: four done, two remaining. Most of it is good, and a manager would read it in a minute. Two sentences go further than the evidence. T4 is “verified and implemented”, but its only commit is a test (<code>test(loyalty): …</code>); a test proves the behaviour was checked, not that new code was written. And “all core business logic is now in place” is a judgement nobody made: the free drink at checkout, still open, is core business logic too. A status report is where small overstatements add up to a project that is “nearly done” for months.</p>
+
+<p>The Arabic edition shows the failure in full. Asked for the same report, in Arabic, from the same log, the model reported all six tasks done, including the stamps screen and the free drink at checkout, described each with a confident sentence (“the interface that shows the stamps has been completed”), wrote “there are no pending tasks”, and declared the system ready to try in the branches. Neither task has a single commit. The check against the log caught it in one line; a busy manager reading the report would not have.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Link every “done” in a report to its evidence: a commit, a merged pull request, a deployed version. Ask the model to include the links; then a reader can check any claim in one click, and claims without a link stand out.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Reading a summary only for errors</td><td>Missing decisions go unnoticed</td><td>Count decisions and actions against the source</td></tr>
+<tr><td>Letting the model complete dates</td><td>Years and weekdays nobody said</td><td>Copy dates as spoken; check every date</td></tr>
+<tr><td>Checking numbers only</td><td>Wrong currency, unit or name</td><td>Read units and names against the facts</td></tr>
+<tr><td>Reports without evidence</td><td>Optimistic “done” and “in place”</td><td>A link per claim; compare with the log</td></tr>
+<tr><td>Changing tone carelessly</td><td>Facts added or lost in the rewrite</td><td>Compare the facts before and after</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A model drafts meetings, emails and reports quickly; every fact in them needs a source.</li>
+<li>Check summaries for what is missing as well as what is wrong: count decisions and actions against the source.</li>
+<li>Check every number against its facts by code, and read units, currencies and names yourself.</li>
+<li>Check every “done” in a report against the log, and watch for summaries that go further than the evidence.</li>
+<li>Long text can be summarised in parts and merged, if the merge keeps everything the parts found.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The model wrote “2023-12-04”: it added a year the meeting never said, and 2023 does not appear in the meeting. 2. The currency: “£50” turns Egyptian pounds into British ones, and no number changed. 3. A wrong decision is in front of you when you read; a missing one is not there to be seen, so only comparing with the source, or counting, reveals it.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects are small tools for everyday writing: a source check for any draft, a tone change that must keep its facts, and a summary of text too long for one request.</p>
+
+<div class="project">
+<p class="project-label">Project 10.1 · Easy</p>
+<h3>Where did this number come from?</h3>
+<p class="project-goal">List the numbers in a draft that do not appear in any of its source files.</p>
+<p class="project-skills"><strong>You will practise:</strong> command-line files, sets, and a check you can run before sending anything.</p>
+<ol class="steps">
+<li>Read the draft and the sources named on the command line.</li>
+<li>Collect the numbers of each.</li>
+<li>Print the draft’s numbers that no source contains.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">check.mjs (part)</div><pre class="code"><span class="c line-bidi">// The facts of a text: its numbers and its capitalised names.</span>
+<span class="k">const</span> [draft, ...sources] = process.argv.slice(<span class="n">2</span>).map((file) =&gt; fs.readFileSync(file, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> invented = newNumbers(draft, ...sources);
+console.log(invented.length ? <span class="s">`numbers not in the sources: ${invented.join(&quot;, &quot;)}`</span> : <span class="s">&quot;every number has a source&quot;</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node check.mjs draft.txt facts.txt</span>
+numbers not in the sources: 55, 10</pre></div>
+<p class="hint"><strong>Hint:</strong> 55 is a typo for 50 that a reader might miss. And 10 (“your 10th coffee is free”) is true, but it is not in these facts: the draft says more than its source. The check cannot tell a true addition from a false one; it tells you exactly which numbers need a second source.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 10.2 · Medium</p>
+<h3>Change the tone, keep the facts</h3>
+<p class="project-goal">Rewrite the email formally, and compare its numbers before and after.</p>
+<p class="project-skills"><strong>You will practise:</strong> chained requests, and comparing two drafts mechanically.</p>
+<ol class="steps">
+<li>Draft the friendly email, then ask for a formal version of it.</li>
+<li>Collect the numbers of both.</li>
+<li>Print the numbers lost and added.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">tone.mjs (part)</div><pre class="code"><span class="k">const</span> before = numbers(friendly);
+<span class="k">const</span> after = numbers(formal);
+<span class="k">const</span> lost = [...before].filter((n) =&gt; !after.has(n));
+<span class="k">const</span> added = [...after].filter((n) =&gt; !before.has(n));
+console.log(<span class="s">`--- numbers lost: ${lost.join(&quot;, &quot;) || &quot;none&quot;}; added: ${added.join(&quot;, &quot;) || &quot;none&quot;}`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node tone.mjs</span>
+Subject: New Pricing and Loyalty Program Launch – Important Update  
+
+Dear Valued Customer,  
+
+We are writing to inform you of a minor adjustment to our pricing structure, effective 1st January 2024. The price of our large latte will be increased from £45 to £50. All other menu prices remain unchanged.  
+
+In addition, we are pleased to announce the launch of our new loyalty program, which will become available on Monday, 8th December, at both of our café locations. This initiative is designed to reward your continued support and enhance your experience with us.  
+
+Thank you for your loyalty and for being an integral part of our café community. We remain committed to delivering high-quality coffee and a welcoming atmosphere for all our guests.  
+
+Warm regards,  
+The Café Team  
+[Company Name]  
+[Contact Information, if applicable]
+--- numbers lost: none; added: 2024</pre></div>
+<p class="hint"><strong>Hint:</strong> the rewrite added “2024”, a year nobody gave, and in the past for this announcement. A formal tone made the model want a complete date, and it supplied one. It also kept “£” from the first draft and added placeholders, “[Company Name]”, that would embarrass anyone who sent the email as it is.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 10.3 · Challenge</p>
+<h3>A summary in parts</h3>
+<p class="project-goal">Split a text into parts, summarise each, then merge the summaries.</p>
+<p class="project-skills"><strong>You will practise:</strong> map and reduce over text, and checking that the merge keeps what the parts found.</p>
+<ol class="steps">
+<li>Split the meeting into three parts.</li>
+<li>Ask for the decisions of each part, in at most three lines.</li>
+<li>Ask for one merged list.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">thread.mjs (part)</div><pre class="code"><span class="k">const</span> lines = fs.readFileSync(<span class="s">&quot;meeting.txt&quot;</span>, <span class="s">&quot;utf8&quot;</span>).trim().split(<span class="s">&quot;\n&quot;</span>);
+<span class="k">const</span> parts = [lines.slice(<span class="n">0</span>, <span class="n">9</span>), lines.slice(<span class="n">9</span>, <span class="n">15</span>), lines.slice(<span class="n">15</span>)].map((p) =&gt; p.join(<span class="s">&quot;\n&quot;</span>));
+<span class="k">const</span> summaries = [];
+<span class="k">for</span> (<span class="k">const</span> [i, part] <span class="k">of</span> parts.entries()) {
+  summaries.push(<span class="k">await</span> ask(<span class="s">`Summarise this part of a discussion in at most three lines: the decisions only.\n\n${part}`</span>, {maxTokens: <span class="n">150</span>}));
+  console.log(<span class="s">`part ${i + 1}: ${summaries.at(-1).replace(/\s*\n\s*/g, &quot; / &quot;)}`</span>);
+}
+console.log(<span class="s">&quot;--- merged&quot;</span>);
+console.log(<span class="k">await</span> ask(<span class="s">`Here are summaries of the parts of one discussion. Merge them into one list of decisions, without repeating.\n\n${summaries.join(&quot;\n\n&quot;)}`</span>, {maxTokens: <span class="n">300</span>}));</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node thread.mjs</span>
+part 1: The loyalty card screen will be ready by Thursday, 4th December. The card launches on Monday, 8th December, in both branches, not just Nasr City. Both branches will launch together to ensure card compatibility across locations.
+part 2: Mona decides to increase the large latte price from 45 to 50 pounds, effective January 1st, with all other prices unchanged. She agrees to inform customers via the app, with Sara to draft and send the notice by December 15th. The cold brew price remains unchanged, with a review planned for March.
+part 3: The team decided to change the opening hour to 9 AM starting next Friday. Omar will update the hours on the app and the door. Mona thanked everyone for their input.
+--- merged
+Here is a merged, non-repetitive list of decisions:
+
+- The loyalty card screen will be ready by Thursday, 4th December, and the card will launch on Monday, 8th December, in both branches (Nasr City and the other branch), with both locations launching simultaneously to ensure card compatibility.  
+- The large latte price will be increased from 45 to 50 pounds, effective January 1st, with all other prices unchanged; customers will be informed via the app, with Sara drafting and sending the notice by December 15th. A cold brew price review is planned for March.  
+- Opening hours will be changed to 9 AM, effective next Friday, with Omar responsible for updating the app and physical door signage.</pre></div>
+<p class="hint"><strong>Hint:</strong> in parts, the model found the decisions it missed in one request: the launch, both branches, the price, the Friday hours, and even the cold brew left for March. Smaller inputs often get more careful answers. The merge kept everything, but blended decisions and tasks into three long lines. Check a merged summary against the parts, as you checked the parts against the meeting.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add “copy dates exactly as said; never add a year” to the summary request. Do the dates pass the check now?</li>
+<li><span class="level">Easy</span> Add a check to <code>email.mjs</code> that fails if the email contains a currency sign other than the one in the facts.</li>
+<li><span class="level medium">Medium</span> Ask for the meeting’s decisions in a separate request from its actions. How many of the four decisions are found?</li>
+<li><span class="level medium">Medium</span> Make <code>report.mjs</code> ask for the commit hash after every task reported done, and check that each hash is in the log.</li>
+<li><span class="level hard">Challenge</span> Write a check that each decision in the merged summary of Project 10.3 can be traced to a line of the meeting: a shared name, number or key word. Which decisions are traced, and which are the model’s own words?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 11</p>
+<p>Some of this writing comes back every week: the same report, the same kind of email, the same clean-up of data. The next chapter automates that repetitive work with the model inside small scripts, and asks when a script with no model would do the job better.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3888,6 +4224,16 @@ On <code>price.mjs</code> as it is, every number in the comments is in the code.
 <li>Search the specification for one key phrase per decision and print found or missing. In the book’s English run, all six decisions appear, including “large latte”, and two of them are still wrong. Finding the phrase shows the decision was not dropped; it does not show it was applied to the right rule. A check like this catches omissions; only reading catches misplacement.</li>
 <li>With <code>{"id": "T8", "dependsOn": ["T42"]}</code> and a pair <code>T9</code> → <code>T10</code> → <code>T9</code>, <code>checkTasks</code> reports “T8 depends on T42, which does not exist” and “cycle: T9 -&gt; T10 -&gt; T9”. Both are easy to produce when a model edits a plan in several steps, and both are invisible in a long list.</li>
 <li>For example, steps such as “first coffee: stamp”, “10th stamp: free drink offered”, “free drink: redeemed at checkout”, “refund: stamp removed”, “other branch: same card”, “existing customer: card created”, each with words a task title must contain. Run it on <code>tasks.json</code>: in the book’s English run, the free drink at checkout, the app screen and existing customers have no task. A walk turned into code can run again on every new version of the plan.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 10</h2>
+<ol class="exercises">
+<li>The instruction removes the reason for the guess, but check rather than assume: run the summary again and read the date check’s lines. If any date still has a year, a schema helps more than words: make <code>due</code> an exact quote by asking for “the words used in the meeting for the date”, and compare it with the meeting text directly (<code>meeting.includes(action.due)</code>). A quote can be checked character by character; a reformatted date cannot.</li>
+<li>Collect the currency signs and words of the facts (“pounds”) and of the email (<code>/[£$€¥]|\bpounds?\b|\bdollars?\b/gi</code>), and fail on any sign in the email that the facts do not use. For this café, “£” fails. The check is crude, and that is fine: its job is to make a person look, not to understand currencies.</li>
+<li>A narrow request (“list only the decisions made in this meeting, one per line”) puts all the model’s attention on one kind of item. Compare the count with four, and read each line: the risk in a decisions-only request is the opposite one, actions and proposals turned into “decisions”, such as the cold brew that was rejected.</li>
+<li>Ask for “each task reported as done, with the hash of the commit that did it”, then check each hash with <code>log.includes(hash)</code>. A task with no hash, or a hash not in the log, is an unsupported claim. In the Arabic edition’s report, T5 and T6 would have had no hash to give; the request itself makes inventing progress harder.</li>
+<li>For each merged decision, collect its numbers and the names of the people and look for each in the meeting; a decision with a number or a name not in the meeting, such as a date, is the model’s own. Run it on both editions. The Arabic merge’s “9 May” passes a number check, because 9 is in the meeting, as an hour; a check of month names catches it, since May was never said. Its “Hassan proposes a review in March” passes every check, because Hassan was in the meeting; it was Mona who said it. That is what is left for reading.</li>
 </ol>
 
 </section>

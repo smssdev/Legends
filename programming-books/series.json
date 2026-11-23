@@ -1428,7 +1428,8 @@
             },
             {
               "en": "Meetings, Emails and Reports",
-              "ar": "الاجتماعات والرسائل والتقارير"
+              "ar": "الاجتماعات والرسائل والتقارير",
+              "src": "b7/meetings"
             },
             {
               "en": "Automating Repetitive Work",
