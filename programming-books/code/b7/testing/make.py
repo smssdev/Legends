@@ -134,9 +134,10 @@ export function failures(tests, source, dir) {
   }
 }
 
-// The code block of an answer that contains tests (an answer may also quote the module).
+// The code block of an answer that contains tests (an answer may also quote the module,
+// and a long answer may stop before its closing fence).
 export function testsOf(answer) {
-  const blocks = [...answer.matchAll(/```(?:\\w+)?\\n([\\s\\S]*?)```/g)].map((m) => m[1]);
+  const blocks = [...answer.matchAll(/```(?:\\w+)?\\n([\\s\\S]*?)(?:```|$)/g)].map((m) => m[1]);
   return blocks.find((block) => /\\b(test|it)\\(/.test(block)) ?? null;
 }
 
@@ -148,6 +149,10 @@ export function passes(tests, source, dir) {
 // any import the file forgot (the two-line fix a developer makes in seconds).
 export function keepPassing(tests, source) {
   let header = tests.split("\\n").filter((line) => /^import /.test(line));
+  // assert does not come from node:test, whatever the file says.
+  header = header.map((line) => {
+    return line.includes("node:test") ? line.replace(/,\\s*assert\\b|\\bassert\\s*,\\s*/, "") : line;
+  });
   if (!header.some((line) => line.includes("node:test"))) {
     header = ['import {test} from "node:test";', ...header];
   }
@@ -235,7 +240,7 @@ import {ask} from "./lib/ask.mjs";
 import {MUTANTS, failures, keepPassing, score, testsOf} from "./lib/mutants.mjs";
 
 const source = fs.readFileSync("price.mjs", "utf8");
-let tests = testsOf(await ask(`{w_tests}\\n\\n${source}`)) ?? "";
+let tests = testsOf(await ask(`{w_tests}\\n\\n${source}`, {maxTokens: 1400})) ?? "";
 console.log(`tests written: ${tests.match(/\\btest\\(|\\bit\\(/g)?.length ?? 0}`);
 
 // {w_c_real}
