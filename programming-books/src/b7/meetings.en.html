@@ -1,0 +1,153 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/meetings/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Meetings, Emails and Reports</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>summarise a meeting into decisions and actions, and check the summary against what was said</li>
+<li>draft emails and announcements, and check every number against its source</li>
+<li>draft status reports, and check every “done” against the work itself</li>
+<li>change the tone of a text without changing its facts</li>
+<li>summarise text that is too long for one request, in parts</li>
+</ul>
+</div>
+
+<p class="lead">Much of a developer’s week is not code: meetings, emails, updates, reports. It is also where assistants save the most time, because the writing is routine and the readers are busy. And it is where their mistakes travel furthest: a wrong date in a summary becomes a missed deadline; a wrong price in an announcement reaches every customer. This chapter drafts all three kinds of text with the book’s model, and for each one asks the same question: where did this fact come from?</p>
+
+<aside class="bit" data-mood="wow"><p>The meeting summary in this chapter has no decisions in it, though four were made, and dates with a year nobody said. The email changed the currency. The formal rewrite added a year. None of it is malicious; all of it is the model filling gaps with the typical case.</p></aside>
+
+<h2>{{n}}.1 A meeting, summarised and checked</h2>
+
+<p>A short team meeting about the café: the loyalty card, a price change, new Friday hours. Four decisions are made, two proposals are turned down, and three people take on a task. A summary should keep all of that, and add nothing:</p>
+
+<pre data-code="meeting.txt" data-title="meeting.txt"></pre>
+<pre data-code="summary.mjs" data-from="// " data-title="summary.mjs (part)"></pre>
+<pre data-term="summary.sh"></pre>
+
+<p>The actions are right: Hassan, Sara and Omar, with the right tasks. Two of them fail the check, for the same reason: “2023-12-04” and “2023-12-15”. The meeting said “Thursday the 4th of December”; the model turned it into a full date and chose a year, the wrong one. In a calendar, that is a deadline two years in the past.</p>
+
+<p>And the decisions list is empty. The launch date, the price change, the Friday hours, both branches together: four decisions, and the most important part of any meeting summary, and the model returned none, though the schema asked for them. A summary is judged by what it leaves out as much as by what it says, and nobody notices an absence by reading. That is why the program compares the count with what the meeting really decided.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Tell the model to copy dates as they were said (“Thursday the 4th of December”), never to complete them. A date with a year or a weekday the speaker did not give is a guess, and guesses in summaries become commitments.</p></aside>
+
+<h2>{{n}}.2 An email, with every number checked</h2>
+
+<p>An announcement to customers, from three facts. The check is simple and catches the worst mistakes: every number in the email must appear in the facts.</p>
+
+<pre data-code="lib/facts.mjs" data-from="^export function newNumbers" data-to="^}" data-title="lib/facts.mjs (part)"></pre>
+<pre data-term="email.sh"></pre>
+
+<p>Every number has a source: 50, 45, the 1st, the 8th. The check passes, and the email is still wrong: “£50”. The facts said pounds, and this café is in Cairo; the model chose the pound sign it has seen most, the British one. Customers would read a price in sterling. No number changed, so no number check could see it. Read every unit, currency and name yourself; the check covers digits, not meaning.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Anything sent to customers, partners or the whole company is read by people who will act on it, and cannot be recalled. Draft with a model; send only what a person has read against the facts, every number and every unit, with the facts beside them.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did the date check flag Hassan’s action, though the day and month were right?</li><li>What did the number check miss in the email?</li><li>Why is a missing decision harder to notice than a wrong one?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 A status report, checked against the work</h2>
+
+<p>A weekly report from the commit log and the task list. The danger in status reports is optimism: work described as done that is not. So the program sets the report beside the truth from the log:</p>
+
+<pre data-code="report.mjs" data-from="// " data-title="report.mjs (part)"></pre>
+<pre data-term="report.sh"></pre>
+
+<p>The report agrees with the log on every task: four done, two remaining. Most of it is good, and a manager would read it in a minute. Two sentences go further than the evidence. T4 is “verified and implemented”, but its only commit is a test (<code>test(loyalty): …</code>); a test proves the behaviour was checked, not that new code was written. And “all core business logic is now in place” is a judgement nobody made: the free drink at checkout, still open, is core business logic too. A status report is where small overstatements add up to a project that is “nearly done” for months.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Link every “done” in a report to its evidence: a commit, a merged pull request, a deployed version. Ask the model to include the links; then a reader can check any claim in one click, and claims without a link stand out.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Reading a summary only for errors</td><td>Missing decisions go unnoticed</td><td>Count decisions and actions against the source</td></tr>
+<tr><td>Letting the model complete dates</td><td>Years and weekdays nobody said</td><td>Copy dates as spoken; check every date</td></tr>
+<tr><td>Checking numbers only</td><td>Wrong currency, unit or name</td><td>Read units and names against the facts</td></tr>
+<tr><td>Reports without evidence</td><td>Optimistic “done” and “in place”</td><td>A link per claim; compare with the log</td></tr>
+<tr><td>Changing tone carelessly</td><td>Facts added or lost in the rewrite</td><td>Compare the facts before and after</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A model drafts meetings, emails and reports quickly; every fact in them needs a source.</li>
+<li>Check summaries for what is missing as well as what is wrong: count decisions and actions against the source.</li>
+<li>Check every number against its facts by code, and read units, currencies and names yourself.</li>
+<li>Check every “done” in a report against the log, and watch for summaries that go further than the evidence.</li>
+<li>Long text can be summarised in parts and merged, if the merge keeps everything the parts found.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The model wrote “2023-12-04”: it added a year the meeting never said, and 2023 does not appear in the meeting. 2. The currency: “£50” turns Egyptian pounds into British ones, and no number changed. 3. A wrong decision is in front of you when you read; a missing one is not there to be seen, so only comparing with the source, or counting, reveals it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects are small tools for everyday writing: a source check for any draft, a tone change that must keep its facts, and a summary of text too long for one request.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Where did this number come from?</h3>
+<p class="project-goal">List the numbers in a draft that do not appear in any of its source files.</p>
+<p class="project-skills"><strong>You will practise:</strong> command-line files, sets, and a check you can run before sending anything.</p>
+<ol class="steps">
+<li>Read the draft and the sources named on the command line.</li>
+<li>Collect the numbers of each.</li>
+<li>Print the draft’s numbers that no source contains.</li>
+</ol>
+<pre data-code="check.mjs" data-from="// " data-title="check.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/check.sh"></pre>
+<p class="hint"><strong>Hint:</strong> 55 is a typo for 50 that a reader might miss. And 10 (“your 10th coffee is free”) is true, but it is not in these facts: the draft says more than its source. The check cannot tell a true addition from a false one; it tells you exactly which numbers need a second source.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Change the tone, keep the facts</h3>
+<p class="project-goal">Rewrite the email formally, and compare its numbers before and after.</p>
+<p class="project-skills"><strong>You will practise:</strong> chained requests, and comparing two drafts mechanically.</p>
+<ol class="steps">
+<li>Draft the friendly email, then ask for a formal version of it.</li>
+<li>Collect the numbers of both.</li>
+<li>Print the numbers lost and added.</li>
+</ol>
+<pre data-code="tone.mjs" data-from="^const before" data-title="tone.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/tone.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the rewrite added “2024”, a year nobody gave, and in the past for this announcement. A formal tone made the model want a complete date, and it supplied one. It also kept “£” from the first draft and added placeholders, “[Company Name]”, that would embarrass anyone who sent the email as it is.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A summary in parts</h3>
+<p class="project-goal">Split a text into parts, summarise each, then merge the summaries.</p>
+<p class="project-skills"><strong>You will practise:</strong> map and reduce over text, and checking that the merge keeps what the parts found.</p>
+<ol class="steps">
+<li>Split the meeting into three parts.</li>
+<li>Ask for the decisions of each part, in at most three lines.</li>
+<li>Ask for one merged list.</li>
+</ol>
+<pre data-code="thread.mjs" data-from="^const lines" data-title="thread.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/thread.sh"></pre>
+<p class="hint"><strong>Hint:</strong> in parts, the model found the decisions it missed in one request: the launch, both branches, the price, the Friday hours, and even the cold brew left for March. Smaller inputs often get more careful answers. The merge kept everything, but blended decisions and tasks into three long lines. Check a merged summary against the parts, as you checked the parts against the meeting.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add “copy dates exactly as said; never add a year” to the summary request. Do the dates pass the check now?</li>
+<li><span class="level">Easy</span> Add a check to <code>email.mjs</code> that fails if the email contains a currency sign other than the one in the facts.</li>
+<li><span class="level">Medium</span> Ask for the meeting’s decisions in a separate request from its actions. How many of the four decisions are found?</li>
+<li><span class="level">Medium</span> Make <code>report.mjs</code> ask for the commit hash after every task reported done, and check that each hash is in the log.</li>
+<li><span class="level">Challenge</span> Write a check that each decision in the merged summary of Project {{n}}.3 can be traced to a line of the meeting: a shared name, number or key word. Which decisions are traced, and which are the model’s own words?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Some of this writing comes back every week: the same report, the same kind of email, the same clean-up of data. The next chapter automates that repetitive work with the model inside small scripts, and asks when a script with no model would do the job better.</p>
+</div>
+</section>
