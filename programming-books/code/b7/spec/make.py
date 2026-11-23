@@ -158,13 +158,15 @@ console.log(answer);
 
 // {w_c_cover}
 const matter = {
-  "which drinks count": /which (drinks|items|products)|what (counts|qualifies)|eligib|count toward|exclusion|certain drinks|definition of/i,
-  "refunds and cancellations": /refund|cancel|return/i,
-  "expiry": /expir|valid for|time limit|reset/i,
-  "what the free drink can be": /free (drink|coffee|item).*(any|which|size|price|limit)|value of the free/i,
-  "several branches": /branch|location|store|shop/i,
-  "abuse and fraud": /fraud|abuse|cheat|misuse|share|transfer/i,
-  "existing customers and past orders": /existing|past (orders|purchases)|retroactive|already/i,
+  "which drinks count":
+    /which (drinks|items|products)|what (counts|qualifies)|eligib|count toward|exclusion|certain drinks|definition of|أي المشروبات|أي مشروب|تُحسب|يُحسب/i,
+  "refunds and cancellations": /refund|cancel|return|استرد|إلغاء|إرجاع/i,
+  "expiry": /expir|valid for|time limit|reset|صلاحي|تنتهي|مدة/i,
+  "what the free drink can be":
+    /free (drink|coffee|item).*(any|which|size|price|limit)|value of the free|المجاني.*(حجم|سعر|أي)/i,
+  "several branches": /branch|location|store|shop|فرع|فروع/i,
+  "abuse and fraud": /fraud|abuse|cheat|misuse|share|transfer|احتيال|تلاعب|غش|مشاركة/i,
+  "existing customers and past orders": /existing|past (orders|purchases)|retroactive|already|الحاليين|السابقة|الجدد/i,
 };
 console.log("--- the questions that matter");
 for (const [name, pattern] of Object.entries(matter)) {
@@ -212,7 +214,7 @@ for (const {id, title, estimate, dependsOn} of tasks) {
   console.log(`${id.padEnd(4)} ${String(estimate).padStart(4)} h  ${title}  [${dependsOn.join(", ")}]`);
 }
 const total = tasks.reduce((sum, t) => sum + t.estimate, 0);
-console.log(`total: ${total} hours`);
+console.log(`total: ${Math.round(total * 10) / 10} hours`);
 
 // {w_c_graph}
 const {problems, order} = checkTasks(tasks);
@@ -255,7 +257,7 @@ for (const seed of [1, 2, 3]) {
   const answer = await ask(`{w_tasks}\\n\\n${spec}`, {grammar, temperature: 0.7, seed, maxTokens: 1000});
   const tasks = JSON.parse(answer);
   const total = tasks.reduce((sum, t) => sum + t.estimate, 0);
-  console.log(`seed ${seed}: ${tasks.length} tasks, ${total} hours`);
+  console.log(`seed ${seed}: ${tasks.length} tasks, ${Math.round(total * 10) / 10} hours`);
 }
 """,
 }

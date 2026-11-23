@@ -1,0 +1,31 @@
+import fs from "node:fs";
+import {ask, model} from "./lib/ask.mjs";
+import {checkTasks} from "./lib/graph.mjs";
+
+const grammar = await model.llama.createGrammarForJsonSchema({
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
+      id: {type: "string"},
+      title: {type: "string"},
+      estimate: {type: "number"},
+      dependsOn: {type: "array", items: {type: "string"}},
+    },
+  },
+  minItems: 3,
+  maxItems: 12,
+});
+const spec = fs.readFileSync("spec.md", "utf8");
+const tasks = JSON.parse(await ask(`قسّم هذه المواصفات إلى مهام تطوير لفريق صغير. أجب بـ JSON: قائمة مهام، لكل منها id (T1، T2...)، وtitle، وestimate بالساعات، وdependsOn (قائمة معرّفات).\n\n${spec}`, {grammar, maxTokens: 1200}));
+fs.writeFileSync("tasks.json", JSON.stringify(tasks, null, 2));
+for (const {id, title, estimate, dependsOn} of tasks) {
+  console.log(`${id.padEnd(4)} ${String(estimate).padStart(4)} h  ${title}  [${dependsOn.join(", ")}]`);
+}
+const total = tasks.reduce((sum, t) => sum + t.estimate, 0);
+console.log(`total: ${total} hours`);
+
+// كل اعتمادية يجب أن تكون موجودة، ولا حلقة دائرية.
+const {problems, order} = checkTasks(tasks);
+console.log(problems.length ? problems.join("\n") : "dependencies: ok");
+console.log(`an order: ${order.join(" ")}`);
