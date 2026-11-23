@@ -5,4 +5,5 @@ FAIL Fixed the price thing.
        subject ends with a full stop
 FAIL feat: a much longer subject line that keeps going and going past the limit of characters
        subject is 88 characters, more than 72
-ok   docs(readme): explain --vip
+FAIL docs(readme): explain --vip
+       no blank line after the subject

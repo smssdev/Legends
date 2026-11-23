@@ -11,7 +11,7 @@ export function lintCommit(message) {
   if (subject.endsWith(".")) {
     problems.push("subject ends with a full stop");
   }
-  if (body.length > 0 && blank !== "") {
+  if (blank !== undefined && blank !== "") {
     problems.push("no blank line after the subject");
   }
   if (/```|\*\*/.test(message)) {

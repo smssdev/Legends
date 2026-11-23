@@ -17,12 +17,19 @@ fs.writeFileSync("repo/price.mjs", changed);
 git("add price.mjs");
 const diff = git("diff --cached");
 
-const message = (await ask(`Write a git commit message for this change in the Conventional Commits format: type(scope): subject of at most 72 characters, a blank line, then a short body that says why. Return only the message.\n\n${diff}`)).replace(/^```\w*\n|```$/g, "").trim();
+const clean = (text) => text.replace(/^```\w*\n|```$/g, "").trim();
+let message = clean(await ask(`Write a git commit message for this change in the Conventional Commits format: type(scope): subject of at most 72 characters, a blank line, then a short body that says why. Return only the message.\n\n${diff}`));
 console.log(message);
 
 // The format is checked by code, not by eye.
-const problems = lintCommit(message);
+let problems = lintCommit(message);
 console.log(`--- lint: ${problems.length ? problems.join("; ") : "ok"}`);
+if (problems.length) {
+  const request = `Write a git commit message for this change in the Conventional Commits format: type(scope): subject of at most 72 characters, a blank line, then a short body that says why. Return only the message.\n\n${diff}\n\nYour message broke these rules. Write it again:\n${message}\n${problems.join("\n")}`;
+  message = clean(await ask(request));
+  problems = lintCommit(message);
+  console.log(`--- once more:\n${message}\n--- lint: ${problems.length ? problems.join("; ") : "ok"}`);
+}
 
 // If the message passes, make the real commit with it.
 if (problems.length === 0) {
