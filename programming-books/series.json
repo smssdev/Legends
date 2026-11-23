@@ -1456,7 +1456,8 @@
             },
             {
               "en": "Retrieval: AI That Knows Your Data",
-              "ar": "الاسترجاع: ذكاء اصطناعي يعرف بياناتك"
+              "ar": "الاسترجاع: ذكاء اصطناعي يعرف بياناتك",
+              "src": "b7/retrieval"
             },
             {
               "en": "Security, Privacy and Licensing",

@@ -33,6 +33,8 @@
 @page ch12:first { @top-center { content: none; } }
 @page ch13 { @top-center { content: "Chapter 13: Calling AI Models from Your Apps"; } }
 @page ch13:first { @top-center { content: none; } }
+@page ch14 { @top-center { content: "Chapter 14: Retrieval: AI That Knows Your Data"; } }
+@page ch14:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -65,7 +67,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">86</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">112</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">124</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">137</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">160</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">183</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">86</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">112</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">124</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">137</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">160</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p">183</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">193</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -4928,6 +4930,247 @@ Yes, your loyalty card is valid at both branches. Just show it when you make you
 <p>The local model answered a question about the café’s rules from nowhere. The next chapter gives it the café’s own documents to answer from: retrieval, embeddings and search, so that an assistant knows your data, and says so when it does not.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch14" data-chapter="14" data-code="b7/retrieval/en">
+<div class="opener"><span class="opener-num">14</span><p class="chapter-kicker">Chapter 14</p><h1>Retrieval: AI That Knows Your Data</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>search your own documents by meaning, with embeddings</li>
+<li>compare search methods on questions whose right answer you know</li>
+<li>give a model the documents it needs, with a rule and citations</li>
+<li>check citations, and measure retrieval and answers separately</li>
+<li>split long documents into pieces that can be found</li>
+</ul>
+</div>
+
+<p class="lead">A model knows what was in its training, and nothing about your café, your product or your company. Chapter 13 ended with the model answering a question about the café’s loyalty card from nowhere. The fix has a name, <em>retrieval-augmented generation</em>, and a simple idea: before asking the model, find the documents that answer the question, and put them in the prompt. This chapter builds it from scratch for a ten-page café handbook, and measures each part: does search find the right page, does the model answer from it, and does it say so when the answer is not there.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Search found the right page for every question in this chapter. The model then answered one of them “not in our documents”, with the answer in front of it. Retrieval and answering fail separately, so they are measured separately.</p></div></div>
+
+<h2><span class="sec">14.1</span> <span>Finding the right document</span></h2>
+
+<p>The handbook is ten short documents, each with an id: loyalty, branches, refunds, hours, prices and so on. Eight questions, written the way customers ask them, each with the document that answers it. That is the test, and three ways of searching take it.</p>
+
+<p>The simplest is shared words: pick the document with the most words in common with the question. The second and third use <em>embeddings</em>: a model turns each text into a list of numbers (here 1,024 of them) such that texts with similar meaning get nearby lists, and the search picks the document whose list is closest to the question’s, by the cosine of the angle between them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/embed.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> nearest(embed, docs, question, k = <span class="n">2</span>) {
+  <span class="k">const</span> vectors = docs.vectors ?? (docs.vectors = <span class="k">await</span> Promise.all(docs.map(([, text]) =&gt; embed(text))));
+  <span class="k">const</span> q = <span class="k">await</span> embed(question);
+  <span class="k">return</span> vectors
+    .map((v, i) =&gt; ({id: docs[i][<span class="n">0</span>], text: docs[i][<span class="n">1</span>], score: cosine(q, v)}))
+    .sort((a, b) =&gt; b.score - a.score)
+    .slice(<span class="n">0</span>, k);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node search.mjs</span>
+shared words     4 of 8  prices-&gt;loyalty refunds-&gt;loyalty delivery-&gt;loyalty gifts-&gt;loyalty
+chat model       2 of 8  wifi-&gt;hours prices-&gt;hours refunds-&gt;hours branches-&gt;hours delivery-&gt;hours gifts-&gt;hours
+embedding model  8 of 8  </pre></div>
+
+<p>Shared words found four: “big latte” shares no word with “large latte costs 50 pounds”, and “bring my order to my office” shares none with “we do not deliver”. The book’s chat model, used to make embeddings, did worse, two of eight, sending almost every question to the opening hours. A real embedding model, small (0.6 billion parameters, 640 MB) and trained for exactly this, found all eight. The lesson is not that the chat model is weak: it was trained to continue text, not to place meanings near each other, and the right tool for each step matters more than the size of the model.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>The embedding model is multilingual. In the Arabic edition, Arabic questions found the right Arabic documents; tried while preparing this chapter, Arabic questions also found the right <em>English</em> documents, because meanings, not words, are compared. One handbook can serve customers in several languages.</p></aside>
+
+<h2><span class="sec">14.2</span> <span>Answering from the documents</span></h2>
+
+<p>Now the generation: for each question, find the two closest documents, put them in the prompt with their ids, and give the model a rule: answer only from these, cite the id, and say a fixed sentence when the answer is not there.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">rag.mjs (part)</div><pre class="code">  <span class="k">const</span> found = <span class="k">await</span> nearest(embed, docs, question, <span class="n">2</span>);
+  <span class="k">const</span> sources = found.map(({id, text}) =&gt; <span class="s">`[${id}] ${text}`</span>).join(<span class="s">&quot;\n&quot;</span>);
+  <span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">`Answer the customer&#x27;s question only from the documents below, in one sentence, and cite the document id in brackets, like [hours]. If the answer is not in the documents, say exactly: Not in our documents.\n\n${sources}\n\n${question}`</span>);
+  <span class="k">const</span> ok = expected ? answer.toLowerCase().includes(expected) : answer.includes(<span class="s">&quot;Not in our documents&quot;</span>);
+  console.log(<span class="s">`  with ${found.map((f) =&gt; f.id).join(&quot;, &quot;)}: ${answer}  ${ok ? &quot;&quot; : &quot;&lt;- CHECK&quot;}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node rag.mjs</span>
+<span class="c">&gt; </span><span class="k">Can I use my loyalty card in Zamalek?</span>
+  without: I&#x27;m sorry, but I can&#x27;t determine if your loyalty card is valid at Zamalek without more specific information about the card and the type of loyalty program.
+  with branches, loyalty: Yes, you can use your loyalty card in Zamalek [branches].  
+<span class="c">&gt; </span><span class="k">How much extra is oat milk?</span>
+  without: Oat milk is typically priced slightly higher than dairy milk, with the extra cost varying by brand and location—usually ranging from 10% to 30% more than regular milk.
+  with allergens, prices: Not in our documents.  &lt;- CHECK
+<span class="c">&gt; </span><span class="k">How long is a gift card valid?</span>
+  without: Gift cards are typically valid for 5 to 10 years, depending on the issuer, but validity periods can vary, so it&#x27;s best to check the specific terms provided by the gift card company.
+  with gifts, refunds: A gift card is valid for one year [gifts].  
+<span class="c">&gt; </span><span class="k">Do you sell sandwiches?</span>
+  without: I don&#x27;t sell sandwiches—please check with a bakery or grocery store for that.
+  with allergens, delivery: Not in our documents.  </pre></div>
+
+<p>Without the documents, the model answered from general knowledge: oat milk is “usually 10% to 30% more”, gift cards are “typically valid for 5 to 10 years”. Fluent, reasonable, and not this café. In the Arabic edition the same model, without documents, was worse: it said the loyalty card <em>cannot</em> be used in Zamalek, and spoke for the café about sandwiches. With them, it answered the gift card (one year) and the branches correctly, each with its citation, and said “not in our documents” about sandwiches, which is right.</p>
+
+<p>With documents, the Arabic edition got all four right, oat milk included. The English run got one wrong in a new way. For oat milk, search found the right document, “oat and almond milk are available for 10 pounds extra”, and the model answered “Not in our documents.” The rule that stops inventions also gave the model an easy way out, and it took it on a question whose answer said “almond and oat milk available” rather than “oat milk costs”. A retrieval system can fail at two places, and the fix is different for each: if search misses, improve search; if search finds and the model misses, improve the prompt or the model.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>An assistant that says “not in our documents” too often is not safe, it is useless: customers stop asking. Count both kinds of error on your test questions: answers that were invented, and answers that were refused although the document was found. Tune for the balance your users need.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did “big latte” fail with shared words and work with embeddings?</li><li>In the oat milk question, did retrieval fail or did answering fail?</li><li>Why does every answer cite a document id?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">14.3</span> <span>What to measure</span></h2>
+
+<p>A retrieval system is two systems, and each gets its own test. For search: is the right document among the first <em>k</em> found? For answers: is the answer right, is it cited, and is “not in our documents” said exactly when it should be? Project 14.3 measures the first; the check after each answer in <code>rag.mjs</code> measures the second, and it is what flagged the oat milk answer.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Keep a file of real questions with the document that answers each, and run it after every change: to the documents, the chunking, the embedding model, the prompt. Retrieval quality changes silently when any of them changes; a test set is how you notice.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Keyword search for questions in customers’ words</td><td>The right page is never found</td><td>Embeddings, from a model made for them</td></tr>
+<tr><td>A chat model for embeddings</td><td>Every question finds the same page</td><td>A dedicated embedding model</td></tr>
+<tr><td>Documents in the prompt without a rule</td><td>The model mixes them with general knowledge</td><td>“Only from these documents”, and a fixed reply</td></tr>
+<tr><td>No citations</td><td>No way to check an answer</td><td>Ids in the prompt, cited in the answer, checked by code</td></tr>
+<tr><td>Measuring only the final answer</td><td>Not knowing which half failed</td><td>Test search and answers separately</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Retrieval gives a model your facts: search your documents, put the best ones in the prompt, answer from them.</li>
+<li>Embeddings search by meaning; use a model trained for them, and test it on real questions.</li>
+<li>A rule (“only from these, cite the id, else say so”) turns inventions into citations and visible refusals.</li>
+<li>Search and answering fail separately; measure each with its own test set.</li>
+<li>Split long documents into pieces about one thing each, so each can be found.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The question and the document share no word (“big” against “large”), but their meanings are close, and embeddings compare meanings. 2. Answering: search found the allergens document, which contains the answer; the model refused anyway. 3. So that the answer can be checked against its source, by a person or by code, and so that an answer without a source stands out.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects prepare documents for retrieval, check what the model cites, and measure the search.</p>
+
+<div class="project">
+<p class="project-label">Project 14.1 · Easy</p>
+<h3>Split a handbook into pieces</h3>
+<p class="project-goal">Cut a long Markdown document at its headings into pieces with ids.</p>
+<p class="project-skills"><strong>You will practise:</strong> chunking by structure, and giving each piece an id that a citation can name.</p>
+<ol class="steps">
+<li>Split the text before each line that starts with <code># </code>.</li>
+<li>Use the heading as the id and the rest as the text.</li>
+<li>Print the pieces.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">chunk.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> chunks(markdown) {
+  <span class="k">return</span> markdown
+    .split(/^(?=# )/m)
+    .map((part) =&gt; part.trim())
+    .filter(Boolean)
+    .map((part) =&gt; {
+      <span class="k">const</span> [title, ...body] = part.split(<span class="s">&quot;\n&quot;</span>);
+      <span class="k">return</span> {id: title.replace(/^# /, <span class="s">&quot;&quot;</span>).toLowerCase(), text: body.join(<span class="s">&quot; &quot;</span>)};
+    });
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node chunk.mjs</span>
+[loyalty] Every paid hot drink earns one stamp. The 10th stamp gives a free drink.
+[refunds] A refunded drink removes its stamp.
+[hours] We open at 8, and at 9 on Fridays.</pre></div>
+<p class="hint"><strong>Hint:</strong> headings are the best boundaries, because the author already decided what belongs together. For documents without them, cut by paragraphs, with a size limit in tokens and a small overlap, so that a sentence split across two pieces is not lost.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 14.2 · Medium</p>
+<h3>Check the citations</h3>
+<p class="project-goal">Check that every cited id is a real document, and that the numbers in the answer appear in it.</p>
+<p class="project-skills"><strong>You will practise:</strong> verifying a model’s sources mechanically.</p>
+<ol class="steps">
+<li>Find the <code>[id]</code> citations in the answer.</li>
+<li>For each, find the document, or report that it does not exist.</li>
+<li>Report any number in the answer that the cited document does not contain.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">cite.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> checkCitations(answer) {
+  <span class="k">const</span> problems = [];
+  <span class="k">const</span> cited = [...answer.matchAll(/\[([\w-]+)\]/g)].map((m) =&gt; m[<span class="n">1</span>]);
+  <span class="k">const</span> numbers = answer.match(/\d+/g) ?? [];
+  <span class="k">for</span> (<span class="k">const</span> id <span class="k">of</span> cited) {
+    <span class="k">const</span> doc = DOCS.find(([docId]) =&gt; docId === id);
+    <span class="k">if</span> (!doc) {
+      problems.push(<span class="s">`[${id}] is not a document`</span>);
+    } <span class="k">else</span> {
+      <span class="k">for</span> (<span class="k">const</span> n <span class="k">of</span> numbers.filter((n) =&gt; !doc[<span class="n">1</span>].includes(n))) {
+        problems.push(<span class="s">`${n} is not in [${id}]`</span>);
+      }
+    }
+  }
+  <span class="k">return</span> cited.length === <span class="n">0</span> ? [<span class="s">&quot;no citation&quot;</span>] : problems;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node cite.mjs</span>
+ok   Oat milk costs 10 pounds extra [allergens].  
+FAIL Oat milk costs 15 pounds extra [allergens].  15 is not in [allergens]
+FAIL Gift cards are valid for one year [gift-cards].  [gift-cards] is not a document
+FAIL Yes, delivery takes about 30 minutes.  no citation</pre></div>
+<p class="hint"><strong>Hint:</strong> each failure is a different kind: a wrong number with a real citation, an invented id, and an answer with no source at all. Run this on every answer before it is shown, and replace a failing answer with the fixed “not in our documents” and a link to a person.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 14.3 · Challenge</p>
+<h3>Measure the search</h3>
+<p class="project-goal">For each question, check whether the right document is among the first one, two and three found.</p>
+<p class="project-skills"><strong>You will practise:</strong> evaluating retrieval on its own, with a test set.</p>
+<ol class="steps">
+<li>For k from 1 to 3, search each question for k documents.</li>
+<li>Count the questions whose expected document is among them.</li>
+<li>Print the counts.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">hits.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> k <span class="k">of</span> [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>]) {
+  <span class="k">let</span> hits = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> [question, expected] <span class="k">of</span> QUESTIONS) {
+    <span class="k">const</span> found = <span class="k">await</span> nearest(embed, docs, question, k);
+    hits += found.some((f) =&gt; f.id === expected) ? <span class="n">1</span> : <span class="n">0</span>;
+  }
+  console.log(<span class="s">`right document in the first ${k}: ${hits} of ${QUESTIONS.length}`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node hits.mjs</span>
+right document in the first 1: 8 of 8
+right document in the first 2: 8 of 8
+right document in the first 3: 8 of 8</pre></div>
+<p class="hint"><strong>Hint:</strong> eight of eight at k = 1 is a result for ten tidy documents. With a thousand real pages the numbers will be lower, and the gap between k = 1 and k = 3 tells you how many documents to put in the prompt: enough to include the right one, few enough to leave room and attention for it.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a document about sandwiches (“We do not sell food other than cakes”) and ask the sandwich question again. What does the answer cite now?</li>
+<li><span class="level">Easy</span> Write three new questions in your own words and their expected documents. Does the embedding search still find all of them?</li>
+<li><span class="level medium">Medium</span> Change the rule so the model must quote the sentence it used before answering. Does the oat milk question get the right answer now?</li>
+<li><span class="level medium">Medium</span> Store the document vectors in a JSON file so they are computed once, not on every run. When must the file be rebuilt?</li>
+<li><span class="level hard">Challenge</span> Combine shared words and embeddings: score each document by both and add the scores. On harder questions (names, numbers, product codes), which method helps the other?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 15</p>
+<p>Giving a model your documents also means giving it whatever is in them, including text written to manipulate it, and sending it wherever the model runs. The next chapter covers security, privacy and licensing for applications built on models.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -5118,6 +5361,16 @@ Add the known rows of Project 11.3, plus the two that failed, as a <code>node:te
 <li>Send <code>stream: true</code>, read <code>response.body</code> as text, split it into lines, take the ones that start with <code>data: </code>, stop at <code>data: [DONE]</code>, parse the JSON of the others and pass each piece of text to <code>onText</code>. A fake server that writes three such lines with small pauses tests it without any account.</li>
 <li>Before calling the provider: if <code>check(question)</code> fails, answer <code>413</code> with its error; if <code>allow(user)</code> is false, answer <code>429</code> with a <code>Retry-After</code> header. Both refusals cost nothing and protect the model for everyone else.</li>
 <li>Wrap the call: try the hosted provider with retries; if it still fails, call the local provider and add <code>fallback: true</code> to the result. The user should see a normal answer, perhaps with a small note (“answered by our backup assistant”) if the backup is noticeably weaker. Log every fallback: many of them mean the main provider needs attention.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 14</h2>
+<ol class="exercises">
+<li>With a “sandwiches” document in the handbook, search finds it first, and the answer should cite it: “We do not sell food other than cakes [food]”. The fixed “not in our documents” was the right answer before; a cited answer is a better one now. Each new document turns a refusal into an answer, which is how a support assistant grows: from the questions it could not answer.</li>
+<li>Run your three questions through <code>nearest</code> with k = 1. Questions that use the handbook’s own words are easy; the useful test is questions in customers’ words, synonyms, or another language. Any miss is worth a look: is the document unclear, is the question ambiguous, or does it belong to two documents?</li>
+<li>Asking for a quote first (“quote the sentence you use, then answer”) makes the model look for the sentence before deciding there is none, and gives you something to check: the quote must appear in the cited document, exactly. Whether it fixes the oat milk refusal is a measurement to make, not a promise; either way, a verifiable quote makes every answer easier to trust or reject.</li>
+<li>Save <code>{id, text, vector}</code> for each document in a JSON file, and load it instead of embedding at start. Rebuild when a document changes, when a document is added or removed, and when the embedding model changes: vectors from two different models cannot be compared. Store the model’s name in the file and refuse to load a file made by another one.</li>
+<li>Score each document by embedding similarity plus a small weight times the number of shared words, and rank by the sum. Embeddings handle paraphrase (“big latte”); shared words handle exact tokens that embeddings blur: names, product codes, order numbers. Search engines call this hybrid search, and it usually beats either method alone on real questions.</li>
 </ol>
 
 </section>
