@@ -1,0 +1,168 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/apps/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Calling AI Models from Your Apps</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>put a model behind one small interface, so the app does not care which model it is</li>
+<li>stream answers to users, and measure the time to the first words</li>
+<li>handle rate limits and failures with retries, and slowness with deadlines</li>
+<li>get structured data from a model that the app can use directly</li>
+<li>protect the service: input limits and per-user rate limits</li>
+</ul>
+</div>
+
+<p class="lead">Until now the model has been a tool for you, the developer. This part of the book puts it inside your applications, where it serves users who do not read prompts, do not wait patiently and do not forgive errors. The model call itself is one line; the engineering is everything around it: what the user sees while the model thinks, what happens when the provider is busy, how long to wait, what to send and what to refuse. This chapter builds those parts, small and tested, around the book’s model and a stand-in for a hosted one.</p>
+
+<aside class="bit" data-mood="happy"><p>No account or key was used in this chapter. The “hosted” model is a fake server written in thirty lines, which answers with errors on purpose, so that the retry code is tested against something real.</p></aside>
+
+<h2>{{n}}.1 One interface, any model</h2>
+
+<p>Your app should not know whether its model runs on your server or at a provider. Give every model the same shape, <code>complete({system, prompt, grammar, onText, signal})</code>, and write one implementation per kind:</p>
+
+<pre data-code="lib/providers.mjs" data-from="^export function hostedProvider" data-to="^}" data-title="lib/providers.mjs (part)"></pre>
+
+<p>The hosted provider speaks the HTTP shape most providers accept: a list of messages in, a message out. Its URL and key come from the environment, never from the code. The local provider wraps the book’s model in the same shape. The application code then calls <code>provider.complete</code> and nothing else:</p>
+
+<pre data-code="same.mjs" data-from="^// The application code" data-to="^}" data-title="same.mjs (part)"></pre>
+<pre data-term="same.sh"></pre>
+
+<p>Two providers, one loop. The hosted one is the fake API, which refuses the first two calls with <code>429 Too Many Requests</code>; the retry code waited 200 ms, then 400 ms, and the third call worked. Switching to a real provider changes two environment variables, not the app.</p>
+
+<p>Look at the local answer too: “Yes, your loyalty card is valid at both branches.” That happens to be true for this café, and the model had no way of knowing it. Nothing in the prompt said so; the model gave the most likely answer to the question. An app that answers customers needs to give the model the facts, which is the next chapter.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Keep the model’s name, the system prompt and the settings in configuration, next to the provider, not scattered through the code. Then trying a new model is a change in one place, and you can run the same test questions against two models to compare them before switching.</p></aside>
+
+<h2>{{n}}.2 Retries and deadlines</h2>
+
+<pre data-code="lib/retry.mjs" data-from="^export async function withRetry" data-to="^}" data-title="lib/retry.mjs (part)"></pre>
+
+<p>Retry only what can succeed later: rate limits, temporary server errors, a dropped connection. A request refused for a bad key or a bad input fails the same way every time, and retrying it wastes time and money. Wait longer each time, so a busy provider gets room to recover, and stop after a few tries, so a user is not left waiting forever.</p>
+
+<p>And give every call a deadline. A user will not wait a minute for an answer; after a few seconds, a fallback (“we are busy, please try again”) is better than a spinner:</p>
+
+<pre data-code="timeout.mjs" data-from="^try" data-to="^}" data-title="timeout.mjs (part)"></pre>
+<pre data-term="timeout.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Retries multiply cost: a request that is retried three times is paid for up to four times, and a retry loop in every one of a thousand users’ requests can turn a provider’s short outage into a long one. Retry with growing waits, cap the attempts, and never retry a request that changes something (an order, a payment) unless it carries an idempotency key.</p></aside>
+
+<h2>{{n}}.3 Streaming</h2>
+
+<p>A model writes its answer token by token. Sending each piece to the user as it arrives makes a slow model feel fast:</p>
+
+<pre data-code="service.mjs" data-from="^const server" data-to="^});" data-title="service.mjs (part)"></pre>
+<pre data-term="stream.sh"></pre>
+
+<p>The first words arrived after 0.7 seconds, the whole answer after 2.8. Without streaming, the user stares at nothing for 2.8 seconds; with it, they start reading at once. The answer is the same, and the experience is not.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which errors should be retried, and which should not?</li><li>What does streaming change: the time to the whole answer, or the time to the first words?</li><li>Why did the local model say the card works in both branches?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Structured answers</h2>
+
+<p>When the app, not a person, reads the answer, ask for data. The schema of Chapter 3, through the same interface:</p>
+
+<pre data-code="structured.mjs" data-from="^const answer" data-title="structured.mjs (part)"></pre>
+<pre data-term="structured.sh"></pre>
+
+<p>The app parsed the answer and added up the cups: an object, not a sentence. Hosted providers offer the same with a JSON schema parameter. Validate the values anyway, as Chapter 3 showed: a schema makes the shape certain, not the content.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Log every model call your app makes: the provider, the model, the prompt’s size in tokens, the time to the first token and to the end, the outcome. Without those numbers you cannot tell whether a complaint is about the model, the provider or your code, and you cannot see what the feature costs.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Provider code throughout the app</td><td>Changing models means changing everything</td><td>One interface; implementations behind it</td></tr>
+<tr><td>Keys in the code</td><td>Secrets in the repository and the logs</td><td>Keys from the environment or a secret manager</td></tr>
+<tr><td>Retrying everything, forever</td><td>Wasted money, longer outages</td><td>Retry temporary errors only, with backoff and a cap</td></tr>
+<tr><td>No deadline</td><td>Users waiting on a hung request</td><td>An abort signal on every call, and a fallback</td></tr>
+<tr><td>Waiting for the whole answer</td><td>A slow feeling, even for fast answers</td><td>Stream the tokens</td></tr>
+<tr><td>Free text for the app to read</td><td>Parsing that breaks</td><td>A schema, and validation of values</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Put every model behind one small interface; local and hosted models then look the same to the app.</li>
+<li>Retry temporary failures with growing waits and a limit; give every call a deadline and a fallback.</li>
+<li>Stream answers: the total time is the same, but users start reading at once.</li>
+<li>Ask for structured output when the app reads the answer, and validate it.</li>
+<li>Protect the service with input limits and per-user rate limits, and log every call.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Retry rate limits (429), temporary server errors (500, 502, 503) and dropped connections; do not retry a bad key (401), a bad request (400) or anything that would change something without an idempotency key. 2. The time to the first words: the whole answer takes as long as before. 3. Because it is the most likely answer to that question in general; nothing told the model the café’s rules. It happened to be true.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects protect a model behind an app: from inputs that are too large, and from users who send too much.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>An input guard</h3>
+<p class="project-goal">Refuse input above a token limit before it reaches the model, with a clear error.</p>
+<p class="project-skills"><strong>You will practise:</strong> counting tokens, and refusing early.</p>
+<ol class="steps">
+<li>Count the input’s tokens with the model’s tokenizer.</li>
+<li>Return ok, or an error that says the size and the limit.</li>
+<li>Try a short question and a very long one.</li>
+</ol>
+<pre data-code="guard.mjs" data-from="^export function check" data-to="^}" data-title="guard.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/guard.sh"></pre>
+<p class="hint"><strong>Hint:</strong> count tokens, not characters: the limit that matters is the model’s, and Arabic text takes about twice as many tokens per word (Chapter 1). A hosted provider bills the long input whether or not the answer is useful; refusing it costs nothing.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A streaming client</h3>
+<p class="project-goal">Read the service’s answer as a stream, and measure the first piece and the whole.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading a response body as it arrives, and timing what users feel.</p>
+<ol class="steps">
+<li>Fetch the service and iterate over <code>response.body</code>.</li>
+<li>Record the time of the first chunk.</li>
+<li>Print the answer and both times.</li>
+</ol>
+<pre data-code="client.mjs" data-title="client.mjs"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="stream.sh"></pre>
+<p class="hint"><strong>Hint:</strong> in a browser, the same body can be read with <code>response.body.getReader()</code>, and each piece appended to the page. Most hosted APIs stream in the server-sent events format, a line per piece starting with <code>data:</code>; parse those lines instead of raw text.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A per-user rate limit</h3>
+<p class="project-goal">Allow each user at most three requests a minute, and answer 429 to the rest.</p>
+<p class="project-skills"><strong>You will practise:</strong> sliding windows, and testing time-based code with a fake clock.</p>
+<ol class="steps">
+<li>Keep, per user, the times of their recent requests.</li>
+<li>Drop the ones older than a minute; refuse if three remain.</li>
+<li>Test with a fake clock, not by waiting.</li>
+</ol>
+<pre data-code="limit.mjs" data-from="^export function allow" data-to="^}" data-title="limit.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/limit.sh"></pre>
+<p class="hint"><strong>Hint:</strong> Mona’s fourth request in a minute is refused, Omar is not affected, and a minute later Mona is allowed again. Passing the time in, rather than reading the clock inside, is what made this testable in a millisecond. On several servers, keep the times in a shared store such as Redis.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Call the fake API with a wrong key (it answers 401). How many attempts does <code>withRetry</code> make, and why?</li>
+<li><span class="level">Easy</span> Add the time of each call and the provider’s name to a log line, as the professional habit suggests.</li>
+<li><span class="level">Medium</span> Add streaming to the hosted provider, reading server-sent events from the response. Test it against a fake server that sends three <code>data:</code> lines.</li>
+<li><span class="level">Medium</span> Use the guard and the rate limit in <code>service.mjs</code>: refuse long questions with 413 and too many requests with 429.</li>
+<li><span class="level">Challenge</span> Add a fallback provider: if the hosted one fails after its retries, answer with the local model, and mark the answer as such. What should the user see?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The local model answered a question about the café’s rules from nowhere. The next chapter gives it the café’s own documents to answer from: retrieval, embeddings and search, so that an assistant knows your data, and says so when it does not.</p>
+</div>
+</section>
