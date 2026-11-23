@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "Chapter 5: Reading and Explaining Unfamiliar Code"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "Chapter 6: Debugging with AI"; } }
+@page ch06:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -49,7 +51,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">86</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">42</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">56</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">73</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">86</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">98</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2247,6 +2249,346 @@ MISSING Yes        STD: A customer type indicating a standard customer (non-VIP)
 <p>Reading code is how you find out what it does. Debugging is how you find out why it does something else. The next chapter debugs real failures with the model: reading stack traces, forming hypotheses, and testing them, with the model as a fast, fallible partner.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b7/debugging/en">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">Chapter 6</p><h1>Debugging with AI</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>give an assistant what it needs to help with a crash: the error, the trace and the code</li>
+<li>tell where a program crashed from where the bug is</li>
+<li>treat a suggested cause as a hypothesis, and a suggested fix as code to run</li>
+<li>check that a reproduction really reproduces the failure</li>
+<li>check a model’s reading of a log by counting</li>
+</ul>
+</div>
+
+<p class="lead">Debugging is the part of programming where an assistant feels most like magic: paste an error, get an explanation and a fix in seconds. Often it is right. When it is wrong, it is wrong in a way that costs more than the time it saved, because a confident wrong diagnosis sends you looking in the wrong place. This chapter debugs three real failures with the book’s model, and checks every answer by running something. Twice, my own checking code had a bug too, and that is part of the lesson.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>In this chapter the model fixed a bug while giving the wrong reason for it, named the line where the program crashed instead of the line with the bug, and wrote a “reproduction” that does not fail. All three are normal. All three were caught by running code.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>A crash</span></h2>
+
+<p>A nightly report prints the first order and then stops:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">shop/orders.mjs</div><pre class="code"><span class="k">import</span> {MENU} <span class="k">from</span> <span class="s">&quot;./menu.mjs&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> priceOf(name) {
+  <span class="k">const</span> drink = MENU.find((d) =&gt; d.name === name);
+  <span class="k">return</span> drink.price;
+}
+
+<span class="k">export</span> <span class="k">function</span> total(order) {
+  <span class="k">return</span> order.items.reduce((sum, item) =&gt; sum + priceOf(item.name) * item.count, <span class="n">0</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node shop/report.mjs 2&gt;&amp;1 | grep -v node:internal</span>
+order 41: 900
+file://shop/orders.mjs:5
+  return drink.price;
+               ^
+
+TypeError: Cannot read properties of undefined (reading &#x27;price&#x27;)
+    at priceOf (file://shop/orders.mjs:5:16)
+    at file://shop/orders.mjs:9:50
+    at Array.reduce (&lt;anonymous&gt;)
+    at total (file://shop/orders.mjs:9:22)
+    at file://shop/report.mjs:10:37
+
+Node.js v22.23.5</pre></div>
+
+<p>A stack trace is read from the top: the error type and message, then the line where it happened, then the chain of calls that led there. Here: something was <code>undefined</code> when the code read its <code>price</code>, on line 5 of <code>orders.mjs</code>, called from <code>total</code>, called from line 10 of <code>report.mjs</code>. Give the assistant all of it, the output and the files, and ask for an explanation and a location:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">crash.mjs (part)</div><pre class="code"><span class="k">const</span> files = [<span class="s">&quot;shop/report.mjs&quot;</span>, <span class="s">&quot;shop/orders.mjs&quot;</span>, <span class="s">&quot;shop/menu.mjs&quot;</span>]
+  .map((file) =&gt; <span class="s">`--- ${file}\n${fs.readFileSync(file, &quot;utf8&quot;)}`</span>)
+  .join(<span class="s">&quot;\n&quot;</span>);
+<span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">`This program crashed. Explain the error in two sentences, then name the file and line number where the bug is (not only where it crashed), as: BUG AT file:line\n\n${trace.join(&quot;\n&quot;)}\n\n${files}`</span>);
+console.log(<span class="s">`\n--- the model:\n${answer}`</span>);
+
+<span class="c line-bidi">// The model names a line; we check it against the line that really has</span>
+<span class="c line-bidi">// the bug.</span>
+<span class="k">const</span> named = answer.match(/BUG AT\s*<span class="s">`?(?:file:\s*)?([\w/.]+):(\d+)/);
+console.log(`</span>\nnamed: ${named ? <span class="s">`${named[1]}:${named[2]}`</span> : <span class="s">&quot;(none)&quot;</span>}`);
+console.log(<span class="s">&quot;the crash: shop/orders.mjs:5 (drink is undefined)&quot;</span>);
+console.log(<span class="s">&quot;the cause: shop/report.mjs:5 (a drink that is not on the menu)&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node crash.mjs</span>
+order 41: 900
+file://shop/orders.mjs:5
+  return drink.price;
+               ^
+
+TypeError: Cannot read properties of undefined (reading &#x27;price&#x27;)
+    at priceOf (file://shop/orders.mjs:5:16)
+    at file://shop/orders.mjs:9:50
+    at Array.reduce (&lt;anonymous&gt;)
+    at total (file://shop/orders.mjs:9:22)
+    at file://shop/report.mjs:10:37
+
+Node.js v22.23.5
+
+--- the model:
+The error occurs because `drink` is undefined when `MENU.find()` does not find a matching drink name, and the code attempts to access `drink.price`, which causes a &quot;Cannot read properties of undefined (reading &#x27;price&#x27;)&quot; error. This happens when an item name in `order.items` does not exist in the MENU array.
+
+BUG AT file:orders.mjs:5
+
+named: orders.mjs:5
+the crash: shop/orders.mjs:5 (drink is undefined)
+the cause: shop/report.mjs:5 (a drink that is not on the menu)</pre></div>
+
+<p>The explanation is good: <code>find</code> returned nothing because an item’s name is not on the menu. The location is where it crashed, not where the bug is. Line 5 of <code>orders.mjs</code> is doing its job; the bad data is on line 5 of <code>report.mjs</code>: a “flat white”, which the café does not sell. Whether the fix belongs in the data (correct the order), in <code>priceOf</code> (a clear error: “unknown drink: flat white”), or in both, is a decision about the business, and the model cannot make it. What it can do, quickly, is narrow the search to two places. That is a lot.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Paste the whole error output, not a summary, and the files on the stack trace, not only the one that crashed. The trace names them in order; the files named lower down are often where the cause is.</p></aside>
+
+<h2><span class="sec">6.2</span> <span>A wrong answer, without a crash</span></h2>
+
+<p>Bugs that crash are the easy ones. This function should list the three most expensive drinks, and it lists the wrong three:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">shop/top.mjs</div><pre class="code"><span class="k">import</span> {MENU} <span class="k">from</span> <span class="s">&quot;./menu.mjs&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> topThree(menu) {
+  <span class="k">return</span> menu
+    .map((drink) =&gt; drink.price)
+    .sort()
+    .reverse()
+    .slice(<span class="n">0</span>, <span class="n">3</span>)
+    .map((price) =&gt; menu.find((drink) =&gt; drink.price === price).name);
+}
+
+console.log(topThree(MENU));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node shop/top.mjs</span>
+[ &#x27;cold brew&#x27;, &#x27;latte&#x27;, &#x27;espresso&#x27; ]</pre></div>
+
+<p>The mocha, at 1,050, is missing. Ask for the cause and a fix, then run the fix:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node wrong.mjs</span>
+**Most likely cause:** The function incorrectly assumes that each price appears only once, and `find()` may return the wrong drink if multiple drinks share the same price, or it fails to properly match the drink by price due to the order of iteration.
+
+**Fixed function:**
+```javascript
+export function topThree(menu) {
+  return menu
+    .sort((a, b) =&gt; b.price - a.price)
+    .slice(0, 3)
+    .map(drink =&gt; drink.name);
+}
+```
+
+--- run:
+before: [ &#x27;cold brew&#x27;, &#x27;latte&#x27;, &#x27;espresso&#x27; ]
+fixed:  [&quot;mocha&quot;,&quot;cold brew&quot;,&quot;latte&quot;]
+right:  [&quot;mocha&quot;,&quot;cold brew&quot;,&quot;latte&quot;]</pre></div>
+
+<p>The fix works: the three right drinks, in order. The diagnosis is wrong. Repeated prices and <code>find</code> are not the problem; there are no repeated prices. The real cause is <code>.sort()</code> with no compare function, which sorts numbers as text: “1050” comes before “250” because “1” comes before “2”, so after <code>reverse()</code> the mocha is last. The model’s new code happens to avoid that by sorting with <code>b.price - a.price</code>, for a reason it never states.</p>
+
+<p>Does a wrong reason matter, if the fix works? Yes, for two reasons. The next time someone sorts numbers with <code>.sort()</code>, nobody will know it is a bug, because the lesson was never learned. And the fix has a side effect the explanation does not mention: <code>menu.sort</code> sorts the array in place, so calling <code>topThree(MENU)</code> now reorders the café’s menu for every other part of the program. A fix you do not understand is a change you cannot review.</p>
+
+<p>The Arabic edition got no fix at all. Asked the same question in Arabic, the model settled on the same wrong cause, then repeated nearly the same sentence until the answer ran out of room, 800 tokens, before any code. When a model starts going in circles, a longer answer will not help; a narrower question will (Exercise 3).</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>“It works now” is the most dangerous sentence in debugging with AI. Before you accept a fix, say in one sentence why the old code was wrong and the new code is right. If you cannot, you have not found the bug yet; you have found a change that hides it, for now.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Where did the report crash, and where is the bug?</li><li>Why does <code>[1050, 250, 900].sort()</code> put 1050 first?</li><li>What does the model’s fix do to <code>MENU</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">6.3</span> <span>A reproduction that reproduces</span></h2>
+
+<p>A failure that happens at night, on a server, in the middle of a long job, is hard to study. A minimal reproduction, a few lines that fail the same way, makes it easy: you can run it, change it, and share it. Assistants are good at writing them, and here is the check that matters: run it and compare the error.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/run.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> errorLine(output) {
+  <span class="k">const</span> found = output.match(/\b(\w*Error): (.*)$/m);
+  <span class="k">return</span> found ? <span class="s">`${found[1]}: ${found[2]}`</span> : <span class="s">&quot;(no error)&quot;</span>;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">repro.mjs (part)</div><pre class="code"><span class="c line-bidi">// A reproduction is only useful if it fails the same way: run it and</span>
+<span class="c line-bidi">// compare the error.</span>
+<span class="k">const</span> wanted = errorLine(log);
+<span class="k">const</span> got = errorLine(run(<span class="s">&quot;repro/attempt.mjs&quot;</span>).output);
+console.log(<span class="s">`wanted: ${wanted}`</span>);
+console.log(<span class="s">`got:    ${got}`</span>);
+console.log(got === wanted ? <span class="s">&quot;same error: a reproduction&quot;</span> : <span class="s">&quot;different: not a reproduction yet&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node repro.mjs</span>
+--- repro/attempt.mjs
+const orders = [];
+
+function priceOf(order) {
+  return order.price;
+}
+
+function total() {
+  return orders.reduce((sum, order) =&gt; sum + priceOf(order), 0);
+}
+
+total();
+
+wanted: TypeError: Cannot read properties of undefined (reading &#x27;price&#x27;)
+got:    (no error)
+different: not a reproduction yet</pre></div>
+
+<p>The script looks like the failing code, with <code>priceOf</code> and <code>total</code> and a <code>reduce</code>, and it does not fail: it adds up an empty list, which is zero. A reproduction that does not reproduce is worse than none, because it looks like evidence that the problem is somewhere else.</p>
+
+<p>The first version of this check was wrong too, and it is worth seeing why. It looked for the error only at the start of a line. In the log, each line starts with a time, so it found no error in the log, found no error in the script, and announced “same error: a reproduction”. Two absences compared equal. A check that can pass when nothing happened is not a check; this one now finds the error anywhere on the line, and would say “wanted” something before it says “same”.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>When you fix a bug, keep the reproduction as a test. It already fails the right way; after the fix it passes; and from then on it guards that exact failure. Debugging with an assistant produces many small scripts; the ones that reproduce a real failure are worth keeping.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Pasting the message without the trace and files</td><td>Generic advice about the message</td><td>The whole output, and the files on the trace</td></tr>
+<tr><td>Fixing where it crashed</td><td>A guard that hides bad data</td><td>Follow the trace to where the bad value came from</td></tr>
+<tr><td>Accepting a fix because the output is right</td><td>Side effects and a lesson never learned</td><td>Explain why the old code was wrong; review the new code</td></tr>
+<tr><td>Trusting a reproduction without running it</td><td>A script that does not fail</td><td>Run it, and compare the error with the original</td></tr>
+<tr><td>Checks that compare two absences</td><td>“Same error” when there is no error</td><td>Require the expected thing to be present first</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Give the assistant the full error, the trace, and the files the trace names.</li>
+<li>The crash site and the cause are often different places; the model tends to name the crash site.</li>
+<li>A suggested cause is a hypothesis; a suggested fix is code to run, read and explain before you accept it.</li>
+<li>A reproduction is only a reproduction if it fails the same way, and that is checked by running it.</li>
+<li>Your checking code can be wrong too; make sure it cannot pass when nothing happened.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It crashed on line 5 of <code>orders.mjs</code>, reading <code>price</code> of nothing; the bug is the order on line 5 of <code>report.mjs</code>, for a drink that is not on the menu (or the missing check for that in <code>priceOf</code>). 2. Without a compare function, <code>sort</code> compares the values as text, character by character, and “1” comes before “2” and “9”. 3. It sorts it in place: after one call, the café’s <code>MENU</code> is in price order for the whole program. A copy, <code>[...menu].sort(…)</code>, avoids that.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects make the chapter’s habits into tools: an explainer for any failing command, a log triage checked by counting, and a reproduction loop that only stops when the error matches.</p>
+
+<div class="project">
+<p class="project-label">Project 6.1 · Easy</p>
+<h3>Why did it fail?</h3>
+<p class="project-goal">Pipe any command’s output into a script that explains the failure in four lines.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading standard input, trimming noise from a trace, and short answers.</p>
+<ol class="steps">
+<li>Read all of standard input.</li>
+<li>Drop the lines from Node’s internals, which never contain your bug.</li>
+<li>Ask what failed, the likely cause, and the first thing to check.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">why.mjs (part)</div><pre class="code"><span class="k">let</span> output = <span class="s">&quot;&quot;</span>;
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> chunk <span class="k">of</span> process.stdin) {
+  output += chunk;
+}
+<span class="k">const</span> lines = output.split(<span class="s">&quot;\n&quot;</span>).filter((line) =&gt; !line.includes(<span class="s">&quot;node:internal&quot;</span>));
+console.log(<span class="k">await</span> ask(<span class="s">`Explain this error output to a developer in at most four lines: what failed, the likely cause, and the first thing to check.\n\n${lines.join(&quot;\n&quot;)}`</span>, {maxTokens: <span class="n">200</span>}));</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node shop/report.mjs 2&gt;&amp;1 | node why.mjs</span>
+The code failed because `drink` is undefined when trying to access `drink.price`.  
+Likely cause: A drink object was not properly fetched or passed to the function.  
+First thing to check: Ensure the `drink` variable is defined and has a `price` property before accessing it.  
+Verify the input data or logic that populates the `drink` array in the `orders.mjs` file.</pre></div>
+<p class="hint"><strong>Hint:</strong> without the files, the model can only describe the message, and “ensure the drink variable is defined” is the generic advice that hides the bad data instead of finding it. Add the files named in the trace, as Section 6.1 did, and the answer gets specific.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 6.2 · Medium</p>
+<h3>Log triage, checked by counting</h3>
+<p class="project-goal">Ask for the first error and a count of each error in a week of logs, and count them yourself to check.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured answers with a schema, and checking a summary with a few lines of code.</p>
+<ol class="steps">
+<li>Ask for <code>first</code> and a list of <code>{message, times}</code>, with a schema.</li>
+<li>Count the <code>ERROR</code> lines by message with a <code>Map</code>.</li>
+<li>Print each count the model gave next to the real one.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">triage.mjs (part)</div><pre class="code"><span class="k">const</span> errors = log.split(<span class="s">&quot;\n&quot;</span>).filter((line) =&gt; line.includes(<span class="s">&quot; ERROR &quot;</span>));
+<span class="k">const</span> actual = <span class="k">new</span> Map();
+<span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> errors) {
+  <span class="k">const</span> message = line.split(<span class="s">&quot; ERROR &quot;</span>)[<span class="n">1</span>];
+  actual.set(message, (actual.get(message) ?? <span class="n">0</span>) + <span class="n">1</span>);
+}
+console.log(<span class="s">`first: ${answer.first}`</span>);
+console.log(<span class="s">`       ${errors[0].split(&quot; ERROR &quot;)[1] === answer.first ? &quot;right&quot; : &quot;WRONG&quot;}`</span>);
+<span class="k">for</span> (<span class="k">const</span> {message, times} <span class="k">of</span> answer.counts) {
+  <span class="k">const</span> real = actual.get(message) ?? <span class="n">0</span>;
+  console.log(<span class="s">`${String(times).padStart(3)} said, ${String(real).padStart(3)} counted  ${message}`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node triage.mjs</span>
+first: Error: menu.json not found
+       right
+  4 said,   5 counted  Error: menu.json not found
+  2 said,   2 counted  TypeError: total is not a function
+  1 said,   1 counted  RangeError: people must be at least 1</pre></div>
+<p class="hint"><strong>Hint:</strong> the first error and the kinds of errors are right; the most frequent one is undercounted, 4 instead of 5, in both editions. That is Chapter 1 again: models do not count, they estimate. For anything you will act on, such as “which error to fix first”, let code do the counting and the model do the reading.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 6.3 · Challenge</p>
+<h3>A reproduction loop</h3>
+<p class="project-goal">Ask for a reproduction, run it, and send back what it really printed, until the error matches or three attempts are spent.</p>
+<p class="project-skills"><strong>You will practise:</strong> comparing errors, feeding results back into the conversation, and loops with a clear end.</p>
+<ol class="steps">
+<li>Take the wanted error from the log.</li>
+<li>Write and run each attempt; stop when its error is the same.</li>
+<li>Otherwise add the attempt and what it printed to the request, and try again.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">reproloop.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> reproduce(log, file, tries = <span class="n">3</span>) {
+  <span class="k">const</span> wanted = errorLine(log);
+  <span class="k">let</span> request = <span class="s">`From this log, write the smallest standalone Node script (ES module, no files, no network) that throws the same error. Return only the code, in one code block.\n\n${log}`</span>;
+  <span class="k">for</span> (<span class="k">let</span> attempt = <span class="n">1</span>; attempt &lt;= tries; attempt++) {
+    <span class="k">const</span> code = codeOf(<span class="k">await</span> ask(request));
+    fs.writeFileSync(file, code ?? <span class="s">&quot;&quot;</span>);
+    <span class="k">const</span> got = errorLine(run(file).output);
+    console.log(<span class="s">`attempt ${attempt}: ${got}`</span>);
+    <span class="k">if</span> (got === wanted) {
+      <span class="k">return</span> <span class="s">`reproduced in ${attempt}`</span>;
+    }
+    request += <span class="s">`\n\nYour script:\n${code}\nIt printed: ${got}\nIt must throw: ${wanted}`</span>;
+  }
+  <span class="k">return</span> <span class="s">&quot;not reproduced&quot;</span>;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node reproloop.mjs</span>
+attempt 1: RangeError: Invalid array length
+reproduced in 1</pre></div>
+<p class="hint"><strong>Hint:</strong> “Invalid array length” is a precise message with one common cause, <code>new Array</code> or <code>Array(n)</code> with a negative or fractional length, so one attempt was enough. In the Arabic edition, all three attempts threw the same wrong error, “<code>bill.split is not a function</code>”, although each request showed the model what its script printed: feedback helps only if the model can use it. The <code>TypeError</code> of Section 6.3, which needs a specific missing value, is the harder case: try it with this loop, and look at what the second attempt changes after seeing “(no error)”.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>priceOf</code> so that an unknown drink throws <code>Error("unknown drink: flat white")</code>. Run the report and <code>why.mjs</code> again. How does the clearer error change the model’s answer?</li>
+<li><span class="level">Easy</span> Fix <code>topThree</code> yourself in one character-level change that keeps the original structure. Which line, and why does it work?</li>
+<li><span class="level medium">Medium</span> Ask the model, with the original <code>top.mjs</code>, “why does <code>.sort()</code> put 1050 after 250?”. Does a more specific question get the right cause?</li>
+<li><span class="level medium">Medium</span> Run the reproduction loop on the night log of Section 6.3. How many attempts does it take, and what did the feedback change in each?</li>
+<li><span class="level hard">Challenge</span> Turn the reproduction of the night failure into a node test that fails today and passes once <code>priceOf</code> handles unknown drinks. Where in the project should it live?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 7</p>
+<p>Debugging ends with a fix, and a fix is only as good as the tests around it. The next chapter uses the model for the work around a change: writing tests, refactoring safely, and reviewing code, its own included.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2335,6 +2677,16 @@ test("VIP, in capitals only, takes 500 off, never below 0", () =&gt; {
   assert.equal(calc(order("VIP", 300, 1), true), 0);
 });</pre>
 They are worth more than any explanation because they cannot drift: if someone “fixes” the case-sensitivity or the boundary, a test fails and says exactly which rule changed. An explanation is read once; a test is run on every change, for years.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 6</h2>
+<ol class="exercises">
+<li>With <code>throw new Error(`unknown drink: ${name}`)</code> in <code>priceOf</code> when <code>find</code> returns nothing, the output says what went wrong in the business’s words, with the name of the drink. Explanations then stop describing <code>undefined</code> and start talking about the order and the menu, because that is what the error now contains. A good error message is a prompt you write once, for every person and model that will read it later.</li>
+<li>Give <code>sort</code> a compare function: <code>.sort((a, b) =&gt; a - b)</code> on line 6. It compares the numbers as numbers, so the order is 200, 250, 450, 900, 1050, and after <code>reverse()</code> the first three are the mocha, the cold brew and the latte. The rest of the function, and the menu, are untouched. (Run in the book’s environment: <code>[ 'mocha', 'cold brew', 'latte' ]</code>.)</li>
+<li>Expect a much better answer: the narrow question names the symptom (1050 after 250) and the method (<code>.sort()</code>), and the most likely continuation of that text is the explanation of text sorting, which is in countless documents. When a broad question gets a confident wrong cause, narrow it to the line and the values you see. Narrow questions are cheap to ask and easy to check.</li>
+<li>The night log needs a <code>TypeError</code> reading <code>price</code> of <code>undefined</code>; the first attempt in Section 6.3 did not fail at all. With the loop, each new request contains the previous script and “It printed: (no error). It must throw: TypeError…”, which tells the model that the missing value is the point. Count the attempts and read how each script changes: if it does not converge in three, give it the fact (“an item whose name is not on the menu”) as a developer would.</li>
+<li>For example, in <code>test/report.test.mjs</code>: import <code>total</code>, call it with an order for a <code>"flat white"</code>, and expect <code>assert.throws(…, /unknown drink: flat white/)</code>. Today it fails, because the error is a <code>TypeError</code> about <code>price</code>; once <code>priceOf</code> throws the clear error, it passes, and it keeps guarding that behaviour. It lives with the other tests of the shop, not in a scratch folder, because it is now part of what the shop promises.</li>
 </ol>
 
 </section>
