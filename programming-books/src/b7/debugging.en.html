@@ -48,6 +48,8 @@
 
 <p>Does a wrong reason matter, if the fix works? Yes, for two reasons. The next time someone sorts numbers with <code>.sort()</code>, nobody will know it is a bug, because the lesson was never learned. And the fix has a side effect the explanation does not mention: <code>menu.sort</code> sorts the array in place, so calling <code>topThree(MENU)</code> now reorders the café’s menu for every other part of the program. A fix you do not understand is a change you cannot review.</p>
 
+<p>The Arabic edition got no fix at all. Asked the same question in Arabic, the model settled on the same wrong cause, then repeated nearly the same sentence until the answer ran out of room, 800 tokens, before any code. When a model starts going in circles, a longer answer will not help; a narrower question will (Exercise 3).</p>
+
 <aside class="box warn"><p class="box-title">Watch out</p><p>“It works now” is the most dangerous sentence in debugging with AI. Before you accept a fix, say in one sentence why the old code was wrong and the new code is right. If you cannot, you have not found the bug yet; you have found a change that hides it, for now.</p></aside>
 
 <aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where did the report crash, and where is the bug?</li><li>Why does <code>[1050, 250, 900].sort()</code> put 1050 first?</li><li>What does the model’s fix do to <code>MENU</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
@@ -125,7 +127,7 @@
 <pre data-code="triage.mjs" data-from="^const errors" data-title="triage.mjs (part)"></pre>
 <p><strong>Your result should look like this:</strong></p>
 <pre data-term="projects/triage.sh"></pre>
-<p class="hint"><strong>Hint:</strong> the first error and the kinds of errors are right; the most frequent one is undercounted, 4 instead of 5. That is Chapter 1 again: models do not count, they estimate. For anything you will act on, such as “which error to fix first”, let code do the counting and the model do the reading.</p>
+<p class="hint"><strong>Hint:</strong> the first error and the kinds of errors are right; the most frequent one is undercounted, 4 instead of 5, in both editions. That is Chapter 1 again: models do not count, they estimate. For anything you will act on, such as “which error to fix first”, let code do the counting and the model do the reading.</p>
 </div>
 
 <div class="project">
@@ -141,7 +143,7 @@
 <pre data-code="reproloop.mjs" data-from="^export async function reproduce" data-to="^}" data-title="reproloop.mjs (part)"></pre>
 <p><strong>Your result should look like this:</strong></p>
 <pre data-term="projects/reproloop.sh"></pre>
-<p class="hint"><strong>Hint:</strong> “Invalid array length” is a precise message with one common cause, <code>new Array</code> or <code>Array(n)</code> with a negative or fractional length, so one attempt was enough. The <code>TypeError</code> of Section {{n}}.3, which needs a specific missing value, is the harder case: try it with this loop, and look at what the second attempt changes after seeing “(no error)”.</p>
+<p class="hint"><strong>Hint:</strong> “Invalid array length” is a precise message with one common cause, <code>new Array</code> or <code>Array(n)</code> with a negative or fractional length, so one attempt was enough. In the Arabic edition, all three attempts threw the same wrong error, “<code>bill.split is not a function</code>”, although each request showed the model what its script printed: feedback helps only if the model can use it. The <code>TypeError</code> of Section {{n}}.3, which needs a specific missing value, is the harder case: try it with this loop, and look at what the second attempt changes after seeing “(no error)”.</p>
 </div>
 <!-- /projects -->
 
