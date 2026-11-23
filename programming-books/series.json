@@ -1390,7 +1390,8 @@
           "chapters": [
             {
               "en": "Pair Programming with AI",
-              "ar": "البرمجة الثنائية مع الذكاء الاصطناعي"
+              "ar": "البرمجة الثنائية مع الذكاء الاصطناعي",
+              "src": "b7/pair"
             },
             {
               "en": "Reading and Explaining Unfamiliar Code",
