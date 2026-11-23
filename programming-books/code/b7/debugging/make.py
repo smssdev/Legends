@@ -166,19 +166,21 @@ console.log("the crash: shop/orders.mjs:5 (drink is undefined)");
 console.log("the cause: shop/report.mjs:5 (a drink that is not on the menu)");
 """,
     "wrong.mjs": """import fs from "node:fs";
-import {ask, codeOf} from "./lib/ask.mjs";
+import {ask} from "./lib/ask.mjs";
 import {run} from "./lib/run.mjs";
 import {MENU} from "./shop/menu.mjs";
 
 const source = fs.readFileSync("shop/top.mjs", "utf8");
 const menu = fs.readFileSync("shop/menu.mjs", "utf8");
-const answer = await ask(`{w_wrong}\\n\\n${source}\\n${menu}`, {maxTokens: 500});
+const answer = await ask(`{w_wrong}\\n\\n${source}\\n${menu}`, {maxTokens: 800});
 console.log(answer);
 
 // {w_c_fix}
-const fixed = codeOf(answer);
+// The code block that defines topThree; an answer may also quote other code.
+const blocks = [...answer.matchAll(/```(?:\\w+)?\\n([\\s\\S]*?)```/g)].map((m) => m[1]);
+const fixed = blocks.findLast((block) => block.includes("function topThree"));
 if (!fixed) {
-  console.log("(no code in the answer)");
+  console.log("\\n(no fixed function in the answer)");
   process.exit(0);
 }
 const code = fixed.replace(/^import .*$/gm, "").replace(/^console.log.*$/gm, "");
