@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: The AI Toolbox for Developers"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: Prompting That Works"; } }
+@page ch03:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -143,7 +145,7 @@ if (isMember && day === "Tuesday") {
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer. Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p"></span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">43</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p"></span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">57</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -1123,6 +1125,405 @@ The total cost for 48,213 cups at $7.35 each, including a 14% tax, is approximat
 <p>Twice in this chapter, a few words decided whether the model succeeded. The next chapter is about those words: how to write instructions, give examples and constraints, ask for a format, and leave room for “I don’t know”, measured on the same model.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b7/prompting/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>Prompting That Works</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>turn a vague request into a specific one, and test what comes back</li>
+<li>get structured output a program can rely on, with a schema</li>
+<li>use examples, and know when they help</li>
+<li>keep a model to the text you gave it, and let it say “not there”</li>
+<li>check whether a technique such as “step by step” helps, instead of assuming it</li>
+<li>treat a prompt like code: build it from parts, test it against cases, and score changes</li>
+</ul>
+</div>
+
+<p class="lead">A <em>prompt</em> is everything you give the model: the instructions, the context, the question. Chapter 1 showed why it matters so much: the model continues your text the way such text usually continues. Vague text is followed by a generic answer; specific text by a specific one. This chapter does not collect magic phrases. It runs each piece of advice on the book’s model and counts what happens, and twice the count says something the advice books do not.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>One popular trick made the model worse in this chapter, and a prompt the model wrote for itself scored lower than one I wrote by hand. Both results are here, because the lesson is the same: measure.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>Say what correct means</span></h2>
+
+<p>Here is the same request twice, once as people often write it, and once with everything the answer must satisfy:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">specific.mjs (part)</div><pre class="code"><span class="k">const</span> vague = <span class="s">&quot;Write a function that checks a phone number.&quot;</span>;
+<span class="k">const</span> specific =
+  <span class="s">&quot;Write a JavaScript function isEgyptianMobile(text) that returns true only for &quot;</span> +
+  <span class="s">&quot;Egyptian mobile numbers: 11 digits starting with 010, 011, 012 or 015, or the same &quot;</span> +
+  <span class="s">&quot;number with +20 instead of the first 0. Spaces and dashes between digits are allowed. &quot;</span> +
+  <span class="s">&quot;Return only the code, in one code block.&quot;</span>;
+
+<span class="k">for</span> (<span class="k">const</span> prompt <span class="k">of</span> [vague, specific]) {
+  console.log(<span class="s">`&gt; ${prompt}\n${await ask(prompt)}\n`</span>);
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/ask.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> ask(prompt, options = {}) {
+  <span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+    contextSequence: context.getSequence(),
+    autoDisposeSequence: <span class="k">true</span>,
+    systemPrompt: options.system,
+  });
+  <span class="k">const</span> answer = <span class="k">await</span> session.prompt(prompt, {
+    temperature: <span class="n">0</span>,
+    maxTokens: options.maxTokens ?? <span class="n">300</span>,
+    grammar: options.grammar,
+  });
+  session.dispose();
+  <span class="k">return</span> answer.trim();
+}</pre></div>
+
+<p>The vague request got a long, polite answer in Python, a language nobody mentioned, for American phone formats, and it ran out of room mid-way. Nothing was wrong with the model: “a function that checks a phone number” is followed, in most of the text it learned from, by exactly that. The specific request named the language, the function, the rule, the variants, and the shape of the reply, and got a short JavaScript function.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node specific.mjs</span>
+<span class="c">&gt; </span><span class="k">Write a function that checks a phone number.</span>
+Sure! Here&#x27;s a simple Python function that checks if a given string resembles a valid phone number format. This function validates the phone number based on a common format (e.g., 123-456-7890 or (123) 456-7890), but **does not verify** if the number actually exists or is in use — it only checks the format.
+
+```python
+import re
+
+def is_valid_phone_number(phone):
+    &quot;&quot;&quot;
+    Checks if a string resembles a valid phone number format.
+    
+    Supported formats:
+    - 123-456-7890
+    - (123) 456-7890
+    - 123.456.7890
+    - 123 456 7890
+    - 1234567890 (no separators)
+    
+    Returns:
+        bool: True if the phone number matches a valid format, False otherwise.
+    &quot;&quot;&quot;
+    # Regex pattern to match various common phone number formats
+    pattern = r&#x27;&#x27;&#x27;
+        ^(?:\(\d{3}\)\s+|\d{3}[-.\s]|\d{3}[\s.-]|\d{3}[\s.-]|\d{3}[\s.-]|\d{3}[\s.-]|\d{
+
+<span class="c">&gt; </span><span class="k">Write a JavaScript function isEgyptianMobile(text) that returns true only for Egyptian mobile numbers: 11 digits starting with 010, 011, 012 or 015, or the same number with +20 instead of the first 0. Spaces and dashes between digits are allowed. Return only the code, in one code block.</span>
+```javascript
+function isEgyptianMobile(text) {
+    const cleaned = text.replace(/\s|-/g, &#x27;&#x27;);
+    if (cleaned.length !== 11) return false;
+    
+    // Check if it starts with 010, 011, 012, or 015
+    const firstThree = cleaned.substring(0, 3);
+    return (firstThree === &#x27;010&#x27; || firstThree === &#x27;011&#x27; || firstThree === &#x27;012&#x27; || firstThree === &#x27;015&#x27;);
+}
+```
+
+pass  &quot;01012345678&quot; -&gt; true
+FAIL  &quot;+20 101 234 5678&quot; -&gt; false
+pass  &quot;015-1234-5678&quot; -&gt; true
+pass  &quot;01312345678&quot; -&gt; false
+pass  &quot;0101234567&quot; -&gt; false
+pass  &quot;phone: 01012345678&quot; -&gt; false</pre></div>
+
+<p>Then the program ran the function against six cases, and one failed: <code>"+20 101 234 5678"</code>. The prompt said that +20 may replace the first 0, and the model’s code ignores it. The specific prompt produced a much better answer, and still not a correct one. That is not a reason to write vague prompts; it is a reason to write tests. A requirement that matters belongs in the prompt and in a test, and only the test proves it was met.</p>
+
+<table>
+<thead><tr><th>Part</th><th>Question it answers</th><th>In the example</th></tr></thead>
+<tbody>
+<tr><td>Context</td><td>What should the model know first?</td><td>JavaScript; the input is text</td></tr>
+<tr><td>Task</td><td>What exactly must it do?</td><td>A function named <code>isEgyptianMobile</code></td></tr>
+<tr><td>Rules</td><td>What makes the answer right?</td><td>11 digits, four prefixes, +20, spaces and dashes</td></tr>
+<tr><td>Format</td><td>What should the reply look like?</td><td>Only code, in one block</td></tr>
+</tbody>
+</table>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Before you send a prompt, ask: “if a new colleague got this message, could they do the task without asking me anything?” Every question they would ask is something the model will guess instead.</p></aside>
+
+<h2><span class="sec">3.2</span> <span>Output a program can read</span></h2>
+
+<p>When a program reads the answer, “reply with JSON only” is a request, not a guarantee. A <em>grammar</em> is a guarantee: <code>node-llama-cpp</code> can turn a JSON schema into rules that forbid every token that would break it.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">format.mjs (part)</div><pre class="code"><span class="k">const</span> grammar = <span class="k">await</span> model.llama.createGrammarForJsonSchema({
+  <span class="k">type</span>: <span class="s">&quot;object&quot;</span>,
+  properties: {
+    name: {<span class="k">type</span>: <span class="s">&quot;string&quot;</span>},
+    drink: {enum: [<span class="s">&quot;latte&quot;</span>, <span class="s">&quot;tea&quot;</span>, <span class="s">&quot;espresso&quot;</span>]},
+    size: {enum: [<span class="s">&quot;small&quot;</span>, <span class="s">&quot;large&quot;</span>, <span class="s">&quot;unknown&quot;</span>]},
+    count: {<span class="k">type</span>: <span class="s">&quot;integer&quot;</span>},
+  },
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node format.mjs</span>
+--- no grammar
+{&quot;name&quot;:&quot;Omar&quot;,&quot;drink&quot;:&quot;latte&quot;,&quot;size&quot;:&quot;large&quot;,&quot;count&quot;:2}
+{&quot;name&quot;:&quot;Sara&quot;,&quot;drink&quot;:&quot;tea&quot;,&quot;size&quot;:&quot;small&quot;,&quot;count&quot;:1}
+{&quot;name&quot;:&quot;Ali&quot;,&quot;drink&quot;:&quot;espresso&quot;,&quot;size&quot;:&quot;small&quot;,&quot;count&quot;:1}
+{&quot;name&quot;:&quot;Mona&quot;,&quot;drink&quot;:&quot;tea&quot;,&quot;size&quot;:&quot;large&quot;,&quot;count&quot;:3}
+{&quot;name&quot;:&quot;Hassan&quot;,&quot;drink&quot;:&quot;latte&quot;,&quot;size&quot;:null,&quot;count&quot;:1}
+--- schema
+{&quot;name&quot;:&quot;Omar&quot;,&quot;drink&quot;:&quot;latte&quot;,&quot;size&quot;:&quot;large&quot;,&quot;count&quot;:2}
+{&quot;name&quot;:&quot;Sara&quot;,&quot;drink&quot;:&quot;tea&quot;,&quot;size&quot;:&quot;small&quot;,&quot;count&quot;:1}
+{&quot;name&quot;:&quot;Ali&quot;,&quot;drink&quot;:&quot;espresso&quot;,&quot;size&quot;:&quot;small&quot;,&quot;count&quot;:1}
+{&quot;name&quot;:&quot;Mona&quot;,&quot;drink&quot;:&quot;tea&quot;,&quot;size&quot;:&quot;large&quot;,&quot;count&quot;:3}
+{&quot;name&quot;:&quot;Hassan&quot;,&quot;drink&quot;:&quot;latte&quot;,&quot;size&quot;:&quot;unknown&quot;,&quot;count&quot;:1}</pre></div>
+
+<p>Without a grammar, the model behaved well: five valid objects. But look at Hassan’s order, which gives no size: the model wrote <code>null</code>, a value the program never planned for. With the schema, it had to choose one of the three allowed sizes, and chose <code>"unknown"</code>. The schema did two jobs: it made the reply valid JSON every time, and it limited each field to values your code handles. Hosted models offer the same thing, under names like structured outputs or JSON mode with a schema; Chapter 13 uses it from an application.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>A schema guarantees the shape, not the truth. The model can still put the wrong drink in a perfectly valid <code>drink</code> field. In the Arabic edition it did exactly that: with the schema, Sara’s small tea came back as an <code>espresso</code>. Validate the values that matter, as you would any input from outside your program.</p></aside>
+
+<h2><span class="sec">3.3</span> <span>Examples</span></h2>
+
+<p>Showing a few examples of input and answer, called <em>few-shot</em> prompting, is the most recommended technique of all. This program sorts eight messages from café customers into four labels, with instructions only and then with four examples, and counts the right answers:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">examples.mjs (part)</div><pre class="code"><span class="k">const</span> instruction = <span class="s">&quot;Classify this message from a customer of a café app as bug, feature, question or billing. Reply with the label only.&quot;</span>;
+<span class="k">const</span> examples = <span class="s">&quot;Examples:\n“The menu shows yesterday&#x27;s prices” -&gt; bug\n“Can I pay with a gift card in the future?” -&gt; feature\n“My refund has not arrived” -&gt; billing\n“Is the café open on holidays?” -&gt; question&quot;</span>;
+
+<span class="k">for</span> (<span class="k">const</span> [label, prompt] <span class="k">of</span> [
+  [<span class="s">&quot;instructions only&quot;</span>, instruction],
+  [<span class="s">&quot;with examples&quot;</span>, <span class="s">`${instruction}\n\n${examples}`</span>],
+]) {
+  <span class="k">let</span> right = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> [message, expected] <span class="k">of</span> messages) {
+    <span class="k">const</span> label = (<span class="k">await</span> ask(<span class="s">`${prompt}\n\n&quot;${message}&quot;`</span>)).toLowerCase();
+    <span class="k">if</span> (label === expected) {
+      right++;
+    } <span class="k">else</span> {
+      console.log(<span class="s">`  wrong: &quot;${message}&quot; -&gt; ${label} (expected ${expected})`</span>);
+    }
+  }
+  console.log(<span class="s">`${label}: ${right} of ${messages.length}\n`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node examples.mjs</span>
+instructions only: 8 of 8
+
+with examples: 8 of 8</pre></div>
+
+<p>Eight out of eight both times: the examples added nothing, because the task was already clear and the labels are ordinary English words. In the Arabic edition, the same messages in Arabic scored 6 of 8 with instructions alone and 7 of 8 with examples: the model called a double charge a <code>bug</code>, a reasonable reading, and the examples fixed one of its two mistakes. Examples earn their place when the instructions cannot say everything: a label with a house meaning (“is a refund question <code>billing</code> or <code>question</code>?”), a tone, a format that is easier to show than to describe. They also cost tokens in every request. So add them when a test shows a mistake they would fix, and pick examples that sit on the boundary between labels, not easy ones.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did the vague request get Python?</li><li>What did the schema guarantee in Hassan’s order that the request alone did not?</li><li>When are examples worth their tokens?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">3.4</span> <span>Answer from the text, or say so</span></h2>
+
+<p>Chapter 1 showed a model inventing a paper. The same thing happens with your own documentation: ask about something it does not contain, and the model may fill the gap. Here is a short documentation for a configuration file, and a question about an option that is not in it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">grounded.mjs (part)</div><pre class="code"><span class="k">const</span> doc = <span class="s">&quot;cafe.yml options:\n- port: the port the service listens on (default 8080).\n- menu_file: the path of the menu (default menu.json).\n- tax_rate: the tax added to every order (default 0.14).&quot;</span>;
+<span class="k">const</span> question = <span class="s">&quot;What does the retry_delay option do, and what is its default?&quot;</span>;
+
+console.log(<span class="s">`&gt; ${question}\n${await ask(`</span>${doc}\n\n${question}<span class="s">`)}\n`</span>);
+console.log(<span class="s">`&gt; ${question} Answer only from the documentation above. If the answer is not there, say: Not in the documentation.`</span>);
+console.log(<span class="k">await</span> ask(<span class="s">`${doc}\n\n${question}\nAnswer only from the documentation above. If the answer is not there, say: Not in the documentation.`</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node grounded.mjs</span>
+<span class="c">&gt; </span><span class="k">What does the retry_delay option do, and what is its default?</span>
+The `retry_delay` option is **not mentioned** in the provided `cafe.yml` configuration details.
+
+Based on the given information:
+- `port`: port the service listens on (default 8080)
+- `menu_file`: path of the menu (default `menu.json`)
+- `tax_rate`: tax added to every order (default 0.14)
+
+There is **no reference** to a `retry_delay` option, so it does not exist in this configuration.
+
+👉 **Answer**: The `retry_delay` option is not defined in the provided `cafe.yml` configuration. Therefore, it does not have a purpose or a default value in this context. If you have additional context or a different configuration file, please share it for clarification.
+
+<span class="c">&gt; </span><span class="k">What does the retry_delay option do, and what is its default? Answer only from the documentation above. If the answer is not there, say: Not in the documentation.</span>
+Not in the documentation.</pre></div>
+
+<p>The first answer is honest, and three paragraphs long: it says the option is not mentioned, lists the ones that are, and then adds that it “does not exist in this configuration”, which the documentation does not say either. The second prompt gave the model a rule and a fixed sentence to use, and got exactly that sentence. A fixed answer for “not there” is useful twice over: the person reading knows it means “look elsewhere”, and a program can recognise it.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>When a model answers from your documents, code or data, always include the rule “answer only from the text above” and a fixed reply for when the answer is missing. It costs one line and turns the most dangerous failure, a fluent invention, into a visible one.</p></aside>
+
+<h2><span class="sec">3.5</span> <span>Measure the tricks</span></h2>
+
+<p>“Ask the model to think step by step” is advice you will read everywhere, and for good reason: for large models on multi-step problems it often helps. Here it is measured on three small problems:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">steps.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [label, suffix] <span class="k">of</span> [
+  [<span class="s">&quot;direct&quot;</span>, <span class="s">&quot;Answer with the result only.&quot;</span>],
+  [<span class="s">&quot;step by step&quot;</span>, <span class="s">&quot;Work it out step by step, then give the result on the last line.&quot;</span>],
+]) {
+  <span class="k">let</span> right = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> [problem, expected] <span class="k">of</span> problems) {
+    <span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">`${problem} ${suffix}`</span>, {maxTokens: <span class="n">400</span>});
+    <span class="k">const</span> last = answer.split(<span class="s">&quot;\n&quot;</span>).filter((line) =&gt; line.trim()).at(-<span class="n">1</span>);
+    <span class="k">const</span> ok = last.includes(expected);
+    right += ok ? <span class="n">1</span> : <span class="n">0</span>;
+    console.log(<span class="s">`  ${ok ? &quot;right&quot; : &quot;wrong&quot;}: ${last.slice(0, 50)} (expected ${expected})`</span>);
+  }
+  console.log(<span class="s">`${label}: ${right} of ${problems.length}\n`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node steps.mjs</span>
+  right: 17:35 (expected 17:35)
+  right: 13:15 (expected 13:15)
+  right: Answer: 36 (expected 36)
+direct: 3 of 3
+
+  wrong: 18:20 (expected 17:35)
+  wrong: 13:55 (expected 13:15)
+  right: **36** (expected 36)
+step by step: 1 of 3</pre></div>
+
+<p>Asked for the result only, the model got all three right. Asked to work step by step, it got both clock times wrong, 18:20 and 13:55, after a page of confident working. More steps meant more places to slip, and this small model slipped. The Arabic edition measured the same thing in Arabic: three right directly, one right step by step. A larger model might gain from the same words; the only way to know is to count, on your model, with your kind of problem. And for clock arithmetic, the best prompt is no prompt: Chapter 2’s calculator tool, or a few lines of code.</p>
+
+<h2><span class="sec">3.6</span> <span>A prompt is code</span></h2>
+
+<p>A prompt that runs inside a program has the same life as the code around it: it is written, changed, broken by a change, and fixed. Treat it the same way. Keep it in a file, build it from named parts, and test it against cases with known answers. Project 3.2 builds that harness; here is what it found:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node harness.mjs</span>
+0 of 8  Is this a bug, feature, question or billing?
+8 of 8  Classify this message from a customer of a café app as bug, feature, question or billing. Reply with the label only.</pre></div>
+
+<p>The short prompt scored zero, not because the model misunderstood the messages but because it answered in sentences, and a sentence is not a label. Every rule you leave out of a prompt is one more way for a correct answer to be unusable.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A request without rules</td><td>A plausible answer to a different question</td><td>Context, task, rules and format, written out</td></tr>
+<tr><td>Trusting a specific prompt</td><td>One requirement silently skipped</td><td>Test the result against cases</td></tr>
+<tr><td>“Reply with JSON” for a program</td><td>Unexpected values, or text around the JSON</td><td>A schema, and validation of the values</td></tr>
+<tr><td>Examples by habit</td><td>Longer, costlier prompts with no gain</td><td>Add examples when a test shows they help</td></tr>
+<tr><td>No rule for missing answers</td><td>Fluent inventions about your own system</td><td>“Only from the text”, and a fixed reply</td></tr>
+<tr><td>Copying tricks without measuring</td><td>A prompt that is worse on your model</td><td>Compare with and without, on real cases</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A good prompt says what correct means: context, task, rules and format. What you leave out, the model guesses.</li>
+<li>Specific prompts give much better answers, and still not guaranteed ones: test what comes back.</li>
+<li>For output a program reads, use a schema: it guarantees the shape and limits the values.</li>
+<li>Examples help when the instructions cannot say everything; add them when a test shows the need.</li>
+<li>Keep the model to your text, with a fixed answer for “not there”.</li>
+<li>Advice is a hypothesis. Measure it on your model, with your cases, before you rely on it.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Nothing in the request named a language, and “a function that checks a phone number” is most often followed, in the text the model learned from, by Python. 2. That <code>size</code> is one of the values the program handles: without the schema the model wrote <code>null</code>; with it, it had to choose, and chose <code>"unknown"</code>. 3. When the instructions cannot fully describe the task (house meanings, tone, a format easier shown than told) and a test shows mistakes that examples fix.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects turn prompts into code: built from parts, tested against cases, and improved with a score instead of a feeling.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>A prompt builder</h3>
+<p class="project-goal">A function that builds a prompt from named parts, used with a system prompt for the role.</p>
+<p class="project-skills"><strong>You will practise:</strong> separating role, context, task, format and rules, and leaving out what is not needed.</p>
+<ol class="steps">
+<li>Write <code>buildPrompt</code>, which joins the parts that are present with blank lines.</li>
+<li>Put the role in the system prompt, and everything else in the message.</li>
+<li>Ask for an explanation of one line of code, with a format and a rule.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">build.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> buildPrompt({context, task, format, rules}) {
+  <span class="k">return</span> [context, task, format, rules]
+    .filter(Boolean)
+    .join(<span class="s">&quot;\n\n&quot;</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node build.mjs</span>
+[system] You are a senior JavaScript developer who reviews code for a small team.
+The team writes Node 22 code with ES modules and no TypeScript.
+
+Explain what this line does: const unique = [...new Set(items)];
+
+One sentence, then one example with input and output.
+
+Do not suggest other ways to write it.
+---
+This line creates a new array with only unique values by converting the input array to a Set (which removes duplicates) and then spreading it back into an array.  
+
+Example:  
+Input: `[1, 2, 2, 3, 3, 4]`  
+Output: `[1, 2, 3, 4]`</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.2 · Medium</p>
+<h3>A test harness for prompts</h3>
+<p class="project-goal">Score any classification prompt against cases with known answers.</p>
+<p class="project-skills"><strong>You will practise:</strong> exporting a scoring function, test cases as data, and comparing prompts by number.</p>
+<ol class="steps">
+<li>Write <code>score(prompt, cases)</code>: ask each case in a fresh conversation and count exact matches.</li>
+<li>Export the cases, so other programs can reuse them.</li>
+<li>When run directly, score a short prompt and a full one.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">harness.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> score(prompt, cases) {
+  <span class="k">let</span> right = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> [message, expected] <span class="k">of</span> cases) {
+    <span class="k">const</span> label = (<span class="k">await</span> ask(<span class="s">`${prompt}\n\n&quot;${message}&quot;`</span>)).toLowerCase();
+    right += label === expected ? <span class="n">1</span> : <span class="n">0</span>;
+  }
+  <span class="k">return</span> right;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node harness.mjs</span>
+0 of 8  Is this a bug, feature, question or billing?
+8 of 8  Classify this message from a customer of a café app as bug, feature, question or billing. Reply with the label only.</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 3.3 · Challenge</p>
+<h3>Let the model improve a prompt, then check</h3>
+<p class="project-goal">Ask the model to rewrite a vague prompt, and score the original and the rewrite with the harness.</p>
+<p class="project-skills"><strong>You will practise:</strong> using a model to write prompts, and keeping the decision with a test.</p>
+<ol class="steps">
+<li>Ask the model to rewrite the vague prompt so that it is clear and specific.</li>
+<li>Score both with <code>score</code> from Project 3.2, on the same cases.</li>
+<li>Compare with the hand-written prompt’s score.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">rewrite.mjs (part)</div><pre class="code"><span class="k">const</span> vague = <span class="s">&quot;Is this a bug, feature, question or billing?&quot;</span>;
+<span class="k">const</span> better = <span class="k">await</span> ask(<span class="s">`Rewrite this prompt for a language model so that it is clear and specific. Keep the task the same. Reply with the new prompt only.\n\n${vague}`</span>);
+console.log(<span class="s">`rewritten: ${better}\n`</span>);
+<span class="k">for</span> (<span class="k">const</span> prompt <span class="k">of</span> [vague, better]) {
+  console.log(<span class="s">`${await score(prompt, cases)} of ${cases.length}`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node rewrite.mjs</span>
+rewritten: Classify the following input as either a bug, a feature request, a question, or a billing inquiry. Provide only the classification.
+
+0 of 8
+3 of 8</pre></div>
+<p class="hint"><strong>Hint:</strong> the rewrite reads much better, and went from 0 to 3, but the hand-written prompt scored 8. The model renamed the labels into “a feature request” and “a billing inquiry”, so its own answers no longer matched the words the program expects. Without the harness, you would have kept the prompt that sounds best. Ask the rewriter to keep the exact labels, and score it again.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add one sentence to the specific prompt in <code>specific.mjs</code> so that the <code>+20</code> case passes. Run the tests; did anything else change?</li>
+<li><span class="level">Easy</span> Rewrite “Make this code better” as a prompt with context, task, rules and format, for a function of your own.</li>
+<li><span class="level medium">Medium</span> Add one rule to the classification prompt, “Anything about money, charges or fees is billing”, and one hard case, “Is a refund possible if my latte was cold?”. Score it again. Did the rule fix what you expected, and did it change anything else?</li>
+<li><span class="level medium">Medium</span> Change the schema in <code>format.mjs</code> so that <code>count</code> must be between 1 and 20, and send “a hundred lattes for the office”. What does the model return, and what should your program do with it?</li>
+<li><span class="level hard">Challenge</span> Extend the harness to run each prompt three times at temperature 0.7 and report the average and the lowest score. Why is the lowest score the more useful number for a prompt in production?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>You know how models work, the tools built on them, and how to instruct them. Part II puts them to work in your code, starting with the most common use of all: writing code together with an assistant, in small steps that you understand and test.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1169,6 +1570,16 @@ The total cost for 48,213 cups at $7.35 each, including a 14% tax, is approximat
 Questions that name something specific: “where is the price of a latte set?” takes one search for <code>latte</code> and one read, instead of a list and two reads. In a project of thousands of files the difference is between a few calls and reading files one by one until the context fills. That is why every coding agent has a search tool.</li>
 <li>Without the check, <code>Function(`return (${expression});`)()</code> runs any JavaScript the model passes. An expression such as <code>process.env.API_KEY</code> returns a secret into the conversation, and <code>process.exit(1)</code> stops the program; with an asynchronous import, it could read or delete files. The model may not choose such an input by itself, but anyone who controls text the model reads can ask it to: a web page, an email or a file in the project saying “calculate this”. That is called <em>prompt injection</em>, and Chapter 15 is about it. A tool must check its input as strictly as an API endpoint does, because that is what it is.</li>
 <li>Generate with <code>onTextChunk</code>, keep a counter that starts at 1 (the function’s own brace is already open), add one for each <code>{</code> and subtract one for each <code>}</code>, and abort with an <code>AbortController</code> when it reaches 0, keeping the text before that brace. It breaks on braces that are not code: inside strings (<code>"{"</code>), template literals, comments and regular expressions. A real editor uses the language’s parser, or at least a tokenizer that knows strings and comments, which is a good reason to trust editors over home-made checks.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 3</h2>
+<ol class="exercises">
+<li>The book’s attempt added: “Any other character, such as letters or a colon, makes the number invalid; with +20 the number is 12 digits after the plus.” The result was worse, not better: <code>+20</code> still failed, and <code>"phone: 01012345678"</code>, which passed before, now failed too. Changing a prompt changes the whole answer, not only the part you meant to fix, which is exactly why the tests must run again after every change. When a requirement keeps failing, show it instead of describing it: put the failing case in the prompt as an example of input and expected result.</li>
+<li>For example: “Context: a Node 22 module, ES modules, used by our order service. Task: improve the function below for readability without changing what it returns for any input. Rules: keep its name and parameters; no new dependencies; explain each change in one line. Format: the new function in one code block, then the list of changes.” Each part removes one guess: what “better” means (readability, not speed), what must not change (behaviour and signature), and what you will get back.</li>
+<li>With the rule “anything about money, charges or fees is billing” and one hard message added (“Is a refund possible if my latte was cold?”), the book’s run scored 7 of 9. The rule did not fix the refund question, which the model still called a <code>question</code>, and it broke a case that was right before: “Do you deliver to Nasr City?” became a <code>feature</code>. In Arabic, the same rule scored 8 of 9, missing only the refund. A rule is a change like any other: it fixes some cases and moves others, and only the full score tells you which. Here an example of a refund question labelled <code>billing</code> is the more direct fix.</li>
+<li>The model returned <code>"count": 100</code>, although the schema said <code>maximum: 20</code>, and named the customer “office”. The grammar enforces the shape and the allowed words, but this version does not enforce number ranges. So the program must check: reject the order, or ask the customer to confirm a large order. That is the general rule: a schema narrows what the model can say; your code still decides what is acceptable.</li>
+<li>Run each case three times at 0.7 and record each run’s score; report the mean and the minimum. In production a prompt runs thousands of times, so the question is not “how well does it usually do?” but “how badly can it do?”. A prompt that scores 8, 8 and 3 has a good average and an unacceptable floor. Compare prompts by their minimum first, and use temperature 0 in production where you can, so the score you measured is the score you get.</li>
 </ol>
 
 </section>
