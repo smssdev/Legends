@@ -37,6 +37,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "Chapter 15: Security, Privacy and Licensing"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "Chapter 16: Judgement: When Not to Trust the AI"; } }
+@page ch16:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -169,7 +171,7 @@ if (isMember && day === "Tuesday") {
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and node-llama-cpp 3.22.3, talking to the open model Qwen3-4B-Instruct-2507 (Apache 2.0) running on the author’s computer, and, in Chapter 14, the embedding model Qwen3-Embedding-0.6B (Apache 2.0). Every listing and terminal session is produced from the files in the book’s code repository.</p>
           <p>Qwen is a trademark of Alibaba Cloud. ChatGPT and OpenAI are trademarks of OpenAI. Claude and Anthropic are trademarks of Anthropic. GitHub Copilot is a trademark of GitHub, Inc. Gemini is a trademark of Google LLC. Llama is a trademark of Meta Platforms, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">161</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p">183</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">202</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: Understanding AI</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Large Language Models Work</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">The AI Toolbox for Developers</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Prompting That Works</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: AI in Your Code</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Pair Programming with AI</span><span class="toc-p">57</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reading and Explaining Unfamiliar Code</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Debugging with AI</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Tests, Refactoring and Code Review</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Documentation and Commit Messages</span><span class="toc-p">113</span></li><li class="toc-part">Part 3: AI in Your Work</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Idea to Specification and Tasks</span><span class="toc-p">125</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Meetings, Emails and Reports</span><span class="toc-p">138</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Automating Repetitive Work</span><span class="toc-p">151</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">AI Agents that Do Multi-Step Work</span><span class="toc-p">161</span></li><li class="toc-part">Part 4: Building with AI</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Calling AI Models from Your Apps</span><span class="toc-p">172</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Retrieval: AI That Knows Your Data</span><span class="toc-p">183</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Security, Privacy and Licensing</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Judgement: When Not to Trust the AI</span><span class="toc-p">202</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: An AI-Powered Assistant for Your Team</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">212</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -5520,6 +5522,274 @@ blocked Claim your prize at https://bitcafe-prizes.example.net/win.  (link to bi
 <p>Every chapter of this book has found the model wrong somewhere, and every chapter checked. The next chapter turns those checks into judgement: when to trust a model, when to verify, and when not to use one at all.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b7/judgement/en">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">Chapter 16</p><h1>Judgement: When Not to Trust the AI</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>see why a model’s confidence is not evidence</li>
+<li>use agreement between samples, and self-checks, for what they are worth</li>
+<li>send each kind of question to the tool that answers it reliably</li>
+<li>decide how much to trust a model on a task, from its impact, reversibility and checkability</li>
+<li>gather the lessons of the book into habits you can apply to any new tool</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter of this book found the model wrong somewhere, and every chapter caught it with a check. That is not a story about a weak model; larger ones fail less often, in the same ways. It is a story about judgement: knowing which answers to trust, which to verify, and which tasks a model should not be given at all. This chapter measures the signals people use to decide (the model’s confidence, agreement between answers, the model checking itself) and finds out which of them deserve your trust.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The model in this chapter was 100% sure of a wrong multiplication. That one line is the chapter. The rest is how to work well anyway.</p></div></div>
+
+<h2><span class="sec">16.1</span> <span>Confidence is not evidence</span></h2>
+
+<p>Ten questions with known answers: some arithmetic, some facts, a famous trap (9.11 or 9.9), a letter count, and two questions no model can answer, the café’s latte price and the winner of a World Cup that has not happened. For each, the model gives an answer and its confidence:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">confidence.mjs (part)</div><pre class="code"><span class="k">let</span> wrongButSure = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> [question, expected] <span class="k">of</span> QUESTIONS) {
+  <span class="k">const</span> {answer, confidence} = JSON.parse(<span class="k">await</span> ask(<span class="s">`Answer the question briefly. If you cannot know the answer, answer unknown. Also give your confidence that the answer is right, from 0 to 100.\n\n${question}`</span>, {grammar}));
+  <span class="k">const</span> right = isRight(answer, expected);
+  wrongButSure += !right &amp;&amp; confidence &gt;= <span class="n">90</span> ? <span class="n">1</span> : <span class="n">0</span>;
+  console.log(<span class="s">`${right ? &quot;right&quot; : &quot;WRONG&quot;} ${String(confidence).padStart(3)}%  ${answer.slice(0, 40)}`</span>);
+}
+console.log(<span class="s">`--- wrong answers given with 90% confidence or more: ${wrongButSure}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node confidence.mjs</span>
+right 100%  408
+WRONG 100%  356,385.55
+right 100%  Cairo
+right 100%  366
+right 100%  9.9
+right 100%  3
+right 100%  2007
+right 100%  1,048,576
+right  20%  unknown
+right   0%  unknown
+--- wrong answers given with 90% confidence or more: 1</pre></div>
+
+<p>Nine right, and the two unknowable questions answered “unknown” with low confidence, which is good behaviour. And one wrong: 48213 × 7.35 is 354,365.55, and the model said 356,385.55, with 100% confidence. In the Arabic edition, a different wrong number, at 98%. Every right answer also came with 100%, so the number carries almost no information: a wrong answer and a right one look identical.</p>
+
+<p>This is the central fact of working with models. They do not know what they do not know, except in the clear cases (“who won in 2034?”) that you would have caught yourself. Their confidence, in words or in numbers, is part of the generated text, and the most likely text after a confident question is a confident answer.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Never use a model’s stated confidence to decide whether to check its answer. Decide by the task: what happens if the answer is wrong, and how easy it is to check. Section 16.4 turns that into a rule.</p></aside>
+
+<h2><span class="sec">16.2</span> <span>Agreement between answers</span></h2>
+
+<p>A better signal: ask the same question several times with some randomness, and see whether the answers agree. A model that knows something tends to say it the same way; a model that is guessing guesses differently each time.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">agreement.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [question, expected] <span class="k">of</span> QUESTIONS.slice(<span class="n">0</span>, <span class="n">8</span>)) {
+  <span class="k">const</span> answers = [];
+  <span class="k">for</span> (<span class="k">const</span> seed <span class="k">of</span> [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>]) {
+    answers.push(<span class="k">await</span> ask(<span class="s">`${question} Answer with the result only.`</span>, {temperature: <span class="n">0.8</span>, seed, maxTokens: <span class="n">30</span>}));
+  }
+  <span class="k">const</span> counts = <span class="k">new</span> Map();
+  answers.forEach((a) =&gt; counts.set(a, (counts.get(a) ?? <span class="n">0</span>) + <span class="n">1</span>));
+  <span class="k">const</span> [top, n] = [...counts].sort((a, b) =&gt; b[<span class="n">1</span>] - a[<span class="n">1</span>])[<span class="n">0</span>];
+  <span class="k">const</span> right = isRight(top, expected);
+  console.log(<span class="s">`${n}/5 agree  ${right ? &quot;right&quot; : &quot;WRONG&quot;}  ${top.slice(0, 40)}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node agreement.mjs</span>
+5/5 agree  right  408
+1/5 agree  WRONG  48213 × 7.35 = 3563410.5
+4/5 agree  right  The capital of Egypt is Cairo.
+3/5 agree  right  366 days
+5/5 agree  right  9.9 is larger than 9.11.
+2/5 agree  right  The letter **r** appears **3 times** in 
+5/5 agree  right  2007
+5/5 agree  right  1,048,576</pre></div>
+
+<p>The wrong multiplication had the lowest agreement, one of five: five samples, five different numbers. That is a real warning, and it costs only extra calls. But read the other lines: “366” agreed three times of five and the letter count twice, both right, because the samples said the same thing in different words (“366 days”, “366”). Agreement must be measured on the extracted answer, not on the text, or right answers look shaky. In the Arabic edition, the letter count agreed three of five on <em>2</em>, wrong: agreement is a signal, not a proof.</p>
+
+<h2><span class="sec">16.3</span> <span>Asking the model to check itself</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">selfcheck.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [question, expected] <span class="k">of</span> QUESTIONS.slice(<span class="n">0</span>, <span class="n">8</span>)) {
+  <span class="k">const</span> answer = <span class="k">await</span> ask(<span class="s">`${question} Answer with the result only.`</span>, {maxTokens: <span class="n">30</span>});
+  <span class="k">const</span> verdict = JSON.parse(<span class="k">await</span> ask(<span class="s">`Here is a question and an answer. Check the answer carefully. Reply with JSON: is it correct, and if not, the correct answer.\n\n${question}\n${answer}`</span>, {grammar, maxTokens: <span class="n">200</span>}));
+  <span class="k">const</span> right = isRight(answer, expected);
+  <span class="k">const</span> caught = !right &amp;&amp; !verdict.correct;
+  <span class="k">const</span> label = right ? (verdict.correct ? <span class="s">&quot;right, confirmed&quot;</span> : <span class="s">&quot;right, DOUBTED&quot;</span>) : caught ? <span class="s">&quot;wrong, caught&quot;</span> : <span class="s">&quot;WRONG, confirmed&quot;</span>;
+  console.log(<span class="s">`${label.padEnd(18)} ${answer.slice(0, 30)}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node selfcheck.mjs</span>
+right, confirmed   408
+wrong, caught      356388.55
+right, confirmed   The capital of Egypt is Cairo.
+right, confirmed   366 days
+right, confirmed   9.9 is larger than 9.11.
+right, confirmed   The letter **r** appears **3 t
+right, confirmed   2007
+right, DOUBTED     1,048,576</pre></div>
+
+<p>The self-check caught the wrong multiplication, in both editions. It also doubted a right answer (1,048,576), and in the Arabic edition it doubted 408, and confirmed a wrong letter count. A second look by the same model is a second sample, with the same blind spots, not an independent review. It is worth having when it is cheap, and its “wrong” is worth a human look; its “correct” proves little.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What did the model’s confidence say about its one wrong answer?</li><li>Why did “366” agree only three times of five, although every sample was right?</li><li>Why is a self-check not an independent review?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">16.4</span> <span>Deciding how far to trust</span></h2>
+
+<p>The signals help; the decision comes from the task. Three questions decide how much checking a task needs: how much harm a wrong answer does, whether it can be undone, and how easy it is to check. Project 16.2 turns them into a small function; here is the rule in words:</p>
+
+<table>
+<thead><tr><th>The task</th><th>Use the model…</th><th>Examples from this book</th></tr></thead>
+<tbody>
+<tr><td>Low harm, easy to check</td><td>freely, with a glance</td><td>name ideas, first drafts, explanations of code you can read</td></tr>
+<tr><td>Real harm, but checkable</td><td>and verify before acting</td><td>code (tests), summaries (the source), numbers (code), citations (the documents)</td></tr>
+<tr><td>Real harm, hard to undo or to check</td><td>only to prepare; a person decides</td><td>refunds, prices sent to customers, agents with write access, anything legal or medical</td></tr>
+<tr><td>Exact answers that code can give</td><td>not at all</td><td>arithmetic, counting, sorting, dates (Project 16.1)</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>For every AI feature you build, write down three things: what a wrong answer costs, what checks it automatically, and who looks at what the checks cannot see. If you cannot fill in the second and third, the feature is not ready, however good the demo.</p></aside>
+
+<h2><span class="sec">16.5</span> <span>What the book measured</span></h2>
+
+<p>Gathered from the chapters, the pattern is consistent. The model wrote correct code and wrong tests (4, 7); explained code fluently and predicted its results three times in six (5); fixed a bug for the wrong reason (6); turned 20,000 piastres into dollars (5) and Egyptian pounds into sterling (10); invented a year in every date it reformatted (10); reported tasks done that had no commit (10); told customers about a discount an attacker wrote (15); and, given the right documents and the right checks, answered correctly and said “not in our documents” when that was the truth (14). The model was the same throughout. What changed the outcome was the work around it.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Trusting stated confidence</td><td>Confident errors go unchecked</td><td>Decide checks by the task, not the tone</td></tr>
+<tr><td>Comparing answers as text</td><td>Right answers look unreliable</td><td>Extract the answer, then compare</td></tr>
+<tr><td>Treating a self-check as a review</td><td>Shared blind spots confirmed</td><td>Independent checks: code, sources, people</td></tr>
+<tr><td>A model for exact answers</td><td>Arithmetic that is nearly right</td><td>Route those questions to code</td></tr>
+<tr><td>One level of trust for everything</td><td>Too slow for drafts, too loose for decisions</td><td>Match the checks to the harm and reversibility</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A model’s confidence is generated text, not evidence; it was 100% sure of a wrong answer.</li>
+<li>Agreement between samples is a useful warning when measured on extracted answers; it is not proof.</li>
+<li>A model checking itself shares its own blind spots; independent checks are code, sources and people.</li>
+<li>Send exact questions to code, and decide the level of trust from the harm, reversibility and checkability of each task.</li>
+<li>Across the book, the same model succeeded or failed depending on the work around it: the instructions, the facts, the tools and the checks.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Nothing useful: it was 100%, the same as for every right answer. 2. Because the samples said the same thing in different words (“366”, “366 days”), and the program compared the whole text; comparing the extracted number would show five of five. 3. It is the same model, with the same training and the same tendencies; it can catch slips, but it tends to repeat the misunderstandings that caused them.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects turn judgement into code: a router for exact questions and a rule for how much to trust a model.</p>
+
+<div class="project">
+<p class="project-label">Project 16.1 · Easy</p>
+<h3>Route exact questions to code</h3>
+<p class="project-goal">Answer arithmetic with JavaScript and everything else with the model, and say which answered.</p>
+<p class="project-skills"><strong>You will practise:</strong> recognising questions that code can answer exactly.</p>
+<ol class="steps">
+<li>Extract an arithmetic expression from the question, if there is one.</li>
+<li>If there is, evaluate it in code; otherwise ask the model.</li>
+<li>Print which one answered.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">route.mjs (part)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> answer(question) {
+  <span class="k">const</span> expression = question.replace(/[^\d\s.+\-*/×÷^()]/g, <span class="s">&quot;&quot;</span>).trim();
+  <span class="k">if</span> (expression.length &gt; <span class="n">2</span> &amp;&amp; ARITHMETIC.test(expression) &amp;&amp; /\d\s*[-+*/×÷^]\s*\d/.test(expression)) {
+    <span class="k">const</span> js = expression.replaceAll(<span class="s">&quot;×&quot;</span>, <span class="s">&quot;*&quot;</span>).replaceAll(<span class="s">&quot;÷&quot;</span>, <span class="s">&quot;/&quot;</span>).replaceAll(<span class="s">&quot;^&quot;</span>, <span class="s">&quot;**&quot;</span>);
+    <span class="k">return</span> {by: <span class="s">&quot;code&quot;</span>, result: String(Function(<span class="s">`return (${js});`</span>)())};
+  }
+  <span class="k">return</span> {by: <span class="s">&quot;model&quot;</span>, result: <span class="k">await</span> ask(<span class="s">`${question} Answer briefly.`</span>, {maxTokens: <span class="n">40</span>})};
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node route.mjs</span>
+code  What is 48213 × 7.35? -&gt; 354365.55
+code  What is 2 ^ 20? -&gt; 1048576
+model What is the capital of Egypt? -&gt; The capital of Egypt is Cairo.</pre></div>
+<p class="hint"><strong>Hint:</strong> 354,365.55, exactly, the number the model got wrong at 100% confidence. The router is crude on purpose; real systems give the model a calculator tool (Chapter 2) and let it decide when to call it, which works as long as the model calls it.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 16.2 · Medium</p>
+<h3>How much to trust the model on a task</h3>
+<p class="project-goal">Score a task by its impact, irreversibility and difficulty of checking, and turn the score into a level of trust.</p>
+<p class="project-skills"><strong>You will practise:</strong> writing a judgement down as a rule others can apply and argue with.</p>
+<ol class="steps">
+<li>Rate each factor from 1 to 3.</li>
+<li>Multiply them into a risk score.</li>
+<li>Map the score to: use it, verify it, or let a person decide.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">trust.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> trustLevel({impact, irreversible, hardToCheck}) {
+  <span class="k">const</span> risk = impact * irreversible * hardToCheck;
+  <span class="k">if</span> (risk &lt;= <span class="n">4</span>) <span class="k">return</span> <span class="s">&quot;use it: a quick look is enough&quot;</span>;
+  <span class="k">if</span> (risk &lt;= <span class="n">12</span>) <span class="k">return</span> <span class="s">&quot;use it, and verify before acting&quot;</span>;
+  <span class="k">return</span> <span class="s">&quot;do not rely on it: a person decides&quot;</span>;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node trust.mjs</span>
+name ideas for a new drink             use it: a quick look is enough
+first draft of a test file             use it: a quick look is enough
+summary of a meeting for the team      use it, and verify before acting
+price announcement to all customers    use it, and verify before acting
+deciding a customer&#x27;s refund           do not rely on it: a person decides</pre></div>
+<p class="hint"><strong>Hint:</strong> the numbers matter less than writing them down: a team that disagrees about the rating of a task has found the conversation it needed to have. Note the price announcement: high impact and irreversible, but easy to check, so “verify before acting”, which is exactly what Chapter 10 did.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 16.3 · Challenge</p>
+<h3>Agreement on extracted answers</h3>
+<p class="project-goal">Rewrite <code>agreement.mjs</code> so that it compares the answers, not the text: the number for arithmetic, the name for facts.</p>
+<p class="project-skills"><strong>You will practise:</strong> normalising model output before comparing it.</p>
+<ol class="steps">
+<li>From each sample, extract the first number, or the answer with a schema.</li>
+<li>Count agreement on the extracted values.</li>
+<li>Compare with the version that compared text.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node agreement.mjs</span>
+5/5 agree  right  408
+1/5 agree  WRONG  48213 × 7.35 = 3563410.5
+4/5 agree  right  The capital of Egypt is Cairo.
+3/5 agree  right  366 days
+5/5 agree  right  9.9 is larger than 9.11.
+2/5 agree  right  The letter **r** appears **3 times** in 
+5/5 agree  right  2007
+5/5 agree  right  1,048,576</pre></div>
+<p class="hint"><strong>Hint:</strong> with extracted numbers, “366” and “366 days” agree, and the multiplication still disagrees with itself, which is exactly the signal you want. A schema with a single <code>answer</code> field does the extraction for you, as Chapter 3 showed.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add three questions of your own that you know the answer to, including one the model cannot know. How does the model’s confidence compare with its accuracy?</li>
+<li><span class="level">Easy</span> Rate three AI features from your own work with <code>trustLevel</code>. Do you agree with the levels it gives?</li>
+<li><span class="level medium">Medium</span> Combine the signals: flag an answer for review when agreement is below four of five, or the self-check says wrong. On the ten questions, how many wrong answers are flagged, and how many right ones?</li>
+<li><span class="level medium">Medium</span> Ask the 9.11 or 9.9 question five other ways (“which is bigger”, “sort these”…). Is the model consistent across phrasings?</li>
+<li><span class="level hard">Challenge</span> Write the “three things” of the professional habit for each AI feature in the capstone of the next chapter, before reading it. Then compare with what the chapter built.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 17</p>
+<p>The last chapter puts the whole book together: an assistant for a development team, built from the parts of every chapter (a provider, retrieval over the team’s own documents, tools with permissions, checks on every answer) and measured the way this book has measured everything.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -5730,6 +6000,16 @@ Add the known rows of Project 11.3, plus the two that failed, as a <code>node:te
 <li>Models give more weight to text near the end of the prompt, so moving the attacker’s text after the question often makes the attack stronger, and moving trusted instructions to the end makes them stronger. Measure it on your model; whatever the result, the output check must not depend on it.</li>
 <li>A placeholder that was not sent means the model invented one (“[EMAIL_3]”), which would restore to nothing, or to the wrong value; a real value in the answer means personal data came from somewhere it should not have, perhaps the model’s memory of another message, or a document. Both are leaks of different kinds, and both are cheap to detect before the answer is shown.</li>
 <li>For example: messages are redacted before they are sent to the provider, which keeps them for no more than its stated period and does not train on them; the café keeps the redacted prompt and the answer for 30 days for support, and hashes for a year for audit; only the support team reads the logs; a customer who writes to privacy@ has their records found by the hash of their email and deleted within a week. Write it before launch, and change the code if the policy and the code disagree.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 16</h2>
+<ol class="exercises">
+<li>Expect the same pattern: high confidence on almost everything, right or wrong, and low confidence only on questions that are obviously unanswerable. If your wrong answers came with confidence as high as your right ones, the confidence told you nothing about them, which is the point of the exercise.</li>
+<li>Rate each feature honestly, then argue with the result. If the function says “use it” for something your team would never ship unchecked, one of your ratings is too low; if it says “a person decides” for something harmless, the rating of harm is too high. The value is in the disagreement, which makes the team say why.</li>
+<li>Flag when <code>agreement &lt; 4</code> or <code>!verdict.correct</code>. On the book’s ten questions this flags the wrong multiplication (both signals) and also some right answers (the doubted 1,048,576, and text-agreement below four). Some false alarms are the price of catching the real error; the flags go to a person, who is fast at confirming a right answer.</li>
+<li>Ask “Which is bigger, 9.11 or 9.9?”, “Sort 9.9 and 9.11 from small to large”, “Is 9.11 greater than 9.9?”, and two more. A model that answers one phrasing right and another wrong does not know the comparison; it knows the phrasing. Consistency across phrasings is a stronger signal than agreement on one.</li>
+<li>For example, for the team assistant: a wrong answer about a team rule costs a mistake in someone’s work; it is checked automatically by citations against the documents; a person looks at answers flagged with no citation. Writing this before reading the next chapter lets you compare your design with the one built there, and see what each of you missed.</li>
 </ol>
 
 </section>
