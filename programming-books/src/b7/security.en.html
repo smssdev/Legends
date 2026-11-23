@@ -1,0 +1,156 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/security/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Security, Privacy and Licensing</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>see prompt injection succeed against a real assistant, and stop it with code</li>
+<li>keep personal data from leaving your machine, and put it back afterwards</li>
+<li>block secrets before a prompt is sent anywhere</li>
+<li>keep an audit log that proves what happened without storing personal data</li>
+<li>read the license of every model and package you ship</li>
+</ul>
+</div>
+
+<p class="lead">An application built on a model has the security problems of any application, and three new ones. The model reads text written by strangers, and text can carry instructions. The model may run at a provider, so whatever you send leaves your control. And models, like code, come with licenses that decide what you may build with them. This chapter attacks the café’s support assistant, protects it, and measures which protections actually held.</p>
+
+<aside class="bit" data-mood="think"><p>The attack in this chapter worked. It worked against the plain prompt and against the careful one, in both languages. What stopped it was ten lines of ordinary code that never asked the model anything.</p></aside>
+
+<h2>{{n}}.1 Prompt injection, measured</h2>
+
+<p>The support assistant answers from the café’s documents, as in Chapter 14. One of those documents is a customer review, and the customer was an attacker:</p>
+
+<pre data-code="inject.mjs" data-from="^const DOCS" data-to="const question" data-title="inject.mjs (part)"></pre>
+
+<p>Two defences live in the prompt: first a plain rule, then the documents fenced in tags with an explicit warning that they are data and their instructions must never be followed. A third lives in code: a check on every answer that blocks any discount code the café never issued and any known secret.</p>
+
+<pre data-code="inject.mjs" data-from="^function check" data-to="^}" data-title="inject.mjs (part)"></pre>
+<pre data-term="inject.sh"></pre>
+
+<p>Both prompts failed. The model told a customer about a 50% code that does not exist, with the plain rule and with the warning written out in the prompt. In the Arabic edition, the same. The output check blocked both answers, because it does not read the prompt or care what the model believes: it compares the answer with a list of codes the café actually issued.</p>
+
+<p>This is the general shape of prompt injection, and the reason it is still unsolved: to a model, instructions and data are both text, and the most recent, most specific, most urgent-sounding text often wins. Defences in the prompt reduce the risk on some models; they cannot remove it. What removes it is what the model cannot change: what it is allowed to do (Chapter 12), what it is allowed to know (the Wi-Fi password was never in its prompt), and what is allowed out (the check).</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Treat everything a model reads from outside as untrusted input, like a form field on the internet: documents, web pages, emails, tool results, file names. Never put a secret in a prompt that also contains untrusted text, and never let a model’s answer trigger an action that a check outside the model has not approved.</p></aside>
+
+<h2>{{n}}.2 Personal data</h2>
+
+<p>When the model runs at a provider, everything in the prompt is sent there. Customer messages contain names, emails, phone numbers and sometimes card numbers. Replace them with placeholders before sending, and put them back after the answer comes home:</p>
+
+<pre data-code="lib/pii.mjs" data-from="^const PATTERNS" data-to="^];" data-title="lib/pii.mjs (part)"></pre>
+<pre data-term="privacy.sh"></pre>
+
+<p>The email, the phone and the card never left the machine; the support team sees the full message, restored locally. Two things in this transcript deserve attention. The first version of the phone pattern expected ten digits, and Egyptian mobile numbers have eleven: the test message caught it before anything was sent, which is why a redaction rule needs tests with real-looking data. And the name, Mona Hassan, went through: patterns can find emails and numbers, not names. For names, use a dedicated tool for finding personal data, a local model, or a rule that customer names are never in the prompt at all.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>The safest personal data is the data you never send. Before redacting, ask whether the model needs the field at all: to summarise a complaint, it needs the complaint, not the card number. Send the minimum, and redact what remains.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which defence stopped the injected discount code, and why did it work when the prompt did not?</li><li>What personal data went through the redaction, and why?</li><li>Why was the Wi-Fi password never at risk?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 Licenses</h2>
+
+<p>A model is software with a license, and licenses differ: some open models forbid commercial use, some limit large companies, some require attribution. The license is written in the model file itself, so read it there rather than from a web page that may describe another version:</p>
+
+<pre data-code="licenses.mjs" data-from="^for" data-title="licenses.mjs (part)"></pre>
+<pre data-term="licenses.sh"></pre>
+
+<p>Both of the book’s models are Apache 2.0, which allows commercial use with attribution; the library is MIT. This is the check that, before the book was written, ruled out a smaller model whose license allowed research use only. For hosted models, the provider’s terms play the same role: read what they allow, what they do with your data, and whether you may use the outputs as you plan.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Keep a list of every model, dataset and package your product depends on, with its license and the date you checked it, and recheck when you upgrade. Licenses change between versions, and “it was open when we started” is not a defence.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Relying on the prompt against injection</td><td>Attackers’ instructions reach users</td><td>Checks in code on what goes out; least privilege</td></tr>
+<tr><td>Secrets in the prompt</td><td>Secrets in answers, logs and providers</td><td>Keep secrets out of reach of the model</td></tr>
+<tr><td>Sending whole customer messages</td><td>Personal data at a third party</td><td>Send the minimum; redact; restore locally</td></tr>
+<tr><td>Untested redaction patterns</td><td>Real data slips through</td><td>Tests with realistic data, every format</td></tr>
+<tr><td>Logging prompts as they are</td><td>A log full of personal data</td><td>Redact and hash before logging</td></tr>
+<tr><td>Assuming a model is free to use</td><td>A product on a non-commercial license</td><td>Read the license in the file; keep a list</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Prompt injection is real and works against careful prompts; defend with code outside the model: permissions, secrets kept out, and checks on output.</li>
+<li>Send providers the minimum; replace personal data with placeholders and restore it locally; test the patterns.</li>
+<li>Scan prompts for secrets before they are sent, and keep audit logs without personal data.</li>
+<li>Read the license of every model and package from the source, and keep the list current.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The output check in code: it compares the answer with the codes the café really issued, so no instruction in a document can change its result. The prompt is text the model weighs against other text, including the attacker’s. 2. The customer’s name: patterns recognise the shape of emails, phone and card numbers, and a name has no such shape. 3. Because it was never given to the model. The attacker’s document only claimed a password; a model cannot leak what it does not know.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects are guards for the edges of an AI feature: what goes in, what comes out, and what is kept.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A secret scanner</h3>
+<p class="project-goal">Block a prompt that contains an API key, a private key or a password in a URL, before it is sent.</p>
+<p class="project-skills"><strong>You will practise:</strong> patterns for common secrets, and refusing early.</p>
+<ol class="steps">
+<li>List patterns for the secrets your team uses.</li>
+<li>Return the names of the patterns that match.</li>
+<li>Block the prompt if any do.</li>
+</ol>
+<pre data-code="scan.mjs" data-from="^const SECRET_PATTERNS" data-to="^];" data-title="scan.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/scan.sh"></pre>
+<p class="hint"><strong>Hint:</strong> developers paste code into assistants all day, and code contains keys. A scanner in front of the assistant, like the one in front of your git commits, catches the paste before the key reaches a provider’s logs. Then rotate the key anyway: if it was in your clipboard, assume it may be elsewhere.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>An output filter</h3>
+<p class="project-goal">Allow only the discount codes and link hosts on an allow list to reach a customer.</p>
+<p class="project-skills"><strong>You will practise:</strong> allow lists rather than block lists, for model output.</p>
+<ol class="steps">
+<li>Find codes and links in the answer.</li>
+<li>Compare them with the allowed codes and hosts.</li>
+<li>Block the answer if anything is not allowed, and say what.</li>
+</ol>
+<pre data-code="filter.mjs" data-from="^export function filterAnswer" data-to="^}" data-title="filter.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/filter.sh"></pre>
+<p class="hint"><strong>Hint:</strong> an allow list beats a block list because attackers invent new codes and new domains faster than you can list them; the café knows exactly which codes it issued. The fourth answer is the classic phishing link, a domain that looks like yours. Block it, and log it: a blocked answer is evidence of an attack.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>An audit log without personal data</h3>
+<p class="project-goal">Record each request with a hashed user, a redacted prompt and a hash of the original.</p>
+<p class="project-skills"><strong>You will practise:</strong> logging for accountability while respecting privacy.</p>
+<ol class="steps">
+<li>Redact the prompt with the same function as before.</li>
+<li>Hash the user’s identity with a salt, and the original prompt.</li>
+<li>Append one JSON line per request.</li>
+</ol>
+<pre data-code="audit.mjs" data-from="^export function audit" data-to="^}" data-title="audit.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/audit.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the hash of the original lets you prove later that a given message was the one sent, if the customer shows it to you, without storing it. The salted user hash lets you count one user’s requests without knowing who they are. And the name, again, is still there: the log is only as private as the redaction feeding it.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add the café’s real code, WELCOME10, to <code>ISSUED_CODES</code> and a sentence about it to the prices document. Ask the discount question again. What reaches the customer now?</li>
+<li><span class="level">Easy</span> Add a pattern for Egyptian national ID numbers (14 digits) to the redaction, and a test message with one.</li>
+<li><span class="level">Medium</span> Move the poisoned review to the end of the prompt, after the question, and run the two prompts again. Does position change the model’s behaviour?</li>
+<li><span class="level">Medium</span> Write a check that the model’s answer contains no placeholder that was not in the message sent, and no real value that was. Why both directions?</li>
+<li><span class="level">Challenge</span> Write a one-page data policy for the café’s assistant: what is sent to the model, what is kept, for how long, who can read the logs, and how a customer can ask for their data to be deleted.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Every chapter of this book has found the model wrong somewhere, and every chapter checked. The next chapter turns those checks into judgement: when to trust a model, when to verify, and when not to use one at all.</p>
+</div>
+</section>

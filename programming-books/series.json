@@ -1461,7 +1461,8 @@
             },
             {
               "en": "Security, Privacy and Licensing",
-              "ar": "الأمان والخصوصية والتراخيص"
+              "ar": "الأمان والخصوصية والتراخيص",
+              "src": "b7/security"
             },
             {
               "en": "Judgement: When Not to Trust the AI",
