@@ -1,0 +1,164 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b7/debugging/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Debugging with AI</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>give an assistant what it needs to help with a crash: the error, the trace and the code</li>
+<li>tell where a program crashed from where the bug is</li>
+<li>treat a suggested cause as a hypothesis, and a suggested fix as code to run</li>
+<li>check that a reproduction really reproduces the failure</li>
+<li>check a model’s reading of a log by counting</li>
+</ul>
+</div>
+
+<p class="lead">Debugging is the part of programming where an assistant feels most like magic: paste an error, get an explanation and a fix in seconds. Often it is right. When it is wrong, it is wrong in a way that costs more than the time it saved, because a confident wrong diagnosis sends you looking in the wrong place. This chapter debugs three real failures with the book’s model, and checks every answer by running something. Twice, my own checking code had a bug too, and that is part of the lesson.</p>
+
+<aside class="bit" data-mood="think"><p>In this chapter the model fixed a bug while giving the wrong reason for it, named the line where the program crashed instead of the line with the bug, and wrote a “reproduction” that does not fail. All three are normal. All three were caught by running code.</p></aside>
+
+<h2>{{n}}.1 A crash</h2>
+
+<p>A nightly report prints the first order and then stops:</p>
+
+<pre data-code="shop/orders.mjs" data-title="shop/orders.mjs"></pre>
+<pre data-term="report.sh"></pre>
+
+<p>A stack trace is read from the top: the error type and message, then the line where it happened, then the chain of calls that led there. Here: something was <code>undefined</code> when the code read its <code>price</code>, on line 5 of <code>orders.mjs</code>, called from <code>total</code>, called from line 10 of <code>report.mjs</code>. Give the assistant all of it, the output and the files, and ask for an explanation and a location:</p>
+
+<pre data-code="crash.mjs" data-from="^const files" data-title="crash.mjs (part)"></pre>
+<pre data-term="crash.sh"></pre>
+
+<p>The explanation is good: <code>find</code> returned nothing because an item’s name is not on the menu. The location is where it crashed, not where the bug is. Line 5 of <code>orders.mjs</code> is doing its job; the bad data is on line 5 of <code>report.mjs</code>: a “flat white”, which the café does not sell. Whether the fix belongs in the data (correct the order), in <code>priceOf</code> (a clear error: “unknown drink: flat white”), or in both, is a decision about the business, and the model cannot make it. What it can do, quickly, is narrow the search to two places. That is a lot.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Paste the whole error output, not a summary, and the files on the stack trace, not only the one that crashed. The trace names them in order; the files named lower down are often where the cause is.</p></aside>
+
+<h2>{{n}}.2 A wrong answer, without a crash</h2>
+
+<p>Bugs that crash are the easy ones. This function should list the three most expensive drinks, and it lists the wrong three:</p>
+
+<pre data-code="shop/top.mjs" data-to="^}" data-title="shop/top.mjs"></pre>
+<pre data-term="top.sh"></pre>
+
+<p>The mocha, at 1,050, is missing. Ask for the cause and a fix, then run the fix:</p>
+
+<pre data-term="wrong.sh"></pre>
+
+<p>The fix works: the three right drinks, in order. The diagnosis is wrong. Repeated prices and <code>find</code> are not the problem; there are no repeated prices. The real cause is <code>.sort()</code> with no compare function, which sorts numbers as text: “1050” comes before “250” because “1” comes before “2”, so after <code>reverse()</code> the mocha is last. The model’s new code happens to avoid that by sorting with <code>b.price - a.price</code>, for a reason it never states.</p>
+
+<p>Does a wrong reason matter, if the fix works? Yes, for two reasons. The next time someone sorts numbers with <code>.sort()</code>, nobody will know it is a bug, because the lesson was never learned. And the fix has a side effect the explanation does not mention: <code>menu.sort</code> sorts the array in place, so calling <code>topThree(MENU)</code> now reorders the café’s menu for every other part of the program. A fix you do not understand is a change you cannot review.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>“It works now” is the most dangerous sentence in debugging with AI. Before you accept a fix, say in one sentence why the old code was wrong and the new code is right. If you cannot, you have not found the bug yet; you have found a change that hides it, for now.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where did the report crash, and where is the bug?</li><li>Why does <code>[1050, 250, 900].sort()</code> put 1050 first?</li><li>What does the model’s fix do to <code>MENU</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.3 A reproduction that reproduces</h2>
+
+<p>A failure that happens at night, on a server, in the middle of a long job, is hard to study. A minimal reproduction, a few lines that fail the same way, makes it easy: you can run it, change it, and share it. Assistants are good at writing them, and here is the check that matters: run it and compare the error.</p>
+
+<pre data-code="lib/run.mjs" data-from="^export function errorLine" data-to="^}" data-title="lib/run.mjs (part)"></pre>
+<pre data-code="repro.mjs" data-from="// " data-title="repro.mjs (part)"></pre>
+<pre data-term="repro.sh"></pre>
+
+<p>The script looks like the failing code, with <code>priceOf</code> and <code>total</code> and a <code>reduce</code>, and it does not fail: it adds up an empty list, which is zero. A reproduction that does not reproduce is worse than none, because it looks like evidence that the problem is somewhere else.</p>
+
+<p>The first version of this check was wrong too, and it is worth seeing why. It looked for the error only at the start of a line. In the log, each line starts with a time, so it found no error in the log, found no error in the script, and announced “same error: a reproduction”. Two absences compared equal. A check that can pass when nothing happened is not a check; this one now finds the error anywhere on the line, and would say “wanted” something before it says “same”.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>When you fix a bug, keep the reproduction as a test. It already fails the right way; after the fix it passes; and from then on it guards that exact failure. Debugging with an assistant produces many small scripts; the ones that reproduce a real failure are worth keeping.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Pasting the message without the trace and files</td><td>Generic advice about the message</td><td>The whole output, and the files on the trace</td></tr>
+<tr><td>Fixing where it crashed</td><td>A guard that hides bad data</td><td>Follow the trace to where the bad value came from</td></tr>
+<tr><td>Accepting a fix because the output is right</td><td>Side effects and a lesson never learned</td><td>Explain why the old code was wrong; review the new code</td></tr>
+<tr><td>Trusting a reproduction without running it</td><td>A script that does not fail</td><td>Run it, and compare the error with the original</td></tr>
+<tr><td>Checks that compare two absences</td><td>“Same error” when there is no error</td><td>Require the expected thing to be present first</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Give the assistant the full error, the trace, and the files the trace names.</li>
+<li>The crash site and the cause are often different places; the model tends to name the crash site.</li>
+<li>A suggested cause is a hypothesis; a suggested fix is code to run, read and explain before you accept it.</li>
+<li>A reproduction is only a reproduction if it fails the same way, and that is checked by running it.</li>
+<li>Your checking code can be wrong too; make sure it cannot pass when nothing happened.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It crashed on line 5 of <code>orders.mjs</code>, reading <code>price</code> of nothing; the bug is the order on line 5 of <code>report.mjs</code>, for a drink that is not on the menu (or the missing check for that in <code>priceOf</code>). 2. Without a compare function, <code>sort</code> compares the values as text, character by character, and “1” comes before “2” and “9”. 3. It sorts it in place: after one call, the café’s <code>MENU</code> is in price order for the whole program. A copy, <code>[...menu].sort(…)</code>, avoids that.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects make the chapter’s habits into tools: an explainer for any failing command, a log triage checked by counting, and a reproduction loop that only stops when the error matches.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Why did it fail?</h3>
+<p class="project-goal">Pipe any command’s output into a script that explains the failure in four lines.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading standard input, trimming noise from a trace, and short answers.</p>
+<ol class="steps">
+<li>Read all of standard input.</li>
+<li>Drop the lines from Node’s internals, which never contain your bug.</li>
+<li>Ask what failed, the likely cause, and the first thing to check.</li>
+</ol>
+<pre data-code="why.mjs" data-from="^let output" data-title="why.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/why.sh"></pre>
+<p class="hint"><strong>Hint:</strong> without the files, the model can only describe the message, and “ensure the drink variable is defined” is the generic advice that hides the bad data instead of finding it. Add the files named in the trace, as Section {{n}}.1 did, and the answer gets specific.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Log triage, checked by counting</h3>
+<p class="project-goal">Ask for the first error and a count of each error in a week of logs, and count them yourself to check.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured answers with a schema, and checking a summary with a few lines of code.</p>
+<ol class="steps">
+<li>Ask for <code>first</code> and a list of <code>{message, times}</code>, with a schema.</li>
+<li>Count the <code>ERROR</code> lines by message with a <code>Map</code>.</li>
+<li>Print each count the model gave next to the real one.</li>
+</ol>
+<pre data-code="triage.mjs" data-from="^const errors" data-title="triage.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/triage.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the first error and the kinds of errors are right; the most frequent one is undercounted, 4 instead of 5. That is Chapter 1 again: models do not count, they estimate. For anything you will act on, such as “which error to fix first”, let code do the counting and the model do the reading.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A reproduction loop</h3>
+<p class="project-goal">Ask for a reproduction, run it, and send back what it really printed, until the error matches or three attempts are spent.</p>
+<p class="project-skills"><strong>You will practise:</strong> comparing errors, feeding results back into the conversation, and loops with a clear end.</p>
+<ol class="steps">
+<li>Take the wanted error from the log.</li>
+<li>Write and run each attempt; stop when its error is the same.</li>
+<li>Otherwise add the attempt and what it printed to the request, and try again.</li>
+</ol>
+<pre data-code="reproloop.mjs" data-from="^export async function reproduce" data-to="^}" data-title="reproloop.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/reproloop.sh"></pre>
+<p class="hint"><strong>Hint:</strong> “Invalid array length” is a precise message with one common cause, <code>new Array</code> or <code>Array(n)</code> with a negative or fractional length, so one attempt was enough. The <code>TypeError</code> of Section {{n}}.3, which needs a specific missing value, is the harder case: try it with this loop, and look at what the second attempt changes after seeing “(no error)”.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>priceOf</code> so that an unknown drink throws <code>Error("unknown drink: flat white")</code>. Run the report and <code>why.mjs</code> again. How does the clearer error change the model’s answer?</li>
+<li><span class="level">Easy</span> Fix <code>topThree</code> yourself in one character-level change that keeps the original structure. Which line, and why does it work?</li>
+<li><span class="level">Medium</span> Ask the model, with the original <code>top.mjs</code>, “why does <code>.sort()</code> put 1050 after 250?”. Does a more specific question get the right cause?</li>
+<li><span class="level">Medium</span> Run the reproduction loop on the night log of Section {{n}}.3. How many attempts does it take, and what did the feedback change in each?</li>
+<li><span class="level">Challenge</span> Turn the reproduction of the night failure into a node test that fails today and passes once <code>priceOf</code> handles unknown drinks. Where in the project should it live?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Debugging ends with a fix, and a fix is only as good as the tests around it. The next chapter uses the model for the work around a change: writing tests, refactoring safely, and reviewing code, its own included.</p>
+</div>
+</section>
