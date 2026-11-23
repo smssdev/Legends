@@ -257,10 +257,17 @@ import {ask} from "./lib/ask.mjs";
 
 // {w_c_once}
 const rows = fs.readFileSync("data/dates.txt", "utf8").trim().split("\\n");
-const answer = await ask(`{w_codegen}\\n\\n${rows.join("\\n")}`, {maxTokens: 700});
-const code = answer.match(/```(?:\\w+)?\\n([\\s\\S]*?)```/)?.[1] ?? answer;
+const answer = await ask(`{w_codegen}\\n\\n${rows.join("\\n")}`, {maxTokens: 1500});
+// The code block, even when the answer stopped before closing it.
+const code = answer.match(/```(?:\\w+)?\\n([\\s\\S]*?)(?:```|$)/)?.[1] ?? answer;
 fs.writeFileSync("toIso.mjs", `${code}\\nexport {toIso};\\n`);
-const {toIso} = await import("./toIso.mjs");
+let toIso;
+try {
+  ({toIso} = await import("./toIso.mjs"));
+} catch (error) {
+  console.log(`toIso.mjs does not load: ${error.message}`);
+  process.exit(0);
+}
 for (const row of rows) {
   let result;
   try {
@@ -309,7 +316,13 @@ for (const [text, truth] of REVIEWS) {
 console.log(`${agreed} decided automatically, ${queue.length} for a person:`);
 queue.forEach((item) => console.log(`  ${item}`));
 """,
-    "tested.mjs": """const {toIso} = await import("./toIso.mjs");
+    "tested.mjs": """let toIso;
+try {
+  ({toIso} = await import("./toIso.mjs"));
+} catch (error) {
+  console.log(`not safe: toIso.mjs does not load (${error.message})`);
+  process.exit(0);
+}
 
 // {w_c_tested}
 const known = [
