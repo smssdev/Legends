@@ -39,6 +39,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "الفصل 16: الحكمة: متى لا تثق بالذكاء الاصطناعي"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "الفصل 17: المشروع الختامي: مساعد ذكي لفريقك"; } }
+@page ch17:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -168,10 +170,10 @@ if (isMember && day === "Tuesday") {
           <p><strong>الذكاء الاصطناعي للمطورين</strong><br>العمل أسرع وأفضل بأدوات الذكاء الاصطناعي، من الكود إلى مهام العمل اليومية</p>
           <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
           <p>الطبعة الأولى, 2026</p>
-          <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 وnode-llama-cpp 3.22.3، ويتحدث مع النموذج المفتوح Qwen3-4B-Instruct-2507 (برخصة Apache 2.0) يعمل على حاسوب المؤلف، ومعه في الفصل 14 نموذج التضمينات Qwen3-Embedding-0.6B (برخصة Apache 2.0). وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 وnode-llama-cpp 3.22.3، ويتحدث مع النموذج المفتوح Qwen3-4B-Instruct-2507 (برخصة Apache 2.0) يعمل على حاسوب المؤلف، ومعه في الفصلين 14 و17 نموذج التضمينات Qwen3-Embedding-0.6B (برخصة Apache 2.0). وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>Qwen علامة تجارية لـ Alibaba Cloud، وChatGPT وOpenAI علامتان تجاريتان لـ OpenAI، وClaude وAnthropic علامتان تجاريتان لـ Anthropic، وGitHub Copilot علامة تجارية لـ GitHub, Inc.، وGemini علامة تجارية لـ Google LLC، وLlama علامة تجارية لـ Meta Platforms, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: فهم الذكاء الاصطناعي</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل النماذج اللغوية الكبيرة</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">صندوق أدوات الذكاء الاصطناعي للمطورين</span><span class="toc-p">27</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">كتابة أوامر تنجح</span><span class="toc-p">47</span></li><li class="toc-part">الجزء 2: الذكاء الاصطناعي في كودك</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">البرمجة الثنائية مع الذكاء الاصطناعي</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">قراءة الكود الغريب وشرحه</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تتبّع الأخطاء مع الذكاء الاصطناعي</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">الاختبارات وإعادة الهيكلة ومراجعة الكود</span><span class="toc-p">112</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التوثيق ورسائل الحفظ</span><span class="toc-p">127</span></li><li class="toc-part">الجزء 3: الذكاء الاصطناعي في عملك</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من الفكرة إلى المواصفات والمهام</span><span class="toc-p">141</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاجتماعات والرسائل والتقارير</span><span class="toc-p">155</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">أتمتة العمل المتكرر</span><span class="toc-p">169</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">وكلاء الذكاء الاصطناعي للمهام متعددة الخطوات</span><span class="toc-p">181</span></li><li class="toc-part">الجزء 4: البناء بالذكاء الاصطناعي</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">استدعاء نماذج الذكاء الاصطناعي من تطبيقاتك</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الاسترجاع: ذكاء اصطناعي يعرف بياناتك</span><span class="toc-p">207</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">الأمان والخصوصية والتراخيص</span><span class="toc-p">218</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الحكمة: متى لا تثق بالذكاء الاصطناعي</span><span class="toc-p">228</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: مساعد ذكي لفريقك</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">239</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: فهم الذكاء الاصطناعي</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل النماذج اللغوية الكبيرة</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">صندوق أدوات الذكاء الاصطناعي للمطورين</span><span class="toc-p">27</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">كتابة أوامر تنجح</span><span class="toc-p">47</span></li><li class="toc-part">الجزء 2: الذكاء الاصطناعي في كودك</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">البرمجة الثنائية مع الذكاء الاصطناعي</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">قراءة الكود الغريب وشرحه</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">تتبّع الأخطاء مع الذكاء الاصطناعي</span><span class="toc-p">98</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">الاختبارات وإعادة الهيكلة ومراجعة الكود</span><span class="toc-p">112</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التوثيق ورسائل الحفظ</span><span class="toc-p">127</span></li><li class="toc-part">الجزء 3: الذكاء الاصطناعي في عملك</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من الفكرة إلى المواصفات والمهام</span><span class="toc-p">141</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الاجتماعات والرسائل والتقارير</span><span class="toc-p">155</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">أتمتة العمل المتكرر</span><span class="toc-p">169</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">وكلاء الذكاء الاصطناعي للمهام متعددة الخطوات</span><span class="toc-p">181</span></li><li class="toc-part">الجزء 4: البناء بالذكاء الاصطناعي</li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">استدعاء نماذج الذكاء الاصطناعي من تطبيقاتك</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الاسترجاع: ذكاء اصطناعي يعرف بياناتك</span><span class="toc-p">207</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">الأمان والخصوصية والتراخيص</span><span class="toc-p">218</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الحكمة: متى لا تثق بالذكاء الاصطناعي</span><span class="toc-p">228</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: مساعد ذكي لفريقك</span><span class="toc-p">239</span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">257</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b7/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -5865,7 +5867,429 @@ model ما عاصمة مصر؟ -&gt; القاهرة</pre></div>
 
 <div class="next">
 <p class="next-title">في الفصل 17</p>
-<p>الفصل الأخير يجمع الكتاب كله: مساعد لفريق تطوير، مبني من أجزاء كل فصل (مزوّد، واسترجاع من مستندات الفريق نفسه، وأدوات بصلاحيات، وفحوص على كل جواب) ومقيس بالطريقة التي قاس بها هذا الكتاب كل شيء.</p>
+<p>الفصل الأخير يجمع الكتاب كله: مساعد لفريق تطوير، مبني من أجزاء كل فصل (استرجاع من مستندات الفريق نفسه، وقاعدة باستشهادات، وفحوص على كل جواب، وسجل تدقيق بلا بيانات شخصية) ومقيس بالطريقة التي قاس بها هذا الكتاب كل شيء.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b7/capstone/ar">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">الفصل 17</p><h1>المشروع الختامي: مساعد ذكي لفريقك</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تبني مساعداً يجيب عن أسئلة الفريق من مستندات الفريق نفسه</li>
+<li>تكتب تقييمه قبل أمره، وتُبقي الاثنين منفصلين</li>
+<li>تفحص كل جواب بالكود: الاستشهادات، والأرقام، والأسرار</li>
+<li>تسجّل كل سؤال دون أن تحفظ من سأل ولا بياناته الشخصية</li>
+<li>تغيّر المساعد بالقياس، وتفحص القياس نفسه أيضاً</li>
+</ul>
+</div>
+
+<p class="lead">يجيب فريق التطوير عن الأسئلة نفسها كل أسبوع. كيف أشغّل الاختبارات؟ هل أستطيع النشر اليوم؟ من المناوب؟ والأجوبة مكتوبة في مكان ما، ويسأل الناس مع ذلك، لأن السؤال أسرع من البحث. وهذا الفصل يبني المساعد الذي يجيبها، من أجزاء الكتاب: الاسترجاع من الفصل 14، وقاعدة باستشهادات من الفصلين 3 و14، وفحوص على المخرجات من الفصلين 14 و15، وسجل تدقيق من الفصل 15، وعادة كل فصل: أن تقيس قبل أن تصدّق.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل جواب علّمه التقييم في هذا الفصل خاطئاً كان صحيحاً. المساعد كان سليماً؛ والاختبار لم يكن. وما كشف ذلك قراءة الإخفاقات، لا النتيجة، وهذا آخر دروس الكتاب.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>الخطة</span></h2>
+
+<p>قبل أي كود، الأشياء الثلاثة من عادة المحترفين في الفصل 16:</p>
+
+<table>
+<thead><tr><th>السؤال</th><th>مساعد الفريق</th></tr></thead>
+<tbody>
+<tr><td>كم يكلّف الجواب الخاطئ؟</td><td>خطأ في عمل أحدهم: نشر يوم جمعة، أو مفتاح في حفظ. خطأ حقيقي، لكن يلتقطه عادة زميل أو اختبار.</td></tr>
+<tr><td>ما الذي يفحصه آلياً؟</td><td>كل جواب يستشهد بمستند أُعطي له؛ وكل رقم فيه موجود في ذلك المستند؛ ولا يخرج سر؛ وخارج المستندات يقول ذلك بجملة ثابتة.</td></tr>
+<tr><td>من ينظر فيما لا تراه الفحوص؟</td><td>من سأل، فهو يرى مصدر كل جواب، وصاحب المستندات، الذي يقرأ في سجل التدقيق حالات الرفض والفحوص التي فشلت.</td></tr>
+</tbody>
+</table>
+
+<p>وما لا يجوز له: يقرأ مستندات الفريق ولا شيء غيرها، ولا يملك أدوات تغيّر أي شيء، ولا يرى سراً أبداً، لأن المستندات لا تحوي أسراراً (فهي في الخزنة). وبقاعدة الفصل 16 يقع هذا في الصف الأوسط: استخدمه، وتحقق قبل التنفيذ، والتحقق مبني فيه.</p>
+
+<p>والأجزاء، ومن أين جاء كل منها:</p>
+
+<table>
+<thead><tr><th>الجزء</th><th>الملف</th><th>من</th></tr></thead>
+<tbody>
+<tr><td>بحث بالمعنى في المستندات</td><td><code>lib/embed.mjs</code></td><td>الفصل 14</td></tr>
+<tr><td>قاعدة ثابتة: جملة واحدة بمصدرها، أو رفض ثابت</td><td><code>lib/assistant.mjs</code></td><td>الفصلان 3 و14</td></tr>
+<tr><td>فحوص على كل جواب، وسطر تدقيق</td><td><code>lib/checks.mjs</code></td><td>الفصلان 14 و15</td></tr>
+<tr><td>أسئلة أجوبتها معروفة، بدرجات</td><td><code>eval.mjs</code></td><td>الفصلان 7 و16</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">17.2</span> <span>المستندات، والاختبار أولاً</span></h2>
+
+<p>دليل الفريق ستة مستندات قصيرة، لكل منها معرّف: <code>conventions</code> (وحدات ES، والاختبارات بـ <code>node --test</code>)، و<code>reviews</code> (موافقة واحدة، ولا تدمج طلبك أبداً)، و<code>deploy</code> (الثلاثاء والخميس في 11:00، ولا نشر يوم الجمعة أبداً)، و<code>oncall</code> (عمر هذا الأسبوع)، و<code>secrets</code> (المفاتيح في الخزنة)، و<code>commits</code> (Conventional Commits). وللفريق الحقيقي عشرات؛ وستة تكفي لترى كل جزء يعمل.</p>
+
+<p>وقبل الأمر، التقييم. كل حالة سؤال، والمستند الذي يجيبه، وكلمة يجب أن يحويها الجواب الصحيح. والحالة الأخيرة بلا مستند: جوابها الصحيح هو الرفض.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">data.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">const</span> EVAL = [
+ [
+  <span class="s">&quot;كيف أشغّل الاختبارات؟&quot;</span>,
+  <span class="s">&quot;conventions&quot;</span>,
+  <span class="s">&quot;node --test&quot;</span>
+ ],
+ [
+  <span class="s">&quot;هل أستطيع النشر يوم الجمعة؟&quot;</span>,
+  <span class="s">&quot;deploy&quot;</span>,
+  <span class="s">&quot;لا&quot;</span>
+ ],
+ [
+  <span class="s">&quot;في أي الأيام ننشر؟&quot;</span>,
+  <span class="s">&quot;deploy&quot;</span>,
+  <span class="s">&quot;الثلاثاء&quot;</span>
+ ],
+ [
+  <span class="s">&quot;هل يجوز أن أدمج طلب الدمج الخاص بي؟&quot;</span>,
+  <span class="s">&quot;reviews&quot;</span>,
+  <span class="s">&quot;لا&quot;</span>
+ ],
+ [
+  <span class="s">&quot;من المناوب هذا الأسبوع؟&quot;</span>,
+  <span class="s">&quot;oncall&quot;</span>,
+  <span class="s">&quot;عمر&quot;</span>
+ ],
+ [
+  <span class="s">&quot;أين أحفظ مفتاح API؟&quot;</span>,
+  <span class="s">&quot;secrets&quot;</span>,
+  <span class="s">&quot;الخزنة&quot;</span>
+ ],
+ [
+  <span class="s">&quot;ما صيغة رسائل الحفظ؟&quot;</span>,
+  <span class="s">&quot;commits&quot;</span>,
+  <span class="s">&quot;conventional&quot;</span>
+ ],
+ [
+  <span class="s">&quot;كم يوم إجازة لدينا؟&quot;</span>,
+  <span class="k">null</span>,
+  <span class="k">null</span>
+ ]
+];</pre></div>
+
+<p>كتابة الحالات أولاً تفعل ما فعلته كتابة الاختبارات أولاً في الفصل 7: تجعلك تقرر معنى «صحيح» قبل أن ترى جواباً قد يقنعك. وفصل المستند المتوقع عن الكلمة المتوقعة يجعل التقييم يقول <em>أين</em> وقع الإخفاق: البحث لم يجد المستند، أو النموذج أساء قراءته.</p>
+
+<h2><span class="sec">17.3</span> <span>البحث</span></h2>
+
+<p>الفهرس يحوّل كل مستند إلى تضمين مرة واحدة، بنموذج التضمينات من الفصل 14، ويعيد أقرب <var>k</var> مستندات لكل سؤال:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/embed.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> index(docs) {
+  <span class="k">const</span> embed = <span class="k">await</span> embedder();
+  <span class="k">const</span> vectors = <span class="k">await</span> Promise.all(docs.map(([, text]) =&gt; embed(text)));
+  <span class="k">return</span> <span class="k">async</span> (question, k = <span class="n">2</span>) =&gt; {
+    <span class="k">const</span> q = <span class="k">await</span> embed(question);
+    <span class="k">return</span> vectors
+      .map((v, i) =&gt; ({id: docs[i][<span class="n">0</span>], text: docs[i][<span class="n">1</span>], score: cosine(q, v)}))
+      .sort((a, b) =&gt; b.score - a.score)
+      .slice(<span class="n">0</span>, k);
+  };
+}</pre></div>
+
+<p>مستندان لكل سؤال، لا واحد: فسؤال النشر يوم الجمعة قريب من <code>deploy</code>، لكن سؤالاً قد يقع بين مستندين، والثاني لا يكلّف إلا سطراً في الأمر. ولا الستة كلها: فقد بيّن الفصل 14 أن النموذج الذي يُعطى كل شيء يتشتت أسهل، ودليل حقيقي لن يتسع.</p>
+
+<h2><span class="sec">17.4</span> <span>الجواب وفحوصه</span></h2>
+
+<p>يبحث المساعد، ويضع المصادر في الأمر بمعرّفاتها، ويسأل بقاعدة ثابتة، ثم يفحص الجواب قبل أن يراه أحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/assistant.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> assistant(docs, {rule = RULE, k = <span class="n">2</span>} = {}) {
+  <span class="k">const</span> search = <span class="k">await</span> index(docs);
+  <span class="k">return</span> <span class="k">async</span> <span class="k">function</span> answer(question, user = <span class="s">&quot;anonymous&quot;</span>) {
+    <span class="k">const</span> sources = <span class="k">await</span> search(question, k);
+    <span class="k">const</span> given = sources.map((s) =&gt; <span class="s">`[${s.id}] ${s.text}`</span>).join(<span class="s">&quot;\n&quot;</span>);
+    <span class="k">const</span> prompt = <span class="s">`${given}\n\n${question}`</span>;
+    <span class="k">const</span> session = <span class="k">new</span> LlamaChatSession({
+      contextSequence: context.getSequence(),
+      autoDisposeSequence: <span class="k">true</span>,
+      systemPrompt: rule,
+    });
+    <span class="k">const</span> reply = <span class="k">await</span> session.prompt(prompt, {temperature: <span class="n">0</span>, maxTokens: <span class="n">150</span>});
+    <span class="k">const</span> text = reply.trim();
+    session.dispose();
+    <span class="k">const</span> refused = text.includes(<span class="s">&quot;ليس في مستنداتنا&quot;</span>);
+    <span class="k">const</span> {cited, problems} = citations(text, sources);
+    problems.push(...secrets(text));
+    <span class="k">if</span> (!refused &amp;&amp; cited.length === <span class="n">0</span>) {
+      problems.push(<span class="s">&quot;no citation&quot;</span>);
+    }
+    <span class="k">const</span> ok = problems.length === <span class="n">0</span>;
+    <span class="k">const</span> result = {text, sources, refused, cited, problems, ok};
+    audit(user, question, result);
+    <span class="k">return</span> result;
+  };
+}</pre></div>
+
+<p>والفحوص كود عادي، لا يستطيع النموذج مجادلته:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/checks.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> citations(answer, sources) {
+  <span class="k">const</span> cited = [...answer.matchAll(/\[([\w-]+)\]/g)].map((m) =&gt; m[<span class="n">1</span>]);
+  <span class="k">const</span> problems = cited
+    .filter((id) =&gt; !sources.some((s) =&gt; s.id === id))
+    .map((id) =&gt; <span class="s">`[${id}] was not given`</span>);
+  <span class="k">for</span> (<span class="k">const</span> id <span class="k">of</span> cited) {
+    <span class="k">const</span> source = sources.find((s) =&gt; s.id === id);
+    <span class="k">const</span> numbers = answer.match(/\d+/g) ?? [];
+    <span class="k">for</span> (<span class="k">const</span> n <span class="k">of</span> numbers.filter((n) =&gt; source &amp;&amp; !source.text.includes(n))) {
+      problems.push(<span class="s">`${n} is not in [${id}]`</span>);
+    }
+  }
+  <span class="k">return</span> {cited, problems};
+}</pre></div>
+
+<p>كل استشهاد يجب أن يسمّي مستنداً أُعطي فعلاً؛ وكل رقم في جواب مستشهد يجب أن يظهر في ذلك المستند، وهو الفحص الذي التقط الأرقام المخترعة في الفصل 14؛ ولا يجوز أن يظهر مفتاح API أو مفتاح خاص في جواب، فحص الفصل 15؛ والجواب الذي ليس رفضاً يجب أن يستشهد بشيء. والنتيجة تحفظ المشكلات كبيانات، فيقرر المستدعي ما يفعل: يعرض الجواب بتحذير، أو يحجبه.</p>
+
+<p>شغّله على ثلاثة أسئلة، كزميل اسم مستخدمه عنوان بريد:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node demo.mjs &amp;&amp; tail -n 3 audit.log</span>
+<span class="c">&gt; </span><span class="k">كيف أشغّل الاختبارات؟</span>
+  باستخدام الأمر: node --test. [conventions]
+  sources: conventions, reviews; checks: ok
+<span class="c">&gt; </span><span class="k">هل أستطيع النشر يوم الجمعة؟</span>
+  لا، لا يمكنك النشر يوم الجمعة لأننا لا ننشر يوم الجمعة أبداً. [deploy]
+  sources: deploy, oncall; checks: ok
+<span class="c">&gt; </span><span class="k">كم يوم إجازة لدينا؟</span>
+  ليس في مستنداتنا.
+  sources: oncall, deploy; checks: ok
+{&quot;user&quot;:&quot;f0dbf78531&quot;,&quot;question&quot;:&quot;كيف أشغّل الاختبارات؟&quot;,&quot;sources&quot;:[&quot;conventions&quot;,&quot;reviews&quot;],&quot;ok&quot;:true}
+{&quot;user&quot;:&quot;f0dbf78531&quot;,&quot;question&quot;:&quot;هل أستطيع النشر يوم الجمعة؟&quot;,&quot;sources&quot;:[&quot;deploy&quot;,&quot;oncall&quot;],&quot;ok&quot;:true}
+{&quot;user&quot;:&quot;f0dbf78531&quot;,&quot;question&quot;:&quot;كم يوم إجازة لدينا؟&quot;,&quot;sources&quot;:[&quot;oncall&quot;,&quot;deploy&quot;],&quot;ok&quot;:true}</pre></div>
+
+<p>كل جواب جملة واحدة، بمصدرها بين قوسين، ونجحت الفحوص. والسؤال الثالث ليس في المستندات، وقال المساعد ذلك بالكلمات المتفق عليها بالضبط، وهذا ما يجعل الكود يتعرّف على الرفض. وانظر إلى سطور التدقيق أيضاً: المستخدم بصمة (hash)، لا عنوان البريد، فيستطيع السجل عدّ أسئلة الشخص الواحد دون أن يعرف من هو، والأسئلة محفوظة، لأن حالات الرفض فيها قائمة بالمستندات التي لم يكتبها الفريق بعد.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>وجد البحث <code>oncall</code> و<code>deploy</code> لسؤال الإجازة: فالبحث يعيد دائماً أقرب <var>k</var>، حتى حين لا يكون شيء قريباً. وإن قال الأمر «أجب من المستندات» ولا شيء غيره، فقد يبني النموذج جواباً واثقاً من المستندات الخطأ. والرفض الثابت، وفحص أن الجواب يستشهد بشيء، هما ما يجعل «لم يُعثر على شيء» آمناً.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يسجّل التقييم المستند المتوقع منفصلاً عن الكلمة المتوقعة؟</li><li>لماذا يجب أن يكون الرفض جملة واحدة ثابتة؟</li><li>ماذا يحفظ سجل التدقيق، وماذا لا يحفظ؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">17.5</span> <span>قياسه</span></h2>
+
+<p>يمرّر التقييم كل حالة على المساعد، ويعطي ثلاث درجات منفصلة: هل وجد البحث المستند الصحيح، وهل الجواب صحيح، وهل فشل أي فحص:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">eval.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> evaluate(answer, cases = EVAL) {
+  <span class="k">const</span> score = {found: <span class="n">0</span>, right: <span class="n">0</span>, refusals: <span class="n">0</span>, problems: <span class="n">0</span>};
+  <span class="k">const</span> lines = [];
+  <span class="k">for</span> (<span class="k">const</span> [question, doc, expected] <span class="k">of</span> cases) {
+    <span class="k">const</span> result = <span class="k">await</span> answer(question);
+    <span class="k">const</span> found = doc === <span class="k">null</span> || result.sources.some((s) =&gt; s.id === doc);
+    <span class="k">const</span> words = [expected].flat();
+    <span class="k">const</span> right = expected === <span class="k">null</span> ? result.refused : words.some((w) =&gt; result.text.toLowerCase().includes(w));
+    score.found += found ? <span class="n">1</span> : <span class="n">0</span>;
+    score.right += right ? <span class="n">1</span> : <span class="n">0</span>;
+    score.refusals += expected === <span class="k">null</span> &amp;&amp; result.refused ? <span class="n">1</span> : <span class="n">0</span>;
+    score.problems += result.problems.length ? <span class="n">1</span> : <span class="n">0</span>;
+    lines.push(<span class="s">`${right ? &quot;right&quot; : &quot;WRONG&quot;} ${found ? &quot;found&quot; : &quot;MISSED&quot;} ${result.problems.join(&quot;; &quot;).padEnd(14)} ${question}`</span>);
+  }
+  <span class="k">return</span> {score, lines};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node eval.mjs</span>
+right found                كيف أشغّل الاختبارات؟
+right found                هل أستطيع النشر يوم الجمعة؟
+right found                في أي الأيام ننشر؟
+right found                هل يجوز أن أدمج طلب الدمج الخاص بي؟
+right found                من المناوب هذا الأسبوع؟
+WRONG found                أين أحفظ مفتاح API؟
+WRONG found                ما صيغة رسائل الحفظ؟
+right found                كم يوم إجازة لدينا؟
+--- found 8/8, right 6/8, answers with a problem 0</pre></div>
+
+<p>ثمانية من ثمانية في الإيجاد، وستة من ثمانية في الصحة، بلا فحص فاشل. وفي النسخة الإنجليزية ثمانية من ثمانية في الاثنين. وقبل أن تصدّق أياً من الرقمين، اقرأ الجوابين اللذين عُلّما WRONG. سُئل المساعد أين يُحفظ مفتاح API، فقال «أحفظ مفتاح API في خزنة الفريق» واستشهد بـ <code>secrets</code>: جواب صحيح، لكن الحالة انتظرت كلمة «الخزنة» بأداة التعريف، و«خزنة الفريق» إضافة بلا «ال»، فلا تحويها. وسُئل عن رسائل الحفظ، فأعطى الصيغة، <code>type(scope):</code> و72 حرفاً على الأكثر، واستشهد بـ <code>commits</code>: صحيح مرة أخرى، دون أن يسمّي Conventional Commits. المساعد أصاب مرتين؛ والتقييم أخطأ مرتين.</p>
+
+<p>وثمانية من ثمانية، حين تأتي، تساوي بالضبط ما تساويه ثمانية أسئلة: تقول إن الأجزاء موصولة صحيحاً، لا إن المساعد مصيب في كل ما سيسأله فريقك. وكل سؤال يخطئه في الاستخدام الحقيقي يصبح حالة جديدة، فتنمو المجموعة لتصير أفضل وصف عند الفريق لما يجب أن يفعله المساعد.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>شغّل التقييم مع كل تغيير في المستندات أو الأمر أو النموذج أو عدد المصادر، كما تشغّل الاختبارات مع كل تغيير في الكود. فالتغيير الذي يحسّن جواباً ويكسر جوابين يبدو تقدماً حتى تعدّ.</p></aside>
+
+<h2><span class="sec">17.6</span> <span>تغييره بالقياس</span></h2>
+
+<p>تغييران سيُجريهما الفريق في الأسبوع الأول. الأول مستند جديد. رُفض سؤال الإجازة، وهذا صحيح؛ فيقرأ صاحب المستندات حالات الرفض في سجل التدقيق، ويكتب الصفحة الناقصة، ويسأل من جديد (المشروع 17.2):</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node grow.mjs</span>
+6 documents: ليس في مستنداتنا.  (no citation)
+7 documents: 21 يوم إجازة [vacation]  (vacation)</pre></div>
+
+<p>الكود نفسه، والأمر نفسه: صار الرفض جواباً مستشهداً، لأن المعرفة تعيش في المستندات لا في النموذج. وهذا السبب الأول لبناء مساعد بهذه الطريقة بدل تدريب نموذج على الدليل: يغيّر الفريق صفحة، فيتغير الجواب التالي معها.</p>
+
+<p>والتغيير الثاني أمر يُفترض أنه أفضل. توصية شائعة أن تجعل النموذج يقتبس الجملة التي يعتمد عليها قبل أن يجيب، فيرتبط الجواب بالمصدر. شغّل الأمرين على التقييم نفسه (المشروع 17.3):</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node ab.mjs</span>
+rule         right 6/8, found 8/8, problems 0
+  WRONG found                أين أحفظ مفتاح API؟
+  WRONG found                ما صيغة رسائل الحفظ؟
+quote first  right 7/8, found 8/8, problems 0
+  WRONG found                أين أحفظ مفتاح API؟</pre></div>
+
+<p>في هذه النسخة كان الأمر الموصى به أفضل، سبعة مقابل ستة؛ وفي النسخة الإنجليزية كان أسوأ، سبعة مقابل ثمانية. نسختان، وحكمان متعاكسان، وكان الفريق سيتبنّى الأمر أو يرفضه على أي منهما. والآن اقرأ السطور تحت الدرجات. مع الاقتباس ذكر النموذج Conventional Commits باسمها، فاختفى إخفاق كاذب واحد وبقيت الخزنة. وفي الإنجليزية، سُئل هل يجوز أن يدمج المرء طلبه، فاقتبس جملة المستند الإنجليزية <span dir="ltr">“Never merge your own pull request.”</span>، واستشهد بـ <code>reviews</code>: جواب صحيح، عُلّم WRONG لأن الحالة انتظرت كلمة «no». فكل فرق بين الأمرين، في النسختين، جاء من المصحّح.</p>
+
+<h2><span class="sec">17.7</span> <span>فحص التقييم</span></h2>
+
+<p>التقييم كود، والكود فيه أخطاء. وكان لهذا التقييم كلمة واحدة لكل حالة، والجواب الصحيح يُصاغ بطرق كثيرة. والإصلاح هو ما يفعله إنسان بعد قراءة الإخفاقات: لكل مستند، الكلمات الأخرى التي قد يستخدمها الجواب الصحيح.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">data.mjs (جزء)</div><pre class="code"><span class="c line-bidi">// كلمات أخرى قد يستخدمها الجواب الصحيح، لكل مستند.</span>
+<span class="k">export</span> <span class="k">const</span> MORE_WORDS = {<span class="s">&quot;reviews&quot;</span>: [<span class="s">&quot;أبداً&quot;</span>], <span class="s">&quot;secrets&quot;</span>: [<span class="s">&quot;خزنة&quot;</span>], <span class="s">&quot;commits&quot;</span>: [<span class="s">&quot;type(scope)&quot;</span>]};</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">fair.mjs (جزء)</div><pre class="code"><span class="k">const</span> fair = EVAL.map(([q, doc, word]) =&gt; [q, doc, word === <span class="k">null</span> ? <span class="k">null</span> : [word, ...(MORE_WORDS[doc] ?? [])]]);
+<span class="k">for</span> (<span class="k">const</span> [name, rule] <span class="k">of</span> [[<span class="s">&quot;rule&quot;</span>, RULE], [<span class="s">&quot;quote first&quot;</span>, QUOTE_FIRST]]) {
+  <span class="k">const</span> {score} = <span class="k">await</span> evaluate(<span class="k">await</span> assistant(DOCS, {rule}), fair);
+  console.log(<span class="s">`${name.padEnd(12)} right ${score.right}/8, found ${score.found}/8, problems ${score.problems}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node fair.mjs</span>
+rule         right 8/8, found 8/8, problems 0
+quote first  right 8/8, found 8/8, problems 0</pre></div>
+
+<p>الأمران، ثمانية من ثمانية، في النسختين. والخلاصة الأمينة للتجربة أن الأمر الموصى به، على هذا النموذج وهذه المستندات، لا يغيّر شيئاً، فيبقى الأبسط. ولاحظ ما <em>لم</em> يفعله التوسيع: لم يحوّل جواباً خاطئاً إلى صحيح. فكل كلمة أُضيفت جاءت من قراءة جواب حكم إنسان بصحته. أما توسيع الكلمات حتى تكتمل الدرجة، دون قراءة، فهو الطريق الذي يكفّ به التقييم عن قياس أي شيء.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>الإخفاق في التقييم ادعاء، لا حقيقة، مثل جواب النموذج. اقرأ كل إخفاق قبل أن تتصرف على درجة، خصوصاً حين تكون الدرجة سبب التغيير. ومطابقة الكلمات رخيصة وهشّة، والعربية تزيدها هشاشة بأداة التعريف والضمائر المتصلة؛ وسؤال نموذج ليحكم مرن وله أخطاؤه (الفصل 16). وأياً كان ما يصحّح حالاتك، افحصه على أجوبة حكمت عليها بنفسك.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>عامل الأمر والمستندات والنموذج كالكود: تتغير في حفظات تُراجَع، ويقيسها التقييم قبل الدمج، والدرجات في طلب الدمج. «أجاب أسئلتي الثلاثة أفضل» عرض، لا قياس.</p></aside>
+
+<h2><span class="sec">17.8</span> <span>أن تأخذه إلى فريق</span></h2>
+
+<p>ما بناه الفصل يعمل على جهاز واحد بنموذج محلي. وقبل أن يعتمد عليه فريق:</p>
+
+<ul>
+<li><strong>المزوّد.</strong> لاستخدام نموذج مستضاف، غلّف الاستدعاء بواجهة المزوّد من الفصل 13، مع إعادة المحاولة ومهلة؛ وأخفِ البيانات الشخصية أولاً وافحص الأسرار (الفصل 15)؛ واقرأ شروط المزوّد عن بياناتك.</li>
+<li><strong>المستندات.</strong> اجعل للدليل صاحباً، واحفظه في المستودع بجانب الكود، وأعد بناء الفهرس حين يتغير. فالمساعد لا يكون أحدث من مستنداته.</li>
+<li><strong>الرخص.</strong> النموذجان هنا برخصة Apache 2.0. افحص رخصة أي نموذج تنتقل إليه، وحافظ على القائمة (الفصل 15).</li>
+<li><strong>الملاحظات.</strong> زر «جواب خاطئ» يضيف السؤال إلى قائمة يقرؤها أحد. وتلك الأسئلة حالات تقييمك التالية.</li>
+<li><strong>الحدود.</strong> لا أدوات تنفّذ أفعالاً، حتى يكون لكل فعل فحص خارج النموذج وإنسان يوافق على ما لا يمكن التراجع عنه (الفصل 12).</li>
+</ul>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>كتابة الأمر قبل التقييم</td><td>«الصحيح» تقرره الأجوبة التي صادف أن رأيتها</td><td>الحالات أولاً: السؤال، والمستند، والكلمة المتوقعة</td></tr>
+<tr><td>قياس الجواب النهائي وحده</td><td>إخفاق لا تعرف مكانه</td><td>قِس البحث والجواب كلاً على حدة</td></tr>
+<tr><td>رفض بكلمات النموذج نفسه</td><td>لا يميّز الكود الرفض من الجواب</td><td>جملة واحدة ثابتة، تُفحص بالكود</td></tr>
+<tr><td>الثقة بالاستشهادات دون فحصها</td><td>مصادر وأرقام مخترعة، بين أقواس أنيقة</td><td>افحص المعرّفات والأرقام مقابل المصادر</td></tr>
+<tr><td>تسجيل من سأل وما كتب</td><td>سجل مليء بالبيانات الشخصية</td><td>بصمة للمستخدم؛ وإخفاء البريد والهاتف</td></tr>
+<tr><td>تبنّي أمر لأنه يبدو أفضل</td><td>تغيير يُشحن بالسمعة</td><td>غيّره فقط حين يقول التقييم ذلك</td></tr>
+<tr><td>الثقة بالدرجة دون قراءة الإخفاقات</td><td>قرارات مبنية على أخطاء المصحّح</td><td>اقرأ كل WRONG؛ وأصلح التقييم حين يخطئ</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>مساعد الفريق بحث في مستندات الفريق، وقاعدة ثابتة باستشهادات ورفض ثابت، وفحوص بالكود على كل جواب، وسجل تدقيق بلا بيانات شخصية.</li>
+<li>التقييم يأتي أولاً، ويقيس البحث والجواب كلاً على حدة، ويُشغَّل مع كل تغيير.</li>
+<li>المعرفة تعيش في المستندات: صفحة جديدة حوّلت رفضاً إلى جواب مستشهد دون لمس الكود.</li>
+<li>كل جواب علّمه التقييم خاطئاً كان صحيحاً: فالتقييم كود فيه أخطاء، وإخفاقاته تُقرأ قبل أن تُصدَّق درجته.</li>
+<li>وبعد إصلاح التقييم، لم يغيّر الأمر الموصى به شيئاً؛ فالأوامر تتغير بالقياس، لا بالسمعة.</li>
+<li>كل جزء جاء من فصل سابق؛ وما جعله جديراً بالثقة هو العمل نفسه حول النموذج الذي فعله كل فصل.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ليُعرف مكان الإخفاق: إن لم يُعثر على المستند، فالإصلاح في البحث (المستندات، والتضمينات، و<var>k</var>)؛ وإن عُثر عليه وظل الجواب خاطئاً، فالإصلاح في الأمر أو النموذج. 2. ليتعرّف عليه الكود: فالتقييم يصحّحه، والفحوص تُعفيه من قاعدة الاستشهاد، وسجل التدقيق يستطيع سرد الأسئلة التي لا تجيبها المستندات. 3. بصمة المستخدم، والسؤال بعد إخفاء البريد وأرقام الهواتف، ومعرّفات المصادر، وهل نجحت الفحوص. ولا يحفظ من سأل، ولا بيانات الاتصال به، ولا الجواب.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تستخدم المشاريع المساعد كما يستخدمه فريق: من الطرفية، وبتحسين مستنداته، وباختبار تغيير في أمره.</p>
+
+<div class="project">
+<p class="project-label">المشروع 17.1 · سهل</p>
+<h3>المساعد من سطر الأوامر</h3>
+<p class="project-goal">اطرح سؤالاً من الطرفية واحصل على الجواب بمصادره، أو على تحذير حين يفشل فحص.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> وضع مكوّن مُقيَّم خلف واجهة صغيرة.</p>
+<ol class="steps">
+<li>اجمع معاملات سطر الأوامر في سؤال.</li>
+<li>اسأل المساعد، ومستخدم النظام هو المستخدم.</li>
+<li>اطبع الجواب، ثم مصادره أو الفحوص التي فشلت.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">ask.mjs (جزء)</div><pre class="code"><span class="k">const</span> question = process.argv.slice(<span class="n">2</span>).join(<span class="s">&quot; &quot;</span>);
+<span class="k">const</span> {text, cited, ok, problems} = <span class="k">await</span> (<span class="k">await</span> assistant(DOCS))(question, process.env.USER);
+console.log(text);
+console.log(ok ? <span class="s">`(sources: ${cited.join(&quot;, &quot;) || &quot;none&quot;})`</span> : <span class="s">`(not checked: ${problems.join(&quot;; &quot;)})`</span>);</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node ask.mjs &quot;كم يوم إجازة لدينا؟&quot;</span>
+ليس في مستنداتنا.
+(sources: none)</pre></div>
+<p class="hint"><strong>تلميح:</strong> «sources: none» للرفض صحيح: لم يُستشهد بشيء، لأن لا شيء أجاب. والزميل الذي يراها يعرف أن يسأل إنساناً، وقد سجّل سجل التدقيق صفحة يجب كتابتها.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 17.2 · متوسط</p>
+<h3>مستند جديد</h3>
+<p class="project-goal">اطرح سؤال الإجازة مع المستندات الستة، ثم مرة أخرى مع مستند سابع يجيبه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تحسين المساعد بمستنداته لا بكوده.</p>
+<ol class="steps">
+<li>اكتب المستند الناقص، بمعرّف.</li>
+<li>ابنِ المساعد بالمستند ودونه.</li>
+<li>اطرح السؤال نفسه على الاثنين، وقارن.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">grow.mjs (جزء)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;كم يوم إجازة لدينا؟&quot;</span>;
+<span class="k">for</span> (<span class="k">const</span> docs <span class="k">of</span> [DOCS, [...DOCS, [<span class="s">&quot;vacation&quot;</span>, <span class="s">&quot;لكل مطور 21 يوم إجازة مدفوعة في السنة، تُحجز في تقويم الفريق.&quot;</span>]]]) {
+  <span class="k">const</span> {text, cited} = <span class="k">await</span> (<span class="k">await</span> assistant(docs))(question);
+  console.log(<span class="s">`${docs.length} documents: ${text}  (${cited.join(&quot;, &quot;) || &quot;no citation&quot;})`</span>);
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node grow.mjs</span>
+6 documents: ليس في مستنداتنا.  (no citation)
+7 documents: 21 يوم إجازة [vacation]  (vacation)</pre></div>
+<p class="hint"><strong>تلميح:</strong> مرّ الرقم 21 في الجواب من فحص الأرقام لأنه في مستند الإجازة. غيّر المستند ليقول 25 فيتبعه الجواب؛ ولو جاء جواب فيه 25 والمستند يقول 21، لالتقطه الفحص. وأضف حالة الإجازة إلى التقييم، لتبقى الصفحة مجابة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 17.3 · تحدٍّ</p>
+<h3>أمران، وتقييم واحد</h3>
+<p class="project-goal">شغّل التقييم بالقاعدة الحالية وبقاعدة «اقتبس أولاً»، وقرر بالدرجات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختبار A/B لأمر على مجموعة حالات ثابتة.</p>
+<ol class="steps">
+<li>اكتب القاعدة الثانية ثابتاً بجانب الأولى.</li>
+<li>شغّل التقييم نفسه بكل منهما.</li>
+<li>اطبع الدرجات، والحالات التي لم تكن صحيحة وموجودة، لتقرأها.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">ab.mjs (جزء)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [name, rule] <span class="k">of</span> [[<span class="s">&quot;rule&quot;</span>, RULE], [<span class="s">&quot;quote first&quot;</span>, QUOTE_FIRST]]) {
+  <span class="k">const</span> {score, lines} = <span class="k">await</span> evaluate(<span class="k">await</span> assistant(DOCS, {rule}));
+  console.log(<span class="s">`${name.padEnd(12)} right ${score.right}/8, found ${score.found}/8, problems ${score.problems}`</span>);
+  lines.filter((line) =&gt; !line.startsWith(<span class="s">&quot;right found&quot;</span>)).forEach((line) =&gt; console.log(<span class="s">`  ${line}`</span>));
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node ab.mjs</span>
+rule         right 6/8, found 8/8, problems 0
+  WRONG found                أين أحفظ مفتاح API؟
+  WRONG found                ما صيغة رسائل الحفظ؟
+quote first  right 7/8, found 8/8, problems 0
+  WRONG found                أين أحفظ مفتاح API؟</pre></div>
+<p class="hint"><strong>تلميح:</strong> الحالات المطبوعة هي ما يجب قراءته، وقد قرأها القسم 17.7: كانت أجوبتها صحيحة. وقبل أن تحكم بأن أمراً أفضل من آخر، اقرأ الحالات التي يختلفان فيها، وأضف حالات حتى لا تكون حالة واحدة هي الفرق كله. فثمانية عيّنة صغيرة.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى التقييم ثلاثة أسئلة يطرحها فريقك كل أسبوع، مع المستندات التي تجيبها. ما الدرجة الآن؟</li>
+<li><span class="level">سهل</span> اجعل <var>k</var> واحداً وشغّل التقييم. أي الحالات تتغير، وفي أي عمود، «found» أم «right»؟</li>
+<li><span class="level medium">متوسط</span> أضف مستنداً فيه مفتاح API مزيف، مثل <code>sk-test-0000000000000000</code>، واسأل عنه. أي فحص يوقفه، وماذا يجب أن يفعل الفريق بالمستند؟</li>
+<li><span class="level medium">متوسط</span> اكتب تقريراً من <code>audit.log</code>: عدد الأسئلة، وحالات الرفض، والفحوص الفاشلة، مع الأسئلة التي رُفضت. من في الفريق يجب أن يقرأه، وكم مرة؟</li>
+<li><span class="level hard">تحدٍّ</span> ضع المساعد خلف نقطة HTTP صغيرة بواجهة المزوّد من الفصل 13، ليستخدم نموذجاً محلياً أو مستضافاً، وأخفِ البيانات الشخصية قبل الاستدعاء المستضاف (الفصل 15). وشغّل التقييم على المزوّدين بالخادم المزيف.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">إلى أين بعد هذا</p>
+<p>استخدمت نموذجاً لتكتب الكود وتقرأه وتختبره وتصلحه وتوثّقه، ولتخطط وتكتب التقارير، وبنيت عليه تطبيقات يستطيع فريق أن يثق بها. وستتغير الأدوات أسرع من أي كتاب: نماذج أكبر، وواجهات جديدة. أما العادات فلا. أعطِ النموذج ما يحتاجه، وافحص ما يعطيك، وقِس قبل أن تصدّق، وقرر بما يكلّفه الجواب الخاطئ. والكتاب التالي في السلسلة، <em>احتراف Claude</em>، يطبّقها على عائلة واحدة من الأدوات بعمق.</p>
 </div>
 </section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b7/answers/ar">
@@ -6088,6 +6512,16 @@ for (const t of ["12/01/2026","2026-1-3","3 Jan 2026","01.02.2026","January 15, 
 <li>علّم حين <code dir="ltr">agreement &lt; 4</code> أو <code dir="ltr">!verdict.correct</code>. وفي أسئلة الكتاب العشرة يعلّم هذا عملية الضرب الخاطئة (بالإشارتين)، وبعض الأجوبة الصحيحة أيضاً (408 و1,048,576 المشكوك فيهما)، ولا يعلّم عدّ الحروف الخاطئ، الذي اتفقت عليه ثلاث عيّنات وأكّده الفحص الذاتي. فبعض الإنذارات الكاذبة ثمن التقاط الخطأ الحقيقي، وبعض الأخطاء لا تلتقطها أي إشارة من النموذج: ولهذا يذهب العدّ إلى الكود.</li>
 <li>اسأل «أيهما أكبر، 9.11 أم 9.9؟»، و«رتّب 9.9 و9.11 من الأصغر إلى الأكبر»، و«هل 9.11 أكبر من 9.9؟»، وصيغتين أخريين. فالنموذج الذي يجيب صيغة صحيحاً وأخرى خاطئاً لا يعرف المقارنة؛ يعرف الصيغة. والثبات عبر الصيغ إشارة أقوى من الاتفاق على صيغة واحدة.</li>
 <li>مثلاً، لمساعد الفريق: الجواب الخاطئ عن قاعدة في الفريق يكلّف خطأً في عمل أحدهم؛ ويُفحص آلياً بالاستشهادات مقابل المستندات؛ وينظر إنسان في الأجوبة المعلَّمة بلا استشهاد. وكتابة هذا قبل قراءة الفصل التالي تتيح لك مقارنة تصميمك بالتصميم المبني هناك، ورؤية ما فات كلاً منكما.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 17</h2>
+<ol class="exercises">
+<li>كل حالة جديدة سؤال، ومعرّف المستند الذي يجيبه، وكلمة يجب أن يحويها الجواب الصحيح؛ واكتب المستندات أولاً إن لم تكن موجودة. وإن نزلت الدرجة، فاقرأ السطور: «MISSED» تعني أن البحث لم يأتِ بالمستند، غالباً لأن السؤال يستخدم كلمات لا يستخدمها المستند؛ و«WRONG» مع «found» تعني أن النموذج كان معه المستند وأساء قراءته، أو أن الكلمة المتوقعة ضيقة كما في القسم 17.7. فاقرأ الجواب قبل أن تحكم.</li>
+<li>بمصدر واحد، تتغير أولاً الأسئلة التي تقع بين مستندين، وتتغير في عمود «found»: فأقرب مستند ليس دائماً الذي يجيب. وإن بقي المستند الصحيح موجوداً، تبقى الأجوبة صحيحة عادة، ويقصر الأمر. والتقييم يخبرك هل يستحق التوفير؛ فالمصدر الثاني يكلّف سطراً في الأمر.</li>
+<li>فحص <code>secrets</code> في <code>lib/checks.mjs</code>، إن كرّر النموذج المفتاح: فالجواب فيه نص بشكل مفتاح، فتحمل النتيجة المشكلة «a secret» وتصير <code>ok</code> خاطئة، مهما كتب النموذج حوله. وعلى الفريق أن يحذف المفتاح من المستند، ويغيّره، لأنه كان في ملف مشترك، ويضيف فحصاً للأسرار حيث تُحفظ المستندات، كما في الفصل 15. فالفحص آخر خط دفاع، لا أوله.</li>
+<li>اقرأ الملف سطراً سطراً بـ <code>JSON.parse</code>، وعدّ السطور والسطور التي فيها <code>ok: false</code>. والسجل كما بُني لا يسجّل الرفض، فأضف حقل <code>refused</code> إلى السطر أولاً؛ ثم عدّها، واسرد أسئلتها. ويقرؤه صاحب المستندات أسبوعياً: حالات الرفض صفحات ناقصة، والفحوص الفاشلة أجوبة يجب النظر فيها، والسؤال الذي تطرحه بصمات كثيرة صفحة يجب تسهيل الوصول إليها.</li>
+<li>أعطِ <code>assistant</code> خياراً <code>provider</code> واستدعِ <code dir="ltr">provider.complete({system: rule, prompt})</code> حيث يسأل الجلسة الآن؛ وللمزوّد المستضاف مرّر الأمر على <code>redact</code> قبل الإرسال و<code>restore</code> على الجواب، وشغّل فحص الأسرار على الأمر أيضاً. ثم شغّل الخادم المزيف من الفصل 13، والتقييم على كل مزوّد، وقارن الدرجات. ومع الخادم المزيف تختبر درجات المستضاف توصيلك، لا نموذجاً: والمقصود أن التقييم نفسه يعمل دون تغيير على أي مزوّد تختاره.</li>
 </ol>
 
 </section>
