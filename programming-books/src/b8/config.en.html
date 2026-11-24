@@ -1,0 +1,166 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/config/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>CLAUDE.md, Skills and Hooks</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write a <code>CLAUDE.md</code> that gives every session what it needs to know about your project</li>
+<li>put permissions in settings files, and understand why a new folder must be trusted first</li>
+<li>enforce a rule with a hook, instead of hoping the model follows it</li>
+<li>package a repeated task as a skill that loads only when needed</li>
+<li>test a hook on its own, without any model</li>
+</ul>
+</div>
+
+<p class="lead">In Chapter 7 every run carried its rules on the command line: which commands were allowed, how to run the tests, what not to touch. A team cannot work like that. Claude Code reads its configuration from files in the repository, so the rules are written once, reviewed like code, and shared by everyone. Four files do most of the work: <code>CLAUDE.md</code> for knowledge, <code>settings.json</code> for permissions, hooks for rules that must hold, and skills for tasks you do again and again.</p>
+
+<aside class="bit" data-mood="wow"><p>Everything Claude Code did in this chapter is real: it sent <code>CLAUDE.md</code> to the model, ignored the project’s permissions until the folder was trusted, ran the hook that blocked a push, and loaded a skill by name. The practice server played the model, and its reply about <code>CLAUDE.md</code> was set to appear only if <code>CLAUDE.md</code>’s words really arrived.</p></aside>
+
+<h2>{{n}}.1 CLAUDE.md</h2>
+
+<p>A file named <code>CLAUDE.md</code> at the root of a project is read at the start of every session and sent with every request. It is the briefing a new colleague would need: how to run things, the conventions, and what never to do. The chapter’s project configures all four pieces:</p>
+
+<pre data-term="tree.sh"></pre>
+<pre data-code="CLAUDE.md" data-title="CLAUDE.md"></pre>
+
+<p>Three lines, each one something Claude could not guess. Ask a question the file answers:</p>
+
+<pre data-term="money.sh"></pre>
+
+<p>The practice server’s answer follows the file, and here that proves something: the reply was scripted to match only when the words of <code>CLAUDE.md</code> appear in the request, so Claude Code really sent them. (The warning after the answer is the subject of the next section.)</p>
+
+<p>Keep <code>CLAUDE.md</code> short and specific. Commands, conventions, the layout of the code, and the mistakes people make here; not a tutorial, not the whole architecture, not facts that change weekly. Every line is sent with every request, so every line costs tokens and attention. <code>/init</code> in an interactive session drafts one from your codebase; edit it down. You can also keep a personal <code>CLAUDE.md</code> in <code>~/.claude/</code> for your own habits across projects, and add files in subfolders for the parts of a large repository that need their own notes.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>When Claude Code makes the same mistake twice, the fix is usually a line in <code>CLAUDE.md</code>, not a longer prompt. Write it as a rule with its reason (“money is in piastres, as integers: floats round wrongly”), commit it, and the whole team’s sessions improve at once.</p></aside>
+
+<h2>{{n}}.2 Settings, and trust</h2>
+
+<p>Permissions live in settings files, in three places: <code>.claude/settings.json</code> in the project, committed, for the team; <code>.claude/settings.local.json</code>, not committed, for your own additions; and <code>~/.claude/settings.json</code> for all your projects. The project allows exactly one command:</p>
+
+<pre data-code=".claude/settings.json" data-title=".claude/settings.json"></pre>
+
+<p>But on the first run, the rule did nothing:</p>
+
+<pre data-term="untrusted.sh"></pre>
+
+<p>Claude Code ignored the project’s allow rule, and said why: the folder has not been trusted. This is deliberate. A repository you clone from the internet could otherwise allow itself any command, and an agent opening it would obey. Trust is given once, by a person, interactively, the first time Claude Code opens a folder; until then, a project’s settings cannot widen what Claude Code may do. Project {{n}}.3 trusts the folder and shows the same rule working.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Read <code>.claude/</code> before you trust a repository you did not write, as you would read a build script before running it: its settings can allow commands, and its hooks run programs on your machine.</p></aside>
+
+<h2>{{n}}.3 Hooks: rules that hold</h2>
+
+<p><code>CLAUDE.md</code> says “never push”. That is advice: the model reads it and usually follows it. Usually is not enough for some rules. A <dfn>hook</dfn> is a command Claude Code runs itself at a moment in the loop (before a tool runs, after it runs, when a prompt is submitted, when the session stops), whatever the model thinks. The project’s hook runs before every shell command:</p>
+
+<pre data-code=".claude/hooks/no-push.sh" data-from="^input" data-title=".claude/hooks/no-push.sh (part)"></pre>
+<pre data-term="hook.sh"></pre>
+
+<p>The scripted model tried to push, despite <code>CLAUDE.md</code>, exactly the kind of slip a hook exists for. Claude Code ran the hook, the hook saw <code>git push</code> and exited with code 2, and the command never ran; the hook’s message went back to the model, which reported the block. A model can ignore advice; it cannot ignore a hook.</p>
+
+<p>Hooks are ordinary programs, so they can do far more than block: format a file after every edit, run the tests when the session ends, add today’s on-call name to every prompt, write an audit log. Keep them fast, since they run on every matching event, and remember that they run with your permissions.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>How does this chapter know that <code>CLAUDE.md</code> really reached the model?</li><li>Why did Claude Code ignore the project’s allow rule on the first run?</li><li>What is the difference between “never push” in <code>CLAUDE.md</code> and the hook?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Skills</h2>
+
+<p>A <dfn>skill</dfn> is a folder with a <code>SKILL.md</code>: a name, a one-line description, and instructions, plus any scripts or templates the task needs. Claude Code sees only the descriptions until a task calls for a skill; then it loads the instructions. Unlike <code>CLAUDE.md</code>, which is sent with every request, a skill costs nothing until it is used, so a team can keep dozens.</p>
+
+<pre data-code=".claude/skills/release-notes/SKILL.md" data-title=".claude/skills/release-notes/SKILL.md"></pre>
+
+<p>Project {{n}}.2 runs it. The description matters more than it looks: it is what Claude reads to decide whether the skill fits the task, so write it as the situation it is for (“write release notes for the café app”), not as a title (“release helper”).</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Review changes to <code>CLAUDE.md</code>, settings, hooks and skills like code, in pull requests, with someone who understands what they allow. They decide what an agent knows, may do and must not do, for everyone on the team.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A long <code>CLAUDE.md</code></td><td>Tokens and attention spent on every request</td><td>Only what Claude cannot guess; move the rest to skills</td></tr>
+<tr><td>Rules that must hold, written as advice</td><td>Usually followed, sometimes not</td><td>Enforce them with hooks or permissions</td></tr>
+<tr><td>Trusting a repository without reading <code>.claude/</code></td><td>Its settings and hooks act on your machine</td><td>Read it first, like any build script</td></tr>
+<tr><td>Personal settings committed for the team</td><td>Everyone gets one person’s permissions</td><td>Personal rules in <code>settings.local.json</code></td></tr>
+<tr><td>Slow hooks on frequent events</td><td>Every tool call waits</td><td>Keep hooks fast; match only the tools they need</td></tr>
+<tr><td>Vague skill descriptions</td><td>The skill is not used when it should be</td><td>Describe the situation the skill is for</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><code>CLAUDE.md</code> is sent with every request: keep it short, specific and committed.</li>
+<li>Settings hold permissions at three levels, and a project’s settings apply only after a person trusts the folder.</li>
+<li>Hooks are commands Claude Code runs itself; exit code 2 blocks a tool call, whatever the model intended.</li>
+<li>Skills load their instructions only when a task needs them, so they cost nothing until used.</li>
+<li>All of it is code: review it, test it, and know what it allows.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The practice server’s reply was set to match only if the words of <code>CLAUDE.md</code> were in the request; it matched, so Claude Code sent them. 2. Because the folder had not been trusted: until a person trusts it, a project’s settings cannot give Claude Code permissions, or any repository could allow itself anything. 3. The line in <code>CLAUDE.md</code> is advice the model may not follow, and here did not; the hook is a program Claude Code runs before the command, and it blocks the push whatever the model does.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects work on the configuration itself: a hook tested without a model, a skill used by name, and the trust step that turns project settings on.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Test a hook without Claude</h3>
+<p class="project-goal">Feed the hook the JSON Claude Code would send, and check its exit code.</p>
+<p class="project-skills"><strong>You will practise:</strong> hooks as ordinary programs with ordinary tests.</p>
+<ol class="steps">
+<li>Write the JSON of a tool call that should be blocked, and one that should not.</li>
+<li>Pipe each to the hook.</li>
+<li>Check the exit codes: 2 blocks, 0 allows.</li>
+</ol>
+<pre data-term="projects/hook-test.sh"></pre>
+<p class="hint"><strong>Hint:</strong> a hook that blocks the wrong command, or fails to block the right one, fails silently in a session. Test it like this in CI, with a list of commands that must be blocked and commands that must pass. This hook would also block <code>echo "git push"</code>: decide whether that is acceptable.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A skill for release notes</h3>
+<p class="project-goal">Write a skill, and watch Claude Code load it for a task.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>SKILL.md</code> format, and when skills load.</p>
+<ol class="steps">
+<li>Create <code>.claude/skills/release-notes/SKILL.md</code> with a name, a description and instructions.</li>
+<li>Ask for release notes.</li>
+<li>Find the moment the skill’s instructions are loaded.</li>
+</ol>
+<pre data-term="skill.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the <code>loads</code> line is the skill arriving in the conversation: only then do its instructions cost tokens. A real skill for release notes would also say where to find the changes (the commits since the last tag) and include a script to list them, so the model formats facts instead of recalling them.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Trust, then allow</h3>
+<p class="project-goal">Trust the folder, and run the same task that was refused, with no flags at all.</p>
+<p class="project-skills"><strong>You will practise:</strong> how trust and project permissions work together.</p>
+<ol class="steps">
+<li>Trust the folder: interactively, or as Claude Code’s message describes.</li>
+<li>Run the test task again, without <code>--allowedTools</code>.</li>
+<li>Compare the denials with the untrusted run.</li>
+</ol>
+<pre data-code="trust.mjs" data-from="^const file" data-title="trust.mjs (part)"></pre>
+<pre data-term="trust.sh"></pre>
+<pre data-term="trusted.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the same rule, the same command: <code>denied: 1</code> before, <code>denied: 0</code> after. The book’s script trusts the folder with a file edit because it cannot answer a dialog; on your machine, open <code>claude</code> in the folder once and accept the dialog, after reading <code>.claude/</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a <code>CLAUDE.md</code> for one of your projects in under fifteen lines. Which line would have saved you the most time last month?</li>
+<li><span class="level">Easy</span> Add a <code>deny</code> rule to the project’s settings that refuses <code>Bash(git push:*)</code>. What does it add that the hook does not, and what does the hook add?</li>
+<li><span class="level">Medium</span> Write a <code>PostToolUse</code> hook that runs <code>node --test</code> after every edit to a file in <code>src/</code>, and test it with sample JSON as in Project {{n}}.1.</li>
+<li><span class="level">Medium</span> Make the push hook precise: block <code>git push</code> as a command, but not the words inside a string. What does the hook need to read from its input?</li>
+<li><span class="level">Challenge</span> Write a skill for your team’s most repeated task, with a script it runs to gather the facts. Then write the description three ways, and decide which one Claude is most likely to match to a real request.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>With the project configured, the next chapter follows a full piece of work: from an issue, through a branch, commits and tests, to a pull request a reviewer can trust.</p>
+</div>
+</section>

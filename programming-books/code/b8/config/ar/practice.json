@@ -1,0 +1,91 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "بالقروش",
+        "text": "كيف أحفظ سعر اللاتيه؟"
+      },
+      "text": "عدداً صحيحاً من القروش: لاتيه بـ 45 جنيهاً هو 4500. ونسّقه 45.00 فقط حين تعرضه، كما يطلب CLAUDE.md."
+    },
+    {
+      "when": {
+        "first": "شغّل الاختبارات.",
+        "result_text": "requires approval"
+      },
+      "text": "لم أستطع تشغيل الاختبارات: `node --test` يحتاج موافقة هنا."
+    },
+    {
+      "when": {
+        "first": "شغّل الاختبارات.",
+        "tool_result": "Bash"
+      },
+      "text": "الاختبارات الثلاثة تنجح."
+    },
+    {
+      "when": {
+        "first": "شغّل الاختبارات."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأشغّل الاختبارات."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "الإصلاح محفوظ. ادفعه.",
+        "tool_result": "Bash"
+      },
+      "text": "أوقف hook المشروع الدفع: الدفع يقوم به إنسان، بعد المراجعة. والحفظ جاهز على الفرع."
+    },
+    {
+      "when": {
+        "first": "الإصلاح محفوظ. ادفعه."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأدفع إلى main."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "git push origin main",
+            "description": "Push the fix"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "اكتب ملاحظات الإصدار.",
+        "tool_result": "Skill"
+      },
+      "text": "أُضيف\n- الإيصالات تُظهر الضريبة.\nتغيّر\n- الأسعار تُعرض بخانتين عشريتين.\nأُصلح\n- الفواتير بالقروش تُجمع بشكل صحيح."
+    },
+    {
+      "when": {
+        "first": "اكتب ملاحظات الإصدار."
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "Skill",
+          "input": {
+            "skill": "release-notes"
+          }
+        }
+      ]
+    }
+  ]
+}

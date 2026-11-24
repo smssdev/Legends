@@ -1588,7 +1588,8 @@
             },
             {
               "en": "CLAUDE.md, Skills and Hooks",
-              "ar": "CLAUDE.md والمهارات والخطافات"
+              "ar": "CLAUDE.md والمهارات والخطافات",
+              "src": "b8/config"
             },
             {
               "en": "From Issue to Pull Request",
