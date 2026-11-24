@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Claude Code for Teams and CI"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "Chapter 11: The Claude API"; } }
+@page ch11:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -59,7 +61,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p">93</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p">103</span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">113</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p">93</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p">103</span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p">113</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">123</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2857,6 +2859,267 @@ on: [&#x27;pull_request&#x27;] | permissions: {&#x27;contents&#x27;: &#x27;read&
 <p>Part III builds products of your own on Claude. It starts where Claude Code ends: the API itself, with conversations, streaming, and the errors and limits every production program meets.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b8/api/en">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">Chapter 11</p><h1>The Claude API</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>stream an answer, so users see it as it is written</li>
+<li>let the SDK retry what can be retried, and know what it does</li>
+<li>set timeouts, and choose them for the request rather than the program</li>
+<li>handle an answer cut off at <code>max_tokens</code>, without losing what came</li>
+<li>keep a feature working when a model is overloaded</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 1 sent one message and read one answer. A product sends thousands, from users who are waiting, through networks that fail, to a service that sometimes says “not now”. This chapter covers what every production program needs around the call itself: streaming, retries, timeouts, answers that do not fit, and what to do when the model you wanted is busy.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The errors, retries, timeouts and streaming events in this chapter are real behaviours of the SDK against the practice server, which can be made slow, busy or overloaded on purpose. The words of the answers are the practice server’s.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>Streaming</span></h2>
+
+<p>A long answer can take many seconds to write. Without streaming, the user stares at nothing until it is complete; with it, the first words appear almost at once. The SDK’s <code>stream</code> gives you the text as it arrives, and the complete message at the end:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">stream.mjs (part)</div><pre class="code"><span class="k">const</span> stream = client.messages.stream({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;Describe our rose latte for the menu board in two sentences.&quot;</span>}],
+});
+<span class="k">let</span> pieces = <span class="n">0</span>;
+stream.on(<span class="s">&quot;text&quot;</span>, (piece) =&gt; {
+  process.stdout.write(pieces++ % <span class="n">4</span> === <span class="n">0</span> ? <span class="s">`|${piece}`</span> : piece);
+});
+<span class="k">const</span> message = <span class="k">await</span> stream.finalMessage();
+console.log(<span class="s">`\n--- ${pieces} pieces; stop: ${message.stop_reason}; ${message.usage.output_tokens} tokens out`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node stream.mjs</span>
+|A latte made with |our Ethiopian espresso, steamed |milk and a touch |of rose syrup. Floral, |gentle and only here |for the spring.
+--- 23 pieces; stop: end_turn; 39 tokens out</pre></div>
+
+<p>Each bar marks where every fourth piece began: the answer arrived in 23 pieces, and the program printed each one immediately. <code>finalMessage()</code> then gives the same message a non-streaming call would have returned, with its stop reason and usage, so the rest of the program does not care how it arrived. Stream whenever a person is waiting, and whenever <code>max_tokens</code> is large: long requests that do not stream can hit HTTP timeouts before the answer is finished.</p>
+
+<h2><span class="sec">11.2</span> <span>Retries</span></h2>
+
+<p>Some failures are worth trying again: 429 (too many requests), 529 (overloaded), other 5xx errors, and broken connections. Others are not: a 400 will fail the same way every time. The SDK knows the difference, and retries the first kind by itself, twice by default, waiting longer each time and respecting the <code>retry-after</code> header when the API sends one. A wrapper around <code>fetch</code> makes it visible:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">retry.mjs (part)</div><pre class="code"><span class="k">const</span> statuses = [];
+<span class="k">const</span> counting = <span class="k">async</span> (url, init) =&gt; {
+  <span class="k">const</span> response = <span class="k">await</span> fetch(url, init);
+  statuses.push(response.status);
+  <span class="k">return</span> response;
+};</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node retry.mjs</span>
+&quot;Nile Frost&quot;: cold, clear, and from here.
+  maxRetries 2, attempts: 429 → 429 → 200
+RateLimitError: 429
+  maxRetries 0, attempts: 429</pre></div>
+
+<p>With the default, the request failed twice with 429, waited as the server asked, and succeeded on the third attempt; the program saw only the answer. With <code>maxRetries: 0</code>, the first 429 became a <code>RateLimitError</code>. Leave the retries on for interactive requests, set them higher for background jobs that can wait, and never write a second retry loop around the SDK’s own: the waits multiply.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Retries make failures slower, not rarer. If your requests are rate-limited regularly, the fix is fewer or smaller requests (caching, batching, a smaller model for simple tasks, Chapter 15) or a higher limit, not more retries.</p></aside>
+
+<h2><span class="sec">11.3</span> <span>Timeouts</span></h2>
+
+<p>The SDK waits up to ten minutes by default, which suits long answers and not much else. Set the timeout for the request in front of you:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">timeout.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> timeout <span class="k">of</span> [<span class="n">1000</span>, <span class="n">10000</span>]) {
+  <span class="k">const</span> start = Date.now();
+  <span class="k">try</span> {
+    <span class="k">const</span> r = <span class="k">await</span> client.messages.create(request, {timeout, maxRetries: <span class="n">0</span>});
+    console.log(<span class="s">`timeout ${timeout} ms: ${r.content[0].text}`</span>);
+  } <span class="k">catch</span> (error) {
+    console.log(<span class="s">`timeout ${timeout} ms: ${error.constructor.name}`</span>);
+  }
+  console.log(<span class="s">`  after ${Math.round((Date.now() - start) / 1000)} s`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node timeout.mjs</span>
+timeout 1000 ms: APIConnectionTimeoutError
+  after 1 s
+timeout 10000 ms: Customers like the coffee and the staff; they complain about the queue at lunch and the noise in the evening.
+  after 3 s</pre></div>
+
+<p>The practice server took three seconds on purpose. With a one-second timeout, the SDK gave up and raised <code>APIConnectionTimeoutError</code>; with ten seconds, the answer arrived. In the JavaScript SDK the timeout is in milliseconds; other SDKs use their own units (seconds in Python, for example). Timeouts are retried like other connection errors, so the longest wait is the timeout times the number of attempts: set both with that sum in mind.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which errors does the SDK retry, and which does it not?</li><li>The timeout is 10 seconds and <code>maxRetries</code> is 2. How long can a request take before it fails?</li><li>What does <code>finalMessage()</code> give a streaming program?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>Answers that do not fit</span></h2>
+
+<p>When an answer reaches <code>max_tokens</code>, it stops, mid-sentence if need be, and <code>stop_reason</code> says <code>max_tokens</code>. A program must not show it as complete. To continue, keep the cut answer in the history and ask for the rest in a new user message:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">truncate.mjs (part)</div><pre class="code"><span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;Write the welcome text for our new website.&quot;</span>}];
+<span class="k">const</span> first = <span class="k">await</span> client.messages.create({model: <span class="s">&quot;claude-opus-5-5&quot;</span>, max_tokens: <span class="n">40</span>, messages});
+console.log(<span class="s">`[${first.stop_reason}] ${text(first)}`</span>);
+
+messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: first.content});
+messages.push({role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;Continue exactly where you stopped.&quot;</span>});
+<span class="k">const</span> rest = <span class="k">await</span> client.messages.create({model: <span class="s">&quot;claude-opus-5-5&quot;</span>, max_tokens: <span class="n">1000</span>, messages});
+console.log(<span class="s">`[${rest.stop_reason}] ${text(rest)}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node truncate.mjs</span>
+[max_tokens] Welcome to Bit Cafe, where every cup starts with beans we roast ourselves in small batches. We opened in Zamalek in 2019 with one machine and a long table, and
+[end_turn] today we serve three neighbourhoods, but the table is still the heart of every branch: a place to work, to meet, or to read slowly. Come for the coffee; stay for the company.</pre></div>
+
+<p>The first answer stopped at “and”; the second began with “today”, because the model could read exactly where its first answer ended. The simpler fix is often the better one: a larger <code>max_tokens</code>, or a request for a shorter answer.</p>
+
+<p>An older trick no longer works here: writing the start of Claude’s answer yourself, as a last assistant message, for Claude to continue. Current models refuse it:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node prefill.mjs</span>
+400 BadRequestError
+  messages: this model does not support assistant message prefill; the last message must be a user message</pre></div>
+
+<p>To control the form of an answer, say it in the instructions, or ask for structured output (Chapter 12); to continue an answer, use a user message as above.</p>
+
+<h2><span class="sec">11.5</span> <span>When a model is busy</span></h2>
+
+<p>An overloaded model returns 529, and after the SDK’s retries the error reaches your code. For a feature that must answer, fall back to another model that can do the job, and say so in your logs (Project 11.3). Every response also carries a <dfn>request id</dfn>, on success and on error: log it with your own request, and when something goes wrong, it is the first thing Anthropic’s support asks for (Project 11.2).</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>For every call to the API, log the model, the request id, the stop reason, the tokens and the time taken. When a user reports a strange answer, those five fields are the difference between finding the cause in a minute and guessing for a day.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Waiting for long answers without streaming</td><td>Users stare at nothing; HTTP timeouts</td><td>Stream; use <code>finalMessage()</code> for the rest</td></tr>
+<tr><td>A retry loop around the SDK’s retries</td><td>Waits multiply; limits are hit harder</td><td>Configure <code>maxRetries</code>; do not wrap it</td></tr>
+<tr><td>Retrying 400 errors</td><td>The same failure, slower</td><td>Fix the request; retry only 429, 5xx, connections</td></tr>
+<tr><td>One timeout for everything</td><td>Short tasks hang; long ones fail</td><td>A timeout per request, sized to the task</td></tr>
+<tr><td>Showing a <code>max_tokens</code> answer as complete</td><td>Sentences that stop in the middle</td><td>Check <code>stop_reason</code>; continue or ask for less</td></tr>
+<tr><td>Prefilling the assistant’s answer</td><td>400 on current models</td><td>Instructions, structured output, or a user message</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Stream when a person is waiting or the answer is long; <code>finalMessage()</code> gives the complete message.</li>
+<li>The SDK retries 429, 5xx and connection errors by itself, respecting <code>retry-after</code>; configure it, do not wrap it.</li>
+<li>Set a timeout per request; remember it is retried too.</li>
+<li>A <code>max_tokens</code> stop is not an answer: continue with the cut text in the history, or ask for less; prefill is refused by current models.</li>
+<li>Fall back to another model on overload, and log the request id of every call.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It retries 429, 408, 409, 5xx (529 included) and connection errors, including timeouts; it does not retry other 4xx errors, such as 400, 401 and 404, which would fail again the same way. 2. Up to about 30 seconds of waiting for responses (three attempts of 10 seconds), plus the pauses between attempts. 3. The complete message, as a non-streaming call would have returned it, with its content, stop reason and usage.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects are three small helpers that make API calls dependable: an answer that is never cut off, request ids for support, and a fallback model.</p>
+
+<div class="project">
+<p class="project-label">Project 11.1 · Easy</p>
+<h3>An answer that is never cut off</h3>
+<p class="project-goal">Ask until the answer is complete, at most three times, and join the parts.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>stop_reason</code> as control flow, with a limit.</p>
+<ol class="steps">
+<li>Ask, and keep the text.</li>
+<li>While the stop reason is <code>max_tokens</code>, add the answer to the history and ask to continue.</li>
+<li>Stop after three parts, and say whether the answer is complete.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">complete.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> complete(question, maxTokens) {
+  <span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: question}];
+  <span class="k">let</span> answer = <span class="s">&quot;&quot;</span>;
+  <span class="k">for</span> (<span class="k">let</span> part = <span class="n">1</span>; part &lt;= <span class="n">3</span>; part++) {
+    <span class="k">const</span> r = <span class="k">await</span> client.messages.create({model: <span class="s">&quot;claude-opus-5-5&quot;</span>, max_tokens: maxTokens, messages});
+    answer += (answer ? <span class="s">&quot; &quot;</span> : <span class="s">&quot;&quot;</span>) + text(r);
+    <span class="k">if</span> (r.stop_reason !== <span class="s">&quot;max_tokens&quot;</span>) <span class="k">return</span> {answer, parts: part};
+    messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: r.content}, {role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;Continue exactly where you stopped.&quot;</span>});
+  }
+  <span class="k">return</span> {answer, parts: <span class="n">3</span>, cut: <span class="k">true</span>};
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node complete.mjs</span>
+(3 parts) Welcome to Bit Cafe, where every cup starts with beans we roast ourselves in small batches. We opened in Zamalek in 2019 with one machine and a long table, and today we serve three neighbourhoods, but the table is still the heart of every branch: a place to work, to meet, or to read slowly. Come for the coffee; stay for the company.</pre></div>
+<p class="hint"><strong>Hint:</strong> three parts at 40 tokens each, joined into one text with no seam. The limit matters: an answer that needs more than three continuations is a sign the request asked for too much, and the caller should know (<code>cut: true</code>).</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 11.2 · Medium</p>
+<h3>Request ids</h3>
+<p class="project-goal">Print the request id of a successful response and of an error.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>withResponse()</code>, and the ids every log should keep.</p>
+<ol class="steps">
+<li>Call with <code>.withResponse()</code> to get the HTTP response with the data.</li>
+<li>Read the <code>request-id</code> header.</li>
+<li>Read <code>requestID</code> from an error.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node ids.mjs</span>
+ok     msg_practice_0021  request-id: req_practice_0022
+429    request-id: req_practice_0023</pre></div>
+<p class="hint"><strong>Hint:</strong> the message id and the request id are different things: the first names the answer, the second names the HTTP request that produced it, or failed to. Keep both in your logs, next to your own id for the user’s request.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 11.3 · Challenge</p>
+<h3>A fallback model</h3>
+<p class="project-goal">Try the preferred model; if it is overloaded after retries, ask the next one.</p>
+<p class="project-skills"><strong>You will practise:</strong> catching the right error class, and degrading gracefully.</p>
+<ol class="steps">
+<li>List the models in order of preference.</li>
+<li>Catch only server errors, and only move on if another model is left.</li>
+<li>Report which model answered.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">fallback.mjs (part)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> ask(content) {
+  <span class="k">for</span> (<span class="k">const</span> model <span class="k">of</span> MODELS) {
+    <span class="k">try</span> {
+      <span class="k">const</span> r = <span class="k">await</span> client.messages.create({model, max_tokens: <span class="n">200</span>, messages: [{role: <span class="s">&quot;user&quot;</span>, content}]});
+      <span class="k">return</span> {model, text: r.content[<span class="n">0</span>].text};
+    } <span class="k">catch</span> (error) {
+      <span class="k">if</span> (!(error <span class="k">instanceof</span> Anthropic.InternalServerError) || model === MODELS.at(-<span class="n">1</span>)) <span class="k">throw</span> error;
+      console.log(<span class="s">`  ${model}: ${error.status} ${error.error?.error?.type}`</span>);
+    }
+  }
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node fallback.mjs</span>
+  claude-opus-5-5: 529 overloaded_error
+Oat milk.  (answered by claude-sonnet-5-5)</pre></div>
+<p class="hint"><strong>Hint:</strong> only server errors move to the next model: a 400 would fail on every model, and a 401 means the key, not the model. Check that the fallback model is good enough for the task before you rely on it (Chapter 16), and remember that each model has its own prompt cache, so a fallback starts cold.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>stream.mjs</code> to print the time until the first piece and the time until the last. Which one does a user notice?</li>
+<li><span class="level">Easy</span> Make the practice server return 400 for a question, and run <code>retry.mjs</code> with it. How many attempts does the SDK make?</li>
+<li><span class="level medium">Medium</span> Write a small logger that records, for every call, the five fields of the professional habit, as one JSON line per call.</li>
+<li><span class="level medium">Medium</span> Stream an answer to a web page with server-sent events, using Node’s <code>http</code> module: forward each piece as it arrives.</li>
+<li><span class="level hard">Challenge</span> Write a function that runs 20 requests with at most 4 at a time, respects the SDK’s retries, and reports how many succeeded, how many failed, and why. Make the practice server rate-limit some of them.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 12</p>
+<p>So far Claude has only answered in text. The next chapter gives it tools to call, and answers in exact shapes: tool use and structured output, where Claude starts acting inside your program.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2972,6 +3235,16 @@ on: [&#x27;pull_request&#x27;] | permissions: {&#x27;contents&#x27;: &#x27;read&
 <li>Use <code>git diff main...HEAD -- src/</code>. The request shrinks, and so does the cost, but the reviewer can no longer see that a behaviour changed without a test, or that the documentation now says something false. A middle way is to send the full list of changed files, and the full diff only for the code.</li>
 <li>Real verdicts can differ between runs on borderline diffs. To stabilise: make the criteria in the prompt precise (“a blocker is…”), keep the schema strict, use a fixed model version, and treat a disagreement as information: fail only when the review finds a blocker it can name with a file and a line, and let a person decide on the rest. Running twice and requiring agreement is possible, at twice the cost.</li>
 <li>For example: tools limited to reading and editing files under <code>src/</code> and running the linter; permission to commit and push only to the pull request’s own branch, never to the main branch; a spending limit and a short timeout; and only pull requests from team members, never from forks. The job should stop if the fix changes anything but whitespace and formatting, and a person still reviews the result.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 11</h2>
+<ol class="exercises">
+<li>Record <code>Date.now()</code> before the call, at the first <code>text</code> event and after <code>finalMessage()</code>. Users notice the first: an answer that starts in half a second feels fast even if it takes ten to finish. With the practice server both are almost instant; with the real API, the gap between them is the reason to stream.</li>
+<li>Add a rule with <code>"error": {"status": 400, "type": "invalid_request_error", "message": "..."}</code> for the question. The SDK makes one attempt: a 400 means the request itself is wrong, so retrying would only fail again. The fetch wrapper shows a single 400.</li>
+<li>Wrap the call: record the start time, call with <code>.withResponse()</code>, then append <code>JSON.stringify({model, requestId, stop: data.stop_reason, tokens: data.usage, ms})</code> to a log file; in the <code>catch</code>, write the same fields with the error’s <code>status</code> and <code>requestID</code>. One line per call makes the log easy to search and to load into any tool.</li>
+<li>Create a server with <code>http.createServer</code>; for a request, write the header <code>content-type: text/event-stream</code>, start <code>client.messages.stream(...)</code>, and on each <code>text</code> event write <code>data: ${JSON.stringify(piece)}\n\n</code>; when <code>finalMessage()</code> resolves, write an end event and close. In the page, read it with <code>EventSource</code>. Handle the client disconnecting by aborting the stream, so you stop paying for an answer nobody reads.</li>
+<li>Keep a queue of the 20 requests and start a new one whenever fewer than 4 are running (a small pool of “workers” that each take the next request until the queue is empty). Leave the SDK’s retries on; count results by outcome and by error class. With the practice server, add a 429 rule with <code>"times"</code> for some questions: you will see them succeed after retries, and the others unaffected. A pool limits how hard you hit the rate limit in the first place, which is better than retrying after hitting it.</li>
 </ol>
 
 </section>

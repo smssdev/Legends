@@ -1611,7 +1611,8 @@
           "chapters": [
             {
               "en": "The Claude API",
-              "ar": "واجهة Claude البرمجية"
+              "ar": "واجهة Claude البرمجية",
+              "src": "b8/api"
             },
             {
               "en": "Tool Use and Structured Output",

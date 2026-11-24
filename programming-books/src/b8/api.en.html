@@ -1,0 +1,166 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/api/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>The Claude API</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>stream an answer, so users see it as it is written</li>
+<li>let the SDK retry what can be retried, and know what it does</li>
+<li>set timeouts, and choose them for the request rather than the program</li>
+<li>handle an answer cut off at <code>max_tokens</code>, without losing what came</li>
+<li>keep a feature working when a model is overloaded</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 1 sent one message and read one answer. A product sends thousands, from users who are waiting, through networks that fail, to a service that sometimes says “not now”. This chapter covers what every production program needs around the call itself: streaming, retries, timeouts, answers that do not fit, and what to do when the model you wanted is busy.</p>
+
+<aside class="bit" data-mood="think"><p>The errors, retries, timeouts and streaming events in this chapter are real behaviours of the SDK against the practice server, which can be made slow, busy or overloaded on purpose. The words of the answers are the practice server’s.</p></aside>
+
+<h2>{{n}}.1 Streaming</h2>
+
+<p>A long answer can take many seconds to write. Without streaming, the user stares at nothing until it is complete; with it, the first words appear almost at once. The SDK’s <code>stream</code> gives you the text as it arrives, and the complete message at the end:</p>
+
+<pre data-code="stream.mjs" data-from="^const stream" data-title="stream.mjs (part)"></pre>
+<pre data-term="stream.sh"></pre>
+
+<p>Each bar marks where every fourth piece began: the answer arrived in 23 pieces, and the program printed each one immediately. <code>finalMessage()</code> then gives the same message a non-streaming call would have returned, with its stop reason and usage, so the rest of the program does not care how it arrived. Stream whenever a person is waiting, and whenever <code>max_tokens</code> is large: long requests that do not stream can hit HTTP timeouts before the answer is finished.</p>
+
+<h2>{{n}}.2 Retries</h2>
+
+<p>Some failures are worth trying again: 429 (too many requests), 529 (overloaded), other 5xx errors, and broken connections. Others are not: a 400 will fail the same way every time. The SDK knows the difference, and retries the first kind by itself, twice by default, waiting longer each time and respecting the <code>retry-after</code> header when the API sends one. A wrapper around <code>fetch</code> makes it visible:</p>
+
+<pre data-code="retry.mjs" data-from="^const statuses" data-to="^};" data-title="retry.mjs (part)"></pre>
+<pre data-term="retry.sh"></pre>
+
+<p>With the default, the request failed twice with 429, waited as the server asked, and succeeded on the third attempt; the program saw only the answer. With <code>maxRetries: 0</code>, the first 429 became a <code>RateLimitError</code>. Leave the retries on for interactive requests, set them higher for background jobs that can wait, and never write a second retry loop around the SDK’s own: the waits multiply.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Retries make failures slower, not rarer. If your requests are rate-limited regularly, the fix is fewer or smaller requests (caching, batching, a smaller model for simple tasks, Chapter 15) or a higher limit, not more retries.</p></aside>
+
+<h2>{{n}}.3 Timeouts</h2>
+
+<p>The SDK waits up to ten minutes by default, which suits long answers and not much else. Set the timeout for the request in front of you:</p>
+
+<pre data-code="timeout.mjs" data-from="^for" data-to="^}" data-title="timeout.mjs (part)"></pre>
+<pre data-term="timeout.sh"></pre>
+
+<p>The practice server took three seconds on purpose. With a one-second timeout, the SDK gave up and raised <code>APIConnectionTimeoutError</code>; with ten seconds, the answer arrived. In the JavaScript SDK the timeout is in milliseconds; other SDKs use their own units (seconds in Python, for example). Timeouts are retried like other connection errors, so the longest wait is the timeout times the number of attempts: set both with that sum in mind.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which errors does the SDK retry, and which does it not?</li><li>The timeout is 10 seconds and <code>maxRetries</code> is 2. How long can a request take before it fails?</li><li>What does <code>finalMessage()</code> give a streaming program?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Answers that do not fit</h2>
+
+<p>When an answer reaches <code>max_tokens</code>, it stops, mid-sentence if need be, and <code>stop_reason</code> says <code>max_tokens</code>. A program must not show it as complete. To continue, keep the cut answer in the history and ask for the rest in a new user message:</p>
+
+<pre data-code="truncate.mjs" data-from="^const messages" data-title="truncate.mjs (part)"></pre>
+<pre data-term="truncate.sh"></pre>
+
+<p>The first answer stopped at “and”; the second began with “today”, because the model could read exactly where its first answer ended. The simpler fix is often the better one: a larger <code>max_tokens</code>, or a request for a shorter answer.</p>
+
+<p>An older trick no longer works here: writing the start of Claude’s answer yourself, as a last assistant message, for Claude to continue. Current models refuse it:</p>
+
+<pre data-term="prefill.sh"></pre>
+
+<p>To control the form of an answer, say it in the instructions, or ask for structured output (Chapter 12); to continue an answer, use a user message as above.</p>
+
+<h2>{{n}}.5 When a model is busy</h2>
+
+<p>An overloaded model returns 529, and after the SDK’s retries the error reaches your code. For a feature that must answer, fall back to another model that can do the job, and say so in your logs (Project {{n}}.3). Every response also carries a <dfn>request id</dfn>, on success and on error: log it with your own request, and when something goes wrong, it is the first thing Anthropic’s support asks for (Project {{n}}.2).</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>For every call to the API, log the model, the request id, the stop reason, the tokens and the time taken. When a user reports a strange answer, those five fields are the difference between finding the cause in a minute and guessing for a day.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Waiting for long answers without streaming</td><td>Users stare at nothing; HTTP timeouts</td><td>Stream; use <code>finalMessage()</code> for the rest</td></tr>
+<tr><td>A retry loop around the SDK’s retries</td><td>Waits multiply; limits are hit harder</td><td>Configure <code>maxRetries</code>; do not wrap it</td></tr>
+<tr><td>Retrying 400 errors</td><td>The same failure, slower</td><td>Fix the request; retry only 429, 5xx, connections</td></tr>
+<tr><td>One timeout for everything</td><td>Short tasks hang; long ones fail</td><td>A timeout per request, sized to the task</td></tr>
+<tr><td>Showing a <code>max_tokens</code> answer as complete</td><td>Sentences that stop in the middle</td><td>Check <code>stop_reason</code>; continue or ask for less</td></tr>
+<tr><td>Prefilling the assistant’s answer</td><td>400 on current models</td><td>Instructions, structured output, or a user message</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Stream when a person is waiting or the answer is long; <code>finalMessage()</code> gives the complete message.</li>
+<li>The SDK retries 429, 5xx and connection errors by itself, respecting <code>retry-after</code>; configure it, do not wrap it.</li>
+<li>Set a timeout per request; remember it is retried too.</li>
+<li>A <code>max_tokens</code> stop is not an answer: continue with the cut text in the history, or ask for less; prefill is refused by current models.</li>
+<li>Fall back to another model on overload, and log the request id of every call.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It retries 429, 408, 409, 5xx (529 included) and connection errors, including timeouts; it does not retry other 4xx errors, such as 400, 401 and 404, which would fail again the same way. 2. Up to about 30 seconds of waiting for responses (three attempts of 10 seconds), plus the pauses between attempts. 3. The complete message, as a non-streaming call would have returned it, with its content, stop reason and usage.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects are three small helpers that make API calls dependable: an answer that is never cut off, request ids for support, and a fallback model.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>An answer that is never cut off</h3>
+<p class="project-goal">Ask until the answer is complete, at most three times, and join the parts.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>stop_reason</code> as control flow, with a limit.</p>
+<ol class="steps">
+<li>Ask, and keep the text.</li>
+<li>While the stop reason is <code>max_tokens</code>, add the answer to the history and ask to continue.</li>
+<li>Stop after three parts, and say whether the answer is complete.</li>
+</ol>
+<pre data-code="complete.mjs" data-from="^export async function complete" data-to="^}" data-title="complete.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/complete.sh"></pre>
+<p class="hint"><strong>Hint:</strong> three parts at 40 tokens each, joined into one text with no seam. The limit matters: an answer that needs more than three continuations is a sign the request asked for too much, and the caller should know (<code>cut: true</code>).</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Request ids</h3>
+<p class="project-goal">Print the request id of a successful response and of an error.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>withResponse()</code>, and the ids every log should keep.</p>
+<ol class="steps">
+<li>Call with <code>.withResponse()</code> to get the HTTP response with the data.</li>
+<li>Read the <code>request-id</code> header.</li>
+<li>Read <code>requestID</code> from an error.</li>
+</ol>
+<pre data-term="projects/ids.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the message id and the request id are different things: the first names the answer, the second names the HTTP request that produced it, or failed to. Keep both in your logs, next to your own id for the user’s request.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A fallback model</h3>
+<p class="project-goal">Try the preferred model; if it is overloaded after retries, ask the next one.</p>
+<p class="project-skills"><strong>You will practise:</strong> catching the right error class, and degrading gracefully.</p>
+<ol class="steps">
+<li>List the models in order of preference.</li>
+<li>Catch only server errors, and only move on if another model is left.</li>
+<li>Report which model answered.</li>
+</ol>
+<pre data-code="fallback.mjs" data-from="^async function ask" data-to="^}" data-title="fallback.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/fallback.sh"></pre>
+<p class="hint"><strong>Hint:</strong> only server errors move to the next model: a 400 would fail on every model, and a 401 means the key, not the model. Check that the fallback model is good enough for the task before you rely on it (Chapter 16), and remember that each model has its own prompt cache, so a fallback starts cold.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>stream.mjs</code> to print the time until the first piece and the time until the last. Which one does a user notice?</li>
+<li><span class="level">Easy</span> Make the practice server return 400 for a question, and run <code>retry.mjs</code> with it. How many attempts does the SDK make?</li>
+<li><span class="level">Medium</span> Write a small logger that records, for every call, the five fields of the professional habit, as one JSON line per call.</li>
+<li><span class="level">Medium</span> Stream an answer to a web page with server-sent events, using Node’s <code>http</code> module: forward each piece as it arrives.</li>
+<li><span class="level">Challenge</span> Write a function that runs 20 requests with at most 4 at a time, respects the SDK’s retries, and reports how many succeeded, how many failed, and why. Make the practice server rate-limit some of them.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>So far Claude has only answered in text. The next chapter gives it tools to call, and answers in exact shapes: tool use and structured output, where Claude starts acting inside your program.</p>
+</div>
+</section>

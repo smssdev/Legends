@@ -1,0 +1,69 @@
+{
+  "replies": [
+    {
+      "when": "Describe our rose latte for the menu board in two sentences.",
+      "text": "A latte made with our Ethiopian espresso, steamed milk and a touch of rose syrup. Floral, gentle and only here for the spring."
+    },
+    {
+      "when": "Suggest a name for our new iced drink.",
+      "error": {
+        "status": 429,
+        "type": "rate_limit_error",
+        "message": "Number of requests has exceeded your rate limit",
+        "retry_after": 1,
+        "times": 2
+      }
+    },
+    {
+      "when": "Suggest a name for our new iced drink.",
+      "text": "\"Nile Frost\": cold, clear, and from here."
+    },
+    {
+      "when": "List three ways to shorten the queue at lunch.",
+      "error": {
+        "status": 429,
+        "type": "rate_limit_error",
+        "message": "Number of requests has exceeded your rate limit",
+        "retry_after": 1
+      }
+    },
+    {
+      "when": "Summarise last month's 4,000 customer reviews.",
+      "delay_ms": 3000,
+      "text": "Customers like the coffee and the staff; they complain about the queue at lunch and the noise in the evening."
+    },
+    {
+      "when": {
+        "text": "Continue exactly where you stopped.",
+        "messages": 3
+      },
+      "text": "today we serve three neighbourhoods, but the table is still the heart of every branch: a place to work, to meet, or to read slowly. Come for the coffee; stay for the company."
+    },
+    {
+      "when": {
+        "text": "Continue exactly where you stopped.",
+        "messages": 5
+      },
+      "text": "for the company."
+    },
+    {
+      "when": "Write the welcome text for our new website.",
+      "text": "Welcome to Bit Cafe, where every cup starts with beans we roast ourselves in small batches. We opened in Zamalek in 2019 with one machine and a long table, and today we serve three neighbourhoods, but the table is still the heart of every branch: a place to work, to meet, or to read slowly. Come for the coffee; stay for the company."
+    },
+    {
+      "when": {
+        "text": "Translate 'oat milk' for the menu.",
+        "model": "claude-opus-5-5"
+      },
+      "error": {
+        "status": 529,
+        "type": "overloaded_error",
+        "message": "Overloaded"
+      }
+    },
+    {
+      "when": "Translate 'oat milk' for the menu.",
+      "text": "Oat milk."
+    }
+  ]
+}
