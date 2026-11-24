@@ -1,0 +1,101 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "Explain price.mjs in two sentences.",
+        "tool_result": "Read"
+      },
+      "text": "price.mjs exports total(bill, tip), which adds the tip percentage to the bill. It reads the bill with parseInt, so the piastres of a bill like 85.50 are dropped."
+    },
+    {
+      "when": {
+        "first": "Explain price.mjs in two sentences."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "I'll read the file first."
+        },
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "price.mjs"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Run the tests and tell me what fails.",
+        "result_text": "requires approval"
+      },
+      "text": "I couldn't run the tests: running `node --test` needs your approval. Allow it, or run it yourself and paste the output."
+    },
+    {
+      "when": {
+        "first": "Run the tests and tell me what fails.",
+        "tool_result": "Bash"
+      },
+      "text": "One test fails: \"a bill with piastres\". total(\"85.50\", 10) returns 93.50 instead of 94.05, because parseInt drops the .50 before the tip is added."
+    },
+    {
+      "when": {
+        "first": "Run the tests and tell me what fails."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "I'll run the tests."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Keep running the tests until they pass.",
+        "tool_result": "Bash"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Still failing; running them again."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Keep running the tests until they pass."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "I'll run the tests."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    }
+  ]
+}

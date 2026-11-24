@@ -34,6 +34,9 @@ def env():
     # The SDK reads these two variables: the practice server's address, and its key.
     e["ANTHROPIC_BASE_URL"] = f"http://127.0.0.1:{PORT}"
     e["ANTHROPIC_API_KEY"] = "test-key"
+    # Claude Code, in Part II, talks to the practice server too, and sends nothing else anywhere.
+    e["DISABLE_TELEMETRY"] = "1"
+    e["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] = "1"
     # The browser for chapters that test an artifact, already installed on this machine.
     for k in ("PLAYWRIGHT_BROWSERS_PATH", "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD"):
         if os.environ.get(k):
@@ -42,6 +45,19 @@ def env():
 
 
 b5kit.env = env
+
+
+def sh(cmd, cwd, timeout=900):
+    """As the Book 5 kit runs a command, with an empty standard input: Claude Code otherwise waits for one."""
+    Path(cwd).mkdir(parents=True, exist_ok=True)
+    if b5kit.AS_READER:
+        subprocess.run(["chown", "-R", "reader:reader", str(WORK)], check=False)
+    r = subprocess.run(b5kit.wrap(cmd), cwd=cwd, env=env(), capture_output=True, text=True, timeout=timeout,
+                       stdin=subprocess.DEVNULL)
+    return b5kit.clean(r.stdout + r.stderr, cwd), r.returncode
+
+
+b5kit.sh = sh
 
 WIDTH = 74
 

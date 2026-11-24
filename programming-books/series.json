@@ -1578,7 +1578,8 @@
           "chapters": [
             {
               "en": "Claude Code in the Terminal",
-              "ar": "Claude Code في الطرفية"
+              "ar": "Claude Code في الطرفية",
+              "src": "b8/terminal"
             },
             {
               "en": "Working on a Real Codebase",
