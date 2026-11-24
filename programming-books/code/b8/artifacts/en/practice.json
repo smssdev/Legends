@@ -1,0 +1,22 @@
+{
+  "replies": [
+    {
+      "when": {
+        "text": "tip calculator",
+        "history": false
+      },
+      "text": "Here is a tip calculator as a single HTML page: type the bill and the tip percentage, and it shows the tip and the total.\n\n```html\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Tip calculator</title>\n  <style>\n    body { font-family: system-ui, sans-serif; max-width: 22rem; margin: 2rem auto; }\n    label, input, output { display: block; margin: 0.5rem 0; font-size: 1.1rem; }\n    input { width: 100%; padding: 0.4rem; }\n  </style>\n</head>\n<body>\n  <h1>Tip calculator</h1>\n  <form id=\"form\">\n    <label for=\"bill\">Bill (EGP)</label>\n    <input id=\"bill\" inputmode=\"decimal\" value=\"0\">\n    <input id=\"tip\" type=\"number\" value=\"10\">\n  </form>\n  <output id=\"result\">Tip: <span id=\"tip-amount\">0.00</span>,\n    total: <span id=\"total\">0.00</span></output>\n  <script>\n    const bill = document.getElementById(\"bill\");\n    const tip = document.getElementById(\"tip\");\n    function update() {\n      const amount = parseInt(bill.value);\n      const share = (amount * Number(tip.value)) / 100;\n      document.getElementById(\"tip-amount\").textContent = share.toFixed(2);\n      const total = amount + share;\n      document.getElementById(\"total\").textContent = total.toFixed(2);\n    }\n    document.getElementById(\"form\").addEventListener(\"input\", update);\n  </script>\n</body>\n</html>\n```\n\nSave it as an .html file and open it in a browser."
+    },
+    {
+      "when": {
+        "text": "test failed",
+        "history": true
+      },
+      "text": "You're right. `parseInt` stops at the decimal point, so 85.50 became 85 and the tip was computed on the wrong amount. `Number` keeps the decimals. I also added the missing label for the tip field.\n\n```html\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Tip calculator</title>\n  <style>\n    body { font-family: system-ui, sans-serif; max-width: 22rem; margin: 2rem auto; }\n    label, input, output { display: block; margin: 0.5rem 0; font-size: 1.1rem; }\n    input { width: 100%; padding: 0.4rem; }\n  </style>\n</head>\n<body>\n  <h1>Tip calculator</h1>\n  <form id=\"form\">\n    <label for=\"bill\">Bill (EGP)</label>\n    <input id=\"bill\" inputmode=\"decimal\" value=\"0\">\n    <label for=\"tip\">Tip (%)</label>\n    <input id=\"tip\" type=\"number\" value=\"10\">\n  </form>\n  <output id=\"result\">Tip: <span id=\"tip-amount\">0.00</span>,\n    total: <span id=\"total\">0.00</span></output>\n  <script>\n    const bill = document.getElementById(\"bill\");\n    const tip = document.getElementById(\"tip\");\n    function update() {\n      const amount = Number(bill.value);\n      const share = (amount * Number(tip.value)) / 100;\n      document.getElementById(\"tip-amount\").textContent = share.toFixed(2);\n      const total = amount + share;\n      document.getElementById(\"total\").textContent = total.toFixed(2);\n    }\n    document.getElementById(\"form\").addEventListener(\"input\", update);\n  </script>\n</body>\n</html>\n```"
+    },
+    {
+      "when": "diagram of how an order",
+      "text": "```mermaid\nflowchart LR\n  A[Customer orders] --> B[Barista makes drink]\n  B --> C{Right drink?}\n  C -- yes --> D[Served]\n  C -- no --> B\n```"
+    }
+  ]
+}

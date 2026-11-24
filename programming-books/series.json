@@ -1560,7 +1560,8 @@
             },
             {
               "en": "Artifacts: Apps, Documents and Diagrams",
-              "ar": "Artifacts: التطبيقات والمستندات والرسوم"
+              "ar": "Artifacts: التطبيقات والمستندات والرسوم",
+              "src": "b8/artifacts"
             },
             {
               "en": "Research, Connectors and Tools",

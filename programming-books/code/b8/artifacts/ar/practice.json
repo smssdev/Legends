@@ -1,0 +1,22 @@
+{
+  "replies": [
+    {
+      "when": {
+        "text": "حاسبة بقشيش",
+        "history": false
+      },
+      "text": "إليك حاسبة بقشيش في صفحة HTML واحدة: اكتب الفاتورة ونسبة البقشيش، فتعرض البقشيش والإجمالي.\n\n```html\n<!doctype html>\n<html lang=\"ar\" dir=\"rtl\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>حاسبة البقشيش</title>\n  <style>\n    body { font-family: system-ui, sans-serif; max-width: 22rem; margin: 2rem auto; }\n    label, input, output { display: block; margin: 0.5rem 0; font-size: 1.1rem; }\n    input { width: 100%; padding: 0.4rem; }\n  </style>\n</head>\n<body>\n  <h1>حاسبة البقشيش</h1>\n  <form id=\"form\">\n    <label for=\"bill\">الفاتورة (جنيه)</label>\n    <input id=\"bill\" inputmode=\"decimal\" value=\"0\">\n    <input id=\"tip\" type=\"number\" value=\"10\">\n  </form>\n  <output id=\"result\">البقشيش: <span id=\"tip-amount\">0.00</span>,\n    الإجمالي: <span id=\"total\">0.00</span></output>\n  <script>\n    const bill = document.getElementById(\"bill\");\n    const tip = document.getElementById(\"tip\");\n    function update() {\n      const amount = parseInt(bill.value);\n      const share = (amount * Number(tip.value)) / 100;\n      document.getElementById(\"tip-amount\").textContent = share.toFixed(2);\n      const total = amount + share;\n      document.getElementById(\"total\").textContent = total.toFixed(2);\n    }\n    document.getElementById(\"form\").addEventListener(\"input\", update);\n  </script>\n</body>\n</html>\n```\n\nاحفظها في ملف ‎.html وافتحها في متصفح."
+    },
+    {
+      "when": {
+        "text": "فشل الاختبار",
+        "history": true
+      },
+      "text": "معك حق. `parseInt` يتوقف عند العلامة العشرية، فصارت 85.50 هي 85 وحُسب البقشيش على المبلغ الخطأ. أما `Number` فيحتفظ بالكسور. وأضفت أيضاً التسمية الناقصة لحقل البقشيش.\n\n```html\n<!doctype html>\n<html lang=\"ar\" dir=\"rtl\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>حاسبة البقشيش</title>\n  <style>\n    body { font-family: system-ui, sans-serif; max-width: 22rem; margin: 2rem auto; }\n    label, input, output { display: block; margin: 0.5rem 0; font-size: 1.1rem; }\n    input { width: 100%; padding: 0.4rem; }\n  </style>\n</head>\n<body>\n  <h1>حاسبة البقشيش</h1>\n  <form id=\"form\">\n    <label for=\"bill\">الفاتورة (جنيه)</label>\n    <input id=\"bill\" inputmode=\"decimal\" value=\"0\">\n    <label for=\"tip\">البقشيش (%)</label>\n    <input id=\"tip\" type=\"number\" value=\"10\">\n  </form>\n  <output id=\"result\">البقشيش: <span id=\"tip-amount\">0.00</span>,\n    الإجمالي: <span id=\"total\">0.00</span></output>\n  <script>\n    const bill = document.getElementById(\"bill\");\n    const tip = document.getElementById(\"tip\");\n    function update() {\n      const amount = Number(bill.value);\n      const share = (amount * Number(tip.value)) / 100;\n      document.getElementById(\"tip-amount\").textContent = share.toFixed(2);\n      const total = amount + share;\n      document.getElementById(\"total\").textContent = total.toFixed(2);\n    }\n    document.getElementById(\"form\").addEventListener(\"input\", update);\n  </script>\n</body>\n</html>\n```"
+    },
+    {
+      "when": "مخططاً لمسار الطلب",
+      "text": "```mermaid\nflowchart RL\n  A[الزبون يطلب] --> B[الباريستا يحضّر المشروب]\n  B --> C{المشروب صحيح؟}\n  C -- نعم --> D[يُقدَّم]\n  C -- لا --> B\n```"
+    }
+  ]
+}
