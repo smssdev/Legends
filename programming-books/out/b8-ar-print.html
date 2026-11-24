@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "الفصل 1: تعرّف على Claude: النماذج ونقاط القوة والحدود"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "الفصل 2: المحادثات والملفات والصور"; } }
+@page ch02:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -41,7 +43,7 @@
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">24</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">36</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -70,7 +72,7 @@
 <h2 class="plain-h">خادم التدريب</h2>
 <p>كل برنامج في هذا الكتاب يستدعي Claude عبر الحزمة الرسمية، <code>@anthropic-ai/sdk</code>، تماماً كما في بيئة الإنتاج. ولتشغيلها كلها مجاناً، ودون اتصال، وبلا حساب، يضم مستودع كود الكتاب <dfn>خادم تدريب</dfn>: برنامجاً محلياً صغيراً يتكلم بصيغة الواجهة البرمجية (الطلبات، والردود، وأحداث البث، واستدعاءات الأدوات، والأخطاء، واستهلاك الـ tokens) ويجيب من ملف في كل فصل، <code>practice.json</code>.</p>
 
-<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>اقرأ هذا قبل أي مثال</p><p>خادم التدريب ليس Claude. أجوبته كُتبت لهذا الكتاب، لتُريك شكل كل جزء من الرد وكيف يتعامل معه البرنامج. وحين تعرض جلسة طرفية في هذا الكتاب جواباً، فهو جواب خادم التدريب، والفصل يقول ذلك. أما الأخطاء، وأسماء الحقول، وأحداث البث، والكود فحقيقية؛ وكلمات الأجوبة ليست كلمات Claude، وعدد الـ tokens تقريبي (نحو أربعة أحرف لكل token). ولترى ما يجيب به Claude حقاً، شغّل الكود نفسه على الواجهة البرمجية الحقيقية بمفتاحك: ستختلف كلمات Claude، وعليك فحصها كما علّمك الكتاب السابع.</p></aside>
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>اقرأ هذا قبل أي مثال</p><p>خادم التدريب ليس Claude. أجوبته كُتبت لهذا الكتاب، لتُريك شكل كل جزء من الرد وكيف يتعامل معه البرنامج. وحين تعرض جلسة طرفية في هذا الكتاب جواباً، فهو جواب خادم التدريب، والفصل يقول ذلك. أما أسماء الحقول، وأحداث البث، وأنواع الأخطاء ورموز حالتها، والكود فحقيقية؛ وكلمات الأجوبة، ورسائل الأخطاء، من خادم التدريب، وعدد الـ tokens عنده تقريبي (نحو أربعة أحرف لكل token). ولترى ما يجيب به Claude حقاً، شغّل الكود نفسه على الواجهة البرمجية الحقيقية بمفتاحك: ستختلف كلمات Claude، وعليك فحصها كما علّمك الكتاب السابع.</p></aside>
 
 <p>والتبديل بين الاثنين متغيرا بيئة، تقرؤهما الحزمة وحدها:</p>
 <pre class="plain" dir="ltr">node practice/server.mjs &amp;                       # the practice server, on port 4141
@@ -229,7 +231,7 @@ console.log(<span class="s">`--- stop: ${response.stop_reason}; `</span> +
   <span class="s">`tokens: ${input_tokens} in, ${output_tokens} out; cost: $${dollars}`</span>);</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node hello.mjs</span>
 أنا Claude، نموذج ذكاء اصطناعي من Anthropic. أستطيع قراءة النصوص والكود وكتابتها، والنظر في الصور والمستندات، واستخدام الأدوات التي تعطيني إياها. ولا أتذكر المحادثات السابقة ما لم ترسلها مرة أخرى، وقد أخطئ، فافحص ما يهم.
---- stop: end_turn; tokens: 15 in, 62 out; cost: $0.001300</pre></div>
+--- stop: end_turn; tokens: 20 in, 104 out; cost: $0.002160</pre></div>
 
 <p>الجواب جواب خادم التدريب، كُتب ليبدو كـ Claude يعرّف بنفسه؛ وكلمات Claude نفسه ستختلف. والمهم هو الشكل، وهو شكل الواجهة البرمجية. فالطلب يسمّي النموذج <code>model</code>، والحد <code>max_tokens</code> الذي قد يستخدمه الجواب، والرسائل <code>messages</code> حتى الآن، بدءاً برسالة المستخدم. ومحتوى الرد <code>content</code> قائمة كتل، لا نص: هنا كتلة نص واحدة، لكن الفصول التالية تلقى كتل تفكير، واستدعاءات أدوات، واستشهادات، فينظر الكود دائماً إلى نوع كل كتلة <code>type</code>. و<code>stop_reason</code> يقول لماذا انتهى الجواب: <code>end_turn</code> يعني أن Claude أنهى، و<code>max_tokens</code> يعني أنه قُطع، والقيم الأخرى (استدعاء أداة، أو رفض) تعني أن على البرنامج عملاً. و<code>usage</code> يعدّ الـ tokens، ومنه يحسب البرنامج التكلفة.</p>
 
@@ -276,7 +278,7 @@ claude-opus-5-5, cached prompt: $0.01116 each</pre></div>
 
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node hello.mjs &quot;ما أخبار اليوم؟&quot;</span>
 لا أستطيع معرفة ذلك: ليس لدي وصول إلى الأخبار، ومعرفتي تتوقف عند تاريخ انتهاء تدريبي. أعطني المقالات، أو استخدم أداة مثل البحث في الويب، وأستطيع تلخيصها.
---- stop: end_turn; tokens: 13 in, 45 out; cost: $0.000952</pre></div>
+--- stop: end_turn; tokens: 16 in, 77 out; cost: $0.001604</pre></div>
 
 <p>جواب خادم التدريب هنا كُتب ليُري السلوك الصحيح: أن يقول ما لا يمكن معرفته، وما الذي يساعد. وافحص أن النموذج الحقيقي يتصرف هكذا في الأسئلة التي يسألها مستخدموك؛ وحين لا يفعل، فلهذا وُجدت أدوات البحث ومستنداتك.</p>
 
@@ -426,6 +428,307 @@ APIConnectionError   لا اتصال: افحص الشبكة وANTHROPIC_BASE_URL
 <p>الفصل التالي يفتح الباب الأول: المحادثات في تطبيقات Claude، بالملفات والصور، وكيف تعطي Claude ما يحتاجه ليجيب جيداً.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b8/conversations/ar">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">الفصل 2</p><h1>المحادثات والملفات والصور</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تبدأ المحادثة بما يحتاجه Claude، وتوجّهها حين يبتعد الجواب</li>
+<li>تعرف متى تكمل، ومتى تعدّل، ومتى تبدأ محادثة جديدة</li>
+<li>ترى ما «المحادثة» حقاً من الداخل، ولماذا تكلّف الطويلة أكثر</li>
+<li>تعطي Claude ملفات PDF والمستندات والصور، وتفحص ما يقرؤه منها</li>
+<li>تُبقي البيانات الخاصة بعيدة عن الأماكن التي لا يجب أن تذهب إليها</li>
+</ul>
+</div>
+
+<p class="lead">يلقى معظم الناس Claude في نافذة محادثة، ومعظم ما يحصلون عليه منه يتوقف على طريقة حديثهم معه. وهذا الفصل عن استخدام تلك النافذة جيداً: كيف تبدأ، وكيف توجّه، وكيف تُدخل ملفاتك ولقطات شاشتك، وكيف تعرف أن محادثة استنفدت غرضها. ويفتح النافذة أيضاً لينظر داخلها، ببضعة أسطر من الكود، لأن معرفة ما يفعله التطبيق عنك تفسّر معظم سلوكه.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الأجوبة في جلسات هذا الفصل من خادم التدريب. أما الصور وملفات PDF فملفات حقيقية صنعها سكربت الفصل؛ وأشكال الطلبات، وحساب الـ tokens، والخطأ من الواجهة البرمجية.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>رسالة أولى جيدة</span></h2>
+
+<p>المحادثة مع Claude محادثة مع زميل قدير دخل للتو: واسع الاطلاع، سريع، ولا يعرف شيئاً عن وضعك. والرسالة الأولى تقرر معظم ما يليها. والجيدة تحمل أربعة أشياء:</p>
+
+<table>
+<thead><tr><th>الجزء</th><th>ضعيف</th><th>قوي</th></tr></thead>
+<tbody>
+<tr><td>السياق</td><td>«اكتب وصفاً لقائمة الطعام.»</td><td>«أدير مقهى صغيراً في القاهرة؛ ومعظم الزبائن طلاب.»</td></tr>
+<tr><td>المهمة</td><td>«اجعله جيداً.»</td><td>«صِف اللاتيه بالورد الجديد في جملتين للوحة القائمة.»</td></tr>
+<tr><td>الشكل</td><td>(لا شيء)</td><td>«عربية دافئة بسيطة؛ 30 كلمة على الأكثر؛ بلا علامات تعجب.»</td></tr>
+<tr><td>مثال</td><td>(لا شيء)</td><td>«هكذا نصف الكابتشينو بالعسل: …»</td></tr>
+</tbody>
+</table>
+
+<p>لا جديد في هذا: إنه الفصل 3 من الكتاب السابع، مطبّقاً على محادثة. والجديد هو النافذة نفسها، التي تعطيك ثلاث طرق للتوجيه حين يخطئ الجواب الهدف:</p>
+
+<ul>
+<li><strong>أكمل</strong> حين يكون الجواب على الطريق الصحيح: «أقصر»، «أكثر رسمية»، «والآن النسخة الإنجليزية». فكل رد يبني على كل ما فوقه.</li>
+<li><strong>عدّل رسالتك</strong> حين أخطأ الجواب بسبب طريقة سؤالك. فتتفرع المحادثة من هناك، ولا يبقى المنعطف الخاطئ في السجل يجرّ الأجوبة التالية نحوه.</li>
+<li><strong>ابدأ محادثة جديدة</strong> حين يتغير الموضوع. فمحادثة قديمة عن ميزانية الشهر الماضي ليست سياقاً لإعلان وظيفة اليوم؛ إنها ضجيج، وكما يبيّن القسم 2.2، تُدفع كلفتها في كل دور.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>حين تُنتج محادثة طويلة شيئاً تريد الاحتفاظ به (خطة، أو مجموعة قرارات)، اطلب من Claude تلخيصه في بضعة أسطر، وابدأ المحادثة التالية بذلك الملخص. فتحتفظ بالنتائج وتترك الرسائل المئة التي أوصلت إليها.</p></aside>
+
+<h2><span class="sec">2.2</span> <span>ما المحادثة حقاً</span></h2>
+
+<p>لا يتذكر Claude المحادثة بين رسائلك. ففي كل مرة تضغط إرسال، يرسل التطبيق المحادثة كلها مرة أخرى، كل رسالة من الأولى، ويقرؤها النموذج من البداية قبل أن يكتب الرد التالي. وبضعة أسطر من الكود تُظهر ذلك، بالواجهة البرمجية من الفصل 1:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">chat.mjs (جزء)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> question <span class="k">of</span> turns) {
+  messages.push({role: <span class="s">&quot;user&quot;</span>, content: question});
+  <span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">1000</span>,
+    messages,
+  });
+  messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: response.content});
+  <span class="k">const</span> used = response.usage.input_tokens;
+  console.log(<span class="s">`&gt; ${question}\n${text(response)}`</span>);
+  console.log(<span class="s">`  (الدور ${messages.length / 2}: ${used} tokens in)`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node chat.mjs</span>
+<span class="c">&gt; </span><span class="k">اسمي منى وأدير مقهى.</span>
+تشرفت بمعرفتك يا منى! إدارة مقهى شيء جميل. كيف أستطيع مساعدتك؟
+  (الدور 1: 18 tokens in)
+<span class="c">&gt; </span><span class="k">اقترح اسماً لمشروب جديد.</span>
+بما أنه لمقهاك: «زهرة بِت» (لاتيه بالورد)، أو «نسمة النيل» (شاي بالنعناع مثلج)، أو «صباح منى» (كابتشينو بالعسل).
+  (الدور 2: 79 tokens in)
+<span class="c">&gt; </span><span class="k">ما اسمي؟</span>
+اسمك منى، وتديرين مقهى.
+  (الدور 3: 155 tokens in)</pre></div>
+
+<p>عرف Claude الاسم في الدور الثالث لأن البرنامج أرسل معه الدور الأول مرة أخرى. وانظر إلى أعداد الـ tokens: 18، ثم 79، ثم 155. فكل دور يدفع ثمن كل ما قبله، فتنمو كلفة المحادثة أسرع من طولها. وأرسل السؤال نفسه بلا السجل، فتذهب المعرفة:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node forget.mjs</span>
+لا أعرف اسمك: هذه بداية محادثتنا، ولم تخبرني به بعد.</pre></div>
+
+<p>والتطبيقات تضيف ميزات فوق هذا: ففي بعض الخطط والإعدادات يستطيع Claude البحث في المحادثات السابقة أو تذكّرها، والمشروع (الفصل 3) يعطي كل محادثة فيه المستندات والتعليمات نفسها. لكن الأساس واحد دائماً: النموذج يرى ما يُرسل، وما يُرسل فقط. وحين «ينسى» Claude شيئاً من أول محادثة طويلة جداً، أو يناقضه، فالسبب عادة أن ذلك الجزء بعيد في نص طويل، ينافسه كل ما بعده.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>المحادثات الطويلة تبطؤ، وتكلّف أكثر، وقد تنجرف: فالخطأ المبكر الذي لم يُصحح يُقرأ في كل دور. وإن انحرفت محادثة عدة أدوار، فلا تجادلها؛ ابدأ من جديد برسالة أولى أفضل.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>الملفات</span></h2>
+
+<p>تستطيع إرفاق مستندات برسالتك: ملفات PDF، وملفات Word، والجداول، والنصوص، والكود. ومع ملف PDF، يتلقى Claude النص وصورة لكل صفحة معاً، فيستطيع قراءة الجداول والرسوم والتنسيق إلى جانب الكلمات. ومن الداخل، ملف PDF <dfn>كتلة مستند</dfn> توضع قبل السؤال:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/files.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> block(file, title) {
+  <span class="k">const</span> data = fs.readFileSync(file).toString(<span class="s">&quot;base64&quot;</span>);
+  <span class="k">if</span> (file.endsWith(<span class="s">&quot;.pdf&quot;</span>)) {
+    <span class="k">const</span> source = {<span class="k">type</span>: <span class="s">&quot;base64&quot;</span>, media_type: <span class="s">&quot;application/pdf&quot;</span>, data};
+    <span class="k">return</span> {<span class="k">type</span>: <span class="s">&quot;document&quot;</span>, source, title};
+  }
+  <span class="k">const</span> source = {<span class="k">type</span>: <span class="s">&quot;base64&quot;</span>, media_type: TYPES[path.extname(file)], data};
+  <span class="k">return</span> {<span class="k">type</span>: <span class="s">&quot;image&quot;</span>, source};
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">pdf.mjs (جزء)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;ما التزامات المشتري؟ اذكر البند والصفحة لكل منها.&quot;</span>;
+
+<span class="c line-bidi">// ملف PDF كتلة مستند: يقرأ Claude نصه وصفحاته.</span>
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: [
+    block(<span class="s">&quot;files/contract.pdf&quot;</span>),
+    {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question},
+  ]}],
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node pdf.mjs</span>
+على المشتري أن يدفع خلال 30 يوماً من كل توريد (البند 2، الصفحة 1)؛ والتأخير يكلّف 2% شهرياً (البند 3، الصفحة 1)؛ وإنهاء الاتفاق يحتاج إشعاراً كتابياً قبل 60 يوماً (البند 4، الصفحة 2).
+--- 3039 tokens in</pre></div>
+
+<p>العقد صفحتان قصيرتان بالإنجليزية، صنعهما سكربت الفصل، والسؤال بالعربية، والجواب بالعربية: فـ Claude يقرأ بلغة ويجيب بأخرى. والسؤال يطلب البند والصفحة لكل التزام. وهذه التعليمة الواحدة هي ما يجعل الجواب قابلاً للفحص: تستطيع أن تفتح الصفحة 2 وتقرأ البند 4 بنفسك. ولاحظ الـ tokens أيضاً: نحو ثلاثة آلاف لصفحتين قصيرتين، لأن كل صفحة تُقرأ صورةً أيضاً. وتقرير من مئة صفحة طلب كبير، ويُرسل مرة أخرى في كل دور من المحادثة.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>اطلب المراجع كلما جاء جواب من مستند: البند، والصفحة، والصف، والاقتباس الحرفي. فالجواب الذي تفحصه في عشر ثوانٍ أثمن من جواب طليق عليك أن تقبله ثقةً. ويبيّن الفصل 12 استشهادات الواجهة البرمجية، التي تعيد المقطع الحرفي مع كل ادعاء.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>الصور</span></h2>
+
+<p>يقرأ Claude الصور: لقطات شاشة لخطأ، وصورة سبورة، ورسماً بيانياً، وإيصالاً، ورسماً باليد لشاشة. والصورة كتلة محتوى، كالمستند:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">image.mjs (جزء)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;ماذا يُظهر هذا الرسم؟ أعطِ الأرقام.&quot;</span>;
+
+<span class="c line-bidi">// الصورة كتلة محتوى، تُرسل بجانب السؤال.</span>
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: [
+    block(<span class="s">&quot;files/sales.png&quot;</span>),
+    {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question},
+  ]}],
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node image.mjs</span>
+عدد الأكواب المبيعة شهرياً في مقهى بِت في النصف الأول من 2026: 410 في يناير، و380 في فبراير، و455 في مارس، و520 في أبريل، و610 في مايو، و590 في يونيو. انخفضت المبيعات في فبراير، ثم نمت ثلاثة أشهر حتى ذروتها في مايو، مع تراجع صغير في يونيو.
+--- 374 tokens in</pre></div>
+
+<p>الرسم حقيقي: ستة أعمدة وقيمها مطبوعة فوقها، صنعه سكربت الفصل من الأرقام 410 و380 و455 و520 و610 و590. وجواب خادم التدريب يقرؤها كلها صحيحة؛ والنموذج الحقيقي يفعل ذلك عادة حين تكون الأرقام مطبوعة، وتقلّ موثوقيته حين عليه تقدير ارتفاع عمود مقابل محور، أو قراءة خط صغير، أو عدّ أشياء كثيرة متشابهة. فعامل الأرقام المقروءة من صورة كمسودة: وحين تهمّ، قارنها بالمصدر، أو اطلب البيانات نفسها.</p>
+
+<p>ويجب أن تقول كتلة الصورة ما هي، وأن تكونه. فأرسل صورة PNG موسومة بأنها JPEG، فيفشل الطلب قبل أن يراه أي نموذج:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node mime.mjs</span>
+400 BadRequestError: messages.0.content.0.source: the image data is image/png, but media_type says image/jpeg</pre></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا عرف الدور الثالث في <code>chat.mjs</code> الاسم، ولم يعرفه السؤال نفسه في <code>forget.mjs</code>؟</li><li>لماذا تنمو الـ tokens أسرع من عدد الأدوار؟</li><li>ماذا تجعل جملة واحدة في سؤال ملف PDF ممكناً؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">2.5</span> <span>ما تشاركه</span></h2>
+
+<p>كل ما ترفقه يُرسل إلى Anthropic لمعالجته، ككل ما تكتبه. وقبل أن ترفع عقداً، أو قائمة عملاء، أو لقطة شاشة للوحة بيانات، اسأل السؤال نفسه الذي تسأله قبل إرساله بالبريد إلى مستشار خارجي: هل يُسمح لي بمشاركته، ومع من؟ فقد تكون لشركتك سياسة، وقد تكون خطة الأعمال أو المؤسسات هي الطريق الوحيد المعتمد لاستخدام Claude مع بيانات الشركة. وافحص إعدادات الخصوصية في خطتك، ومنها هل قد تُستخدم محادثاتك لتحسين النماذج، واختر عن قصد. واحذف ما لا تحتاجه المهمة: يستطيع Claude تلخيص شكوى بلا رقم هاتف العميل (الكتاب السابع، الفصل 15).</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>قبل أن ترفق ملفاً، انظر إليه كما ينظر غريب. فلقطات الشاشة خصوصاً تحمل أكثر مما تقصد مشاركته: تبويباً مفتوحاً، واسماً في زاوية، ورمز دخول في رابط. اقتصّ أولاً.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>رسالة أولى بلا سياق</td><td>أجوبة عامة تناسب أي أحد</td><td>قل من، ولأي غرض، وبأي شكل، مع مثال</td></tr>
+<tr><td>مجادلة محادثة انحرفت</td><td>الخطأ يبقى في السجل</td><td>عدّل الرسالة، أو ابدأ من جديد</td></tr>
+<tr><td>محادثة واحدة لا تنتهي لكل شيء</td><td>أجوبة أبطأ وأغلى وأكثر ارتباكاً</td><td>محادثة لكل موضوع؛ واحمل ملخصاً</td></tr>
+<tr><td>الثقة بالأرقام المقروءة من الصور</td><td>أرقام معقولة وخاطئة</td><td>قارن بالمصدر؛ وأرسل البيانات</td></tr>
+<tr><td>أجوبة من المستندات بلا مراجع</td><td>ادعاءات لا تستطيع فحصها</td><td>اطلب البند أو الصفحة أو الاقتباس</td></tr>
+<tr><td>رفع ما لا يجوز مشاركته</td><td>بيانات حيث لا يجب أن تكون</td><td>السياسة أولاً؛ واحذف واقتصّ ما لا يلزم</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الرسالة الأولى الجيدة تعطي السياق والمهمة والشكل ومثالاً؛ ووجّه بالإكمال أو التعديل أو البدء من جديد.</li>
+<li>المحادثة تُرسل كاملة في كل دور: هكذا «يتذكر» Claude، ولهذا تكلّف المحادثات الطويلة أكثر وتنجرف.</li>
+<li>المستندات والصور كتل محتوى؛ وملفات PDF تُقرأ نصاً وصور صفحات.</li>
+<li>اطلب المراجع مع كل جواب من مستند، وافحص الأرقام المقروءة من الصور.</li>
+<li>شارك ما يُسمح لك بمشاركته فقط، وما تحتاجه المهمة فقط.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن <code>chat.mjs</code> أرسل الأدوار السابقة مرة أخرى، ومنها «اسمي منى»، بينما أرسل <code>forget.mjs</code> السؤال وحده؛ والنموذج لا يعرف إلا ما في الطلب. 2. لأن كل دور يعيد إرسال كل الأدوار السابقة: الطلب الثالث يحوي السؤالين الأولين وجوابيهما إلى جانب سؤاله. 3. الفحص: فمع تسمية البند والصفحة، يستطيع إنسان التحقق من كل التزام في ثوانٍ بدل أن يثق بالملخص.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تستخدم المشاريع الملفات والمحادثات كما يستخدمها برنامج: صور كثيرة على التوالي، وسجل يجب أن يتسع لميزانية، ومستندان يُقارنان.</p>
+
+<div class="project">
+<p class="project-label">المشروع 2.1 · سهل</p>
+<h3>وصف مجلد من الصور</h3>
+<p class="project-goal">اطرح سؤالاً واحداً عن كل صورة في مجلد، بالنوع الصحيح لكل ملف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> كتل الصور، وطلب منفصل لكل صورة.</p>
+<ol class="steps">
+<li>اربط كل ملف بالسؤال الذي يُطرح عنه.</li>
+<li>ابنِ كتلة الصورة من الملف، ونوعها من امتداده.</li>
+<li>أرسل طلباً لكل صورة، واطبع الأجوبة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">describe.mjs (جزء)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [file, question] <span class="k">of</span> Object.entries(questions)) {
+  <span class="k">const</span> content = [block(<span class="s">`files/${file}`</span>), {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question}];
+  <span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">500</span>,
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content}],
+  });
+  console.log(<span class="s">`${file}: ${text(response)}\n`</span>);
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node describe.mjs</span>
+sales.png: عدد الأكواب المبيعة شهرياً في مقهى بِت في النصف الأول من 2026: 410 في يناير، و380 في فبراير، و455 في مارس، و520 في أبريل، و610 في مايو، و590 في يونيو. انخفضت المبيعات في فبراير، ثم نمت ثلاثة أشهر حتى ذروتها في مايو، مع تراجع صغير في يونيو.
+
+receipt.png: لاتيه كبير (45.00)، وكرواسون (30.00)، وماء (10.00): 85.00 إجمالاً، دُفعت بالبطاقة.</pre></div>
+<p class="hint"><strong>تلميح:</strong> طلب لكل صورة يُبقي كل جواب عن صورة واحدة، ويتيح لك إعادة محاولة ما يفشل. ولألف إيصال، هذه مهمة لواجهة Message Batches بنصف السعر (الفصل 15)، والمجاميع مهمة للكود: اطلب من Claude قراءة السطور، واجمعها أنت.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 2.2 · متوسط</p>
+<h3>إبقاء المحادثة ضمن ميزانية</h3>
+<p class="project-goal">احذف أقدم أدوار السجل حتى يتسع لميزانية من الـ tokens، مقيسة بنقطة عدّ الـ tokens.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>countTokens</code>، وثمن النسيان.</p>
+<ol class="steps">
+<li>عدّ tokens السجل كله.</li>
+<li>ما دام فوق الميزانية، احذف أقدم سؤال وجوابه.</li>
+<li>جرّب ثلاث ميزانيات، وانظر ماذا بقي.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">trim.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> trim(messages, budget) {
+  <span class="k">let</span> kept = [...messages];
+  <span class="k">for</span> (;;) {
+    <span class="k">const</span> counted = <span class="k">await</span> client.messages.countTokens({model, messages: kept});
+    <span class="k">const</span> size = counted.input_tokens;
+    <span class="k">if</span> (size &lt;= budget || kept.length &lt;= <span class="n">1</span>) <span class="k">return</span> {kept, size};
+    kept = kept.slice(<span class="n">2</span>); <span class="c line-bidi">// one user turn and its answer</span>
+  }
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node trim.mjs</span>
+budget 1000: بقي 13 of 13 messages, 952 tokens
+budget  400: بقي 5 of 13 messages, 327 tokens
+budget  150: بقي 1 of 13 messages, 15 tokens</pre></div>
+<p class="hint"><strong>تلميح:</strong> في أصغر ميزانية لا يبقى إلا السؤال الأخير: وكل ما قاله المستخدم أولاً، اسمه ومقهاه، ذهب. فالاقتطاع رخيص وكثير النسيان. والأداة الأفضل للمحادثات الطويلة تحتفظ بملخص لما حُذف، أو تستخدم الضغط (compaction) في الواجهة البرمجية، الذي يفعل ذلك عنك (الفصل 14).</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 2.3 · تحدٍّ</p>
+<h3>مقارنة نسختين من عقد</h3>
+<p class="project-goal">أرسل النسختين في رسالة واحدة، لكل منهما عنوان، واسأل ما الذي تغيّر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> عدة مستندات في طلب واحد، مسمّاة ليشير إليها السؤال.</p>
+<ol class="steps">
+<li>اصنع كتلة مستند لكل ملف PDF، بعنوان.</li>
+<li>اسأل ما الذي تغيّر بينهما، بعنوانيهما.</li>
+<li>افحص الجواب مقابل الملفين.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">compare.mjs (جزء)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;ما الذي تغيّر بين العقد الأول والثاني؟&quot;</span>;
+
+<span class="c line-bidi">// مستندان في رسالة واحدة، لكل منهما عنوان يُشار إليه به.</span>
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: [
+    block(<span class="s">&quot;files/contract.pdf&quot;</span>, <span class="s">&quot;Contract, first version&quot;</span>),
+    block(<span class="s">&quot;files/contract-v2.pdf&quot;</span>, <span class="s">&quot;Contract, second version&quot;</span>),
+    {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question},
+  ]}],
+});</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node compare.mjs</span>
+تغيّر بندان. صار الدفع مستحقاً خلال 15 يوماً من كل توريد بدل 30 (البند 2)، وصارت مدة الإشعار لإنهاء الاتفاق 30 يوماً بدل 60 (البند 4). وكل شيء آخر كما هو.</pre></div>
+<p class="hint"><strong>تلميح:</strong> غيّر السكربت سطرين بالضبط بين النسختين، فتستطيع فحص الجواب كاملاً. ومع العقود الحقيقية، شغّل مقارنة نصية عادية (diff) أيضاً: فهي تجد كل تغيير، وClaude يشرح معنى كل منها. فالمقارنة دقيقة؛ وClaude هو القارئ.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أعد كتابة رسالة أولى أرسلتها إلى مساعد ذكاء اصطناعي هذا الأسبوع بالأجزاء الأربعة من القسم 2.1. أرسل الاثنتين، في محادثتين جديدتين، وقارن الأجوبة.</li>
+<li><span class="level">سهل</span> غيّر <code>chat.mjs</code> ليطبع مجموع tokens المحادثة كلها في النهاية. كم token تكلّف محادثة من 30 دوراً بالحجم نفسه، ولماذا ليست عشرة أضعاف محادثة الأدوار الثلاثة؟</li>
+<li><span class="level medium">متوسط</span> غيّر <code>image.mjs</code> ليرسل الصورة بعد السؤال لا قبله. لا يهتم خادم التدريب بذلك؛ فلماذا قد يهتم النموذج الحقيقي؟</li>
+<li><span class="level medium">متوسط</span> وسّع <code>trim.mjs</code> ليُبقي الرسالة الأولى دائماً، حيث يقول المستخدمون عادة من هم، ويحذف من الثانية فما بعد. ما الذي يجب أن يبقى صحيحاً في ترتيب الأدوار؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب برنامج محادثة صغيراً للطرفية يحفظ سجله، ويطبع التكلفة بعد كل دور، وحين يتجاوز السجل ميزانية، يستبدل النصف الأقدم بملخص يكتبه Claude. واختبر المنطق بخادم التدريب.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 3</p>
+<p>إرفاق الملفات نفسها بكل محادثة متعب. والفصل التالي يقدّم المشاريع: مكاناً تعيش فيه المستندات والتعليمات مرة واحدة، وتبدأ بها كل محادثة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -451,6 +754,16 @@ APIConnectionError   لا اتصال: افحص الشبكة وANTHROPIC_BASE_URL
 <li>لا يتغير شيء مع خادم التدريب: فهو لا يفكّر، ويتجاهل الجهد. ومع الواجهة الحقيقية، الجهد المنخفض يعني عادة تفكيراً أقل، وtokens أقل، وجواباً أسرع وأرخص، وللسؤال البسيط الجواب نفسه. ويظهر الفرق في الأسئلة الصعبة، ولهذا يُختار الجهد لكل مهمة ويُقاس، لا يُضبط مرة لكل شيء.</li>
 <li>أضف خياراً <code>batch</code> ينصّف التكلفة، واطبع عموداً رابعاً. والمرشحون الجيدون عمل لا ينتظره أحد: ملخصات ليلية للتذاكر، ووسم المهام المتراكمة، وترجمة التوثيق، وتشغيل مجموعة تقييم. أما المحادثة مع عميل فليست منها: العميل ينتظر.</li>
 <li>اسرد النماذج بـ <code dir="ltr">client.models.list()</code>، وأرسل الطلب نفسه إلى كل منها بالدور، واطبع النص و<code>usage</code> والتكلفة لكل منها، والتقط الأخطاء حتى لا يوقف نموذج يخفق الباقين. وعلى خادم التدريب، يعطي كل نموذج الجواب المكتوب نفسه وأعداد الـ tokens تقريبية، فلا تختلف إلا التكاليف. ولا تعني المقارنة شيئاً إلا بأجوبة حقيقية، وحتى حينها سؤال واحد حكاية: قارن النماذج على مجموعة أسئلة لها أجوبة جيدة معروفة، كما فعل الكتاب السابع.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 2</h2>
+<ol class="exercises">
+<li>الرسالة المعاد كتابتها تأخذ عادة جواباً يحتاج متابعات أقل: يناسب جمهورك وطولك ونبرتك من المرة الأولى. وإن كان الجوابان جيدين بالقدر نفسه، فالمهمة كانت بسيطة بما يكفي ألا يهم السياق؛ والعادة تؤتي ثمرها في المهام التي يهم فيها.</li>
+<li>أضف <code>input_tokens</code> و<code>output_tokens</code> لكل دور إلى مجموع جارٍ. ومحادثة من 30 دوراً بالحجم نفسه لا تكلّف عشرة أضعاف محادثة من ثلاثة، لأن الدور 30 يعيد إرسال الأدوار من 1 إلى 29: فالمدخلات تنمو مع كل دور، والمجموع ينمو تقريباً مع مربع عدد الأدوار. عشرة أضعاف الأدوار تقارب ثمانين ضعفاً من tokens المدخلات (1 + 2 + … + 30 = 465 دوراً، مقابل 1 + 2 + 3 = 6).</li>
+<li>توجيهات Anthropic أن توضع الصور والمستندات قبل السؤال، فيقرأ النموذج المادة أولاً ثم ما يُفعل بها. وإن وُضعت بعده، يقرأ النموذج السؤال دون الشيء الذي يسأل عنه؛ وغالباً ما يجيب جيداً مع ذلك، لكن العادة لا تكلّف شيئاً، ويتبعها كل مثال في هذا الكتاب.</li>
+<li>أبقِ <code dir="ltr">messages[0]</code> واحذف رسالتين في كل مرة من الموضع 1: <code dir="ltr">kept = [kept[0], ...kept.slice(3)]</code>. فالزوج المحذوف جواب والسؤال الذي بعده، فيبقى ما تبقى يبدأ برسالة المستخدم الأولى ويتناوب: مستخدم، مساعد، مستخدم. وأياً كان ما تحذفه، أبقِ هذه القاعدة صحيحة: الرسالة الأولى للمستخدم، والأدوار تتناوب.</li>
+<li>احفظ <code>messages</code>؛ وبعد كل دور، اطبع التكلفة من <code>usage</code>؛ وحين يتجاوز <code>countTokens</code> الميزانية، أرسل النصف الأقدم إلى Claude مع «لخّص هذه المحادثة في خمسة أسطر، محتفظاً بالأسماء والأرقام والقرارات»، واستبدل ذلك النصف برسالة مستخدم واحدة فيها الملخص ورسالة مساعد تقرّ به. ومع خادم التدريب، أضف جواباً لطلب التلخيص ليُختبر المنطق من أوله لآخره؛ أما جودة الملخصات الحقيقية فتُفحص على الواجهة الحقيقية.</li>
 </ol>
 
 </section>

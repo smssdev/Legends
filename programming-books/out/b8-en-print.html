@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "Chapter 1: Meet Claude: Models, Strengths and Limits"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: Conversations, Files and Images"; } }
+@page ch02:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -41,7 +43,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">21</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">32</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -70,7 +72,7 @@
 <h2 class="plain-h">The practice server</h2>
 <p>Every program in this book calls Claude through the official SDK, <code>@anthropic-ai/sdk</code>, exactly as it would in production. To let you run all of them for free, offline and with no account, the book’s code repository includes a <dfn>practice server</dfn>: a small local program that speaks the API’s format (requests, responses, streaming events, tool calls, errors, token usage) and answers from a file in each chapter, <code>practice.json</code>.</p>
 
-<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Read this before any example</p><p>The practice server is not Claude. Its answers were written for this book, to show what each part of a response looks like and how a program should handle it. When a transcript in this book shows an answer, it is the practice server’s, and the chapter says so. The errors, the field names, the streaming events and the code are real; the words of the answers are not Claude’s, and the token counts are an approximation (about four characters per token). To see what Claude really answers, run the same code against the real API with your own key: Claude’s words will differ, and you should check them the way Book 7 taught.</p></aside>
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Read this before any example</p><p>The practice server is not Claude. Its answers were written for this book, to show what each part of a response looks like and how a program should handle it. When a transcript in this book shows an answer, it is the practice server’s, and the chapter says so. The field names, the streaming events, the kinds of error and their status codes, and the code are real; the words of the answers, and of the error messages, are the practice server’s, and its token counts are an approximation (about four characters per token). To see what Claude really answers, run the same code against the real API with your own key: Claude’s words will differ, and you should check them the way Book 7 taught.</p></aside>
 
 <p>Switching between the two is a matter of two environment variables, which the SDK reads by itself:</p>
 <pre class="plain" dir="ltr">node practice/server.mjs &amp;                       # the practice server, on port 4141
@@ -426,6 +428,307 @@ APIConnectionError   No connection: check the network and ANTHROPIC_BASE_URL.</p
 <p>The next chapter opens the first door: conversations in the Claude apps, with files and images, and how to give Claude what it needs to answer well.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b8/conversations/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>Conversations, Files and Images</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>open a conversation with what Claude needs, and steer it when the answer is off</li>
+<li>know when to continue, when to edit, and when to start a new chat</li>
+<li>see what “the conversation” really is underneath, and why long ones cost more</li>
+<li>give Claude PDFs, documents and images, and check what it reads from them</li>
+<li>keep private data out of places it should not go</li>
+</ul>
+</div>
+
+<p class="lead">Most people meet Claude in a chat window, and most of what they get from it depends on how they talk to it. This chapter is about using that window well: how to start, how to steer, how to bring in your files and screenshots, and how to know when a conversation has run its course. It also opens the window to look inside, with a few lines of code, because knowing what the app does for you explains most of its behaviour.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The answers in this chapter’s transcripts are the practice server’s. The images and the PDFs are real files, made by the chapter’s script; the shapes of the requests, the token accounting and the error are the API’s.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>A good first message</span></h2>
+
+<p>A chat with Claude is a conversation with a capable colleague who has just walked in: well read, quick, and knowing nothing about your situation. The first message decides most of what follows. A good one carries four things:</p>
+
+<table>
+<thead><tr><th>Part</th><th>Weak</th><th>Strong</th></tr></thead>
+<tbody>
+<tr><td>Context</td><td>“Write a menu description.”</td><td>“I run a small café in Cairo; most customers are students.”</td></tr>
+<tr><td>The task</td><td>“Make it good.”</td><td>“Describe our new rose latte in two sentences for the menu board.”</td></tr>
+<tr><td>The form</td><td>(nothing)</td><td>“Warm, simple English; no more than 30 words; no exclamation marks.”</td></tr>
+<tr><td>An example</td><td>(nothing)</td><td>“Here is how we describe our honey cappuccino: …”</td></tr>
+</tbody>
+</table>
+
+<p>None of this is new: it is Book 7’s Chapter 3, applied to a chat. What is new is the window itself, which gives you three ways to steer when an answer misses:</p>
+
+<ul>
+<li><strong>Continue</strong> when the answer is on the right track: “shorter”, “more formal”, “now the Arabic version”. Each reply builds on everything above it.</li>
+<li><strong>Edit your message</strong> when the answer went wrong because of how you asked. The conversation branches from there, and the wrong turn no longer sits in the history, pulling later answers toward it.</li>
+<li><strong>Start a new chat</strong> when the topic changes. An old conversation about last month’s budget is not context for today’s job advert; it is noise, and, as Section 2.2 shows, it is paid for on every turn.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>When a long chat has produced something you want to keep (a plan, a set of decisions), ask Claude to summarise it in a few lines, and start the next chat with that summary. You keep the conclusions and drop the hundred messages that led to them.</p></aside>
+
+<h2><span class="sec">2.2</span> <span>What the conversation really is</span></h2>
+
+<p>Claude does not remember the chat between your messages. Each time you press send, the app sends the whole conversation again, every message from the first, and the model reads it from the top before writing the next reply. Three lines of code show it, using the API of Chapter 1:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">chat.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> question <span class="k">of</span> turns) {
+  messages.push({role: <span class="s">&quot;user&quot;</span>, content: question});
+  <span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">1000</span>,
+    messages,
+  });
+  messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: response.content});
+  <span class="k">const</span> used = response.usage.input_tokens;
+  console.log(<span class="s">`&gt; ${question}\n${text(response)}`</span>);
+  console.log(<span class="s">`  (turn ${messages.length / 2}: ${used} tokens in)`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node chat.mjs</span>
+<span class="c">&gt; </span><span class="k">My name is Mona and I run a café.</span>
+Nice to meet you, Mona! A café is a lovely thing to run. How can I help?
+  (turn 1: 18 tokens in)
+<span class="c">&gt; </span><span class="k">Suggest a name for a new drink.</span>
+Since it&#x27;s for your café: &quot;Bit Bloom&quot; (a rose latte), &quot;Nile Breeze&quot; (iced mint tea) or &quot;Mona&#x27;s Morning&quot; (a honey cappuccino).
+  (turn 2: 66 tokens in)
+<span class="c">&gt; </span><span class="k">What is my name?</span>
+Your name is Mona, and you run a café.
+  (turn 3: 125 tokens in)</pre></div>
+
+<p>Claude knew the name in the third turn because the program sent the first turn again with it. Look at the token counts: 18, then 66, then 125. Every turn pays for everything before it, so a conversation’s cost grows faster than its length. Send the same question without the history, and the knowledge is gone:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node forget.mjs</span>
+I don&#x27;t know your name: this is the start of our conversation, and you haven&#x27;t told me yet.</pre></div>
+
+<p>The apps add features on top of this: in some plans and settings Claude can search or remember earlier chats, and a project (Chapter 3) gives every chat in it the same documents and instructions. But the core is always the same: the model sees what is sent, and only that. When Claude “forgets” something from early in a very long chat, or contradicts it, it is usually because that part is far back in a long text, competing with everything after it.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Long conversations get slower, cost more, and can drift: an early mistake that was never corrected keeps being read on every turn. If a chat has gone wrong for several turns, do not argue with it; start again with a better first message.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>Files</span></h2>
+
+<p>You can attach documents to a message: PDFs, Word files, spreadsheets, text and code. For a PDF, Claude receives both the text and an image of each page, so it can read tables, charts and layout as well as words. Underneath, a PDF is a <dfn>document block</dfn> placed before the question:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/files.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> block(file, title) {
+  <span class="k">const</span> data = fs.readFileSync(file).toString(<span class="s">&quot;base64&quot;</span>);
+  <span class="k">if</span> (file.endsWith(<span class="s">&quot;.pdf&quot;</span>)) {
+    <span class="k">const</span> source = {<span class="k">type</span>: <span class="s">&quot;base64&quot;</span>, media_type: <span class="s">&quot;application/pdf&quot;</span>, data};
+    <span class="k">return</span> {<span class="k">type</span>: <span class="s">&quot;document&quot;</span>, source, title};
+  }
+  <span class="k">const</span> source = {<span class="k">type</span>: <span class="s">&quot;base64&quot;</span>, media_type: TYPES[path.extname(file)], data};
+  <span class="k">return</span> {<span class="k">type</span>: <span class="s">&quot;image&quot;</span>, source};
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">pdf.mjs (part)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;What are the obligations of the Buyer? Name the clause and page of each.&quot;</span>;
+
+<span class="c line-bidi">// A PDF is a document block: Claude reads its text and its pages.</span>
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: [
+    block(<span class="s">&quot;files/contract.pdf&quot;</span>),
+    {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question},
+  ]}],
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node pdf.mjs</span>
+The Buyer must pay within 30 days of each delivery (clause 2, page 1); late payment costs 2% a month (clause 3, page 1); and ending the agreement needs 60 days&#x27; written notice (clause 4, page 2).
+--- 3034 tokens in</pre></div>
+
+<p>The contract is two short pages, made by the chapter’s script, and the question asks for the clause and page of every obligation. That one instruction is what makes the answer checkable: you can open page 2 and read clause 4 yourself. Notice the tokens too: about three thousand for two short pages, because each page is also read as an image. A hundred-page report is a large request, and it is sent again on every turn of the conversation.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Ask for references whenever an answer comes from a document: the clause, the page, the row, the exact quotation. An answer you can check in ten seconds is worth more than a fluent one you have to take on trust. Chapter 12 shows the API’s citations, which return the exact passage with each claim.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>Images</span></h2>
+
+<p>Claude reads images: screenshots of an error, a photo of a whiteboard, a chart, a receipt, a hand-drawn sketch of a screen. An image is a content block, like a document:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">image.mjs (part)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;What does this chart show? Give the numbers.&quot;</span>;
+
+<span class="c line-bidi">// An image is a content block, sent next to the question.</span>
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: [
+    block(<span class="s">&quot;files/sales.png&quot;</span>),
+    {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question},
+  ]}],
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node image.mjs</span>
+Cups sold per month at Bit Cafe in the first half of 2026: 410 in January, 380 in February, 455 in March, 520 in April, 610 in May and 590 in June. Sales dipped in February, then grew for three months to a peak in May, with a small fall in June.
+--- 369 tokens in</pre></div>
+
+<p>The chart is real: six bars with their values printed above them, made by the chapter’s script from the numbers 410, 380, 455, 520, 610 and 590. The practice server’s answer reads them all correctly; a real model usually does too when the numbers are printed, and is less reliable when it must estimate a bar’s height against an axis, read small print, or count many similar objects. Treat numbers read from an image as a draft: when they matter, compare them with the source, or ask for the data itself.</p>
+
+<p>An image block must say what it is, and be it. Send a PNG labelled as a JPEG and the request fails before any model sees it:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node mime.mjs</span>
+400 BadRequestError: messages.0.content.0.source: the image data is image/png, but media_type says image/jpeg</pre></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did the third turn of <code>chat.mjs</code> know the name, and the same question in <code>forget.mjs</code> not?</li><li>Why do the tokens grow faster than the number of turns?</li><li>What does one sentence in the PDF question make possible?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">2.5</span> <span>What you share</span></h2>
+
+<p>Everything you attach is sent to Anthropic to be processed, like everything you type. Before you upload a contract, a customer list or a screenshot of a dashboard, ask the same question you would before emailing it to an outside consultant: am I allowed to share this, and with whom? Your company may have a policy, and a business or enterprise plan may be the only approved way to use Claude with company data. Check your plan’s privacy settings, including whether your chats may be used to improve the models, and choose deliberately. And remove what the task does not need: Claude can summarise a complaint without the customer’s phone number (Book 7, Chapter 15).</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Before you attach a file, look at it the way a stranger would. Screenshots in particular carry more than you mean to share: an open tab, a name in a corner, a token in a URL. Crop first.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A first message with no context</td><td>Generic answers that fit anyone</td><td>Say who, what for, in what form, with an example</td></tr>
+<tr><td>Arguing with a chat that went wrong</td><td>The mistake stays in the history</td><td>Edit the message, or start again</td></tr>
+<tr><td>One endless chat for everything</td><td>Slower, dearer, more confused answers</td><td>A new chat per topic; carry a summary</td></tr>
+<tr><td>Trusting numbers read from images</td><td>Plausible wrong figures</td><td>Check against the source; send the data</td></tr>
+<tr><td>Answers from documents without references</td><td>Claims you cannot check</td><td>Ask for the clause, page or quotation</td></tr>
+<tr><td>Uploading what you may not share</td><td>Data where it should not be</td><td>Policy first; remove and crop what is not needed</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A good first message gives context, the task, the form and an example; steer by continuing, editing or starting fresh.</li>
+<li>The conversation is resent in full on every turn: that is how Claude “remembers”, and why long chats cost more and drift.</li>
+<li>Documents and images are content blocks; PDFs are read as text and as page images.</li>
+<li>Ask for references with every answer from a document, and check numbers read from images.</li>
+<li>Share only what you are allowed to share, and only what the task needs.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>chat.mjs</code> sent the earlier turns again, including “My name is Mona”, while <code>forget.mjs</code> sent only the question; the model knows only what is in the request. 2. Because each turn resends all the earlier turns: the third request contains the first two questions and both answers as well as its own. 3. Checking: with the clause and page named, a person can verify each obligation in seconds instead of trusting the summary.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects use files and conversations the way a program does: many images in a row, a history that must fit a budget, and two documents compared.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>Describe a folder of images</h3>
+<p class="project-goal">Ask one question about each image in a folder, with the right media type for each file.</p>
+<p class="project-skills"><strong>You will practise:</strong> image blocks, and a separate request per image.</p>
+<ol class="steps">
+<li>Map each file to the question to ask about it.</li>
+<li>Build the image block from the file, its type from the extension.</li>
+<li>Send one request per image, and print the answers.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">describe.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> [file, question] <span class="k">of</span> Object.entries(questions)) {
+  <span class="k">const</span> content = [block(<span class="s">`files/${file}`</span>), {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question}];
+  <span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">500</span>,
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content}],
+  });
+  console.log(<span class="s">`${file}: ${text(response)}\n`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node describe.mjs</span>
+sales.png: Cups sold per month at Bit Cafe in the first half of 2026: 410 in January, 380 in February, 455 in March, 520 in April, 610 in May and 590 in June. Sales dipped in February, then grew for three months to a peak in May, with a small fall in June.
+
+receipt.png: A large latte (45.00), a croissant (30.00) and a water (10.00): 85.00 in total, paid by card.</pre></div>
+<p class="hint"><strong>Hint:</strong> one request per image keeps each answer about one image, and lets you retry one that fails. For a thousand receipts, this is a job for the Message Batches API at half the price (Chapter 15), and the totals are a job for code: ask Claude to read the lines, and add them up yourself.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>Keep a conversation within a budget</h3>
+<p class="project-goal">Drop the oldest turns of a history until it fits a token budget, measured with the token-counting endpoint.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>countTokens</code>, and the cost of forgetting.</p>
+<ol class="steps">
+<li>Count the tokens of the whole history.</li>
+<li>While it is over budget, drop the oldest question and its answer.</li>
+<li>Try three budgets, and see what is left.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">trim.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> trim(messages, budget) {
+  <span class="k">let</span> kept = [...messages];
+  <span class="k">for</span> (;;) {
+    <span class="k">const</span> counted = <span class="k">await</span> client.messages.countTokens({model, messages: kept});
+    <span class="k">const</span> size = counted.input_tokens;
+    <span class="k">if</span> (size &lt;= budget || kept.length &lt;= <span class="n">1</span>) <span class="k">return</span> {kept, size};
+    kept = kept.slice(<span class="n">2</span>); <span class="c line-bidi">// one user turn and its answer</span>
+  }
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node trim.mjs</span>
+budget 1000: kept 13 of 13 messages, 952 tokens
+budget  400: kept 5 of 13 messages, 327 tokens
+budget  150: kept 1 of 13 messages, 15 tokens</pre></div>
+<p class="hint"><strong>Hint:</strong> at the smallest budget only the last question survives: whatever the user said first, their name, their café, is gone. Trimming is cheap and forgetful. The better tool for long conversations keeps a summary of what was dropped, or uses the API’s compaction, which does that for you (Chapter 14).</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>Compare two versions of a contract</h3>
+<p class="project-goal">Send both versions in one message, each with a title, and ask what changed.</p>
+<p class="project-skills"><strong>You will practise:</strong> several documents in one request, named so the question can refer to them.</p>
+<ol class="steps">
+<li>Make a document block for each PDF, with a title.</li>
+<li>Ask what changed between them, by title.</li>
+<li>Check the answer against the two files.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">compare.mjs (part)</div><pre class="code"><span class="k">const</span> question = <span class="s">&quot;What changed between the first contract and the second?&quot;</span>;
+
+<span class="c line-bidi">// Two documents in one message, each with a title to refer to.</span>
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: [
+    block(<span class="s">&quot;files/contract.pdf&quot;</span>, <span class="s">&quot;Contract, first version&quot;</span>),
+    block(<span class="s">&quot;files/contract-v2.pdf&quot;</span>, <span class="s">&quot;Contract, second version&quot;</span>),
+    {<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: question},
+  ]}],
+});</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node compare.mjs</span>
+Two clauses changed. Payment is now due within 15 days of each delivery instead of 30 (clause 2), and the notice period to end the agreement is now 30 days instead of 60 (clause 4). Everything else is the same.</pre></div>
+<p class="hint"><strong>Hint:</strong> the script changed exactly two lines between the versions, so you can check the answer completely. With real contracts, run a plain text diff as well: it finds every change, and Claude explains what each one means. The diff is exact; Claude is the reader.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Rewrite a first message you sent to an AI assistant this week with the four parts of Section 2.1. Send both, in new chats, and compare the answers.</li>
+<li><span class="level">Easy</span> Change <code>chat.mjs</code> to print the total tokens of the whole conversation at the end. How many tokens would a 30-turn conversation of the same size cost, and why is it not ten times the three-turn one?</li>
+<li><span class="level medium">Medium</span> Change <code>image.mjs</code> to send the image after the question instead of before it. The practice server does not care; why might a real model?</li>
+<li><span class="level medium">Medium</span> Extend <code>trim.mjs</code> so it always keeps the first message, where users usually say who they are, and drops from the second onward. What must stay true about the order of roles?</li>
+<li><span class="level hard">Challenge</span> Write a small chat program for the terminal that keeps its history, prints the cost after each turn, and when the history passes a budget, replaces the oldest half with a summary written by Claude. Test the logic with the practice server.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>Attaching the same files to every chat is tiring. The next chapter introduces projects: a place where documents and instructions live once, and every conversation starts with them.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -451,6 +754,16 @@ APIConnectionError   No connection: check the network and ANTHROPIC_BASE_URL.</p
 <li>Nothing changes with the practice server: it does not think, and it ignores effort. With the real API, low effort usually means less thinking, fewer tokens, a faster and cheaper answer, and for a simple question the same answer. The difference shows on hard questions, which is why effort is chosen per task and measured, not set once for everything.</li>
 <li>Add a <code>batch</code> option that halves the cost, and print a fourth column. Good candidates are work nobody waits for: nightly summaries of tickets, tagging a backlog, translating documentation, running an evaluation set. A chat with a customer is not one: the customer is waiting.</li>
 <li>List the models with <code>client.models.list()</code>, send the same request to each in turn, and print the text, <code>usage</code> and <code>cost</code> for each, catching errors so that one model that fails does not stop the others. Against the practice server, every model gives the same scripted answer and the token counts are approximations, so only the costs differ. The comparison means something only with real answers, and even then a single question is an anecdote: compare models on a set of questions with known good answers, as Book 7 did.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 2</h2>
+<ol class="exercises">
+<li>The rewritten message usually gets an answer that needs fewer follow-ups: it fits your audience, your length and your tone the first time. If both answers are equally good, the task was simple enough that context did not matter; the habit pays off on the tasks where it does.</li>
+<li>Add the <code>input_tokens</code> and <code>output_tokens</code> of each turn to a running total. A conversation of 30 turns of the same size does not cost ten times one of three, because turn 30 resends turns 1 to 29: the input grows with each turn, so the total grows roughly with the square of the number of turns. Ten times the turns is nearly eighty times the input tokens (1 + 2 + … + 30 = 465 turns’ worth, against 1 + 2 + 3 = 6).</li>
+<li>Anthropic’s guidance is to put images and documents before the question, so that the model reads the material first and then what to do with it. Placed after, the model reads the question without the thing it asks about; it usually still answers well, but the habit costs nothing and is followed in every example of this book.</li>
+<li>Keep <code>messages[0]</code> and drop two messages at a time from index 1: <code>kept = [kept[0], ...kept.slice(3)]</code>. The pair dropped is an answer and the question after it, so what remains still starts with the user’s first message and still alternates: user, assistant, user. Whatever you drop, keep that rule true: the first message is the user’s, and roles alternate.</li>
+<li>Keep <code>messages</code>; after each turn, print the cost from <code>usage</code>; when <code>countTokens</code> passes the budget, send the oldest half to Claude with “summarise this conversation in five lines, keeping names, numbers and decisions”, and replace that half with one user message containing the summary and one assistant message acknowledging it. With the practice server, add a reply for the summary request so the logic can be tested end to end; the quality of real summaries is something to check against the real API.</li>
 </ol>
 
 </section>

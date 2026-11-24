@@ -37,9 +37,57 @@ const cache = new Map(); // prefix hash -> tokens
 const failures = new Map(); // rule index -> times it has failed so far
 let counter = 0;
 
-// About four characters per token: an approximation; the real count comes
-// from the model's tokenizer (POST /v1/messages/count_tokens).
-const tokens = (value) => Math.ceil(JSON.stringify(value ?? "").length / 4);
+// About four characters per token in English and two in Arabic: an
+// approximation; the real count comes from the model's tokenizer (POST
+// /v1/messages/count_tokens). An image counts about width x height / 750
+// tokens, and a PDF page about 1,500.
+function tokens(value) {
+  const text = JSON.stringify(value ?? "", media);
+  const other = text.replace(/[\x00-\x7f]/g, "").length;
+  return Math.ceil((text.length - other) / 4 + other / 2);
+}
+
+function media(key, value) {
+  if (value?.type === "image" && value.source?.type === "base64") {
+    const png = Buffer.from(value.source.data, "base64");
+    const [w, h] = png.length > 24 ? [png.readUInt32BE(16), png.readUInt32BE(20)] : [1000, 1000];
+    return "x".repeat(Math.ceil((Math.min(w, 1568) * Math.min(h, 1568)) / 750) * 4);
+  }
+  if (value?.type === "document" && value.source?.type === "base64") {
+    const pdf = Buffer.from(value.source.data, "base64").toString("latin1");
+    const pages = (pdf.match(/\/Type\s*\/Page[^s]/g) ?? [1]).length;
+    return "x".repeat(pages * 1500 * 4);
+  }
+  return value;
+}
+
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+
+// Images and documents must say what they are, and be what they say.
+function badMedia(messages) {
+  for (const [i, m] of messages.entries()) {
+    for (const [j, b] of (Array.isArray(m.content) ? m.content : []).entries()) {
+      const where = `messages.${i}.content.${j}`;
+      if (b.type === "image" && b.source?.type === "base64") {
+        if (!IMAGE_TYPES.includes(b.source.media_type)) {
+          return `${where}.source.media_type: must be one of ${IMAGE_TYPES.join(", ")}`;
+        }
+        const head = Buffer.from(b.source.data, "base64").subarray(0, 4).toString("latin1");
+        const real = head.startsWith("\x89PNG") ? "image/png" : head.startsWith("\xff\xd8") ? "image/jpeg" : null;
+        if (real && real !== b.source.media_type) {
+          return `${where}.source: the image data is ${real}, but media_type says ${b.source.media_type}`;
+        }
+      }
+      if (b.type === "document" && b.source?.type === "base64") {
+        if (b.source.media_type !== "application/pdf") return `${where}.source.media_type: must be application/pdf`;
+        if (!Buffer.from(b.source.data, "base64").toString("latin1").startsWith("%PDF")) {
+          return `${where}.source.data: not a PDF`;
+        }
+      }
+    }
+  }
+  return "";
+}
 
 function textOf(content) {
   if (typeof content === "string") return content;
@@ -52,12 +100,14 @@ function error(res, status, type, message, headers = {}) {
   res.end(JSON.stringify({type: "error", error: {type, message}, request_id: id}));
 }
 
-function invalid(body) {
+function invalid(body, counting) {
   if (!body.model) return "model: Field required";
   if (!MODELS.some(([id]) => id === body.model)) return null; // reported as 404
-  if (body.max_tokens === undefined) return "max_tokens: Field required";
+  if (body.max_tokens === undefined && !counting) return "max_tokens: Field required";
   if (!Array.isArray(body.messages) || body.messages.length === 0) return "messages: at least one message is required";
   if (body.messages[0].role !== "user") return "messages: the first message must use the \"user\" role";
+  const media = badMedia(body.messages);
+  if (media) return media;
   if (ALWAYS_THINKING.has(body.model) && body.thinking && body.thinking.type !== "adaptive") {
     return `thinking: type "${body.thinking.type}" is not supported for this model; use "adaptive" or omit it`;
   }
@@ -86,6 +136,8 @@ function reply(body) {
     if (w.tools === false && body.tools?.length) continue;
     if (w.tools === true && !body.tools?.length) continue;
     if (w.model && body.model !== w.model) continue;
+    if (w.history !== undefined && w.history !== body.messages.length > 1) continue;
+    if (w.document && !JSON.stringify(last.content).includes(`"title":"${w.document}"`)) continue;
     if (rule.error) {
       const failed = failures.get(i) ?? 0;
       if (failed >= (rule.error.times ?? Infinity)) continue;
@@ -220,7 +272,7 @@ const server = http.createServer((req, res) => {
     if (sampling && version >= "2026-10-21") {
       return error(res, 400, "invalid_request_error", `${sampling}: not supported in API version ${version}`);
     }
-    const problem = invalid(body);
+    const problem = invalid(body, url.pathname === "/v1/messages/count_tokens");
     if (problem === null) return error(res, 404, "not_found_error", `model: ${body.model}`);
     if (problem) return error(res, 400, "invalid_request_error", problem);
     if (url.pathname === "/v1/messages/count_tokens") {

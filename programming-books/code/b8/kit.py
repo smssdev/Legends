@@ -99,8 +99,9 @@ class Practice:
         self.proc.wait(timeout=10)
 
 
-def chapter(here, words_by_lang, files, runs, extra=()):
-    """files: {path: text} with {w_...} words, practice.json among them; runs: [(transcript, command[, keep])].
+def chapter(here, words_by_lang, files, runs, extra=(), binaries=None):
+    """files: {path: text} with {w_...} words, practice.json among them; runs: [(transcript, command[, keep])];
+    binaries(lang) -> {path: bytes} for the images and documents a chapter sends.
     Every run of a chapter talks to one practice server, started fresh, so the runs are reproducible."""
     modules = deps(extra)
     only = os.environ.get("B8_LANG")  # B8_LANG=ar runs one edition
@@ -117,6 +118,10 @@ def chapter(here, words_by_lang, files, runs, extra=()):
         texts.update({name: wrap_comments(fill(text, words)) for name, text in files.items()})
         write(base, texts)
         write(out, texts)
+        for name, data in (binaries(lang) if binaries else {}).items():  # images, PDFs: made by the chapter
+            for folder in (base, out):
+                (folder / name).parent.mkdir(parents=True, exist_ok=True)
+                (folder / name).write_bytes(data)
         (base / "practice").mkdir(exist_ok=True)
         shutil.copyfile(HERE / "practice" / "server.mjs", base / "practice" / "server.mjs")
         subprocess.run(["chown", "-R", "reader:reader", str(base)], check=False)
