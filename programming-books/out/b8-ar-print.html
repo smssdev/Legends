@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: CLAUDE.md والمهارات والخطافات"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "الفصل 9: من المهمة إلى طلب الدمج"; } }
+@page ch09:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -55,7 +57,7 @@
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">36</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">59</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">71</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">107</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">36</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">59</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">71</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p">107</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">117</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2346,6 +2348,248 @@ trusted: ~/b8-work/config/ar</pre></div>
 <p>بعد إعداد المشروع، يتابع الفصل التالي قطعة عمل كاملة: من مهمة، عبر فرع وحفظات واختبارات، إلى طلب دمج يستطيع المراجع أن يثق به.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b8/pr/ar">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">الفصل 9</p><h1>من المهمة إلى طلب الدمج</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تكتب مهمة يستطيع وكيل، أو زميل، إصلاحها دون أن يسأل</li>
+<li>تدع Claude Code يأخذ مهمة إلى فرع، وإصلاح، واختبار، وحفظ</li>
+<li>تُبقي قواعد المستودع نافذة بـ hooks الخاصة بـ git، أياً كان من يحفظ</li>
+<li>تحصل على وصف طلب دمج يستطيع المراجع استخدامه</li>
+<li>تفحص الفرع والحفظات والوصف قبل أن يراجعها أحد</li>
+</ul>
+</div>
+
+<p class="lead">معظم العمل في فريق البرمجيات يسير في الطريق نفسه: مهمة تصف مشكلة، وفرع يحمل الإصلاح، وحفظات تسجّله، وطلب دمج يطلب من زميل قبوله. ويستطيع Claude Code أن يسير هذا الطريق عنك، من قراءة المهمة إلى كتابة الوصف. وهذا الفصل يتبعه كله، في مستودع محلي، ويُريك أين أوقفت قواعد الفريق خطأً ارتكبه الوكيل في الطريق.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل خطوة في هذا الفصل حدثت فعلاً: الفرع، والتعديلات، والاختباران، ورفض git لرسالة حفظ، والحفظ الثاني، والوصف المكتوب من قالب المستودع. اختار خادم التدريب الخطوات؛ ونفّذها git وNode وClaude Code.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>مهمة تستحق الإصلاح</span></h2>
+
+<p>الوكيل يصلح المهمة التي يُعطاها بالضبط، فالمهمة تقرر جودة الإصلاح. والجيدة تقول ماذا حدث، وماذا كان يجب أن يحدث، وكيف تراه، بمثال حقيقي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">issues/42.md</div><pre class="code md"><b># 42: الفواتير بالقروش تُجمع خطأً</b>
+
+فاتورة زبون بـ 85.50 جنيهاً وبقشيش 10% أظهرت 93.50. ويجب أن تكون 94.05.
+
+الخطوات: افتح صفحة البقشيش، وأدخل 85.50 و10.</pre></div>
+
+<p>ثلاثة أرقام تجعل هذه المهمة قابلة للإصلاح: الفاتورة، والبقشيش، والنتيجة التي كان يجب أن تكون. وهي تصير الاختبار. أما مهمة تقول «البقشيش خاطئ أحياناً» فستأخذ إصلاحاً لما خمّنه الوكيل عن معنى «أحياناً».</p>
+
+<h2><span class="sec">9.2</span> <span>من المهمة إلى الحفظ</span></h2>
+
+<p>الأمر يسمّي المهمة، وسياسة الفروع، والحاجة إلى اختبار، وأين يذهب الوصف. والتشغيل يسمح بتعديل الملفات وبأربعة أوامر: قراءة المهمة، وإنشاء الفرع، وتشغيل الاختبارات، والحفظ، والأخير مسموح بالبادئة، <code dir="ltr">Bash(git commit:*)</code>، لأن الرسالة غير معروفة مسبقاً:</p>
+
+<pre class="plain" dir="ltr">claude -p "..." --permission-mode acceptEdits \
+  --allowedTools "Bash(cat issues/42.md)" "Bash(git switch -c fix/42-piastres)" \
+                 "Bash(node --test)" "Bash(git commit:*)"</pre>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;أصلح المهمة 42 (issues/42.md) في فرع جديد، مع اختبار، واكتب وصف طلب الدمج في PR.md من القالب.&quot; --model claude-opus-5-5 --no-session-persistence --permission-mode acceptEdits --allowedTools &quot;Bash(cat issues/42.md)&quot; &quot;Bash(git switch -c fix/42-piastres)&quot; &quot;Bash(node --test)&quot; &quot;Bash(git commit:*)&quot; --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأقرأ المهمة أولاً.
+  calls  Bash cat issues/42.md
+  gets   # 42: الفواتير بالقروش تُجمع خطأً | فاتورة زبون بـ 85.50 جنيهاً وبقشيش 10% أظهرت 93.50. ويجب أن تكون
+  says   تُقرأ الفاتورة خطأً حين يكون فيها قروش. سأنشئ فرعاً للإصلاح.
+  calls  Bash git switch -c fix/42-piastres
+  gets   Switched to a new branch &#x27;fix/42-piastres&#x27;
+  says   سأقرأ الكود الذي يجمع الفاتورة.
+  calls  Read src/price.mjs
+  gets   1	export const total = (bill, tip) =&gt; parseInt(bill) * (1 + tip / 100); | 2
+  says   parseInt يُسقط القروش. سأستخدم Number، وأضيف اختباراً بمثال المهمة.
+  calls  Edit src/price.mjs
+  calls  Read test/price.test.mjs
+  gets   The file src/price.mjs has been updated successfully. (file state is current in your context — no ne
+  gets   1	import test from &quot;node:test&quot;; | 2	import assert from &quot;node:assert/strict&quot;;
+  calls  Edit test/price.test.mjs
+  gets   The file test/price.test.mjs has been updated successfully. (file state is current in your context —
+  says   سأشغّل الاختبارات.
+  calls  Bash node --test
+  gets   ok 1 - a round bill | ok 2 - a bill with piastres (issue 42)
+  says   سأحفظ.
+  calls  Bash git commit -am &quot;fixed stuff&quot;
+  gets   (error) Exit code 1 | رسائل الحفظ تتبع Conventional Commits: type(scope): subject
+  says   hook المستودع يريد Conventional Commits. سأحفظ من جديد برسالة صحيحة.
+  calls  Bash git commit -am &quot;fix(price): keep piastres when totalling a bill (#42)&quot;
+  gets   [fix/42-piastres 7483cfe] fix(price): keep piastres when totalling a bill (#42) | 2 files changed, 2
+  says   سأكتب الوصف من القالب.
+  calls  Read .github/pull_request_template.md
+  gets   1	## ماذا ولماذا | 2
+  calls  Write PR.md
+  gets   File created successfully at: PR.md (file state is current in your context — no need to Read it back
+  says   تم: في الفرع fix/42-piastres حفظ واحد، والاختبارات تنجح، وPR.md جاهز للصق في طلب الدمج.
+  الأدوار: 12، رُفض: 0، التكلفة: $0.7378، success</pre></div>
+
+<p>اتبع الطريق. قرأ المهمة قبل أي شيء، وأنشأ فرعاً باسمها، وقرأ الكود، ورأى السبب: <code>parseInt</code>، خطأ الفصل 4. وأصلح الكود وأضاف اختباراً مبنياً من أرقام المهمة نفسها، وشغّل الاختبارات (اثنان، ينجحان)، وحفظ. ثم قال المستودع لا.</p>
+
+<h2><span class="sec">9.3</span> <span>قواعد تصمد للجميع</span></h2>
+
+<p>كانت رسالة الحفظ الأولى «fixed stuff». وفي المستودع hook من نوع <code>commit-msg</code>، سكربت يشغّله git نفسه قبل قبول الحفظ:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">githooks/commit-msg (جزء)</div><pre class="code">if ! head -n 1 &quot;$1&quot; | grep -qE &#x27;^(feat|fix|docs|refactor|test|chore)(\([a-z-]+\))?: .+&#x27;; then
+  echo &quot;رسائل الحفظ تتبع Conventional Commits: type(scope): subject&quot; &gt;&amp;2
+  exit 1
+fi</pre></div>
+
+<p>لم تطابق الرسالة، فخرج الـ hook بـ 1، ورفض git الحفظ؛ وعادت رسالته إلى النموذج، فحفظ من جديد برسالة تتبع العُرف، تسمّي المهمة. وهذا نوع آخر من الـ hooks غير الذي في الفصل 8: إنه لـ git، لا لـ Claude Code، فينطبق على كل حفظ في المستودع، من إنسان، أو Claude Code، أو أي أداة أخرى. والقواعد التي تهم الفريق مكانها حيث تصمد للجميع: hooks الخاصة بـ git محلياً، وعلى الخادم حماية الفروع والفحوص المطلوبة (الفصل 10).</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>احفظ hooks الخاصة بـ git في المستودع (هنا في <code>githooks/</code>) ووجّه git إليها بـ <code dir="ltr">git config core.hooksPath githooks</code>، كما يفعل إعداد الفصل. فالـ hooks في <code>.git/hooks</code> لا تُحفظ في السجل، فيكون لكل مطور، ولجهاز كل وكيل، مجموعة مختلفة.</p></aside>
+
+<h2><span class="sec">9.4</span> <span>طلب الدمج</span></h2>
+
+<p>جاء الوصف من قالب المستودع، قسماً قسماً: ما الذي تغيّر ولماذا، وكيف اختُبر، والمهمة التي يغلقها. والمشروع 9.3 يجمعه مع حفظات الفرع وحجم التغيير، وهو ما يقرؤه المراجع أولاً. وفي خدمة استضافة مثل GitHub، عبارة «Closes #42» في طلب الدمج تغلق المهمة حين يُدمج الطلب، ويستطيع Claude Code فتح طلب الدمج بنفسه عبر أداة سطر الأوامر للخدمة، إن سمحت له.</p>
+
+<p>اثنا عشر دوراً ونحو سبعين سنتاً، بعدّ خادم التدريب: والمهمة الحقيقية بهذا الحجم تكلّف عادة أقل من ساعة من وقت أي أحد، والمراجعة التي تحتاجها ما زالت تكلّف انتباه إنسان. وذلك الانتباه يُنفق أفضل على طلب دمج صغير موصوف جيداً منه على طلب كبير.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>لا تدع الوكيل يدمج طلب الدمج الخاص به، ولا يدفع إلى الفرع الرئيسي. ففتح طلب الدمج اقتراح؛ والدمج قرار. أبقِ القرارات مع الناس، واجعل الخادم يفرض ذلك بحماية الفروع، فلا تستطيع صلاحية مُنحت خطأً تجاوزه.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي ثلاث حقائق في المهمة صارت الاختبار؟</li><li>لماذا يُسمح بـ <code dir="ltr">git commit</code> بالبادئة، بينما يُسمح بالأوامر الأخرى بالضبط؟</li><li>لماذا يحمي hook الـ <code>commit-msg</code> المستودع أفضل من قاعدة في <code>CLAUDE.md</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>مهام غامضة</td><td>إصلاح لتخمين الوكيل</td><td>ماذا حدث، وماذا كان يجب، وكيف تراه، بأرقام</td></tr>
+<tr><td>العمل على الفرع الرئيسي</td><td>تغييرات لم يراجعها أحد</td><td>فرع لكل مهمة؛ واحمِ الفرع الرئيسي</td></tr>
+<tr><td>قواعد الفريق في التعليمات فقط</td><td>يتبعها البعض، أحياناً</td><td>hooks الخاصة بـ git وفحوص الخادم، لكل من يحفظ</td></tr>
+<tr><td>hooks في <code>.git/hooks</code></td><td>لكل جهاز قواعد مختلفة</td><td>hooks محفوظة في المستودع و<code>core.hooksPath</code></td></tr>
+<tr><td>أوصاف مكتوبة من الذاكرة</td><td>اختبارات ناقصة، وأسباب ناقصة</td><td>قالب، يُملأ قسماً قسماً</td></tr>
+<tr><td>وكلاء يدمجون</td><td>قرارات لم يتخذها أحد</td><td>الوكلاء يقترحون؛ والناس يدمجون</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>المهمة الجيدة فيها مثال حقيقي؛ وهو يصير الاختبار.</li>
+<li>يستطيع Claude Code قراءة المهمة، وإنشاء فرع، والإصلاح، والاختبار، والحفظ، بالأوامر التي يحتاجها العمل بالضبط.</li>
+<li>hooks الخاصة بـ git تفرض قواعد الفريق على كل من يحفظ، وكيلاً أو إنساناً؛ وهنا رفض أحدها رسالة حفظ مهملة.</li>
+<li>الوصف من القالب يخبر المراجع بما تغيّر، ولماذا، وكيف اختُبر، وما يغلقه.</li>
+<li>الوكلاء يقترحون؛ والناس يدمجون. افحص الفرع والحفظات والوصف قبل المراجعة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. الفاتورة (85.50)، والبقشيش (10%)، والإجمالي المتوقع (94.05). 2. لأن رسالة الحفظ غير معروفة مسبقاً، فلا تطابقها قاعدة محددة؛ والبادئة تسمح بأي رسالة، ثم يفحص hook الـ git الرسالة نفسها. 3. لأن git يشغّله مع كل حفظ، أياً كان من يصنعه، ويرفض الرسالة السيئة رفضاً قاطعاً؛ والقاعدة في <code>CLAUDE.md</code> نصيحة لوكيل واحد، قد لا يتبعها.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تفحص المشاريع الطريق من المهمة إلى طلب الدمج: الـ hook وحده، وفحص آلي قبل المراجعة، والحزمة التي يقرؤها المراجع أولاً.</p>
+
+<div class="project">
+<p class="project-label">المشروع 9.1 · سهل</p>
+<h3>hook الـ commit-msg وحده</h3>
+<p class="project-goal">احفظ برسالة سيئة بنفسك، وراقب git يرفضها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> hooks الخاصة بـ git كقواعد الفريق، للجميع.</p>
+<ol class="steps">
+<li>وجّه git إلى hooks المستودع بـ <code>core.hooksPath</code>.</li>
+<li>احفظ برسالة تخالف العُرف.</li>
+<li>اقرأ الرفض ورمز الخروج.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">git commit --allow-empty -m &quot;update&quot; 2&gt;&amp;1; echo &quot;exit $?&quot;</span>
+رسائل الحفظ تتبع Conventional Commits: type(scope): subject
+exit 1</pre></div>
+<p class="hint"><strong>تلميح:</strong> الرفض نفسه الذي تلقاه الوكيل. وهذا هو المقصود من وضع القاعدة في git: لا يهمه من يحفظ. لكن الـ hooks المحلية يمكن تخطيها بـ <code dir="ltr">--no-verify</code>، فما زال فحص على الخادم لازماً للقواعد التي يجب ألا تُكسر أبداً.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 9.2 · متوسط</p>
+<h3>فحص قبل المراجعة</h3>
+<p class="project-goal">افحص اسم الفرع، وكل رسالة حفظ، والوصف قبل طلب المراجعة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تحويل قائمة مراجعة إلى كود.</p>
+<ol class="steps">
+<li>اقرأ الفرع ورسائل الحفظ منذ الفرع الرئيسي.</li>
+<li>افحص كلاً منها مقابل أنماط الفريق.</li>
+<li>افحص أن في الوصف كل أقسام القالب وأنه يغلق مهمة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">check.mjs (جزء)</div><pre class="code"><span class="k">const</span> problems = {
+  <span class="s">&quot;اسم الفرع&quot;</span>: /^(fix|feat|docs|chore)\/\d+-[a-z0-<span class="n">9</span>-]+$/.test(branch) ? [] : [branch],
+  <span class="s">&quot;رسائل الحفظ&quot;</span>: messages.filter((m) =&gt; !/^(feat|fix|docs|refactor|test|chore)(\([a-z-]+\))?: .+/.test(m)),
+  <span class="s">&quot;الوصف&quot;</span>: [
+    ...sections.filter(([s]) =&gt; !body.includes(s)).map(([s]) =&gt; <span class="s">`قسم ناقص: ${s}`</span>),
+    ...(/#\d+/.test(body) ? [] : [<span class="s">&quot;لا يغلق مهمة&quot;</span>]),
+  ],
+};</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node check.mjs</span>
+اسم الفرع        سليم
+رسائل الحفظ      سليم
+الوصف            سليم</pre></div>
+<p class="hint"><strong>تلميح:</strong> الثلاثة تنجح هنا؛ جرّبه على الفرع بعد حذف قسم من <code>PR.md</code> لتراه يفشل. وفحوص كهذه تحرر المراجع لينظر فيما لا يحكم عليه إلا إنسان: هل الإصلاح صحيح.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 9.3 · تحدٍّ</p>
+<h3>حزمة المراجع</h3>
+<p class="project-goal">اجمع ما يحتاجه المراجع أولاً: الحفظات، وحجم التغيير، والوصف.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المراجعة من الحقائق، قبل الكود.</p>
+<ol class="steps">
+<li>اسرد حفظات الفرع منذ الفرع الرئيسي.</li>
+<li>اعرض حجم التغيير، ملفاً ملفاً.</li>
+<li>اطبع الوصف، وقارنه بالفرق.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">git log --oneline main..HEAD &amp;&amp; git diff --stat main &amp;&amp; cat PR.md</span>
+7483cfe fix(price): keep piastres when totalling a bill (#42)
+ src/price.mjs       | 2 +-
+ test/price.test.mjs | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+<span class="c line-bidi">## ماذا ولماذا</span>
+
+كانت الفواتير بالقروش تُجمع كأنها بلا قروش: `parseInt(&quot;85.50&quot;)` تساوي 85. وصارت `total` تقرأ الفاتورة بـ `Number`.
+
+<span class="c line-bidi">## كيف اختُبر</span>
+
+اختبار جديد: فاتورة 85.50 بنسبة 10% تعطي 94.05، مثال المهمة. وكل الاختبارات تنجح بـ `node --test`.
+
+<span class="c line-bidi">## يغلق</span>
+
+<span class="c line-bidi">#42</span></pre></div>
+<p class="hint"><strong>تلميح:</strong> حفظ واحد، وملفان، وثلاثة أسطر متغيرة، ووصف يشرحها: طلب دمج يستطيع المراجع إنهاءه في خمس دقائق. وقارن الوصف بالفرق سطراً سطراً؛ فالوصف الذي يدّعي أكثر مما يُظهره الفرق أول ما يُسأل عنه.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أعد كتابة مهمة غامضة من عملك كما في القسم 9.1: ماذا حدث، وماذا كان يجب أن يحدث، وكيف تراه، ومثال حقيقي واحد.</li>
+<li><span class="level">سهل</span> أضف قسم <code dir="ltr">## Risks</code> (المخاطر) إلى القالب. أي المخاطر تتوقع أن يريد المراجع رؤيتها مكتوبة لهذا الإصلاح؟</li>
+<li><span class="level medium">متوسط</span> وسّع hook الـ <code>commit-msg</code> ليشترط رقم مهمة في كل حفظ من نوع <code>fix</code>. واختبره كما في المشروع 9.1.</li>
+<li><span class="level medium">متوسط</span> اكتب أضيق صلاحيات لمهمة تنتهي بفتح طلب دمج بأداة سطر الأوامر لخدمة الاستضافة. أي أمر ستسمح به، وأيها يجب أن يبقى مع إنسان؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب سكربتاً يأخذ ملف مهمة، ويشغّل Claude Code عليه في وضع الطباعة في فرع جديد، ويشغّل <code>check.mjs</code>، ويشغّل الاختبارات بنفسه، ولا يترك وصف طلب دمج جاهزاً إلا إن نجح كل شيء. ماذا يسلّم لإنسان حين يفشل شيء؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 10</p>
+<p>حتى الآن قاد مطور واحد Claude Code من طرفية. والفصل التالي يأتي به إلى الفريق: إعدادات مشتركة، وClaude Code في التكامل المستمر، ومراجعات تعمل مع كل طلب دمج.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2441,6 +2685,16 @@ trusted: ~/b8-work/config/ar</pre></div>
 <li>طابق <code dir="ltr">Edit|Write</code> في إدخال <code>PostToolUse</code>؛ وفي السكربت، اقرأ JSON من المدخل القياسي، وافحص أن <code dir="ltr">tool_input.file_path</code> يبدأ بـ <code>src/</code>، وشغّل <code dir="ltr">node --test</code>، واكتب ملخصاً قصيراً للإخفاق على الخطأ القياسي واخرج بـ 2 إن فشل، ليراه Claude. واختبره بتمرير JSON تجريبي بمسار في <code>src/</code> وآخر خارجه، والاختبارات ناجحة وفاشلة.</li>
 <li>حلّل المدخل كـ JSON وانظر في <code dir="ltr">tool_input.command</code>، ثم قسّمه إلى كلمات وافحص هل الأمر (أو أي أمر في سلسلة يربطها <code dir="ltr">&amp;&amp;</code> أو <code>;</code> أو <code>|</code>) يبدأ بـ <code dir="ltr">git push</code>. فمطابقة النص الخام تمنع <code dir="ltr">echo "git push"</code>؛ وتحليل الأمر يمنع ما يعمل فقط. وحتى عندها، الأسماء المستعارة والسكربتات تستطيع الدفع بشكل غير مباشر، ولهذا تبقى الصلاحيات وحماية الفروع على الخادم هي الضمانات الحقيقية.</li>
 <li>مثلاً، مهارة تُعدّ تقرير الحالة الأسبوعي: سكربت يسرد طلبات الدمج المدموجة والمهام المغلقة منذ الإثنين الماضي، وتعليمات للشكل. والأوصاف للمقارنة: «تقرير الحالة» (عنوان، غامض جداً)، و«حالة الفريق الأسبوعية من طلبات الدمج المدموجة والمهام المغلقة» (أفضل)، و«اكتب تقرير الحالة الأسبوعي للفريق مما دُمج وأُغلق منذ الإثنين الماضي» (الموقف، بالكلمات التي يستخدمها الناس حين يطلبونه). والأخير الأرجح أن يُختار حين يطلب أحد التقرير الأسبوعي.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 9</h2>
+<ol class="exercises">
+<li>مثلاً، من «البحث بطيء»: «البحث عن كلمة في القائمة يأخذ نحو 4 ثوانٍ على جهاز فرع الزمالك اللوحي؛ ويجب أن يأخذ أقل من نصف ثانية. الخطوات: افتح القائمة، واكتب ‹لاتيه›. يحدث مع 300 صنف؛ ومع 20 يكون فورياً.» والمثال (300 صنف، 4 ثوانٍ) هو ما يتيح لأي أحد، أو أي وكيل، إعادة إنتاجه ومعرفة متى أُصلح.</li>
+<li>لهذا الإصلاح: تتغير الإجماليات لكل فاتورة فيها قروش، فالتقارير التي تقارن بالإجماليات السابقة ستُظهر فرقاً؛ وأي كود اعتمد على أن <code>parseInt</code> يتجاهل النص اللاحق («85.50 EGP») سيحصل الآن على <code>NaN</code>. وكتابة المخاطر تجعل المراجع يفحصها بدل أن يكتشفها بعد الإصدار.</li>
+<li>أضف فحصاً ثانياً: إن كان النوع <code>fix</code>، فيجب أن يحوي الموضوع <code>#</code> تتبعها أرقام، مثلاً <code dir="ltr">grep -qE '^fix(\([a-z-]+\))?: .+#[0-9]+'</code>. واختبر بـ «fix(price): keep piastres» (تُرفض) و«fix(price): keep piastres (#42)» (تُقبل)، كما في المشروع 9.1.</li>
+<li>اسمح بالصيغة التي تحتاجها أداتك بالضبط، مثلاً <code dir="ltr">Bash(gh pr create:*)</code>، وعلى فرع فقط؛ ولا تسمح أبداً بالدمج (<code dir="ltr">gh pr merge</code>)، ولا بالدفع إلى الفرع الرئيسي، ولا بتغيير حماية الفروع. ففتح طلب الدمج اقتراح يستطيع أي أحد رفضه؛ والدمج يغيّر ما يشغّله الجميع. وكثير من الفرق تترك الأمر الأخير لإنسان، بالوصف الذي كتبه الوكيل.</li>
+<li>شغّل الخطوات بالترتيب وتوقف عند أول إخفاق: أنشئ الفرع، وشغّل Claude Code بـ <code dir="ltr">--output-format json</code>، وافحص <code>subtype</code>، وشغّل <code>check.mjs</code>، وشغّل الاختبارات بنفسك. وعند النجاح، اطبع مسار <code>PR.md</code>. وعند الإخفاق، اترك الفرع كما هو واطبع ما فشل، وآخر رسالة من الوكيل، وتكلفته، ليلتقطه إنسان في دقيقة بدل إعادة تشغيل كل شيء.</li>
 </ol>
 
 </section>

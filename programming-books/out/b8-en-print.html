@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: CLAUDE.md, Skills and Hooks"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: From Issue to Pull Request"; } }
+@page ch09:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -55,7 +57,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">93</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p">93</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">103</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2346,6 +2348,248 @@ trusted: ~/b8-work/config/en</pre></div>
 <p>With the project configured, the next chapter follows a full piece of work: from an issue, through a branch, commits and tests, to a pull request a reviewer can trust.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b8/pr/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>From Issue to Pull Request</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write an issue that an agent, or a colleague, can fix without asking</li>
+<li>let Claude Code take an issue to a branch, a fix, a test and a commit</li>
+<li>keep the repository’s rules in force with git’s own hooks, whoever commits</li>
+<li>get a pull request description that a reviewer can use</li>
+<li>check the branch, the commits and the description before anyone reviews them</li>
+</ul>
+</div>
+
+<p class="lead">Most work in a software team travels the same road: an issue describes a problem, a branch holds the fix, commits record it, and a pull request asks a colleague to accept it. Claude Code can walk that road for you, from reading the issue to writing the description. This chapter follows it all the way, in a local repository, and shows where the team’s rules stop a mistake that the agent made on the way.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every step in this chapter ran for real: the branch, the edits, the two tests, git refusing a commit message, the second commit, and the description written from the repository’s template. The practice server chose the steps; git, Node and Claude Code carried them out.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>An issue worth fixing</span></h2>
+
+<p>An agent fixes exactly the issue it is given, so the issue decides the quality of the fix. A good one says what happened, what should have happened, and how to see it, with a real example:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">issues/42.md</div><pre class="code md"><b># 42: Bills with piastres are totalled wrong</b>
+
+A customer&#x27;s bill of 85.50 EGP with a 10% tip showed 93.50. It should be 94.05.
+
+Steps: open the tip page, enter 85.50 and 10.</pre></div>
+
+<p>Three numbers make this issue fixable: the bill, the tip, and the result it should have been. They become the test. An issue that said “tips are wrong sometimes” would get a fix for whatever the agent guessed “sometimes” meant.</p>
+
+<h2><span class="sec">9.2</span> <span>From issue to commit</span></h2>
+
+<p>The task names the issue, the branch policy, the need for a test, and where the description goes. The run allows file edits and four commands: reading the issue, creating the branch, running the tests, and committing, the last allowed by prefix, <code>Bash(git commit:*)</code>, because the message is not known in advance:</p>
+
+<pre class="plain" dir="ltr">claude -p "Fix issue 42 ..." --permission-mode acceptEdits \
+  --allowedTools "Bash(cat issues/42.md)" "Bash(git switch -c fix/42-piastres)" \
+                 "Bash(node --test)" "Bash(git commit:*)"</pre>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.&quot; --model claude-opus-5-5 --no-session-persistence --permission-mode acceptEdits --allowedTools &quot;Bash(cat issues/42.md)&quot; &quot;Bash(git switch -c fix/42-piastres)&quot; &quot;Bash(node --test)&quot; &quot;Bash(git commit:*)&quot; --output-format stream-json --verbose | node watch.mjs</span>
+  says   I&#x27;ll read the issue first.
+  calls  Bash cat issues/42.md
+  gets   # 42: Bills with piastres are totalled wrong | A customer&#x27;s bill of 85.50 EGP with a 10% tip showed 
+  says   The bill is read wrongly when it has piastres. Creating a branch for the fix.
+  calls  Bash git switch -c fix/42-piastres
+  gets   Switched to a new branch &#x27;fix/42-piastres&#x27;
+  says   Reading the code that totals a bill.
+  calls  Read src/price.mjs
+  gets   1	export const total = (bill, tip) =&gt; parseInt(bill) * (1 + tip / 100); | 2
+  says   parseInt drops the piastres. Using Number, and adding a test with the issue&#x27;s example.
+  calls  Edit src/price.mjs
+  calls  Read test/price.test.mjs
+  gets   The file src/price.mjs has been updated successfully. (file state is current in your context — no ne
+  gets   1	import test from &quot;node:test&quot;; | 2	import assert from &quot;node:assert/strict&quot;;
+  calls  Edit test/price.test.mjs
+  gets   The file test/price.test.mjs has been updated successfully. (file state is current in your context —
+  says   Running the tests.
+  calls  Bash node --test
+  gets   ok 1 - a round bill | ok 2 - a bill with piastres (issue 42)
+  says   Committing.
+  calls  Bash git commit -am &quot;fixed stuff&quot;
+  gets   (error) Exit code 1 | Commit messages follow Conventional Commits: type(scope): subject
+  says   The repository&#x27;s hook wants Conventional Commits. Committing again with a proper message.
+  calls  Bash git commit -am &quot;fix(price): keep piastres when totalling a bill (#42)&quot;
+  gets   [fix/42-piastres e043548] fix(price): keep piastres when totalling a bill (#42) | 2 files changed, 2
+  says   Writing the description from the template.
+  calls  Read .github/pull_request_template.md
+  gets   1	## What and why | 2
+  calls  Write PR.md
+  gets   File created successfully at: PR.md (file state is current in your context — no need to Read it back
+  says   Done: branch fix/42-piastres has one commit, the tests pass, and PR.md is ready to paste into the pull request.
+  turns: 12, denied: 0, cost: $0.7340, success</pre></div>
+
+<p>Follow the road. It read the issue before anything else, created a branch named for it, read the code, and saw the cause: <code>parseInt</code>, the bug from Chapter 4. It fixed the code and added a test built from the issue’s own numbers, ran the tests (two, both passing), and committed. Then the repository said no.</p>
+
+<h2><span class="sec">9.3</span> <span>Rules that hold for everyone</span></h2>
+
+<p>The first commit message was “fixed stuff”. The repository has a <code>commit-msg</code> hook, a script git itself runs before accepting a commit:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">githooks/commit-msg (part)</div><pre class="code">if ! head -n 1 &quot;$1&quot; | grep -qE &#x27;^(feat|fix|docs|refactor|test|chore)(\([a-z-]+\))?: .+&#x27;; then
+  echo &quot;Commit messages follow Conventional Commits: type(scope): subject&quot; &gt;&amp;2
+  exit 1
+fi</pre></div>
+
+<p>The message did not match, the hook exited with 1, and git refused the commit; its message went back to the model, which committed again with a message that follows the convention, naming the issue. This is a different kind of hook from Chapter 8’s: it belongs to git, not to Claude Code, so it applies to every commit in the repository, by a person, by Claude Code, or by any other tool. Rules that matter to the team belong where they hold for everyone: git hooks locally, and on the server, branch protection and required checks (Chapter 10).</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Keep git hooks in the repository (here in <code>githooks/</code>) and point git at them with <code>git config core.hooksPath githooks</code>, as the chapter’s setup does. Hooks in <code>.git/hooks</code> are not versioned, so each developer, and each agent’s machine, would have a different set.</p></aside>
+
+<h2><span class="sec">9.4</span> <span>The pull request</span></h2>
+
+<p>The description came from the repository’s template, section by section: what changed and why, how it was tested, and the issue it closes. Project 9.3 gathers it with the branch’s commits and the size of the change, which is what a reviewer reads first. On a hosting service such as GitHub, “Closes #42” in a pull request closes the issue when the pull request is merged, and Claude Code can open the pull request itself through the service’s command-line tool, if you allow it.</p>
+
+<p>Twelve turns and about seventy cents, by the practice server’s count: a real task of this size usually costs less than an hour of anyone’s time, and the review it needs still costs a person’s attention. That attention is better spent on a small, well-described pull request than on a large one.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Do not let an agent merge its own pull request, or push to the main branch. Opening a pull request is a proposal; merging is a decision. Keep decisions with people, and make the server enforce it with branch protection, so that no permission set by mistake can bypass it.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which three facts in the issue became the test?</li><li>Why is <code>git commit</code> allowed by prefix, when the other commands are allowed exactly?</li><li>Why does the <code>commit-msg</code> hook protect the repository better than a rule in <code>CLAUDE.md</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Vague issues</td><td>A fix for the agent’s guess</td><td>What happened, what should have, how to see it, with numbers</td></tr>
+<tr><td>Working on the main branch</td><td>Changes nobody reviewed</td><td>A branch per issue; protect the main branch</td></tr>
+<tr><td>Team rules only in instructions</td><td>Followed by some, sometimes</td><td>Git hooks and server checks, for every committer</td></tr>
+<tr><td>Hooks in <code>.git/hooks</code></td><td>Each machine has different rules</td><td>Versioned hooks and <code>core.hooksPath</code></td></tr>
+<tr><td>Descriptions written from memory</td><td>Missing tests, missing reasons</td><td>A template, filled section by section</td></tr>
+<tr><td>Agents that merge</td><td>Decisions made by nobody</td><td>Agents propose; people merge</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A good issue has a real example; it becomes the test.</li>
+<li>Claude Code can read the issue, branch, fix, test and commit, with exactly the commands that work needs.</li>
+<li>Git’s own hooks enforce the team’s rules for every committer, agent or person; here one rejected a careless commit message.</li>
+<li>A description from the template tells the reviewer what changed, why, how it was tested, and what it closes.</li>
+<li>Agents propose; people merge. Check the branch, commits and description before review.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The bill (85.50), the tip (10%) and the expected total (94.05). 2. Because the commit message is not known in advance, so an exact rule could not match it; the prefix allows any message, and the git hook then checks the message itself. 3. Because git runs it on every commit, whoever or whatever makes it, and refuses a bad message outright; a rule in <code>CLAUDE.md</code> is advice to one agent, which it may not follow.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects check the road from issue to pull request: the hook on its own, an automatic check before review, and the packet a reviewer reads first.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>The commit-msg hook on its own</h3>
+<p class="project-goal">Make a commit with a bad message yourself, and watch git refuse it.</p>
+<p class="project-skills"><strong>You will practise:</strong> git hooks as the team’s rules, for everyone.</p>
+<ol class="steps">
+<li>Point git at the repository’s hooks with <code>core.hooksPath</code>.</li>
+<li>Commit with a message that breaks the convention.</li>
+<li>Read the refusal and the exit code.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">git commit --allow-empty -m &quot;update&quot; 2&gt;&amp;1; echo &quot;exit $?&quot;</span>
+Commit messages follow Conventional Commits: type(scope): subject
+exit 1</pre></div>
+<p class="hint"><strong>Hint:</strong> the same refusal the agent got. That is the point of putting the rule in git: it does not care who is committing. Local hooks can be skipped with <code>--no-verify</code>, though, so a check on the server is still needed for rules that must never be broken.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>A check before review</h3>
+<p class="project-goal">Check the branch name, every commit message and the description before asking for a review.</p>
+<p class="project-skills"><strong>You will practise:</strong> turning a review checklist into code.</p>
+<ol class="steps">
+<li>Read the branch and the commit messages since the main branch.</li>
+<li>Check each against the team’s patterns.</li>
+<li>Check that the description has every section of the template and closes an issue.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">check.mjs (part)</div><pre class="code"><span class="k">const</span> problems = {
+  <span class="s">&quot;branch name&quot;</span>: /^(fix|feat|docs|chore)\/\d+-[a-z0-<span class="n">9</span>-]+$/.test(branch) ? [] : [branch],
+  <span class="s">&quot;commit messages&quot;</span>: messages.filter((m) =&gt; !/^(feat|fix|docs|refactor|test|chore)(\([a-z-]+\))?: .+/.test(m)),
+  <span class="s">&quot;description&quot;</span>: [
+    ...sections.filter(([s]) =&gt; !body.includes(s)).map(([s]) =&gt; <span class="s">`missing section: ${s}`</span>),
+    ...(/#\d+/.test(body) ? [] : [<span class="s">&quot;does not close an issue&quot;</span>]),
+  ],
+};</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node check.mjs</span>
+branch name      ok
+commit messages  ok
+description      ok</pre></div>
+<p class="hint"><strong>Hint:</strong> all three pass here; try it on the branch after deleting a section of <code>PR.md</code> to see it fail. Checks like these free the reviewer to look at what only a person can judge: whether the fix is right.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>The reviewer’s packet</h3>
+<p class="project-goal">Gather what a reviewer needs first: the commits, the size of the change and the description.</p>
+<p class="project-skills"><strong>You will practise:</strong> reviewing from the facts, before the code.</p>
+<ol class="steps">
+<li>List the branch’s commits since the main branch.</li>
+<li>Show the size of the change, file by file.</li>
+<li>Print the description, and compare it with the diff.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">git log --oneline main..HEAD &amp;&amp; git diff --stat main &amp;&amp; cat PR.md</span>
+e043548 fix(price): keep piastres when totalling a bill (#42)
+ src/price.mjs       | 2 +-
+ test/price.test.mjs | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+<span class="c line-bidi">## What and why</span>
+
+Bills with piastres were totalled as if they had none: `parseInt(&quot;85.50&quot;)` is 85. `total` now reads the bill with `Number`.
+
+<span class="c line-bidi">## How it was tested</span>
+
+New test: a bill of 85.50 at 10% gives 94.05, the example from the issue. All tests pass with `node --test`.
+
+<span class="c line-bidi">## Closes</span>
+
+<span class="c line-bidi">#42</span></pre></div>
+<p class="hint"><strong>Hint:</strong> one commit, two files, three changed lines, and a description that explains them: a pull request a reviewer can finish in five minutes. Compare the description with the diff line by line; a description that claims more than the diff shows is the first thing to question.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Rewrite a vague issue from your own work as in Section 9.1: what happened, what should have happened, how to see it, and one real example.</li>
+<li><span class="level">Easy</span> Add a <code>## Risks</code> section to the template. Which risks would you expect a reviewer to want written down for this fix?</li>
+<li><span class="level medium">Medium</span> Extend the <code>commit-msg</code> hook to require an issue number in every <code>fix</code> commit. Test it as in Project 9.1.</li>
+<li><span class="level medium">Medium</span> Write the narrowest permissions for a task that ends by opening a pull request with your hosting service’s command-line tool. Which command would you allow, and which must stay with a person?</li>
+<li><span class="level hard">Challenge</span> Write a script that takes an issue file, runs Claude Code on it in print mode on a new branch, runs <code>check.mjs</code>, runs the tests itself, and leaves a ready pull request description only if everything passes. What does it hand to a person when something fails?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>So far one developer has driven Claude Code from a terminal. The next chapter brings it to the team: shared settings, Claude Code in continuous integration, and reviews that run on every pull request.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2441,6 +2685,16 @@ trusted: ~/b8-work/config/en</pre></div>
 <li>Match <code>Edit|Write</code> in a <code>PostToolUse</code> entry; in the script, read the JSON from standard input, check that <code>tool_input.file_path</code> starts with <code>src/</code>, and run <code>node --test</code>, writing a short failure summary to standard error and exiting with 2 if it fails, so Claude sees it. Test it by piping sample JSON with a path in <code>src/</code> and one outside it, with the tests passing and failing.</li>
 <li>Parse the input as JSON and look at <code>tool_input.command</code>, then split it into words and check whether the command (or any command in a chain joined by <code>&amp;&amp;</code>, <code>;</code> or <code>|</code>) starts with <code>git push</code>. Matching the raw text blocks <code>echo "git push"</code>; parsing the command blocks only what runs. Even then, aliases and scripts can push indirectly, which is why permissions and server-side branch protection remain the real guarantees.</li>
 <li>For example, a skill that prepares the weekly status report: a script that lists merged pull requests and closed issues since last Monday, and instructions for the format. Descriptions to compare: “status report” (a title, too vague), “Weekly team status from merged PRs and closed issues” (better), and “Write the weekly status report for the team from what was merged and closed since last Monday” (the situation, in the words people use when they ask). The last is the most likely to be chosen when someone asks for the weekly report.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 9</h2>
+<ol class="exercises">
+<li>For example, from “search is slow”: “Searching the menu for a word takes about 4 seconds on the Zamalek branch’s tablet; it should take under half a second. Steps: open the menu, type ‘latte’. Happens with 300 items; with 20 it is instant.” The example (300 items, 4 seconds) is what lets anyone, or any agent, reproduce it and know when it is fixed.</li>
+<li>For this fix: totals change for every bill with piastres, so reports that compare with earlier totals will show a difference; and any code that relied on <code>parseInt</code> ignoring trailing text (“85.50 EGP”) now gets <code>NaN</code>. Writing risks down makes the reviewer check them rather than discover them after the release.</li>
+<li>Add a second check: if the type is <code>fix</code>, the subject must contain <code>#</code> followed by digits, for example <code>grep -qE '^fix(\([a-z-]+\))?: .+#[0-9]+'</code>. Test with “fix(price): keep piastres” (refused) and “fix(price): keep piastres (#42)” (accepted), as in Project 9.1.</li>
+<li>Allow the exact form your tool needs, for example <code>Bash(gh pr create:*)</code>, and only on a branch; never allow merging (<code>gh pr merge</code>), pushing to the main branch, or changing branch protection. Opening a pull request is a proposal anyone can reject; merging changes what everyone runs. Many teams let a person run the final command, with the description the agent wrote.</li>
+<li>Run the steps in order and stop at the first failure: create the branch, run Claude Code with <code>--output-format json</code>, check its <code>subtype</code>, run <code>check.mjs</code>, run the tests yourself. On success, print the path of <code>PR.md</code>. On failure, leave the branch as it is and print what failed, the agent’s last message, and its cost, so a person can pick it up in a minute instead of rerunning everything.</li>
 </ol>
 
 </section>

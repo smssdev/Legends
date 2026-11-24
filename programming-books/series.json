@@ -1593,7 +1593,8 @@
             },
             {
               "en": "From Issue to Pull Request",
-              "ar": "من المهمة إلى طلب الدمج"
+              "ar": "من المهمة إلى طلب الدمج",
+              "src": "b8/pr"
             },
             {
               "en": "Claude Code for Teams and CI",
