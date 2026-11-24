@@ -1,0 +1,48 @@
+{
+  "replies": [
+    {
+      "when": {
+        "text": "my name is mona",
+        "history": false
+      },
+      "text": "Nice to meet you, Mona! A café is a lovely thing to run. How can I help?"
+    },
+    {
+      "when": {
+        "text": "name for a new drink",
+        "history": true
+      },
+      "text": "Since it's for your café: \"Bit Bloom\" (a rose latte), \"Nile Breeze\" (iced mint tea) or \"Mona's Morning\" (a honey cappuccino)."
+    },
+    {
+      "when": {
+        "text": "what is my name",
+        "history": true
+      },
+      "text": "Your name is Mona, and you run a café."
+    },
+    {
+      "when": {
+        "text": "what is my name",
+        "history": false
+      },
+      "text": "I don't know your name: this is the start of our conversation, and you haven't told me yet."
+    },
+    {
+      "when": "what does this chart show",
+      "text": "Cups sold per month at Bit Cafe in the first half of 2026: 410 in January, 380 in February, 455 in March, 520 in April, 610 in May and 590 in June. Sales dipped in February, then grew for three months to a peak in May, with a small fall in June."
+    },
+    {
+      "when": "what is on this receipt",
+      "text": "A large latte (45.00), a croissant (30.00) and a water (10.00): 85.00 in total, paid by card."
+    },
+    {
+      "when": "obligations of the buyer",
+      "text": "The Buyer must pay within 30 days of each delivery (clause 2, page 1); late payment costs 2% a month (clause 3, page 1); and ending the agreement needs 60 days' written notice (clause 4, page 2)."
+    },
+    {
+      "when": "what changed between",
+      "text": "Two clauses changed. Payment is now due within 15 days of each delivery instead of 30 (clause 2), and the notice period to end the agreement is now 30 days instead of 60 (clause 4). Everything else is the same."
+    }
+  ]
+}

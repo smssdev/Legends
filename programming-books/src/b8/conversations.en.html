@@ -1,0 +1,188 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/conversations/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Conversations, Files and Images</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>open a conversation with what Claude needs, and steer it when the answer is off</li>
+<li>know when to continue, when to edit, and when to start a new chat</li>
+<li>see what “the conversation” really is underneath, and why long ones cost more</li>
+<li>give Claude PDFs, documents and images, and check what it reads from them</li>
+<li>keep private data out of places it should not go</li>
+</ul>
+</div>
+
+<p class="lead">Most people meet Claude in a chat window, and most of what they get from it depends on how they talk to it. This chapter is about using that window well: how to start, how to steer, how to bring in your files and screenshots, and how to know when a conversation has run its course. It also opens the window to look inside, with a few lines of code, because knowing what the app does for you explains most of its behaviour.</p>
+
+<aside class="bit" data-mood="think"><p>The answers in this chapter’s transcripts are the practice server’s. The images and the PDFs are real files, made by the chapter’s script; the shapes of the requests, the token accounting and the error are the API’s.</p></aside>
+
+<h2>{{n}}.1 A good first message</h2>
+
+<p>A chat with Claude is a conversation with a capable colleague who has just walked in: well read, quick, and knowing nothing about your situation. The first message decides most of what follows. A good one carries four things:</p>
+
+<table>
+<thead><tr><th>Part</th><th>Weak</th><th>Strong</th></tr></thead>
+<tbody>
+<tr><td>Context</td><td>“Write a menu description.”</td><td>“I run a small café in Cairo; most customers are students.”</td></tr>
+<tr><td>The task</td><td>“Make it good.”</td><td>“Describe our new rose latte in two sentences for the menu board.”</td></tr>
+<tr><td>The form</td><td>(nothing)</td><td>“Warm, simple English; no more than 30 words; no exclamation marks.”</td></tr>
+<tr><td>An example</td><td>(nothing)</td><td>“Here is how we describe our honey cappuccino: …”</td></tr>
+</tbody>
+</table>
+
+<p>None of this is new: it is Book 7’s Chapter 3, applied to a chat. What is new is the window itself, which gives you three ways to steer when an answer misses:</p>
+
+<ul>
+<li><strong>Continue</strong> when the answer is on the right track: “shorter”, “more formal”, “now the Arabic version”. Each reply builds on everything above it.</li>
+<li><strong>Edit your message</strong> when the answer went wrong because of how you asked. The conversation branches from there, and the wrong turn no longer sits in the history, pulling later answers toward it.</li>
+<li><strong>Start a new chat</strong> when the topic changes. An old conversation about last month’s budget is not context for today’s job advert; it is noise, and, as Section {{n}}.2 shows, it is paid for on every turn.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>When a long chat has produced something you want to keep (a plan, a set of decisions), ask Claude to summarise it in a few lines, and start the next chat with that summary. You keep the conclusions and drop the hundred messages that led to them.</p></aside>
+
+<h2>{{n}}.2 What the conversation really is</h2>
+
+<p>Claude does not remember the chat between your messages. Each time you press send, the app sends the whole conversation again, every message from the first, and the model reads it from the top before writing the next reply. Three lines of code show it, using the API of Chapter 1:</p>
+
+<pre data-code="chat.mjs" data-from="^for" data-to="^}" data-title="chat.mjs (part)"></pre>
+<pre data-term="chat.sh"></pre>
+
+<p>Claude knew the name in the third turn because the program sent the first turn again with it. Look at the token counts: 18, then 66, then 125. Every turn pays for everything before it, so a conversation’s cost grows faster than its length. Send the same question without the history, and the knowledge is gone:</p>
+
+<pre data-term="forget.sh"></pre>
+
+<p>The apps add features on top of this: in some plans and settings Claude can search or remember earlier chats, and a project (Chapter 3) gives every chat in it the same documents and instructions. But the core is always the same: the model sees what is sent, and only that. When Claude “forgets” something from early in a very long chat, or contradicts it, it is usually because that part is far back in a long text, competing with everything after it.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Long conversations get slower, cost more, and can drift: an early mistake that was never corrected keeps being read on every turn. If a chat has gone wrong for several turns, do not argue with it; start again with a better first message.</p></aside>
+
+<h2>{{n}}.3 Files</h2>
+
+<p>You can attach documents to a message: PDFs, Word files, spreadsheets, text and code. For a PDF, Claude receives both the text and an image of each page, so it can read tables, charts and layout as well as words. Underneath, a PDF is a <dfn>document block</dfn> placed before the question:</p>
+
+<pre data-code="lib/files.mjs" data-from="^export function block" data-to="^}" data-title="lib/files.mjs (part)"></pre>
+<pre data-code="pdf.mjs" data-from="^const question" data-to="^});" data-title="pdf.mjs (part)"></pre>
+<pre data-term="pdf.sh"></pre>
+
+<p>The contract is two short pages, made by the chapter’s script, and the question asks for the clause and page of every obligation. That one instruction is what makes the answer checkable: you can open page 2 and read clause 4 yourself. Notice the tokens too: about three thousand for two short pages, because each page is also read as an image. A hundred-page report is a large request, and it is sent again on every turn of the conversation.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Ask for references whenever an answer comes from a document: the clause, the page, the row, the exact quotation. An answer you can check in ten seconds is worth more than a fluent one you have to take on trust. Chapter 12 shows the API’s citations, which return the exact passage with each claim.</p></aside>
+
+<h2>{{n}}.4 Images</h2>
+
+<p>Claude reads images: screenshots of an error, a photo of a whiteboard, a chart, a receipt, a hand-drawn sketch of a screen. An image is a content block, like a document:</p>
+
+<pre data-code="image.mjs" data-from="^const question" data-to="^});" data-title="image.mjs (part)"></pre>
+<pre data-term="image.sh"></pre>
+
+<p>The chart is real: six bars with their values printed above them, made by the chapter’s script from the numbers 410, 380, 455, 520, 610 and 590. The practice server’s answer reads them all correctly; a real model usually does too when the numbers are printed, and is less reliable when it must estimate a bar’s height against an axis, read small print, or count many similar objects. Treat numbers read from an image as a draft: when they matter, compare them with the source, or ask for the data itself.</p>
+
+<p>An image block must say what it is, and be it. Send a PNG labelled as a JPEG and the request fails before any model sees it:</p>
+
+<pre data-term="mime.sh"></pre>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did the third turn of <code>chat.mjs</code> know the name, and the same question in <code>forget.mjs</code> not?</li><li>Why do the tokens grow faster than the number of turns?</li><li>What does one sentence in the PDF question make possible?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 What you share</h2>
+
+<p>Everything you attach is sent to Anthropic to be processed, like everything you type. Before you upload a contract, a customer list or a screenshot of a dashboard, ask the same question you would before emailing it to an outside consultant: am I allowed to share this, and with whom? Your company may have a policy, and a business or enterprise plan may be the only approved way to use Claude with company data. Check your plan’s privacy settings, including whether your chats may be used to improve the models, and choose deliberately. And remove what the task does not need: Claude can summarise a complaint without the customer’s phone number (Book 7, Chapter 15).</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Before you attach a file, look at it the way a stranger would. Screenshots in particular carry more than you mean to share: an open tab, a name in a corner, a token in a URL. Crop first.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A first message with no context</td><td>Generic answers that fit anyone</td><td>Say who, what for, in what form, with an example</td></tr>
+<tr><td>Arguing with a chat that went wrong</td><td>The mistake stays in the history</td><td>Edit the message, or start again</td></tr>
+<tr><td>One endless chat for everything</td><td>Slower, dearer, more confused answers</td><td>A new chat per topic; carry a summary</td></tr>
+<tr><td>Trusting numbers read from images</td><td>Plausible wrong figures</td><td>Check against the source; send the data</td></tr>
+<tr><td>Answers from documents without references</td><td>Claims you cannot check</td><td>Ask for the clause, page or quotation</td></tr>
+<tr><td>Uploading what you may not share</td><td>Data where it should not be</td><td>Policy first; remove and crop what is not needed</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A good first message gives context, the task, the form and an example; steer by continuing, editing or starting fresh.</li>
+<li>The conversation is resent in full on every turn: that is how Claude “remembers”, and why long chats cost more and drift.</li>
+<li>Documents and images are content blocks; PDFs are read as text and as page images.</li>
+<li>Ask for references with every answer from a document, and check numbers read from images.</li>
+<li>Share only what you are allowed to share, and only what the task needs.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>chat.mjs</code> sent the earlier turns again, including “My name is Mona”, while <code>forget.mjs</code> sent only the question; the model knows only what is in the request. 2. Because each turn resends all the earlier turns: the third request contains the first two questions and both answers as well as its own. 3. Checking: with the clause and page named, a person can verify each obligation in seconds instead of trusting the summary.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects use files and conversations the way a program does: many images in a row, a history that must fit a budget, and two documents compared.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Describe a folder of images</h3>
+<p class="project-goal">Ask one question about each image in a folder, with the right media type for each file.</p>
+<p class="project-skills"><strong>You will practise:</strong> image blocks, and a separate request per image.</p>
+<ol class="steps">
+<li>Map each file to the question to ask about it.</li>
+<li>Build the image block from the file, its type from the extension.</li>
+<li>Send one request per image, and print the answers.</li>
+</ol>
+<pre data-code="describe.mjs" data-from="^for" data-to="^}" data-title="describe.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/describe.sh"></pre>
+<p class="hint"><strong>Hint:</strong> one request per image keeps each answer about one image, and lets you retry one that fails. For a thousand receipts, this is a job for the Message Batches API at half the price (Chapter 15), and the totals are a job for code: ask Claude to read the lines, and add them up yourself.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Keep a conversation within a budget</h3>
+<p class="project-goal">Drop the oldest turns of a history until it fits a token budget, measured with the token-counting endpoint.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>countTokens</code>, and the cost of forgetting.</p>
+<ol class="steps">
+<li>Count the tokens of the whole history.</li>
+<li>While it is over budget, drop the oldest question and its answer.</li>
+<li>Try three budgets, and see what is left.</li>
+</ol>
+<pre data-code="trim.mjs" data-from="^export async function trim" data-to="^}" data-title="trim.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/trim.sh"></pre>
+<p class="hint"><strong>Hint:</strong> at the smallest budget only the last question survives: whatever the user said first, their name, their café, is gone. Trimming is cheap and forgetful. The better tool for long conversations keeps a summary of what was dropped, or uses the API’s compaction, which does that for you (Chapter 14).</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Compare two versions of a contract</h3>
+<p class="project-goal">Send both versions in one message, each with a title, and ask what changed.</p>
+<p class="project-skills"><strong>You will practise:</strong> several documents in one request, named so the question can refer to them.</p>
+<ol class="steps">
+<li>Make a document block for each PDF, with a title.</li>
+<li>Ask what changed between them, by title.</li>
+<li>Check the answer against the two files.</li>
+</ol>
+<pre data-code="compare.mjs" data-from="^const question" data-to="^});" data-title="compare.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/compare.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the script changed exactly two lines between the versions, so you can check the answer completely. With real contracts, run a plain text diff as well: it finds every change, and Claude explains what each one means. The diff is exact; Claude is the reader.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Rewrite a first message you sent to an AI assistant this week with the four parts of Section {{n}}.1. Send both, in new chats, and compare the answers.</li>
+<li><span class="level">Easy</span> Change <code>chat.mjs</code> to print the total tokens of the whole conversation at the end. How many tokens would a 30-turn conversation of the same size cost, and why is it not ten times the three-turn one?</li>
+<li><span class="level">Medium</span> Change <code>image.mjs</code> to send the image after the question instead of before it. The practice server does not care; why might a real model?</li>
+<li><span class="level">Medium</span> Extend <code>trim.mjs</code> so it always keeps the first message, where users usually say who they are, and drops from the second onward. What must stay true about the order of roles?</li>
+<li><span class="level">Challenge</span> Write a small chat program for the terminal that keeps its history, prints the cost after each turn, and when the history passes a budget, replaces the oldest half with a summary written by Claude. Test the logic with the practice server.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Attaching the same files to every chat is tiring. The next chapter introduces projects: a place where documents and instructions live once, and every conversation starts with them.</p>
+</div>
+</section>
