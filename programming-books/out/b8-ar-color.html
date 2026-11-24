@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: Claude Code للفرق والتكامل المستمر"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "الفصل 11: واجهة Claude البرمجية"; } }
+@page ch11:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -161,7 +163,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p">106</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p">116</span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">127</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p">106</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p">116</span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p">127</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">138</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -2959,6 +2961,267 @@ on: [&#x27;pull_request&#x27;] | permissions: {&#x27;contents&#x27;: &#x27;read&
 <p>يبني الجزء الثالث منتجاتك الخاصة على Claude. ويبدأ حيث ينتهي Claude Code: الواجهة البرمجية نفسها، بالمحادثات والبث والأخطاء والحدود التي يلقاها كل برنامج في بيئة الإنتاج.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b8/api/ar">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">الفصل 11</p><h1>واجهة Claude البرمجية</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تبث الجواب، فيراه المستخدمون وهو يُكتب</li>
+<li>تدع الحزمة تعيد ما يمكن إعادته، وتعرف ما تفعله</li>
+<li>تضبط المهل، وتختارها للطلب لا للبرنامج</li>
+<li>تتعامل مع جواب قُطع عند <code>max_tokens</code>، دون أن تخسر ما جاء</li>
+<li>تُبقي الميزة تعمل حين يكون النموذج مثقلاً</li>
+</ul>
+</div>
+
+<p class="lead">أرسل الفصل 1 رسالة واحدة وقرأ جواباً واحداً. والمنتج يرسل آلافاً، من مستخدمين ينتظرون، عبر شبكات تتعطل، إلى خدمة تقول أحياناً «ليس الآن». وهذا الفصل يغطي ما يحتاجه كل برنامج في بيئة الإنتاج حول الاستدعاء نفسه: البث، وإعادة المحاولة، والمهل، والأجوبة التي لا تتسع، وما تفعله حين يكون النموذج الذي أردته مشغولاً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الأخطاء وإعادات المحاولة والمهل وأحداث البث في هذا الفصل سلوك حقيقي للحزمة مع خادم التدريب، الذي يمكن جعله بطيئاً أو مشغولاً أو مثقلاً عمداً. وكلمات الأجوبة من خادم التدريب.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>البث</span></h2>
+
+<p>الجواب الطويل قد يستغرق ثوانيَ كثيرة ليُكتب. وبلا بث، يحدّق المستخدم في لا شيء حتى يكتمل؛ ومعه، تظهر الكلمات الأولى فوراً تقريباً. و<code>stream</code> في الحزمة تعطيك النص لحظة وصوله، والرسالة الكاملة في النهاية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">stream.mjs (جزء)</div><pre class="code"><span class="k">const</span> stream = client.messages.stream({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;صِف اللاتيه بالورد للوحة القائمة في جملتين.&quot;</span>}],
+});
+<span class="k">let</span> pieces = <span class="n">0</span>;
+stream.on(<span class="s">&quot;text&quot;</span>, (piece) =&gt; {
+  process.stdout.write(pieces++ % <span class="n">4</span> === <span class="n">0</span> ? <span class="s">`|${piece}`</span> : piece);
+});
+<span class="k">const</span> message = <span class="k">await</span> stream.finalMessage();
+console.log(<span class="s">`\n--- ${pieces} قطعة; stop: ${message.stop_reason}; ${message.usage.output_tokens} tokens out`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node stream.mjs</span>
+|لاتيه بإسبريسو إثيوبي وحليب |مبخّر ولمسة من شراب |الورد. زهري ولطيف، وموجود |في الربيع فقط.
+--- 15 قطعة; stop: end_turn; 47 tokens out</pre></div>
+
+<p>كل خط عمودي يعلّم بداية كل قطعة رابعة: وصل الجواب في 15 قطعة، وطبع البرنامج كلاً منها فوراً. ثم تعطي <code dir="ltr">finalMessage()</code> الرسالة نفسها التي كان سيعيدها الاستدعاء بلا بث، بسبب توقفها واستهلاكها، فلا يهتم باقي البرنامج بكيف وصلت. ابثّ كلما انتظر إنسان، وكلما كان <code>max_tokens</code> كبيراً: فالطلبات الطويلة بلا بث قد تصطدم بمهل HTTP قبل أن يكتمل الجواب.</p>
+
+<h2><span class="sec">11.2</span> <span>إعادة المحاولة</span></h2>
+
+<p>بعض الإخفاقات تستحق المحاولة من جديد: 429 (طلبات كثيرة)، و529 (مثقل)، وأخطاء 5xx الأخرى، والاتصالات المقطوعة. وأخرى لا: فالـ 400 سيفشل بالطريقة نفسها كل مرة. والحزمة تعرف الفرق، وتعيد النوع الأول بنفسها، مرتين افتراضياً، وتنتظر أطول في كل مرة وتحترم ترويسة <code>retry-after</code> حين ترسلها الواجهة. وغلاف حول <code>fetch</code> يجعل ذلك مرئياً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">retry.mjs (جزء)</div><pre class="code"><span class="k">const</span> statuses = [];
+<span class="k">const</span> counting = <span class="k">async</span> (url, init) =&gt; {
+  <span class="k">const</span> response = <span class="k">await</span> fetch(url, init);
+  statuses.push(response.status);
+  <span class="k">return</span> response;
+};</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node retry.mjs</span>
+«صقيع النيل»: بارد، وصافٍ، ومن هنا.
+  maxRetries 2, المحاولات: 429 → 429 → 200
+RateLimitError: 429
+  maxRetries 0, المحاولات: 429</pre></div>
+
+<p>مع الافتراضي، فشل الطلب مرتين بـ 429، وانتظر كما طلب الخادم، ونجح في المحاولة الثالثة؛ ولم يرَ البرنامج إلا الجواب. ومع <code dir="ltr">maxRetries: 0</code>، صار أول 429 خطأ <code>RateLimitError</code>. أبقِ إعادة المحاولة للطلبات التفاعلية، وارفعها للمهام الخلفية التي تستطيع الانتظار، ولا تكتب أبداً حلقة إعادة ثانية حول حلقة الحزمة: فالانتظارات تتضاعف.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>إعادة المحاولة تجعل الإخفاقات أبطأ، لا أندر. فإن كانت طلباتك تُحدّ بانتظام، فالإصلاح طلبات أقل أو أصغر (التخزين المؤقت، والدفعات، ونموذج أصغر للمهام البسيطة، الفصل 15) أو حد أعلى، لا مزيد من الإعادات.</p></aside>
+
+<h2><span class="sec">11.3</span> <span>المهل</span></h2>
+
+<p>تنتظر الحزمة حتى عشر دقائق افتراضياً، وهذا يناسب الأجوبة الطويلة ولا شيء غيرها تقريباً. اضبط المهلة للطلب الذي أمامك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">timeout.mjs (جزء)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> timeout <span class="k">of</span> [<span class="n">1000</span>, <span class="n">10000</span>]) {
+  <span class="k">const</span> start = Date.now();
+  <span class="k">try</span> {
+    <span class="k">const</span> r = <span class="k">await</span> client.messages.create(request, {timeout, maxRetries: <span class="n">0</span>});
+    console.log(<span class="s">`timeout ${timeout} ms: ${r.content[0].text}`</span>);
+  } <span class="k">catch</span> (error) {
+    console.log(<span class="s">`timeout ${timeout} ms: ${error.constructor.name}`</span>);
+  }
+  console.log(<span class="s">`  بعد ${Math.round((Date.now() - start) / 1000)} s`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node timeout.mjs</span>
+timeout 1000 ms: APIConnectionTimeoutError
+  بعد 1 s
+timeout 10000 ms: يحب الزبائن القهوة والعاملين؛ ويشتكون من الطابور وقت الغداء ومن الضجيج في المساء.
+  بعد 3 s</pre></div>
+
+<p>أخذ خادم التدريب ثلاث ثوانٍ عمداً. ومع مهلة ثانية واحدة، استسلمت الحزمة ورمت <code>APIConnectionTimeoutError</code>؛ ومع عشر ثوانٍ، وصل الجواب. والمهلة في حزمة JavaScript بالملّي ثانية؛ والحزم الأخرى بوحداتها (بالثواني في Python مثلاً). والمهل تُعاد كأخطاء الاتصال الأخرى، فأطول انتظار هو المهلة مضروبة في عدد المحاولات: اضبط الاثنين وذلك المجموع في ذهنك.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي الأخطاء تعيدها الحزمة، وأيها لا؟</li><li>المهلة 10 ثوانٍ و<code>maxRetries</code> اثنان. كم قد يستغرق الطلب قبل أن يفشل؟</li><li>ماذا تعطي <code dir="ltr">finalMessage()</code> البرنامج الذي يبث؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>أجوبة لا تتسع</span></h2>
+
+<p>حين يبلغ الجواب <code>max_tokens</code>، يتوقف، في منتصف جملة إن لزم، ويقول <code>stop_reason</code> إنه <code>max_tokens</code>. ويجب ألا يعرضه البرنامج كاملاً. وللإكمال، أبقِ الجواب المقطوع في السجل واطلب الباقي في رسالة مستخدم جديدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">truncate.mjs (جزء)</div><pre class="code"><span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;اكتب نص الترحيب لموقعنا الجديد.&quot;</span>}];
+<span class="k">const</span> first = <span class="k">await</span> client.messages.create({model: <span class="s">&quot;claude-opus-5-5&quot;</span>, max_tokens: <span class="n">40</span>, messages});
+console.log(<span class="s">`[${first.stop_reason}] ${text(first)}`</span>);
+
+messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: first.content});
+messages.push({role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;أكمل من حيث توقفت بالضبط.&quot;</span>});
+<span class="k">const</span> rest = <span class="k">await</span> client.messages.create({model: <span class="s">&quot;claude-opus-5-5&quot;</span>, max_tokens: <span class="n">1000</span>, messages});
+console.log(<span class="s">`[${rest.stop_reason}] ${text(rest)}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node truncate.mjs</span>
+[max_tokens] أهلاً بك في مقهى بِت، حيث يبدأ كل كوب ببن نحمّصه بأنفسنا على دفعات صغيرة. افتتحنا في الزمالك عام 2019 بآلة واحدة وطاولة طويلة، واليوم نخدم ثلاثة أحياء، لكن
+[end_turn] الطاولة ما زالت قلب كل فرع: مكاناً للعمل، أو اللقاء، أو القراءة على مهل. تعالَ من أجل القهوة؛ وابقَ من أجل الصحبة.</pre></div>
+
+<p>توقف الجواب الأول عند «لكن»؛ وبدأ الثاني بـ «الطاولة»، لأن النموذج استطاع أن يقرأ بالضبط أين انتهى جوابه الأول. والإصلاح الأبسط هو الأفضل غالباً: <code>max_tokens</code> أكبر، أو طلب جواب أقصر.</p>
+
+<p>وحيلة قديمة لم تعد تعمل هنا: أن تكتب بداية جواب Claude بنفسك، كرسالة مساعد أخيرة، ليكملها Claude. فالنماذج الحالية ترفضها:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node prefill.mjs</span>
+400 BadRequestError
+  messages: this model does not support assistant message prefill; the last message must be a user message</pre></div>
+
+<p>ولتتحكم في شكل الجواب، قله في التعليمات، أو اطلب مخرجات منظّمة (الفصل 12)؛ ولتكمل جواباً، استخدم رسالة مستخدم كما أعلاه.</p>
+
+<h2><span class="sec">11.5</span> <span>حين يكون النموذج مشغولاً</span></h2>
+
+<p>النموذج المثقل يعيد 529، وبعد إعادات الحزمة يصل الخطأ إلى كودك. وللميزة التي يجب أن تجيب، انتقل إلى نموذج آخر يستطيع المهمة، وقل ذلك في سجلاتك (المشروع 11.3). ولكل رد أيضاً <dfn>معرّف طلب</dfn>، في النجاح والخطأ: سجّله مع طلبك أنت، وحين يحدث خطأ، يكون أول ما يطلبه دعم Anthropic (المشروع 11.2).</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>لكل استدعاء للواجهة البرمجية، سجّل النموذج، ومعرّف الطلب، وسبب التوقف، والـ tokens، والوقت المستغرق. فحين يبلّغ مستخدم عن جواب غريب، تكون هذه الحقول الخمسة الفرق بين إيجاد السبب في دقيقة والتخمين يوماً كاملاً.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>انتظار الأجوبة الطويلة بلا بث</td><td>مستخدمون يحدّقون في لا شيء؛ ومهل HTTP</td><td>ابثّ؛ واستخدم <code dir="ltr">finalMessage()</code> للباقي</td></tr>
+<tr><td>حلقة إعادة حول إعادات الحزمة</td><td>الانتظارات تتضاعف؛ والحدود تُضرب أكثر</td><td>اضبط <code>maxRetries</code>؛ ولا تغلّفه</td></tr>
+<tr><td>إعادة أخطاء 400</td><td>الإخفاق نفسه، أبطأ</td><td>أصلح الطلب؛ وأعد 429 و5xx والاتصالات فقط</td></tr>
+<tr><td>مهلة واحدة لكل شيء</td><td>المهام القصيرة تعلق؛ والطويلة تفشل</td><td>مهلة لكل طلب، بحجم المهمة</td></tr>
+<tr><td>عرض جواب <code>max_tokens</code> كاملاً</td><td>جمل تتوقف في منتصفها</td><td>افحص <code>stop_reason</code>؛ وأكمل أو اطلب أقل</td></tr>
+<tr><td>بدء جواب المساعد عنه</td><td>400 مع النماذج الحالية</td><td>التعليمات، أو المخرجات المنظّمة، أو رسالة مستخدم</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>ابثّ حين ينتظر إنسان أو يكون الجواب طويلاً؛ و<code dir="ltr">finalMessage()</code> تعطي الرسالة الكاملة.</li>
+<li>تعيد الحزمة 429 و5xx وأخطاء الاتصال بنفسها، محترمة <code>retry-after</code>؛ اضبطها، ولا تغلّفها.</li>
+<li>اضبط مهلة لكل طلب؛ وتذكّر أنها تُعاد أيضاً.</li>
+<li>التوقف عند <code>max_tokens</code> ليس جواباً: أكمل والنص المقطوع في السجل، أو اطلب أقل؛ والنماذج الحالية ترفض بدء الجواب عنها.</li>
+<li>انتقل إلى نموذج آخر عند الإثقال، وسجّل معرّف طلب كل استدعاء.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. تعيد 429 و408 و409 و5xx (ومنها 529) وأخطاء الاتصال، بما فيها المهل؛ ولا تعيد أخطاء 4xx الأخرى، مثل 400 و401 و404، التي ستفشل بالطريقة نفسها. 2. حتى نحو 30 ثانية من انتظار الردود (ثلاث محاولات من 10 ثوانٍ)، مع فترات التوقف بين المحاولات. 3. الرسالة الكاملة، كما كان سيعيدها الاستدعاء بلا بث، بمحتواها وسبب توقفها واستهلاكها.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع ثلاث أدوات صغيرة تجعل استدعاءات الواجهة البرمجية جديرة بالاعتماد: جواب لا يُقطع أبداً، ومعرّفات الطلبات للدعم، ونموذج بديل.</p>
+
+<div class="project">
+<p class="project-label">المشروع 11.1 · سهل</p>
+<h3>جواب لا يُقطع أبداً</h3>
+<p class="project-goal">اسأل حتى يكتمل الجواب، ثلاث مرات على الأكثر، واجمع الأجزاء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>stop_reason</code> كتدفق تحكم، بحد.</p>
+<ol class="steps">
+<li>اسأل، واحتفظ بالنص.</li>
+<li>ما دام سبب التوقف <code>max_tokens</code>، أضف الجواب إلى السجل واطلب الإكمال.</li>
+<li>توقف بعد ثلاثة أجزاء، وقل هل اكتمل الجواب.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">complete.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> complete(question, maxTokens) {
+  <span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: question}];
+  <span class="k">let</span> answer = <span class="s">&quot;&quot;</span>;
+  <span class="k">for</span> (<span class="k">let</span> part = <span class="n">1</span>; part &lt;= <span class="n">3</span>; part++) {
+    <span class="k">const</span> r = <span class="k">await</span> client.messages.create({model: <span class="s">&quot;claude-opus-5-5&quot;</span>, max_tokens: maxTokens, messages});
+    answer += (answer ? <span class="s">&quot; &quot;</span> : <span class="s">&quot;&quot;</span>) + text(r);
+    <span class="k">if</span> (r.stop_reason !== <span class="s">&quot;max_tokens&quot;</span>) <span class="k">return</span> {answer, parts: part};
+    messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: r.content}, {role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;أكمل من حيث توقفت بالضبط.&quot;</span>});
+  }
+  <span class="k">return</span> {answer, parts: <span class="n">3</span>, cut: <span class="k">true</span>};
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node complete.mjs</span>
+(3 أجزاء) أهلاً بك في مقهى بِت، حيث يبدأ كل كوب ببن نحمّصه بأنفسنا على دفعات صغيرة. افتتحنا في الزمالك عام 2019 بآلة واحدة وطاولة طويلة، واليوم نخدم ثلاثة أحياء، لكن الطاولة ما زالت قلب كل فرع: مكاناً للعمل، أو اللقاء، أو القراءة على مهل. تعالَ من أجل القهوة؛ وابقَ من أجل الصحبة.</pre></div>
+<p class="hint"><strong>تلميح:</strong> ثلاثة أجزاء من 40 token لكل منها، مجموعة في نص واحد بلا درز. والحد مهم: فالجواب الذي يحتاج أكثر من ثلاثة إكمالات علامة على أن الطلب طلب أكثر من اللازم، ويجب أن يعرف المستدعي (<code dir="ltr">cut: true</code>).</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 11.2 · متوسط</p>
+<h3>معرّفات الطلبات</h3>
+<p class="project-goal">اطبع معرّف طلب رد ناجح ومعرّف طلب خطأ.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code dir="ltr">withResponse()</code>، والمعرّفات التي يجب أن يحفظها كل سجل.</p>
+<ol class="steps">
+<li>استدعِ بـ <code dir="ltr">.withResponse()</code> لتحصل على رد HTTP مع البيانات.</li>
+<li>اقرأ ترويسة <code>request-id</code>.</li>
+<li>اقرأ <code>requestID</code> من الخطأ.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node ids.mjs</span>
+ok     msg_practice_0021  request-id: req_practice_0022
+429    request-id: req_practice_0023</pre></div>
+<p class="hint"><strong>تلميح:</strong> معرّف الرسالة ومعرّف الطلب شيئان مختلفان: الأول يسمّي الجواب، والثاني يسمّي طلب HTTP الذي أنتجه، أو فشل. احفظ الاثنين في سجلاتك، بجانب معرّفك أنت لطلب المستخدم.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 11.3 · تحدٍّ</p>
+<h3>نموذج بديل</h3>
+<p class="project-goal">جرّب النموذج المفضل؛ وإن كان مثقلاً بعد الإعادات، فاسأل التالي.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التقاط صنف الخطأ الصحيح، والتراجع بلطف.</p>
+<ol class="steps">
+<li>اسرد النماذج بترتيب التفضيل.</li>
+<li>التقط أخطاء الخادم فقط، ولا تنتقل إلا إن بقي نموذج آخر.</li>
+<li>أبلغ أي نموذج أجاب.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">fallback.mjs (جزء)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> ask(content) {
+  <span class="k">for</span> (<span class="k">const</span> model <span class="k">of</span> MODELS) {
+    <span class="k">try</span> {
+      <span class="k">const</span> r = <span class="k">await</span> client.messages.create({model, max_tokens: <span class="n">200</span>, messages: [{role: <span class="s">&quot;user&quot;</span>, content}]});
+      <span class="k">return</span> {model, text: r.content[<span class="n">0</span>].text};
+    } <span class="k">catch</span> (error) {
+      <span class="k">if</span> (!(error <span class="k">instanceof</span> Anthropic.InternalServerError) || model === MODELS.at(-<span class="n">1</span>)) <span class="k">throw</span> error;
+      console.log(<span class="s">`  ${model}: ${error.status} ${error.error?.error?.type}`</span>);
+    }
+  }
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node fallback.mjs</span>
+  claude-opus-5-5: 529 overloaded_error
+حليب الشوفان.  (أجاب claude-sonnet-5-5)</pre></div>
+<p class="hint"><strong>تلميح:</strong> أخطاء الخادم وحدها تنقل إلى النموذج التالي: فالـ 400 سيفشل على كل نموذج، والـ 401 يعني المفتاح، لا النموذج. وافحص أن النموذج البديل جيد بما يكفي للمهمة قبل أن تعتمد عليه (الفصل 16)، وتذكّر أن لكل نموذج ذاكرته المؤقتة للأوامر، فالبديل يبدأ بارداً.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> غيّر <code>stream.mjs</code> ليطبع الوقت حتى أول قطعة والوقت حتى آخرها. أيهما يلاحظه المستخدم؟</li>
+<li><span class="level">سهل</span> اجعل خادم التدريب يعيد 400 لسؤال، وشغّل <code>retry.mjs</code> به. كم محاولة تجري الحزمة؟</li>
+<li><span class="level medium">متوسط</span> اكتب مسجّلاً صغيراً يسجّل، لكل استدعاء، الحقول الخمسة من عادة المحترفين، سطر JSON لكل استدعاء.</li>
+<li><span class="level medium">متوسط</span> ابثّ جواباً إلى صفحة ويب بأحداث الخادم (server-sent events)، بوحدة <code>http</code> في Node: مرّر كل قطعة لحظة وصولها.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب دالة تشغّل 20 طلباً، 4 على الأكثر في آن، وتحترم إعادات الحزمة، وتبلّغ كم نجح، وكم فشل، ولماذا. واجعل خادم التدريب يحدّ بعضها.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 12</p>
+<p>حتى الآن لم يُجب Claude إلا بنص. والفصل التالي يعطيه أدوات يستدعيها، وأجوبة بأشكال دقيقة: استخدام الأدوات والمخرجات المنظّمة، حيث يبدأ Claude يتصرف داخل برنامجك.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3074,6 +3337,16 @@ on: [&#x27;pull_request&#x27;] | permissions: {&#x27;contents&#x27;: &#x27;read&
 <li>استخدم <code dir="ltr">git diff main...HEAD -- src/</code>. فيصغر الطلب، وتصغر التكلفة، لكن المراجع لا يعود يرى أن سلوكاً تغيّر بلا اختبار، أو أن التوثيق صار يقول شيئاً خاطئاً. والطريق الوسط أن ترسل القائمة الكاملة للملفات المتغيرة، والفرق الكامل للكود وحده.</li>
 <li>قد تختلف الأحكام الحقيقية بين التشغيلات في الفروق الحدّية. وللتثبيت: اجعل المعايير في الأمر دقيقة («العائق هو…»)، وأبقِ المخطط صارماً، واستخدم إصدار نموذج ثابتاً، وعامل الاختلاف كمعلومة: أفشل فقط حين تجد المراجعة عائقاً تستطيع تسميته بملف وسطر، ودع إنساناً يقرر في الباقي. والتشغيل مرتين واشتراط الاتفاق ممكن، بضعف التكلفة.</li>
 <li>مثلاً: أدوات محصورة في قراءة الملفات تحت <code>src/</code> وتعديلها وتشغيل أداة الفحص؛ وصلاحية الحفظ والدفع إلى فرع طلب الدمج نفسه فقط، لا إلى الفرع الرئيسي أبداً؛ وحد إنفاق ومهلة قصيرة؛ وطلبات الدمج من أعضاء الفريق فقط، لا من النسخ المتفرعة أبداً. ويجب أن تتوقف المهمة إن غيّر الإصلاح أي شيء غير المسافات والتنسيق، وما زال إنسان يراجع النتيجة.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 11</h2>
+<ol class="exercises">
+<li>سجّل <code dir="ltr">Date.now()</code> قبل الاستدعاء، وعند أول حدث <code>text</code>، وبعد <code dir="ltr">finalMessage()</code>. والمستخدمون يلاحظون الأول: فالجواب الذي يبدأ في نصف ثانية يبدو سريعاً حتى لو أخذ عشراً لينتهي. ومع خادم التدريب كلاهما فوري تقريباً؛ ومع الواجهة الحقيقية، الفجوة بينهما هي سبب البث.</li>
+<li>أضف قاعدة فيها <code dir="ltr">"error": {"status": 400, "type": "invalid_request_error", "message": "..."}</code> للسؤال. فتجري الحزمة محاولة واحدة: الـ 400 يعني أن الطلب نفسه خاطئ، فالإعادة لن تفعل إلا أن تفشل من جديد. ويُظهر الغلاف حول fetch رمز 400 واحداً.</li>
+<li>غلّف الاستدعاء: سجّل وقت البدء، واستدعِ بـ <code dir="ltr">.withResponse()</code>، ثم أضف <code dir="ltr">JSON.stringify({model, requestId, stop: data.stop_reason, tokens: data.usage, ms})</code> إلى ملف سجل؛ وفي <code>catch</code>، اكتب الحقول نفسها مع <code>status</code> الخطأ و<code>requestID</code>. وسطر لكل استدعاء يجعل السجل سهل البحث وسهل التحميل في أي أداة.</li>
+<li>أنشئ خادماً بـ <code dir="ltr">http.createServer</code>؛ ولطلب، اكتب الترويسة <code dir="ltr">content-type: text/event-stream</code>، وابدأ <code dir="ltr">client.messages.stream(...)</code>، ومع كل حدث <code>text</code> اكتب <code dir="ltr">data: ${JSON.stringify(piece)}\n\n</code>؛ وحين تنتهي <code dir="ltr">finalMessage()</code>، اكتب حدث نهاية وأغلق. وفي الصفحة، اقرأه بـ <code>EventSource</code>. وتعامل مع انقطاع العميل بإيقاف البث، فتتوقف عن الدفع لجواب لا يقرؤه أحد.</li>
+<li>احفظ طابوراً بالطلبات العشرين وابدأ طلباً جديداً كلما كان أقل من 4 يعمل (مجموعة صغيرة من «العاملين» يأخذ كل منهم الطلب التالي حتى يفرغ الطابور). وأبقِ إعادات الحزمة مشغّلة؛ وعدّ النتائج حسب الحصيلة وحسب صنف الخطأ. ومع خادم التدريب، أضف قاعدة 429 بـ <code>"times"</code> لبعض الأسئلة: ستراها تنجح بعد الإعادات، والأخرى لا تتأثر. والمجموعة تحدّ من شدة ضربك للحد من الأساس، وهذا أفضل من الإعادة بعد ضربه.</li>
 </ol>
 
 </section>

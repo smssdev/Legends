@@ -30,6 +30,8 @@ const MODELS = [
 ];
 // Models on which thinking cannot be turned off, and forced tool choice is rejected.
 const ALWAYS_THINKING = new Set(["claude-fable-5-2", "claude-opus-5-5"]);
+// Models that reject a last assistant message (prefill).
+const NO_PREFILL = new Set(["claude-fable-5-2", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-opus-4-8"]);
 const NO_FORCED_TOOLS = new Set(["claude-fable-5-2", "claude-opus-5-5", "claude-sonnet-5-5"]);
 
 const script = () => JSON.parse(fs.readFileSync("practice.json", "utf8"));
@@ -107,6 +109,9 @@ function invalid(body, counting) {
   if (body.max_tokens === undefined && !counting) return "max_tokens: Field required";
   if (!Array.isArray(body.messages) || body.messages.length === 0) return "messages: at least one message is required";
   if (body.messages[0].role !== "user") return "messages: the first message must use the \"user\" role";
+  if (NO_PREFILL.has(body.model) && body.messages.at(-1).role === "assistant") {
+    return "messages: this model does not support assistant message prefill; the last message must be a user message";
+  }
   const media = badMedia(body.messages);
   if (media) return media;
   if (ALWAYS_THINKING.has(body.model) && body.thinking && body.thinking.type !== "adaptive") {
@@ -142,6 +147,7 @@ function reply(body) {
     if (w.tools === true && !body.tools?.length) continue;
     if (w.model && body.model !== w.model) continue;
     if (w.history !== undefined && w.history !== body.messages.length > 1) continue;
+    if (w.messages && body.messages.length !== w.messages) continue;
     if (w.document && !JSON.stringify(last.content).includes(`"title":"${w.document}"`)) continue;
     if (w.allowed_domains !== undefined && w.allowed_domains !== Boolean(searchTool(body)?.allowed_domains)) continue;
     if (rule.error) {
@@ -205,7 +211,8 @@ function message(body) {
   if (out > body.max_tokens) {
     out = body.max_tokens;
     const first = content.find((b) => b.type === "text");
-    if (first) first.text = first.text.slice(0, body.max_tokens * 4);
+    // Cut where the tokens ran out, at the last whole word.
+    if (first) first.text = first.text.slice(0, body.max_tokens * 4).replace(/\s+\S*$/, "");
     return {rule, msg: build(body, content, "max_tokens", out, rule)};
   }
   return {rule, msg: build(body, content, stop, out, rule)};
@@ -263,7 +270,7 @@ function models(res, id) {
 }
 
 function json(res, value) {
-  res.writeHead(200, {"content-type": "application/json", "request-id": `req_practice_${++counter}`});
+  res.writeHead(200, {"content-type": "application/json", "request-id": `req_practice_${String(++counter).padStart(4, "0")}`});
   res.end(JSON.stringify(value));
 }
 
@@ -301,12 +308,16 @@ const server = http.createServer((req, res) => {
     }
     if (process.env.PRACTICE_DUMP) fs.writeFileSync(`${process.env.PRACTICE_DUMP}-${counter + 1}.json`, raw);
     const {rule, msg} = message(body);
-    if (rule.error) {
-      const {status, type, message: text, retry_after: after} = rule.error;
-      return error(res, status, type, text, after ? {"retry-after": String(after)} : {});
-    }
-    fs.appendFileSync("practice.log", `${msg.id} ${body.model} ${msg.stop_reason} in=${msg.usage.input_tokens} out=${msg.usage.output_tokens}\n`);
-    return body.stream ? stream(res, msg) : json(res, msg);
+    // A reply can be slow on purpose (delay_ms), to show timeouts.
+    setTimeout(() => {
+      if (res.destroyed) return;
+      if (rule.error) {
+        const {status, type, message: text, retry_after: after} = rule.error;
+        return error(res, status, type, text, after ? {"retry-after": String(after)} : {});
+      }
+      fs.appendFileSync("practice.log", `${msg.id} ${body.model} ${msg.stop_reason} in=${msg.usage.input_tokens} out=${msg.usage.output_tokens}\n`);
+      return body.stream ? stream(res, msg) : json(res, msg);
+    }, rule.delay_ms ?? 0);
   });
 });
 
