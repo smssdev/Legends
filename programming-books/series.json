@@ -1545,7 +1545,8 @@
           "chapters": [
             {
               "en": "Meet Claude: Models, Strengths and Limits",
-              "ar": "تعرّف على Claude: النماذج ونقاط القوة والحدود"
+              "ar": "تعرّف على Claude: النماذج ونقاط القوة والحدود",
+              "src": "b8/meet"
             },
             {
               "en": "Conversations, Files and Images",
@@ -1629,7 +1630,17 @@
             }
           ]
         }
-      ]
+      ],
+      "notes": {
+        "code": {
+          "en": "The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.",
+          "ar": "الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026."
+        },
+        "trademarks": {
+          "en": "Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.",
+          "ar": "Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic."
+        }
+      }
     },
     {
       "id": "b9",
