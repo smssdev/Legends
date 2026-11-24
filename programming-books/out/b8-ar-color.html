@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "الفصل 9: من المهمة إلى طلب الدمج"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "الفصل 10: Claude Code للفرق والتكامل المستمر"; } }
+@page ch10:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -159,7 +161,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p">106</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">116</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p">106</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p">116</span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">127</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -2692,6 +2694,271 @@ exit 1</pre></div>
 <p>حتى الآن قاد مطور واحد Claude Code من طرفية. والفصل التالي يأتي به إلى الفريق: إعدادات مشتركة، وClaude Code في التكامل المستمر، ومراجعات تعمل مع كل طلب دمج.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b8/teams/ar">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">الفصل 10</p><h1>Claude Code للفرق والتكامل المستمر</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تطبّق إعدادات الفريق والإعدادات الشخصية طبقة فوق طبقة، وتعرف أيها يغلب</li>
+<li>تشغّل Claude Code في التكامل المستمر، بلا إنسان أمام لوحة المفاتيح</li>
+<li>تحصل على حكم كبيانات منظّمة يستطيع السكربت التصرف بها</li>
+<li>تُبقي تشغيلات التكامل المستمر صغيرة ومحدودة ورخيصة</li>
+<li>تُبقي الناس أصحاب القرارات التي تُخبرها المراجعة الآلية</li>
+</ul>
+</div>
+
+<p class="lead">الفريق الذي يستخدم Claude Code يحتاج شيئين لا يحتاجهما المطور الواحد. الأول قواعد مشتركة لا يستطيع شخص أن يرخيها خطأً: ما يُسمح لكل جلسة به، وما لا يُسمح لأي منها. والثاني الأتمتة: Claude Code يعمل مع كل طلب دمج، في خط العمل نفسه مع الاختبارات، دون أن يكتب أحد. وهذا الفصل يبني الاثنين، ويُظهر كم يكلّف كل منهما.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الإعدادات، والرفض، وسكربت التكامل المستمر، ورموز خروجه، وتكاليفه سلوك Claude Code حقيقي. أما الأحكام فمن خادم التدريب، مكتوبة لتتوقف على الفرق الذي تلقاه: تمنع الإجمالي غير المقرّب، وتمرّر المقرّب.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>إعدادات الفريق والإعدادات الشخصية</span></h2>
+
+<p>يحفظ الفريق <code>.claude/settings.json</code>؛ ويستطيع كل مطور إضافة <code>.claude/settings.local.json</code>، الذي يتجاهله git. وهنا يسمح الفريق بالاختبارات ويرفض الدفع، وقد سمح أحد المطورين بالدفع لنفسه:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">cat .claude/settings.json .claude/settings.local.json</span>
+{
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [
+      &quot;Bash(node --test)&quot;
+    ],
+    &quot;deny&quot;: [
+      &quot;Bash(git push:*)&quot;
+    ]
+  }
+}
+{
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [
+      &quot;Bash(git push:*)&quot;
+    ]
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node trust.mjs &amp;&amp; claude -p &quot;الإصدار موسوم. ادفعه.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأدفع.
+  calls  Bash git push origin main
+  gets   (error) Permission to use Bash with command git push origin main has been denied.
+  says   لم أستطع الدفع: إعدادات الفريق ترفضه. يجب أن يدفع إنسان الإصدار.
+  الأدوار: 2، رُفض: 1، التكلفة: $0.1268، success</pre></div>
+
+<p>رُفض الدفع. فحين تتعارض القواعد، يغلب الرفض السماح، أينما كُتب كل منهما، فلا يستطيع ملف شخصي إلغاء رفض الفريق. وهذه الخاصية التي يحتاجها الفريق: يمكن إضافة السماح حيث يحتاجه الناس؛ وتبقى الأشياء القليلة التي لا يجوز لأحد فعلها مرفوضة. والمؤسسات التي تحتاج أكثر تستطيع تثبيت <dfn>إعدادات مُدارة</dfn> (managed settings) على كل جهاز، تتقدم على الاثنين ولا يستطيع المستخدمون تغييرها.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>اكتب حالات رفض الفريق أولاً، ثم السماح. فالرفض قصير (الدفع إلى الفرع الرئيسي، وقراءة مجلد الأسرار، وحذف البيانات) ونادراً ما يتغير؛ والسماح ينمو مع العمل، ويمكن أن يعيش أقرب إلى الناس الذين يحتاجونه.</p></aside>
+
+<h2><span class="sec">10.2</span> <span>مراجعة في التكامل المستمر</span></h2>
+
+<p>في التكامل المستمر لا يستطيع أحد الموافقة على استدعاء أداة، فأأمن تشغيل هو الذي بلا أدوات أصلاً: يقرأ Claude Code الفرق من المدخل القياسي، ويجيب، ويتوقف. وثلاثة خيارات تجعله مناسباً لخط العمل: <code dir="ltr">--tools ""</code> فلا يقرأ إلا ما يُعطى، و<code dir="ltr">--max-budget-usd</code> فلا يتجاوز التشغيل ميزانيته، و<code dir="ltr">--json-schema</code> فيعود الحكم بيانات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ci/review.sh (جزء)</div><pre class="code">claude -p &quot;راجع هذا الفرق لتطبيق المقهى. أبلغ عن العوائق فقط: الأخطاء، والاختبارات الناقصة لسلوك تغيّر، والتعامل الخاطئ مع المال.&quot; &lt; /tmp/branch.diff \
+  --model claude-opus-5-5 --tools &quot;&quot; --max-budget-usd 0.50 --no-session-persistence \
+  --output-format json --json-schema &quot;$(cat review/schema.json)&quot; &gt; review.json
+node -e &#x27;
+  const r = JSON.parse(require(&quot;fs&quot;).readFileSync(&quot;review.json&quot;, &quot;utf8&quot;));
+  const v = r.structured_output;
+  console.log(JSON.stringify(v), `($${r.total_cost_usd.toFixed(4)})`);
+  process.exit(r.subtype === &quot;success&quot; &amp;&amp; v.ok ? 0 : 1);
+&#x27;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">review/schema.json</div><pre class="code">{
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;object&quot;</span>,
+  <span class="s">&quot;properties&quot;</span>: {
+    <span class="s">&quot;ok&quot;</span>: {
+      <span class="s">&quot;type&quot;</span>: <span class="s">&quot;boolean&quot;</span>
+    },
+    <span class="s">&quot;blockers&quot;</span>: {
+      <span class="s">&quot;type&quot;</span>: <span class="s">&quot;array&quot;</span>,
+      <span class="s">&quot;items&quot;</span>: {
+        <span class="s">&quot;type&quot;</span>: <span class="s">&quot;string&quot;</span>
+      }
+    }
+  },
+  <span class="s">&quot;required&quot;</span>: [
+    <span class="s">&quot;ok&quot;</span>,
+    <span class="s">&quot;blockers&quot;</span>
+  ]
+}</pre></div>
+
+<p>الفرع يضيف الضريبة إلى الإيصالات، تغيير الفصل 7، مع مسألة التقريب التي وجدتها مراجعته. وخطوة التكامل المستمر:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">sh ci/review.sh; echo &quot;exit $?&quot;</span>
+{&quot;ok&quot;:false,&quot;blockers&quot;:[&quot;receipt.mjs: الإجمالي subtotal + vat بلا تقريب؛ مجموع فرعي 16 يعطي 18.240000000000002.&quot;]} ($0.0150)
+exit 1</pre></div>
+
+<p>الحكم كائن، لا فقرة: <code>ok</code> خاطئة والعائق يسمّي الملف والمشكلة، فيخرج السكربت بـ 1 ويفشل خط العمل. ومع <code dir="ltr">--json-schema</code>، يعطي Claude Code النموذج أداة ليبلّغ بجوابه بذلك الشكل، ويعيده في <code>structured_output</code>؛ فلا يضطر السكربت أبداً إلى تحليل نثر.</p>
+
+<p>وانظر إلى التكلفة أيضاً: سنت ونصف. فتشغيلات الفصول السابقة كلّفت نحو اثني عشر سنتاً للدور، معظمها لتعليمات Claude Code وأوصاف أدواته؛ وبلا أدوات، لا يبقى ما يُرسل إلا الفرق والطلب تقريباً. وفي خط عمل يعمل مع كل دفع، ذلك الفرق هو الميزانية.</p>
+
+<p>ويقرّب المطور الإجمالي، ويحفظ، فتعمل الخطوة نفسها من جديد:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">cp changes/receipt-rounded.mjs src/receipt.mjs &amp;&amp; git commit -qam &quot;fix(receipt): round the total&quot; &amp;&amp; sh ci/review.sh; echo &quot;exit $?&quot;</span>
+{&quot;ok&quot;:true,&quot;blockers&quot;:[]} ($0.0144)
+exit 0</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>الفرق مدخل من فاتح طلب الدمج، وطلب دمج من خارج الفريق قد يحوي نصاً مكتوباً لتوجيه المراجع. والمراجعة بلا أدوات لا تستطيع إلا أن تجيب؛ ولا تستطيع تشغيل شيء. فلا تعطِ تشغيل تكامل مستمر أدوات تكتب، ولا أسراراً لا يحتاجها، على كود لم ينظر فيه أحد من الفريق.</p></aside>
+
+<h2><span class="sec">10.3</span> <span>في خط العمل</span></h2>
+
+<p>يشغّل ملف سير العمل السكربت نفسه مع كل طلب دمج، بمفتاح الـ API من أسرار المستودع، ووصول للقراءة فقط إلى محتواه، وحد زمني (المشروع 10.3 يفحص الملف). وتنشر Anthropic أيضاً GitHub Action لـ Claude Code، يستطيع مراجعة طلبات الدمج والرد على التعليقات التي تذكره؛ والمبادئ نفسها: أقل الأدوات التي تؤدي المهمة، وحد للإنفاق، ومخرجات يستطيع السكربت قراءتها.</p>
+
+<p>وما تُنتجه المراجعة الآلية معلومات لإنسان، لا قرار. فالمراجعة الفاشلة يجب أن تمنع الدمج كما يمنعه الاختبار الفاشل؛ والناجحة يجب ألا توافق على شيء. وما زال طلب الدمج يحتاج مراجعاً إنساناً، يبدأ الآن والمشكلات الآلية قد وُجدت.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا رُفض الدفع، مع أن الإعدادات الشخصية سمحت به؟</li><li>ماذا يضيف كل من <code dir="ltr">--tools ""</code> و<code dir="ltr">--max-budget-usd</code> و<code dir="ltr">--json-schema</code> في التكامل المستمر؟</li><li>لماذا كلّفت مراجعة التكامل المستمر عُشر التشغيلات السابقة؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>تتبّع ما تجده المراجعة الآلية وما يجده الناس بعدها، لشهر. فإن ظل الناس يجدون ما تفوته، فحسّن تعليماتها؛ وإن ظلت تمنع ما يوافق عليه الناس، فخففها. فالمراجع الآلي الذي لا يقيسه أحد يتحول إلى ضجيج يتجاهله الجميع.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>قواعد الفريق سماحاً فقط</td><td>يستطيع أي أحد توسيعها</td><td>رفض لما يجب ألا يحدث أبداً</td></tr>
+<tr><td>إعدادات شخصية محفوظة</td><td>صلاحيات شخص واحد للجميع</td><td><code>settings.local.json</code>، يتجاهله git</td></tr>
+<tr><td>أدوات في التكامل المستمر «احتياطاً»</td><td>يستطيع مدخل غير موثوق الوصول إليها</td><td>بلا أدوات للمراجعات؛ وأقلها للمهام</td></tr>
+<tr><td>تحليل أحكام نثرية</td><td>خطوط عمل هشّة</td><td><code dir="ltr">--json-schema</code>؛ واقرأ <code>structured_output</code></td></tr>
+<tr><td>لا حد للإنفاق في التكامل المستمر</td><td>تكاليف تنمو مع كل دفع</td><td><code dir="ltr">--max-budget-usd</code> ومهلة للمهمة</td></tr>
+<tr><td>معاملة النجاح كموافقة</td><td>لا أحد يراجع فعلاً</td><td>الفحوص الآلية تُخبر؛ والناس يوافقون</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>إعدادات الفريق محفوظة، والشخصية لا، والرفض يغلب السماح أينما كُتب كل منهما.</li>
+<li>في التكامل المستمر، شغّل Claude Code في وضع الطباعة بلا أدوات، وبحد إنفاق، ومخطط JSON للحكم.</li>
+<li>يقرأ السكربت <code>structured_output</code> ويُفشل البناء عند العائق؛ وتنجح الخطوة نفسها بعد إصلاح المشكلة.</li>
+<li>أدوات أقل تعني طلباً أصغر في كل دور: كلّفت مراجعة التكامل المستمر نحو عُشر تشغيل بأدوات Claude Code كاملة.</li>
+<li>المراجعات الآلية تُخبر الناس؛ ولا توافق.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن إعدادات الفريق ترفض <code dir="ltr">Bash(git push:*)</code>، والرفض يغلب السماح، حتى السماح في ملف شخصي. 2. <code dir="ltr">--tools ""</code> يزيل كل أداة، فلا يستطيع المدخل غير الموثوق أن يجعله يتصرف؛ و<code dir="ltr">--max-budget-usd</code> يوقف التشغيل الذي سينفق أكثر من اللازم؛ و<code dir="ltr">--json-schema</code> يعيد الحكم بيانات يستطيع السكربت فحصها. 3. لأنه بلا أدوات، لا يحمل الطلب أوصاف أدوات، وأقل بكثير من تعليمات Claude Code نفسه: الفرق والطلب في الغالب.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تكمل المشاريع مراجعة التكامل المستمر: تعليق لطلب الدمج، والتشغيل الناجح بعد الإصلاح، وفحص ملف سير العمل.</p>
+
+<div class="project">
+<p class="project-label">المشروع 10.1 · سهل</p>
+<h3>الحكم كتعليق</h3>
+<p class="project-goal">حوّل JSON المراجعة إلى تعليق قصير لطلب الدمج.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المخرجات المنظّمة كمدخل للخطوة التالية.</p>
+<ol class="steps">
+<li>اقرأ <code>review.json</code>.</li>
+<li>اكتب عنواناً، والعوائق أو «لا عوائق»، والتكلفة.</li>
+<li>قل بوضوح إن إنساناً ما زال يوافق.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">comment.mjs (جزء)</div><pre class="code"><span class="k">const</span> {structured_output: v, total_cost_usd: cost} = JSON.parse(fs.readFileSync(<span class="s">&quot;review.json&quot;</span>, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> lines = [<span class="s">`### مراجعة Claude`</span>, <span class="s">&quot;&quot;</span>];
+<span class="k">if</span> (v.ok) lines.push(<span class="s">&quot;لا عوائق.&quot;</span>);
+<span class="k">else</span> lines.push(<span class="s">&quot;**العوائق:**&quot;</span>, ...v.blockers.map((b) =&gt; <span class="s">`- ${b}`</span>));
+lines.push(<span class="s">&quot;&quot;</span>, <span class="s">`_مراجعة آلية: ما زال إنسان يوافق. ($${cost.toFixed(2)})_`</span>);
+console.log(lines.join(<span class="s">&quot;\n&quot;</span>));</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node comment.mjs</span>
+<span class="c line-bidi">### مراجعة Claude</span>
+
+**العوائق:**
+- receipt.mjs: الإجمالي subtotal + vat بلا تقريب؛ مجموع فرعي 16 يعطي 18.240000000000002.
+
+_مراجعة آلية: ما زال إنسان يوافق. ($0.01)_</pre></div>
+<p class="hint"><strong>تلميح:</strong> السطر الأخير مهم بقدر العوائق: يخبر كل من يقرأ طلب الدمج ما هو التعليق وما ليس هو. ونشره خطوة إضافية بأداة خدمة الاستضافة، برمز مسموح له بالتعليق ولا شيء غيره.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 10.2 · متوسط</p>
+<h3>أصلح، وشغّل المراجعة من جديد</h3>
+<p class="project-goal">أصلح العائق بنفسك، واحفظ، وراقب خطوة التكامل المستمر نفسها تنجح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> معاملة المراجعة كاختبار: أحمر، إصلاح، أخضر.</p>
+<ol class="steps">
+<li>قرّب الإجمالي في <code>receipt.mjs</code>.</li>
+<li>احفظ الإصلاح على الفرع.</li>
+<li>شغّل <code>ci/review.sh</code> وافحص رمز الخروج.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">cp changes/receipt-rounded.mjs src/receipt.mjs &amp;&amp; git commit -qam &quot;fix(receipt): round the total&quot; &amp;&amp; sh ci/review.sh; echo &quot;exit $?&quot;</span>
+{&quot;ok&quot;:true,&quot;blockers&quot;:[]} ($0.0144)
+exit 0</pre></div>
+<p class="hint"><strong>تلميح:</strong> النجاح من المراجع يعني أنه لم يجد عوائق فيما عُرض عليه، وهو الفرق ولا شيء غيره. واختبار لمجموع فرعي 16 يجعل الإصلاح دائماً؛ فالمراجعة لن تلاحظ لو ألغاه تغيير لاحق.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 10.3 · تحدٍّ</p>
+<h3>افحص سير العمل</h3>
+<p class="project-goal">حمّل ملف سير العمل وتأكد من محفّزه، وصلاحياته، ومهلته، وخطواته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> معاملة إعدادات التكامل المستمر ككود له فحوصه.</p>
+<ol class="steps">
+<li>حلّل YAML.</li>
+<li>اطبع المحفّز، والصلاحيات، والحد الزمني.</li>
+<li>اسرد الخطوات، وأيها يتلقى السر.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">.github/workflows/claude-review.yml (جزء)</div><pre class="code">permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @anthropic-ai/claude-code
+      - run: sh ci/review.sh
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">python3 workflow.py</span>
+on: [&#x27;pull_request&#x27;] | permissions: {&#x27;contents&#x27;: &#x27;read&#x27;} | timeout: 10
+ - actions/checkout@v4 
+ - actions/setup-node@v4 
+ - npm install -g @anthropic-ai/claude-code 
+ - sh ci/review.sh (secret)</pre></div>
+<p class="hint"><strong>تلميح:</strong> صلاحيات قراءة فقط، وحد عشر دقائق، والمفتاح يُعطى للخطوة التي تحتاجه وحدها. وقاعدة أخرى مكانها هنا للمستودعات العامة: طلبات الدمج من النسخ المتفرعة (forks) لا تتلقى أسرار المستودع افتراضياً في معظم خدمات الاستضافة، وهذا يحمي مفتاحك من كود لم تراجعه. أبقِه كذلك.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب ثلاث حالات رفض لفريقك. ولكل منها، قل ماذا كان سيحدث لو استطاعت إعدادات شخص واحد إلغاءها.</li>
+<li><span class="level">سهل</span> أضف حقل <code>severity</code> («blocker» أو «note») إلى المخطط. كيف يجب أن يعامل <code>ci/review.sh</code> الملاحظات؟</li>
+<li><span class="level medium">متوسط</span> اجعل المراجعة أرخص بعد: أرسل الملفات المتغيرة تحت <code>src/</code> فقط، لا الاختبارات ولا التوثيق. ماذا قد يفوت المراجع حينها؟</li>
+<li><span class="level medium">متوسط</span> شغّل مراجعة التكامل المستمر مرتين على الفرق نفسه بالواجهة الحقيقية. إن اختلف الحكمان، فكيف تجعل خط العمل مستقراً؟</li>
+<li><span class="level hard">تحدٍّ</span> صمّم مهمة تكامل مستمر ثانية تدع Claude Code يصلح أخطاء فحص الكود البسيطة في طلب دمج ويدفع الإصلاح إلى الفرع نفسه. أي أدوات، وأي صلاحيات، وأي حدود، وأي طلبات دمج تسمح له بلمسها؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 11</p>
+<p>يبني الجزء الثالث منتجاتك الخاصة على Claude. ويبدأ حيث ينتهي Claude Code: الواجهة البرمجية نفسها، بالمحادثات والبث والأخطاء والحدود التي يلقاها كل برنامج في بيئة الإنتاج.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2797,6 +3064,16 @@ exit 1</pre></div>
 <li>أضف فحصاً ثانياً: إن كان النوع <code>fix</code>، فيجب أن يحوي الموضوع <code>#</code> تتبعها أرقام، مثلاً <code dir="ltr">grep -qE '^fix(\([a-z-]+\))?: .+#[0-9]+'</code>. واختبر بـ «fix(price): keep piastres» (تُرفض) و«fix(price): keep piastres (#42)» (تُقبل)، كما في المشروع 9.1.</li>
 <li>اسمح بالصيغة التي تحتاجها أداتك بالضبط، مثلاً <code dir="ltr">Bash(gh pr create:*)</code>، وعلى فرع فقط؛ ولا تسمح أبداً بالدمج (<code dir="ltr">gh pr merge</code>)، ولا بالدفع إلى الفرع الرئيسي، ولا بتغيير حماية الفروع. ففتح طلب الدمج اقتراح يستطيع أي أحد رفضه؛ والدمج يغيّر ما يشغّله الجميع. وكثير من الفرق تترك الأمر الأخير لإنسان، بالوصف الذي كتبه الوكيل.</li>
 <li>شغّل الخطوات بالترتيب وتوقف عند أول إخفاق: أنشئ الفرع، وشغّل Claude Code بـ <code dir="ltr">--output-format json</code>، وافحص <code>subtype</code>، وشغّل <code>check.mjs</code>، وشغّل الاختبارات بنفسك. وعند النجاح، اطبع مسار <code>PR.md</code>. وعند الإخفاق، اترك الفرع كما هو واطبع ما فشل، وآخر رسالة من الوكيل، وتكلفته، ليلتقطه إنسان في دقيقة بدل إعادة تشغيل كل شيء.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 10</h2>
+<ol class="exercises">
+<li>مثلاً: ارفض <code dir="ltr">Bash(git push:*)</code> (كان شخص واحد سيستطيع دفع كود غير مُراجع للجميع)، وارفض قراءة <code>secrets/</code> أو <code>.env</code> (كان شخص واحد سيستطيع إرسال المفاتيح إلى سياق نموذج وسجلاته)، وارفض الأوامر التي تحذف البيانات، كإسقاط قاعدة بيانات (خطأ واحد كان سيصير عطلاً للجميع). فالرفض قرار اتخذه الفريق مرة؛ ويجب ألا يتوقف على إعدادات كل شخص.</li>
+<li>أضف <code dir="ltr">"severity": {"enum": ["blocker", "note"]}</code> إلى كل عنصر، ككائنات بدل نصوص. واخرج بـ 1 فقط إن كان أي عنصر عائقاً؛ واطبع الملاحظات في التعليق، ليراها الناس دون أن يفشل البناء. والملاحظات التي يعمل بها الناس كثيراً قد تستحق أن تصير عوائق؛ والتي لا يقرؤها أحد يجب أن تُحذف من الأمر.</li>
+<li>استخدم <code dir="ltr">git diff main...HEAD -- src/</code>. فيصغر الطلب، وتصغر التكلفة، لكن المراجع لا يعود يرى أن سلوكاً تغيّر بلا اختبار، أو أن التوثيق صار يقول شيئاً خاطئاً. والطريق الوسط أن ترسل القائمة الكاملة للملفات المتغيرة، والفرق الكامل للكود وحده.</li>
+<li>قد تختلف الأحكام الحقيقية بين التشغيلات في الفروق الحدّية. وللتثبيت: اجعل المعايير في الأمر دقيقة («العائق هو…»)، وأبقِ المخطط صارماً، واستخدم إصدار نموذج ثابتاً، وعامل الاختلاف كمعلومة: أفشل فقط حين تجد المراجعة عائقاً تستطيع تسميته بملف وسطر، ودع إنساناً يقرر في الباقي. والتشغيل مرتين واشتراط الاتفاق ممكن، بضعف التكلفة.</li>
+<li>مثلاً: أدوات محصورة في قراءة الملفات تحت <code>src/</code> وتعديلها وتشغيل أداة الفحص؛ وصلاحية الحفظ والدفع إلى فرع طلب الدمج نفسه فقط، لا إلى الفرع الرئيسي أبداً؛ وحد إنفاق ومهلة قصيرة؛ وطلبات الدمج من أعضاء الفريق فقط، لا من النسخ المتفرعة أبداً. ويجب أن تتوقف المهمة إن غيّر الإصلاح أي شيء غير المسافات والتنسيق، وما زال إنسان يراجع النتيجة.</li>
 </ol>
 
 </section>

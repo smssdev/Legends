@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "Chapter 9: From Issue to Pull Request"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "Chapter 10: Claude Code for Teams and CI"; } }
+@page ch10:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -159,7 +161,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">22</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">33</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">43</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">53</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">64</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">75</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p">84</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p">94</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">104</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">22</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">33</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">43</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">53</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">64</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">75</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p">84</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p">94</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p">104</span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">113</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -2692,6 +2694,271 @@ New test: a bill of 85.50 at 10% gives 94.05, the example from the issue. All te
 <p>So far one developer has driven Claude Code from a terminal. The next chapter brings it to the team: shared settings, Claude Code in continuous integration, and reviews that run on every pull request.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b8/teams/en">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>Claude Code for Teams and CI</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>layer team settings and personal settings, and know which one wins</li>
+<li>run Claude Code in continuous integration, with no person at the keyboard</li>
+<li>get a verdict as structured data a script can act on</li>
+<li>keep CI runs small, bounded and cheap</li>
+<li>keep people in charge of the decisions an automatic review informs</li>
+</ul>
+</div>
+
+<p class="lead">A team using Claude Code needs two things that a single developer does not. The first is shared rules that a person cannot loosen by accident: what every session may do, and what none may. The second is automation: Claude Code running on every pull request, in the same pipeline as the tests, without anyone typing. This chapter builds both, and shows what each one costs.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The settings, the denial, the CI script, its exit codes and its costs are real Claude Code behaviour. The verdicts come from the practice server, scripted to depend on the diff it received: blocking the unrounded total, passing the rounded one.</p></div></div>
+
+<h2><span class="sec">10.1</span> <span>Team settings and personal settings</span></h2>
+
+<p>The team commits <code>.claude/settings.json</code>; each developer may add <code>.claude/settings.local.json</code>, which git ignores. Here the team allows the tests and denies pushing, and one developer has allowed pushing for themselves:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">cat .claude/settings.json .claude/settings.local.json</span>
+{
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [
+      &quot;Bash(node --test)&quot;
+    ],
+    &quot;deny&quot;: [
+      &quot;Bash(git push:*)&quot;
+    ]
+  }
+}
+{
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [
+      &quot;Bash(git push:*)&quot;
+    ]
+  }
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node trust.mjs &amp;&amp; claude -p &quot;The release is tagged. Push it.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   Pushing.
+  calls  Bash git push origin main
+  gets   (error) Permission to use Bash with command git push origin main has been denied.
+  says   I couldn&#x27;t push: the team&#x27;s settings deny it. A person needs to push the release.
+  turns: 2, denied: 1, cost: $0.1265, success</pre></div>
+
+<p>The push was denied. When rules conflict, a deny wins over an allow, wherever each is written, so a personal file cannot undo a team’s refusal. That is the property a team needs: allows can be added where people need them; the few things nobody may do stay refused. Organisations that need more can install <dfn>managed settings</dfn> on every machine, which take precedence over both and cannot be changed by users.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Write the team’s denies first, then its allows. The denies are short (push to the main branch, read the secrets folder, delete data) and almost never change; the allows grow with the work, and can live closer to the people who need them.</p></aside>
+
+<h2><span class="sec">10.2</span> <span>A review in CI</span></h2>
+
+<p>In continuous integration nobody can approve a tool call, so the safest run has no tools at all: Claude Code reads the diff from standard input, answers, and stops. Three flags make it fit for a pipeline: <code>--tools ""</code> so it can only read what it is given, <code>--max-budget-usd</code> so a run cannot overspend, and <code>--json-schema</code> so the verdict comes back as data:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ci/review.sh (part)</div><pre class="code">claude -p &quot;Review this diff for the café app. Report blockers only: bugs, missing tests for changed behaviour, or money handled wrongly.&quot; &lt; /tmp/branch.diff \
+  --model claude-opus-5-5 --tools &quot;&quot; --max-budget-usd 0.50 --no-session-persistence \
+  --output-format json --json-schema &quot;$(cat review/schema.json)&quot; &gt; review.json
+node -e &#x27;
+  const r = JSON.parse(require(&quot;fs&quot;).readFileSync(&quot;review.json&quot;, &quot;utf8&quot;));
+  const v = r.structured_output;
+  console.log(JSON.stringify(v), `($${r.total_cost_usd.toFixed(4)})`);
+  process.exit(r.subtype === &quot;success&quot; &amp;&amp; v.ok ? 0 : 1);
+&#x27;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">review/schema.json</div><pre class="code">{
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;object&quot;</span>,
+  <span class="s">&quot;properties&quot;</span>: {
+    <span class="s">&quot;ok&quot;</span>: {
+      <span class="s">&quot;type&quot;</span>: <span class="s">&quot;boolean&quot;</span>
+    },
+    <span class="s">&quot;blockers&quot;</span>: {
+      <span class="s">&quot;type&quot;</span>: <span class="s">&quot;array&quot;</span>,
+      <span class="s">&quot;items&quot;</span>: {
+        <span class="s">&quot;type&quot;</span>: <span class="s">&quot;string&quot;</span>
+      }
+    }
+  },
+  <span class="s">&quot;required&quot;</span>: [
+    <span class="s">&quot;ok&quot;</span>,
+    <span class="s">&quot;blockers&quot;</span>
+  ]
+}</pre></div>
+
+<p>The branch adds VAT to receipts, the change of Chapter 7, with the rounding problem its review found. The CI step:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">sh ci/review.sh; echo &quot;exit $?&quot;</span>
+{&quot;ok&quot;:false,&quot;blockers&quot;:[&quot;receipt.mjs: total is subtotal + vat without rounding; a subtotal of 16 gives 18.240000000000002.&quot;]} ($0.0147)
+exit 1</pre></div>
+
+<p>The verdict is an object, not a paragraph: <code>ok</code> is false and the blocker names the file and the problem, so the script exits with 1 and the pipeline fails. With <code>--json-schema</code>, Claude Code gives the model a tool to report its answer in that shape and returns it in <code>structured_output</code>; a script never has to parse prose.</p>
+
+<p>Look at the cost, too: a cent and a half. The runs of the earlier chapters cost about twelve cents a turn, mostly for Claude Code’s own instructions and tool descriptions; with no tools, there is little to send but the diff and the request. In a pipeline that runs on every push, that difference is the budget.</p>
+
+<p>The developer rounds the total, commits, and the same step runs again:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">cp changes/receipt-rounded.mjs src/receipt.mjs &amp;&amp; git commit -qam &quot;fix(receipt): round the total&quot; &amp;&amp; sh ci/review.sh; echo &quot;exit $?&quot;</span>
+{&quot;ok&quot;:true,&quot;blockers&quot;:[]} ($0.0143)
+exit 0</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The diff is input from whoever opened the pull request, and a pull request from outside the team can contain text written to steer a reviewer. A review with no tools can only answer; it cannot run anything. Never give a CI run tools that write, or secrets it does not need, on code nobody on the team has looked at.</p></aside>
+
+<h2><span class="sec">10.3</span> <span>In the pipeline</span></h2>
+
+<p>The workflow runs the same script on every pull request, with the API key from the repository’s secrets, read-only access to its contents and a time limit (Project 10.3 checks the file). Anthropic also publishes a GitHub Action for Claude Code, which can review pull requests and answer comments that mention it; the principles are the same: the fewest tools that do the job, a limit on spending, and output a script can read.</p>
+
+<p>What the automatic review produces is information for a person, not a decision. A failing review should block a merge the way a failing test does; a passing one should not approve anything. The pull request still needs a human reviewer, who now starts with the mechanical problems already found.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why was the push denied, although the personal settings allowed it?</li><li>What do <code>--tools ""</code>, <code>--max-budget-usd</code> and <code>--json-schema</code> each add in CI?</li><li>Why did the CI review cost a tenth of the earlier runs?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Track what the automatic review finds and what people find after it, for a month. If people keep finding what it misses, improve its instructions; if it keeps blocking what people approve, loosen them. An automatic reviewer that nobody measures turns into noise that everyone ignores.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Team rules only as allows</td><td>Anyone can widen them</td><td>Denies for what must never happen</td></tr>
+<tr><td>Personal settings committed</td><td>One person’s permissions for all</td><td><code>settings.local.json</code>, ignored by git</td></tr>
+<tr><td>Tools in CI “just in case”</td><td>Untrusted input can reach them</td><td>No tools for reviews; the fewest for tasks</td></tr>
+<tr><td>Parsing prose verdicts</td><td>Fragile pipelines</td><td><code>--json-schema</code>; read <code>structured_output</code></td></tr>
+<tr><td>No spending limit in CI</td><td>Costs that grow with every push</td><td><code>--max-budget-usd</code> and a job timeout</td></tr>
+<tr><td>Treating a pass as an approval</td><td>Nobody actually reviews</td><td>Automatic checks inform; people approve</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Team settings are committed, personal ones are not, and a deny wins over an allow wherever each is written.</li>
+<li>In CI, run Claude Code in print mode with no tools, a spending limit and a JSON schema for the verdict.</li>
+<li>A script reads <code>structured_output</code> and fails the build on a blocker; the same step passes once the problem is fixed.</li>
+<li>Fewer tools means a smaller request on every turn: the CI review cost about a tenth of a run with Claude Code’s full tool set.</li>
+<li>Automatic reviews inform people; they do not approve.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the team’s settings deny <code>Bash(git push:*)</code>, and a deny wins over an allow, even an allow in a personal file. 2. <code>--tools ""</code> removes every tool, so untrusted input cannot make it act; <code>--max-budget-usd</code> stops a run that would spend too much; <code>--json-schema</code> returns the verdict as data a script can check. 3. Because with no tools, the request carries no tool descriptions and much less of Claude Code’s own instructions: mostly just the diff and the request.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects finish the CI review: a comment for the pull request, the workflow file checked, and the passing run after the fix.</p>
+
+<div class="project">
+<p class="project-label">Project 10.1 · Easy</p>
+<h3>The verdict as a comment</h3>
+<p class="project-goal">Turn the review’s JSON into a short comment for the pull request.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured output as the input of the next step.</p>
+<ol class="steps">
+<li>Read <code>review.json</code>.</li>
+<li>Write a heading, the blockers or “no blockers”, and the cost.</li>
+<li>Say plainly that a person still approves.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">comment.mjs (part)</div><pre class="code"><span class="k">const</span> {structured_output: v, total_cost_usd: cost} = JSON.parse(fs.readFileSync(<span class="s">&quot;review.json&quot;</span>, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> lines = [<span class="s">`### Claude review`</span>, <span class="s">&quot;&quot;</span>];
+<span class="k">if</span> (v.ok) lines.push(<span class="s">&quot;No blockers found.&quot;</span>);
+<span class="k">else</span> lines.push(<span class="s">&quot;**Blockers:**&quot;</span>, ...v.blockers.map((b) =&gt; <span class="s">`- ${b}`</span>));
+lines.push(<span class="s">&quot;&quot;</span>, <span class="s">`_An automatic review: a person still approves. ($${cost.toFixed(2)})_`</span>);
+console.log(lines.join(<span class="s">&quot;\n&quot;</span>));</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node comment.mjs</span>
+<span class="c line-bidi">### Claude review</span>
+
+**Blockers:**
+- receipt.mjs: total is subtotal + vat without rounding; a subtotal of 16 gives 18.240000000000002.
+
+_An automatic review: a person still approves. ($0.01)_</pre></div>
+<p class="hint"><strong>Hint:</strong> the last line matters as much as the blockers: it tells everyone reading the pull request what the comment is and is not. Posting it is one more step with your hosting service’s tool, with a token allowed to comment and nothing else.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 10.2 · Medium</p>
+<h3>Fix, and run the review again</h3>
+<p class="project-goal">Fix the blocker yourself, commit, and watch the same CI step pass.</p>
+<p class="project-skills"><strong>You will practise:</strong> treating the review like a test: red, fix, green.</p>
+<ol class="steps">
+<li>Round the total in <code>receipt.mjs</code>.</li>
+<li>Commit the fix on the branch.</li>
+<li>Run <code>ci/review.sh</code> and check the exit code.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">cp changes/receipt-rounded.mjs src/receipt.mjs &amp;&amp; git commit -qam &quot;fix(receipt): round the total&quot; &amp;&amp; sh ci/review.sh; echo &quot;exit $?&quot;</span>
+{&quot;ok&quot;:true,&quot;blockers&quot;:[]} ($0.0143)
+exit 0</pre></div>
+<p class="hint"><strong>Hint:</strong> a pass from the reviewer means it found no blockers in what it was shown, which is the diff and nothing else. A test for a subtotal of 16 would make the fix permanent; the review would not notice if a later change undid it.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 10.3 · Challenge</p>
+<h3>Check the workflow</h3>
+<p class="project-goal">Load the workflow file and confirm its trigger, its permissions, its timeout and its steps.</p>
+<p class="project-skills"><strong>You will practise:</strong> treating CI configuration as code with checks of its own.</p>
+<ol class="steps">
+<li>Parse the YAML.</li>
+<li>Print the trigger, the permissions and the time limit.</li>
+<li>List the steps, and which one receives the secret.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">.github/workflows/claude-review.yml (part)</div><pre class="code">permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @anthropic-ai/claude-code
+      - run: sh ci/review.sh
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">python3 workflow.py</span>
+on: [&#x27;pull_request&#x27;] | permissions: {&#x27;contents&#x27;: &#x27;read&#x27;} | timeout: 10
+ - actions/checkout@v4 
+ - actions/setup-node@v4 
+ - npm install -g @anthropic-ai/claude-code 
+ - sh ci/review.sh (secret)</pre></div>
+<p class="hint"><strong>Hint:</strong> read-only permissions, a ten-minute limit, and the key given only to the step that needs it. One more rule belongs here for public repositories: pull requests from forks do not receive repository secrets by default on most hosting services, which protects your key from code you have not reviewed. Keep it that way.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write your team’s three denies. For each, say what would happen if one person’s settings could undo it.</li>
+<li><span class="level">Easy</span> Add a <code>severity</code> field (“blocker” or “note”) to the schema. How should <code>ci/review.sh</code> treat notes?</li>
+<li><span class="level medium">Medium</span> Make the review cheaper still: send only the changed files under <code>src/</code>, not the tests or documentation. What could the reviewer then miss?</li>
+<li><span class="level medium">Medium</span> Run the CI review twice on the same diff with the real API. If the verdicts differ, how would you make the pipeline stable?</li>
+<li><span class="level hard">Challenge</span> Design a second CI job that lets Claude Code fix simple lint errors on a pull request and push the fix to the same branch. Which tools, which permissions, which limits, and which pull requests would you allow it to touch?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 11</p>
+<p>Part III builds products of your own on Claude. It starts where Claude Code ends: the API itself, with conversations, streaming, and the errors and limits every production program meets.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2797,6 +3064,16 @@ New test: a bill of 85.50 at 10% gives 94.05, the example from the issue. All te
 <li>Add a second check: if the type is <code>fix</code>, the subject must contain <code>#</code> followed by digits, for example <code>grep -qE '^fix(\([a-z-]+\))?: .+#[0-9]+'</code>. Test with “fix(price): keep piastres” (refused) and “fix(price): keep piastres (#42)” (accepted), as in Project 9.1.</li>
 <li>Allow the exact form your tool needs, for example <code>Bash(gh pr create:*)</code>, and only on a branch; never allow merging (<code>gh pr merge</code>), pushing to the main branch, or changing branch protection. Opening a pull request is a proposal anyone can reject; merging changes what everyone runs. Many teams let a person run the final command, with the description the agent wrote.</li>
 <li>Run the steps in order and stop at the first failure: create the branch, run Claude Code with <code>--output-format json</code>, check its <code>subtype</code>, run <code>check.mjs</code>, run the tests yourself. On success, print the path of <code>PR.md</code>. On failure, leave the branch as it is and print what failed, the agent’s last message, and its cost, so a person can pick it up in a minute instead of rerunning everything.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 10</h2>
+<ol class="exercises">
+<li>For example: deny <code>Bash(git push:*)</code> (one person could push unreviewed code to everyone), deny reading <code>secrets/</code> or <code>.env</code> (one person could send keys into a model’s context and its logs), and deny commands that delete data, such as dropping a database (one mistake would be everyone’s outage). A deny is a decision the team made once; it should not depend on each person’s settings.</li>
+<li>Add <code>"severity": {"enum": ["blocker", "note"]}</code> to each item, as objects instead of strings. Exit with 1 only if any item is a blocker; print notes in the comment, so people see them without the build failing. Notes that people act on often may deserve to become blockers; notes nobody reads should be dropped from the prompt.</li>
+<li>Use <code>git diff main...HEAD -- src/</code>. The request shrinks, and so does the cost, but the reviewer can no longer see that a behaviour changed without a test, or that the documentation now says something false. A middle way is to send the full list of changed files, and the full diff only for the code.</li>
+<li>Real verdicts can differ between runs on borderline diffs. To stabilise: make the criteria in the prompt precise (“a blocker is…”), keep the schema strict, use a fixed model version, and treat a disagreement as information: fail only when the review finds a blocker it can name with a file and a line, and let a person decide on the rest. Running twice and requiring agreement is possible, at twice the cost.</li>
+<li>For example: tools limited to reading and editing files under <code>src/</code> and running the linter; permission to commit and push only to the pull request’s own branch, never to the main branch; a spending limit and a short timeout; and only pull requests from team members, never from forks. The job should stop if the fix changes anything but whitespace and formatting, and a person still reviews the result.</li>
 </ol>
 
 </section>

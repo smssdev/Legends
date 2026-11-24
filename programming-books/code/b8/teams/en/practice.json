@@ -1,0 +1,69 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "The release is tagged. Push it.",
+        "tool_result": "Bash"
+      },
+      "text": "I couldn't push: the team's settings deny it. A person needs to push the release."
+    },
+    {
+      "when": {
+        "first": "The release is tagged. Push it."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Pushing."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "git push origin main",
+            "description": "Push the release"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Review this diff for the café app. Report blockers only: bugs, missing tests for changed behaviour, or money handled wrongly.",
+        "tool_result": "StructuredOutput"
+      },
+      "text": "-"
+    },
+    {
+      "when": {
+        "first": "total: Math.round((subtotal + vat) * 100) / 100"
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "StructuredOutput",
+          "input": {
+            "ok": true,
+            "blockers": []
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Review this diff for the café app. Report blockers only: bugs, missing tests for changed behaviour, or money handled wrongly."
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "StructuredOutput",
+          "input": {
+            "ok": false,
+            "blockers": [
+              "receipt.mjs: total is subtotal + vat without rounding; a subtotal of 16 gives 18.240000000000002."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
