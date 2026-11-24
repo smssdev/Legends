@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: Conversations, Files and Images"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: Projects and Knowledge"; } }
+@page ch03:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -43,7 +45,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">32</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">42</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -729,6 +731,270 @@ Two clauses changed. Payment is now due within 15 days of each delivery instead 
 <p>Attaching the same files to every chat is tiring. The next chapter introduces projects: a place where documents and instructions live once, and every conversation starts with them.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b8/projects/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>Projects and Knowledge</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>set up a project: instructions once, knowledge once, and every chat starts with both</li>
+<li>write project instructions that hold up across hundreds of chats</li>
+<li>organise knowledge so Claude finds the right document and you can keep it current</li>
+<li>see a project underneath: a system prompt, documents, and the prompt cache</li>
+<li>share a project with a team without sharing what should stay private</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 2 ended with a chore: attaching the same menu, the same policies and the same instructions to every new chat. A <dfn>project</dfn> ends it. You put the instructions and the documents in one place, and every conversation inside the project begins with them. For a team, a project becomes something more: the shared memory of how the team works, which a new colleague can use on their first day.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The answers in this chapter come from the practice server. The projects, their documents, the token counts and the cache are real parts of the code; and the English edition ran into a limit of the cache that this chapter turns into a lesson.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>What a project is</span></h2>
+
+<p>In the Claude apps, a project has three parts:</p>
+<ul>
+<li><strong>Instructions</strong>, written once, that apply to every chat in the project: who Claude is helping, which sources to use, how to answer.</li>
+<li><strong>Knowledge</strong>: files you add (documents, PDFs, code, data) that Claude can read in every chat.</li>
+<li><strong>Chats</strong>, each a normal conversation that starts with the instructions and the knowledge already in place.</li>
+</ul>
+
+<p>On team plans, a project can be shared with colleagues, who then chat with the same instructions and knowledge. When the knowledge grows larger than Claude can read at once, the app searches it for the passages that matter to each question, instead of reading everything: the retrieval that Book 7’s Chapter 14 built by hand.</p>
+
+<p>The book’s example is two projects for Bit Cafe: one for answering customers, with the menu, the policies, the barista recipes and a guide to the café’s voice; and one for writing social media posts, with just the menu:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">find support marketing -type f | sort</span>
+marketing/instructions.md
+marketing/knowledge/menu.md
+support/instructions.md
+support/knowledge/menu.md
+support/knowledge/policies.md
+support/knowledge/recipes.md
+support/knowledge/voice.md</pre></div>
+
+<h2><span class="sec">3.2</span> <span>Instructions that hold up</span></h2>
+
+<p>Project instructions are read at the start of every chat, by every member of the team, for months. They deserve the care of code:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">support/instructions.md</div><pre class="code md">You answer customers of Bit Cafe. Use only the project&#x27;s documents. Follow voice.md. If the documents do not answer, say you will ask a colleague.</pre></div>
+
+<p>Three sentences, and each one earns its place. The first says who Claude is helping, which decides the tone and the level of detail. The second limits the sources, so the answer about prices comes from the menu and not from what cafés usually charge. The third says what to do when the documents are silent, which is the case instructions most often forget, and the one that produces confident inventions when they do.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Keep instructions short and about behaviour; put facts in the knowledge. “Our latte costs 45” in the instructions goes out of date unseen; in <code>menu.md</code> it sits with the other prices, where the person who changes prices will find it.</p></aside>
+
+<h2><span class="sec">3.3</span> <span>Knowledge you can keep current</span></h2>
+
+<p>A project is only as good as its documents, and documents rot. A few rules keep them useful:</p>
+<ul>
+<li><strong>One topic per file, named for the topic</strong>: <code>menu.md</code>, <code>policies.md</code>. Clear names help Claude and the people who maintain them.</li>
+<li><strong>The current version only.</strong> Two menus, one from last year, give Claude two prices to choose from. Replace files; do not add new versions next to old ones.</li>
+<li><strong>Text over scans.</strong> A Markdown or text file is read exactly; a scanned PDF must be read from page images, which is slower and less reliable.</li>
+<li><strong>An owner and a date.</strong> Somebody updates the menu when prices change, and the file says when it was last checked.</li>
+</ul>
+
+<h2><span class="sec">3.4</span> <span>A project underneath</span></h2>
+
+<p>Built with the API, a project is a few lines: the instructions become the <dfn>system prompt</dfn>, the part of the request that sets Claude’s role before any message, and the knowledge follows as documents in it. The last document carries a <code>cache_control</code> marker, which asks the API to keep everything up to that point in the <dfn>prompt cache</dfn>, so the next request that starts with the same text reads it back for a fraction of the price:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/project.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> loadProject(folder) {
+  <span class="k">const</span> instructions = read(folder, <span class="s">&quot;instructions.md&quot;</span>);
+  <span class="k">const</span> dir = path.join(folder, <span class="s">&quot;knowledge&quot;</span>);
+  <span class="k">const</span> knowledge = fs.readdirSync(dir).sort().map((name) =&gt; ({
+    <span class="k">type</span>: <span class="s">&quot;text&quot;</span>,
+    text: <span class="s">`&lt;document name=&quot;${name}&quot;&gt;\n${read(dir, name)}&lt;/document&gt;`</span>,
+  }));
+  knowledge.at(-<span class="n">1</span>).cache_control = {<span class="k">type</span>: <span class="s">&quot;ephemeral&quot;</span>};
+  <span class="k">return</span> {instructions, knowledge};
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/project.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> chat(project, question) {
+  <span class="k">return</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">1000</span>,
+    system: [{<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: project.instructions}, ...project.knowledge],
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content: question}],
+  });
+}</pre></div>
+
+<p>Three chats in the support project:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node chats.mjs</span>
+<span class="c">&gt; </span><span class="k">How much is the rose latte?</span>
+Our rose latte costs 55 EGP. It contains rose syrup, so tell the barista if you would like it less sweet.
+  (chat 1: 0 written to cache, 0 read from cache, 919 new)
+<span class="c">&gt; </span><span class="k">Does anything contain nuts?</span>
+Yes: our date cake contains nuts. For any other allergen, please ask the barista, who can check each item for you.
+  (chat 2: 0 written to cache, 0 read from cache, 919 new)
+<span class="c">&gt; </span><span class="k">Is there parking at the Zamalek branch?</span>
+I&#x27;m not sure: our documents don&#x27;t say. I will ask a colleague and come back to you.
+  (chat 3: 0 written to cache, 0 read from cache, 922 new)</pre></div>
+
+<p>The answers follow the instructions: prices from the menu, the nut warning from the policies, and an honest “I will ask a colleague” about parking, which no document mentions. But look at the cache: nothing was written and nothing read. Every chat paid for all 900 tokens of knowledge. The reason is a rule of prompt caching that the API applies without an error or a warning: a prefix shorter than a minimum is not cached. The minimum depends on the model, from 512 to 4,096 tokens; the practice server uses 1,024, and the English knowledge is 913 tokens long.</p>
+
+<p>In the Arabic edition, the same four documents take 1,379 tokens, because Arabic text uses more tokens for the same content, and there the cache works as intended: the first chat writes 1,379 tokens to the cache, and the next two read them back. On Claude Opus 5.5, reading from the cache costs a twentieth of the normal input price, so from the second chat on, the knowledge is almost free.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Caching fails silently: a request that misses the cache still works, it just costs the full price. Check <code>cache_read_input_tokens</code> in the usage of the second request. If it is zero, either the prefix is too short, or something in it changed between requests: a date in the instructions, documents in a different order, a tool list that varies. Chapter 15 lists the usual culprits.</p></aside>
+
+<p>Without the project, the same question gets a general answer, and an honest one: it does not know the café’s price.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node plain.mjs</span>
+A rose latte is a latte flavoured with rose syrup or rose water. Prices vary by café; I don&#x27;t know what Bit Cafe charges.</pre></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did the English chats write nothing to the cache?</li><li>Which instruction produced “I will ask a colleague”, and what might happen without it?</li><li>Why should a price live in <code>menu.md</code> and not in the instructions?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">3.5</span> <span>Projects for a team</span></h2>
+
+<p>A shared project gives a team one place for its working knowledge: the support team’s answers, the engineering team’s conventions, the sales team’s product sheets. Before sharing, settle three things. Who can change the instructions and the knowledge: a project anyone can edit drifts. What is in the knowledge: everyone with access can ask Claude about every document in it, so a salary sheet does not belong in a project the whole company uses. And how chats are shared: check what your plan shows to other members, and tell the team, so nobody types into a shared space what they meant to keep private.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Give every shared project an owner and a monthly check: are the documents current, are the instructions still right, and what did people ask that the documents could not answer? Those questions are the next documents to write.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Facts in the instructions</td><td>Outdated facts nobody sees</td><td>Facts in knowledge files; behaviour in instructions</td></tr>
+<tr><td>No rule for unknown answers</td><td>Confident inventions</td><td>Say what to do when the documents are silent</td></tr>
+<tr><td>Old and new versions side by side</td><td>Answers from the wrong version</td><td>Replace files; keep one current version</td></tr>
+<tr><td>Assuming the cache works</td><td>Full price on every request</td><td>Check <code>cache_read_input_tokens</code>; mind the minimum</td></tr>
+<tr><td>Changing text before the cache marker</td><td>Every request misses the cache</td><td>Keep the prefix identical; variable parts after it</td></tr>
+<tr><td>Private files in a shared project</td><td>Anyone with access can ask about them</td><td>Decide what each project may contain before sharing</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A project holds instructions and knowledge once, and every chat in it starts with both.</li>
+<li>Instructions say whom Claude helps, which sources to use, and what to do when they are silent; facts belong in the knowledge.</li>
+<li>Keep knowledge one topic per file, current, in text, with an owner.</li>
+<li>Underneath, a project is a system prompt with documents, cached after the first chat; caching is silent, has a minimum length, and must be checked.</li>
+<li>Shared projects need an owner, a policy on what they contain, and a team that knows what is visible to whom.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the English knowledge, 913 tokens, is shorter than the practice server’s minimum for caching, 1,024 tokens, and a prefix below the minimum is simply not cached, with no error. 2. “If the documents do not answer, say you will ask a colleague.” Without it, Claude might answer from general knowledge, for example by guessing that there is street parking, and a customer would take the guess as the café’s word. 3. Because prices change, and a price in the instructions is easy to forget when the menu is updated; in <code>menu.md</code> it is where the person changing prices will look, next to the other prices.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects treat a Claude project as what it is underneath: files in folders, tokens in a budget, and instructions that change behaviour.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>A project from a folder</h3>
+<p class="project-goal">Load a project’s instructions and knowledge from files, so the team edits them like code.</p>
+<p class="project-skills"><strong>You will practise:</strong> projects as files under version control.</p>
+<ol class="steps">
+<li>Put the instructions in <code>instructions.md</code>, and each document in <code>knowledge/</code>.</li>
+<li>Read them in a fixed order, so the prefix is identical every time.</li>
+<li>Mark the last document for the cache.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">find support marketing -type f | sort</span>
+marketing/instructions.md
+marketing/knowledge/menu.md
+support/instructions.md
+support/knowledge/menu.md
+support/knowledge/policies.md
+support/knowledge/recipes.md
+support/knowledge/voice.md</pre></div>
+<p class="hint"><strong>Hint:</strong> the <code>sort()</code> in <code>loadProject</code> matters more than it looks. Directory listings are not guaranteed to come in the same order, and a different order is a different prefix: a cache miss on every request.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.2 · Medium</p>
+<h3>A knowledge budget</h3>
+<p class="project-goal">Measure how many tokens each project’s instructions and knowledge take before the first question.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>countTokens</code> on a system prompt with documents.</p>
+<ol class="steps">
+<li>Load each project.</li>
+<li>Count the tokens of a request with a one-character question.</li>
+<li>Print the size and its share of the context window.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">budget.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> name <span class="k">of</span> [<span class="s">&quot;support&quot;</span>, <span class="s">&quot;marketing&quot;</span>]) {
+  <span class="k">const</span> {instructions, knowledge} = loadProject(name);
+  <span class="k">const</span> {input_tokens: size} = <span class="k">await</span> client.messages.countTokens({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    system: [{<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: instructions}, ...knowledge],
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;?&quot;</span>}],
+  });
+  <span class="k">const</span> share = ((size / 1_000_000) * <span class="n">100</span>).toFixed(<span class="n">3</span>);
+  <span class="k">const</span> files = <span class="s">`files: ${knowledge.length}`</span>;
+  console.log(<span class="s">`${name.padEnd(10)} ${files}, ${size} tokens: ${share}% of the context window`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node budget.mjs</span>
+support    files: 4, 913 tokens: 0.091% of the context window
+marketing  files: 1, 192 tokens: 0.019% of the context window</pre></div>
+<p class="hint"><strong>Hint:</strong> a tenth of a percent of the window: size is not the problem with these projects. It becomes one with hundreds of documents, and before that, the cache minimum and the cost per chat are the numbers to watch. Run this whenever the knowledge changes.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 3.3 · Challenge</p>
+<h3>Two projects, one question</h3>
+<p class="project-goal">Ask the support project and the marketing project for the same thing, and compare.</p>
+<p class="project-skills"><strong>You will practise:</strong> seeing how much the instructions, not the question, decide the answer.</p>
+<ol class="steps">
+<li>Load both projects.</li>
+<li>Ask each for a post about the rose latte.</li>
+<li>Compare the answers against each project’s instructions.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">two.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> name <span class="k">of</span> [<span class="s">&quot;support&quot;</span>, <span class="s">&quot;marketing&quot;</span>]) {
+  <span class="k">const</span> response = <span class="k">await</span> chat(loadProject(name), <span class="s">&quot;Write a post about the rose latte.&quot;</span>);
+  console.log(<span class="s">`[${name}]\n${text(response)}\n`</span>);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node two.mjs</span>
+[support]
+Our rose latte costs 55 EGP. It contains rose syrup, so tell the barista if you would like it less sweet.
+
+[marketing]
+1. Spring has a new flavour: our rose latte, 55 EGP, is here. Come taste it before the season ends.
+2. Coffee, but make it bloom. Rose latte, 55 EGP, at every Bit Cafe.</pre></div>
+<p class="hint"><strong>Hint:</strong> the support project answered the customer question inside the request and ignored “write a post”, because its instructions say it answers customers; the marketing project wrote two options, as its instructions ask. With the real model the details will differ, but the lesson holds: when a project gives odd answers, read its instructions before you blame the question.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write the instructions for a project your team could use this week: whom it helps, which sources, the form of answers, and what to do when the sources are silent. Keep them under 80 words.</li>
+<li><span class="level">Easy</span> Add a short document to the English support project’s knowledge and run <code>chats.mjs</code> again. How large must it be before the cache starts working with the practice server?</li>
+<li><span class="level medium">Medium</span> Put today’s date at the start of the instructions and run <code>chats.mjs</code> twice, a minute apart, in the Arabic project. What happens to the cache, and where should a date go instead?</li>
+<li><span class="level medium">Medium</span> Write a check that warns when two knowledge files mention the same item with different prices. Why is this a job for code rather than for Claude?</li>
+<li><span class="level hard">Challenge</span> Write a monthly report for a shared project: the questions from a log of chats that ended in “I will ask a colleague”, grouped by topic. Which documents would you write first?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>Some answers are not text but things: a document to edit, a diagram, a small working app. The next chapter is about artifacts, and how to build, check and share them.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -764,6 +1030,16 @@ Two clauses changed. Payment is now due within 15 days of each delivery instead 
 <li>Anthropic’s guidance is to put images and documents before the question, so that the model reads the material first and then what to do with it. Placed after, the model reads the question without the thing it asks about; it usually still answers well, but the habit costs nothing and is followed in every example of this book.</li>
 <li>Keep <code>messages[0]</code> and drop two messages at a time from index 1: <code>kept = [kept[0], ...kept.slice(3)]</code>. The pair dropped is an answer and the question after it, so what remains still starts with the user’s first message and still alternates: user, assistant, user. Whatever you drop, keep that rule true: the first message is the user’s, and roles alternate.</li>
 <li>Keep <code>messages</code>; after each turn, print the cost from <code>usage</code>; when <code>countTokens</code> passes the budget, send the oldest half to Claude with “summarise this conversation in five lines, keeping names, numbers and decisions”, and replace that half with one user message containing the summary and one assistant message acknowledging it. With the practice server, add a reply for the summary request so the logic can be tested end to end; the quality of real summaries is something to check against the real API.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 3</h2>
+<ol class="exercises">
+<li>For example, for an engineering team: “You help developers of the Bit Cafe app. Use only the documents in this project, and quote the file you rely on. Answer with the command or the code first, then one line of explanation. If the documents do not cover it, say so and suggest who on the team might know.” Read it as a new colleague would: if any sentence could be read two ways, rewrite it.</li>
+<li>The English knowledge is 913 tokens; it needs to pass 1,024, so a document of a little over 110 tokens, about 450 characters of English, is enough with the practice server. The second chat then shows the knowledge read from the cache. With the real API the minimum depends on the model; check its documentation, and check <code>cache_read_input_tokens</code> rather than trusting a calculation.</li>
+<li>Every run has a different first line, so the prefix differs and every request writes the cache again and never reads it: you pay more than with no caching at all, because a cache write costs 1.25 times the input price. A date belongs after the cached part: in the user’s message, or in a short system block after the last document marked for the cache.</li>
+<li>Parse the lines that look like “name: price” in every file, group them by name, and report names with more than one price. It is a job for code because it must be exact and complete: a model might notice one conflict and miss another, while ten lines of code check every line every time, for free, and can run before the knowledge is uploaded.</li>
+<li>Read the log, keep the questions whose answer contains the refusal sentence, and group them, by hand for a small team or with Claude for a large log (and then check the groups). The largest group is the first document to write; a question asked once is not a pattern yet. Report the count per group month by month, so the team sees the gaps closing.</li>
 </ol>
 
 </section>

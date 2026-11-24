@@ -1,0 +1,178 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/projects/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Projects and Knowledge</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>set up a project: instructions once, knowledge once, and every chat starts with both</li>
+<li>write project instructions that hold up across hundreds of chats</li>
+<li>organise knowledge so Claude finds the right document and you can keep it current</li>
+<li>see a project underneath: a system prompt, documents, and the prompt cache</li>
+<li>share a project with a team without sharing what should stay private</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 2 ended with a chore: attaching the same menu, the same policies and the same instructions to every new chat. A <dfn>project</dfn> ends it. You put the instructions and the documents in one place, and every conversation inside the project begins with them. For a team, a project becomes something more: the shared memory of how the team works, which a new colleague can use on their first day.</p>
+
+<aside class="bit" data-mood="think"><p>The answers in this chapter come from the practice server. The projects, their documents, the token counts and the cache are real parts of the code; and the English edition ran into a limit of the cache that this chapter turns into a lesson.</p></aside>
+
+<h2>{{n}}.1 What a project is</h2>
+
+<p>In the Claude apps, a project has three parts:</p>
+<ul>
+<li><strong>Instructions</strong>, written once, that apply to every chat in the project: who Claude is helping, which sources to use, how to answer.</li>
+<li><strong>Knowledge</strong>: files you add (documents, PDFs, code, data) that Claude can read in every chat.</li>
+<li><strong>Chats</strong>, each a normal conversation that starts with the instructions and the knowledge already in place.</li>
+</ul>
+
+<p>On team plans, a project can be shared with colleagues, who then chat with the same instructions and knowledge. When the knowledge grows larger than Claude can read at once, the app searches it for the passages that matter to each question, instead of reading everything: the retrieval that Book 7’s Chapter 14 built by hand.</p>
+
+<p>The book’s example is two projects for Bit Cafe: one for answering customers, with the menu, the policies, the barista recipes and a guide to the café’s voice; and one for writing social media posts, with just the menu:</p>
+
+<pre data-term="tree.sh"></pre>
+
+<h2>{{n}}.2 Instructions that hold up</h2>
+
+<p>Project instructions are read at the start of every chat, by every member of the team, for months. They deserve the care of code:</p>
+
+<pre data-code="support/instructions.md" data-title="support/instructions.md"></pre>
+
+<p>Three sentences, and each one earns its place. The first says who Claude is helping, which decides the tone and the level of detail. The second limits the sources, so the answer about prices comes from the menu and not from what cafés usually charge. The third says what to do when the documents are silent, which is the case instructions most often forget, and the one that produces confident inventions when they do.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Keep instructions short and about behaviour; put facts in the knowledge. “Our latte costs 45” in the instructions goes out of date unseen; in <code>menu.md</code> it sits with the other prices, where the person who changes prices will find it.</p></aside>
+
+<h2>{{n}}.3 Knowledge you can keep current</h2>
+
+<p>A project is only as good as its documents, and documents rot. A few rules keep them useful:</p>
+<ul>
+<li><strong>One topic per file, named for the topic</strong>: <code>menu.md</code>, <code>policies.md</code>. Clear names help Claude and the people who maintain them.</li>
+<li><strong>The current version only.</strong> Two menus, one from last year, give Claude two prices to choose from. Replace files; do not add new versions next to old ones.</li>
+<li><strong>Text over scans.</strong> A Markdown or text file is read exactly; a scanned PDF must be read from page images, which is slower and less reliable.</li>
+<li><strong>An owner and a date.</strong> Somebody updates the menu when prices change, and the file says when it was last checked.</li>
+</ul>
+
+<h2>{{n}}.4 A project underneath</h2>
+
+<p>Built with the API, a project is a few lines: the instructions become the <dfn>system prompt</dfn>, the part of the request that sets Claude’s role before any message, and the knowledge follows as documents in it. The last document carries a <code>cache_control</code> marker, which asks the API to keep everything up to that point in the <dfn>prompt cache</dfn>, so the next request that starts with the same text reads it back for a fraction of the price:</p>
+
+<pre data-code="lib/project.mjs" data-from="^export function loadProject" data-to="^}" data-title="lib/project.mjs (part)"></pre>
+<pre data-code="lib/project.mjs" data-from="^export async function chat" data-to="^}" data-title="lib/project.mjs (part)"></pre>
+
+<p>Three chats in the support project:</p>
+
+<pre data-term="chats.sh"></pre>
+
+<p>The answers follow the instructions: prices from the menu, the nut warning from the policies, and an honest “I will ask a colleague” about parking, which no document mentions. But look at the cache: nothing was written and nothing read. Every chat paid for all 900 tokens of knowledge. The reason is a rule of prompt caching that the API applies without an error or a warning: a prefix shorter than a minimum is not cached. The minimum depends on the model, from 512 to 4,096 tokens; the practice server uses 1,024, and the English knowledge is 913 tokens long.</p>
+
+<p>In the Arabic edition, the same four documents take 1,379 tokens, because Arabic text uses more tokens for the same content, and there the cache works as intended: the first chat writes 1,379 tokens to the cache, and the next two read them back. On Claude Opus 5.5, reading from the cache costs a twentieth of the normal input price, so from the second chat on, the knowledge is almost free.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Caching fails silently: a request that misses the cache still works, it just costs the full price. Check <code>cache_read_input_tokens</code> in the usage of the second request. If it is zero, either the prefix is too short, or something in it changed between requests: a date in the instructions, documents in a different order, a tool list that varies. Chapter 15 lists the usual culprits.</p></aside>
+
+<p>Without the project, the same question gets a general answer, and an honest one: it does not know the café’s price.</p>
+
+<pre data-term="plain.sh"></pre>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why did the English chats write nothing to the cache?</li><li>Which instruction produced “I will ask a colleague”, and what might happen without it?</li><li>Why should a price live in <code>menu.md</code> and not in the instructions?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Projects for a team</h2>
+
+<p>A shared project gives a team one place for its working knowledge: the support team’s answers, the engineering team’s conventions, the sales team’s product sheets. Before sharing, settle three things. Who can change the instructions and the knowledge: a project anyone can edit drifts. What is in the knowledge: everyone with access can ask Claude about every document in it, so a salary sheet does not belong in a project the whole company uses. And how chats are shared: check what your plan shows to other members, and tell the team, so nobody types into a shared space what they meant to keep private.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Give every shared project an owner and a monthly check: are the documents current, are the instructions still right, and what did people ask that the documents could not answer? Those questions are the next documents to write.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Facts in the instructions</td><td>Outdated facts nobody sees</td><td>Facts in knowledge files; behaviour in instructions</td></tr>
+<tr><td>No rule for unknown answers</td><td>Confident inventions</td><td>Say what to do when the documents are silent</td></tr>
+<tr><td>Old and new versions side by side</td><td>Answers from the wrong version</td><td>Replace files; keep one current version</td></tr>
+<tr><td>Assuming the cache works</td><td>Full price on every request</td><td>Check <code>cache_read_input_tokens</code>; mind the minimum</td></tr>
+<tr><td>Changing text before the cache marker</td><td>Every request misses the cache</td><td>Keep the prefix identical; variable parts after it</td></tr>
+<tr><td>Private files in a shared project</td><td>Anyone with access can ask about them</td><td>Decide what each project may contain before sharing</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A project holds instructions and knowledge once, and every chat in it starts with both.</li>
+<li>Instructions say whom Claude helps, which sources to use, and what to do when they are silent; facts belong in the knowledge.</li>
+<li>Keep knowledge one topic per file, current, in text, with an owner.</li>
+<li>Underneath, a project is a system prompt with documents, cached after the first chat; caching is silent, has a minimum length, and must be checked.</li>
+<li>Shared projects need an owner, a policy on what they contain, and a team that knows what is visible to whom.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the English knowledge, 913 tokens, is shorter than the practice server’s minimum for caching, 1,024 tokens, and a prefix below the minimum is simply not cached, with no error. 2. “If the documents do not answer, say you will ask a colleague.” Without it, Claude might answer from general knowledge, for example by guessing that there is street parking, and a customer would take the guess as the café’s word. 3. Because prices change, and a price in the instructions is easy to forget when the menu is updated; in <code>menu.md</code> it is where the person changing prices will look, next to the other prices.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects treat a Claude project as what it is underneath: files in folders, tokens in a budget, and instructions that change behaviour.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A project from a folder</h3>
+<p class="project-goal">Load a project’s instructions and knowledge from files, so the team edits them like code.</p>
+<p class="project-skills"><strong>You will practise:</strong> projects as files under version control.</p>
+<ol class="steps">
+<li>Put the instructions in <code>instructions.md</code>, and each document in <code>knowledge/</code>.</li>
+<li>Read them in a fixed order, so the prefix is identical every time.</li>
+<li>Mark the last document for the cache.</li>
+</ol>
+<pre data-term="tree.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the <code>sort()</code> in <code>loadProject</code> matters more than it looks. Directory listings are not guaranteed to come in the same order, and a different order is a different prefix: a cache miss on every request.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A knowledge budget</h3>
+<p class="project-goal">Measure how many tokens each project’s instructions and knowledge take before the first question.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>countTokens</code> on a system prompt with documents.</p>
+<ol class="steps">
+<li>Load each project.</li>
+<li>Count the tokens of a request with a one-character question.</li>
+<li>Print the size and its share of the context window.</li>
+</ol>
+<pre data-code="budget.mjs" data-from="^for" data-to="^}" data-title="budget.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/budget.sh"></pre>
+<p class="hint"><strong>Hint:</strong> a tenth of a percent of the window: size is not the problem with these projects. It becomes one with hundreds of documents, and before that, the cache minimum and the cost per chat are the numbers to watch. Run this whenever the knowledge changes.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Two projects, one question</h3>
+<p class="project-goal">Ask the support project and the marketing project for the same thing, and compare.</p>
+<p class="project-skills"><strong>You will practise:</strong> seeing how much the instructions, not the question, decide the answer.</p>
+<ol class="steps">
+<li>Load both projects.</li>
+<li>Ask each for a post about the rose latte.</li>
+<li>Compare the answers against each project’s instructions.</li>
+</ol>
+<pre data-code="two.mjs" data-from="^for" data-to="^}" data-title="two.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/two.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the support project answered the customer question inside the request and ignored “write a post”, because its instructions say it answers customers; the marketing project wrote two options, as its instructions ask. With the real model the details will differ, but the lesson holds: when a project gives odd answers, read its instructions before you blame the question.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write the instructions for a project your team could use this week: whom it helps, which sources, the form of answers, and what to do when the sources are silent. Keep them under 80 words.</li>
+<li><span class="level">Easy</span> Add a short document to the English support project’s knowledge and run <code>chats.mjs</code> again. How large must it be before the cache starts working with the practice server?</li>
+<li><span class="level">Medium</span> Put today’s date at the start of the instructions and run <code>chats.mjs</code> twice, a minute apart, in the Arabic project. What happens to the cache, and where should a date go instead?</li>
+<li><span class="level">Medium</span> Write a check that warns when two knowledge files mention the same item with different prices. Why is this a job for code rather than for Claude?</li>
+<li><span class="level">Challenge</span> Write a monthly report for a shared project: the questions from a log of chats that ended in “I will ask a colleague”, grouped by topic. Which documents would you write first?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Some answers are not text but things: a document to edit, a diagram, a small working app. The next chapter is about artifacts, and how to build, check and share them.</p>
+</div>
+</section>
