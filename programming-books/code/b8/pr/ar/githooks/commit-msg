@@ -1,0 +1,7 @@
+#!/bin/sh
+# ارفض رسالة حفظ لا تتبع Conventional Commits.
+# git runs this with the path of the file that holds the message.
+if ! head -n 1 "$1" | grep -qE '^(feat|fix|docs|refactor|test|chore)(\([a-z-]+\))?: .+'; then
+  echo "رسائل الحفظ تتبع Conventional Commits: type(scope): subject" >&2
+  exit 1
+fi

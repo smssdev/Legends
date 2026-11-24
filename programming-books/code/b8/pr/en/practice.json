@@ -1,0 +1,217 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Write"
+      },
+      "text": "Done: branch fix/42-piastres has one commit, the tests pass, and PR.md is ready to paste into the pull request."
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Bash",
+        "result_text": "] fix(price)"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Writing the description from the template."
+        },
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": ".github/pull_request_template.md"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Read",
+        "result_text": "##"
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "Write",
+          "input": {
+            "file_path": "PR.md",
+            "content": "## What and why\n\nBills with piastres were totalled as if they had none: `parseInt(\"85.50\")` is 85. `total` now reads the bill with `Number`.\n\n## How it was tested\n\nNew test: a bill of 85.50 at 10% gives 94.05, the example from the issue. All tests pass with `node --test`.\n\n## Closes\n\n#42\n"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Bash",
+        "result_text": "Conventional Commits"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "The repository's hook wants Conventional Commits. Committing again with a proper message."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "git commit -am \"fix(price): keep piastres when totalling a bill (#42)\"",
+            "description": "Commit the fix"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Bash",
+        "result_text": "ok 2"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Committing."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "git commit -am \"fixed stuff\"",
+            "description": "Commit the fix"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Edit",
+        "result_text": "price.test.mjs"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Running the tests."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Edit"
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "Edit",
+          "input": {
+            "file_path": "test/price.test.mjs",
+            "old_string": "test(\"a round bill\", () => assert.equal(total(\"100\", 10).toFixed(2), \"110.00\"));",
+            "new_string": "test(\"a round bill\", () => assert.equal(total(\"100\", 10).toFixed(2), \"110.00\"));\ntest(\"a bill with piastres (issue 42)\", () => assert.equal(total(\"85.50\", 10).toFixed(2), \"94.05\"));"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Read",
+        "result_text": "parseInt"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "parseInt drops the piastres. Using Number, and adding a test with the issue's example."
+        },
+        {
+          "type": "tool_use",
+          "name": "Edit",
+          "input": {
+            "file_path": "src/price.mjs",
+            "old_string": "export const total = (bill, tip) => parseInt(bill) * (1 + tip / 100);",
+            "new_string": "export const total = (bill, tip) => Number(bill) * (1 + tip / 100);"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "test/price.test.mjs"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Bash",
+        "result_text": "Switched to a new branch"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Reading the code that totals a bill."
+        },
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "src/price.mjs"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template.",
+        "tool_result": "Bash",
+        "result_text": "# 42"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "The bill is read wrongly when it has piastres. Creating a branch for the fix."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "git switch -c fix/42-piastres",
+            "description": "Create a branch"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Fix issue 42 (issues/42.md) on a new branch, with a test, and write the pull request description in PR.md from the template."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "I'll read the issue first."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "cat issues/42.md",
+            "description": "Read the issue"
+          }
+        }
+      ]
+    }
+  ]
+}

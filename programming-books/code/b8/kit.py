@@ -37,6 +37,9 @@ def env():
     # Claude Code, in Part II, talks to the practice server too, and sends nothing else anywhere.
     e["DISABLE_TELEMETRY"] = "1"
     e["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] = "1"
+    # Commits made in the examples, by the reader or by Claude Code, are signed by Bit.
+    for k in ("GIT_AUTHOR", "GIT_COMMITTER"):
+        e[f"{k}_NAME"], e[f"{k}_EMAIL"] = "Bit", "bit@example.com"
     # The browser for chapters that test an artifact, already installed on this machine.
     for k in ("PLAYWRIGHT_BROWSERS_PATH", "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD"):
         if os.environ.get(k):
