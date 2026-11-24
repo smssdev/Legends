@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "الفصل 5: البحث والموصلات والأدوات"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "الفصل 6: Claude Code في الطرفية"; } }
+@page ch06:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -151,7 +153,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">72</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">84</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -1664,6 +1666,289 @@ sources.forEach((url, i) =&gt; console.log(<span class="s">`[${i + 1}] ${url}`</
 <p>استخدم الجزء الأول Claude في نافذة. والجزء الثاني يأتي به إلى طرفيتك ومستودعك: Claude Code، وكيل يقرأ كودك ويعدّله ويشغّله.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b8/terminal/ar">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">الفصل 6</p><h1>Claude Code في الطرفية</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تثبّت Claude Code، وتسجّل الدخول، وتختار بين الوضع التفاعلي ووضع الطباعة</li>
+<li>تراقب حلقة الوكيل: ما يقوله Claude، وأي الأدوات يستدعي، وما يعود</li>
+<li>تتحكم فيما يُسمح لـ Claude Code بفعله، بالصلاحيات والأدوات المسموحة</li>
+<li>تقرأ مخرجات Claude Code بصيغة JSON: النتيجة، والأدوار، والتكلفة</li>
+<li>تضع حداً صارماً لما يُسمح لتشغيل أن ينفقه</li>
+</ul>
+</div>
+
+<p class="lead">استخدم الجزء الأول Claude في نافذة، وكنت تحمل الكود منها وإليها. أما <dfn>Claude Code</dfn> فيعمل حيث الكود: في طرفيتك، داخل مستودعك. يقرأ الملفات، ويبحث فيها، ويشغّل الأوامر، ويعدّل الكود ويفحص عمله، في حلقة، حتى تنتهي المهمة أو يحتاجك. وهذا يجعله أقوى طريقة لاستخدام Claude في البرمجيات، والطريقة التي تهم فيها الصلاحيات أكثر من غيرها.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>Claude Code في هذا الفصل حقيقي، الإصدار 2.1.331، يعمل على جهاز الكتاب. ونموذجه وحده خادم التدريب: الردود مكتوبة مسبقاً، لكن الملف الذي يقرؤه، والاختبارات التي يشغّلها، والأمر الذي يُرفض، وحساب تكلفته، وحد إنفاقه كلها سلوك Claude Code نفسه.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>التثبيت وتسجيل الدخول</span></h2>
+
+<p>Claude Code برنامج سطر أوامر. ويسرد توثيق Anthropic طرق تثبيته (مثبّت أصلي، أو حزمة لنظامك، أو npm)؛ ومع وجود Node.js على جهازك، npm أقصرها:</p>
+
+<pre class="plain" dir="ltr">npm install -g @anthropic-ai/claude-code
+claude --version</pre>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude --version</span>
+2.1.331 (Claude Code)</pre></div>
+
+<p>أول مرة تشغّل فيها <code>claude</code>، يطلب منك تسجيل الدخول، باشتراك Claude أو بحساب Claude Console يدفع لكل token عبر مفتاح API. ويعمل أيضاً في محررات مثل VS Code وJetBrains، وفي تطبيق الحاسوب وعلى الويب؛ وهو الوكيل نفسه في كل منها، ويستخدم هذا الجزء من الكتاب الطرفية لأن كل شيء فيها مرئي.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>يقرأ Claude Code المتغيرين نفسيهما اللذين تقرؤهما الحزمة، <code>ANTHROPIC_BASE_URL</code> و<code>ANTHROPIC_API_KEY</code>. وهكذا يوجّهه هذا الفصل إلى خادم التدريب، وهكذا توجّهه الشركات عبر بوابتها أو عبر مزوّد سحابي.</p></aside>
+
+<h2><span class="sec">6.2</span> <span>طريقتان لتشغيله</span></h2>
+
+<p>شغّل <code>claude</code> في مجلد مشروع فتحصل على <dfn>جلسة تفاعلية</dfn>: تكتب، ويعمل Claude، وتستطيع توجيهه، والموافقة على أفعاله، وكتابة أوامر تبدأ بشرطة مائلة: <code>/help</code> للقائمة، و<code>/model</code> لتغيير النموذج، و<code>/clear</code> للبدء من جديد، و<code>/compact</code> لتلخيص جلسة طويلة والإكمال، و<code>/permissions</code> لرؤية المسموح. وهكذا ستستخدمه معظم الوقت.</p>
+
+<p>وشغّل <code>claude -p</code> مع أمر فتحصل على <dfn>وضع الطباعة</dfn>: مهمة واحدة، بلا أسئلة، والجواب على المخرج القياسي. وهكذا تستخدم السكربتات ومهام التكامل المستمر وهذا الكتاب Claude Code:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;اشرح price.mjs في جملتين.&quot; --model claude-opus-5-5 --no-session-persistence</span>
+يصدّر price.mjs الدالة total(bill, tip)، التي تضيف نسبة البقشيش إلى الفاتورة. وهو يقرأ الفاتورة بـ parseInt، فتسقط قروش فاتورة مثل 85.50.</pre></div>
+
+<p>قرأ Claude الملف <code>price.mjs</code> قبل أن يجيب؛ والأقسام التالية تُظهر تلك الخطوة. والجواب من خادم التدريب؛ والنموذج الحقيقي يشرح الملف بكلماته، ويجب أن يلاحظ المشكلة نفسها، التي يجعلها بقية الفصل مرئية.</p>
+
+<h2><span class="sec">6.3</span> <span>حلقة الوكيل، مرئية</span></h2>
+
+<p>مع <code dir="ltr">--output-format stream-json</code>، يطبع Claude Code كل حدث سطراً من JSON: كل رسالة، وكل استدعاء أداة، وكل نتيجة، وملخصاً في النهاية. وبضعة أسطر من JavaScript تحوّل التدفق إلى شيء يقرؤه إنسان:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">watch.mjs (جزء)</div><pre class="code"><span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> line <span class="k">of</span> readline.createInterface({input: process.stdin})) {
+  <span class="k">const</span> event = JSON.parse(line);
+  <span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> event.message?.content ?? []) {
+    <span class="k">if</span> (block.<span class="k">type</span> === <span class="s">&quot;text&quot;</span>) console.log(<span class="s">`  says   ${block.text}`</span>);
+    <span class="k">if</span> (block.<span class="k">type</span> === <span class="s">&quot;tool_use&quot;</span>) console.log(<span class="s">`  calls  ${block.name}: ${JSON.stringify(block.input)}`</span>);
+    <span class="k">if</span> (block.<span class="k">type</span> === <span class="s">&quot;tool_result&quot;</span>) {
+      <span class="k">const</span> content = <span class="k">typeof</span> block.content === <span class="s">&quot;string&quot;</span> ? block.content : JSON.stringify(block.content);
+      console.log(<span class="s">`  gets   ${block.is_error ? &quot;(error) &quot; : &quot;&quot;}${short(content)}`</span>);
+    }
+  }
+  <span class="k">if</span> (event.<span class="k">type</span> === <span class="s">&quot;result&quot;</span>) {
+    <span class="k">const</span> denied = event.permission_denials.length;
+    console.log(<span class="s">`  الأدوار: ${event.num_turns}، رُفض: ${denied}، `</span> +
+      <span class="s">`التكلفة: $${event.total_cost_usd.toFixed(4)}، ${event.subtype}`</span>);
+  }
+}</pre></div>
+
+<p>والآن مهمة تحتاج أمراً. في المشروع دالة واختباران، يفشل أحدهما:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;شغّل الاختبارات وقل لي ما الذي يفشل.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأشغّل الاختبارات.
+  calls  Bash: {&quot;command&quot;:&quot;node --test&quot;,&quot;description&quot;:&quot;Run the tests&quot;}
+  gets   (error) This command requires approval
+  says   لم أستطع تشغيل الاختبارات: تشغيل `node --test` يحتاج موافقتك. اسمح به، أو شغّله بنفسك والصق المخرجات.
+  الأدوار: 2، رُفض: 1، التكلفة: $0.1243، success</pre></div>
+
+<p>الحلقة كلها هنا. يقول Claude ما سيفعل، ويستدعي أداة <code>Bash</code> بـ <code>node --test</code>، فيرفض Claude Code: «This command requires approval». وفي الجلسة التفاعلية كنت ستُسأل؛ أما في وضع الطباعة فلا أحد يُسأل، فيُرفض الاستدعاء ويُخبر Claude بالسبب. ثم يفعل الرد المكتوب ما يجب أن يفعله النموذج الجيد: يقول إنه لم يستطع تشغيل الاختبارات، وما الذي تستطيع فعله. ولاحظ «رُفض: 1» في الملخص. فالسكربت يستطيع فحصها.</p>
+
+<h2><span class="sec">6.4</span> <span>الصلاحيات</span></h2>
+
+<p>أدوات Claude Code مجموعتان. القراءة (الملفات، والبحث، وقائمة الملفات) مسموحة افتراضياً. وكل ما يغيّر شيئاً أو يشغّل شيئاً (تعديل الملفات، وتشغيل الأوامر، والجلب من الويب) يحتاج صلاحية، تُعطى مرة، أو لجلسة، أو بقاعدة. والقاعدة تسمّي أداة، وللأوامر، الأمر:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;شغّل الاختبارات وقل لي ما الذي يفشل.&quot; --model claude-opus-5-5 --no-session-persistence --allowedTools &quot;Bash(node --test)&quot; --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأشغّل الاختبارات.
+  calls  Bash: {&quot;command&quot;:&quot;node --test&quot;,&quot;description&quot;:&quot;Run the tests&quot;}
+  gets   (error) ok 1 - a round bill | not ok 2 - a bill with piastres
+  says   يفشل اختبار واحد: «a bill with piastres». تعيد total(&quot;85.50&quot;, 10) القيمة 93.50 بدل 94.05، لأن parseInt يُسقط .50 قبل إضافة البقشيش.
+  الأدوار: 2، رُفض: 0، التكلفة: $0.0672، success</pre></div>
+
+<p><code dir="ltr">--allowedTools "Bash(node --test)"</code> يسمح بهذا الأمر بالضبط، ولا شيء غيره: لا <code dir="ltr">node --test --watch</code>، ولا <code>rm</code>. وهذه المرة شُغّلت الاختبارات، فعلاً، وعادت نتيجتها الحقيقية إلى النموذج: الفاتورة الصحيحة تنجح، والفاتورة بالقروش تفشل، خطأ <code>parseInt</code> نفسه من الفصل 4. والقواعد نفسها يمكن أن تعيش في ملف إعدادات، لك أو للفريق كله (الفصل 8).</p>
+
+<p>وأوضاع الصلاحيات تغيّر الافتراضي لجلسة كاملة: <code>default</code> يسأل عن كل فعل؛ و<code>acceptEdits</code> يترك Claude يعدّل الملفات دون سؤال لكنه يسأل قبل الأوامر؛ و<code>plan</code> يتركه يقرأ ويخطط دون أن يغيّر شيئاً، وهي البداية الصحيحة لمهمة كبيرة. وهناك وضع يتخطى كل فحوص الصلاحيات: موجود لبيئات معزولة تُرمى بعد الاستخدام، ولا مكان له على جهاز فيه مفاتيحك وبريدك وكود شركتك.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>اسمح بالأوامر بأسمائها، لا بنمط لم تفكر فيه جيداً. <code dir="ltr">Bash(npm test)</code> قرار؛ و<code dir="ltr">Bash(*)</code> تخلٍّ عن القرار. فقد يحوي المستودع تعليمات في ملف README أو في مهمة، مكتوبة لتجدها وكلاء الذكاء الاصطناعي، والأوامر التي سمحت بها هي ما تستطيع تلك التعليمات الوصول إليه.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا رُفض <code dir="ltr">node --test</code> في التشغيل الأول ولم يُرفض في الثاني؟</li><li>أي الأدوات يسمح بها Claude Code دون سؤال؟</li><li>لماذا وضع plan طريقة جيدة لبدء مهمة كبيرة؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">6.5</span> <span>كم يكلّف التشغيل</span></h2>
+
+<p>مع <code dir="ltr">--output-format json</code>، يعيد وضع الطباعة كائن JSON واحداً في النهاية: النتيجة، وعدد الأدوار، واستهلاك الـ tokens، والتكلفة. والسكربت يحتفظ بما يحتاجه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">fields.mjs (جزء)</div><pre class="code"><span class="k">const</span> result = JSON.parse(fs.readFileSync(<span class="n">0</span>, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> {usage} = result;
+console.log({
+  subtype: result.subtype,
+  result: result.result,
+  num_turns: result.num_turns,
+  total_cost_usd: result.total_cost_usd,
+  tokens: {
+    input: usage.input_tokens,
+    cache_written: usage.cache_creation_input_tokens,
+    cache_read: usage.cache_read_input_tokens,
+    output: usage.output_tokens,
+  },
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;اشرح price.mjs في جملتين.&quot; --model claude-opus-5-5 --no-session-persistence --output-format json | node fields.mjs</span>
+{
+  subtype: &#x27;success&#x27;,
+  result: &#x27;يصدّر price.mjs الدالة total(bill, tip)، التي تضيف نسبة البقشيش إلى الفاتورة. وهو يقرأ الفاتورة بـ parseInt، فتسقط قروش فاتورة مثل 85.50.&#x27;,
+  num_turns: 2,
+  total_cost_usd: 0.0658068,
+  tokens: { input: 0, cache_written: 12270, cache_read: 12184, output: 101 }
+}</pre></div>
+
+<p>دوران (قراءة الملف، ثم الإجابة)، ونحو سبعة سنتات. وانظر إلى الـ tokens: اثنا عشر ألفاً كُتبت في الذاكرة المؤقتة، واثنا عشر ألفاً قُرئت منها، ولا شيء تقريباً غير ذلك. فقبل أن يقول أمرك كلمة، يرسل Claude Code تعليماته وأوصاف أدواته، وهذا معظم كل طلب. والتخزين المؤقت يجعل الدور الثاني رخيصاً؛ والأول ما زال يدفع ثمن كتابة الذاكرة المؤقتة. وخادم التدريب يعدّ الـ tokens تقريبياً، فستختلف الأرقام الحقيقية، لكن الشكل لا يختلف: سياق الوكيل الثابت جزء كبير من تكلفته، والتكلفة لكل دور.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>مع الاشتراك، يُحسب استخدام Claude Code من حدود خطتك لا فاتورة؛ ومع مفتاح API، يُحاسب كل دور. وفي الحالتين، <code>/cost</code> في الجلسة التفاعلية ومخرجات JSON في وضع الطباعة تخبرانك بما استخدمته المهمة. انظر بعد بضع مهام، فتعرف كم يكلّف عملك.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>السماح بالأوامر بأنماط واسعة</td><td>يستطيع الوكيل تشغيل أكثر مما قصدت</td><td>اسمح بأوامر محددة؛ ووسّع فقط بسبب</td></tr>
+<tr><td>تخطي الصلاحيات على جهازك</td><td>وكيل معه مفاتيحك وبلا مكابح</td><td>أبقِ ذلك الوضع للبيئات التي تُرمى</td></tr>
+<tr><td>وضع الطباعة دون فحص النتيجة</td><td>تشغيلات مرفوضة أو فاشلة تُعامل كنجاح</td><td>افحص <code>subtype</code> و<code>permission_denials</code></td></tr>
+<tr><td>سكربتات طويلة التشغيل بلا حد</td><td>حلقة تظل تنفق</td><td><code dir="ltr">--max-budget-usd</code> وقاعدة توقف</td></tr>
+<tr><td>بدء تغييرات كبيرة بلا خطة</td><td>تعديلات في الاتجاه الخطأ</td><td>وضع plan أولاً؛ اقرأ الخطة؛ ثم نفّذ</td></tr>
+<tr><td>جلسة واحدة لكل شيء</td><td>سياق طويل ومكلف ومرتبك</td><td><code>/clear</code> بين المهام؛ و<code>/compact</code> حين تطول</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>Claude Code وكيل في طرفيتك: يقرأ، ويبحث، ويشغّل، ويعدّل، في حلقة، داخل مشروعك.</li>
+<li>الجلسات التفاعلية للعمل معه؛ ووضع الطباعة (<code>-p</code>) للسكربتات، بنص أو JSON أو تدفق أحداث.</li>
+<li>القراءة مسموحة افتراضياً؛ والتغيير والتشغيل يحتاجان صلاحية، تُعطى بدقة، بقاعدة أو بوضع.</li>
+<li>كل تشغيل يبلّغ عن أدواره والـ tokens والتكلفة؛ وتعليمات الوكيل نفسه جزء كبير ومخزَّن من كل دور.</li>
+<li>حد الإنفاق يوقف الحلقة الهاربة، بعد الدور الذي يتجاوزه.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. تشغيل أمر يحتاج صلاحية. في التشغيل الأول لم يسمح به شيء، ووضع الطباعة لا يستطيع أن يسأل، فرُفض؛ وفي الثاني، سمح <code dir="ltr">--allowedTools "Bash(node --test)"</code> بهذا الأمر بالضبط. 2. أدوات القراءة: قراءة الملفات، والبحث في محتواها، وسردها. 3. لأن Claude يقرأ ويقترح دون أن يغيّر شيئاً، فتستطيع فحص الاتجاه قبل أن يُعدَّل أي ملف.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تغلّف المشاريع Claude Code بسكربتات صغيرة يحتفظ بها الفريق فعلاً: أمر أسئلة آمن، وتقرير تشغيل، وتشغيل لا يستطيع تجاوز الميزانية.</p>
+
+<div class="project">
+<p class="project-label">المشروع 6.1 · سهل</p>
+<h3>أمر أسئلة للقراءة فقط</h3>
+<p class="project-goal">سكربت من سطر واحد يسأل Claude Code عن المشروع بأدوات القراءة فقط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تقييد الأدوات نفسها، لا صلاحياتها فقط.</p>
+<ol class="steps">
+<li>اكتب سكربت shell يمرر معاملاته كأمر.</li>
+<li>أعطِ Claude Code أدوات القراءة وحدها بـ <code>--tools</code>.</li>
+<li>اسأله سؤالاً عن الكود.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">ask-code.sh</div><pre class="code"><span class="c line-bidi">#!/bin/sh</span>
+<span class="c line-bidi"># اسأل Claude Code عن هذا المشروع، بأدوات القراءة فقط.</span>
+exec claude -p &quot;$*&quot; --model claude-opus-5-5 --tools Read,Grep,Glob --no-session-persistence</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">sh ask-code.sh &quot;اشرح price.mjs في جملتين.&quot;</span>
+يصدّر price.mjs الدالة total(bill, tip)، التي تضيف نسبة البقشيش إلى الفاتورة. وهو يقرأ الفاتورة بـ parseInt، فتسقط قروش فاتورة مثل 85.50.</pre></div>
+<p class="hint"><strong>تلميح:</strong> <code>--tools</code> يزيل الأدوات الأخرى من الجلسة كلياً، فلا يمكن حتى طلبها. وهذا ضمان أقوى من الصلاحيات، والصحيح لأمر تسلّمه لكل من في الفريق.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 6.2 · متوسط</p>
+<h3>تقرير تشغيل</h3>
+<p class="project-goal">حوّل نتيجة Claude Code بصيغة JSON إلى الحقول القليلة التي تحتاجها مهمة تكامل مستمر أو سجل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة <code dir="ltr">--output-format json</code> من المدخل القياسي.</p>
+<ol class="steps">
+<li>اقرأ نتيجة JSON كلها من المدخل القياسي.</li>
+<li>احتفظ بالحصيلة، والجواب، والأدوار، والتكلفة، والـ tokens.</li>
+<li>اطبعها، وأفشل المهمة في أي شيء غير النجاح.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">fields.mjs (جزء)</div><pre class="code"><span class="k">const</span> result = JSON.parse(fs.readFileSync(<span class="n">0</span>, <span class="s">&quot;utf8&quot;</span>));
+<span class="k">const</span> {usage} = result;
+console.log({
+  subtype: result.subtype,
+  result: result.result,
+  num_turns: result.num_turns,
+  total_cost_usd: result.total_cost_usd,
+  tokens: {
+    input: usage.input_tokens,
+    cache_written: usage.cache_creation_input_tokens,
+    cache_read: usage.cache_read_input_tokens,
+    output: usage.output_tokens,
+  },
+});</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;اشرح price.mjs في جملتين.&quot; --model claude-opus-5-5 --no-session-persistence --output-format json | node fields.mjs</span>
+{
+  subtype: &#x27;success&#x27;,
+  result: &#x27;يصدّر price.mjs الدالة total(bill, tip)، التي تضيف نسبة البقشيش إلى الفاتورة. وهو يقرأ الفاتورة بـ parseInt، فتسقط قروش فاتورة مثل 85.50.&#x27;,
+  num_turns: 2,
+  total_cost_usd: 0.0658068,
+  tokens: { input: 0, cache_written: 12270, cache_read: 12184, output: 101 }
+}</pre></div>
+<p class="hint"><strong>تلميح:</strong> في JSON الكامل عشرات الحقول؛ والسجل يحتاج حفنة منها. وأضف <code dir="ltr">process.exitCode = result.subtype === "success" ? 0 : 1</code> فيصير السكربت بوابة يستطيع خط النشر استخدامها (الفصل 10).</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 6.3 · تحدٍّ</p>
+<h3>تشغيل لا يستطيع تجاوز الميزانية</h3>
+<p class="project-goal">أعطِ Claude Code مهمة لا يستطيع إنهاءها، ودع حد الإنفاق يوقفه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code dir="ltr">--max-budget-usd</code>، وقراءة كيف انتهى التشغيل.</p>
+<ol class="steps">
+<li>اطلب شيئاً بلا نهاية: شغّل الاختبارات حتى تنجح، دون إصلاح أي شيء.</li>
+<li>اسمح بأمر الاختبار وحده، وضع حداً من ثلاثين سنتاً.</li>
+<li>راقب الحلقة، واقرأ سطر الملخص.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;استمر في تشغيل الاختبارات حتى تنجح.&quot; --model claude-opus-5-5 --no-session-persistence --allowedTools &quot;Bash(node --test)&quot; --max-budget-usd 0.30 --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأشغّل الاختبارات.
+  calls  Bash: {&quot;command&quot;:&quot;node --test&quot;,&quot;description&quot;:&quot;Run the tests&quot;}
+  gets   (error) ok 1 - a round bill | not ok 2 - a bill with piastres
+  says   ما زالت تفشل؛ سأشغّلها مرة أخرى.
+  calls  Bash: {&quot;command&quot;:&quot;node --test&quot;,&quot;description&quot;:&quot;Run the tests&quot;}
+  gets   (error) ok 1 - a round bill | not ok 2 - a bill with piastres
+  says   ما زالت تفشل؛ سأشغّلها مرة أخرى.
+  calls  Bash: {&quot;command&quot;:&quot;node --test&quot;,&quot;description&quot;:&quot;Run the tests&quot;}
+  gets   (error) ok 1 - a round bill | not ok 2 - a bill with piastres
+  says   ما زالت تفشل؛ سأشغّلها مرة أخرى.
+  calls  Bash: {&quot;command&quot;:&quot;node --test&quot;,&quot;description&quot;:&quot;Run the tests&quot;}
+  gets   (error) ok 1 - a round bill | not ok 2 - a bill with piastres
+  says   ما زالت تفشل؛ سأشغّلها مرة أخرى.
+  calls  Bash: {&quot;command&quot;:&quot;node --test&quot;,&quot;description&quot;:&quot;Run the tests&quot;}
+  الأدوار: 5، رُفض: 0، التكلفة: $0.3301، error_max_budget_usd</pre></div>
+<p class="hint"><strong>تلميح:</strong> انتهى التشغيل بـ <code>error_max_budget_usd</code> عند 0.3301 دولار، فوق الحد بقليل: فـ Claude Code يفحص الميزانية بين الأدوار، فيكتمل الدور الذي يتجاوزها. فاضبط الحد تحت ما تستطيع تحمّله، لا عنده. ولاحظ ما أخطأ فيه «النموذج» المكتوب: كرر أمراً لا يمكن أن تتغير نتيجته. والنماذج الحقيقية تفعل هذا أيضاً، والحد هو ما يوقفها.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> شغّل <code>claude</code> في أحد مشاريعك واكتب <code>/help</code>. أي ثلاثة أوامر ستستخدمها أكثر، ولماذا؟</li>
+<li><span class="level">سهل</span> شغّل مهمة الاختبار الأولى بـ <code dir="ltr">--permission-mode plan</code>. ماذا يفعل Claude Code بأمر الاختبار في هذا الوضع؟</li>
+<li><span class="level medium">متوسط</span> اكتب أضيق قائمة <code>--allowedTools</code> تتيح لـ Claude Code تشغيل اختبارات مشروعك وأداة فحص الكود، ولا شيء غيرهما.</li>
+<li><span class="level medium">متوسط</span> وسّع <code>watch.mjs</code> ليطبع الوقت بين الأحداث. أين يقضي التشغيل وقته: في النموذج، أم في الأدوات؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب سكربت shell يشغّل مهمة Claude Code في وضع الطباعة، ويحفظ نتيجة JSON بطابع زمني، ويضيف سطراً لكل تشغيل إلى ملف CSV: التاريخ، والمهمة، والحصيلة، والأدوار، والتكلفة. وبعد أسبوع، ماذا ستتعلم من الملف؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 7</p>
+<p>اختباران ودالة واحدة عرض توضيحي. والفصل التالي يأخذ Claude Code إلى قاعدة كود حقيقية: يجد طريقه فيها، ويُجري تغييراً عبر الملفات، ويفحصه كما يفعل المراجع.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1729,6 +2014,16 @@ sources.forEach((url, i) =&gt; console.log(<span class="s">`[${i + 1}] ${url}`</
 <li>لكل كتلة نصية، استخرج الأرقام من نصها بـ <code dir="ltr">/\d+(\.\d+)?/g</code>، وافحص كلاً منها مقابل <code>cited_text</code> لاستشهاداتها؛ وعلّم الرقم الذي لا يوجد في أي منها. وفي جواب هذا الفصل، «8%» و«1 ديسمبر» في النص المستشهد من الجمعية، فلا يُعلَّم شيء؛ غيّر الجملة إلى 9% في <code>practice.json</code> فيلتقطها الفحص. وهذا فحص الأرقام من الكتاب السابع، مطبّقاً على مصادر الويب.</li>
 <li>مثلاً: «القرص المشترك (مجلد المبيعات فقط): يقرأ المستندات؛ لا يعدّل؛ وافق عليه قائد المبيعات.» «نظام المهام: يقرأ المهام وينشئها، وكل إنشاء يؤكده المستخدم؛ وافق عليه مدير الهندسة.» «البريد: يقرأ ويرسل.» والأخير هو الذي يُرفض، أو يُسمح به فقط مع الموافقة على كل إرسال: فهو يجمع مدخلاً غير موثوق (أي رسالة من الخارج) وفعلاً يصل إلى خارج الشركة.</li>
 <li>اكتب الجواب بعلامات <code dir="ltr">[^n]</code>، والمصادر حواشيَ بعنوانها ورابطها وعمرها، وقسماً يسرد الجمل غير المستشهدة، والتاريخ والسؤال في الأعلى. والثقة تأتي من الفحص، لا من الشكل: قبل الإرسال، افتح المصادر وراء الاستنتاجات الرئيسية، وتأكد من الأرقام، وكن مستعداً لتقول من فحصه. فالتقرير الذي يقول كيف صُنع أسهل في الثقة به، وأسهل في تصحيحه.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 6</h2>
+<ol class="exercises">
+<li>يستقر معظم الناس على <code>/clear</code> (سياق جديد لكل مهمة)، و<code>/compact</code> (جلسة طويلة تُلخَّص لتكمل)، و<code>/model</code> (نموذج أسرع أو أقوى للمهمة الحالية)، ويليها <code>/permissions</code>. والقائمة تتغير بين الإصدارات؛ و<code>/help</code> هي الحالية دائماً.</li>
+<li>في وضع plan لا يشغّل Claude Code الأوامر التي تغيّر أو تنفّذ شيئاً: يُرفض استدعاء <code>Bash</code>، ويُظهر ملخص التشغيل رفضاً واحداً. والرسالة بالضبط تتوقف على إصدارك وإعداداتك. والرد الجيد يقترح حينها خطة («شغّل <code dir="ltr">node --test</code>، واقرأ الإخفاق، وأصلح <code>total</code>») لتوافق عليها، بدل ادعاء نتائج ليست عنده؛ ومع خادم التدريب، الرد المكتوب لهذه المهمة يفترض أن الاختبارات شُغّلت، فجوابه هنا يصف إخفاقاً لم يره أحد: تذكير بأن تقرأ ما يقوله أي نموذج مقابل ما حدث فعلاً في التشغيل.</li>
+<li>مثلاً <code dir="ltr">--allowedTools "Bash(npm test)" "Bash(npm run lint)"</code>: أمران محددان. وإن احتاج سكربت الاختبار معاملات، فاسمح بتلك الصيغ صراحة أيضاً. واحفظ القائمة في ملف إعدادات الفريق (الفصل 8) ليأخذ الجميع القواعد نفسها.</li>
+<li>سجّل <code dir="ltr">Date.now()</code> مع وصول كل سطر واطبع الفرق عن السابق. ومع نموذج حقيقي، يكون معظم الوقت عادة في أدوار النموذج (التفكير والكتابة)؛ ومع مجموعة اختبارات بطيئة أو بناء كبير، تطغى الأدوات. وأي الجوابين يخبرك أين تنظر حين تبطؤ مهمة: نموذج أصغر أو جهد أقل، أو اختبارات أسرع.</li>
+<li>شغّل <code dir="ltr">claude -p "$TASK" --output-format json &gt; runs/$(date +%Y%m%d-%H%M%S).json</code>، ثم اقرأ الملف ببضعة أسطر من Node وأضف <code dir="ltr">date,task,subtype,num_turns,total_cost_usd</code> إلى <code>runs.csv</code>. وبعد أسبوع سترى كم تكلّف المهام المعتادة، وأي المهام تأخذ أدواراً كثيرة، وكم مرة تنتهي التشغيلات بغير النجاح: الأرقام التي تحملها إلى حديث عن الميزانيات، والمهام التي تحتاج تعليمات أوضح.</li>
 </ol>
 
 </section>

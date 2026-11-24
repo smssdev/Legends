@@ -1,0 +1,101 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "اشرح price.mjs في جملتين.",
+        "tool_result": "Read"
+      },
+      "text": "يصدّر price.mjs الدالة total(bill, tip)، التي تضيف نسبة البقشيش إلى الفاتورة. وهو يقرأ الفاتورة بـ parseInt، فتسقط قروش فاتورة مثل 85.50."
+    },
+    {
+      "when": {
+        "first": "اشرح price.mjs في جملتين."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأقرأ الملف أولاً."
+        },
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "price.mjs"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "شغّل الاختبارات وقل لي ما الذي يفشل.",
+        "result_text": "requires approval"
+      },
+      "text": "لم أستطع تشغيل الاختبارات: تشغيل `node --test` يحتاج موافقتك. اسمح به، أو شغّله بنفسك والصق المخرجات."
+    },
+    {
+      "when": {
+        "first": "شغّل الاختبارات وقل لي ما الذي يفشل.",
+        "tool_result": "Bash"
+      },
+      "text": "يفشل اختبار واحد: «a bill with piastres». تعيد total(\"85.50\", 10) القيمة 93.50 بدل 94.05، لأن parseInt يُسقط .50 قبل إضافة البقشيش."
+    },
+    {
+      "when": {
+        "first": "شغّل الاختبارات وقل لي ما الذي يفشل."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأشغّل الاختبارات."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "استمر في تشغيل الاختبارات حتى تنجح.",
+        "tool_result": "Bash"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "ما زالت تفشل؛ سأشغّلها مرة أخرى."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "استمر في تشغيل الاختبارات حتى تنجح."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأشغّل الاختبارات."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/terminal/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Claude Code in the Terminal</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>install Claude Code, sign in, and choose between the interactive and the print mode</li>
+<li>watch the agent loop: what Claude says, which tools it calls, what comes back</li>
+<li>control what Claude Code may do, with permissions and allowed tools</li>
+<li>read Claude Code’s JSON output: the result, the turns and the cost</li>
+<li>put a hard limit on what a run may spend</li>
+</ul>
+</div>
+
+<p class="lead">Part I used Claude in a window, and you carried the code to and from it. <dfn>Claude Code</dfn> works where the code is: in your terminal, inside your repository. It reads files, searches them, runs commands, edits code and checks its own work, in a loop, until the task is done or it needs you. That makes it the most powerful way to use Claude for software, and the one where permissions matter most.</p>
+
+<aside class="bit" data-mood="wow"><p>The Claude Code in this chapter is real, version 2.1.331, running on the book’s machine. Only its model is the practice server: the replies are scripted, but the file it reads, the tests it runs, the command it is refused, its cost accounting and its spending limit are all Claude Code’s own behaviour.</p></aside>
+
+<h2>{{n}}.1 Install and sign in</h2>
+
+<p>Claude Code is a command-line program. Anthropic’s documentation lists the ways to install it (a native installer, a package for your system, or npm); with Node.js already on your machine, npm is the shortest:</p>
+
+<pre class="plain" dir="ltr">npm install -g @anthropic-ai/claude-code
+claude --version</pre>
+<pre data-term="version.sh"></pre>
+
+<p>The first time you run <code>claude</code>, it asks you to sign in, with a Claude subscription or with a Claude Console account that pays per token through an API key. It also runs in editors such as VS Code and JetBrains, in the desktop app and on the web; it is the same agent in each, and this part of the book uses the terminal because there everything is visible.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>Claude Code reads the same <code>ANTHROPIC_BASE_URL</code> and <code>ANTHROPIC_API_KEY</code> variables as the SDK. That is how this chapter points it at the practice server, and how companies route it through their own gateway or a cloud provider.</p></aside>
+
+<h2>{{n}}.2 Two ways to run it</h2>
+
+<p>Run <code>claude</code> in a project folder and you get an <dfn>interactive session</dfn>: you type, Claude works, and you can steer it, approve its actions and type commands that start with a slash: <code>/help</code> for the list, <code>/model</code> to change the model, <code>/clear</code> to start fresh, <code>/compact</code> to summarise a long session and continue, <code>/permissions</code> to see what is allowed. This is how you will use it most of the time.</p>
+
+<p>Run <code>claude -p</code> with a prompt and you get the <dfn>print mode</dfn>: one task, no questions, the answer on standard output. It is how scripts, CI jobs and this book use Claude Code:</p>
+
+<pre data-term="explain.sh"></pre>
+
+<p>Claude read <code>price.mjs</code> before answering; the next sections show that step. The answer is the practice server’s; a real model would explain the file in its own words, and should spot the same problem, which the rest of the chapter makes visible.</p>
+
+<h2>{{n}}.3 The agent loop, visible</h2>
+
+<p>With <code>--output-format stream-json</code>, Claude Code prints every event as a line of JSON: each message, each tool call, each result, and a summary at the end. A few lines of JavaScript turn the stream into something a person can read:</p>
+
+<pre data-code="watch.mjs" data-from="^for await" data-to="^}" data-title="watch.mjs (part)"></pre>
+
+<p>Now a task that needs a command. The project has a function and two tests, one of which fails:</p>
+
+<pre data-term="denied.sh"></pre>
+
+<p>The loop is all there. Claude says what it will do, calls the <code>Bash</code> tool with <code>node --test</code>, and Claude Code refuses: “This command requires approval”. In an interactive session, you would have been asked; in print mode there is nobody to ask, so the call is denied and Claude is told why. The scripted reply then does what a good model should: it says it could not run the tests and what you can do. Notice <code>denied: 1</code> in the summary. A script can check it.</p>
+
+<h2>{{n}}.4 Permissions</h2>
+
+<p>Claude Code’s tools fall into two groups. Reading (files, searches, the list of files) is allowed by default. Anything that changes something or runs something (editing files, running commands, fetching from the web) needs permission, given once, for a session, or by rule. A rule names a tool and, for commands, the command:</p>
+
+<pre data-term="allowed.sh"></pre>
+
+<p><code>--allowedTools "Bash(node --test)"</code> allows exactly that command, and nothing else: not <code>node --test --watch</code>, not <code>rm</code>. This time the tests ran, for real, and their real result went back to the model: the round bill passes, the bill with piastres fails, the same <code>parseInt</code> bug as Chapter 4. The same rules can live in a settings file, for you or for the whole team (Chapter 8).</p>
+
+<p>Permission modes change the default for a whole session: <code>default</code> asks for each action; <code>acceptEdits</code> lets Claude edit files without asking but still asks before commands; <code>plan</code> lets it read and plan but not change anything, which is the right start for a large task. And there is a mode that skips all permission checks: it exists for throwaway sandboxes, and has no place on a machine with your keys, your email and your company’s code.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Allow commands by name, not by pattern you have not thought through. <code>Bash(npm test)</code> is a decision; <code>Bash(*)</code> is giving away the decision. A repository can contain instructions in a README or an issue, written for AI agents to find, and the commands you allowed are what such instructions can reach.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why was <code>node --test</code> refused in the first run but not in the second?</li><li>Which tools does Claude Code allow without asking?</li><li>Why is the plan mode a good way to start a large task?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 What a run costs</h2>
+
+<p>With <code>--output-format json</code>, print mode returns one JSON object at the end: the result, the number of turns, the token usage and the cost. A script keeps what it needs:</p>
+
+<pre data-code="fields.mjs" data-from="^const result" data-title="fields.mjs (part)"></pre>
+<pre data-term="json.sh"></pre>
+
+<p>Two turns (reading the file, then answering), about seven cents. Look at the tokens: twelve thousand written to the cache, twelve thousand read from it, and almost nothing else. Before your prompt says a word, Claude Code sends its own instructions and the descriptions of its tools, and that is most of every request. Caching makes the second turn cheap; the first still pays to write the cache. The practice server counts tokens approximately, so the real figures will differ, but the shape does not: an agent’s fixed context is a large part of its cost, and the cost is per turn.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>On a subscription, Claude Code’s usage counts against your plan’s limits rather than a bill; with an API key, every turn is billed. Either way, <code>/cost</code> in an interactive session and the JSON output in print mode tell you what a task used. Look after a few tasks, and you will know what your work costs.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Allowing commands by wide patterns</td><td>The agent can run more than you meant</td><td>Allow exact commands; widen only with reason</td></tr>
+<tr><td>Skipping permissions on your own machine</td><td>An agent with your keys and no brakes</td><td>Keep that mode for disposable sandboxes</td></tr>
+<tr><td>Print mode without checking the result</td><td>Denied or failed runs treated as success</td><td>Check <code>subtype</code> and <code>permission_denials</code></td></tr>
+<tr><td>Long-running scripts with no limit</td><td>A loop that keeps spending</td><td><code>--max-budget-usd</code> and a stopping rule</td></tr>
+<tr><td>Starting large changes without a plan</td><td>Edits in the wrong direction</td><td>Plan mode first; read the plan; then act</td></tr>
+<tr><td>One session for everything</td><td>A long, expensive, confused context</td><td><code>/clear</code> between tasks; <code>/compact</code> when long</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Claude Code is an agent in your terminal: it reads, searches, runs and edits, in a loop, inside your project.</li>
+<li>Interactive sessions are for working with it; print mode (<code>-p</code>) is for scripts, with text, JSON or a stream of events.</li>
+<li>Reading is allowed by default; changing and running need permission, given exactly, by rule or by mode.</li>
+<li>Every run reports its turns, tokens and cost; an agent’s own instructions are a large, cached part of every turn.</li>
+<li>A spending limit stops a runaway loop, after the turn that crosses it.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Running a command needs permission. In the first run nothing allowed it, and print mode cannot ask, so it was denied; in the second, <code>--allowedTools "Bash(node --test)"</code> allowed exactly that command. 2. The reading tools: reading files, searching their contents and listing them. 3. Because Claude reads and proposes without changing anything, so you can check the direction before any file is edited.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects wrap Claude Code in small scripts a team would actually keep: a safe question command, a run report, and a run that cannot overspend.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A read-only question command</h3>
+<p class="project-goal">A one-line script that asks Claude Code about the project with reading tools only.</p>
+<p class="project-skills"><strong>You will practise:</strong> limiting the tools themselves, not only their permissions.</p>
+<ol class="steps">
+<li>Write a shell script that passes its arguments as the prompt.</li>
+<li>Give Claude Code only the reading tools with <code>--tools</code>.</li>
+<li>Ask it a question about the code.</li>
+</ol>
+<pre data-code="ask-code.sh" data-title="ask-code.sh"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/ask.sh"></pre>
+<p class="hint"><strong>Hint:</strong> <code>--tools</code> removes the other tools from the session altogether, so they cannot even be requested. It is a stronger guarantee than permissions, and the right one for a command you hand to everyone on the team.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A run report</h3>
+<p class="project-goal">Turn Claude Code’s JSON result into the few fields a CI job or a log needs.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading <code>--output-format json</code> from standard input.</p>
+<ol class="steps">
+<li>Read the whole JSON result from standard input.</li>
+<li>Keep the outcome, the answer, the turns, the cost and the tokens.</li>
+<li>Print them, and fail the job on anything but success.</li>
+</ol>
+<pre data-code="fields.mjs" data-from="^const result" data-title="fields.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="json.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the full JSON has dozens of fields; a log needs a handful. Add <code>process.exitCode = result.subtype === "success" ? 0 : 1</code> and the script becomes a gate a pipeline can use (Chapter 10).</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A run that cannot overspend</h3>
+<p class="project-goal">Give Claude Code a task it cannot finish, and let a spending limit stop it.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>--max-budget-usd</code>, and reading how a run ended.</p>
+<ol class="steps">
+<li>Ask for something with no end: run the tests until they pass, without fixing anything.</li>
+<li>Allow only the test command, and set a limit of thirty cents.</li>
+<li>Watch the loop, and read the summary line.</li>
+</ol>
+<pre data-term="projects/budget.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the run ended with <code>error_max_budget_usd</code> at $0.3291, a little over the limit: Claude Code checks the budget between turns, so the turn that crosses it still completes. Set the limit below what you can afford, not at it. And notice what the scripted “model” did wrong: it repeated a command that could not change its result. Real models do this too, and a limit is what stops them.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Start <code>claude</code> in one of your projects and type <code>/help</code>. Which three commands will you use most, and why?</li>
+<li><span class="level">Easy</span> Run the first test task with <code>--permission-mode plan</code>. What does Claude Code do with the test command in this mode?</li>
+<li><span class="level">Medium</span> Write the narrowest <code>--allowedTools</code> list that lets Claude Code run your project’s tests and its linter, and nothing else.</li>
+<li><span class="level">Medium</span> Extend <code>watch.mjs</code> to print the time between events. Where does a run spend its time: in the model, or in the tools?</li>
+<li><span class="level">Challenge</span> Write a shell script that runs a Claude Code task in print mode, saves the JSON result with a timestamp, and appends one line per run to a CSV: date, task, outcome, turns, cost. After a week, what would you learn from the file?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Two tests and one function are a demonstration. The next chapter takes Claude Code into a real codebase: finding its way around, making a change across files, and checking it the way a reviewer would.</p>
+</div>
+</section>

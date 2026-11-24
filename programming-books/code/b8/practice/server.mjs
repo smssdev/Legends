@@ -36,6 +36,7 @@ const script = () => JSON.parse(fs.readFileSync("practice.json", "utf8"));
 const cache = new Map(); // prefix hash -> tokens
 const failures = new Map(); // rule index -> times it has failed so far
 let counter = 0;
+let toolCalls = 0;
 
 // About four characters per token in English and two in Arabic: an
 // approximation; the real count comes from the model's tokenizer (POST
@@ -122,17 +123,21 @@ function invalid(body, counting) {
 
 // The reply for a request: the first rule of practice.json that matches.
 function reply(body) {
-  const last = body.messages.at(-1);
+  // The last message from the user: a client such as Claude Code may add a system message after it.
+  const last = body.messages.findLast((m) => m.role === "user") ?? body.messages.at(-1);
   const results = Array.isArray(last.content) ? last.content.filter((b) => b.type === "tool_result") : [];
   const asked = textOf(last.content).toLowerCase();
+  const first = textOf(body.messages.find((m) => m.role === "user").content).toLowerCase();
   const system = textOf(body.system ?? "").toLowerCase();
   const rules = script().replies;
   for (const [i, rule] of rules.entries()) {
     const when = rule.when ?? {};
     const w = typeof when === "string" ? {text: when} : when;
     if (w.text && !asked.includes(w.text.toLowerCase())) continue;
+    if (w.first && !first.includes(w.first.toLowerCase())) continue;
     if (w.system && !system.includes(w.system.toLowerCase())) continue;
     if (w.tool_result && !results.some((r) => r.tool_use_id.includes(w.tool_result))) continue;
+    if (w.result_text && !results.some((r) => JSON.stringify(r.content ?? "").includes(w.result_text))) continue;
     if (w.tools === false && body.tools?.length) continue;
     if (w.tools === true && !body.tools?.length) continue;
     if (w.model && body.model !== w.model) continue;
@@ -166,7 +171,7 @@ function blocksOf(rule, body) {
 
 function blocksFrom(rule, body) {
   if (rule.blocks) {
-    return rule.blocks.map((b, i) => (b.type === "tool_use" ? {id: `toolu_practice_${b.name}_${counter}_${i}`, ...b} : b));
+    return rule.blocks.map((b) => (b.type === "tool_use" ? {id: `toolu_practice_${b.name}_${++toolCalls}`, ...b} : b));
   }
   if (rule.json !== undefined) return [{type: "text", text: JSON.stringify(rule.json)}];
   return [{type: "text", text: rule.text}];
@@ -294,6 +299,7 @@ const server = http.createServer((req, res) => {
     if (url.pathname === "/v1/messages/count_tokens") {
       return json(res, {input_tokens: tokens([body.tools ?? [], body.system ?? "", ...body.messages])});
     }
+    if (process.env.PRACTICE_DUMP) fs.writeFileSync(`${process.env.PRACTICE_DUMP}-${counter + 1}.json`, raw);
     const {rule, msg} = message(body);
     if (rule.error) {
       const {status, type, message: text, retry_after: after} = rule.error;
