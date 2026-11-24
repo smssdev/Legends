@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "الفصل 6: Claude Code في الطرفية"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "الفصل 7: العمل على مستودع كود حقيقي"; } }
+@page ch07:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -51,7 +53,7 @@
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">36</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">59</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">71</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">84</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">36</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">59</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">71</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">95</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -1847,6 +1849,245 @@ console.log({
 <p>اختباران ودالة واحدة عرض توضيحي. والفصل التالي يأخذ Claude Code إلى قاعدة كود حقيقية: يجد طريقه فيها، ويُجري تغييراً عبر الملفات، ويفحصه كما يفعل المراجع.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b8/codebase/ar">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">الفصل 7</p><h1>العمل على قاعدة كود حقيقية</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تُعدّ المستودع بحيث يسهل رؤية كل تغيير يجريه Claude Code والتراجع عنه</li>
+<li>تدع Claude Code يجد طريقه قبل أن يغيّر أي شيء</li>
+<li>تتابع تغييراً عبر عدة ملفات، من البحث حتى نجاح الاختبارات</li>
+<li>تراجع النتيجة كما يفعل المراجع: من الفرق، لا من الملخص</li>
+<li>تأخذ رأياً ثانياً في الفرق، وتفحصه هو أيضاً</li>
+</ul>
+</div>
+
+<p class="lead">في قاعدة الكود الحقيقية ملفات أكثر مما يتذكره أحد، وأعراف لم يكتبها أحد، واختبارات تنجح لأسباب لم يفحصها أحد. وهناك يكسب Claude Code مكانه، وهناك يحتاج أكبر عناية: فالتغيير الذي يجريه قد يمس ملفات لم تفكر فيها، وملخصه لما فعل لا يكون أفضل من انتباهه. وهذا الفصل يُجري تغييراً صغيراً عبر مشروع صغير، من أوله لآخره، ويراجعه كما يجب.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>Claude Code في هذا الفصل حقيقي، وكذلك بحثه وتعديلاته وتشغيل الاختبارات: تغيّرت الملفات على القرص، و<code dir="ltr">git diff</code> يُظهر كيف بالضبط. وخادم التدريب يلعب دور النموذج، وفُحصت ردوده مقابل ما حدث فعلاً، وهكذا وجد هذا الفصل ادعاءً خاطئاً في نصه هو.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>قبل أن يلمس Claude Code أي شيء</span></h2>
+
+<p>ابدأ كل مهمة من شجرة عمل نظيفة: كل شيء محفوظ، والاختبارات تنجح. فيكون كل ما يغيّره الوكيل هو بالضبط ما يُظهره <code dir="ltr">git diff</code>، والتراجع عنه أمر واحد. ومشروع الفصل ثلاثة ملفات واختبار، في مستودع جديد:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">git init -q &amp;&amp; git add -A &amp;&amp; git -c user.name=Bit -c user.email=bit@example.com commit -qm start &amp;&amp; git log --oneline &amp;&amp; node --test 2&gt;&amp;1 | grep -E &#x27;^# (pass|fail)&#x27;</span>
+d9dd3cd start
+<span class="c line-bidi"># pass 1</span>
+<span class="c line-bidi"># fail 0</span></pre></div>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>اجعل لكل مهمة فرعها، أو شجرة عملها (worktree: نسخة ثانية من المستودع نفسه في مجلد آخر)، فلا تخلط مهمتان تغييراتهما أبداً. ويستطيع Claude Code إنشاء أشجار العمل لك؛ و<code dir="ltr">git worktree add</code> العادي يعمل أيضاً.</p></aside>
+
+<h2><span class="sec">7.2</span> <span>تغيير عبر الملفات</span></h2>
+
+<p>المهمة: أضف ضريبة القيمة المضافة 14% إلى الإيصالات، بمجموع فرعي والضريبة والإجمالي. وهي تمس الكود الذي يجمع الإيصال، والمكان الذي تنتمي إليه النسب، والاختبار الذي يفحص الإجمالي. ويسمح التشغيل بتعديل الملفات طوال الجلسة (<code>acceptEdits</code>) وبأمرين بالضبط، بحث والاختبارات:</p>
+
+<pre class="plain" dir="ltr">claude -p "..." --permission-mode acceptEdits \
+  --allowedTools "Bash(grep -rln total src)" "Bash(node --test)"</pre>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار.&quot; --model claude-opus-5-5 --no-session-persistence --permission-mode acceptEdits --allowedTools &quot;Bash(grep -rln total src)&quot; &quot;Bash(node --test)&quot; --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأجد أين تُجمع الإيصالات.
+  calls  Bash grep -rln total src
+  gets   src/receipt.mjs
+  says   وجدت src/receipt.mjs. سأقرؤه، ووحدة القائمة بجانبه، قبل أن أغيّر أي شيء.
+  calls  Read src/receipt.mjs
+  calls  Read src/menu.mjs
+  gets   1	import {priceOf} from &quot;./menu.mjs&quot;;
+  gets   1	export const PRICES = {
+  says   سأضيف الضريبة بعد المجموع الفرعي.
+  calls  Edit src/receipt.mjs
+  calls  Edit src/menu.mjs
+  gets   The file src/receipt.mjs has been updated successfully. (file stat
+  gets   The file src/menu.mjs has been updated successfully. (file state i
+  says   والآن الاختبار، الذي ما زال يتوقع الإجمالي القديم.
+  calls  Edit test/receipt.test.mjs
+  gets   The file test/receipt.test.mjs has been updated successfully.
+  says   سأشغّل الاختبارات.
+  calls  Bash node --test
+  gets   ok 1 - a receipt adds up its lines
+  says   تم. صار src/receipt.mjs يعيد subtotal وvat (14%، مقرّبة إلى القروش) وtotal؛ وVAT_RATE يُصدَّر من src/menu.mjs. والاختبار يفحص الثلاثة، وهو ينجح.
+  الأدوار: 8، رُفض: 0، التكلفة: $0.4006، success</pre></div>
+
+<p>اقرأه كما تراقب زميلاً. بحث قبل أن يخمّن أين تُجمع الإجماليات. وقرأ الملفين قبل أن يغيّرهما، في دور واحد، لأن القراءتين لا تعتمد إحداهما على الأخرى. وعدّل الاثنين، ثم الاختبار، الذي ما زال يتوقع الإجمالي القديم. وشغّل الاختبارات، فعادت النتيجة الحقيقية: اختبار واحد، ينجح. وعندها فقط أبلغ. ثمانية أدوار، ونحو أربعين سنتاً بأعداد tokens خادم التدريب؛ والنموذج الحقيقي في مهمة حقيقية قد يأخذ أدواراً أكثر أو أقل.</p>
+
+<p>وتفصيل واحد يستحق الملاحظة لما يقوله عن الأدوات. فمجموعة أدوات Claude Code المدمجة تختلف حسب الإصدار والإعدادات، والنسخة المستخدمة هنا لم تكن فيها أداة بحث منفصلة مفعّلة، فمرّ البحث عبر <code>grep</code>، مسموحاً به كأمر محدد. افحص ما يتيحه تثبيتك (<code>/permissions</code>، وتوثيق إصدارك) قبل أن تكتب قواعد تعتمد عليه.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>انتهى النص الأول لخادم التدريب لهذه المهمة بـ «والاختباران ينجحان». وفي المشروع اختبار واحد. أظهر التشغيل واحداً، فصُحح النص. والنموذج الحقيقي قد يقع في الزلة نفسها: فالملخص يُكتب بعد العمل، من ذاكرته، والذاكرة حيث تختبئ الأخطاء. اقرأ نتائج الأدوات، لا الرسالة الأخيرة وحدها.</p></aside>
+
+<h2><span class="sec">7.3</span> <span>راجع الفرق، لا الملخص</span></h2>
+
+<p>الملخص يقول ما يعتقد Claude أنه فعله. والفرق يقول ما فعله:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">git diff --stat &amp;&amp; git diff src/receipt.mjs</span>
+ src/menu.mjs          | 2 ++
+ src/receipt.mjs       | 7 ++++---
+ test/receipt.test.mjs | 4 +++-
+ 3 files changed, 9 insertions(+), 4 deletions(-)
+diff --git a/src/receipt.mjs b/src/receipt.mjs
+index 6aef014..4faec27 100644
+--- a/src/receipt.mjs
++++ b/src/receipt.mjs
+@@ -1,8 +1,9 @@
+-import {priceOf} from &quot;./menu.mjs&quot;;
++import {priceOf, VAT_RATE} from &quot;./menu.mjs&quot;;
+ 
+ // A receipt for an order: one line per item, then the total.
+ export function receipt(items) {
+   const lines = items.map(({name, qty}) =&gt; ({name, qty, amount: priceOf(name) * qty}));
+-  const total = lines.reduce((sum, line) =&gt; sum + line.amount, 0);
+-  return {lines, total};
++  const subtotal = lines.reduce((sum, line) =&gt; sum + line.amount, 0);
++  const vat = Math.round(subtotal * VAT_RATE * 100) / 100;
++  return {lines, subtotal, vat, total: subtotal + vat};
+ }</pre></div>
+
+<p>ثلاثة ملفات، وتسعة أسطر مضافة، وأربعة محذوفة، وفي <code>receipt.mjs</code> التغيير المطلوب بالضبط: النسبة مستوردة من وحدة القائمة، والضريبة مقرّبة إلى القروش، وثلاثة حقول حيث كان حقل واحد. راجعه كما تراجع أي طلب دمج. هل الأسماء جيدة؟ هل يعمل كل من يستدعي <code>receipt</code> بعد أن صار يعيد حقولاً أكثر؟ هل التقريب صحيح؟ ولهذا السؤال الأخير جواب لا تجده إلا بتجربة القيم، والمشروع 7.2 يجده.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا تبدأ من شجرة عمل نظيفة ومحفوظة؟</li><li>لماذا قرأ الوكيل ملفين في دور واحد؟</li><li>ما الفرق بين ملخص الوكيل والفرق في git؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>عادات للمستودعات الحقيقية</span></h2>
+
+<ul>
+<li><strong>مهام صغيرة.</strong> «أضف الضريبة إلى الإيصالات» مهمة؛ و«نظّف كود الفوترة» أسبوع. والمهام الصغيرة تعطي فروقاً صغيرة، والفروق الصغيرة تنال مراجعات حقيقية.</li>
+<li><strong>الأسئلة قبل التغييرات.</strong> في قاعدة كود غير مألوفة، اسأل أولاً («أين يُحسب الإجمالي؟»، المشروع 7.1)، أو ابدأ في وضع plan، وصحّح الخطة قبل أن يتغير أي ملف.</li>
+<li><strong>الاختبارات هي العقد.</strong> إن كانت الاختبارات ضعيفة، فـ «تنجح» من الوكيل لا تعني كثيراً. اطلب الاختبارات أولاً، واقرأها، ثم اطلب التغيير.</li>
+<li><strong>تراجع بلا خوف.</strong> <code dir="ltr">git checkout -- .</code> يرمي تغييراً لا يعجبك؛ ومحاولة جديدة بأمر أفضل أسرع غالباً من إصلاح محاولة سيئة.</li>
+<li><strong>أنت من يحفظ.</strong> اقرأ كل سطر، وشغّل الاختبارات بنفسك، واصنع الحفظ باسمك. كتب الوكيل التغيير؛ وأنت من يقول إنه صحيح.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>أخضع التغييرات المصنوعة بـ Claude Code للمراجعة نفسها التي تخضع لها تغييرات الزملاء: الاختبارات نفسها، والمراجع نفسه، والمعايير نفسها. والفريق الذي يراجع تغييرات الوكيل بخفة سيجد قريباً قاعدة كود لا يفهمها أحد.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>البدء بعمل غير محفوظ</td><td>تتشابك تغييراتك وتغييرات الوكيل</td><td>احفظ أو خبّئ أولاً؛ ومهمة لكل فرع</td></tr>
+<tr><td>الثقة بالملخص الأخير</td><td>ادعاءات لا تدعمها نتائج الأدوات</td><td>اقرأ نتائج الأدوات والفرق</td></tr>
+<tr><td>مهام كبيرة غامضة</td><td>فروق أكبر من أن تُراجع</td><td>قسّمها إلى مهام لكل منها نتيجة واحدة</td></tr>
+<tr><td>اختبارات ضعيفة كشبكة أمان</td><td>«تنجح» لا تثبت كثيراً</td><td>قوِّ الاختبارات قبل التغيير</td></tr>
+<tr><td>السماح بأوامر واسعة للراحة</td><td>يستطيع الوكيل أكثر مما تحتاجه المهمة</td><td>اسمح بالأوامر التي تستخدمها المهمة بالضبط</td></tr>
+<tr><td>إصلاح محاولة سيئة سطراً سطراً</td><td>بطيء، والنتيجة ترث البداية السيئة</td><td>تراجع، وحسّن الأمر، وحاول من جديد</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>ابدأ من شجرة نظيفة محفوظة، ليكون الفرق هو تغيير الوكيل بالضبط والتراجع عنه أمراً واحداً.</li>
+<li>تشغيل الوكيل الجيد يبحث، ويقرأ، ويعدّل، ويختبر، وعندها فقط يبلّغ؛ وتستطيع رؤية كل خطوة.</li>
+<li>الأدوات تختلف حسب الإصدار والإعدادات؛ فاسمح بالأوامر التي تحتاجها المهمة بالضبط.</li>
+<li>الملخص ادعاء والفرق حقيقة؛ افحص أحدهما مقابل الآخر.</li>
+<li>مهام صغيرة، والاختبارات أولاً، وتراجع سهل، والمراجعة نفسها كتغيير أي زميل.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ليُظهر <code dir="ltr">git diff</code> ما غيّره الوكيل بالضبط، دون أن يختلط به شيء منك، وليكون التراجع عنه أمراً واحداً. 2. لأن القراءتين لا تعتمد إحداهما على الأخرى، فأمكن طلبهما معاً؛ وهذا يوفّر دوراً، وكل دور يعيد إرسال السياق. 3. الملخص ما يقول الوكيل إنه فعله، مكتوباً بعد العمل؛ والفرق ما تغيّر فعلاً على القرص. وحين يختلفان، فالفرق هو الصحيح.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع ثلاثة فحوص يجريها المطور الحريص حول الوكيل: السؤال قبل التغيير، ومراجعة ثانية للفرق، ومقارنة ادعاءات الوكيل بـ git.</p>
+
+<div class="project">
+<p class="project-label">المشروع 7.1 · سهل</p>
+<h3>اسأل قبل أن تغيّر</h3>
+<p class="project-goal">اسأل أين يحدث شيء في الكود، بأدوات لا تستطيع تغيير شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الاستكشاف للقراءة فقط، مع أمر واحد محدد مسموح.</p>
+<ol class="steps">
+<li>أعطِ Claude Code أداة القراءة والطرفية فقط.</li>
+<li>اسمح بأمر بحث واحد بالضبط.</li>
+<li>اطرح سؤالك، وافحص الجواب في الملفات التي يسمّيها.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;أين يُحسب إجمالي الإيصال؟&quot; --model claude-opus-5-5 --no-session-persistence --tools Read,Bash --allowedTools &quot;Bash(grep -rn total src)&quot;</span>
+يُحسب الإجمالي في src/receipt.mjs، في receipt(): تُجمع مبالغ السطور بـ reduce. والأسعار تأتي من priceOf في src/menu.mjs.</pre></div>
+<p class="hint"><strong>تلميح:</strong> الجواب يسمّي ملفاً ودالة، ففحصه يأخذ عشر ثوانٍ. اطلب ذلك في كل مرة: «أجب بالملف والدالة». وفي قاعدة كود كبيرة، الجواب الخاطئ عن مكان شيء يكلّف أكثر من لا جواب.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 7.2 · متوسط</p>
+<h3>مراجعة ثانية للفرق</h3>
+<p class="project-goal">مرّر الفرق إلى Claude Code بلا أي أدوات، واطلب مراجعة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المدخل القياسي كسياق، وفحص ادعاءات المراجع.</p>
+<ol class="steps">
+<li>أرسل <code dir="ltr">git diff</code> على المدخل القياسي.</li>
+<li>أطفئ كل الأدوات بـ <code dir="ltr">--tools ""</code>، لتستخدم المراجعة الفرق وحده.</li>
+<li>افحص كل نقطة في المراجعة بنفسك.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">git diff | claude -p &quot;راجع هذا الفرق.&quot; --model claude-opus-5-5 --no-session-persistence --tools &quot;&quot;</span>
+1. menu.mjs: الثابت VAT_RATE = 0.14 مكان واحد جيد للنسبة.
+2. receipt.mjs: الضريبة مقرّبة إلى القروش، لكن total هو subtotal + vat بلا تقريب؛ ومع أسعار أخرى قد يظهر ذيل عشري: مجموع فرعي 16 يعطي إجمالياً 18.240000000000002.
+3. الاختبار يغطي طلباً واحداً؛ أضف طلباً تحتاج ضريبته إلى تقريب.</pre></div>
+<p class="hint"><strong>تلميح:</strong> النقطة الثانية هي المهمة، وهي صحيحة: في JavaScript، 16 + 2.24 تساوي 18.240000000000002، و158 من المجاميع الفرعية الصحيحة حتى 2,000 تعطي ذيلاً كهذا. والمسودة الأولى لهذه المراجعة في السكربت أعطت مثالاً لا يحدث (136.80000000000001)؛ فمثال المراجع يستحق الفحص نفسه كالكود. قرّب الإجمالي أيضاً، وأضف له اختباراً.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 7.3 · تحدٍّ</p>
+<h3>ادعاءات الوكيل مقابل git</h3>
+<p class="project-goal">قارن الملفات التي يذكرها ملخص الوكيل بالملفات التي يقول git إنها تغيّرت.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> فحص تقرير الوكيل آلياً.</p>
+<ol class="steps">
+<li>تراجع عن التغيير السابق، وشغّل المهمة من جديد في وضع الطباعة.</li>
+<li>اقرأ الملخص من المدخل القياسي، والملفات المتغيرة من <code dir="ltr">git diff --name-only</code>.</li>
+<li>أبلغ عن الملفات التي تغيّرت ولم تُذكر.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">claims.mjs (جزء)</div><pre class="code"><span class="k">const</span> said = fs.readFileSync(<span class="n">0</span>, <span class="s">&quot;utf8&quot;</span>);
+<span class="k">const</span> changed = execFileSync(<span class="s">&quot;git&quot;</span>, [<span class="s">&quot;diff&quot;</span>, <span class="s">&quot;--name-only&quot;</span>], {encoding: <span class="s">&quot;utf8&quot;</span>}).split(<span class="s">&quot;\n&quot;</span>).filter(Boolean);
+<span class="k">const</span> claimed = changed.filter((file) =&gt; said.includes(file));
+console.log(<span class="s">`يقول إنه غيّر: ${claimed.join(&quot;, &quot;) || &quot;-&quot;}`</span>);
+console.log(<span class="s">`تغيّر في git: ${changed.join(&quot;, &quot;)}`</span>);
+<span class="k">const</span> missing = changed.filter((file) =&gt; !claimed.includes(file));
+console.log(<span class="s">`تغيّر ولم يُذكر: ${missing.join(&quot;, &quot;) || &quot;-&quot;}`</span>);</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">git checkout -q -- . &amp;&amp; claude -p &quot;أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار.&quot; --model claude-opus-5-5 --no-session-persistence --permission-mode acceptEdits --allowedTools &quot;Bash(grep -rln total src)&quot; &quot;Bash(node --test)&quot; | node claims.mjs</span>
+يقول إنه غيّر: src/menu.mjs, src/receipt.mjs
+تغيّر في git: src/menu.mjs, src/receipt.mjs, test/receipt.test.mjs
+تغيّر ولم يُذكر: test/receipt.test.mjs</pre></div>
+<p class="hint"><strong>تلميح:</strong> تغيّر ملف الاختبار ولم يسمّه الملخص أبداً: قال «الاختبار». وهذا غير ضار هنا، لكن الفحص رخيص والعادة ثمينة: فالملف الذي تغيّر ولم يُذكر أول مكان يجب أن ينظر فيه المراجع، لأن أحداً لم يشرحه.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب أمر تغيير صغير في أحد مشاريعك في جملة واحدة، بالنتيجة وكيف تُفحص. ما الذي يجعله مهمتين؟</li>
+<li><span class="level">سهل</span> بعد تغيير الضريبة، أي مستدعي <code>receipt</code> قد ينكسر، وكيف تجدهم في قاعدة كود كبيرة؟</li>
+<li><span class="level medium">متوسط</span> أصلح مسألة التقريب من المراجعة بنفسك، مع اختبار لمجموع فرعي 16، قبل أن تسأل أي وكيل. ثم قارن فرقك بما تتوقعه من Claude Code.</li>
+<li><span class="level medium">متوسط</span> وسّع <code>claims.mjs</code> ليعلّم أيضاً الملفات التي يذكرها الملخص ولم تتغير.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب سكربتاً يشغّل مهمة Claude Code في فرع جديد، ويشغّل الاختبارات بنفسه بعدها، ويرفض الحفظ إن فشلت الاختبارات، أو كان الفرق أكبر من 200 سطر، أو كان ملف متغير غير مذكور في الملخص.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 8</p>
+<p>كل تشغيل في هذا الفصل كرر القواعد نفسها في سطر الأوامر. والفصل التالي يكتبها مرة: <code>CLAUDE.md</code> لمعرفة المشروع، والإعدادات للصلاحيات، والمهارات للمهام المتكررة، والـ hooks التي تشغّل فحوصك تلقائياً.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1922,6 +2163,16 @@ console.log({
 <li>مثلاً <code dir="ltr">--allowedTools "Bash(npm test)" "Bash(npm run lint)"</code>: أمران محددان. وإن احتاج سكربت الاختبار معاملات، فاسمح بتلك الصيغ صراحة أيضاً. واحفظ القائمة في ملف إعدادات الفريق (الفصل 8) ليأخذ الجميع القواعد نفسها.</li>
 <li>سجّل <code dir="ltr">Date.now()</code> مع وصول كل سطر واطبع الفرق عن السابق. ومع نموذج حقيقي، يكون معظم الوقت عادة في أدوار النموذج (التفكير والكتابة)؛ ومع مجموعة اختبارات بطيئة أو بناء كبير، تطغى الأدوات. وأي الجوابين يخبرك أين تنظر حين تبطؤ مهمة: نموذج أصغر أو جهد أقل، أو اختبارات أسرع.</li>
 <li>شغّل <code dir="ltr">claude -p "$TASK" --output-format json &gt; runs/$(date +%Y%m%d-%H%M%S).json</code>، ثم اقرأ الملف ببضعة أسطر من Node وأضف <code dir="ltr">date,task,subtype,num_turns,total_cost_usd</code> إلى <code>runs.csv</code>. وبعد أسبوع سترى كم تكلّف المهام المعتادة، وأي المهام تأخذ أدواراً كثيرة، وكم مرة تنتهي التشغيلات بغير النجاح: الأرقام التي تحملها إلى حديث عن الميزانيات، والمهام التي تحتاج تعليمات أوضح.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 7</h2>
+<ol class="exercises">
+<li>مثلاً: «اعرض الأسعار بخانتين عشريتين في الإيصالات، في <code>src/receipt.mjs</code>؛ ويجب أن ينجح الاختبار الحالي وأن يُظهر اختبار جديد لـ 45.5 القيمة 45.50.» ويصير مهمتين لو قال أيضاً «وفي صفحة القائمة»: مكانان، وفرقان، ومراجعتان.</li>
+<li>كل ما يقرأ <code>total</code> ما زال يعمل، لكن ما يقارن الكائن كله (اختبار لقطة، أو رد واجهة يُفحص حقلاً حقلاً) أو ما توقع أن <code>total</code> بلا ضريبة سيتغير سلوكه. وفي قاعدة كود كبيرة، ابحث عن كل استخدام لـ <code dir="ltr">receipt(</code> و<code>.total</code> قريباً منه، واقرأ المستدعين؛ واطلب من Claude Code سردهم أولاً، ثم افحص القائمة ببحثك أنت.</li>
+<li>قرّب الإجمالي أيضاً: <code dir="ltr">total: Math.round((subtotal + vat) * 100) / 100</code>، أو احفظ المبالغ بالقروش أعداداً صحيحة ونسّقها للعرض فقط، فتتجنب المشكلة في كل مكان. وأضف اختباراً بطلب مجموعه الفرعي 16 يتوقع 18.24 (تحتاج القائمة صنفاً يعطي 16، أو اختبر الحساب منفصلاً). وكتابته بنفسك أولاً تعطيك ما تقارن به نسخة الوكيل.</li>
+<li>جِد المسارات في الملخص بنمط مثل <code dir="ltr">/[\w./-]+\.(m?js|json|md)/g</code>، وأبلغ عما ليس في قائمة <code dir="ltr">git diff --name-only</code>. والملف المذكور غير المتغير علامة غالباً على أن الوكيل يعتقد أنه أجرى تغييراً لم يجرِه، صورة معكوسة لفحص الفصل.</li>
+<li>أنشئ فرعاً بـ <code dir="ltr">git switch -c task/...</code>، وشغّل المهمة بـ <code dir="ltr">--output-format json</code>، ثم شغّل الاختبارات بنفسك، وقِس <code dir="ltr">git diff --numstat</code>، وشغّل <code>claims.mjs</code> على نص النتيجة. واحفظ فقط إن نجحت الثلاثة؛ وإلا فاطبع السبب واترك الفرع لإنسان. والمقصود أن البوابة لك: «الاختبارات تنجح» من الوكيل نفسه ليست من الفحوص.</li>
 </ol>
 
 </section>

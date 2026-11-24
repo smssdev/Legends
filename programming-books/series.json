@@ -1583,7 +1583,8 @@
             },
             {
               "en": "Working on a Real Codebase",
-              "ar": "العمل على مستودع كود حقيقي"
+              "ar": "العمل على مستودع كود حقيقي",
+              "src": "b8/codebase"
             },
             {
               "en": "CLAUDE.md, Skills and Hooks",

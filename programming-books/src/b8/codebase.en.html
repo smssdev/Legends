@@ -1,0 +1,156 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/codebase/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Working on a Real Codebase</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>prepare a repository so that every change Claude Code makes is easy to see and to undo</li>
+<li>let Claude Code find its way around before it changes anything</li>
+<li>follow a change across several files, from search to passing tests</li>
+<li>review the result the way a reviewer would: from the diff, not from the summary</li>
+<li>get a second opinion on a diff, and check it too</li>
+</ul>
+</div>
+
+<p class="lead">A real codebase has more files than anyone remembers, conventions nobody wrote down, and tests that pass for reasons nobody checked. That is where Claude Code earns its place, and where it needs the most care: the change it makes may touch files you did not think of, and its summary of what it did is only as good as its attention. This chapter makes a small change across a small project, end to end, and reviews it properly.</p>
+
+<aside class="bit" data-mood="think"><p>Claude Code in this chapter is real, and so are its searches, its edits and the test run: the files changed on disk, and <code>git diff</code> shows exactly how. The practice server plays the model, and its replies were checked against what really happened, which is how this chapter found one claim in its own script that was false.</p></aside>
+
+<h2>{{n}}.1 Before Claude Code touches anything</h2>
+
+<p>Start every task from a clean working tree: everything committed, the tests passing. Then whatever the agent changes is exactly what <code>git diff</code> shows, and undoing it is one command. The chapter’s project is three files and a test, in a new repository:</p>
+
+<pre data-term="setup.sh"></pre>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Give each task its own branch, or its own worktree (a second checkout of the same repository in another folder), so two tasks never mix their changes. Claude Code can create worktrees for you; plain <code>git worktree add</code> works too.</p></aside>
+
+<h2>{{n}}.2 A change across files</h2>
+
+<p>The task: add 14% VAT to receipts, with a subtotal, the VAT and the total. It touches the code that totals a receipt, the place where rates belong, and the test that checks the total. The run allows file edits for the session (<code>acceptEdits</code>) and exactly two commands, a search and the tests:</p>
+
+<pre class="plain" dir="ltr">claude -p "Add 14% VAT to receipts: ..." --permission-mode acceptEdits \
+  --allowedTools "Bash(grep -rln total src)" "Bash(node --test)"</pre>
+<pre data-term="task.sh"></pre>
+
+<p>Read it as you would watch a colleague. It searched before guessing where totals live. It read the two files before changing them, in one turn, because the two reads did not depend on each other. It edited both, then the test, which still expected the old total. It ran the tests, and the real result came back: one test, passing. Only then did it report. Eight turns, about forty cents with the practice server’s token counts; a real model on a real task may take more turns or fewer.</p>
+
+<p>One detail is worth noticing for what it says about tools. Claude Code’s set of built-in tools varies by version and settings, and the build used here had no separate search tool enabled, so the search went through <code>grep</code>, allowed as an exact command. Check what your installation offers (<code>/permissions</code>, and the documentation for your version) before you write rules that depend on it.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The practice server’s first script for this task ended with “both tests pass”. The project has one test. The run showed one, and the script was corrected. A real model can make the same slip: a summary is written after the work, from memory of it, and memory is where errors hide. Read the tool results, not just the last message.</p></aside>
+
+<h2>{{n}}.3 Review the diff, not the summary</h2>
+
+<p>The summary says what Claude believes it did. The diff says what it did:</p>
+
+<pre data-term="diff.sh"></pre>
+
+<p>Three files, nine lines added, four removed, and in <code>receipt.mjs</code> exactly the change asked for: the rate imported from the menu module, the VAT rounded to piastres, and three fields where there was one. Review it as you would any pull request. Are the names good? Does every caller of <code>receipt</code> still work now that it returns more fields? Is rounding right? That last question has an answer you would only find by trying values, and Project {{n}}.2 finds it.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why start from a clean, committed working tree?</li><li>Why did the agent read two files in one turn?</li><li>What is the difference between the agent’s summary and the diff?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Habits for real repositories</h2>
+
+<ul>
+<li><strong>Small tasks.</strong> “Add VAT to receipts” is a task; “clean up the billing code” is a week. Small tasks give small diffs, and small diffs get real reviews.</li>
+<li><strong>Questions before changes.</strong> In an unfamiliar codebase, ask first (“where is the total computed?”, Project {{n}}.1), or start in plan mode, and correct the plan before any file changes.</li>
+<li><strong>Tests as the contract.</strong> If the tests are weak, the agent’s “they pass” means little. Ask for the tests first, read them, then ask for the change.</li>
+<li><strong>Undo without fear.</strong> <code>git checkout -- .</code> throws away a change you do not like; a fresh attempt with a better prompt is often faster than repairing a bad one.</li>
+<li><strong>You commit.</strong> Read every line, run the tests yourself, and make the commit with your name on it. The agent wrote the change; you are the one who says it is right.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Hold changes made with Claude Code to the same review as changes from a colleague: the same tests, the same reviewer, the same standards. A team that reviews agent changes more lightly will soon have a codebase nobody understands.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Starting with uncommitted work</td><td>Your changes and the agent’s are tangled</td><td>Commit or stash first; one task per branch</td></tr>
+<tr><td>Trusting the final summary</td><td>Claims that the tool results do not support</td><td>Read the tool results and the diff</td></tr>
+<tr><td>Large, vague tasks</td><td>Diffs too large to review</td><td>Split into tasks with one outcome each</td></tr>
+<tr><td>Weak tests as the safety net</td><td>“Tests pass” proves little</td><td>Strengthen the tests before the change</td></tr>
+<tr><td>Allowing broad commands for convenience</td><td>The agent can do more than the task needs</td><td>Allow the exact commands the task uses</td></tr>
+<tr><td>Repairing a bad attempt line by line</td><td>Slow, and the result inherits the bad start</td><td>Revert, improve the prompt, try again</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Start from a clean, committed tree, so the diff is exactly the agent’s change and undoing it is one command.</li>
+<li>A good agent run searches, reads, edits, tests and only then reports; you can see every step.</li>
+<li>Tools vary by version and settings; allow exactly the commands a task needs.</li>
+<li>The summary is a claim and the diff is the fact; check one against the other.</li>
+<li>Small tasks, tests first, easy reverts, and the same review as any colleague’s change.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that <code>git diff</code> shows exactly what the agent changed, nothing of yours mixed in, and so that undoing it is a single command. 2. Because the two reads did not depend on each other, so both could be requested at once; it saves a turn, and every turn re-sends the context. 3. The summary is what the agent says it did, written after the work; the diff is what actually changed on disk. When they disagree, the diff is right.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects are three checks a careful developer runs around an agent: asking before changing, a second review of the diff, and comparing the agent’s claims with git.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Ask before you change</h3>
+<p class="project-goal">Ask where something happens in the code, with tools that cannot change anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> read-only exploration, with one exact command allowed.</p>
+<ol class="steps">
+<li>Give Claude Code only the reading tool and the shell.</li>
+<li>Allow exactly one search command.</li>
+<li>Ask your question, and check the answer in the files it names.</li>
+</ol>
+<pre data-term="projects/find.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the answer names a file and a function, so it takes ten seconds to check. Ask for that every time: “answer with the file and the function”. In a large codebase, a wrong answer about where something lives costs more than no answer.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A second review of the diff</h3>
+<p class="project-goal">Pipe the diff to Claude Code with no tools at all, and ask for a review.</p>
+<p class="project-skills"><strong>You will practise:</strong> standard input as context, and checking a reviewer’s claims.</p>
+<ol class="steps">
+<li>Send <code>git diff</code> on standard input.</li>
+<li>Turn off every tool with <code>--tools ""</code>, so the review uses only the diff.</li>
+<li>Check each point of the review yourself.</li>
+</ol>
+<pre data-term="projects/review.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the second point is the one that matters, and it is true: in JavaScript, 16 + 2.24 is 18.240000000000002, and 158 of the integer subtotals up to 2,000 give such a tail. The script’s first draft of this review gave an example that does not happen (136.80000000000001); a reviewer’s example deserves the same check as the code. Round the total too, and add a test for it.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>The agent’s claims against git</h3>
+<p class="project-goal">Compare the files the agent’s summary mentions with the files git says changed.</p>
+<p class="project-skills"><strong>You will practise:</strong> checking an agent’s report automatically.</p>
+<ol class="steps">
+<li>Undo the earlier change, and run the task again in print mode.</li>
+<li>Read the summary from standard input, and the changed files from <code>git diff --name-only</code>.</li>
+<li>Report the files changed but not mentioned.</li>
+</ol>
+<pre data-code="claims.mjs" data-from="^const said" data-title="claims.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/claims.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the test file changed and the summary never names it: it says “the test”. Harmless here, but the check is cheap and the habit is valuable: a file changed and not mentioned is the first place a reviewer should look, because nobody explained it.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write the prompt for a small change in one of your own projects in one sentence, with the outcome and how to check it. What would make it two tasks?</li>
+<li><span class="level">Easy</span> After the VAT change, which callers of <code>receipt</code> could break, and how would you find them in a large codebase?</li>
+<li><span class="level">Medium</span> Fix the rounding issue from the review yourself, with a test for a subtotal of 16, before asking any agent. Then compare your diff with what you would expect from Claude Code.</li>
+<li><span class="level">Medium</span> Extend <code>claims.mjs</code> to also flag files the summary mentions that did not change.</li>
+<li><span class="level">Challenge</span> Write a script that runs a Claude Code task on a new branch, runs the tests itself afterwards, and refuses to commit if the tests fail, the diff is larger than 200 lines, or a changed file is not mentioned in the summary.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Every run in this chapter repeated the same rules on the command line. The next chapter writes them down once: <code>CLAUDE.md</code> for the project’s knowledge, settings for permissions, skills for repeated tasks, and hooks that run your checks automatically.</p>
+</div>
+</section>

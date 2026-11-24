@@ -1,0 +1,159 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار.",
+        "tool_result": "Bash",
+        "result_text": "ok 1"
+      },
+      "text": "تم. صار src/receipt.mjs يعيد subtotal وvat (14%، مقرّبة إلى القروش) وtotal؛ وVAT_RATE يُصدَّر من src/menu.mjs. والاختبار يفحص الثلاثة، وهو ينجح."
+    },
+    {
+      "when": {
+        "first": "أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار.",
+        "tool_result": "Edit",
+        "result_text": "receipt.test.mjs"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأشغّل الاختبارات."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار.",
+        "tool_result": "Edit"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "والآن الاختبار، الذي ما زال يتوقع الإجمالي القديم."
+        },
+        {
+          "type": "tool_use",
+          "name": "Edit",
+          "input": {
+            "file_path": "test/receipt.test.mjs",
+            "old_string": "  assert.equal(r.total, 120);\n});",
+            "new_string": "  assert.equal(r.subtotal, 120);\n  assert.equal(r.vat, 16.8);\n  assert.equal(r.total, 136.8);\n});"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار.",
+        "tool_result": "Read"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأضيف الضريبة بعد المجموع الفرعي."
+        },
+        {
+          "type": "tool_use",
+          "name": "Edit",
+          "input": {
+            "file_path": "src/receipt.mjs",
+            "old_string": "import {priceOf} from \"./menu.mjs\";\n\n// A receipt for an order: one line per item, then the total.\nexport function receipt(items) {\n  const lines = items.map(({name, qty}) => ({name, qty, amount: priceOf(name) * qty}));\n  const total = lines.reduce((sum, line) => sum + line.amount, 0);\n  return {lines, total};\n}",
+            "new_string": "import {priceOf, VAT_RATE} from \"./menu.mjs\";\n\n// A receipt for an order: one line per item, then the total.\nexport function receipt(items) {\n  const lines = items.map(({name, qty}) => ({name, qty, amount: priceOf(name) * qty}));\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  const vat = Math.round(subtotal * VAT_RATE * 100) / 100;\n  return {lines, subtotal, vat, total: subtotal + vat};\n}"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "Edit",
+          "input": {
+            "file_path": "src/menu.mjs",
+            "old_string": "export const PRICES = {",
+            "new_string": "export const VAT_RATE = 0.14;\n\nexport const PRICES = {"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار.",
+        "tool_result": "Bash",
+        "result_text": "src/"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "وجدت src/receipt.mjs. سأقرؤه، ووحدة القائمة بجانبه، قبل أن أغيّر أي شيء."
+        },
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "src/receipt.mjs"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "src/menu.mjs"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "أضف ضريبة القيمة المضافة 14% إلى الإيصالات: مجموعاً فرعياً، والضريبة، والإجمالي شاملاً لها. وحدّث الاختبار."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأجد أين تُجمع الإيصالات."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "grep -rln total src",
+            "description": "Find files"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "أين يُحسب إجمالي الإيصال؟",
+        "tool_result": "Bash",
+        "result_text": "src/receipt.mjs"
+      },
+      "text": "يُحسب الإجمالي في src/receipt.mjs، في receipt(): تُجمع مبالغ السطور بـ reduce. والأسعار تأتي من priceOf في src/menu.mjs."
+    },
+    {
+      "when": {
+        "first": "أين يُحسب إجمالي الإيصال؟"
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "grep -rn total src",
+            "description": "Search the sources"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "راجع هذا الفرق"
+      },
+      "text": "1. menu.mjs: الثابت VAT_RATE = 0.14 مكان واحد جيد للنسبة.\n2. receipt.mjs: الضريبة مقرّبة إلى القروش، لكن total هو subtotal + vat بلا تقريب؛ ومع أسعار أخرى قد يظهر ذيل عشري: مجموع فرعي 16 يعطي إجمالياً 18.240000000000002.\n3. الاختبار يغطي طلباً واحداً؛ أضف طلباً تحتاج ضريبته إلى تقريب."
+    }
+  ]
+}
