@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "Chapter 4: Artifacts: Apps, Documents and Diagrams"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "Chapter 5: Research, Connectors and Tools"; } }
+@page ch05:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -47,7 +49,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">52</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">63</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -1282,6 +1284,284 @@ attempt 2: PASS</pre></div>
 <p>So far Claude has known only what you gave it. The next chapter gives it more: research across the web, connectors to your team’s tools, and the judgement to know which sources to trust.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b8/research/en">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">Chapter 5</p><h1>Research, Connectors and Tools</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell apart the ways Claude reaches beyond its training: search, research, connectors and tools</li>
+<li>turn on web search from the API and read every block that comes back</li>
+<li>judge a cited answer by its sources, not by its citations</li>
+<li>handle a search that fails inside a successful response</li>
+<li>connect Claude to your team’s tools without handing it more than it needs</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 1 ended with Claude saying, correctly, that it could not know today’s news. This chapter removes that limit, carefully. Claude can search the web, run a longer research process that reads dozens of pages, and, through connectors, read your team’s documents, email and code. Each of these makes Claude more useful and adds a new question: where did this answer come from, and should I believe it?</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every search, result and answer in this chapter is the practice server’s, and every website ends in <code>.example</code>, a domain reserved so that it can never belong to anyone. The blocks, the citations and the error are shaped exactly as the API returns them.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>Four ways beyond the training</span></h2>
+
+<table>
+<thead><tr><th>Way</th><th>What it does</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>Web search</td><td>Claude searches when a question needs current or specific facts, and cites what it used</td><td>The apps, and the API as a server tool</td></tr>
+<tr><td>Research</td><td>A longer process: many searches, many pages, a report with sources; takes minutes, not seconds</td><td>The apps</td></tr>
+<tr><td>Connectors</td><td>Claude reads, and sometimes acts in, your own tools: documents, email, calendars, code, tickets</td><td>The apps; the API through MCP (Chapter 13)</td></tr>
+<tr><td>Your own tools</td><td>Functions you write that Claude can call: your database, your pricing rules</td><td>The API (Chapter 12)</td></tr>
+</tbody>
+</table>
+
+<p>All four work the same way underneath: Claude decides it needs something, asks for it, reads the result, and continues. What differs is who runs the step. Web search is a <dfn>server tool</dfn>: Anthropic runs the search and returns the results inside the same response. Your own tools are run by your code (Part III).</p>
+
+<h2><span class="sec">5.2</span> <span>Web search from the API</span></h2>
+
+<p>Turning search on is one entry in <code>tools</code>. Claude decides whether to search, and what for; <code>max_uses</code> limits how many searches one request may run:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/research.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> research(question, search = {}) {
+  <span class="k">return</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">4000</span>,
+    tools: [
+      {<span class="k">type</span>: <span class="s">&quot;web_search_20260209&quot;</span>, name: <span class="s">&quot;web_search&quot;</span>, max_uses: <span class="n">3</span>, ...search},
+    ],
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content: question}],
+  });
+}</pre></div>
+
+<p>The response holds the whole story in order: what Claude searched for, what came back, and the answer, split into text blocks so that each claim can carry its own citations:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node blocks.mjs</span>
+server_tool_use        {&quot;query&quot;:&quot;Egyptian Coffee Association bean prices December 2026&quot;}
+web_search_tool_result 3 results
+text                   116 chars, 1 citations
+text                   75 chars, 1 citations
+text                   45 chars, 1 citations
+text                   74 chars, 0 citations</pre></div>
+
+<p>A <code>server_tool_use</code> block with the query, a <code>web_search_tool_result</code> with three results, and four text blocks: three with a citation each, and one with none. Searches are billed on top of tokens, and <code>usage.server_tool_use.web_search_requests</code> counts them, so a program can see what each answer cost.</p>
+
+<h2><span class="sec">5.3</span> <span>Reading a cited answer</span></h2>
+
+<p>A program shows the answer the way the app does: a number after each cited claim, and the sources at the end:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/research.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> render(response) {
+  <span class="k">const</span> sources = [];
+  <span class="k">let</span> text = <span class="s">&quot;&quot;</span>;
+  <span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> response.content) {
+    <span class="k">if</span> (block.<span class="k">type</span> !== <span class="s">&quot;text&quot;</span>) continue;
+    text += block.text;
+    <span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> block.citations ?? []) {
+      <span class="k">if</span> (!sources.includes(c.url)) sources.push(c.url);
+      text += <span class="s">`[${sources.indexOf(c.url) + 1}]`</span>;
+    }
+  }
+  <span class="k">return</span> {text, sources};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node ask.mjs</span>
+The Egyptian Coffee Association announced that wholesale prices for Ethiopian beans will rise by 8% from 1 December.[1] A news report links the rise to higher shipping costs through the Red Sea.[2] One blog expects prices to double next year.[3] For a café, an 8% rise on beans is a small share of the price of a drink.
+
+Sources (searches: 1):
+[1] https://coffee-association.example/2026/11/bean-prices
+[2] https://news.example/business/coffee-prices-rise
+[3] https://beanblog.example/prices-will-double</pre></div>
+
+<p>Every sentence but the last has a source, and that is exactly where the reading starts, not where it ends. Look at what each claim rests on. The 8% comes from the association that set the prices, three days ago: the best source there is. The cause comes from a news report, two days old, which is reasonable. The doubling comes from a blog post five weeks old, whose title states a prediction as a fact: a citation, but not evidence. And the last sentence has no source because it is Claude’s own reasoning, which may be right but should be read as an opinion.</p>
+
+<p>A citation answers one question: where did this sentence come from? It does not answer whether the source is right, current, or relevant to you. Each citation carries the <code>cited_text</code> from the page, so you can check that the source says what the sentence claims; the source itself, you judge as you would any web page.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Search results are text written by strangers, and Claude reads them. A page can contain instructions aimed at AI models, as Book 7’s Chapter 15 showed with a café review. Never give a model with web search access to secrets or to tools that act, without checks outside the model on what it does.</p></aside>
+
+<h2><span class="sec">5.4</span> <span>When a search fails</span></h2>
+
+<p>A search can fail while the request succeeds. The response is a normal 200 with a normal stop reason, and the failure sits inside a result block, where the list of results would be:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.mjs (part)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> response.content) {
+  <span class="k">if</span> (block.<span class="k">type</span> === <span class="s">&quot;server_tool_use&quot;</span>) console.log(<span class="s">`search: ${block.input.query}`</span>);
+  <span class="k">if</span> (block.<span class="k">type</span> !== <span class="s">&quot;web_search_tool_result&quot;</span>) continue;
+  <span class="k">if</span> (Array.isArray(block.content)) {
+    console.log(<span class="s">`  ${block.content.length} results`</span>);
+  } <span class="k">else</span> {
+    console.log(<span class="s">`  search failed: ${block.content.error_code}`</span>);
+  }
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node errors.mjs</span>
+search: coffee prices Africa
+  0 results
+search: bean prices Kenya
+  0 results
+search: bean prices Ethiopia
+  search failed: max_uses_exceeded
+stop: end_turn</pre></div>
+
+<p>The question asked for more than two searches could cover, and the third search came back as <code>max_uses_exceeded</code>. A program that assumed <code>content</code> is always a list would crash here, or worse, report zero results as if the web had nothing. Check the type of <code>content</code> before reading it, and treat an answer built on failed searches as incomplete, whether or not the answer says so.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>The blog sentence has a citation. Why is it still the weakest claim in the answer?</li><li>How does a program know that a search failed, when the request succeeded?</li><li>What does <code>cited_text</code> let you check?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">5.5</span> <span>Research in the apps</span></h2>
+
+<p>For a broad question (“what are our options for accepting payments in Egypt?”), the apps can run a research process: Claude plans, searches many times, reads the pages it finds, and writes a report with sources. It takes minutes rather than seconds, and it is good at covering ground you would not have thought of. Read its report the way Section 5.3 read the short answer: by its sources. Open the three or four citations that carry the conclusions, check their dates and their authors, and treat the report as a well-organised first draft of your own research, not as the research.</p>
+
+<h2><span class="sec">5.6</span> <span>Connectors</span></h2>
+
+<p>A connector lets Claude reach into a tool your team uses: shared documents, email, a calendar, a code repository, an issue tracker. Most are built on MCP, the open protocol of Chapter 13, and you can add your own. Once connected, Claude can search your documents to answer a question, summarise a thread, or, if the connector allows it, create a ticket or draft a reply.</p>
+
+<p>Three questions decide whether a connector is safe to turn on:</p>
+<ul>
+<li><strong>What can it read?</strong> Everything Claude reads through it becomes part of the conversation. Connect the folder the task needs, not the whole drive.</li>
+<li><strong>What can it do?</strong> Reading is one level of trust; sending, deleting and paying are another. Prefer connectors that ask you before each action, and read the action before you approve it.</li>
+<li><strong>Who wrote what it reads?</strong> An email from outside your company is untrusted text, like a web page. A connector that reads email and can also send it is exactly the combination an attacker would want.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>For every connector your team enables, write one line: what it can read, what it can do, and who approved it. Review the list when people change roles, and remove what nobody uses: an idle connector is access nobody is watching.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Treating a citation as proof</td><td>Weak sources passed off as facts</td><td>Judge each source: who, when, and does it say that</td></tr>
+<tr><td>Ignoring uncited sentences</td><td>The model’s opinion read as a finding</td><td>Mark them, and check them first</td></tr>
+<tr><td>Assuming search results are a list</td><td>Crashes, or failures reported as “nothing found”</td><td>Check the type of <code>content</code></td></tr>
+<tr><td>No limit on searches</td><td>Slow, costly answers</td><td>Set <code>max_uses</code>; read the usage</td></tr>
+<tr><td>Connecting everything</td><td>Claude reads far more than the task needs</td><td>The smallest scope; review it regularly</td></tr>
+<tr><td>Reading and sending in one connector, unchecked</td><td>An injected instruction becomes an action</td><td>Approve every action; separate read from act</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Claude reaches beyond its training through search, research, connectors and tools; all of them follow the same pattern of asking, reading and continuing.</li>
+<li>Web search from the API is one tool entry; the response shows the searches, the results, and text split by citation.</li>
+<li>A citation says where a sentence came from, not whether it is true: judge the sources, and check uncited sentences first.</li>
+<li>Search failures arrive inside successful responses; check the type before reading the results.</li>
+<li>Connectors should read and do as little as the task needs, with every action approved.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because its source is the weakest: a five-week-old blog post stating a prediction as a fact, while the 8% comes from the association itself. A citation shows where the claim came from, not that it is right. 2. The <code>web_search_tool_result</code> block’s <code>content</code> is an error object with an <code>error_code</code> instead of a list of results. 3. That the source really says what the sentence claims: you can compare the sentence with the exact text it was based on.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects turn the reading habits of this chapter into code: listing the sources, finding the claims without one, and limiting the search to sites the team trusts.</p>
+
+<div class="project">
+<p class="project-label">Project 5.1 · Easy</p>
+<h3>Every source, with its age</h3>
+<p class="project-goal">List every search result by site, age and title, before reading the answer.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading the evidence before the conclusion.</p>
+<ol class="steps">
+<li>Find the search result blocks in the response.</li>
+<li>Print each result’s site, age and title.</li>
+<li>Decide which you would trust, then read the answer.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">sites.mjs (part)</div><pre class="code"><span class="k">const</span> response = <span class="k">await</span> research(QUESTION);
+<span class="k">const</span> results = response.content.filter((b) =&gt; b.<span class="k">type</span> === <span class="s">&quot;web_search_tool_result&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> results) {
+  <span class="k">for</span> (<span class="k">const</span> r <span class="k">of</span> block.content) {
+    <span class="k">const</span> site = <span class="k">new</span> URL(r.url).hostname;
+    console.log(<span class="s">`${site.padEnd(28)} ${r.page_age.padEnd(12)} ${r.title}`</span>);
+  }
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node sites.mjs</span>
+coffee-association.example   3 days ago   Wholesale prices for Ethiopian beans from December
+news.example                 2 days ago   Coffee prices to rise as shipping costs climb
+beanblog.example             5 weeks ago  Why bean prices will double next year</pre></div>
+<p class="hint"><strong>Hint:</strong> reading the list first changes how you read the answer: you already know that one of three sources is an old blog. Results Claude found but did not cite are worth a look too; they show what it chose to leave out.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 5.2 · Medium</p>
+<h3>Sentences without a citation</h3>
+<p class="project-goal">Print every sentence of an answer that has no citation, so a reader checks those first.</p>
+<p class="project-skills"><strong>You will practise:</strong> working with citations as data.</p>
+<ol class="steps">
+<li>Keep the text blocks with text and no citations.</li>
+<li>Print them, marked.</li>
+<li>Say so plainly when every sentence is cited.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">uncited.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> uncited(response) {
+  <span class="k">return</span> response.content
+    .filter((b) =&gt; b.<span class="k">type</span> === <span class="s">&quot;text&quot;</span> &amp;&amp; b.text.trim() &amp;&amp; !(b.citations ?? []).length)
+    .map((b) =&gt; b.text.trim());
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node uncited.mjs</span>
+no citation: For a café, an 8% rise on beans is a small share of the price of a drink.</pre></div>
+<p class="hint"><strong>Hint:</strong> the uncited sentence is not wrong, but it is Claude’s judgement, not a fact from a source, and a reader deserves to know which is which. In a report for your team, you might print such sentences in a different style.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 5.3 · Challenge</p>
+<h3>Only sites the team trusts</h3>
+<p class="project-goal">Ask the same question with the search limited to the association and the news site.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>allowed_domains</code>, and choosing sources before searching.</p>
+<ol class="steps">
+<li>List the sites the team trusts for this kind of question.</li>
+<li>Pass them as <code>allowed_domains</code>.</li>
+<li>Compare the answer with the unrestricted one.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">official.mjs (part)</div><pre class="code"><span class="k">const</span> trusted = [<span class="s">&quot;coffee-association.example&quot;</span>, <span class="s">&quot;news.example&quot;</span>];
+<span class="k">const</span> response = <span class="k">await</span> research(QUESTION, {allowed_domains: trusted});
+<span class="k">const</span> {text, sources} = render(response);
+console.log(text);
+sources.forEach((url, i) =&gt; console.log(<span class="s">`[${i + 1}] ${url}`</span>));</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node official.mjs</span>
+The Egyptian Coffee Association announced that wholesale prices for Ethiopian beans will rise by 8% from 1 December.[1] A news report links the rise to higher shipping costs through the Red Sea.[2]
+[1] https://coffee-association.example/2026/11/bean-prices
+[2] https://news.example/business/coffee-prices-rise</pre></div>
+<p class="hint"><strong>Hint:</strong> the blog is gone, and with it the doubling claim. A domain list is a strong control for questions with known authorities (official prices, laws, documentation) and a poor one for open questions, where it hides what you did not think to include. Use <code>blocked_domains</code> instead when you know what to avoid but not where the answer is.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Ask the same question in the app with search on and off. List the differences in what it says and in what it cites.</li>
+<li><span class="level">Easy</span> Change <code>ask.mjs</code> to print each source’s title next to its address, from the citations.</li>
+<li><span class="level medium">Medium</span> Write a check that compares each citation’s <code>cited_text</code> with the sentence it supports and flags numbers in the sentence that are not in the cited text.</li>
+<li><span class="level medium">Medium</span> Write the connector line of the professional habit for three connectors your team uses or might use. Which one would you not enable, and why?</li>
+<li><span class="level hard">Challenge</span> Build a small report writer: ask a question with search, then write a Markdown file with the answer, footnotes for the sources, a list of uncited sentences, and the date of the research. What would make you trust such a report enough to send it?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 6</p>
+<p>Part I used Claude in a window. Part II brings it into your terminal and your repository: Claude Code, an agent that reads, edits and runs your code.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1337,6 +1617,16 @@ attempt 2: PASS</pre></div>
 <li>Write the test first: a bill of 100 split between 3 gives 36.67 each (110 / 3 = 36.666…), and the shares then add up to 110.01, not 110.00. Tricky inputs: zero or negative people, fractions of a person, and the rounding that makes shares not add up to the total. Decide in the test what should happen (for example, the last person pays the difference), and only then write or ask for the code.</li>
 <li>Open the page with <code>browser.newPage({viewport: {width: 360, height: 640}})</code> and check that <code>document.documentElement.scrollWidth</code> is not larger than <code>clientWidth</code>. Fixed widths, long words and wide tables are the usual causes. Add the check to the lint so every future version is held to it.</li>
 <li>With no fix in <code>practice.json</code>, the second and third attempts get the practice server’s “no reply matches” text, which has no HTML block, so the loop needs to handle a reply without code (it would crash on <code>html.code</code>): treat it as a failed attempt. After three, the loop prints that a person should look. The team should read the failures, decide whether the test or the request is wrong, and fix one of them: a loop that gives up is working as designed; one that never gives up is the bug.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 5</h2>
+<ol class="exercises">
+<li>With search off, Claude answers from its training and should say when the question needs more recent information; with search on, it cites pages and usually gives more specific, more current facts. Note also what changes in confidence: a cited answer reads as more certain, which is exactly why its sources need reading.</li>
+<li>Collect the title from each citation as you collect its URL (<code>c.title</code>), keep them in the same order, and print <code>[n] title: url</code>. A reader decides faster from a title and a site than from an address alone.</li>
+<li>For each text block, extract the numbers in its text with <code>/\d+(\.\d+)?/g</code>, and check each one against the <code>cited_text</code> of its citations; flag a number found in none of them. On this chapter’s answer, “8%” and “1 December” are in the association’s cited text, and nothing is flagged; change the sentence to 9% in <code>practice.json</code> and the check catches it. This is Book 7’s number check, applied to web sources.</li>
+<li>For example: “Shared drive (sales folder only): reads documents; cannot edit; approved by the sales lead.” “Issue tracker: reads and creates tickets, each creation confirmed by the user; approved by the engineering manager.” “Email: reads and sends.” The last is the one to decline, or to allow only with every send approved: it combines untrusted input (any email from outside) with an action that reaches outside the company.</li>
+<li>Write the answer with <code>[^n]</code> markers, the sources as footnotes with title, URL and age, a section listing uncited sentences, and the date and question at the top. Trust comes from checking, not from the format: before sending, open the sources behind the main conclusions, confirm the numbers, and be ready to say who checked it. A report that says how it was made is easier to trust, and easier to correct.</li>
 </ol>
 
 </section>

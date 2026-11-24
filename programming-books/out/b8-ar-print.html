@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "الفصل 4: Artifacts: التطبيقات والمستندات والرسوم"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "الفصل 5: البحث والموصلات والأدوات"; } }
+@page ch05:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -47,7 +49,7 @@
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">36</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">59</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">36</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">59</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">71</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -1282,6 +1284,284 @@ console.log(<span class="s">&quot;ما زال يفشل: يجب أن ينظر إ�
 <p>حتى الآن لم يعرف Claude إلا ما أعطيته. والفصل التالي يعطيه أكثر: البحث عبر الويب، والموصّلات بأدوات فريقك، والحكم على أي المصادر يستحق الثقة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b8/research/ar">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">الفصل 5</p><h1>البحث والموصّلات والأدوات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تميّز الطرق التي يتجاوز بها Claude تدريبه: البحث، والبحث المعمّق، والموصّلات، والأدوات</li>
+<li>تشغّل البحث في الويب من الواجهة البرمجية وتقرأ كل كتلة تعود</li>
+<li>تحكم على الجواب المستشهد بمصادره، لا باستشهاداته</li>
+<li>تتعامل مع بحث يفشل داخل رد ناجح</li>
+<li>تصل Claude بأدوات فريقك دون أن تعطيه أكثر مما يحتاج</li>
+</ul>
+</div>
+
+<p class="lead">انتهى الفصل 1 وClaude يقول، محقاً، إنه لا يستطيع معرفة أخبار اليوم. وهذا الفصل يزيل ذلك الحد، بحذر. فـ Claude يستطيع البحث في الويب، وتشغيل عملية بحث أطول تقرأ عشرات الصفحات، وعبر الموصّلات، قراءة مستندات فريقك وبريده وكوده. وكل منها يجعل Claude أنفع، ويضيف سؤالاً جديداً: من أين جاء هذا الجواب، وهل أصدّقه؟</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل بحث ونتيجة وجواب في هذا الفصل من خادم التدريب، وكل موقع ينتهي بـ <code>.example</code>، نطاق محجوز كي لا يملكه أحد أبداً. أما الكتل والاستشهادات والخطأ فبالشكل الذي تعيده الواجهة البرمجية تماماً.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>أربع طرق لتجاوز التدريب</span></h2>
+
+<table>
+<thead><tr><th>الطريقة</th><th>ما تفعله</th><th>أين</th></tr></thead>
+<tbody>
+<tr><td>البحث في الويب</td><td>يبحث Claude حين يحتاج السؤال حقائق حديثة أو محددة، ويستشهد بما استخدمه</td><td>التطبيقات، والواجهة البرمجية كأداة خادم</td></tr>
+<tr><td>البحث المعمّق</td><td>عملية أطول: عمليات بحث كثيرة، وصفحات كثيرة، وتقرير بمصادره؛ يستغرق دقائق لا ثوانيَ</td><td>التطبيقات</td></tr>
+<tr><td>الموصّلات</td><td>يقرأ Claude في أدواتك، ويتصرف فيها أحياناً: المستندات، والبريد، والتقويم، والكود، والمهام</td><td>التطبيقات؛ والواجهة البرمجية عبر MCP (الفصل 13)</td></tr>
+<tr><td>أدواتك أنت</td><td>دوال تكتبها يستطيع Claude استدعاءها: قاعدة بياناتك، وقواعد تسعيرك</td><td>الواجهة البرمجية (الفصل 12)</td></tr>
+</tbody>
+</table>
+
+<p>والأربع تعمل بالطريقة نفسها من الداخل: يقرر Claude أنه يحتاج شيئاً، فيطلبه، ويقرأ النتيجة، ويكمل. والفرق في من ينفّذ الخطوة. فالبحث في الويب <dfn>أداة خادم</dfn>: تنفّذ Anthropic البحث وتعيد النتائج داخل الرد نفسه. أما أدواتك فينفّذها كودك (الجزء الثالث).</p>
+
+<h2><span class="sec">5.2</span> <span>البحث في الويب من الواجهة البرمجية</span></h2>
+
+<p>تشغيل البحث إدخال واحد في <code>tools</code>. ويقرر Claude هل يبحث، وعن ماذا؛ و<code>max_uses</code> يحدّ عدد عمليات البحث في الطلب الواحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/research.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> research(question, search = {}) {
+  <span class="k">return</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">4000</span>,
+    tools: [
+      {<span class="k">type</span>: <span class="s">&quot;web_search_20260209&quot;</span>, name: <span class="s">&quot;web_search&quot;</span>, max_uses: <span class="n">3</span>, ...search},
+    ],
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content: question}],
+  });
+}</pre></div>
+
+<p>والرد يحمل القصة كلها بترتيبها: عمّ بحث Claude، وماذا عاد، والجواب، مقسّماً إلى كتل نصية ليحمل كل ادعاء استشهاداته:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node blocks.mjs</span>
+server_tool_use        {&quot;query&quot;:&quot;جمعية البن المصرية أسعار البن ديسمبر 2026&quot;}
+web_search_tool_result 3 results
+text                   77 chars, 1 citations
+text                   66 chars, 1 citations
+text                   45 chars, 1 citations
+text                   53 chars, 0 citations</pre></div>
+
+<p>كتلة <code>server_tool_use</code> فيها نص البحث، و<code>web_search_tool_result</code> بثلاث نتائج، وأربع كتل نصية: ثلاث لكل منها استشهاد، وواحدة بلا استشهاد. وعمليات البحث تُحاسب فوق الـ tokens، ويعدّها <code dir="ltr">usage.server_tool_use.web_search_requests</code>، فيرى البرنامج كم كلّف كل جواب.</p>
+
+<h2><span class="sec">5.3</span> <span>قراءة جواب مستشهد</span></h2>
+
+<p>يعرض البرنامج الجواب كما يعرضه التطبيق: رقم بعد كل ادعاء مستشهد، والمصادر في النهاية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/research.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> render(response) {
+  <span class="k">const</span> sources = [];
+  <span class="k">let</span> text = <span class="s">&quot;&quot;</span>;
+  <span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> response.content) {
+    <span class="k">if</span> (block.<span class="k">type</span> !== <span class="s">&quot;text&quot;</span>) continue;
+    text += block.text;
+    <span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> block.citations ?? []) {
+      <span class="k">if</span> (!sources.includes(c.url)) sources.push(c.url);
+      text += <span class="s">`[${sources.indexOf(c.url) + 1}]`</span>;
+    }
+  }
+  <span class="k">return</span> {text, sources};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node ask.mjs</span>
+أعلنت جمعية البن المصرية أن أسعار الجملة للبن الإثيوبي سترتفع 8% من 1 ديسمبر.[1] ويربط تقرير إخباري الارتفاع بزيادة تكاليف الشحن عبر البحر الأحمر.[2] وتتوقع مدونة أن تتضاعف الأسعار العام القادم.[3] وللمقهى، ارتفاع 8% في البن حصة صغيرة من سعر المشروب.
+
+المصادر (عمليات البحث: 1):
+[1] https://coffee-association.example/2026/11/bean-prices
+[2] https://news.example/business/coffee-prices-rise
+[3] https://beanblog.example/prices-will-double</pre></div>
+
+<p>لكل جملة إلا الأخيرة مصدر، وهنا بالضبط تبدأ القراءة، لا تنتهي. انظر على ماذا يقوم كل ادعاء. الـ 8% من الجمعية التي حددت الأسعار، قبل ثلاثة أيام: أفضل مصدر ممكن. والسبب من تقرير إخباري، عمره يومان، وهذا معقول. والتضاعف من تدوينة عمرها خمسة أسابيع، يقدّم عنوانها توقعاً كأنه حقيقة: استشهاد، لكنه ليس دليلاً. والجملة الأخيرة بلا مصدر لأنها استنتاج Claude نفسه، وقد يكون صحيحاً لكن يجب أن يُقرأ رأياً.</p>
+
+<p>الاستشهاد يجيب سؤالاً واحداً: من أين جاءت هذه الجملة؟ ولا يجيب هل المصدر صحيح، أو حديث، أو يخصّك. وكل استشهاد يحمل <code>cited_text</code> من الصفحة، فتستطيع أن تفحص أن المصدر يقول ما تدّعيه الجملة؛ أما المصدر نفسه فتحكم عليه كما تحكم على أي صفحة ويب.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>نتائج البحث نصوص كتبها غرباء، وClaude يقرؤها. وقد تحوي صفحةٌ تعليمات موجّهة لنماذج الذكاء الاصطناعي، كما بيّن الفصل 15 من الكتاب السابع بمراجعة مقهى. فلا تعطِ نموذجاً يستطيع البحث في الويب أسراراً أو أدوات تتصرف، دون فحوص خارج النموذج على ما يفعله.</p></aside>
+
+<h2><span class="sec">5.4</span> <span>حين يفشل البحث</span></h2>
+
+<p>قد يفشل البحث وينجح الطلب. فالرد 200 عادي بسبب توقف عادي، والإخفاق يقع داخل كتلة نتيجة، حيث كانت ستكون قائمة النتائج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.mjs (جزء)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> response.content) {
+  <span class="k">if</span> (block.<span class="k">type</span> === <span class="s">&quot;server_tool_use&quot;</span>) console.log(<span class="s">`search: ${block.input.query}`</span>);
+  <span class="k">if</span> (block.<span class="k">type</span> !== <span class="s">&quot;web_search_tool_result&quot;</span>) continue;
+  <span class="k">if</span> (Array.isArray(block.content)) {
+    console.log(<span class="s">`  ${block.content.length} results`</span>);
+  } <span class="k">else</span> {
+    console.log(<span class="s">`  فشل البحث: ${block.content.error_code}`</span>);
+  }
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node errors.mjs</span>
+search: coffee prices Africa
+  0 results
+search: bean prices Kenya
+  0 results
+search: bean prices Ethiopia
+  فشل البحث: max_uses_exceeded
+stop: end_turn</pre></div>
+
+<p>طلب السؤال أكثر مما يغطيه بحثان، فعاد البحث الثالث بـ <code>max_uses_exceeded</code>. والبرنامج الذي يفترض أن <code>content</code> قائمة دائماً سينهار هنا، أو أسوأ، سيبلّغ عن صفر نتائج كأن الويب ليس فيه شيء. افحص نوع <code>content</code> قبل قراءته، وعامل الجواب المبني على بحث فاشل كناقص، سواء قال الجواب ذلك أم لم يقل.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لجملة المدونة استشهاد. لماذا تبقى أضعف ادعاء في الجواب؟</li><li>كيف يعرف البرنامج أن بحثاً فشل، وقد نجح الطلب؟</li><li>ماذا يتيح لك <code>cited_text</code> أن تفحص؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">5.5</span> <span>البحث المعمّق في التطبيقات</span></h2>
+
+<p>لسؤال واسع («ما خياراتنا لقبول المدفوعات في مصر؟»)، تستطيع التطبيقات تشغيل عملية بحث: يخطط Claude، ويبحث مرات كثيرة، ويقرأ الصفحات التي يجدها، ويكتب تقريراً بمصادره. تستغرق دقائق لا ثوانيَ، وتُحسن تغطية ما لم تكن لتفكر فيه. واقرأ تقريرها كما قرأ القسم 5.3 الجواب القصير: بمصادره. افتح الاستشهادات الثلاثة أو الأربعة التي تحمل الاستنتاجات، وافحص تواريخها وكتّابها، وعامل التقرير كمسودة أولى منظّمة لبحثك أنت، لا كالبحث نفسه.</p>
+
+<h2><span class="sec">5.6</span> <span>الموصّلات</span></h2>
+
+<p>الموصّل يتيح لـ Claude الوصول إلى أداة يستخدمها فريقك: المستندات المشتركة، والبريد، والتقويم، ومستودع الكود، ونظام المهام. ومعظمها مبني على MCP، البروتوكول المفتوح في الفصل 13، وتستطيع إضافة موصّلاتك. وبعد الوصل، يستطيع Claude البحث في مستنداتك ليجيب سؤالاً، أو تلخيص سلسلة رسائل، أو، إن سمح الموصّل، إنشاء مهمة أو كتابة مسودة رد.</p>
+
+<p>وثلاثة أسئلة تقرر هل تشغيل موصّل آمن:</p>
+<ul>
+<li><strong>ماذا يستطيع أن يقرأ؟</strong> كل ما يقرؤه Claude عبره يصير جزءاً من المحادثة. صِل المجلد الذي تحتاجه المهمة، لا القرص كله.</li>
+<li><strong>ماذا يستطيع أن يفعل؟</strong> القراءة مستوى من الثقة؛ والإرسال والحذف والدفع مستوى آخر. فضّل الموصّلات التي تسألك قبل كل فعل، واقرأ الفعل قبل أن توافق.</li>
+<li><strong>من كتب ما يقرؤه؟</strong> رسالة بريد من خارج شركتك نص غير موثوق، كصفحة ويب. والموصّل الذي يقرأ البريد ويستطيع إرساله أيضاً هو بالضبط المزيج الذي يريده المهاجم.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>لكل موصّل يشغّله فريقك، اكتب سطراً واحداً: ماذا يستطيع أن يقرأ، وماذا يستطيع أن يفعل، ومن وافق عليه. وراجع القائمة حين يغيّر الناس أدوارهم، واحذف ما لا يستخدمه أحد: فالموصّل الخامل صلاحية لا يراقبها أحد.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>معاملة الاستشهاد كدليل</td><td>مصادر ضعيفة تُقدَّم كحقائق</td><td>احكم على كل مصدر: من، ومتى، وهل يقول ذلك</td></tr>
+<tr><td>تجاهل الجمل غير المستشهدة</td><td>رأي النموذج يُقرأ كنتيجة</td><td>علّمها، وافحصها أولاً</td></tr>
+<tr><td>افتراض أن نتائج البحث قائمة</td><td>انهيارات، أو إخفاقات تُبلَّغ «لم يُعثر على شيء»</td><td>افحص نوع <code>content</code></td></tr>
+<tr><td>لا حد لعمليات البحث</td><td>أجوبة بطيئة ومكلفة</td><td>اضبط <code>max_uses</code>؛ واقرأ الاستهلاك</td></tr>
+<tr><td>وصل كل شيء</td><td>يقرأ Claude أكثر بكثير مما تحتاجه المهمة</td><td>أصغر نطاق؛ وراجعه بانتظام</td></tr>
+<tr><td>قراءة وإرسال في موصّل واحد، بلا فحص</td><td>تعليمة محقونة تصير فعلاً</td><td>وافق على كل فعل؛ وافصل القراءة عن التصرف</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>يتجاوز Claude تدريبه بالبحث، والبحث المعمّق، والموصّلات، والأدوات؛ وكلها تتبع النمط نفسه: يطلب، ويقرأ، ويكمل.</li>
+<li>البحث في الويب من الواجهة البرمجية إدخال أداة واحد؛ والرد يُظهر عمليات البحث، والنتائج، والنص مقسّماً حسب الاستشهاد.</li>
+<li>الاستشهاد يقول من أين جاءت الجملة، لا هل هي صحيحة: احكم على المصادر، وافحص الجمل غير المستشهدة أولاً.</li>
+<li>إخفاقات البحث تصل داخل ردود ناجحة؛ افحص النوع قبل قراءة النتائج.</li>
+<li>الموصّلات يجب أن تقرأ وتفعل أقل ما تحتاجه المهمة، مع الموافقة على كل فعل.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن مصدرها الأضعف: تدوينة عمرها خمسة أسابيع تقدّم توقعاً كحقيقة، بينما تأتي الـ 8% من الجمعية نفسها. فالاستشهاد يُظهر من أين جاء الادعاء، لا أنه صحيح. 2. يكون <code>content</code> في كتلة <code>web_search_tool_result</code> كائن خطأ فيه <code>error_code</code> بدل قائمة نتائج. 3. أن المصدر يقول حقاً ما تدّعيه الجملة: تستطيع مقارنة الجملة بالنص الحرفي الذي بُنيت عليه.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تحوّل المشاريع عادات القراءة في هذا الفصل إلى كود: سرد المصادر، وإيجاد الادعاءات التي بلا مصدر، وحصر البحث في المواقع التي يثق بها الفريق.</p>
+
+<div class="project">
+<p class="project-label">المشروع 5.1 · سهل</p>
+<h3>كل مصدر، بعمره</h3>
+<p class="project-goal">اسرد كل نتيجة بحث بموقعها وعمرها وعنوانها، قبل قراءة الجواب.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الدليل قبل الاستنتاج.</p>
+<ol class="steps">
+<li>جِد كتل نتائج البحث في الرد.</li>
+<li>اطبع موقع كل نتيجة وعمرها وعنوانها.</li>
+<li>قرر بأيها تثق، ثم اقرأ الجواب.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">sites.mjs (جزء)</div><pre class="code"><span class="k">const</span> response = <span class="k">await</span> research(QUESTION);
+<span class="k">const</span> results = response.content.filter((b) =&gt; b.<span class="k">type</span> === <span class="s">&quot;web_search_tool_result&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> results) {
+  <span class="k">for</span> (<span class="k">const</span> r <span class="k">of</span> block.content) {
+    <span class="k">const</span> site = <span class="k">new</span> URL(r.url).hostname;
+    console.log(<span class="s">`${site.padEnd(28)} ${r.page_age.padEnd(12)} ${r.title}`</span>);
+  }
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node sites.mjs</span>
+coffee-association.example   3 days ago   أسعار الجملة للبن الإثيوبي من ديسمبر
+news.example                 2 days ago   أسعار القهوة إلى ارتفاع مع صعود تكاليف الشحن
+beanblog.example             5 weeks ago  لماذا ستتضاعف أسعار البن العام القادم</pre></div>
+<p class="hint"><strong>تلميح:</strong> قراءة القائمة أولاً تغيّر طريقة قراءتك للجواب: تعرف مسبقاً أن واحداً من ثلاثة مصادر تدوينة قديمة. والنتائج التي وجدها Claude ولم يستشهد بها تستحق نظرة أيضاً؛ فهي تُظهر ما اختار أن يترك.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 5.2 · متوسط</p>
+<h3>جمل بلا استشهاد</h3>
+<p class="project-goal">اطبع كل جملة في الجواب ليس لها استشهاد، ليفحصها القارئ أولاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التعامل مع الاستشهادات كبيانات.</p>
+<ol class="steps">
+<li>احتفظ بالكتل النصية التي فيها نص بلا استشهادات.</li>
+<li>اطبعها، معلّمة.</li>
+<li>قل ذلك بوضوح حين تكون كل جملة مستشهدة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">uncited.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> uncited(response) {
+  <span class="k">return</span> response.content
+    .filter((b) =&gt; b.<span class="k">type</span> === <span class="s">&quot;text&quot;</span> &amp;&amp; b.text.trim() &amp;&amp; !(b.citations ?? []).length)
+    .map((b) =&gt; b.text.trim());
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node uncited.mjs</span>
+بلا استشهاد: وللمقهى، ارتفاع 8% في البن حصة صغيرة من سعر المشروب.</pre></div>
+<p class="hint"><strong>تلميح:</strong> الجملة غير المستشهدة ليست خاطئة، لكنها حكم Claude، لا حقيقة من مصدر، والقارئ يستحق أن يعرف أيهما أيها. وفي تقرير لفريقك، قد تطبع هذه الجمل بأسلوب مختلف.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 5.3 · تحدٍّ</p>
+<h3>المواقع التي يثق بها الفريق فقط</h3>
+<p class="project-goal">اطرح السؤال نفسه والبحث محصور في الجمعية وموقع الأخبار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>allowed_domains</code>، واختيار المصادر قبل البحث.</p>
+<ol class="steps">
+<li>اسرد المواقع التي يثق بها الفريق لهذا النوع من الأسئلة.</li>
+<li>مرّرها في <code>allowed_domains</code>.</li>
+<li>قارن الجواب بالجواب غير المحصور.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">official.mjs (جزء)</div><pre class="code"><span class="k">const</span> trusted = [<span class="s">&quot;coffee-association.example&quot;</span>, <span class="s">&quot;news.example&quot;</span>];
+<span class="k">const</span> response = <span class="k">await</span> research(QUESTION, {allowed_domains: trusted});
+<span class="k">const</span> {text, sources} = render(response);
+console.log(text);
+sources.forEach((url, i) =&gt; console.log(<span class="s">`[${i + 1}] ${url}`</span>));</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node official.mjs</span>
+أعلنت جمعية البن المصرية أن أسعار الجملة للبن الإثيوبي سترتفع 8% من 1 ديسمبر.[1] ويربط تقرير إخباري الارتفاع بزيادة تكاليف الشحن عبر البحر الأحمر.[2]
+[1] https://coffee-association.example/2026/11/bean-prices
+[2] https://news.example/business/coffee-prices-rise</pre></div>
+<p class="hint"><strong>تلميح:</strong> ذهبت المدونة، ومعها ادعاء التضاعف. وقائمة المواقع ضبط قوي للأسئلة التي لها مراجع معروفة (الأسعار الرسمية، والقوانين، والتوثيق)، وضعيف للأسئلة المفتوحة، حيث تخفي ما لم تفكر في إضافته. واستخدم <code>blocked_domains</code> بدلاً منها حين تعرف ما تتجنبه لا أين الجواب.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اطرح السؤال نفسه في التطبيق والبحث مشغّل ومطفأ. اسرد الفروق فيما يقوله وفيما يستشهد به.</li>
+<li><span class="level">سهل</span> غيّر <code>ask.mjs</code> ليطبع عنوان كل مصدر بجانب عنوانه على الويب، من الاستشهادات.</li>
+<li><span class="level medium">متوسط</span> اكتب فحصاً يقارن <code>cited_text</code> لكل استشهاد بالجملة التي يدعمها، ويعلّم الأرقام التي في الجملة وليست في النص المستشهد به.</li>
+<li><span class="level medium">متوسط</span> اكتب سطر الموصّل من عادة المحترفين لثلاثة موصّلات يستخدمها فريقك أو قد يستخدمها. أيها لن تشغّل، ولماذا؟</li>
+<li><span class="level hard">تحدٍّ</span> ابنِ كاتب تقارير صغيراً: اطرح سؤالاً مع البحث، ثم اكتب ملف Markdown فيه الجواب، وحواشٍ للمصادر، وقائمة بالجمل غير المستشهدة، وتاريخ البحث. ما الذي يجعلك تثق بتقرير كهذا بما يكفي لإرساله؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>استخدم الجزء الأول Claude في نافذة. والجزء الثاني يأتي به إلى طرفيتك ومستودعك: Claude Code، وكيل يقرأ كودك ويعدّله ويشغّله.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1337,6 +1617,16 @@ console.log(<span class="s">&quot;ما زال يفشل: يجب أن ينظر إ�
 <li>اكتب الاختبار أولاً: فاتورة 100 مقسومة على 3 تعطي 36.67 لكل واحد (110 ÷ 3 = 36.666…)، ثم تجتمع الحصص إلى 110.01 لا 110.00. والمدخلات الصعبة: صفر أشخاص أو عدد سالب، وأجزاء من شخص، والتقريب الذي يجعل الحصص لا تساوي الإجمالي. قرر في الاختبار ما يجب أن يحدث (مثلاً، يدفع الأخير الفرق)، وعندها فقط اكتب الكود أو اطلبه.</li>
 <li>افتح الصفحة بـ <code dir="ltr">browser.newPage({viewport: {width: 360, height: 640}})</code> وافحص أن <code dir="ltr">document.documentElement.scrollWidth</code> ليس أكبر من <code>clientWidth</code>. والأسباب المعتادة العروض الثابتة، والكلمات الطويلة، والجداول العريضة. وأضف الفحص إلى الأداة، لتُلزم به كل نسخة قادمة.</li>
 <li>بلا إصلاح في <code>practice.json</code>، تأخذ المحاولتان الثانية والثالثة نص خادم التدريب «لا جواب يطابق»، الذي لا كتلة HTML فيه، فيجب أن تتعامل الحلقة مع رد بلا كود (وإلا انهارت عند <code>html.code</code>): اعتبره محاولة فاشلة. وبعد ثلاث، تطبع الحلقة أن إنساناً يجب أن ينظر. وعلى الفريق أن يقرأ الإخفاقات، ويقرر هل الاختبار أم الطلب هو الخاطئ، ويصلح أحدهما: فالحلقة التي تستسلم تعمل كما صُممت؛ والتي لا تستسلم أبداً هي الخطأ.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 5</h2>
+<ol class="exercises">
+<li>والبحث مطفأ، يجيب Claude من تدريبه ويجب أن يقول متى يحتاج السؤال معلومات أحدث؛ والبحث مشغّل، يستشهد بصفحات ويعطي عادة حقائق أكثر تحديداً وحداثة. ولاحظ أيضاً ما يتغير في الثقة: الجواب المستشهد يبدو أكثر يقيناً، ولهذا بالضبط تحتاج مصادره إلى قراءة.</li>
+<li>اجمع العنوان من كل استشهاد كما تجمع رابطه (<code>c.title</code>)، واحفظهما بالترتيب نفسه، واطبع <code dir="ltr">[n] title: url</code>. فالقارئ يقرر أسرع من عنوان وموقع منه من رابط وحده.</li>
+<li>لكل كتلة نصية، استخرج الأرقام من نصها بـ <code dir="ltr">/\d+(\.\d+)?/g</code>، وافحص كلاً منها مقابل <code>cited_text</code> لاستشهاداتها؛ وعلّم الرقم الذي لا يوجد في أي منها. وفي جواب هذا الفصل، «8%» و«1 ديسمبر» في النص المستشهد من الجمعية، فلا يُعلَّم شيء؛ غيّر الجملة إلى 9% في <code>practice.json</code> فيلتقطها الفحص. وهذا فحص الأرقام من الكتاب السابع، مطبّقاً على مصادر الويب.</li>
+<li>مثلاً: «القرص المشترك (مجلد المبيعات فقط): يقرأ المستندات؛ لا يعدّل؛ وافق عليه قائد المبيعات.» «نظام المهام: يقرأ المهام وينشئها، وكل إنشاء يؤكده المستخدم؛ وافق عليه مدير الهندسة.» «البريد: يقرأ ويرسل.» والأخير هو الذي يُرفض، أو يُسمح به فقط مع الموافقة على كل إرسال: فهو يجمع مدخلاً غير موثوق (أي رسالة من الخارج) وفعلاً يصل إلى خارج الشركة.</li>
+<li>اكتب الجواب بعلامات <code dir="ltr">[^n]</code>، والمصادر حواشيَ بعنوانها ورابطها وعمرها، وقسماً يسرد الجمل غير المستشهدة، والتاريخ والسؤال في الأعلى. والثقة تأتي من الفحص، لا من الشكل: قبل الإرسال، افتح المصادر وراء الاستنتاجات الرئيسية، وتأكد من الأرقام، وكن مستعداً لتقول من فحصه. فالتقرير الذي يقول كيف صُنع أسهل في الثقة به، وأسهل في تصحيحه.</li>
 </ol>
 
 </section>

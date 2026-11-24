@@ -1,0 +1,183 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/research/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Research, Connectors and Tools</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell apart the ways Claude reaches beyond its training: search, research, connectors and tools</li>
+<li>turn on web search from the API and read every block that comes back</li>
+<li>judge a cited answer by its sources, not by its citations</li>
+<li>handle a search that fails inside a successful response</li>
+<li>connect Claude to your team’s tools without handing it more than it needs</li>
+</ul>
+</div>
+
+<p class="lead">Chapter 1 ended with Claude saying, correctly, that it could not know today’s news. This chapter removes that limit, carefully. Claude can search the web, run a longer research process that reads dozens of pages, and, through connectors, read your team’s documents, email and code. Each of these makes Claude more useful and adds a new question: where did this answer come from, and should I believe it?</p>
+
+<aside class="bit" data-mood="think"><p>Every search, result and answer in this chapter is the practice server’s, and every website ends in <code>.example</code>, a domain reserved so that it can never belong to anyone. The blocks, the citations and the error are shaped exactly as the API returns them.</p></aside>
+
+<h2>{{n}}.1 Four ways beyond the training</h2>
+
+<table>
+<thead><tr><th>Way</th><th>What it does</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>Web search</td><td>Claude searches when a question needs current or specific facts, and cites what it used</td><td>The apps, and the API as a server tool</td></tr>
+<tr><td>Research</td><td>A longer process: many searches, many pages, a report with sources; takes minutes, not seconds</td><td>The apps</td></tr>
+<tr><td>Connectors</td><td>Claude reads, and sometimes acts in, your own tools: documents, email, calendars, code, tickets</td><td>The apps; the API through MCP (Chapter 13)</td></tr>
+<tr><td>Your own tools</td><td>Functions you write that Claude can call: your database, your pricing rules</td><td>The API (Chapter 12)</td></tr>
+</tbody>
+</table>
+
+<p>All four work the same way underneath: Claude decides it needs something, asks for it, reads the result, and continues. What differs is who runs the step. Web search is a <dfn>server tool</dfn>: Anthropic runs the search and returns the results inside the same response. Your own tools are run by your code (Part III).</p>
+
+<h2>{{n}}.2 Web search from the API</h2>
+
+<p>Turning search on is one entry in <code>tools</code>. Claude decides whether to search, and what for; <code>max_uses</code> limits how many searches one request may run:</p>
+
+<pre data-code="lib/research.mjs" data-from="^export async function research" data-to="^}" data-title="lib/research.mjs (part)"></pre>
+
+<p>The response holds the whole story in order: what Claude searched for, what came back, and the answer, split into text blocks so that each claim can carry its own citations:</p>
+
+<pre data-term="blocks.sh"></pre>
+
+<p>A <code>server_tool_use</code> block with the query, a <code>web_search_tool_result</code> with three results, and four text blocks: three with a citation each, and one with none. Searches are billed on top of tokens, and <code>usage.server_tool_use.web_search_requests</code> counts them, so a program can see what each answer cost.</p>
+
+<h2>{{n}}.3 Reading a cited answer</h2>
+
+<p>A program shows the answer the way the app does: a number after each cited claim, and the sources at the end:</p>
+
+<pre data-code="lib/research.mjs" data-from="^export function render" data-to="^}" data-title="lib/research.mjs (part)"></pre>
+<pre data-term="ask.sh"></pre>
+
+<p>Every sentence but the last has a source, and that is exactly where the reading starts, not where it ends. Look at what each claim rests on. The 8% comes from the association that set the prices, three days ago: the best source there is. The cause comes from a news report, two days old, which is reasonable. The doubling comes from a blog post five weeks old, whose title states a prediction as a fact: a citation, but not evidence. And the last sentence has no source because it is Claude’s own reasoning, which may be right but should be read as an opinion.</p>
+
+<p>A citation answers one question: where did this sentence come from? It does not answer whether the source is right, current, or relevant to you. Each citation carries the <code>cited_text</code> from the page, so you can check that the source says what the sentence claims; the source itself, you judge as you would any web page.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Search results are text written by strangers, and Claude reads them. A page can contain instructions aimed at AI models, as Book 7’s Chapter 15 showed with a café review. Never give a model with web search access to secrets or to tools that act, without checks outside the model on what it does.</p></aside>
+
+<h2>{{n}}.4 When a search fails</h2>
+
+<p>A search can fail while the request succeeds. The response is a normal 200 with a normal stop reason, and the failure sits inside a result block, where the list of results would be:</p>
+
+<pre data-code="errors.mjs" data-from="^for" data-to="^}" data-title="errors.mjs (part)"></pre>
+<pre data-term="errors.sh"></pre>
+
+<p>The question asked for more than two searches could cover, and the third search came back as <code>max_uses_exceeded</code>. A program that assumed <code>content</code> is always a list would crash here, or worse, report zero results as if the web had nothing. Check the type of <code>content</code> before reading it, and treat an answer built on failed searches as incomplete, whether or not the answer says so.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>The blog sentence has a citation. Why is it still the weakest claim in the answer?</li><li>How does a program know that a search failed, when the request succeeded?</li><li>What does <code>cited_text</code> let you check?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Research in the apps</h2>
+
+<p>For a broad question (“what are our options for accepting payments in Egypt?”), the apps can run a research process: Claude plans, searches many times, reads the pages it finds, and writes a report with sources. It takes minutes rather than seconds, and it is good at covering ground you would not have thought of. Read its report the way Section {{n}}.3 read the short answer: by its sources. Open the three or four citations that carry the conclusions, check their dates and their authors, and treat the report as a well-organised first draft of your own research, not as the research.</p>
+
+<h2>{{n}}.6 Connectors</h2>
+
+<p>A connector lets Claude reach into a tool your team uses: shared documents, email, a calendar, a code repository, an issue tracker. Most are built on MCP, the open protocol of Chapter 13, and you can add your own. Once connected, Claude can search your documents to answer a question, summarise a thread, or, if the connector allows it, create a ticket or draft a reply.</p>
+
+<p>Three questions decide whether a connector is safe to turn on:</p>
+<ul>
+<li><strong>What can it read?</strong> Everything Claude reads through it becomes part of the conversation. Connect the folder the task needs, not the whole drive.</li>
+<li><strong>What can it do?</strong> Reading is one level of trust; sending, deleting and paying are another. Prefer connectors that ask you before each action, and read the action before you approve it.</li>
+<li><strong>Who wrote what it reads?</strong> An email from outside your company is untrusted text, like a web page. A connector that reads email and can also send it is exactly the combination an attacker would want.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>For every connector your team enables, write one line: what it can read, what it can do, and who approved it. Review the list when people change roles, and remove what nobody uses: an idle connector is access nobody is watching.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Treating a citation as proof</td><td>Weak sources passed off as facts</td><td>Judge each source: who, when, and does it say that</td></tr>
+<tr><td>Ignoring uncited sentences</td><td>The model’s opinion read as a finding</td><td>Mark them, and check them first</td></tr>
+<tr><td>Assuming search results are a list</td><td>Crashes, or failures reported as “nothing found”</td><td>Check the type of <code>content</code></td></tr>
+<tr><td>No limit on searches</td><td>Slow, costly answers</td><td>Set <code>max_uses</code>; read the usage</td></tr>
+<tr><td>Connecting everything</td><td>Claude reads far more than the task needs</td><td>The smallest scope; review it regularly</td></tr>
+<tr><td>Reading and sending in one connector, unchecked</td><td>An injected instruction becomes an action</td><td>Approve every action; separate read from act</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Claude reaches beyond its training through search, research, connectors and tools; all of them follow the same pattern of asking, reading and continuing.</li>
+<li>Web search from the API is one tool entry; the response shows the searches, the results, and text split by citation.</li>
+<li>A citation says where a sentence came from, not whether it is true: judge the sources, and check uncited sentences first.</li>
+<li>Search failures arrive inside successful responses; check the type before reading the results.</li>
+<li>Connectors should read and do as little as the task needs, with every action approved.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because its source is the weakest: a five-week-old blog post stating a prediction as a fact, while the 8% comes from the association itself. A citation shows where the claim came from, not that it is right. 2. The <code>web_search_tool_result</code> block’s <code>content</code> is an error object with an <code>error_code</code> instead of a list of results. 3. That the source really says what the sentence claims: you can compare the sentence with the exact text it was based on.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects turn the reading habits of this chapter into code: listing the sources, finding the claims without one, and limiting the search to sites the team trusts.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Every source, with its age</h3>
+<p class="project-goal">List every search result by site, age and title, before reading the answer.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading the evidence before the conclusion.</p>
+<ol class="steps">
+<li>Find the search result blocks in the response.</li>
+<li>Print each result’s site, age and title.</li>
+<li>Decide which you would trust, then read the answer.</li>
+</ol>
+<pre data-code="sites.mjs" data-from="^const response" data-to="^}" data-title="sites.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/sites.sh"></pre>
+<p class="hint"><strong>Hint:</strong> reading the list first changes how you read the answer: you already know that one of three sources is an old blog. Results Claude found but did not cite are worth a look too; they show what it chose to leave out.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Sentences without a citation</h3>
+<p class="project-goal">Print every sentence of an answer that has no citation, so a reader checks those first.</p>
+<p class="project-skills"><strong>You will practise:</strong> working with citations as data.</p>
+<ol class="steps">
+<li>Keep the text blocks with text and no citations.</li>
+<li>Print them, marked.</li>
+<li>Say so plainly when every sentence is cited.</li>
+</ol>
+<pre data-code="uncited.mjs" data-from="^export function uncited" data-to="^}" data-title="uncited.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/uncited.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the uncited sentence is not wrong, but it is Claude’s judgement, not a fact from a source, and a reader deserves to know which is which. In a report for your team, you might print such sentences in a different style.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Only sites the team trusts</h3>
+<p class="project-goal">Ask the same question with the search limited to the association and the news site.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>allowed_domains</code>, and choosing sources before searching.</p>
+<ol class="steps">
+<li>List the sites the team trusts for this kind of question.</li>
+<li>Pass them as <code>allowed_domains</code>.</li>
+<li>Compare the answer with the unrestricted one.</li>
+</ol>
+<pre data-code="official.mjs" data-from="^const trusted" data-title="official.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/official.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the blog is gone, and with it the doubling claim. A domain list is a strong control for questions with known authorities (official prices, laws, documentation) and a poor one for open questions, where it hides what you did not think to include. Use <code>blocked_domains</code> instead when you know what to avoid but not where the answer is.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Ask the same question in the app with search on and off. List the differences in what it says and in what it cites.</li>
+<li><span class="level">Easy</span> Change <code>ask.mjs</code> to print each source’s title next to its address, from the citations.</li>
+<li><span class="level">Medium</span> Write a check that compares each citation’s <code>cited_text</code> with the sentence it supports and flags numbers in the sentence that are not in the cited text.</li>
+<li><span class="level">Medium</span> Write the connector line of the professional habit for three connectors your team uses or might use. Which one would you not enable, and why?</li>
+<li><span class="level">Challenge</span> Build a small report writer: ask a question with search, then write a Markdown file with the answer, footnotes for the sources, a list of uncited sentences, and the date of the research. What would make you trust such a report enough to send it?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Part I used Claude in a window. Part II brings it into your terminal and your repository: Claude Code, an agent that reads, edits and runs your code.</p>
+</div>
+</section>
