@@ -1,0 +1,559 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>Mastering Claude</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "Mastering Claude"; font: 700 8pt 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: Meet Claude: Models, Strengths and Limits"; } }
+@page ch01:first { @top-center { content: none; } }
+@page preface { @top-center { content: "How to Use This Book"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "Answers to the Exercises"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">From Zero to Senior · Book 8</p>
+  <h1 class="cv-title">Mastering Claude</h1>
+  <p class="cv-sub">Claude.ai, Claude Code, the API and Agents, for Developers and Teams</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>Claude</span><span>Claude Code</span><span>API</span><span>MCP</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">All levels</span><span class="cv-author">Soliman Maged Saeed Salah</span></div>
+</div></section><section class="front half-title"><p class="ht">Mastering Claude</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 8</p>
+          <h1 class="tp-title">Mastering Claude</h1>
+          <p class="tp-sub">Claude.ai, Claude Code, the API and Agents, for Developers and Teams</p>
+          <p class="tp-level">All levels</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>Mastering Claude</strong><br>Claude.ai, Claude Code, the API and Agents, for Developers and Teams</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
+          <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">6</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">22</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Claude is one family of AI models that reaches you through several doors: a chat app on the web, desktop and phone; Claude Code, an agent that works in your terminal and your repository; and an API that puts the same models inside your own programs. This book teaches all three the way a professional uses them: what each is good at, how to give it the right context, how to check its work, and what it costs. It is written for developers and teams, and it builds on Book 7, <em>AI for Developers</em>, whose habits (give the model what it needs, check what it gives you, measure before you believe) apply here to one family of tools in depth.</p>
+
+<h2 class="plain-h">What you need</h2>
+<ul>
+<li>Node.js 22 and a code editor, as in the earlier books.</li>
+<li>For Part I, a Claude account; the free plan is enough for most of it, and the chapters say where a paid plan adds something.</li>
+<li>For Part II, Claude Code, installed as Chapter 6 shows, with a Claude subscription or an API key.</li>
+<li>For Part III, nothing more: every example runs against the book’s practice server, described below. A key from the Claude Console is needed only when you want real answers from Claude.</li>
+</ul>
+
+<h2 class="plain-h">The practice server</h2>
+<p>Every program in this book calls Claude through the official SDK, <code>@anthropic-ai/sdk</code>, exactly as it would in production. To let you run all of them for free, offline and with no account, the book’s code repository includes a <dfn>practice server</dfn>: a small local program that speaks the API’s format (requests, responses, streaming events, tool calls, errors, token usage) and answers from a file in each chapter, <code>practice.json</code>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Read this before any example</p><p>The practice server is not Claude. Its answers were written for this book, to show what each part of a response looks like and how a program should handle it. When a transcript in this book shows an answer, it is the practice server’s, and the chapter says so. The errors, the field names, the streaming events and the code are real; the words of the answers are not Claude’s, and the token counts are an approximation (about four characters per token). To see what Claude really answers, run the same code against the real API with your own key: Claude’s words will differ, and you should check them the way Book 7 taught.</p></aside>
+
+<p>Switching between the two is a matter of two environment variables, which the SDK reads by itself:</p>
+<pre class="plain" dir="ltr">node practice/server.mjs &amp;                       # the practice server, on port 4141
+export ANTHROPIC_BASE_URL=http://127.0.0.1:4141    # talk to it
+export ANTHROPIC_API_KEY=test-key                  # its only key
+
+unset ANTHROPIC_BASE_URL                           # the real API instead
+export ANTHROPIC_API_KEY=sk-ant-...                # your own key, never in code</pre>
+
+<h2 class="plain-h">How the book is organised</h2>
+<p>The seventeen chapters are grouped in three parts, one for each door. They can be read in any order, but the parts build on each other: the habits of Part I are assumed in Part II, and Part III assumes you have read Chapter 1.</p>
+<ul>
+<li><strong>Claude.ai</strong>: the models and their limits, conversations with files and images, projects that keep a team’s knowledge, artifacts, and research with connectors and tools.</li>
+<li><strong>Claude Code</strong>: the agent in your terminal, working on a real codebase, instructions in <code>CLAUDE.md</code>, skills and hooks, the path from issue to pull request, and Claude Code for teams and continuous integration.</li>
+<li><strong>Building with Claude</strong>: the API, tool use and structured output, MCP for connecting Claude to your systems, agents, cost and speed, safety and evaluation, and a capstone product.</li>
+</ul>
+
+<h2 class="plain-h">Every chapter</h2>
+<p>Each chapter follows the pattern of the series: what you will learn; explanations built on real examples; a quick check; boxes with tips, traps and professional habits; common mistakes; a summary; three practice projects (easy, medium and challenge); and exercises with answers at the end of the book.</p>
+
+<h2 class="plain-h">Versions and dates</h2>
+<p>Claude changes faster than any book: new models, new features, new prices. Everything in this book was checked in November 2026 against these versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>@anthropic-ai/sdk</td><td>1.8.0 (API version 2026-10-21)</td></tr>
+<tr><td>Models</td><td>Claude Fable 5.2, Opus 5.5, Sonnet 5.5 and Haiku 5.5</td></tr>
+</tbody>
+</table>
+<p>When a model name, a price or a limit in this book disagrees with Anthropic’s documentation, the documentation is right. Chapter 1 shows how to ask the API itself which models exist and what their limits are, so your programs never depend on a number printed here.</p>
+
+<h2 class="plain-h">Reading the examples</h2>
+<ul>
+<li>A dark tab above a listing gives the file’s path in the project.</li>
+<li>A box with three coloured dots is a terminal: a line starting with <code>$</code> is a command, the lines below are its answer.</li>
+<li>Every example, project and exercise answer is in the book’s code repository, with the practice server, each chapter’s <code>practice.json</code>, and the script that produced each transcript.</li>
+</ul>
+
+<h2 class="plain-h">A word from the author</h2>
+<p>A tool this capable rewards the people who learn it properly and punishes the people who trust it blindly. Bit, the purple robot, meets Claude in these pages as a colleague: fast, well read, tireless, and still a colleague whose work you review. Learn its strengths, learn its limits, and keep your own judgement in charge.</p>
+
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b8/meet/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>Meet Claude: Models, Strengths and Limits</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell apart the ways Claude reaches you: the apps, Claude Code and the API</li>
+<li>choose between the Claude models by task, speed and price</li>
+<li>send a first message from code and read everything that comes back</li>
+<li>work out what a request costs before you send a thousand of them</li>
+<li>name Claude’s limits, and recognise the errors a first program meets</li>
+</ul>
+</div>
+
+<p class="lead">Claude is a family of AI models made by Anthropic. The same models answer you in the chat app, edit your repository through Claude Code, and run inside your programs through the API. This chapter introduces the family: which models exist and how they differ, what a request and a response look like, what they cost, and what Claude cannot do however well you ask. Everything after this chapter builds on it.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every answer from “Claude” in this chapter comes from the book’s practice server, not from Claude: the preface explains why. The prices, the limits, the errors and the code are real, and the arithmetic in this chapter is exact.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>One family, three doors</span></h2>
+
+<table>
+<thead><tr><th>Door</th><th>What it is</th><th>Best for</th><th>Part</th></tr></thead>
+<tbody>
+<tr><td>Claude apps</td><td>Chat on the web (claude.ai), on the desktop and on phones, with files, projects, artifacts, research and connectors</td><td>Thinking, writing, analysis and one-off tasks, alone or as a team</td><td>I</td></tr>
+<tr><td>Claude Code</td><td>An agent that reads, edits and runs code in your terminal, your editor or the cloud</td><td>Work inside a repository: features, fixes, refactors, reviews</td><td>II</td></tr>
+<tr><td>The Claude API</td><td>An HTTP API and official SDKs, also offered through Amazon Bedrock, Google Cloud and Microsoft Foundry</td><td>Putting Claude inside your own product</td><td>III</td></tr>
+</tbody>
+</table>
+
+<p>The doors share the models but not the setup around them. The apps add a system prompt, tools and memory features that Anthropic maintains; Claude Code adds tools for files and commands, and permissions; the API adds nothing: you get the model, and every instruction, tool and check is yours to write. That is why the same question can get a different answer in each place, and why Part III spends so much time on what the apps do for you.</p>
+
+<h2><span class="sec">1.2</span> <span>The models</span></h2>
+
+<p>Claude models come in tiers, named for size and speed, and each tier gets new versions. In November 2026 the current ones are:</p>
+
+<table>
+<thead><tr><th>Model</th><th>Id</th><th>Use it for</th><th>Input / output, $ per million tokens</th></tr></thead>
+<tbody>
+<tr><td>Claude Fable 5.2</td><td><code>claude-fable-5-2</code></td><td>The hardest reasoning and long-running agent work</td><td>8 / 40</td></tr>
+<tr><td>Claude Opus 5.5</td><td><code>claude-opus-5-5</code></td><td>Complex coding and knowledge work; the default choice</td><td>4 / 20</td></tr>
+<tr><td>Claude Sonnet 5.5</td><td><code>claude-sonnet-5-5</code></td><td>Everyday coding, agents and chat, faster and cheaper</td><td>2 / 10</td></tr>
+<tr><td>Claude Haiku 5.5</td><td><code>claude-haiku-5-5</code></td><td>High volume and low latency: classification, routing, extraction</td><td>0.10 / 0.50</td></tr>
+</tbody>
+</table>
+
+<p>All four read up to a million tokens of input and write up to 128,000. The ids are complete as they are: no dates, no suffixes. A program should not depend on this table, because the list changes; it should ask the API, which says which models your account can use and their limits:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">models.mjs (part)</div><pre class="code"><span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> model <span class="k">of</span> client.models.list()) {
+  <span class="k">const</span> input = (model.max_input_tokens / <span class="n">1000</span>).toLocaleString(<span class="s">&quot;en-US&quot;</span>);
+  console.log(<span class="s">`${model.id.padEnd(18)} ${model.display_name.padEnd(18)} input ${input}K, output ${model.max_tokens / 1000}K`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node models.mjs</span>
+claude-fable-5-2   Claude Fable 5.2   input 1,000K, output 128K
+claude-opus-5-5    Claude Opus 5.5    input 1,000K, output 128K
+claude-sonnet-5-5  Claude Sonnet 5.5  input 1,000K, output 128K
+claude-haiku-5-5   Claude Haiku 5.5   input 1,000K, output 128K
+claude-opus-4-8    Claude Opus 4.8    input 1,000K, output 128K
+claude-haiku-4-5   Claude Haiku 4.5   input 200K, output 64K</pre></div>
+
+<p>The practice server knows six models, the four above and two older ones that are still served. The real API lists more, including earlier versions kept for programs that depend on them.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>A <dfn>token</dfn> is the unit models read and write: a short word, part of a longer word, a punctuation mark. In English a token is about four characters on average; Arabic and code usually take more tokens for the same length. Prices and limits are counted in tokens, and the API counts them exactly for you (Chapter 15).</p></aside>
+
+<h2><span class="sec">1.3</span> <span>A first message</span></h2>
+
+<p>Install the SDK in a new project, start the practice server from the book’s repository, and point the SDK at it with the two variables from the preface:</p>
+
+<pre class="plain" dir="ltr">npm install @anthropic-ai/sdk@1.8.0
+node practice/server.mjs &amp;
+export ANTHROPIC_BASE_URL=http://127.0.0.1:4141 ANTHROPIC_API_KEY=test-key</pre>
+
+<p>Then a program of a few lines:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello.mjs (part)</div><pre class="code"><span class="k">const</span> question = process.argv[<span class="n">2</span>] ?? <span class="s">&quot;Introduce yourself in three sentences.&quot;</span>;
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: question}],
+});
+<span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> response.content) {
+  <span class="k">if</span> (block.<span class="k">type</span> === <span class="s">&quot;text&quot;</span>) console.log(block.text);
+}
+<span class="k">const</span> {input_tokens, output_tokens} = response.usage;
+<span class="k">const</span> dollars = cost(response.model, response.usage).toFixed(<span class="n">6</span>);
+console.log(<span class="s">`--- stop: ${response.stop_reason}; `</span> +
+  <span class="s">`tokens: ${input_tokens} in, ${output_tokens} out; cost: $${dollars}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node hello.mjs</span>
+I&#x27;m Claude, an AI model made by Anthropic. I can read and write text and code, look at images and documents, and use tools that you give me. I don&#x27;t remember earlier conversations unless you send them again, and I can be wrong, so check what matters.
+--- stop: end_turn; tokens: 19 in, 70 out; cost: $0.001476</pre></div>
+
+<p>The answer is the practice server’s, written to sound like Claude introducing itself; Claude’s own words will differ. What matters is the shape, which is the API’s. A request names the <code>model</code>, the <code>max_tokens</code> the answer may use, and the <code>messages</code> so far, starting with the user’s. The response’s <code>content</code> is a list of blocks, not a string: here a single text block, but later chapters meet thinking blocks, tool calls and citations, so code always looks at each block’s <code>type</code>. <code>stop_reason</code> says why the answer ended: <code>end_turn</code> means Claude finished, <code>max_tokens</code> means it was cut off, and other values (a tool call, a refusal) mean the program has work to do. And <code>usage</code> counts the tokens, from which the program works out the cost.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Never write an API key in code, and never commit one. The SDK reads <code>ANTHROPIC_API_KEY</code> from the environment, so the code above works with the practice server and with the real API without a change. A key in a repository is a key anyone can spend on.</p></aside>
+
+<h2><span class="sec">1.4</span> <span>What it costs</span></h2>
+
+<p>Every request is priced by its tokens: input at one rate, output at a higher one (five times higher for every current model), and two more rates for prompt caching, which Chapter 15 covers. The calculation is short enough to keep next to your code:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/prices.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> cost(model, usage) {
+  <span class="k">const</span> p = PRICES[model];
+  <span class="k">const</span> written = usage.cache_creation_input_tokens ?? <span class="n">0</span>;
+  <span class="k">const</span> read = usage.cache_read_input_tokens ?? <span class="n">0</span>;
+  <span class="k">const</span> dollars = usage.input_tokens * p.input + usage.output_tokens * p.output +
+    written * p.input * <span class="n">1.25</span> + read * p.cacheRead;
+  <span class="k">return</span> dollars / 1_000_000;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node prices.mjs</span>
+claude-fable-5-2   $0.03600 each, $36.00 per thousand
+claude-opus-5-5    $0.01800 each, $18.00 per thousand
+claude-sonnet-5-5  $0.00900 each, $9.00 per thousand
+claude-haiku-5-5   $0.00045 each, $0.45 per thousand
+claude-opus-5-5, cached prompt: $0.01116 each</pre></div>
+
+<p>The same request, 2,000 tokens in and 500 out, costs eighty times more on the most capable model than on the fastest. A thousand of them costs $36 on Claude Fable 5.2 and 45 cents on Claude Haiku 5.5. And caching most of the prompt, as in the last line, cuts the Opus request by more than a third, because input read from the cache costs a twentieth of its usual price on Claude Opus 5.5. Neither number says which model to use: a cheap model that gets a task wrong costs more than an expensive one that gets it right, which is why Chapter 16 measures before it chooses.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Start with Claude Opus 5.5, the default, until the feature works and you have a way to measure it; then try the smaller models on the same measurement. Moving down to Sonnet or Haiku is often possible for a well-defined task; you only know when you measure.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why should a program ask the API for its models instead of keeping a list?</li><li>Why is a response’s <code>content</code> a list of blocks rather than a string?</li><li>The same request costs $0.018 on Opus 5.5. What does it cost on Sonnet 5.5, and why exactly half?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>Strengths and limits</span></h2>
+
+<p>Claude reads quickly and widely: a long contract, a codebase, a spreadsheet, a screenshot. It writes clearly in many languages, Arabic and English included. It reasons through problems in steps, thinking before it answers when the task needs it. It writes and reviews code well enough that Part II is a whole part. And it uses tools: given a function to call, it decides when to call it and what to pass, which is how it searches, runs code and acts in your systems (Chapter 12).</p>
+
+<p>Its limits are the same in kind as every model of Book 7, and they decide how you design around it:</p>
+
+<ul>
+<li><strong>Its knowledge stops at a date.</strong> Ask about today’s news and the honest answer is the one below: it does not know. Recent facts must come from you, from a search tool, or from your documents.</li>
+<li><strong>The API remembers nothing.</strong> Each request is complete in itself: to continue a conversation, you send it all again. The apps keep history and memory for you; your programs must do it themselves (Chapter 11).</li>
+<li><strong>It can be wrong, fluently.</strong> Better models are wrong less often, not never. Everything Book 7 taught about checking applies here.</li>
+<li><strong>It may decline.</strong> Some requests are refused for safety, with <code>stop_reason</code> set to <code>refusal</code>. A program handles that like any other outcome (Chapter 16).</li>
+<li><strong>Its context is large but finite</strong>, and what you put in it costs money and attention: a million tokens is a capacity, not a target.</li>
+</ul>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node hello.mjs &quot;What happened in the news today?&quot;</span>
+I can&#x27;t know that: I have no access to the news, and my knowledge stops at my training cutoff. Give me the articles, or use a tool such as web search, and I can summarise them.
+--- stop: end_turn; tokens: 17 in, 51 out; cost: $0.001088</pre></div>
+
+<p>The practice server’s answer here was written to show the right behaviour: say what cannot be known, and say what would help. Check that the real model behaves like this for the questions your users ask; when it does not, that is what search tools and your own documents are for.</p>
+
+<h2><span class="sec">1.6</span> <span>Thinking and effort</span></h2>
+
+<p>Current Claude models think before they answer when a problem needs it, and decide for themselves how much: this is <dfn>adaptive thinking</dfn>. You control the depth with <dfn>effort</dfn>, from <code>low</code> to <code>max</code>, set in <code>output_config</code>. Low effort is faster and cheaper, for simple tasks and chat; high effort is for hard problems, where thinking longer pays off. On Claude Opus 5.5 the default is <code>medium</code>, and thinking cannot be turned off: effort is the only control. A first program discovers this, and two other rules, the way everyone does:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.mjs (part)</div><pre class="code"><span class="k">const</span> attempts = [
+  [<span class="s">&quot;a misspelled model&quot;</span>, {...ask, model: <span class="s">&quot;claude-opus-55&quot;</span>}],
+  [<span class="s">&quot;no max_tokens&quot;</span>, {model: <span class="s">&quot;claude-opus-5-5&quot;</span>, messages: ask.messages}],
+  [<span class="s">&quot;thinking turned off&quot;</span>, {...ask, model: <span class="s">&quot;claude-opus-5-5&quot;</span>, thinking: {<span class="k">type</span>: <span class="s">&quot;disabled&quot;</span>}}],
+];</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node errors.mjs</span>
+a misspelled model: 404 NotFoundError
+  model: claude-opus-55
+no max_tokens: 400 BadRequestError
+  max_tokens: Field required
+thinking turned off: 400 BadRequestError
+  thinking: type &quot;disabled&quot; is not supported for this model; use &quot;adaptive&quot; or omit it</pre></div>
+
+<p>Three different errors, each with a status and a message that names the problem. A model id with a typo is a 404, not found; a request without <code>max_tokens</code> is a 400, invalid; and asking Claude Opus 5.5 to stop thinking is a 400 too. Read the message before changing the code: the API almost always says which field is wrong.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Keep the model id, the effort and <code>max_tokens</code> in one place in your configuration, not scattered through the code. Models change every few months, and the team that can switch, measure and switch back in an afternoon will always use the best model for the price.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Hard-coding a list of models</td><td>Programs break or miss new models</td><td>Ask <code>GET /v1/models</code>; keep the id in configuration</td></tr>
+<tr><td>Reading <code>content[0].text</code></td><td>Crashes when the first block is not text</td><td>Check each block’s <code>type</code></td></tr>
+<tr><td>Ignoring <code>stop_reason</code></td><td>Cut-off answers treated as complete</td><td>Handle <code>max_tokens</code>, tool use and refusals</td></tr>
+<tr><td>Choosing a model by price alone</td><td>A cheap model that fails costs more</td><td>Measure quality, then compare cost</td></tr>
+<tr><td>An API key in the code</td><td>A key anyone can spend</td><td>Environment variables and a secret store</td></tr>
+<tr><td>Expecting the API to remember</td><td>A conversation that forgets everything</td><td>Send the history with every request</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>One family of models reaches you through the apps, Claude Code and the API; each door adds different things around the same models.</li>
+<li>Fable, Opus, Sonnet and Haiku trade capability for speed and price; ask the API which models exist and their limits.</li>
+<li>A response is a list of typed blocks, with a <code>stop_reason</code> and a <code>usage</code> that every program should read.</li>
+<li>Cost is tokens times price, with output dearer than input and cached input much cheaper; calculate it before you scale.</li>
+<li>Claude’s knowledge ends at a date, the API remembers nothing, and answers can be wrong or refused: design for all four.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the list changes with every release and differs between accounts and platforms; the API always knows what your key can use and each model’s limits. 2. Because a response can contain more than text: thinking, tool calls, and text split around citations; a list of typed blocks holds them all, in order. 3. $0.009, because both Sonnet prices ($2 in, $10 out) are exactly half of Opus’s ($4 and $20), so any mix of tokens costs half.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects are three small tools every team that uses the API ends up writing: a first choice of model, a budget, and error messages that say what to do.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>A first choice of model</h3>
+<p class="project-goal">Suggest a model from three questions about a task: is it hard, is it long-running, is it high-volume?</p>
+<p class="project-skills"><strong>You will practise:</strong> turning a rule of thumb into code you can argue with.</p>
+<ol class="steps">
+<li>Write the three questions as booleans.</li>
+<li>Map them to a model, from Haiku for volume to Fable for long, hard work.</li>
+<li>Print the suggestion for four tasks.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">choose.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> chooseModel({hard, longRunning, highVolume}) {
+  <span class="k">if</span> (highVolume &amp;&amp; !hard) <span class="k">return</span> <span class="s">&quot;claude-haiku-5-5&quot;</span>;
+  <span class="k">if</span> (hard &amp;&amp; longRunning) <span class="k">return</span> <span class="s">&quot;claude-fable-5-2&quot;</span>;
+  <span class="k">if</span> (hard) <span class="k">return</span> <span class="s">&quot;claude-opus-5-5&quot;</span>;
+  <span class="k">return</span> <span class="s">&quot;claude-sonnet-5-5&quot;</span>;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node choose.mjs</span>
+classify support tickets               claude-haiku-5-5
+answer customers in a chat             claude-sonnet-5-5
+refactor a large codebase              claude-opus-5-5
+plan a migration with many unknowns    claude-fable-5-2</pre></div>
+<p class="hint"><strong>Hint:</strong> this is a starting point, not a decision. The decision comes from measuring the suggested model and the one below it on real examples of the task, as Chapter 16 does.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.2 · Medium</p>
+<h3>A monthly budget</h3>
+<p class="project-goal">Estimate what a feature costs a month on three models, with and without caching.</p>
+<p class="project-skills"><strong>You will practise:</strong> cost as a design input, before the first line of the feature.</p>
+<ol class="steps">
+<li>Describe the feature: requests a day, tokens in and out.</li>
+<li>Price a month on each model with <code>cost</code>.</li>
+<li>Price it again with 80% of the input read from the cache.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">budget.mjs (part)</div><pre class="code"><span class="k">function</span> monthly({model, perDay, input, output, cachedShare = <span class="n">0</span>}) {
+  <span class="k">const</span> cached = Math.round(input * cachedShare);
+  <span class="k">const</span> usage = {input_tokens: input - cached, cache_read_input_tokens: cached, output_tokens: output};
+  <span class="k">return</span> cost(model, usage) * perDay * <span class="n">30</span>;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node budget.mjs</span>
+ticket summaries: 5,000 a day, 3,000 tokens in, 300 out
+  claude-opus-5-5    $ 2700.00 a month; with 80% cached $ 1332.00
+  claude-sonnet-5-5  $ 1350.00 a month; with 80% cached $  666.00
+  claude-haiku-5-5   $   67.50 a month; with 80% cached $   35.10</pre></div>
+<p class="hint"><strong>Hint:</strong> the range is wide: $35 to $2,700 for the same feature. Caching halves every model’s bill here, because most of the cost is the long input. Run this before the meeting where someone asks what the feature will cost.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 1.3 · Challenge</p>
+<h3>Errors that say what to do</h3>
+<p class="project-goal">Turn every kind of API error into one sentence that tells a developer what to fix.</p>
+<p class="project-skills"><strong>You will practise:</strong> the SDK’s typed errors, checked from the most specific to the most general.</p>
+<ol class="steps">
+<li>Write one sentence for each error class.</li>
+<li>Check <code>instanceof</code> from specific to general, and rethrow what you do not know.</li>
+<li>Provoke three errors: a wrong model, a wrong key, and no server.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">handle.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> advice(error) {
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.APIConnectionError) <span class="k">return</span> <span class="s">&quot;No connection: check the network and ANTHROPIC_BASE_URL.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.AuthenticationError) <span class="k">return</span> <span class="s">&quot;Check ANTHROPIC_API_KEY: missing, mistyped or revoked.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.NotFoundError) <span class="k">return</span> <span class="s">&quot;Check the model name against GET /v1/models.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.RateLimitError) <span class="k">return</span> <span class="s">&quot;Too many requests: wait as long as retry-after says, then retry.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.BadRequestError) <span class="k">return</span> <span class="s">&quot;Fix the request: read the message, it names the field.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.InternalServerError) <span class="k">return</span> <span class="s">&quot;A problem on the API&#x27;s side: retry with backoff.&quot;</span>;
+  <span class="k">throw</span> error;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node handle.mjs</span>
+NotFoundError        Check the model name against GET /v1/models.
+AuthenticationError  Check ANTHROPIC_API_KEY: missing, mistyped or revoked.
+APIConnectionError   No connection: check the network and ANTHROPIC_BASE_URL.</pre></div>
+<p class="hint"><strong>Hint:</strong> order matters because the classes form a hierarchy: <code>NotFoundError</code> and <code>RateLimitError</code> are both <code>APIError</code>s, so a broad check first would hide them. And never match on the message text: the classes and the <code>status</code> are the stable contract.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>hello.mjs</code> to print the model, the id of the message and the cost, and add a reply of your own to <code>practice.json</code> for a question of your own.</li>
+<li><span class="level">Easy</span> Set <code>max_tokens</code> to 10 and run <code>hello.mjs</code> again. What is the <code>stop_reason</code>, and what should a program do with that answer?</li>
+<li><span class="level medium">Medium</span> Add <code>output_config: {effort: "low"}</code> to the request. What changes in the response from the practice server, and what would you expect to change with the real API?</li>
+<li><span class="level medium">Medium</span> Extend <code>budget.mjs</code> with the Message Batches API, which costs half for requests that can wait up to a day. Which of your team’s features could use it?</li>
+<li><span class="level hard">Challenge</span> Write a program that asks the API for the models, then sends the same question to each one, and prints the answer, the tokens and the cost side by side. Run it against the practice server, and explain why the comparison would only mean something against the real API.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+<p>The next chapter opens the first door: conversations in the Claude apps, with files and images, and how to give Claude what it needs to answer well.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most problems have several good solutions. If yours handles normal and unusual cases, and you can explain your choices, it is a good answer. The full, tested code for every answer is in the book’s code repository.</p>
+
+<h2 class="plain-h">Chapter 1</h2>
+<ol class="exercises">
+<li>Print <code>response.model</code>, <code>response.id</code> and the cost from <code>cost(response.model, response.usage)</code>. A reply in <code>practice.json</code> is an object with a <code>when</code> (words the question must contain) and a <code>text</code>; put it before any reply that would also match, because the first match wins. The id is worth logging in real programs: it is what Anthropic’s support asks for when you report a problem.</li>
+<li>The <code>stop_reason</code> is <code>max_tokens</code>, and the text stops in the middle of a sentence. A program must not treat it as a complete answer: show it as cut off, ask again with a larger <code>max_tokens</code>, or ask for a shorter answer in the prompt. Silent truncation is one of the most common bugs in programs that call a model.</li>
+<li>Nothing changes with the practice server: it does not think, and it ignores effort. With the real API, low effort usually means less thinking, fewer tokens, a faster and cheaper answer, and for a simple question the same answer. The difference shows on hard questions, which is why effort is chosen per task and measured, not set once for everything.</li>
+<li>Add a <code>batch</code> option that halves the cost, and print a fourth column. Good candidates are work nobody waits for: nightly summaries of tickets, tagging a backlog, translating documentation, running an evaluation set. A chat with a customer is not one: the customer is waiting.</li>
+<li>List the models with <code>client.models.list()</code>, send the same request to each in turn, and print the text, <code>usage</code> and <code>cost</code> for each, catching errors so that one model that fails does not stop the others. Against the practice server, every model gives the same scripted answer and the token counts are approximations, so only the costs differ. The comparison means something only with real answers, and even then a single question is an anecdote: compare models on a set of questions with known good answers, as Book 7 did.</li>
+</ol>
+
+</section>
+</body></html>

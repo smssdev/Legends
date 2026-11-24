@@ -1,0 +1,62 @@
+<section class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+<p class="chapter-kicker">Before you begin</p>
+<h1>How to Use This Book</h1>
+
+<p class="lead">Claude is one family of AI models that reaches you through several doors: a chat app on the web, desktop and phone; Claude Code, an agent that works in your terminal and your repository; and an API that puts the same models inside your own programs. This book teaches all three the way a professional uses them: what each is good at, how to give it the right context, how to check its work, and what it costs. It is written for developers and teams, and it builds on Book 7, <em>AI for Developers</em>, whose habits (give the model what it needs, check what it gives you, measure before you believe) apply here to one family of tools in depth.</p>
+
+<h2>What you need</h2>
+<ul>
+<li>Node.js 22 and a code editor, as in the earlier books.</li>
+<li>For Part I, a Claude account; the free plan is enough for most of it, and the chapters say where a paid plan adds something.</li>
+<li>For Part II, Claude Code, installed as Chapter 6 shows, with a Claude subscription or an API key.</li>
+<li>For Part III, nothing more: every example runs against the book’s practice server, described below. A key from the Claude Console is needed only when you want real answers from Claude.</li>
+</ul>
+
+<h2>The practice server</h2>
+<p>Every program in this book calls Claude through the official SDK, <code>@anthropic-ai/sdk</code>, exactly as it would in production. To let you run all of them for free, offline and with no account, the book’s code repository includes a <dfn>practice server</dfn>: a small local program that speaks the API’s format (requests, responses, streaming events, tool calls, errors, token usage) and answers from a file in each chapter, <code>practice.json</code>.</p>
+
+<aside class="box warn"><p class="box-title">Read this before any example</p><p>The practice server is not Claude. Its answers were written for this book, to show what each part of a response looks like and how a program should handle it. When a transcript in this book shows an answer, it is the practice server’s, and the chapter says so. The errors, the field names, the streaming events and the code are real; the words of the answers are not Claude’s, and the token counts are an approximation (about four characters per token). To see what Claude really answers, run the same code against the real API with your own key: Claude’s words will differ, and you should check them the way Book 7 taught.</p></aside>
+
+<p>Switching between the two is a matter of two environment variables, which the SDK reads by itself:</p>
+<pre class="plain" dir="ltr">node practice/server.mjs &amp;                       # the practice server, on port 4141
+export ANTHROPIC_BASE_URL=http://127.0.0.1:4141    # talk to it
+export ANTHROPIC_API_KEY=test-key                  # its only key
+
+unset ANTHROPIC_BASE_URL                           # the real API instead
+export ANTHROPIC_API_KEY=sk-ant-...                # your own key, never in code</pre>
+
+<h2>How the book is organised</h2>
+<p>The seventeen chapters are grouped in three parts, one for each door. They can be read in any order, but the parts build on each other: the habits of Part I are assumed in Part II, and Part III assumes you have read Chapter 1.</p>
+<ul>
+<li><strong>Claude.ai</strong>: the models and their limits, conversations with files and images, projects that keep a team’s knowledge, artifacts, and research with connectors and tools.</li>
+<li><strong>Claude Code</strong>: the agent in your terminal, working on a real codebase, instructions in <code>CLAUDE.md</code>, skills and hooks, the path from issue to pull request, and Claude Code for teams and continuous integration.</li>
+<li><strong>Building with Claude</strong>: the API, tool use and structured output, MCP for connecting Claude to your systems, agents, cost and speed, safety and evaluation, and a capstone product.</li>
+</ul>
+
+<h2>Every chapter</h2>
+<p>Each chapter follows the pattern of the series: what you will learn; explanations built on real examples; a quick check; boxes with tips, traps and professional habits; common mistakes; a summary; three practice projects (easy, medium and challenge); and exercises with answers at the end of the book.</p>
+
+<h2>Versions and dates</h2>
+<p>Claude changes faster than any book: new models, new features, new prices. Everything in this book was checked in November 2026 against these versions:</p>
+<table>
+<thead><tr><th>Tool</th><th>Version</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>@anthropic-ai/sdk</td><td>1.8.0 (API version 2026-10-21)</td></tr>
+<tr><td>Models</td><td>Claude Fable 5.2, Opus 5.5, Sonnet 5.5 and Haiku 5.5</td></tr>
+</tbody>
+</table>
+<p>When a model name, a price or a limit in this book disagrees with Anthropic’s documentation, the documentation is right. Chapter 1 shows how to ask the API itself which models exist and what their limits are, so your programs never depend on a number printed here.</p>
+
+<h2>Reading the examples</h2>
+<ul>
+<li>A dark tab above a listing gives the file’s path in the project.</li>
+<li>A box with three coloured dots is a terminal: a line starting with <code>$</code> is a command, the lines below are its answer.</li>
+<li>Every example, project and exercise answer is in the book’s code repository, with the practice server, each chapter’s <code>practice.json</code>, and the script that produced each transcript.</li>
+</ul>
+
+<h2>A word from the author</h2>
+<p>A tool this capable rewards the people who learn it properly and punishes the people who trust it blindly. Bit, the purple robot, meets Claude in these pages as a colleague: fast, well read, tireless, and still a colleague whose work you review. Learn its strengths, learn its limits, and keep your own judgement in charge.</p>
+
+<p><strong>Soliman Maged Saeed Salah</strong></p>
+</section>

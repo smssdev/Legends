@@ -1,0 +1,457 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>احتراف Claude</title><link rel="stylesheet" href="../style/book.css"><link rel="stylesheet" href="../style/print-bw.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.875in 0.8in 0.625in;
+  @top-center { content: "احتراف Claude"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #555; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #111;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.875in; margin-right: 0.625in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: تعرّف على Claude: النماذج ونقاط القوة والحدود"; } }
+@page ch01:first { @top-center { content: none; } }
+@page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
+</style></head>
+<body><section class="front half-title"><p class="ht">احتراف Claude</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الثامن</p>
+          <h1 class="tp-title">احتراف Claude</h1>
+          <p class="tp-sub">Claude.ai وClaude Code والواجهة البرمجية والوكلاء، للمطورين والفرق</p>
+          <p class="tp-level">كل المستويات</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>احتراف Claude</strong><br>Claude.ai وClaude Code والواجهة البرمجية والوكلاء، للمطورين والفرق</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
+          <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">24</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Claude عائلة واحدة من نماذج الذكاء الاصطناعي تصلك من عدة أبواب: تطبيق محادثة على الويب والحاسوب والجوال؛ وClaude Code، وكيل يعمل في طرفيتك ومستودعك؛ وواجهة برمجية تضع النماذج نفسها داخل برامجك. وهذا الكتاب يعلّم الثلاثة كما يستخدمها المحترف: فيمَ يُحسن كل منها، وكيف تعطيه السياق الصحيح، وكيف تفحص عمله، وكم يكلّف. وهو مكتوب للمطورين والفرق، ويبني على الكتاب السابع، <em>الذكاء الاصطناعي للمطورين</em>، الذي تنطبق عاداته (أعطِ النموذج ما يحتاجه، وافحص ما يعطيك، وقِس قبل أن تصدّق) هنا على عائلة واحدة من الأدوات بعمق.</p>
+
+<h2 class="plain-h">ما تحتاجه</h2>
+<ul>
+<li>Node.js 22 ومحرر كود، كما في الكتب السابقة.</li>
+<li>للجزء الأول، حساب Claude؛ والخطة المجانية تكفي لمعظمه، والفصول تقول أين تضيف الخطة المدفوعة شيئاً.</li>
+<li>للجزء الثاني، Claude Code، مثبّتاً كما يبيّن الفصل 6، باشتراك Claude أو مفتاح API.</li>
+<li>للجزء الثالث، لا شيء أكثر: كل مثال يعمل على خادم التدريب الخاص بالكتاب، الموصوف أدناه. ولا تحتاج مفتاحاً من Claude Console إلا حين تريد أجوبة حقيقية من Claude.</li>
+</ul>
+
+<h2 class="plain-h">خادم التدريب</h2>
+<p>كل برنامج في هذا الكتاب يستدعي Claude عبر الحزمة الرسمية، <code>@anthropic-ai/sdk</code>، تماماً كما في بيئة الإنتاج. ولتشغيلها كلها مجاناً، ودون اتصال، وبلا حساب، يضم مستودع كود الكتاب <dfn>خادم تدريب</dfn>: برنامجاً محلياً صغيراً يتكلم بصيغة الواجهة البرمجية (الطلبات، والردود، وأحداث البث، واستدعاءات الأدوات، والأخطاء، واستهلاك الـ tokens) ويجيب من ملف في كل فصل، <code>practice.json</code>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>اقرأ هذا قبل أي مثال</p><p>خادم التدريب ليس Claude. أجوبته كُتبت لهذا الكتاب، لتُريك شكل كل جزء من الرد وكيف يتعامل معه البرنامج. وحين تعرض جلسة طرفية في هذا الكتاب جواباً، فهو جواب خادم التدريب، والفصل يقول ذلك. أما الأخطاء، وأسماء الحقول، وأحداث البث، والكود فحقيقية؛ وكلمات الأجوبة ليست كلمات Claude، وعدد الـ tokens تقريبي (نحو أربعة أحرف لكل token). ولترى ما يجيب به Claude حقاً، شغّل الكود نفسه على الواجهة البرمجية الحقيقية بمفتاحك: ستختلف كلمات Claude، وعليك فحصها كما علّمك الكتاب السابع.</p></aside>
+
+<p>والتبديل بين الاثنين متغيرا بيئة، تقرؤهما الحزمة وحدها:</p>
+<pre class="plain" dir="ltr">node practice/server.mjs &amp;                       # the practice server, on port 4141
+export ANTHROPIC_BASE_URL=http://127.0.0.1:4141    # talk to it
+export ANTHROPIC_API_KEY=test-key                  # its only key
+
+unset ANTHROPIC_BASE_URL                           # the real API instead
+export ANTHROPIC_API_KEY=sk-ant-...                # your own key, never in code</pre>
+
+<h2 class="plain-h">كيف نُظّم الكتاب</h2>
+<p>الفصول السبعة عشر في ثلاثة أجزاء، جزء لكل باب. ويمكن قراءتها بأي ترتيب، لكن الأجزاء يبني بعضها على بعض: عادات الجزء الأول مفترضة في الجزء الثاني، والجزء الثالث يفترض أنك قرأت الفصل 1.</p>
+<ul>
+<li><strong>Claude.ai</strong>: النماذج وحدودها، والمحادثات بالملفات والصور، والمشاريع التي تحفظ معرفة الفريق، والـ artifacts، والبحث بالموصّلات والأدوات.</li>
+<li><strong>Claude Code</strong>: الوكيل في طرفيتك، والعمل على قاعدة كود حقيقية، والتعليمات في <code>CLAUDE.md</code>، والمهارات والـ hooks، والطريق من المهمة إلى طلب الدمج، وClaude Code للفرق والتكامل المستمر.</li>
+<li><strong>البناء بـ Claude</strong>: الواجهة البرمجية، واستخدام الأدوات والمخرجات المنظَّمة، وMCP لوصل Claude بأنظمتك، والوكلاء، والتكلفة والسرعة، والأمان والتقييم، ومنتج ختامي.</li>
+</ul>
+
+<h2 class="plain-h">كل فصل</h2>
+<p>يتبع كل فصل نمط السلسلة: ما ستتعلمه؛ وشروح مبنية على أمثلة حقيقية؛ واختبر نفسك؛ وصناديق بنصائح وفخاخ وعادات المحترفين؛ وأخطاء شائعة؛ وملخص؛ وثلاثة مشاريع للتدريب (سهل ومتوسط وتحدٍّ)؛ وتمارين حلولها في آخر الكتاب.</p>
+
+<h2 class="plain-h">الإصدارات والتواريخ</h2>
+<p>يتغير Claude أسرع من أي كتاب: نماذج جديدة، وميزات جديدة، وأسعار جديدة. وكل ما في هذا الكتاب فُحص في نوفمبر 2026 على هذه الإصدارات:</p>
+<table>
+<thead><tr><th>الأداة</th><th>الإصدار</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>22.23</td></tr>
+<tr><td>@anthropic-ai/sdk</td><td>1.8.0 (إصدار الواجهة 2026-10-21)</td></tr>
+<tr><td>النماذج</td><td>Claude Fable 5.2 وOpus 5.5 وSonnet 5.5 وHaiku 5.5</td></tr>
+</tbody>
+</table>
+<p>وحين يختلف اسم نموذج أو سعر أو حد في هذا الكتاب عن توثيق Anthropic، فالتوثيق هو الصحيح. ويبيّن الفصل 1 كيف تسأل الواجهة البرمجية نفسها عن النماذج الموجودة وحدودها، فلا تعتمد برامجك أبداً على رقم مطبوع هنا.</p>
+
+<h2 class="plain-h">قراءة الأمثلة</h2>
+<ul>
+<li>اللسان الداكن فوق المثال يعطي مسار الملف في المشروع.</li>
+<li>الصندوق ذو النقاط الملونة الثلاث طرفية: السطر الذي يبدأ بـ <code>$</code> أمر، والسطور تحته جوابه.</li>
+<li>كل مثال ومشروع وحل تمرين في مستودع كود الكتاب، مع خادم التدريب، و<code>practice.json</code> لكل فصل، والسكربت الذي أنتج كل جلسة طرفية.</li>
+</ul>
+
+<h2 class="plain-h">كلمة من المؤلف</h2>
+<p>أداة بهذه القدرة تكافئ من يتعلمها كما يجب، وتعاقب من يثق بها بلا فحص. وBit، الروبوت البنفسجي، يلتقي Claude في هذه الصفحات كزميل: سريع، واسع الاطلاع، لا يتعب، ويبقى زميلاً تراجع عمله. تعلّم نقاط قوته، وتعلّم حدوده، وأبقِ حكمك أنت هو صاحب القرار.</p>
+
+<p><strong>سليمان ماجد سعيد صلاح</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b8/meet/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>تعرّف على Claude: النماذج ونقاط القوة والحدود</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تميّز الطرق التي يصلك بها Claude: التطبيقات، وClaude Code، والواجهة البرمجية</li>
+<li>تختار بين نماذج Claude حسب المهمة والسرعة والسعر</li>
+<li>ترسل رسالة أولى من الكود وتقرأ كل ما يعود معها</li>
+<li>تحسب كم يكلّف الطلب قبل أن ترسل ألفاً منه</li>
+<li>تسمّي حدود Claude، وتتعرّف على الأخطاء التي يلقاها البرنامج الأول</li>
+</ul>
+</div>
+
+<p class="lead">Claude عائلة من نماذج الذكاء الاصطناعي صنعتها Anthropic. والنماذج نفسها تجيبك في تطبيق المحادثة، وتعدّل مستودعك عبر Claude Code، وتعمل داخل برامجك عبر الواجهة البرمجية. وهذا الفصل يعرّفك بالعائلة: أي النماذج موجودة وبمَ تختلف، وكيف يبدو الطلب والرد، وكم يكلّفان، وما لا يستطيعه Claude مهما أحسنت السؤال. وكل ما بعد هذا الفصل يبني عليه.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل جواب من «Claude» في هذا الفصل يأتي من خادم التدريب الخاص بالكتاب، لا من Claude: والمقدمة تشرح السبب. أما الأسعار والحدود والأخطاء والكود فحقيقية، والحساب في هذا الفصل دقيق.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>عائلة واحدة، وثلاثة أبواب</span></h2>
+
+<table>
+<thead><tr><th>الباب</th><th>ما هو</th><th>الأنسب له</th><th>الجزء</th></tr></thead>
+<tbody>
+<tr><td>تطبيقات Claude</td><td>محادثة على الويب (claude.ai) والحاسوب والجوال، بالملفات والمشاريع والـ artifacts والبحث والموصّلات</td><td>التفكير والكتابة والتحليل والمهام المنفردة، وحدك أو مع فريق</td><td>الأول</td></tr>
+<tr><td>Claude Code</td><td>وكيل يقرأ الكود ويعدّله ويشغّله في طرفيتك أو محررك أو السحابة</td><td>العمل داخل مستودع: ميزات، وإصلاحات، وإعادة هيكلة، ومراجعات</td><td>الثاني</td></tr>
+<tr><td>واجهة Claude البرمجية</td><td>واجهة HTTP وحزم رسمية، متاحة أيضاً عبر Amazon Bedrock وGoogle Cloud وMicrosoft Foundry</td><td>وضع Claude داخل منتجك</td><td>الثالث</td></tr>
+</tbody>
+</table>
+
+<p>الأبواب تتشارك النماذج لا الإعداد حولها. فالتطبيقات تضيف أمر نظام وأدوات وميزات ذاكرة تديرها Anthropic؛ وClaude Code يضيف أدوات للملفات والأوامر، وصلاحيات؛ والواجهة البرمجية لا تضيف شيئاً: تحصل على النموذج، وكل تعليمة وأداة وفحص عليك أنت كتابته. ولهذا قد يأخذ السؤال نفسه جواباً مختلفاً في كل مكان، ولهذا يقضي الجزء الثالث وقتاً طويلاً فيما تفعله التطبيقات عنك.</p>
+
+<h2><span class="sec">1.2</span> <span>النماذج</span></h2>
+
+<p>تأتي نماذج Claude في فئات، سُمّيت بحسب الحجم والسرعة، ولكل فئة إصدارات جديدة. وفي نوفمبر 2026 الحالية منها:</p>
+
+<table>
+<thead><tr><th>النموذج</th><th>المعرّف</th><th>استخدمه لـ</th><th>المدخلات / المخرجات، دولار لكل مليون token</th></tr></thead>
+<tbody>
+<tr><td>Claude Fable 5.2</td><td><code>claude-fable-5-2</code></td><td>أصعب الاستدلال وعمل الوكلاء الطويل</td><td>8 / 40</td></tr>
+<tr><td>Claude Opus 5.5</td><td><code>claude-opus-5-5</code></td><td>البرمجة المعقدة والعمل المعرفي؛ الخيار الافتراضي</td><td>4 / 20</td></tr>
+<tr><td>Claude Sonnet 5.5</td><td><code>claude-sonnet-5-5</code></td><td>البرمجة اليومية والوكلاء والمحادثة، أسرع وأرخص</td><td>2 / 10</td></tr>
+<tr><td>Claude Haiku 5.5</td><td><code>claude-haiku-5-5</code></td><td>الحجم الكبير والاستجابة السريعة: التصنيف والتوجيه والاستخراج</td><td>0.10 / 0.50</td></tr>
+</tbody>
+</table>
+
+<p>الأربعة تقرأ حتى مليون token من المدخلات وتكتب حتى 128,000. والمعرّفات كاملة كما هي: بلا تواريخ ولا لواحق. ولا يجب أن يعتمد البرنامج على هذا الجدول، لأن القائمة تتغير؛ بل يسأل الواجهة البرمجية، التي تقول أي النماذج يستطيع حسابك استخدامها، وما حدودها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">models.mjs (جزء)</div><pre class="code"><span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> model <span class="k">of</span> client.models.list()) {
+  <span class="k">const</span> input = (model.max_input_tokens / <span class="n">1000</span>).toLocaleString(<span class="s">&quot;en-US&quot;</span>);
+  console.log(<span class="s">`${model.id.padEnd(18)} ${model.display_name.padEnd(18)} input ${input}K, output ${model.max_tokens / 1000}K`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node models.mjs</span>
+claude-fable-5-2   Claude Fable 5.2   input 1,000K, output 128K
+claude-opus-5-5    Claude Opus 5.5    input 1,000K, output 128K
+claude-sonnet-5-5  Claude Sonnet 5.5  input 1,000K, output 128K
+claude-haiku-5-5   Claude Haiku 5.5   input 1,000K, output 128K
+claude-opus-4-8    Claude Opus 4.8    input 1,000K, output 128K
+claude-haiku-4-5   Claude Haiku 4.5   input 200K, output 64K</pre></div>
+
+<p>يعرف خادم التدريب ستة نماذج، الأربعة أعلاه واثنين أقدم ما زالا يعملان. والواجهة الحقيقية تسرد أكثر، ومنها إصدارات سابقة محفوظة للبرامج التي تعتمد عليها.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>الـ <dfn>token</dfn> هو الوحدة التي تقرؤها النماذج وتكتبها: كلمة قصيرة، أو جزء من كلمة أطول، أو علامة ترقيم. وفي الإنجليزية الـ token نحو أربعة أحرف في المتوسط؛ والعربية والكود يأخذان عادة tokens أكثر للطول نفسه. والأسعار والحدود تُعدّ بالـ tokens، والواجهة البرمجية تعدّها لك بدقة (الفصل 15).</p></aside>
+
+<h2><span class="sec">1.3</span> <span>رسالة أولى</span></h2>
+
+<p>ثبّت الحزمة في مشروع جديد، وشغّل خادم التدريب من مستودع الكتاب، ووجّه الحزمة إليه بالمتغيرين من المقدمة:</p>
+
+<pre class="plain" dir="ltr">npm install @anthropic-ai/sdk@1.8.0
+node practice/server.mjs &amp;
+export ANTHROPIC_BASE_URL=http://127.0.0.1:4141 ANTHROPIC_API_KEY=test-key</pre>
+
+<p>ثم برنامج من بضعة أسطر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello.mjs (جزء)</div><pre class="code"><span class="k">const</span> question = process.argv[<span class="n">2</span>] ?? <span class="s">&quot;عرّف بنفسك في ثلاث جمل.&quot;</span>;
+<span class="k">const</span> response = <span class="k">await</span> client.messages.create({
+  model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+  max_tokens: <span class="n">1000</span>,
+  messages: [{role: <span class="s">&quot;user&quot;</span>, content: question}],
+});
+<span class="k">for</span> (<span class="k">const</span> block <span class="k">of</span> response.content) {
+  <span class="k">if</span> (block.<span class="k">type</span> === <span class="s">&quot;text&quot;</span>) console.log(block.text);
+}
+<span class="k">const</span> {input_tokens, output_tokens} = response.usage;
+<span class="k">const</span> dollars = cost(response.model, response.usage).toFixed(<span class="n">6</span>);
+console.log(<span class="s">`--- stop: ${response.stop_reason}; `</span> +
+  <span class="s">`tokens: ${input_tokens} in, ${output_tokens} out; cost: $${dollars}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node hello.mjs</span>
+أنا Claude، نموذج ذكاء اصطناعي من Anthropic. أستطيع قراءة النصوص والكود وكتابتها، والنظر في الصور والمستندات، واستخدام الأدوات التي تعطيني إياها. ولا أتذكر المحادثات السابقة ما لم ترسلها مرة أخرى، وقد أخطئ، فافحص ما يهم.
+--- stop: end_turn; tokens: 15 in, 62 out; cost: $0.001300</pre></div>
+
+<p>الجواب جواب خادم التدريب، كُتب ليبدو كـ Claude يعرّف بنفسه؛ وكلمات Claude نفسه ستختلف. والمهم هو الشكل، وهو شكل الواجهة البرمجية. فالطلب يسمّي النموذج <code>model</code>، والحد <code>max_tokens</code> الذي قد يستخدمه الجواب، والرسائل <code>messages</code> حتى الآن، بدءاً برسالة المستخدم. ومحتوى الرد <code>content</code> قائمة كتل، لا نص: هنا كتلة نص واحدة، لكن الفصول التالية تلقى كتل تفكير، واستدعاءات أدوات، واستشهادات، فينظر الكود دائماً إلى نوع كل كتلة <code>type</code>. و<code>stop_reason</code> يقول لماذا انتهى الجواب: <code>end_turn</code> يعني أن Claude أنهى، و<code>max_tokens</code> يعني أنه قُطع، والقيم الأخرى (استدعاء أداة، أو رفض) تعني أن على البرنامج عملاً. و<code>usage</code> يعدّ الـ tokens، ومنه يحسب البرنامج التكلفة.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>لا تكتب مفتاح API في الكود أبداً، ولا تحفظه في مستودع. فالحزمة تقرأ <code>ANTHROPIC_API_KEY</code> من البيئة، فيعمل الكود أعلاه مع خادم التدريب ومع الواجهة الحقيقية دون تغيير. والمفتاح في مستودع مفتاح يستطيع أي أحد الإنفاق منه.</p></aside>
+
+<h2><span class="sec">1.4</span> <span>كم يكلّف</span></h2>
+
+<p>كل طلب يُسعّر بالـ tokens: المدخلات بسعر، والمخرجات بسعر أعلى (خمسة أضعاف في كل نموذج حالي)، وسعران آخران للتخزين المؤقت للأوامر، الذي يغطيه الفصل 15. والحساب قصير بما يكفي ليبقى بجانب كودك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/prices.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> cost(model, usage) {
+  <span class="k">const</span> p = PRICES[model];
+  <span class="k">const</span> written = usage.cache_creation_input_tokens ?? <span class="n">0</span>;
+  <span class="k">const</span> read = usage.cache_read_input_tokens ?? <span class="n">0</span>;
+  <span class="k">const</span> dollars = usage.input_tokens * p.input + usage.output_tokens * p.output +
+    written * p.input * <span class="n">1.25</span> + read * p.cacheRead;
+  <span class="k">return</span> dollars / 1_000_000;
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node prices.mjs</span>
+claude-fable-5-2   $0.03600 each, $36.00 per thousand
+claude-opus-5-5    $0.01800 each, $18.00 per thousand
+claude-sonnet-5-5  $0.00900 each, $9.00 per thousand
+claude-haiku-5-5   $0.00045 each, $0.45 per thousand
+claude-opus-5-5, cached prompt: $0.01116 each</pre></div>
+
+<p>الطلب نفسه، 2,000 token داخلة و500 خارجة، يكلّف ثمانين ضعفاً على أقدر نموذج مقارنة بأسرعها. وألف منه تكلّف 36 دولاراً على Claude Fable 5.2، و45 سنتاً على Claude Haiku 5.5. وتخزين معظم الأمر مؤقتاً، كما في السطر الأخير، يخفض طلب Opus بأكثر من الثلث، لأن المدخلات المقروءة من الذاكرة المؤقتة تكلّف جزءاً من عشرين من سعرها المعتاد على Claude Opus 5.5. ولا يقول أي من الرقمين أي نموذج تستخدم: فالنموذج الرخيص الذي يخطئ في المهمة يكلّف أكثر من الغالي الذي يصيب، ولهذا يقيس الفصل 16 قبل أن يختار.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>ابدأ بـ Claude Opus 5.5، الافتراضي، حتى تعمل الميزة ويكون لديك ما تقيسها به؛ ثم جرّب النماذج الأصغر على القياس نفسه. والنزول إلى Sonnet أو Haiku ممكن غالباً لمهمة محددة جيداً؛ ولا تعرف إلا حين تقيس.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يسأل البرنامج الواجهة البرمجية عن نماذجها بدل أن يحفظ قائمة؟</li><li>لماذا محتوى الرد <code>content</code> قائمة كتل لا نص؟</li><li>الطلب نفسه يكلّف 0.018 دولار على Opus 5.5. كم يكلّف على Sonnet 5.5، ولماذا النصف بالضبط؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>نقاط القوة والحدود</span></h2>
+
+<p>يقرأ Claude بسرعة واتساع: عقداً طويلاً، أو قاعدة كود، أو جدولاً، أو لقطة شاشة. ويكتب بوضوح بلغات كثيرة، منها العربية والإنجليزية. ويستدل على المشكلات خطوة خطوة، ويفكّر قبل أن يجيب حين تحتاج المهمة ذلك. ويكتب الكود ويراجعه بما يكفي لأن يكون الجزء الثاني جزءاً كاملاً. ويستخدم الأدوات: إن أُعطي دالة يستدعيها، قرر متى يستدعيها وماذا يمرر لها، وهكذا يبحث ويشغّل الكود ويتصرف في أنظمتك (الفصل 12).</p>
+
+<p>وحدوده من نوع حدود كل نموذج في الكتاب السابع، وهي تقرر كيف تصمّم حوله:</p>
+
+<ul>
+<li><strong>معرفته تتوقف عند تاريخ.</strong> اسأله عن أخبار اليوم، فالجواب الأمين هو الذي أدناه: لا يعرف. والحقائق الحديثة يجب أن تأتي منك، أو من أداة بحث، أو من مستنداتك.</li>
+<li><strong>الواجهة البرمجية لا تتذكر شيئاً.</strong> كل طلب كامل بذاته: لتكمل محادثة، ترسلها كلها مرة أخرى. والتطبيقات تحفظ السجل والذاكرة عنك؛ وبرامجك يجب أن تفعل ذلك بنفسها (الفصل 11).</li>
+<li><strong>قد يخطئ، بطلاقة.</strong> النماذج الأفضل تخطئ أقل، لا أبداً. وكل ما علّمه الكتاب السابع عن الفحص ينطبق هنا.</li>
+<li><strong>قد يرفض.</strong> بعض الطلبات تُرفض لأسباب تتعلق بالسلامة، فيكون <code>stop_reason</code> هو <code>refusal</code>. والبرنامج يتعامل معه كأي نتيجة أخرى (الفصل 16).</li>
+<li><strong>سياقه كبير لكنه محدود</strong>، وما تضعه فيه يكلّف مالاً وانتباهاً: مليون token سعة، لا هدف.</li>
+</ul>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node hello.mjs &quot;ما أخبار اليوم؟&quot;</span>
+لا أستطيع معرفة ذلك: ليس لدي وصول إلى الأخبار، ومعرفتي تتوقف عند تاريخ انتهاء تدريبي. أعطني المقالات، أو استخدم أداة مثل البحث في الويب، وأستطيع تلخيصها.
+--- stop: end_turn; tokens: 13 in, 45 out; cost: $0.000952</pre></div>
+
+<p>جواب خادم التدريب هنا كُتب ليُري السلوك الصحيح: أن يقول ما لا يمكن معرفته، وما الذي يساعد. وافحص أن النموذج الحقيقي يتصرف هكذا في الأسئلة التي يسألها مستخدموك؛ وحين لا يفعل، فلهذا وُجدت أدوات البحث ومستنداتك.</p>
+
+<h2><span class="sec">1.6</span> <span>التفكير والجهد</span></h2>
+
+<p>نماذج Claude الحالية تفكّر قبل أن تجيب حين تحتاج المشكلة ذلك، وتقرر بنفسها كم: هذا <dfn>التفكير التكيّفي</dfn> (adaptive thinking). وأنت تتحكم في العمق بـ <dfn>الجهد</dfn> (effort)، من <code>low</code> إلى <code>max</code>، في <code>output_config</code>. فالجهد المنخفض أسرع وأرخص، للمهام البسيطة والمحادثة؛ والعالي للمشكلات الصعبة، حيث يؤتي التفكير الأطول ثمره. وعلى Claude Opus 5.5 الافتراضي <code>medium</code>، ولا يمكن إيقاف التفكير: الجهد هو التحكم الوحيد. والبرنامج الأول يكتشف هذا، وقاعدتين أخريين، كما يكتشفها الجميع:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.mjs (جزء)</div><pre class="code"><span class="k">const</span> attempts = [
+  [<span class="s">&quot;اسم نموذج فيه خطأ&quot;</span>, {...ask, model: <span class="s">&quot;claude-opus-55&quot;</span>}],
+  [<span class="s">&quot;بلا max_tokens&quot;</span>, {model: <span class="s">&quot;claude-opus-5-5&quot;</span>, messages: ask.messages}],
+  [<span class="s">&quot;إيقاف التفكير&quot;</span>, {...ask, model: <span class="s">&quot;claude-opus-5-5&quot;</span>, thinking: {<span class="k">type</span>: <span class="s">&quot;disabled&quot;</span>}}],
+];</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node errors.mjs</span>
+اسم نموذج فيه خطأ: 404 NotFoundError
+  model: claude-opus-55
+بلا max_tokens: 400 BadRequestError
+  max_tokens: Field required
+إيقاف التفكير: 400 BadRequestError
+  thinking: type &quot;disabled&quot; is not supported for this model; use &quot;adaptive&quot; or omit it</pre></div>
+
+<p>ثلاثة أخطاء مختلفة، لكل منها حالة ورسالة تسمّي المشكلة. فمعرّف نموذج فيه خطأ مطبعي 404، غير موجود؛ والطلب بلا <code>max_tokens</code> 400، غير صالح؛ وطلب إيقاف تفكير Claude Opus 5.5 400 أيضاً. اقرأ الرسالة قبل أن تغيّر الكود: فالواجهة البرمجية تقول دائماً تقريباً أي حقل خاطئ.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>أبقِ معرّف النموذج والجهد و<code>max_tokens</code> في مكان واحد من إعداداتك، لا مبعثرة في الكود. فالنماذج تتغير كل بضعة أشهر، والفريق الذي يستطيع أن يبدّل ويقيس ويعود في عصر يوم سيستخدم دائماً أفضل نموذج بالسعر.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>كتابة قائمة نماذج ثابتة في الكود</td><td>برامج تنكسر أو تفوتها النماذج الجديدة</td><td>اسأل <code>GET /v1/models</code>؛ وأبقِ المعرّف في الإعدادات</td></tr>
+<tr><td>قراءة <code dir="ltr">content[0].text</code></td><td>انهيار حين لا تكون الكتلة الأولى نصاً</td><td>افحص نوع كل كتلة</td></tr>
+<tr><td>تجاهل <code>stop_reason</code></td><td>أجوبة مقطوعة تُعامل كأنها كاملة</td><td>تعامل مع <code>max_tokens</code> واستخدام الأدوات والرفض</td></tr>
+<tr><td>اختيار النموذج بالسعر وحده</td><td>نموذج رخيص يخفق يكلّف أكثر</td><td>قِس الجودة، ثم قارن التكلفة</td></tr>
+<tr><td>مفتاح API في الكود</td><td>مفتاح يستطيع أي أحد الإنفاق منه</td><td>متغيرات البيئة ومخزن للأسرار</td></tr>
+<tr><td>توقّع أن تتذكر الواجهة البرمجية</td><td>محادثة تنسى كل شيء</td><td>أرسل السجل مع كل طلب</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>عائلة واحدة من النماذج تصلك عبر التطبيقات وClaude Code والواجهة البرمجية؛ وكل باب يضيف أشياء مختلفة حول النماذج نفسها.</li>
+<li>Fable وOpus وSonnet وHaiku تبادل القدرة بالسرعة والسعر؛ واسأل الواجهة البرمجية عن النماذج الموجودة وحدودها.</li>
+<li>الرد قائمة كتل بأنواعها، مع <code>stop_reason</code> و<code>usage</code> يجب أن يقرأهما كل برنامج.</li>
+<li>التكلفة tokens مضروبة في السعر، والمخرجات أغلى من المدخلات والمدخلات المخزنة أرخص بكثير؛ احسبها قبل أن تتوسع.</li>
+<li>معرفة Claude تنتهي عند تاريخ، والواجهة البرمجية لا تتذكر شيئاً، والأجوبة قد تخطئ أو تُرفض: صمّم للأربعة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن القائمة تتغير مع كل إصدار وتختلف بين الحسابات والمنصات؛ والواجهة البرمجية تعرف دائماً ما يستطيع مفتاحك استخدامه وحدود كل نموذج. 2. لأن الرد قد يحوي أكثر من نص: تفكيراً، واستدعاءات أدوات، ونصاً مقسّماً حول الاستشهادات؛ وقائمة الكتل بأنواعها تحفظها كلها، بترتيبها. 3. 0.009 دولار، لأن سعري Sonnet (2 للمدخلات و10 للمخرجات) نصف سعري Opus (4 و20) بالضبط، فأي مزيج من الـ tokens يكلّف النصف.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">المشاريع ثلاث أدوات صغيرة ينتهي كل فريق يستخدم الواجهة البرمجية إلى كتابتها: اختيار أول للنموذج، وميزانية، ورسائل أخطاء تقول ماذا تفعل.</p>
+
+<div class="project">
+<p class="project-label">المشروع 1.1 · سهل</p>
+<h3>اختيار أول للنموذج</h3>
+<p class="project-goal">اقترح نموذجاً من ثلاثة أسئلة عن المهمة: هل هي صعبة، وهل هي طويلة، وهل حجمها كبير؟</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تحويل قاعدة عملية إلى كود يمكن مناقشته.</p>
+<ol class="steps">
+<li>اكتب الأسئلة الثلاثة كقيم منطقية.</li>
+<li>اربطها بنموذج، من Haiku للحجم إلى Fable للعمل الطويل الصعب.</li>
+<li>اطبع الاقتراح لأربع مهام.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">choose.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> chooseModel({hard, longRunning, highVolume}) {
+  <span class="k">if</span> (highVolume &amp;&amp; !hard) <span class="k">return</span> <span class="s">&quot;claude-haiku-5-5&quot;</span>;
+  <span class="k">if</span> (hard &amp;&amp; longRunning) <span class="k">return</span> <span class="s">&quot;claude-fable-5-2&quot;</span>;
+  <span class="k">if</span> (hard) <span class="k">return</span> <span class="s">&quot;claude-opus-5-5&quot;</span>;
+  <span class="k">return</span> <span class="s">&quot;claude-sonnet-5-5&quot;</span>;
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node choose.mjs</span>
+تصنيف تذاكر الدعم                      claude-haiku-5-5
+الرد على العملاء في محادثة             claude-sonnet-5-5
+إعادة هيكلة قاعدة كود كبيرة            claude-opus-5-5
+تخطيط ترحيل فيه مجاهيل كثيرة           claude-fable-5-2</pre></div>
+<p class="hint"><strong>تلميح:</strong> هذه نقطة بداية، لا قرار. والقرار يأتي من قياس النموذج المقترح والذي تحته على أمثلة حقيقية من المهمة، كما يفعل الفصل 16.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 1.2 · متوسط</p>
+<h3>ميزانية شهرية</h3>
+<p class="project-goal">قدّر كم تكلّف ميزة في الشهر على ثلاثة نماذج، بالتخزين المؤقت ودونه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التكلفة كمُدخل في التصميم، قبل أول سطر من الميزة.</p>
+<ol class="steps">
+<li>صِف الميزة: الطلبات في اليوم، والـ tokens الداخلة والخارجة.</li>
+<li>سعّر شهراً على كل نموذج بـ <code>cost</code>.</li>
+<li>سعّره مرة أخرى و80% من المدخلات مقروءة من الذاكرة المؤقتة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">budget.mjs (جزء)</div><pre class="code"><span class="k">function</span> monthly({model, perDay, input, output, cachedShare = <span class="n">0</span>}) {
+  <span class="k">const</span> cached = Math.round(input * cachedShare);
+  <span class="k">const</span> usage = {input_tokens: input - cached, cache_read_input_tokens: cached, output_tokens: output};
+  <span class="k">return</span> cost(model, usage) * perDay * <span class="n">30</span>;
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node budget.mjs</span>
+ملخصات التذاكر: 5,000 a day, 3,000 tokens in, 300 out
+  claude-opus-5-5    $ 2700.00 a month; with 80% cached $ 1332.00
+  claude-sonnet-5-5  $ 1350.00 a month; with 80% cached $  666.00
+  claude-haiku-5-5   $   67.50 a month; with 80% cached $   35.10</pre></div>
+<p class="hint"><strong>تلميح:</strong> المدى واسع: من 35 إلى 2,700 دولار للميزة نفسها. والتخزين المؤقت ينصّف فاتورة كل نموذج هنا، لأن معظم التكلفة في المدخلات الطويلة. شغّل هذا قبل الاجتماع الذي يسأل فيه أحدهم كم ستكلّف الميزة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 1.3 · تحدٍّ</p>
+<h3>أخطاء تقول ماذا تفعل</h3>
+<p class="project-goal">حوّل كل نوع من أخطاء الواجهة البرمجية إلى جملة واحدة تقول للمطور ماذا يصلح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أخطاء الحزمة بأنواعها، مفحوصة من الأخص إلى الأعم.</p>
+<ol class="steps">
+<li>اكتب جملة لكل صنف من الأخطاء.</li>
+<li>افحص بـ <code>instanceof</code> من الأخص إلى الأعم، وأعد رمي ما لا تعرفه.</li>
+<li>استثر ثلاثة أخطاء: نموذج خاطئ، ومفتاح خاطئ، ولا خادم.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">handle.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> advice(error) {
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.APIConnectionError) <span class="k">return</span> <span class="s">&quot;لا اتصال: افحص الشبكة وANTHROPIC_BASE_URL.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.AuthenticationError) <span class="k">return</span> <span class="s">&quot;افحص ANTHROPIC_API_KEY: غائب، أو فيه خطأ، أو أُلغي.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.NotFoundError) <span class="k">return</span> <span class="s">&quot;قارن اسم النموذج بـ GET /v1/models.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.RateLimitError) <span class="k">return</span> <span class="s">&quot;طلبات كثيرة: انتظر المدة التي تقولها retry-after، ثم أعد المحاولة.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.BadRequestError) <span class="k">return</span> <span class="s">&quot;أصلح الطلب: اقرأ الرسالة، فهي تسمّي الحقل.&quot;</span>;
+  <span class="k">if</span> (error <span class="k">instanceof</span> Anthropic.InternalServerError) <span class="k">return</span> <span class="s">&quot;مشكلة في جهة الواجهة البرمجية: أعد المحاولة مع تباعد.&quot;</span>;
+  <span class="k">throw</span> error;
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node handle.mjs</span>
+NotFoundError        قارن اسم النموذج بـ GET /v1/models.
+AuthenticationError  افحص ANTHROPIC_API_KEY: غائب، أو فيه خطأ، أو أُلغي.
+APIConnectionError   لا اتصال: افحص الشبكة وANTHROPIC_BASE_URL.</pre></div>
+<p class="hint"><strong>تلميح:</strong> الترتيب مهم لأن الأصناف تشكّل هرماً: <code>NotFoundError</code> و<code>RateLimitError</code> كلاهما <code>APIError</code>، ففحص عام أولاً يخفيهما. ولا تطابق نص الرسالة أبداً: الأصناف و<code>status</code> هي العقد الثابت.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> غيّر <code>hello.mjs</code> ليطبع النموذج ومعرّف الرسالة والتكلفة، وأضف إلى <code>practice.json</code> جواباً من عندك لسؤال من عندك.</li>
+<li><span class="level">سهل</span> اجعل <code>max_tokens</code> عشرة وشغّل <code>hello.mjs</code> مرة أخرى. ما <code>stop_reason</code>، وماذا يجب أن يفعل البرنامج بهذا الجواب؟</li>
+<li><span class="level medium">متوسط</span> أضف <code dir="ltr">output_config: {effort: "low"}</code> إلى الطلب. ماذا يتغير في رد خادم التدريب، وماذا تتوقع أن يتغير مع الواجهة الحقيقية؟</li>
+<li><span class="level medium">متوسط</span> وسّع <code>budget.mjs</code> بواجهة Message Batches، التي تكلّف النصف للطلبات التي تستطيع الانتظار حتى يوم. أي ميزات فريقك تستطيع استخدامها؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب برنامجاً يسأل الواجهة البرمجية عن النماذج، ثم يرسل السؤال نفسه إلى كل منها، ويطبع الجواب والـ tokens والتكلفة جنباً إلى جنب. شغّله على خادم التدريب، واشرح لماذا لا يعني القياس شيئاً إلا على الواجهة الحقيقية.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+<p>الفصل التالي يفتح الباب الأول: المحادثات في تطبيقات Claude، بالملفات والصور، وكيف تعطي Claude ما يحتاجه ليجيب جيداً.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">حاول حل كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف حلك عن هذا فليس بالضرورة خطأ: معظم المسائل لها حلول جيدة كثيرة. إن كان حلك يعالج الحالات العادية وغير العادية، وتستطيع أن تشرح اختياراتك، فهو حل جيد. والكود الكامل المختبر لكل حل موجود في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li>اطبع <code>response.model</code> و<code>response.id</code> والتكلفة من <code dir="ltr">cost(response.model, response.usage)</code>. والجواب في <code>practice.json</code> كائن فيه <code>when</code> (كلمات يجب أن يحويها السؤال) و<code>text</code>؛ ضعه قبل أي جواب قد يطابق أيضاً، لأن أول تطابق يفوز. والمعرّف يستحق التسجيل في البرامج الحقيقية: فهو ما يطلبه دعم Anthropic حين تبلّغ عن مشكلة.</li>
+<li><code>stop_reason</code> هو <code>max_tokens</code>، والنص يتوقف في منتصف جملة. ويجب ألا يعامله البرنامج كجواب كامل: اعرضه كمقطوع، أو اسأل مرة أخرى بـ <code>max_tokens</code> أكبر، أو اطلب جواباً أقصر في الأمر. والقطع الصامت من أكثر الأخطاء شيوعاً في البرامج التي تستدعي نموذجاً.</li>
+<li>لا يتغير شيء مع خادم التدريب: فهو لا يفكّر، ويتجاهل الجهد. ومع الواجهة الحقيقية، الجهد المنخفض يعني عادة تفكيراً أقل، وtokens أقل، وجواباً أسرع وأرخص، وللسؤال البسيط الجواب نفسه. ويظهر الفرق في الأسئلة الصعبة، ولهذا يُختار الجهد لكل مهمة ويُقاس، لا يُضبط مرة لكل شيء.</li>
+<li>أضف خياراً <code>batch</code> ينصّف التكلفة، واطبع عموداً رابعاً. والمرشحون الجيدون عمل لا ينتظره أحد: ملخصات ليلية للتذاكر، ووسم المهام المتراكمة، وترجمة التوثيق، وتشغيل مجموعة تقييم. أما المحادثة مع عميل فليست منها: العميل ينتظر.</li>
+<li>اسرد النماذج بـ <code dir="ltr">client.models.list()</code>، وأرسل الطلب نفسه إلى كل منها بالدور، واطبع النص و<code>usage</code> والتكلفة لكل منها، والتقط الأخطاء حتى لا يوقف نموذج يخفق الباقين. وعلى خادم التدريب، يعطي كل نموذج الجواب المكتوب نفسه وأعداد الـ tokens تقريبية، فلا تختلف إلا التكاليف. ولا تعني المقارنة شيئاً إلا بأجوبة حقيقية، وحتى حينها سؤال واحد حكاية: قارن النماذج على مجموعة أسئلة لها أجوبة جيدة معروفة، كما فعل الكتاب السابع.</li>
+</ol>
+
+</section>
+</body></html>

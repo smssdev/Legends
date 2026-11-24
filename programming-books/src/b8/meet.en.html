@@ -1,0 +1,211 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/meet/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Meet Claude: Models, Strengths and Limits</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell apart the ways Claude reaches you: the apps, Claude Code and the API</li>
+<li>choose between the Claude models by task, speed and price</li>
+<li>send a first message from code and read everything that comes back</li>
+<li>work out what a request costs before you send a thousand of them</li>
+<li>name Claude’s limits, and recognise the errors a first program meets</li>
+</ul>
+</div>
+
+<p class="lead">Claude is a family of AI models made by Anthropic. The same models answer you in the chat app, edit your repository through Claude Code, and run inside your programs through the API. This chapter introduces the family: which models exist and how they differ, what a request and a response look like, what they cost, and what Claude cannot do however well you ask. Everything after this chapter builds on it.</p>
+
+<aside class="bit" data-mood="think"><p>Every answer from “Claude” in this chapter comes from the book’s practice server, not from Claude: the preface explains why. The prices, the limits, the errors and the code are real, and the arithmetic in this chapter is exact.</p></aside>
+
+<h2>{{n}}.1 One family, three doors</h2>
+
+<table>
+<thead><tr><th>Door</th><th>What it is</th><th>Best for</th><th>Part</th></tr></thead>
+<tbody>
+<tr><td>Claude apps</td><td>Chat on the web (claude.ai), on the desktop and on phones, with files, projects, artifacts, research and connectors</td><td>Thinking, writing, analysis and one-off tasks, alone or as a team</td><td>I</td></tr>
+<tr><td>Claude Code</td><td>An agent that reads, edits and runs code in your terminal, your editor or the cloud</td><td>Work inside a repository: features, fixes, refactors, reviews</td><td>II</td></tr>
+<tr><td>The Claude API</td><td>An HTTP API and official SDKs, also offered through Amazon Bedrock, Google Cloud and Microsoft Foundry</td><td>Putting Claude inside your own product</td><td>III</td></tr>
+</tbody>
+</table>
+
+<p>The doors share the models but not the setup around them. The apps add a system prompt, tools and memory features that Anthropic maintains; Claude Code adds tools for files and commands, and permissions; the API adds nothing: you get the model, and every instruction, tool and check is yours to write. That is why the same question can get a different answer in each place, and why Part III spends so much time on what the apps do for you.</p>
+
+<h2>{{n}}.2 The models</h2>
+
+<p>Claude models come in tiers, named for size and speed, and each tier gets new versions. In November 2026 the current ones are:</p>
+
+<table>
+<thead><tr><th>Model</th><th>Id</th><th>Use it for</th><th>Input / output, $ per million tokens</th></tr></thead>
+<tbody>
+<tr><td>Claude Fable 5.2</td><td><code>claude-fable-5-2</code></td><td>The hardest reasoning and long-running agent work</td><td>8 / 40</td></tr>
+<tr><td>Claude Opus 5.5</td><td><code>claude-opus-5-5</code></td><td>Complex coding and knowledge work; the default choice</td><td>4 / 20</td></tr>
+<tr><td>Claude Sonnet 5.5</td><td><code>claude-sonnet-5-5</code></td><td>Everyday coding, agents and chat, faster and cheaper</td><td>2 / 10</td></tr>
+<tr><td>Claude Haiku 5.5</td><td><code>claude-haiku-5-5</code></td><td>High volume and low latency: classification, routing, extraction</td><td>0.10 / 0.50</td></tr>
+</tbody>
+</table>
+
+<p>All four read up to a million tokens of input and write up to 128,000. The ids are complete as they are: no dates, no suffixes. A program should not depend on this table, because the list changes; it should ask the API, which says which models your account can use and their limits:</p>
+
+<pre data-code="models.mjs" data-from="^for await" data-to="^}" data-title="models.mjs (part)"></pre>
+<pre data-term="models.sh"></pre>
+
+<p>The practice server knows six models, the four above and two older ones that are still served. The real API lists more, including earlier versions kept for programs that depend on them.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>A <dfn>token</dfn> is the unit models read and write: a short word, part of a longer word, a punctuation mark. In English a token is about four characters on average; Arabic and code usually take more tokens for the same length. Prices and limits are counted in tokens, and the API counts them exactly for you (Chapter 15).</p></aside>
+
+<h2>{{n}}.3 A first message</h2>
+
+<p>Install the SDK in a new project, start the practice server from the book’s repository, and point the SDK at it with the two variables from the preface:</p>
+
+<pre class="plain" dir="ltr">npm install @anthropic-ai/sdk@1.8.0
+node practice/server.mjs &amp;
+export ANTHROPIC_BASE_URL=http://127.0.0.1:4141 ANTHROPIC_API_KEY=test-key</pre>
+
+<p>Then a program of a few lines:</p>
+
+<pre data-code="hello.mjs" data-from="^const question" data-title="hello.mjs (part)"></pre>
+<pre data-term="hello.sh"></pre>
+
+<p>The answer is the practice server’s, written to sound like Claude introducing itself; Claude’s own words will differ. What matters is the shape, which is the API’s. A request names the <code>model</code>, the <code>max_tokens</code> the answer may use, and the <code>messages</code> so far, starting with the user’s. The response’s <code>content</code> is a list of blocks, not a string: here a single text block, but later chapters meet thinking blocks, tool calls and citations, so code always looks at each block’s <code>type</code>. <code>stop_reason</code> says why the answer ended: <code>end_turn</code> means Claude finished, <code>max_tokens</code> means it was cut off, and other values (a tool call, a refusal) mean the program has work to do. And <code>usage</code> counts the tokens, from which the program works out the cost.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Never write an API key in code, and never commit one. The SDK reads <code>ANTHROPIC_API_KEY</code> from the environment, so the code above works with the practice server and with the real API without a change. A key in a repository is a key anyone can spend on.</p></aside>
+
+<h2>{{n}}.4 What it costs</h2>
+
+<p>Every request is priced by its tokens: input at one rate, output at a higher one (five times higher for every current model), and two more rates for prompt caching, which Chapter 15 covers. The calculation is short enough to keep next to your code:</p>
+
+<pre data-code="lib/prices.mjs" data-from="^export function cost" data-to="^}" data-title="lib/prices.mjs (part)"></pre>
+<pre data-term="prices.sh"></pre>
+
+<p>The same request, 2,000 tokens in and 500 out, costs eighty times more on the most capable model than on the fastest. A thousand of them costs $36 on Claude Fable 5.2 and 45 cents on Claude Haiku 5.5. And caching most of the prompt, as in the last line, cuts the Opus request by more than a third, because input read from the cache costs a twentieth of its usual price on Claude Opus 5.5. Neither number says which model to use: a cheap model that gets a task wrong costs more than an expensive one that gets it right, which is why Chapter 16 measures before it chooses.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Start with Claude Opus 5.5, the default, until the feature works and you have a way to measure it; then try the smaller models on the same measurement. Moving down to Sonnet or Haiku is often possible for a well-defined task; you only know when you measure.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why should a program ask the API for its models instead of keeping a list?</li><li>Why is a response’s <code>content</code> a list of blocks rather than a string?</li><li>The same request costs $0.018 on Opus 5.5. What does it cost on Sonnet 5.5, and why exactly half?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Strengths and limits</h2>
+
+<p>Claude reads quickly and widely: a long contract, a codebase, a spreadsheet, a screenshot. It writes clearly in many languages, Arabic and English included. It reasons through problems in steps, thinking before it answers when the task needs it. It writes and reviews code well enough that Part II is a whole part. And it uses tools: given a function to call, it decides when to call it and what to pass, which is how it searches, runs code and acts in your systems (Chapter 12).</p>
+
+<p>Its limits are the same in kind as every model of Book 7, and they decide how you design around it:</p>
+
+<ul>
+<li><strong>Its knowledge stops at a date.</strong> Ask about today’s news and the honest answer is the one below: it does not know. Recent facts must come from you, from a search tool, or from your documents.</li>
+<li><strong>The API remembers nothing.</strong> Each request is complete in itself: to continue a conversation, you send it all again. The apps keep history and memory for you; your programs must do it themselves (Chapter 11).</li>
+<li><strong>It can be wrong, fluently.</strong> Better models are wrong less often, not never. Everything Book 7 taught about checking applies here.</li>
+<li><strong>It may decline.</strong> Some requests are refused for safety, with <code>stop_reason</code> set to <code>refusal</code>. A program handles that like any other outcome (Chapter 16).</li>
+<li><strong>Its context is large but finite</strong>, and what you put in it costs money and attention: a million tokens is a capacity, not a target.</li>
+</ul>
+
+<pre data-term="news.sh"></pre>
+
+<p>The practice server’s answer here was written to show the right behaviour: say what cannot be known, and say what would help. Check that the real model behaves like this for the questions your users ask; when it does not, that is what search tools and your own documents are for.</p>
+
+<h2>{{n}}.6 Thinking and effort</h2>
+
+<p>Current Claude models think before they answer when a problem needs it, and decide for themselves how much: this is <dfn>adaptive thinking</dfn>. You control the depth with <dfn>effort</dfn>, from <code>low</code> to <code>max</code>, set in <code>output_config</code>. Low effort is faster and cheaper, for simple tasks and chat; high effort is for hard problems, where thinking longer pays off. On Claude Opus 5.5 the default is <code>medium</code>, and thinking cannot be turned off: effort is the only control. A first program discovers this, and two other rules, the way everyone does:</p>
+
+<pre data-code="errors.mjs" data-from="^const attempts" data-to="^];" data-title="errors.mjs (part)"></pre>
+<pre data-term="errors.sh"></pre>
+
+<p>Three different errors, each with a status and a message that names the problem. A model id with a typo is a 404, not found; a request without <code>max_tokens</code> is a 400, invalid; and asking Claude Opus 5.5 to stop thinking is a 400 too. Read the message before changing the code: the API almost always says which field is wrong.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Keep the model id, the effort and <code>max_tokens</code> in one place in your configuration, not scattered through the code. Models change every few months, and the team that can switch, measure and switch back in an afternoon will always use the best model for the price.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Hard-coding a list of models</td><td>Programs break or miss new models</td><td>Ask <code>GET /v1/models</code>; keep the id in configuration</td></tr>
+<tr><td>Reading <code>content[0].text</code></td><td>Crashes when the first block is not text</td><td>Check each block’s <code>type</code></td></tr>
+<tr><td>Ignoring <code>stop_reason</code></td><td>Cut-off answers treated as complete</td><td>Handle <code>max_tokens</code>, tool use and refusals</td></tr>
+<tr><td>Choosing a model by price alone</td><td>A cheap model that fails costs more</td><td>Measure quality, then compare cost</td></tr>
+<tr><td>An API key in the code</td><td>A key anyone can spend</td><td>Environment variables and a secret store</td></tr>
+<tr><td>Expecting the API to remember</td><td>A conversation that forgets everything</td><td>Send the history with every request</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>One family of models reaches you through the apps, Claude Code and the API; each door adds different things around the same models.</li>
+<li>Fable, Opus, Sonnet and Haiku trade capability for speed and price; ask the API which models exist and their limits.</li>
+<li>A response is a list of typed blocks, with a <code>stop_reason</code> and a <code>usage</code> that every program should read.</li>
+<li>Cost is tokens times price, with output dearer than input and cached input much cheaper; calculate it before you scale.</li>
+<li>Claude’s knowledge ends at a date, the API remembers nothing, and answers can be wrong or refused: design for all four.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the list changes with every release and differs between accounts and platforms; the API always knows what your key can use and each model’s limits. 2. Because a response can contain more than text: thinking, tool calls, and text split around citations; a list of typed blocks holds them all, in order. 3. $0.009, because both Sonnet prices ($2 in, $10 out) are exactly half of Opus’s ($4 and $20), so any mix of tokens costs half.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects are three small tools every team that uses the API ends up writing: a first choice of model, a budget, and error messages that say what to do.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A first choice of model</h3>
+<p class="project-goal">Suggest a model from three questions about a task: is it hard, is it long-running, is it high-volume?</p>
+<p class="project-skills"><strong>You will practise:</strong> turning a rule of thumb into code you can argue with.</p>
+<ol class="steps">
+<li>Write the three questions as booleans.</li>
+<li>Map them to a model, from Haiku for volume to Fable for long, hard work.</li>
+<li>Print the suggestion for four tasks.</li>
+</ol>
+<pre data-code="choose.mjs" data-from="^export function chooseModel" data-to="^}" data-title="choose.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/choose.sh"></pre>
+<p class="hint"><strong>Hint:</strong> this is a starting point, not a decision. The decision comes from measuring the suggested model and the one below it on real examples of the task, as Chapter 16 does.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A monthly budget</h3>
+<p class="project-goal">Estimate what a feature costs a month on three models, with and without caching.</p>
+<p class="project-skills"><strong>You will practise:</strong> cost as a design input, before the first line of the feature.</p>
+<ol class="steps">
+<li>Describe the feature: requests a day, tokens in and out.</li>
+<li>Price a month on each model with <code>cost</code>.</li>
+<li>Price it again with 80% of the input read from the cache.</li>
+</ol>
+<pre data-code="budget.mjs" data-from="^function monthly" data-to="^}" data-title="budget.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/budget.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the range is wide: $35 to $2,700 for the same feature. Caching halves every model’s bill here, because most of the cost is the long input. Run this before the meeting where someone asks what the feature will cost.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Errors that say what to do</h3>
+<p class="project-goal">Turn every kind of API error into one sentence that tells a developer what to fix.</p>
+<p class="project-skills"><strong>You will practise:</strong> the SDK’s typed errors, checked from the most specific to the most general.</p>
+<ol class="steps">
+<li>Write one sentence for each error class.</li>
+<li>Check <code>instanceof</code> from specific to general, and rethrow what you do not know.</li>
+<li>Provoke three errors: a wrong model, a wrong key, and no server.</li>
+</ol>
+<pre data-code="handle.mjs" data-from="^export function advice" data-to="^}" data-title="handle.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/handle.sh"></pre>
+<p class="hint"><strong>Hint:</strong> order matters because the classes form a hierarchy: <code>NotFoundError</code> and <code>RateLimitError</code> are both <code>APIError</code>s, so a broad check first would hide them. And never match on the message text: the classes and the <code>status</code> are the stable contract.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change <code>hello.mjs</code> to print the model, the id of the message and the cost, and add a reply of your own to <code>practice.json</code> for a question of your own.</li>
+<li><span class="level">Easy</span> Set <code>max_tokens</code> to 10 and run <code>hello.mjs</code> again. What is the <code>stop_reason</code>, and what should a program do with that answer?</li>
+<li><span class="level">Medium</span> Add <code>output_config: {effort: "low"}</code> to the request. What changes in the response from the practice server, and what would you expect to change with the real API?</li>
+<li><span class="level">Medium</span> Extend <code>budget.mjs</code> with the Message Batches API, which costs half for requests that can wait up to a day. Which of your team’s features could use it?</li>
+<li><span class="level">Challenge</span> Write a program that asks the API for the models, then sends the same question to each one, and prints the answer, the tokens and the cost side by side. Run it against the practice server, and explain why the comparison would only mean something against the real API.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>The next chapter opens the first door: conversations in the Claude apps, with files and images, and how to give Claude what it needs to answer well.</p>
+</div>
+</section>
