@@ -1,0 +1,221 @@
+{
+  "replies": [
+    {
+      "when": {
+        "text": "ماذا أعلنت جمعية البن المصرية عن أسعار البن هذا الشهر؟",
+        "allowed_domains": true
+      },
+      "blocks": [
+        {
+          "type": "server_tool_use",
+          "id": "srvtoolu_practice_01",
+          "name": "web_search",
+          "input": {
+            "query": "جمعية البن المصرية أسعار البن ديسمبر 2026"
+          }
+        },
+        {
+          "type": "web_search_tool_result",
+          "tool_use_id": "srvtoolu_practice_01",
+          "content": [
+            {
+              "type": "web_search_result",
+              "url": "https://coffee-association.example/2026/11/bean-prices",
+              "title": "أسعار الجملة للبن الإثيوبي من ديسمبر",
+              "page_age": "3 days ago",
+              "encrypted_content": "practice-0"
+            },
+            {
+              "type": "web_search_result",
+              "url": "https://news.example/business/coffee-prices-rise",
+              "title": "أسعار القهوة إلى ارتفاع مع صعود تكاليف الشحن",
+              "page_age": "2 days ago",
+              "encrypted_content": "practice-1"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "أعلنت جمعية البن المصرية أن أسعار الجملة للبن الإثيوبي سترتفع 8% من 1 ديسمبر.",
+          "citations": [
+            {
+              "type": "web_search_result_location",
+              "url": "https://coffee-association.example/2026/11/bean-prices",
+              "title": "أسعار الجملة للبن الإثيوبي من ديسمبر",
+              "cited_text": "أسعار الجملة للبن الإثيوبي سترتفع 8% من 1 ديسمبر",
+              "encrypted_index": "practice-0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " ويربط تقرير إخباري الارتفاع بزيادة تكاليف الشحن عبر البحر الأحمر.",
+          "citations": [
+            {
+              "type": "web_search_result_location",
+              "url": "https://news.example/business/coffee-prices-rise",
+              "title": "أسعار القهوة إلى ارتفاع مع صعود تكاليف الشحن",
+              "cited_text": "ربط الزيادة بارتفاع تكاليف الشحن عبر البحر الأحمر",
+              "encrypted_index": "practice-1"
+            }
+          ]
+        }
+      ],
+      "usage": {
+        "server_tool_use": {
+          "web_search_requests": 1
+        }
+      }
+    },
+    {
+      "when": {
+        "text": "ماذا أعلنت جمعية البن المصرية عن أسعار البن هذا الشهر؟",
+        "tools": true
+      },
+      "blocks": [
+        {
+          "type": "server_tool_use",
+          "id": "srvtoolu_practice_01",
+          "name": "web_search",
+          "input": {
+            "query": "جمعية البن المصرية أسعار البن ديسمبر 2026"
+          }
+        },
+        {
+          "type": "web_search_tool_result",
+          "tool_use_id": "srvtoolu_practice_01",
+          "content": [
+            {
+              "type": "web_search_result",
+              "url": "https://coffee-association.example/2026/11/bean-prices",
+              "title": "أسعار الجملة للبن الإثيوبي من ديسمبر",
+              "page_age": "3 days ago",
+              "encrypted_content": "practice-0"
+            },
+            {
+              "type": "web_search_result",
+              "url": "https://news.example/business/coffee-prices-rise",
+              "title": "أسعار القهوة إلى ارتفاع مع صعود تكاليف الشحن",
+              "page_age": "2 days ago",
+              "encrypted_content": "practice-1"
+            },
+            {
+              "type": "web_search_result",
+              "url": "https://beanblog.example/prices-will-double",
+              "title": "لماذا ستتضاعف أسعار البن العام القادم",
+              "page_age": "5 weeks ago",
+              "encrypted_content": "practice-2"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "أعلنت جمعية البن المصرية أن أسعار الجملة للبن الإثيوبي سترتفع 8% من 1 ديسمبر.",
+          "citations": [
+            {
+              "type": "web_search_result_location",
+              "url": "https://coffee-association.example/2026/11/bean-prices",
+              "title": "أسعار الجملة للبن الإثيوبي من ديسمبر",
+              "cited_text": "أسعار الجملة للبن الإثيوبي سترتفع 8% من 1 ديسمبر",
+              "encrypted_index": "practice-0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " ويربط تقرير إخباري الارتفاع بزيادة تكاليف الشحن عبر البحر الأحمر.",
+          "citations": [
+            {
+              "type": "web_search_result_location",
+              "url": "https://news.example/business/coffee-prices-rise",
+              "title": "أسعار القهوة إلى ارتفاع مع صعود تكاليف الشحن",
+              "cited_text": "ربط الزيادة بارتفاع تكاليف الشحن عبر البحر الأحمر",
+              "encrypted_index": "practice-1"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " وتتوقع مدونة أن تتضاعف الأسعار العام القادم.",
+          "citations": [
+            {
+              "type": "web_search_result_location",
+              "url": "https://beanblog.example/prices-will-double",
+              "title": "لماذا ستتضاعف أسعار البن العام القادم",
+              "cited_text": "ستتضاعف الأسعار العام القادم",
+              "encrypted_index": "practice-2"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " وللمقهى، ارتفاع 8% في البن حصة صغيرة من سعر المشروب."
+        }
+      ],
+      "usage": {
+        "server_tool_use": {
+          "web_search_requests": 1
+        }
+      }
+    },
+    {
+      "when": {
+        "text": "قارن أسعار البن في كل دولة في أفريقيا هذا الشهر.",
+        "tools": true
+      },
+      "blocks": [
+        {
+          "type": "server_tool_use",
+          "id": "srvtoolu_practice_1",
+          "name": "web_search",
+          "input": {
+            "query": "coffee prices Africa"
+          }
+        },
+        {
+          "type": "web_search_tool_result",
+          "tool_use_id": "srvtoolu_practice_1",
+          "content": []
+        },
+        {
+          "type": "server_tool_use",
+          "id": "srvtoolu_practice_2",
+          "name": "web_search",
+          "input": {
+            "query": "bean prices Kenya"
+          }
+        },
+        {
+          "type": "web_search_tool_result",
+          "tool_use_id": "srvtoolu_practice_2",
+          "content": []
+        },
+        {
+          "type": "server_tool_use",
+          "id": "srvtoolu_practice_3",
+          "name": "web_search",
+          "input": {
+            "query": "bean prices Ethiopia"
+          }
+        },
+        {
+          "type": "web_search_tool_result",
+          "tool_use_id": "srvtoolu_practice_3",
+          "content": {
+            "type": "web_search_tool_result_error",
+            "error_code": "max_uses_exceeded"
+          }
+        },
+        {
+          "type": "text",
+          "text": "لم أستطع إجراء أكثر من بحثين، ولم يجدا أسعاراً موثوقة لمعظم الدول."
+        }
+      ],
+      "usage": {
+        "server_tool_use": {
+          "web_search_requests": 2
+        }
+      }
+    }
+  ]
+}

@@ -138,6 +138,7 @@ function reply(body) {
     if (w.model && body.model !== w.model) continue;
     if (w.history !== undefined && w.history !== body.messages.length > 1) continue;
     if (w.document && !JSON.stringify(last.content).includes(`"title":"${w.document}"`)) continue;
+    if (w.allowed_domains !== undefined && w.allowed_domains !== Boolean(searchTool(body)?.allowed_domains)) continue;
     if (rule.error) {
       const failed = failures.get(i) ?? 0;
       if (failed >= (rule.error.times ?? Infinity)) continue;
@@ -148,7 +149,22 @@ function reply(body) {
   return {text: "(practice server: no reply in practice.json matches this request)"};
 }
 
+const searchTool = (body) => (body.tools ?? []).find((t) => t.type?.startsWith("web_search"));
+
+// The web search tool's allowed_domains: results from other sites are dropped.
+function restrict(blocks, body) {
+  const allowed = searchTool(body)?.allowed_domains;
+  if (!allowed) return blocks;
+  const ok = (url) => allowed.some((d) => new URL(url).hostname === d || new URL(url).hostname.endsWith(`.${d}`));
+  return blocks.map((b) => (b.type === "web_search_tool_result" && Array.isArray(b.content)
+    ? {...b, content: b.content.filter((r) => ok(r.url))} : b));
+}
+
 function blocksOf(rule, body) {
+  return restrict(blocksFrom(rule, body), body);
+}
+
+function blocksFrom(rule, body) {
   if (rule.blocks) {
     return rule.blocks.map((b, i) => (b.type === "tool_use" ? {id: `toolu_practice_${b.name}_${counter}_${i}`, ...b} : b));
   }
@@ -185,12 +201,12 @@ function message(body) {
     out = body.max_tokens;
     const first = content.find((b) => b.type === "text");
     if (first) first.text = first.text.slice(0, body.max_tokens * 4);
-    return {rule, msg: build(body, content, "max_tokens", out)};
+    return {rule, msg: build(body, content, "max_tokens", out, rule)};
   }
-  return {rule, msg: build(body, content, stop, out)};
+  return {rule, msg: build(body, content, stop, out, rule)};
 }
 
-function build(body, content, stop, out) {
+function build(body, content, stop, out, rule = {}) {
   return {
     id: `msg_practice_${String(++counter).padStart(4, "0")}`,
     type: "message",
@@ -200,7 +216,7 @@ function build(body, content, stop, out) {
     stop_reason: stop,
     stop_sequence: null,
     stop_details: null,
-    usage: {...caching(body), output_tokens: out},
+    usage: {...caching(body), output_tokens: out, ...(rule.usage ?? {})},
   };
 }
 
