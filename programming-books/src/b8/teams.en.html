@@ -1,0 +1,155 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b8/teams/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Claude Code for Teams and CI</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>layer team settings and personal settings, and know which one wins</li>
+<li>run Claude Code in continuous integration, with no person at the keyboard</li>
+<li>get a verdict as structured data a script can act on</li>
+<li>keep CI runs small, bounded and cheap</li>
+<li>keep people in charge of the decisions an automatic review informs</li>
+</ul>
+</div>
+
+<p class="lead">A team using Claude Code needs two things that a single developer does not. The first is shared rules that a person cannot loosen by accident: what every session may do, and what none may. The second is automation: Claude Code running on every pull request, in the same pipeline as the tests, without anyone typing. This chapter builds both, and shows what each one costs.</p>
+
+<aside class="bit" data-mood="think"><p>The settings, the denial, the CI script, its exit codes and its costs are real Claude Code behaviour. The verdicts come from the practice server, scripted to depend on the diff it received: blocking the unrounded total, passing the rounded one.</p></aside>
+
+<h2>{{n}}.1 Team settings and personal settings</h2>
+
+<p>The team commits <code>.claude/settings.json</code>; each developer may add <code>.claude/settings.local.json</code>, which git ignores. Here the team allows the tests and denies pushing, and one developer has allowed pushing for themselves:</p>
+
+<pre data-term="settings.sh"></pre>
+<pre data-term="deny.sh"></pre>
+
+<p>The push was denied. When rules conflict, a deny wins over an allow, wherever each is written, so a personal file cannot undo a team’s refusal. That is the property a team needs: allows can be added where people need them; the few things nobody may do stay refused. Organisations that need more can install <dfn>managed settings</dfn> on every machine, which take precedence over both and cannot be changed by users.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Write the team’s denies first, then its allows. The denies are short (push to the main branch, read the secrets folder, delete data) and almost never change; the allows grow with the work, and can live closer to the people who need them.</p></aside>
+
+<h2>{{n}}.2 A review in CI</h2>
+
+<p>In continuous integration nobody can approve a tool call, so the safest run has no tools at all: Claude Code reads the diff from standard input, answers, and stops. Three flags make it fit for a pipeline: <code>--tools ""</code> so it can only read what it is given, <code>--max-budget-usd</code> so a run cannot overspend, and <code>--json-schema</code> so the verdict comes back as data:</p>
+
+<pre data-code="ci/review.sh" data-from="^claude -p" data-title="ci/review.sh (part)"></pre>
+<pre data-code="review/schema.json" data-title="review/schema.json"></pre>
+
+<p>The branch adds VAT to receipts, the change of Chapter 7, with the rounding problem its review found. The CI step:</p>
+
+<pre data-term="ci-fail.sh"></pre>
+
+<p>The verdict is an object, not a paragraph: <code>ok</code> is false and the blocker names the file and the problem, so the script exits with 1 and the pipeline fails. With <code>--json-schema</code>, Claude Code gives the model a tool to report its answer in that shape and returns it in <code>structured_output</code>; a script never has to parse prose.</p>
+
+<p>Look at the cost, too: a cent and a half. The runs of the earlier chapters cost about twelve cents a turn, mostly for Claude Code’s own instructions and tool descriptions; with no tools, there is little to send but the diff and the request. In a pipeline that runs on every push, that difference is the budget.</p>
+
+<p>The developer rounds the total, commits, and the same step runs again:</p>
+
+<pre data-term="ci-pass.sh"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The diff is input from whoever opened the pull request, and a pull request from outside the team can contain text written to steer a reviewer. A review with no tools can only answer; it cannot run anything. Never give a CI run tools that write, or secrets it does not need, on code nobody on the team has looked at.</p></aside>
+
+<h2>{{n}}.3 In the pipeline</h2>
+
+<p>The workflow runs the same script on every pull request, with the API key from the repository’s secrets, read-only access to its contents and a time limit (Project {{n}}.3 checks the file). Anthropic also publishes a GitHub Action for Claude Code, which can review pull requests and answer comments that mention it; the principles are the same: the fewest tools that do the job, a limit on spending, and output a script can read.</p>
+
+<p>What the automatic review produces is information for a person, not a decision. A failing review should block a merge the way a failing test does; a passing one should not approve anything. The pull request still needs a human reviewer, who now starts with the mechanical problems already found.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why was the push denied, although the personal settings allowed it?</li><li>What do <code>--tools ""</code>, <code>--max-budget-usd</code> and <code>--json-schema</code> each add in CI?</li><li>Why did the CI review cost a tenth of the earlier runs?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Track what the automatic review finds and what people find after it, for a month. If people keep finding what it misses, improve its instructions; if it keeps blocking what people approve, loosen them. An automatic reviewer that nobody measures turns into noise that everyone ignores.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Team rules only as allows</td><td>Anyone can widen them</td><td>Denies for what must never happen</td></tr>
+<tr><td>Personal settings committed</td><td>One person’s permissions for all</td><td><code>settings.local.json</code>, ignored by git</td></tr>
+<tr><td>Tools in CI “just in case”</td><td>Untrusted input can reach them</td><td>No tools for reviews; the fewest for tasks</td></tr>
+<tr><td>Parsing prose verdicts</td><td>Fragile pipelines</td><td><code>--json-schema</code>; read <code>structured_output</code></td></tr>
+<tr><td>No spending limit in CI</td><td>Costs that grow with every push</td><td><code>--max-budget-usd</code> and a job timeout</td></tr>
+<tr><td>Treating a pass as an approval</td><td>Nobody actually reviews</td><td>Automatic checks inform; people approve</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Team settings are committed, personal ones are not, and a deny wins over an allow wherever each is written.</li>
+<li>In CI, run Claude Code in print mode with no tools, a spending limit and a JSON schema for the verdict.</li>
+<li>A script reads <code>structured_output</code> and fails the build on a blocker; the same step passes once the problem is fixed.</li>
+<li>Fewer tools means a smaller request on every turn: the CI review cost about a tenth of a run with Claude Code’s full tool set.</li>
+<li>Automatic reviews inform people; they do not approve.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the team’s settings deny <code>Bash(git push:*)</code>, and a deny wins over an allow, even an allow in a personal file. 2. <code>--tools ""</code> removes every tool, so untrusted input cannot make it act; <code>--max-budget-usd</code> stops a run that would spend too much; <code>--json-schema</code> returns the verdict as data a script can check. 3. Because with no tools, the request carries no tool descriptions and much less of Claude Code’s own instructions: mostly just the diff and the request.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">The projects finish the CI review: a comment for the pull request, the workflow file checked, and the passing run after the fix.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>The verdict as a comment</h3>
+<p class="project-goal">Turn the review’s JSON into a short comment for the pull request.</p>
+<p class="project-skills"><strong>You will practise:</strong> structured output as the input of the next step.</p>
+<ol class="steps">
+<li>Read <code>review.json</code>.</li>
+<li>Write a heading, the blockers or “no blockers”, and the cost.</li>
+<li>Say plainly that a person still approves.</li>
+</ol>
+<pre data-code="comment.mjs" data-from="^const" data-title="comment.mjs (part)"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-term="projects/comment.sh"></pre>
+<p class="hint"><strong>Hint:</strong> the last line matters as much as the blockers: it tells everyone reading the pull request what the comment is and is not. Posting it is one more step with your hosting service’s tool, with a token allowed to comment and nothing else.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Fix, and run the review again</h3>
+<p class="project-goal">Fix the blocker yourself, commit, and watch the same CI step pass.</p>
+<p class="project-skills"><strong>You will practise:</strong> treating the review like a test: red, fix, green.</p>
+<ol class="steps">
+<li>Round the total in <code>receipt.mjs</code>.</li>
+<li>Commit the fix on the branch.</li>
+<li>Run <code>ci/review.sh</code> and check the exit code.</li>
+</ol>
+<pre data-term="ci-pass.sh"></pre>
+<p class="hint"><strong>Hint:</strong> a pass from the reviewer means it found no blockers in what it was shown, which is the diff and nothing else. A test for a subtotal of 16 would make the fix permanent; the review would not notice if a later change undid it.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Check the workflow</h3>
+<p class="project-goal">Load the workflow file and confirm its trigger, its permissions, its timeout and its steps.</p>
+<p class="project-skills"><strong>You will practise:</strong> treating CI configuration as code with checks of its own.</p>
+<ol class="steps">
+<li>Parse the YAML.</li>
+<li>Print the trigger, the permissions and the time limit.</li>
+<li>List the steps, and which one receives the secret.</li>
+</ol>
+<pre data-code=".github/workflows/claude-review.yml" data-from="^permissions" data-title=".github/workflows/claude-review.yml (part)"></pre>
+<pre data-term="projects/workflow.sh"></pre>
+<p class="hint"><strong>Hint:</strong> read-only permissions, a ten-minute limit, and the key given only to the step that needs it. One more rule belongs here for public repositories: pull requests from forks do not receive repository secrets by default on most hosting services, which protects your key from code you have not reviewed. Keep it that way.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write your team’s three denies. For each, say what would happen if one person’s settings could undo it.</li>
+<li><span class="level">Easy</span> Add a <code>severity</code> field (“blocker” or “note”) to the schema. How should <code>ci/review.sh</code> treat notes?</li>
+<li><span class="level">Medium</span> Make the review cheaper still: send only the changed files under <code>src/</code>, not the tests or documentation. What could the reviewer then miss?</li>
+<li><span class="level">Medium</span> Run the CI review twice on the same diff with the real API. If the verdicts differ, how would you make the pipeline stable?</li>
+<li><span class="level">Challenge</span> Design a second CI job that lets Claude Code fix simple lint errors on a pull request and push the fix to the same branch. Which tools, which permissions, which limits, and which pull requests would you allow it to touch?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Part III builds products of your own on Claude. It starts where Claude Code ends: the API itself, with conversations, streaming, and the errors and limits every production program meets.</p>
+</div>
+</section>

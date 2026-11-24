@@ -1598,7 +1598,8 @@
             },
             {
               "en": "Claude Code for Teams and CI",
-              "ar": "Claude Code للفرق والتكامل المستمر"
+              "ar": "Claude Code للفرق والتكامل المستمر",
+              "src": "b8/teams"
             }
           ]
         },

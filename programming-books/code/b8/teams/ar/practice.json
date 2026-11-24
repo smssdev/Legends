@@ -1,0 +1,69 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "الإصدار موسوم. ادفعه.",
+        "tool_result": "Bash"
+      },
+      "text": "لم أستطع الدفع: إعدادات الفريق ترفضه. يجب أن يدفع إنسان الإصدار."
+    },
+    {
+      "when": {
+        "first": "الإصدار موسوم. ادفعه."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "سأدفع."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "git push origin main",
+            "description": "Push the release"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "راجع هذا الفرق لتطبيق المقهى. أبلغ عن العوائق فقط: الأخطاء، والاختبارات الناقصة لسلوك تغيّر، والتعامل الخاطئ مع المال.",
+        "tool_result": "StructuredOutput"
+      },
+      "text": "-"
+    },
+    {
+      "when": {
+        "first": "total: Math.round((subtotal + vat) * 100) / 100"
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "StructuredOutput",
+          "input": {
+            "ok": true,
+            "blockers": []
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "راجع هذا الفرق لتطبيق المقهى. أبلغ عن العوائق فقط: الأخطاء، والاختبارات الناقصة لسلوك تغيّر، والتعامل الخاطئ مع المال."
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "StructuredOutput",
+          "input": {
+            "ok": false,
+            "blockers": [
+              "receipt.mjs: الإجمالي subtotal + vat بلا تقريب؛ مجموع فرعي 16 يعطي 18.240000000000002."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
