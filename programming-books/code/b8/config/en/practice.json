@@ -1,0 +1,91 @@
+{
+  "replies": [
+    {
+      "when": {
+        "first": "piastres",
+        "text": "How should I store the price of a latte?"
+      },
+      "text": "As an integer number of piastres: a latte at 45 EGP is 4500. Format it as 45.00 only when you display it, as CLAUDE.md asks."
+    },
+    {
+      "when": {
+        "first": "Run the tests.",
+        "result_text": "requires approval"
+      },
+      "text": "I couldn't run the tests: `node --test` needs approval here."
+    },
+    {
+      "when": {
+        "first": "Run the tests.",
+        "tool_result": "Bash"
+      },
+      "text": "All 3 tests pass."
+    },
+    {
+      "when": {
+        "first": "Run the tests."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Running the tests."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "node --test",
+            "description": "Run the tests"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "The fix is committed. Push it.",
+        "tool_result": "Bash"
+      },
+      "text": "The push was blocked by the project's hook: pushing is done by a person, after review. The commit is ready on the branch."
+    },
+    {
+      "when": {
+        "first": "The fix is committed. Push it."
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Pushing to main."
+        },
+        {
+          "type": "tool_use",
+          "name": "Bash",
+          "input": {
+            "command": "git push origin main",
+            "description": "Push the fix"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "first": "Write the release notes.",
+        "tool_result": "Skill"
+      },
+      "text": "Added\n- Receipts show VAT.\nChanged\n- Prices are shown with two decimals.\nFixed\n- Bills with piastres are totalled correctly."
+    },
+    {
+      "when": {
+        "first": "Write the release notes."
+      },
+      "blocks": [
+        {
+          "type": "tool_use",
+          "name": "Skill",
+          "input": {
+            "skill": "release-notes"
+          }
+        }
+      ]
+    }
+  ]
+}

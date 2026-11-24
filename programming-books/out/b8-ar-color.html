@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "الفصل 7: العمل على مستودع كود حقيقي"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "الفصل 8: CLAUDE.md والمهارات والخطافات"; } }
+@page ch08:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -155,7 +157,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">94</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p">60</span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p">72</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">106</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -2190,6 +2192,262 @@ console.log(<span class="s">`تغيّر ولم يُذكر: ${missing.join(&quot;
 <p>كل تشغيل في هذا الفصل كرر القواعد نفسها في سطر الأوامر. والفصل التالي يكتبها مرة: <code>CLAUDE.md</code> لمعرفة المشروع، والإعدادات للصلاحيات، والمهارات للمهام المتكررة، والـ hooks التي تشغّل فحوصك تلقائياً.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b8/config/ar">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">الفصل 8</p><h1>CLAUDE.md والمهارات والـ Hooks</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تكتب <code>CLAUDE.md</code> يعطي كل جلسة ما تحتاج معرفته عن مشروعك</li>
+<li>تضع الصلاحيات في ملفات الإعدادات، وتفهم لماذا يجب أن يُوثق المجلد الجديد أولاً</li>
+<li>تفرض قاعدة بـ hook، بدل أن تأمل أن يتبعها النموذج</li>
+<li>تحزم مهمة متكررة في مهارة لا تُحمَّل إلا عند الحاجة</li>
+<li>تختبر الـ hook وحده، دون أي نموذج</li>
+</ul>
+</div>
+
+<p class="lead">في الفصل 7 حمل كل تشغيل قواعده في سطر الأوامر: أي الأوامر مسموحة، وكيف تُشغّل الاختبارات، وما لا يُلمس. ولا يستطيع فريق أن يعمل هكذا. فـ Claude Code يقرأ إعداداته من ملفات في المستودع، فتُكتب القواعد مرة، وتُراجع كالكود، ويتشاركها الجميع. وأربعة ملفات تقوم بمعظم العمل: <code>CLAUDE.md</code> للمعرفة، و<code>settings.json</code> للصلاحيات، والـ hooks للقواعد التي يجب أن تصمد، والمهارات للمهام التي تكررها.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل ما فعله Claude Code في هذا الفصل حقيقي: أرسل <code>CLAUDE.md</code> إلى النموذج، وتجاهل صلاحيات المشروع حتى وُثق المجلد، وشغّل الـ hook الذي أوقف الدفع، وحمّل مهارة باسمها. ولعب خادم التدريب دور النموذج، وضُبط رده عن <code>CLAUDE.md</code> ألا يظهر إلا إن وصلت كلمات <code>CLAUDE.md</code> فعلاً.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>ملف CLAUDE.md</span></h2>
+
+<p>ملف اسمه <code>CLAUDE.md</code> في جذر المشروع يُقرأ في بداية كل جلسة ويُرسل مع كل طلب. إنه الإحاطة التي يحتاجها زميل جديد: كيف تُشغّل الأشياء، والأعراف، وما لا يُفعل أبداً. ومشروع الفصل يُعدّ القطع الأربع كلها:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">git init -q &amp;&amp; find CLAUDE.md .claude -type f | sort</span>
+.claude/hooks/no-push.sh
+.claude/settings.json
+.claude/skills/release-notes/SKILL.md
+CLAUDE.md</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">CLAUDE.md</div><pre class="code md"><b># تطبيق مقهى بِت</b>
+
+- المبالغ محفوظة بالقروش، أعداداً صحيحة؛ ولا تُنسّق إلا للعرض.
+- شغّل الاختبارات بـ `node --test`؛ وكل تغيير يحتاج اختباراً ناجحاً.
+- لا تدفع (push) أبداً: إنسان يدفع بعد المراجعة.</pre></div>
+
+<p>ثلاثة أسطر، كل منها شيء لا يستطيع Claude تخمينه. اطرح سؤالاً يجيبه الملف:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;كيف أحفظ سعر اللاتيه؟&quot; --model claude-opus-5-5 --no-session-persistence</span>
+عدداً صحيحاً من القروش: لاتيه بـ 45 جنيهاً هو 4500. ونسّقه 45.00 فقط حين تعرضه، كما يطلب CLAUDE.md.</pre></div>
+
+<p>جواب خادم التدريب يتبع الملف، وهنا يثبت ذلك شيئاً: فقد كُتب الرد ليطابق فقط حين تظهر كلمات <code>CLAUDE.md</code> في الطلب، فقد أرسلها Claude Code فعلاً. (والتحذير بعد الجواب موضوع القسم التالي.)</p>
+
+<p>أبقِ <code>CLAUDE.md</code> قصيراً ومحدداً. الأوامر، والأعراف، وتخطيط الكود، والأخطاء التي يقع فيها الناس هنا؛ لا درساً تعليمياً، ولا المعمارية كلها، ولا حقائق تتغير كل أسبوع. فكل سطر يُرسل مع كل طلب، فكل سطر يكلّف tokens وانتباهاً. و<code>/init</code> في الجلسة التفاعلية يكتب مسودة من قاعدة كودك؛ فاختصرها. وتستطيع أيضاً حفظ <code>CLAUDE.md</code> شخصي في <code>~/.claude/</code> لعاداتك عبر المشاريع، وإضافة ملفات في المجلدات الفرعية لأجزاء المستودع الكبير التي تحتاج ملاحظاتها.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>حين يكرر Claude Code الخطأ نفسه مرتين، فالإصلاح عادة سطر في <code>CLAUDE.md</code>، لا أمر أطول. اكتبه قاعدة بسببها («المبالغ بالقروش، أعداداً صحيحة: الأعداد العشرية تقرّب خطأ»)، واحفظه، فتتحسن جلسات الفريق كله دفعة واحدة.</p></aside>
+
+<h2><span class="sec">8.2</span> <span>الإعدادات، والثقة</span></h2>
+
+<p>الصلاحيات تعيش في ملفات الإعدادات، في ثلاثة أماكن: <code>.claude/settings.json</code> في المشروع، محفوظاً، للفريق؛ و<code>.claude/settings.local.json</code>، غير محفوظ، لإضافاتك أنت؛ و<code>~/.claude/settings.json</code> لكل مشاريعك. والمشروع يسمح بأمر واحد بالضبط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.claude/settings.json</div><pre class="code">{
+  <span class="s">&quot;permissions&quot;</span>: {
+    <span class="s">&quot;allow&quot;</span>: [
+      <span class="s">&quot;Bash(node --test)&quot;</span>
+    ]
+  },
+  <span class="s">&quot;hooks&quot;</span>: {
+    <span class="s">&quot;PreToolUse&quot;</span>: [
+      {
+        <span class="s">&quot;matcher&quot;</span>: <span class="s">&quot;Bash&quot;</span>,
+        <span class="s">&quot;hooks&quot;</span>: [
+          {
+            <span class="s">&quot;type&quot;</span>: <span class="s">&quot;command&quot;</span>,
+            <span class="s">&quot;command&quot;</span>: <span class="s">&quot;sh .claude/hooks/no-push.sh&quot;</span>
+          }
+        ]
+      }
+    ]
+  }
+}</pre></div>
+
+<p>لكن في التشغيل الأول، لم تفعل القاعدة شيئاً:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;شغّل الاختبارات.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأشغّل الاختبارات.
+  calls  Bash node --test
+  gets   ok 1 - whole pounds | ok 2 - piastres | ok 3 - zero
+  says   الاختبارات الثلاثة تنجح.
+  الأدوار: 2، رُفض: 0، التكلفة: $0.1280، success</pre></div>
+
+<p>تجاهل Claude Code قاعدة السماح في المشروع، وقال السبب: المجلد لم يُوثق بعد. وهذا مقصود. فالمستودع الذي تنسخه من الإنترنت كان سيستطيع غير ذلك أن يسمح لنفسه بأي أمر، والوكيل الذي يفتحه سيطيع. والثقة تُعطى مرة، من إنسان، تفاعلياً، أول مرة يفتح فيها Claude Code المجلد؛ وحتى ذلك الحين، لا تستطيع إعدادات المشروع توسيع ما يُسمح لـ Claude Code بفعله. والمشروع 8.3 يوثق المجلد ويُظهر القاعدة نفسها تعمل.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>اقرأ <code>.claude/</code> قبل أن تثق بمستودع لم تكتبه، كما تقرأ سكربت بناء قبل تشغيله: فإعداداته تستطيع السماح بأوامر، والـ hooks فيه تشغّل برامج على جهازك.</p></aside>
+
+<h2><span class="sec">8.3</span> <span>الـ Hooks: قواعد تصمد</span></h2>
+
+<p>يقول <code>CLAUDE.md</code> «لا تدفع أبداً». هذه نصيحة: يقرؤها النموذج ويتبعها عادة. و«عادة» لا تكفي لبعض القواعد. والـ <dfn>hook</dfn> أمر يشغّله Claude Code بنفسه في لحظة من الحلقة (قبل أن تعمل أداة، وبعد أن تعمل، وحين يُرسل أمر، وحين تتوقف الجلسة)، مهما ظن النموذج. وhook المشروع يعمل قبل كل أمر طرفية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.claude/hooks/no-push.sh (جزء)</div><pre class="code">input=$(cat)
+case &quot;$input&quot; in
+  *&quot;git push&quot;*) echo &quot;الدفع يقوم به إنسان، بعد المراجعة.&quot; &gt;&amp;2; exit 2 ;;
+esac
+exit 0</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;الإصلاح محفوظ. ادفعه.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأدفع إلى main.
+  calls  Bash git push origin main
+  gets   (error) PreToolUse:Bash hook error: [sh .claude/hooks/no-push.sh]: الدفع يقوم به إنسان، بعد المراجعة.
+  says   أوقف hook المشروع الدفع: الدفع يقوم به إنسان، بعد المراجعة. والحفظ جاهز على الفرع.
+  الأدوار: 2، رُفض: 1، التكلفة: $0.1281، success</pre></div>
+
+<p>حاول النموذج المكتوب أن يدفع، رغم <code>CLAUDE.md</code>، بالضبط نوع الزلة الذي وُجد الـ hook من أجله. فشغّل Claude Code الـ hook، ورأى الـ hook <code dir="ltr">git push</code> فخرج برمز 2، ولم يعمل الأمر أبداً؛ وعادت رسالة الـ hook إلى النموذج، فأبلغ عن المنع. النموذج يستطيع تجاهل النصيحة؛ ولا يستطيع تجاهل الـ hook.</p>
+
+<p>والـ hooks برامج عادية، فتستطيع فعل أكثر بكثير من المنع: تنسيق ملف بعد كل تعديل، وتشغيل الاختبارات حين تنتهي الجلسة، وإضافة اسم المناوب اليوم إلى كل أمر، وكتابة سجل تدقيق. وأبقِها سريعة، لأنها تعمل مع كل حدث مطابق، وتذكّر أنها تعمل بصلاحياتك أنت.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>كيف يعرف هذا الفصل أن <code>CLAUDE.md</code> وصل فعلاً إلى النموذج؟</li><li>لماذا تجاهل Claude Code قاعدة السماح في المشروع في التشغيل الأول؟</li><li>ما الفرق بين «لا تدفع أبداً» في <code>CLAUDE.md</code> والـ hook؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">8.4</span> <span>المهارات</span></h2>
+
+<p>الـ <dfn>مهارة</dfn> (skill) مجلد فيه <code>SKILL.md</code>: اسم، ووصف من سطر واحد، وتعليمات، مع أي سكربتات أو قوالب تحتاجها المهمة. ولا يرى Claude Code إلا الأوصاف حتى تحتاج مهمةٌ مهارة؛ وعندها يحمّل التعليمات. وعلى خلاف <code>CLAUDE.md</code> الذي يُرسل مع كل طلب، لا تكلّف المهارة شيئاً حتى تُستخدم، فيستطيع الفريق أن يحفظ عشرات منها.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.claude/skills/release-notes/SKILL.md</div><pre class="code md">---
+name: release-notes
+description: اكتب ملاحظات الإصدار لتطبيق المقهى من الحفظات منذ آخر إصدار.
+---
+اسرد التغييرات تحت أُضيف وتغيّر وأُصلح، سطراً لكل منها، بكلمات يفهمها الزبون. واترك التغييرات التي لا يراها الزبائن.</pre></div>
+
+<p>والمشروع 8.2 يشغّلها. والوصف أهم مما يبدو: فهو ما يقرؤه Claude ليقرر هل تناسب المهارة المهمة، فاكتبه بالموقف الذي هي له («اكتب ملاحظات الإصدار لتطبيق المقهى»)، لا كعنوان («مساعد الإصدار»).</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>راجع التغييرات على <code>CLAUDE.md</code> والإعدادات والـ hooks والمهارات كالكود، في طلبات دمج، مع شخص يفهم ما تسمح به. فهي تقرر ما يعرفه الوكيل، وما يُسمح له به، وما يجب ألا يفعله، لكل من في الفريق.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td><code>CLAUDE.md</code> طويل</td><td>tokens وانتباه يُنفقان مع كل طلب</td><td>ما لا يستطيع Claude تخمينه فقط؛ والباقي إلى المهارات</td></tr>
+<tr><td>قواعد يجب أن تصمد مكتوبة كنصيحة</td><td>تُتبع عادة، وأحياناً لا</td><td>افرضها بـ hooks أو صلاحيات</td></tr>
+<tr><td>الثقة بمستودع دون قراءة <code>.claude/</code></td><td>إعداداته والـ hooks فيه تعمل على جهازك</td><td>اقرأه أولاً، كأي سكربت بناء</td></tr>
+<tr><td>إعدادات شخصية محفوظة للفريق</td><td>يأخذ الجميع صلاحيات شخص واحد</td><td>القواعد الشخصية في <code>settings.local.json</code></td></tr>
+<tr><td>hooks بطيئة على أحداث متكررة</td><td>كل استدعاء أداة ينتظر</td><td>أبقِ الـ hooks سريعة؛ وطابق الأدوات التي تحتاجها فقط</td></tr>
+<tr><td>أوصاف مهارات غامضة</td><td>لا تُستخدم المهارة حين يجب</td><td>صِف الموقف الذي المهارة له</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li><code>CLAUDE.md</code> يُرسل مع كل طلب: أبقِه قصيراً ومحدداً ومحفوظاً.</li>
+<li>الإعدادات تحفظ الصلاحيات على ثلاثة مستويات، وإعدادات المشروع لا تنطبق إلا بعد أن يوثق إنسان المجلد.</li>
+<li>الـ hooks أوامر يشغّلها Claude Code بنفسه؛ ورمز الخروج 2 يوقف استدعاء الأداة، مهما قصد النموذج.</li>
+<li>المهارات لا تحمّل تعليماتها إلا حين تحتاجها مهمة، فلا تكلّف شيئاً حتى تُستخدم.</li>
+<li>كل ذلك كود: راجعه، واختبره، واعرف ما يسمح به.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ضُبط رد خادم التدريب ليطابق فقط إن كانت كلمات <code>CLAUDE.md</code> في الطلب؛ وقد طابق، فقد أرسلها Claude Code. 2. لأن المجلد لم يكن موثوقاً: فحتى يثق به إنسان، لا تستطيع إعدادات المشروع منح Claude Code صلاحيات، وإلا لاستطاع أي مستودع أن يسمح لنفسه بأي شيء. 3. السطر في <code>CLAUDE.md</code> نصيحة قد لا يتبعها النموذج، وهنا لم يتبعها؛ والـ hook برنامج يشغّله Claude Code قبل الأمر، فيوقف الدفع مهما فعل النموذج.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تعمل المشاريع على الإعدادات نفسها: hook يُختبر دون نموذج، ومهارة تُستخدم باسمها، وخطوة الثقة التي تشغّل إعدادات المشروع.</p>
+
+<div class="project">
+<p class="project-label">المشروع 8.1 · سهل</p>
+<h3>اختبر hook دون Claude</h3>
+<p class="project-goal">أعطِ الـ hook بصيغة JSON ما كان سيرسله Claude Code، وافحص رمز خروجه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الـ hooks كبرامج عادية باختبارات عادية.</p>
+<ol class="steps">
+<li>اكتب JSON استدعاء أداة يجب أن يُمنع، وآخر يجب ألا يُمنع.</li>
+<li>مرّر كلاً منهما إلى الـ hook.</li>
+<li>افحص رموز الخروج: 2 يمنع، و0 يسمح.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">echo &#x27;{&quot;tool_name&quot;:&quot;Bash&quot;,&quot;tool_input&quot;:{&quot;command&quot;:&quot;git push origin main&quot;}}&#x27; | sh .claude/hooks/no-push.sh 2&gt;&amp;1; echo &quot;exit $?&quot;; echo &#x27;{&quot;tool_name&quot;:&quot;Bash&quot;,&quot;tool_input&quot;:{&quot;command&quot;:&quot;node --test&quot;}}&#x27; | sh .claude/hooks/no-push.sh 2&gt;&amp;1; echo &quot;exit $?&quot;</span>
+الدفع يقوم به إنسان، بعد المراجعة.
+exit 2
+exit 0</pre></div>
+<p class="hint"><strong>تلميح:</strong> الـ hook الذي يمنع الأمر الخطأ، أو يفشل في منع الصحيح، يفشل بصمت في الجلسة. فاختبره هكذا في التكامل المستمر، بقائمة أوامر يجب أن تُمنع وأوامر يجب أن تمر. وهذا الـ hook سيمنع أيضاً <code dir="ltr">echo "git push"</code>: قرر هل هذا مقبول.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 8.2 · متوسط</p>
+<h3>مهارة لملاحظات الإصدار</h3>
+<p class="project-goal">اكتب مهارة، وراقب Claude Code يحمّلها لمهمة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> صيغة <code>SKILL.md</code>، ومتى تُحمَّل المهارات.</p>
+<ol class="steps">
+<li>أنشئ <code>.claude/skills/release-notes/SKILL.md</code> باسم ووصف وتعليمات.</li>
+<li>اطلب ملاحظات الإصدار.</li>
+<li>جِد اللحظة التي تُحمَّل فيها تعليمات المهارة.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;اكتب ملاحظات الإصدار.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  calls  Skill release-notes
+  gets   Launching skill: release-notes
+  loads  Base directory for this skill: .claude/skills/release-notes /  / اسرد التغييرات تحت أُضيف وتغيّر وأُصلح، سطراً لكل منها، بكلمات يفهمها الزبون. واترك التغييرات التي لا يراها الزبائن. / 
+  says   أُضيف / - الإيصالات تُظهر الضريبة. / تغيّر / - الأسعار تُعرض بخانتين عشريتين. / أُصلح / - الفواتير بالقروش تُجمع بشكل صحيح.
+  الأدوار: 3، رُفض: 0، التكلفة: $0.1282، success</pre></div>
+<p class="hint"><strong>تلميح:</strong> سطر <code>loads</code> هو وصول المهارة إلى المحادثة: عندها فقط تكلّف تعليماتها tokens. والمهارة الحقيقية لملاحظات الإصدار تقول أيضاً أين تجد التغييرات (الحفظات منذ آخر وسم) وتضم سكربتاً يسردها، فينسّق النموذج حقائق بدل أن يتذكرها.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 8.3 · تحدٍّ</p>
+<h3>ثق، ثم اسمح</h3>
+<p class="project-goal">وثّق المجلد، وشغّل المهمة نفسها التي رُفضت، بلا أي خيارات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> كيف تعمل الثقة وصلاحيات المشروع معاً.</p>
+<ol class="steps">
+<li>وثّق المجلد: تفاعلياً، أو كما تصف رسالة Claude Code.</li>
+<li>شغّل مهمة الاختبار من جديد، بلا <code>--allowedTools</code>.</li>
+<li>قارن حالات الرفض بالتشغيل غير الموثوق.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">trust.mjs (جزء)</div><pre class="code"><span class="k">const</span> file = path.join(os.homedir(), <span class="s">&quot;.claude.json&quot;</span>);
+<span class="k">const</span> config = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, <span class="s">&quot;utf8&quot;</span>)) : {};
+config.projects ??= {};
+config.projects[process.cwd()] = {...config.projects[process.cwd()], hasTrustDialogAccepted: <span class="k">true</span>};
+fs.writeFileSync(file, JSON.stringify(config, <span class="k">null</span>, <span class="n">2</span>));
+console.log(<span class="s">`trusted: ${process.cwd()}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node trust.mjs</span>
+trusted: ~/b8-work/config/ar</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;شغّل الاختبارات.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   سأشغّل الاختبارات.
+  calls  Bash node --test
+  gets   ok 1 - whole pounds | ok 2 - piastres | ok 3 - zero
+  says   الاختبارات الثلاثة تنجح.
+  الأدوار: 2، رُفض: 0، التكلفة: $0.0676، success</pre></div>
+<p class="hint"><strong>تلميح:</strong> القاعدة نفسها، والأمر نفسه: «رُفض: 1» قبل، و«رُفض: 0» بعد. ويوثق سكربت الكتاب المجلد بتعديل ملف لأنه لا يستطيع الرد على نافذة حوار؛ أما على جهازك، فافتح <code>claude</code> في المجلد مرة واقبل النافذة، بعد قراءة <code>.claude/</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب <code>CLAUDE.md</code> لأحد مشاريعك في أقل من خمسة عشر سطراً. أي سطر كان سيوفّر عليك أكبر وقت الشهر الماضي؟</li>
+<li><span class="level">سهل</span> أضف قاعدة <code>deny</code> إلى إعدادات المشروع ترفض <code dir="ltr">Bash(git push:*)</code>. ماذا تضيف مما لا يضيفه الـ hook، وماذا يضيف الـ hook؟</li>
+<li><span class="level medium">متوسط</span> اكتب hook من نوع <code>PostToolUse</code> يشغّل <code dir="ltr">node --test</code> بعد كل تعديل لملف في <code>src/</code>، واختبره بـ JSON تجريبي كما في المشروع 8.1.</li>
+<li><span class="level medium">متوسط</span> اجعل hook الدفع دقيقاً: امنع <code dir="ltr">git push</code> كأمر، لا الكلمات داخل نص. ماذا يحتاج الـ hook أن يقرأ من مدخله؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب مهارة لأكثر مهمة يكررها فريقك، مع سكربت تشغّله لجمع الحقائق. ثم اكتب الوصف بثلاث طرق، وقرر أيها الأرجح أن يطابقه Claude بطلب حقيقي.</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 9</p>
+<p>بعد إعداد المشروع، يتابع الفصل التالي قطعة عمل كاملة: من مهمة، عبر فرع وحفظات واختبارات، إلى طلب دمج يستطيع المراجع أن يثق به.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2275,6 +2533,16 @@ console.log(<span class="s">`تغيّر ولم يُذكر: ${missing.join(&quot;
 <li>قرّب الإجمالي أيضاً: <code dir="ltr">total: Math.round((subtotal + vat) * 100) / 100</code>، أو احفظ المبالغ بالقروش أعداداً صحيحة ونسّقها للعرض فقط، فتتجنب المشكلة في كل مكان. وأضف اختباراً بطلب مجموعه الفرعي 16 يتوقع 18.24 (تحتاج القائمة صنفاً يعطي 16، أو اختبر الحساب منفصلاً). وكتابته بنفسك أولاً تعطيك ما تقارن به نسخة الوكيل.</li>
 <li>جِد المسارات في الملخص بنمط مثل <code dir="ltr">/[\w./-]+\.(m?js|json|md)/g</code>، وأبلغ عما ليس في قائمة <code dir="ltr">git diff --name-only</code>. والملف المذكور غير المتغير علامة غالباً على أن الوكيل يعتقد أنه أجرى تغييراً لم يجرِه، صورة معكوسة لفحص الفصل.</li>
 <li>أنشئ فرعاً بـ <code dir="ltr">git switch -c task/...</code>، وشغّل المهمة بـ <code dir="ltr">--output-format json</code>، ثم شغّل الاختبارات بنفسك، وقِس <code dir="ltr">git diff --numstat</code>، وشغّل <code>claims.mjs</code> على نص النتيجة. واحفظ فقط إن نجحت الثلاثة؛ وإلا فاطبع السبب واترك الفرع لإنسان. والمقصود أن البوابة لك: «الاختبارات تنجح» من الوكيل نفسه ليست من الفحوص.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 8</h2>
+<ol class="exercises">
+<li>مثلاً: أمر الاختبار، والأمر الذي يشغّل التطبيق محلياً، وأين تعيش الإعدادات، والعرف الذي ينساه الجميع («التواريخ بتوقيت UTC في قاعدة البيانات»)، وما لا يُلمس أبداً («الملفات المولّدة في <code>gen/</code>»). وأثمن سطر عادة هو الذي عن الخطأ الذي كلّف أكثر وقت: اكتبه بسببه.</li>
+<li><code dir="ltr">"deny": ["Bash(git push:*)"]</code> يرفض الأمر عبر نظام الصلاحيات: تعريفي، ويظهر في <code>/permissions</code>، ولا يحتاج سكربتاً. والـ hook يستطيع ما لا تستطيعه القاعدة: فحص المدخل كله، وإعادة رسالة محددة إلى النموذج، وتسجيل المحاولة، أو السماح بالدفع إلى بعض الفروع دون غيرها. وكثير من الفرق تستخدم الاثنين: القاعدة كحد أدنى، والـ hook للتفاصيل.</li>
+<li>طابق <code dir="ltr">Edit|Write</code> في إدخال <code>PostToolUse</code>؛ وفي السكربت، اقرأ JSON من المدخل القياسي، وافحص أن <code dir="ltr">tool_input.file_path</code> يبدأ بـ <code>src/</code>، وشغّل <code dir="ltr">node --test</code>، واكتب ملخصاً قصيراً للإخفاق على الخطأ القياسي واخرج بـ 2 إن فشل، ليراه Claude. واختبره بتمرير JSON تجريبي بمسار في <code>src/</code> وآخر خارجه، والاختبارات ناجحة وفاشلة.</li>
+<li>حلّل المدخل كـ JSON وانظر في <code dir="ltr">tool_input.command</code>، ثم قسّمه إلى كلمات وافحص هل الأمر (أو أي أمر في سلسلة يربطها <code dir="ltr">&amp;&amp;</code> أو <code>;</code> أو <code>|</code>) يبدأ بـ <code dir="ltr">git push</code>. فمطابقة النص الخام تمنع <code dir="ltr">echo "git push"</code>؛ وتحليل الأمر يمنع ما يعمل فقط. وحتى عندها، الأسماء المستعارة والسكربتات تستطيع الدفع بشكل غير مباشر، ولهذا تبقى الصلاحيات وحماية الفروع على الخادم هي الضمانات الحقيقية.</li>
+<li>مثلاً، مهارة تُعدّ تقرير الحالة الأسبوعي: سكربت يسرد طلبات الدمج المدموجة والمهام المغلقة منذ الإثنين الماضي، وتعليمات للشكل. والأوصاف للمقارنة: «تقرير الحالة» (عنوان، غامض جداً)، و«حالة الفريق الأسبوعية من طلبات الدمج المدموجة والمهام المغلقة» (أفضل)، و«اكتب تقرير الحالة الأسبوعي للفريق مما دُمج وأُغلق منذ الإثنين الماضي» (الموقف، بالكلمات التي يستخدمها الناس حين يطلبونه). والأخير الأرجح أن يُختار حين يطلب أحد التقرير الأسبوعي.</li>
 </ol>
 
 </section>

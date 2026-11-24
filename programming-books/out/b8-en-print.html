@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Working on a Real Codebase"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "Chapter 8: CLAUDE.md, Skills and Hooks"; } }
+@page ch08:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -53,7 +55,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">83</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p">83</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">93</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -2088,6 +2090,262 @@ changed but not mentioned: test/receipt.test.mjs</pre></div>
 <p>Every run in this chapter repeated the same rules on the command line. The next chapter writes them down once: <code>CLAUDE.md</code> for the project’s knowledge, settings for permissions, skills for repeated tasks, and hooks that run your checks automatically.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b8/config/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>CLAUDE.md, Skills and Hooks</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write a <code>CLAUDE.md</code> that gives every session what it needs to know about your project</li>
+<li>put permissions in settings files, and understand why a new folder must be trusted first</li>
+<li>enforce a rule with a hook, instead of hoping the model follows it</li>
+<li>package a repeated task as a skill that loads only when needed</li>
+<li>test a hook on its own, without any model</li>
+</ul>
+</div>
+
+<p class="lead">In Chapter 7 every run carried its rules on the command line: which commands were allowed, how to run the tests, what not to touch. A team cannot work like that. Claude Code reads its configuration from files in the repository, so the rules are written once, reviewed like code, and shared by everyone. Four files do most of the work: <code>CLAUDE.md</code> for knowledge, <code>settings.json</code> for permissions, hooks for rules that must hold, and skills for tasks you do again and again.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Everything Claude Code did in this chapter is real: it sent <code>CLAUDE.md</code> to the model, ignored the project’s permissions until the folder was trusted, ran the hook that blocked a push, and loaded a skill by name. The practice server played the model, and its reply about <code>CLAUDE.md</code> was set to appear only if <code>CLAUDE.md</code>’s words really arrived.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>CLAUDE.md</span></h2>
+
+<p>A file named <code>CLAUDE.md</code> at the root of a project is read at the start of every session and sent with every request. It is the briefing a new colleague would need: how to run things, the conventions, and what never to do. The chapter’s project configures all four pieces:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">git init -q &amp;&amp; find CLAUDE.md .claude -type f | sort</span>
+.claude/hooks/no-push.sh
+.claude/settings.json
+.claude/skills/release-notes/SKILL.md
+CLAUDE.md</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">CLAUDE.md</div><pre class="code md"><b># Bit Cafe app</b>
+
+- Money is stored in piastres, as integers; format it only for display.
+- Run the tests with `node --test`; every change needs a passing test.
+- Never push: a person pushes after review.</pre></div>
+
+<p>Three lines, each one something Claude could not guess. Ask a question the file answers:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;How should I store the price of a latte?&quot; --model claude-opus-5-5 --no-session-persistence</span>
+As an integer number of piastres: a latte at 45 EGP is 4500. Format it as 45.00 only when you display it, as CLAUDE.md asks.</pre></div>
+
+<p>The practice server’s answer follows the file, and here that proves something: the reply was scripted to match only when the words of <code>CLAUDE.md</code> appear in the request, so Claude Code really sent them. (The warning after the answer is the subject of the next section.)</p>
+
+<p>Keep <code>CLAUDE.md</code> short and specific. Commands, conventions, the layout of the code, and the mistakes people make here; not a tutorial, not the whole architecture, not facts that change weekly. Every line is sent with every request, so every line costs tokens and attention. <code>/init</code> in an interactive session drafts one from your codebase; edit it down. You can also keep a personal <code>CLAUDE.md</code> in <code>~/.claude/</code> for your own habits across projects, and add files in subfolders for the parts of a large repository that need their own notes.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>When Claude Code makes the same mistake twice, the fix is usually a line in <code>CLAUDE.md</code>, not a longer prompt. Write it as a rule with its reason (“money is in piastres, as integers: floats round wrongly”), commit it, and the whole team’s sessions improve at once.</p></aside>
+
+<h2><span class="sec">8.2</span> <span>Settings, and trust</span></h2>
+
+<p>Permissions live in settings files, in three places: <code>.claude/settings.json</code> in the project, committed, for the team; <code>.claude/settings.local.json</code>, not committed, for your own additions; and <code>~/.claude/settings.json</code> for all your projects. The project allows exactly one command:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.claude/settings.json</div><pre class="code">{
+  <span class="s">&quot;permissions&quot;</span>: {
+    <span class="s">&quot;allow&quot;</span>: [
+      <span class="s">&quot;Bash(node --test)&quot;</span>
+    ]
+  },
+  <span class="s">&quot;hooks&quot;</span>: {
+    <span class="s">&quot;PreToolUse&quot;</span>: [
+      {
+        <span class="s">&quot;matcher&quot;</span>: <span class="s">&quot;Bash&quot;</span>,
+        <span class="s">&quot;hooks&quot;</span>: [
+          {
+            <span class="s">&quot;type&quot;</span>: <span class="s">&quot;command&quot;</span>,
+            <span class="s">&quot;command&quot;</span>: <span class="s">&quot;sh .claude/hooks/no-push.sh&quot;</span>
+          }
+        ]
+      }
+    ]
+  }
+}</pre></div>
+
+<p>But on the first run, the rule did nothing:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;Run the tests.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   Running the tests.
+  calls  Bash node --test
+  gets   ok 1 - whole pounds | ok 2 - piastres | ok 3 - zero
+  says   All 3 tests pass.
+  turns: 2, denied: 0, cost: $0.1273, success</pre></div>
+
+<p>Claude Code ignored the project’s allow rule, and said why: the folder has not been trusted. This is deliberate. A repository you clone from the internet could otherwise allow itself any command, and an agent opening it would obey. Trust is given once, by a person, interactively, the first time Claude Code opens a folder; until then, a project’s settings cannot widen what Claude Code may do. Project 8.3 trusts the folder and shows the same rule working.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Read <code>.claude/</code> before you trust a repository you did not write, as you would read a build script before running it: its settings can allow commands, and its hooks run programs on your machine.</p></aside>
+
+<h2><span class="sec">8.3</span> <span>Hooks: rules that hold</span></h2>
+
+<p><code>CLAUDE.md</code> says “never push”. That is advice: the model reads it and usually follows it. Usually is not enough for some rules. A <dfn>hook</dfn> is a command Claude Code runs itself at a moment in the loop (before a tool runs, after it runs, when a prompt is submitted, when the session stops), whatever the model thinks. The project’s hook runs before every shell command:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.claude/hooks/no-push.sh (part)</div><pre class="code">input=$(cat)
+case &quot;$input&quot; in
+  *&quot;git push&quot;*) echo &quot;Pushing is done by a person, after review.&quot; &gt;&amp;2; exit 2 ;;
+esac
+exit 0</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;The fix is committed. Push it.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   Pushing to main.
+  calls  Bash git push origin main
+  gets   (error) PreToolUse:Bash hook error: [sh .claude/hooks/no-push.sh]: Pushing is done by a person, after review.
+  says   The push was blocked by the project&#x27;s hook: pushing is done by a person, after review. The commit is ready on the branch.
+  turns: 2, denied: 1, cost: $0.1275, success</pre></div>
+
+<p>The scripted model tried to push, despite <code>CLAUDE.md</code>, exactly the kind of slip a hook exists for. Claude Code ran the hook, the hook saw <code>git push</code> and exited with code 2, and the command never ran; the hook’s message went back to the model, which reported the block. A model can ignore advice; it cannot ignore a hook.</p>
+
+<p>Hooks are ordinary programs, so they can do far more than block: format a file after every edit, run the tests when the session ends, add today’s on-call name to every prompt, write an audit log. Keep them fast, since they run on every matching event, and remember that they run with your permissions.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>How does this chapter know that <code>CLAUDE.md</code> really reached the model?</li><li>Why did Claude Code ignore the project’s allow rule on the first run?</li><li>What is the difference between “never push” in <code>CLAUDE.md</code> and the hook?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">8.4</span> <span>Skills</span></h2>
+
+<p>A <dfn>skill</dfn> is a folder with a <code>SKILL.md</code>: a name, a one-line description, and instructions, plus any scripts or templates the task needs. Claude Code sees only the descriptions until a task calls for a skill; then it loads the instructions. Unlike <code>CLAUDE.md</code>, which is sent with every request, a skill costs nothing until it is used, so a team can keep dozens.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.claude/skills/release-notes/SKILL.md</div><pre class="code md">---
+name: release-notes
+description: Write release notes for the café app from the commits since the last release.
+---
+List the changes under Added, Changed and Fixed, one line each, in words a customer understands. Leave out changes customers cannot see.</pre></div>
+
+<p>Project 8.2 runs it. The description matters more than it looks: it is what Claude reads to decide whether the skill fits the task, so write it as the situation it is for (“write release notes for the café app”), not as a title (“release helper”).</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Review changes to <code>CLAUDE.md</code>, settings, hooks and skills like code, in pull requests, with someone who understands what they allow. They decide what an agent knows, may do and must not do, for everyone on the team.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A long <code>CLAUDE.md</code></td><td>Tokens and attention spent on every request</td><td>Only what Claude cannot guess; move the rest to skills</td></tr>
+<tr><td>Rules that must hold, written as advice</td><td>Usually followed, sometimes not</td><td>Enforce them with hooks or permissions</td></tr>
+<tr><td>Trusting a repository without reading <code>.claude/</code></td><td>Its settings and hooks act on your machine</td><td>Read it first, like any build script</td></tr>
+<tr><td>Personal settings committed for the team</td><td>Everyone gets one person’s permissions</td><td>Personal rules in <code>settings.local.json</code></td></tr>
+<tr><td>Slow hooks on frequent events</td><td>Every tool call waits</td><td>Keep hooks fast; match only the tools they need</td></tr>
+<tr><td>Vague skill descriptions</td><td>The skill is not used when it should be</td><td>Describe the situation the skill is for</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><code>CLAUDE.md</code> is sent with every request: keep it short, specific and committed.</li>
+<li>Settings hold permissions at three levels, and a project’s settings apply only after a person trusts the folder.</li>
+<li>Hooks are commands Claude Code runs itself; exit code 2 blocks a tool call, whatever the model intended.</li>
+<li>Skills load their instructions only when a task needs them, so they cost nothing until used.</li>
+<li>All of it is code: review it, test it, and know what it allows.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The practice server’s reply was set to match only if the words of <code>CLAUDE.md</code> were in the request; it matched, so Claude Code sent them. 2. Because the folder had not been trusted: until a person trusts it, a project’s settings cannot give Claude Code permissions, or any repository could allow itself anything. 3. The line in <code>CLAUDE.md</code> is advice the model may not follow, and here did not; the hook is a program Claude Code runs before the command, and it blocks the push whatever the model does.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects work on the configuration itself: a hook tested without a model, a skill used by name, and the trust step that turns project settings on.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>Test a hook without Claude</h3>
+<p class="project-goal">Feed the hook the JSON Claude Code would send, and check its exit code.</p>
+<p class="project-skills"><strong>You will practise:</strong> hooks as ordinary programs with ordinary tests.</p>
+<ol class="steps">
+<li>Write the JSON of a tool call that should be blocked, and one that should not.</li>
+<li>Pipe each to the hook.</li>
+<li>Check the exit codes: 2 blocks, 0 allows.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">echo &#x27;{&quot;tool_name&quot;:&quot;Bash&quot;,&quot;tool_input&quot;:{&quot;command&quot;:&quot;git push origin main&quot;}}&#x27; | sh .claude/hooks/no-push.sh 2&gt;&amp;1; echo &quot;exit $?&quot;; echo &#x27;{&quot;tool_name&quot;:&quot;Bash&quot;,&quot;tool_input&quot;:{&quot;command&quot;:&quot;node --test&quot;}}&#x27; | sh .claude/hooks/no-push.sh 2&gt;&amp;1; echo &quot;exit $?&quot;</span>
+Pushing is done by a person, after review.
+exit 2
+exit 0</pre></div>
+<p class="hint"><strong>Hint:</strong> a hook that blocks the wrong command, or fails to block the right one, fails silently in a session. Test it like this in CI, with a list of commands that must be blocked and commands that must pass. This hook would also block <code>echo "git push"</code>: decide whether that is acceptable.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>A skill for release notes</h3>
+<p class="project-goal">Write a skill, and watch Claude Code load it for a task.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>SKILL.md</code> format, and when skills load.</p>
+<ol class="steps">
+<li>Create <code>.claude/skills/release-notes/SKILL.md</code> with a name, a description and instructions.</li>
+<li>Ask for release notes.</li>
+<li>Find the moment the skill’s instructions are loaded.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;Write the release notes.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  calls  Skill release-notes
+  gets   Launching skill: release-notes
+  loads  Base directory for this skill: .claude/skills/release-notes /  / List the changes under Added, Changed and Fixed, one line each, in words a customer understands. Leave out changes customers cannot see. / 
+  says   Added / - Receipts show VAT. / Changed / - Prices are shown with two decimals. / Fixed / - Bills with piastres are totalled correctly.
+  turns: 3, denied: 0, cost: $0.1272, success</pre></div>
+<p class="hint"><strong>Hint:</strong> the <code>loads</code> line is the skill arriving in the conversation: only then do its instructions cost tokens. A real skill for release notes would also say where to find the changes (the commits since the last tag) and include a script to list them, so the model formats facts instead of recalling them.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>Trust, then allow</h3>
+<p class="project-goal">Trust the folder, and run the same task that was refused, with no flags at all.</p>
+<p class="project-skills"><strong>You will practise:</strong> how trust and project permissions work together.</p>
+<ol class="steps">
+<li>Trust the folder: interactively, or as Claude Code’s message describes.</li>
+<li>Run the test task again, without <code>--allowedTools</code>.</li>
+<li>Compare the denials with the untrusted run.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">trust.mjs (part)</div><pre class="code"><span class="k">const</span> file = path.join(os.homedir(), <span class="s">&quot;.claude.json&quot;</span>);
+<span class="k">const</span> config = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, <span class="s">&quot;utf8&quot;</span>)) : {};
+config.projects ??= {};
+config.projects[process.cwd()] = {...config.projects[process.cwd()], hasTrustDialogAccepted: <span class="k">true</span>};
+fs.writeFileSync(file, JSON.stringify(config, <span class="k">null</span>, <span class="n">2</span>));
+console.log(<span class="s">`trusted: ${process.cwd()}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node trust.mjs</span>
+trusted: ~/b8-work/config/en</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;Run the tests.&quot; --model claude-opus-5-5 --no-session-persistence --output-format stream-json --verbose | node watch.mjs</span>
+  says   Running the tests.
+  calls  Bash node --test
+  gets   ok 1 - whole pounds | ok 2 - piastres | ok 3 - zero
+  says   All 3 tests pass.
+  turns: 2, denied: 0, cost: $0.0671, success</pre></div>
+<p class="hint"><strong>Hint:</strong> the same rule, the same command: <code>denied: 1</code> before, <code>denied: 0</code> after. The book’s script trusts the folder with a file edit because it cannot answer a dialog; on your machine, open <code>claude</code> in the folder once and accept the dialog, after reading <code>.claude/</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a <code>CLAUDE.md</code> for one of your projects in under fifteen lines. Which line would have saved you the most time last month?</li>
+<li><span class="level">Easy</span> Add a <code>deny</code> rule to the project’s settings that refuses <code>Bash(git push:*)</code>. What does it add that the hook does not, and what does the hook add?</li>
+<li><span class="level medium">Medium</span> Write a <code>PostToolUse</code> hook that runs <code>node --test</code> after every edit to a file in <code>src/</code>, and test it with sample JSON as in Project 8.1.</li>
+<li><span class="level medium">Medium</span> Make the push hook precise: block <code>git push</code> as a command, but not the words inside a string. What does the hook need to read from its input?</li>
+<li><span class="level hard">Challenge</span> Write a skill for your team’s most repeated task, with a script it runs to gather the facts. Then write the description three ways, and decide which one Claude is most likely to match to a real request.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>With the project configured, the next chapter follows a full piece of work: from an issue, through a branch, commits and tests, to a pull request a reviewer can trust.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2173,6 +2431,16 @@ changed but not mentioned: test/receipt.test.mjs</pre></div>
 <li>Round the total as well: <code>total: Math.round((subtotal + vat) * 100) / 100</code>, or keep amounts in piastres as integers and format only for display, which avoids the problem everywhere. Add <code>test("rounding", () =&gt; assert.equal(receipt(...).total, 18.24))</code> with an order whose subtotal is 16 (the menu needs an item that makes 16, or test the calculation separately). Writing it yourself first gives you something to compare an agent’s version with.</li>
 <li>Find paths in the summary with a pattern such as <code>/[\w./-]+\.(m?js|json|md)/g</code>, and report those not in the list from <code>git diff --name-only</code>. A file mentioned and unchanged is often a sign the agent believes it made a change it did not make, the mirror image of the chapter’s check.</li>
 <li>Create a branch with <code>git switch -c task/...</code>, run the task with <code>--output-format json</code>, then run the tests yourself, measure <code>git diff --numstat</code>, and run <code>claims.mjs</code> on the result text. Commit only if all three pass; otherwise print why and leave the branch for a person. The point is that the gate is yours: the agent’s own “tests pass” is not one of the checks.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 8</h2>
+<ol class="exercises">
+<li>For example: the test command, the command that starts the app locally, where configuration lives, the one convention everyone forgets (“dates are UTC in the database”), and what never to touch (“generated files in <code>gen/</code>”). The most valuable line is usually the one about the mistake that cost the most time: write it with its reason.</li>
+<li><code>"deny": ["Bash(git push:*)"]</code> refuses the command through the permission system: it is declarative, shows in <code>/permissions</code>, and needs no script. The hook can do what a rule cannot: inspect the whole input, give a specific message back to the model, log the attempt, or allow pushes to some branches and not others. Many teams use both: the rule as the floor, the hook for the nuance.</li>
+<li>Match <code>Edit|Write</code> in a <code>PostToolUse</code> entry; in the script, read the JSON from standard input, check that <code>tool_input.file_path</code> starts with <code>src/</code>, and run <code>node --test</code>, writing a short failure summary to standard error and exiting with 2 if it fails, so Claude sees it. Test it by piping sample JSON with a path in <code>src/</code> and one outside it, with the tests passing and failing.</li>
+<li>Parse the input as JSON and look at <code>tool_input.command</code>, then split it into words and check whether the command (or any command in a chain joined by <code>&amp;&amp;</code>, <code>;</code> or <code>|</code>) starts with <code>git push</code>. Matching the raw text blocks <code>echo "git push"</code>; parsing the command blocks only what runs. Even then, aliases and scripts can push indirectly, which is why permissions and server-side branch protection remain the real guarantees.</li>
+<li>For example, a skill that prepares the weekly status report: a script that lists merged pull requests and closed issues since last Monday, and instructions for the format. Descriptions to compare: “status report” (a title, too vague), “Weekly team status from merged PRs and closed issues” (better), and “Write the weekly status report for the team from what was merged and closed since last Monday” (the situation, in the words people use when they ask). The last is the most likely to be chosen when someone asks for the weekly report.</li>
 </ol>
 
 </section>
