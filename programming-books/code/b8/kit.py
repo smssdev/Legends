@@ -34,6 +34,10 @@ def env():
     # The SDK reads these two variables: the practice server's address, and its key.
     e["ANTHROPIC_BASE_URL"] = f"http://127.0.0.1:{PORT}"
     e["ANTHROPIC_API_KEY"] = "test-key"
+    # The browser for chapters that test an artifact, already installed on this machine.
+    for k in ("PLAYWRIGHT_BROWSERS_PATH", "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD"):
+        if os.environ.get(k):
+            e[k] = os.environ[k]
     return e
 
 
@@ -63,8 +67,12 @@ def wrap_comments(text):
 
 
 def deps(extra=()):
-    """The SDK (and any extra packages), installed once for every chapter's project."""
+    """The SDK (and any extra packages), installed once for every chapter's project. Playwright is linked
+    from this machine's global install, whose browser is already there; a reader runs
+    `npm install playwright` and `npx playwright install chromium` instead."""
     base = WORK / "_deps"
+    link = "playwright" in extra
+    extra = [x for x in extra if x != "playwright"]
     wanted = [SDK, *extra]
     stamp = base / "installed.txt"
     if not stamp.exists() or stamp.read_text().split() != wanted:
@@ -75,6 +83,9 @@ def deps(extra=()):
         if code:
             raise RuntimeError(out)
         stamp.write_text(" ".join(wanted))
+    target = base / "node_modules" / "playwright"
+    if link and not target.exists():
+        target.symlink_to(Path("/opt/node22/lib/node_modules/playwright"))
     return base / "node_modules"
 
 
@@ -133,4 +144,6 @@ def chapter(here, words_by_lang, files, runs, extra=(), binaries=None):
                 s.save(out / transcript)
         finally:
             server.stop()
+        if (base / "artifacts").is_dir():  # what the examples made, kept with the book's code
+            shutil.copytree(base / "artifacts", out / "artifacts")
         print("wrote", out)

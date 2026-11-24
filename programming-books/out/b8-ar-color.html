@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "الفصل 3: المشاريع والمعرفة"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "الفصل 4: Artifacts: التطبيقات والمستندات والرسوم"; } }
+@page ch04:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -147,7 +149,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">48</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">25</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">60</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -1097,6 +1099,291 @@ marketing  الملفات: 1، 283 tokens: 0.028% من نافذة السياق</
 <p>بعض الأجوبة ليست نصاً بل أشياء: مستند يُحرَّر، ورسم توضيحي، وتطبيق صغير يعمل. والفصل التالي عن الـ artifacts، وكيف تبنيها وتفحصها وتشاركها.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b8/artifacts/ar">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">الفصل 4</p><h1>الـ Artifacts: التطبيقات والمستندات والمخططات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تتعرّف على ما يصنعه Claude كـ artifact، ومتى تطلبه</li>
+<li>تطلب الـ artifact ليناسب غرضه من المرة الأولى</li>
+<li>تختبر الـ artifact كما تختبر الكود، في متصفح حقيقي</li>
+<li>تعيد الإخفاق بحيث يكون الإصلاح دقيقاً</li>
+<li>تشارك الـ artifact دون أن تشارك أكثر مما قصدت</li>
+</ul>
+</div>
+
+<p class="lead">بعض الأجوبة ليست فقرات بل أشياء: مستند ستظل تعدّله، ومخطط لاجتماع، وتطبيق صغير يستخدمه زميل. وفي تطبيقات Claude تظهر هذه <dfn>artifacts</dfn>، في لوحة بجانب المحادثة، حيث تراها، وتغيّرها بالطلب، وتشاركها. وهذا الفصل عن الحصول على artifacts تعمل، وعن معرفة أنها تعمل.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الـ artifact في هذا الفصل فيه خطأ حقيقي، ووجده متصفح حقيقي: فاتورة 85.50 صارت 85. والـ artifact كُتب للكتاب وأعاده خادم التدريب؛ أما الاختبار والإخفاق والإصلاح الذي نجح فكلها حقيقية.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>ما الـ artifact</span></h2>
+
+<p>حين يكون الجواب كبيراً وقائماً بذاته، يضعه Claude في artifact بدل مجرى المحادثة. وأنواعه الشائعة:</p>
+
+<table>
+<thead><tr><th>النوع</th><th>أمثلة</th><th>افحصه بـ</th></tr></thead>
+<tbody>
+<tr><td>المستندات</td><td>خطة، أو سياسة، أو تقرير بصيغة Markdown</td><td>قراءته مقابل مصادره</td></tr>
+<tr><td>الكود</td><td>سكربت، أو دالة، أو ملف إعدادات</td><td>تشغيل اختباراته</td></tr>
+<tr><td>صفحات الويب والتطبيقات</td><td>حاسبة، أو نموذج، أو لوحة بيانات في ملف HTML واحد أو مكوّن React</td><td>استخدامه في متصفح، مع اختبار</td></tr>
+<tr><td>المخططات والصور</td><td>مخطط تدفق بصيغة Mermaid، أو شعار SVG</td><td>رسمه وقراءة كل سهم</td></tr>
+</tbody>
+</table>
+
+<p>يحتفظ الـ artifact بنسخه: كل تغيير تطلبه يصنع نسخة جديدة، وتستطيع العودة. ويمكن نشره برابط، فيفتحه الآخرون ويستخدمونه أو يصنعون نسختهم منه. وبعض التطبيقات تتيح للـ artifact نفسه أن يستدعي Claude، فتجيب صفحة صنعتها عن الأسئلة أو تولّد نصاً لمن يستخدمها. وكل هذا يجعل الـ artifacts تبدو منتهية. وهي مسودات، صنعها نموذج، وبقية هذا الفصل تعاملها كذلك.</p>
+
+<h2><span class="sec">4.2</span> <span>كيف تطلبه</span></h2>
+
+<p>طلب الـ artifact مواصفات صغيرة (الكتاب السابع، الفصل 9): لأي غرض، وما يدخل وما يخرج، والقيود المهمة. وطلب الفصل:</p>
+
+<pre class="plain">اصنع لي حاسبة بقشيش في صفحة HTML واحدة: حقل للفاتورة بالجنيه، وحقل لنسبة البقشيش،
+والبقشيش والإجمالي، يتحدثان وأنا أكتب.</pre>
+
+<p>يقول الشكل (صفحة HTML واحدة)، والمدخلات، والمخرجات، والسلوك. والطلب الأفضل يقول أيضاً كيف سيُفحص («فاتورة 85.50 بنسبة 10% تعطي 8.55») والقيود التي تهم الفريق: يعمل دون اتصال، وبلا مكتبات خارجية، وحقول بتسميات، وبالعربية والإنجليزية. وكل قيد تتركه قد يكسره الـ artifact بهدوء.</p>
+
+<p>ويأخذ البرنامج الـ artifact من كتلة الكود في الرد، كما يفعل التطبيق تماماً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/artifact.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> codeBlocks(text) {
+  <span class="k">return</span> [...text.matchAll(/<span class="s">``</span><span class="s">`(\w*)\n([\s\S]*?)\n`</span><span class="s">``</span>/g)].map(([, lang, code]) =&gt; ({lang, code}));
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">make.mjs (جزء)</div><pre class="code"><span class="k">const</span> reply = <span class="k">await</span> ask([{role: <span class="s">&quot;user&quot;</span>, content: REQUEST}]);
+<span class="k">const</span> [html] = codeBlocks(reply).filter((b) =&gt; b.lang === <span class="s">&quot;html&quot;</span>);
+save(<span class="s">&quot;tip-v1.html&quot;</span>, html.code);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node make.mjs</span>
+حُفظ artifacts/tip-v1.html: 35 سطراً</pre></div>
+
+<h2><span class="sec">4.3</span> <span>العرض ليس اختباراً</span></h2>
+
+<p>افتح الصفحة، واكتب 100، فترى 10.00 و110.00، فتبدو منتهية. واكتب فاتورة كالتي يطبعها مقهى حقيقي، بالقروش، فلا تكون. واختبار في متصفح حقيقي، بـ Playwright، يكتب ما يكتبه الزبون ويقرأ ما تعرضه الصفحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">check.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> check(file) {
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">const</span> page = <span class="k">await</span> browser.newPage();
+  <span class="k">await</span> page.goto(<span class="s">`file://${path.resolve(file)}`</span>);
+  <span class="k">await</span> page.fill(<span class="s">&quot;#bill&quot;</span>, <span class="s">&quot;85.50&quot;</span>);
+  <span class="k">await</span> page.fill(<span class="s">&quot;#tip&quot;</span>, <span class="s">&quot;10&quot;</span>);
+  <span class="k">const</span> tip = <span class="k">await</span> page.textContent(<span class="s">&quot;#tip-amount&quot;</span>);
+  <span class="k">const</span> total = <span class="k">await</span> page.textContent(<span class="s">&quot;#total&quot;</span>);
+  <span class="k">await</span> browser.close();
+  <span class="k">const</span> ok = tip === <span class="s">&quot;8.55&quot;</span> &amp;&amp; total === <span class="s">&quot;94.05&quot;</span>;
+  <span class="k">const</span> failure = <span class="s">&quot;فاتورة 85.50 بنسبة 10% أعطت بقشيشاً $tip وإجمالياً $total؛ والمتوقع 8.55 و94.05&quot;</span>.replace(<span class="s">&quot;$tip&quot;</span>, tip).replace(<span class="s">&quot;$total&quot;</span>, total);
+  <span class="k">return</span> {ok, failure: ok ? <span class="s">&quot;&quot;</span> : failure};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node check.mjs artifacts/tip-v1.html</span>
+FAIL artifacts/tip-v1.html: فاتورة 85.50 بنسبة 10% أعطت بقشيشاً 8.50 وإجمالياً 93.50؛ والمتوقع 8.55 و94.05</pre></div>
+
+<p>بقشيش 8.50 بدل 8.55. والسبب كلمة واحدة في الـ artifact:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">artifacts/tip-v1.html (جزء)</div><pre class="code">    function update() {
+      const amount = parseInt(bill.value);
+      const share = (amount * Number(tip.value)) / 100;
+      document.getElementById(<span class="s">&quot;tip-amount&quot;</span>).textContent = share.toFixed(2);
+      const total = amount + share;
+      document.getElementById(<span class="s">&quot;total&quot;</span>).textContent = total.toFixed(2);
+    }</pre></div>
+
+<p><code>parseInt</code> يقرأ الأرقام حتى أول حرف ليس رقماً، فيصير <code dir="ltr">"85.50"</code> هو 85 وتختفي القروش. وبدت الصفحة صحيحة مع كل رقم صحيح قد يجرّبه أحد في عرض. وهذه أكثر طريقة شائعة تخفق بها الـ artifacts: لا بالانهيار، بل بالصواب في الحالات التي فكّرت فيها والخطأ في التي يأتي بها مستخدموك.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>المال، والتواريخ، والمناطق الزمنية، والتقريب، والحقول الفارغة، والمدخلات الطويلة جداً هي حيث يخفق الكود المولّد أكثر. وقبل أن يعتمد أحد على artifact يلمسها، اختبر تلك الحالات بالضبط، بقيم من الحياة الحقيقية.</p></aside>
+
+<h2><span class="sec">4.4</span> <span>إصلاحه في المحادثة</span></h2>
+
+<p>«لا يعمل» لا تعطي Claude شيئاً يعمل به. أما الاختبار الفاشل فيعطيه: ماذا كُتب، وماذا خرج، وماذا كان متوقعاً. فأعده إلى المحادثة نفسها، ليبني الرد على الصفحة التي صنعها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">fix.mjs (جزء)</div><pre class="code"><span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: REQUEST}];
+messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: <span class="k">await</span> ask(messages)});
+<span class="k">const</span> {failure} = <span class="k">await</span> check(<span class="s">&quot;artifacts/tip-v1.html&quot;</span>);
+messages.push({role: <span class="s">&quot;user&quot;</span>, content: failed(failure)});
+<span class="k">const</span> reply = <span class="k">await</span> ask(messages);
+<span class="k">const</span> [html] = codeBlocks(reply).filter((b) =&gt; b.lang === <span class="s">&quot;html&quot;</span>);
+save(<span class="s">&quot;tip-v2.html&quot;</span>, html.code);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node fix.mjs</span>
+حُفظ artifacts/tip-v2.html: 36 سطراً</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node check.mjs artifacts/tip-v2.html</span>
+PASS artifacts/tip-v2.html</pre></div>
+
+<p>رد خادم التدريب يسمّي السبب ويستبدل <code>parseInt</code> بـ <code>Number</code>؛ والنموذج الحقيقي يجده عادة بالطريقة نفسها، من الدليل نفسه. والاختبار نفسه، مشغّلاً من جديد، ينجح: وهذا، لا شرح الرد، هو ما يخبرك أن الإصلاح يعمل. وفي التطبيق الحلقة نفسها: صِف الإخفاق بدقة، واطلب التغيير، وافحص النسخة الجديدة قبل أن تشاركها.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>اطلب الاختبار مع الـ artifact: «ومعه قائمة بخمسة مدخلات والنتائج التي تتوقعها». وما زلت تفحص أن النتائج المتوقعة صحيحة، لكنك تحصل على خطة اختبار مجاناً، ويُكتب الـ artifact وتلك الحالات في الحسبان.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا نجحت الحاسبة في العرض وفشلت في الاختبار؟</li><li>ما الذي يجعل تقرير الإخفاق مفيداً لـ Claude؟</li><li>بعد الإصلاح، ما الذي يخبرك أنه يعمل: الشرح أم الاختبار؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>المخططات والمستندات</span></h2>
+
+<p>اطلب مخططاً فتحصل عليه عادة بصيغة Mermaid، صيغة نصية لمخططات التدفق والتسلسل يرسمها التطبيق لك (المشروع 4.1 يحفظ واحداً). ولأنه نص، يستطيع أن يعيش في مستودعك بجانب الكود الذي يشرحه، ويتغير في طلب الدمج نفسه. وافحص المخطط بقراءة كل سهم مقابل ما يحدث فعلاً: فالمخطط الخاطئ يعلّم الشيء الخاطئ لكل من يقرؤه.</p>
+
+<p>والـ artifacts المستندية (خطط، وسياسات، وأدلة) تُفحص ككل نص من Claude: مقابل مصادرها، مع التحقق من الأسماء والأرقام والتواريخ. والمستند الطويل الذي يكتب Claude مسودته وتعدّله أنت طريقة عمل جيدة؛ أما الذي يكتب Claude مسودته ويُرسل دون قراءة فليس كذلك.</p>
+
+<h2><span class="sec">4.6</span> <span>المشاركة</span></h2>
+
+<p>الـ artifact المنشور يستطيع فتحه أي أحد معه الرابط. وقبل أن تنشر، اقرأه لترى ما يحويه: قائمة أسعار داخلية، أو اسم عميل في بيانات تجريبية، أو رابطاً فيه رمز دخول. وإن كان الـ artifact يستدعي Claude لمن يستخدمه، ففكّر فيما قد يسألونه، ومن يدفع. وقرر من يحافظ عليه: فالـ artifact المفيد ينتشر، وغير المصان يظل يعطي أجوبة الربع الماضي بعد أن يتغير الربع بكثير.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>عامل أي artifact سيعتمد عليه الآخرون ككود: ضعه في المستودع، واجعل له اختباراً، وغيّره عبر المراجعة. فالتطبيق مكان جيد لكتابة مسودته؛ وليس مكاناً لصيانته.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>الثقة بالعرض</td><td>أخطاء في الحالات التي لم يجرّبها أحد</td><td>اختبر بقيم حقيقية، خصوصاً المال والتواريخ</td></tr>
+<tr><td>«لا يعمل» كملاحظة</td><td>تخمينات بدل إصلاحات</td><td>أرسل المدخل والمخرج والمتوقع</td></tr>
+<tr><td>تصديق شرح الإصلاح</td><td>إصلاح معقول ليس إصلاحاً</td><td>شغّل الاختبار نفسه من جديد</td></tr>
+<tr><td>طلب بلا قيود</td><td>مكتبات خارجية، وبلا تسميات، ويحتاج اتصالاً</td><td>قل ما يجب أن يكون صحيحاً، وكيف سيُفحص</td></tr>
+<tr><td>النشر دون قراءة</td><td>بيانات داخلية على رابط عام</td><td>اقرأه كما يقرؤه غريب، ثم انشر</td></tr>
+<tr><td>صيانة artifact في محادثة</td><td>بلا سجل، ولا مراجعة، ولا اختبارات</td><td>انقله إلى المستودع حين يعتمد عليه الآخرون</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>الـ artifacts مخرجات قائمة بذاتها (مستندات، وكود، وصفحات، ومخططات) لها نسخ ومشاركة.</li>
+<li>اطلبه كمواصفات صغيرة: الغرض، والمدخلات، والمخرجات، والقيود، وكيف سيُفحص.</li>
+<li>اختبر الـ artifacts ككود، في متصفح حقيقي، بالقيم التي يأتي بها المستخدمون الحقيقيون؛ فالحاسبة كانت صحيحة مع 100 وخاطئة مع 85.50.</li>
+<li>أصلح بإعادة الاختبار الفاشل إلى المحادثة، وصدّق الاختبار، لا الشرح.</li>
+<li>اقرأ قبل أن تنشر، وانقل ما يعتمد عليه الآخرون إلى المستودع.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن العرض يستخدم أرقاماً صحيحة، و<code>parseInt</code> لا يفقد إلا الأرقام بعد العلامة العشرية؛ والاختبار استخدم فاتورة حقيقية، 85.50. 2. المدخل بالضبط، وما خرج، وما كان متوقعاً: فهو يشير إلى السبب، فيكون الإصلاح دقيقاً. 3. الاختبار: الشرح ما يقول النموذج إنه فعله؛ والاختبار ما تفعله الصفحة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تؤتمت المشاريع ما فعله هذا الفصل باليد: حفظ الـ artifacts من الردود، وفحصها، وتشغيل حلقة الطلب والاختبار والإصلاح.</p>
+
+<div class="project">
+<p class="project-label">المشروع 4.1 · سهل</p>
+<h3>احفظ كل كتلة كود</h3>
+<p class="project-goal">احفظ كل كتلة كود في رد في ملف مستقل، بامتداد يناسب لغتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إخراج الـ artifacts من المحادثة إلى ملفاتك.</p>
+<ol class="steps">
+<li>جِد كتل الكود المسوّرة في الرد.</li>
+<li>اربط كل لغة بامتداد.</li>
+<li>احفظ كل كتلة، واطبع ما حُفظ.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">blocks.mjs (جزء)</div><pre class="code"><span class="k">const</span> reply = <span class="k">await</span> ask([{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;ارسم مخططاً لمسار الطلب في المقهى، بصيغة Mermaid.&quot;</span>}]);
+<span class="k">for</span> (<span class="k">const</span> [i, {lang, code}] <span class="k">of</span> codeBlocks(reply).entries()) {
+  save(<span class="s">`block-${i + 1}.${EXTENSIONS[lang] ?? &quot;txt&quot;}`</span>, code);
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node blocks.mjs &amp;&amp; cat artifacts/block-1.mmd</span>
+حُفظ artifacts/block-1.mmd: 5 سطراً
+flowchart RL
+  A[الزبون يطلب] --&gt; B[الباريستا يحضّر المشروب]
+  B --&gt; C{المشروب صحيح؟}
+  C -- نعم --&gt; D[يُقدَّم]
+  C -- لا --&gt; B</pre></div>
+<p class="hint"><strong>تلميح:</strong> ملف <code>.mmd</code> ترسمه محررات وأدوات توثيق كثيرة، وGitHub داخل Markdown. واقرأ المخطط مقابل المقهى: هل يعود المشروب الخاطئ حقاً إلى الباريستا، أم إلى الكاشير أولاً؟</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 4.2 · متوسط</p>
+<h3>فحص الـ artifact</h3>
+<p class="project-goal">افحص أن للصفحة عنواناً، وأن لكل حقل تسمية، وأنها لا تطلب شيئاً من الشبكة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> فحوص آلية لصفات لا يُظهرها العرض أبداً.</p>
+<ol class="steps">
+<li>افتح الصفحة في متصفح وسجّل كل طلب.</li>
+<li>افحص العنوان وتسميات الحقول.</li>
+<li>أبلغ عما فشل، لكل نسخة.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lint.mjs (جزء)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> lint(file) {
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">const</span> page = <span class="k">await</span> browser.newPage();
+  <span class="k">const</span> requests = [];
+  page.on(<span class="s">&quot;request&quot;</span>, (r) =&gt; r.url().startsWith(<span class="s">&quot;file:&quot;</span>) || requests.push(r.url()));
+  <span class="k">await</span> page.goto(<span class="s">`file://${path.resolve(file)}`</span>);
+  <span class="k">const</span> results = {
+    <span class="s">&quot;له عنوان&quot;</span>: (<span class="k">await</span> page.title()).trim().length &gt; <span class="n">0</span>,
+    <span class="s">&quot;لكل حقل تسمية&quot;</span>: <span class="k">await</span> page.$$eval(<span class="s">&quot;input&quot;</span>, (inputs) =&gt;
+      inputs.every((i) =&gt; i.labels.length &gt; <span class="n">0</span> || i.getAttribute(<span class="s">&quot;aria-label&quot;</span>))),
+    <span class="s">&quot;لا يطلب شيئاً من الشبكة&quot;</span>: requests.length === <span class="n">0</span>,
+  };
+  <span class="k">await</span> browser.close();
+  <span class="k">return</span> results;
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node lint.mjs</span>
+artifacts/tip-v1.html: FAIL (لكل حقل تسمية)
+artifacts/tip-v2.html: PASS</pre></div>
+<p class="hint"><strong>تلميح:</strong> حقل البقشيش في النسخة الأولى بلا تسمية، فيعلن قارئ الشاشة صندوقاً بلا اسم. وأضاف الإصلاح تسمية، لأن تقرير الإخفاق طلبها. وأضف قواعد فريقك: العربية والإنجليزية، وحجم أقصى، وبلا أسرار داخل الصفحة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 4.3 · تحدٍّ</p>
+<h3>اطلب، واختبر، وأصلح، بحدّ</h3>
+<p class="project-goal">شغّل حلقة هذا الفصل بالكود: اطلب الـ artifact، واختبره، وأعد الإخفاق، ثلاث مرات على الأكثر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حلقة وكيل صغيرة بقاعدة توقف وتسليم لإنسان.</p>
+<ol class="steps">
+<li>اطلب الـ artifact واحفظ HTML الرد.</li>
+<li>اختبره؛ وإن فشل، أعد الإخفاق في المحادثة نفسها.</li>
+<li>توقف عند النجاح، أو بعد ثلاث محاولات، وقل إن إنساناً يجب أن ينظر.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">loop.mjs (جزء)</div><pre class="code"><span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: REQUEST}];
+<span class="k">for</span> (<span class="k">let</span> attempt = <span class="n">1</span>; attempt &lt;= <span class="n">3</span>; attempt++) {
+  <span class="k">const</span> reply = <span class="k">await</span> ask(messages);
+  messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: reply});
+  <span class="k">const</span> [html] = codeBlocks(reply).filter((b) =&gt; b.lang === <span class="s">&quot;html&quot;</span>);
+  save(<span class="s">`loop-${attempt}.html`</span>, html.code);
+  <span class="k">const</span> {ok, failure} = <span class="k">await</span> check(<span class="s">`artifacts/loop-${attempt}.html`</span>);
+  console.log(<span class="s">`المحاولة ${attempt}: ${ok ? &quot;PASS&quot; : `</span>FAIL، ${failure}<span class="s">`}`</span>);
+  <span class="k">if</span> (ok) process.exit(<span class="n">0</span>);
+  messages.push({role: <span class="s">&quot;user&quot;</span>, content: failed(failure)});
+}
+console.log(<span class="s">&quot;ما زال يفشل: يجب أن ينظر إنسان&quot;</span>);</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node loop.mjs</span>
+حُفظ artifacts/loop-1.html: 35 سطراً
+المحاولة 1: FAIL، فاتورة 85.50 بنسبة 10% أعطت بقشيشاً 8.50 وإجمالياً 93.50؛ والمتوقع 8.55 و94.05
+حُفظ artifacts/loop-2.html: 36 سطراً
+المحاولة 2: PASS</pre></div>
+<p class="hint"><strong>تلميح:</strong> الحد أهم سطر. فبدونه، يظل النموذج الذي لا يستطيع إصلاح مشكلة يحاول، ويظل يكلّف. والاختبار الذي ينجح فيه الـ artifact لا يكون أفضل من الاختبار نفسه: هذا يفحص فاتورة واحدة؛ فأضف المزيد قبل أن تأتمن الحلقة على أي شيء مهم.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف حالتين إلى <code>check.mjs</code>: فاتورة فارغة، وفاتورة 1,000.75. ماذا يجب أن تعرض الصفحة لكل منهما؟ وهل تنجح النسخة 2؟</li>
+<li><span class="level">سهل</span> أعد كتابة طلب الـ artifact في الفصل بكل القيود من القسم 4.2. أيها كسرت النسخة الأولى؟</li>
+<li><span class="level medium">متوسط</span> أضف بنفسك حقل «التقسيم على» إلى الحاسبة، ثم اكتب الاختبار قبل أن تطلب من أي أحد، إنساناً أو نموذجاً، فحص كودك. أي المدخلات تجعل التقسيم صعباً؟</li>
+<li><span class="level medium">متوسط</span> وسّع <code>lint.mjs</code> ليفحص أن الصفحة تعمل بعرض جوال (360 بكسل) دون تمرير أفقي.</li>
+<li><span class="level hard">تحدٍّ</span> غيّر <code>loop.mjs</code> بحيث لا يصلح خادم التدريب الخطأ أبداً (احذف جواب الإصلاح من <code>practice.json</code>). ماذا تطبع الحلقة، وماذا يجب أن يفعل الفريق بهذه النتيجة؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 5</p>
+<p>حتى الآن لم يعرف Claude إلا ما أعطيته. والفصل التالي يعطيه أكثر: البحث عبر الويب، والموصّلات بأدوات فريقك، والحكم على أي المصادر يستحق الثقة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1142,6 +1429,16 @@ marketing  الملفات: 1، 283 tokens: 0.028% من نافذة السياق</
 <li>لكل تشغيل سطر أول مختلف، فتختلف البادئة، ويكتب كل طلب الذاكرة المؤقتة من جديد ولا يقرؤها أبداً: فتدفع أكثر مما بلا تخزين مؤقت أصلاً، لأن الكتابة في الذاكرة المؤقتة تكلّف 1.25 ضعف سعر المدخلات. ومكان التاريخ بعد الجزء المخزَّن: في رسالة المستخدم، أو في كتلة نظام قصيرة بعد آخر مستند موسوم للذاكرة المؤقتة.</li>
 <li>حلّل السطور التي تشبه «الاسم: السعر» في كل ملف، واجمعها حسب الاسم، وأبلغ عن الأسماء التي لها أكثر من سعر. وهي مهمة للكود لأنها يجب أن تكون دقيقة وكاملة: فقد يلاحظ النموذج تعارضاً ويفوته آخر، بينما تفحص عشرة أسطر من الكود كل سطر في كل مرة، مجاناً، ويمكن تشغيلها قبل رفع المعرفة.</li>
 <li>اقرأ السجل، واحتفظ بالأسئلة التي يحوي جوابها جملة الرفض، واجمعها، باليد لفريق صغير أو بـ Claude لسجل كبير (ثم افحص المجموعات). وأكبر مجموعة هي أول مستند يُكتب؛ والسؤال الذي سُئل مرة واحدة ليس نمطاً بعد. وأبلغ عن العدد لكل مجموعة شهراً بشهر، ليرى الفريق الفجوات تُسدّ.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 4</h2>
+<ol class="exercises">
+<li>قرر أولاً ماذا يجب أن تفعل الصفحة: للفاتورة الفارغة، 0.00 و0.00 (لا «NaN»)؛ ولـ 1,000.75 مكتوبة بلا فاصلة، بقشيش 100.08 وإجمالي 1,100.83. والنسخة 2 تنجح في الحالة الأولى، لأن <code dir="ltr">Number("")</code> صفر، وتنجح مع 1000.75؛ لكن المستخدم الذي يكتب الفاصلة، «1,000.75»، يحصل على NaN، لأن <code>Number</code> لا يقبل فواصل الآلاف. وهذا خطأ ثالث، وجده اختبار لم يكتبه أحد في الفصل.</li>
+<li>القيود: ملف HTML واحد، ويعمل دون اتصال، وبلا مكتبات خارجية، وتسمية لكل حقل، والعربية والإنجليزية، والفحص (85.50 بنسبة 10% تعطي 8.55 و94.05). وكسرت النسخة الأولى اثنين: التسمية الناقصة لحقل البقشيش، والفحص الذي فشل. وكتابة الفحص في الطلب كانت على الأرجح ستمنع الاثنين.</li>
+<li>اكتب الاختبار أولاً: فاتورة 100 مقسومة على 3 تعطي 36.67 لكل واحد (110 ÷ 3 = 36.666…)، ثم تجتمع الحصص إلى 110.01 لا 110.00. والمدخلات الصعبة: صفر أشخاص أو عدد سالب، وأجزاء من شخص، والتقريب الذي يجعل الحصص لا تساوي الإجمالي. قرر في الاختبار ما يجب أن يحدث (مثلاً، يدفع الأخير الفرق)، وعندها فقط اكتب الكود أو اطلبه.</li>
+<li>افتح الصفحة بـ <code dir="ltr">browser.newPage({viewport: {width: 360, height: 640}})</code> وافحص أن <code dir="ltr">document.documentElement.scrollWidth</code> ليس أكبر من <code>clientWidth</code>. والأسباب المعتادة العروض الثابتة، والكلمات الطويلة، والجداول العريضة. وأضف الفحص إلى الأداة، لتُلزم به كل نسخة قادمة.</li>
+<li>بلا إصلاح في <code>practice.json</code>، تأخذ المحاولتان الثانية والثالثة نص خادم التدريب «لا جواب يطابق»، الذي لا كتلة HTML فيه، فيجب أن تتعامل الحلقة مع رد بلا كود (وإلا انهارت عند <code>html.code</code>): اعتبره محاولة فاشلة. وبعد ثلاث، تطبع الحلقة أن إنساناً يجب أن ينظر. وعلى الفريق أن يقرأ الإخفاقات، ويقرر هل الاختبار أم الطلب هو الخاطئ، ويصلح أحدهما: فالحلقة التي تستسلم تعمل كما صُممت؛ والتي لا تستسلم أبداً هي الخطأ.</li>
 </ol>
 
 </section>

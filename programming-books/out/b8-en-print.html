@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "Chapter 3: Projects and Knowledge"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "Chapter 4: Artifacts: Apps, Documents and Diagrams"; } }
+@page ch04:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -45,7 +47,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">42</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">52</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -995,6 +997,291 @@ Our rose latte costs 55 EGP. It contains rose syrup, so tell the barista if you 
 <p>Some answers are not text but things: a document to edit, a diagram, a small working app. The next chapter is about artifacts, and how to build, check and share them.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b8/artifacts/en">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">Chapter 4</p><h1>Artifacts: Apps, Documents and Diagrams</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise what Claude makes as an artifact, and when to ask for one</li>
+<li>ask for an artifact so that it fits its purpose the first time</li>
+<li>test an artifact the way you test code, in a real browser</li>
+<li>send a failure back so that the fix is precise</li>
+<li>share an artifact without sharing more than you meant</li>
+</ul>
+</div>
+
+<p class="lead">Some answers are not paragraphs but things: a document you will keep editing, a diagram for a meeting, a small app a colleague can use. In the Claude apps these appear as <dfn>artifacts</dfn>, in a panel beside the conversation, where you can see them, change them by asking, and share them. This chapter is about getting artifacts that work, and knowing that they do.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The artifact in this chapter has a real bug, and a real browser found it: a bill of 85.50 came out as 85. The artifact was written for the book and returned by the practice server; the test, the failure and the fix that passed are all real.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>What an artifact is</span></h2>
+
+<p>When an answer is substantial and stands on its own, Claude puts it in an artifact rather than in the flow of the chat. The common kinds are:</p>
+
+<table>
+<thead><tr><th>Kind</th><th>Examples</th><th>Check it by</th></tr></thead>
+<tbody>
+<tr><td>Documents</td><td>A plan, a policy, a report in Markdown</td><td>Reading it against its sources</td></tr>
+<tr><td>Code</td><td>A script, a function, a configuration file</td><td>Running its tests</td></tr>
+<tr><td>Web pages and apps</td><td>A calculator, a form, a dashboard in one HTML file or a React component</td><td>Using it in a browser, with a test</td></tr>
+<tr><td>Diagrams and images</td><td>A flowchart in Mermaid, an SVG logo</td><td>Rendering it and reading every arrow</td></tr>
+</tbody>
+</table>
+
+<p>An artifact keeps its versions: each change you ask for makes a new one, and you can go back. It can be published with a link, and others can open it, use it, or make their own copy. Some apps let an artifact itself call Claude, so a page you made can answer questions or generate text for whoever uses it. All of this makes artifacts feel finished. They are drafts, made by a model, and the rest of this chapter treats them that way.</p>
+
+<h2><span class="sec">4.2</span> <span>Asking for one</span></h2>
+
+<p>An artifact request is a small specification (Book 7, Chapter 9): what it is for, what goes in and comes out, and the constraints that matter. The chapter’s request:</p>
+
+<pre class="plain">Make me a tip calculator as one HTML page: a field for the bill in EGP,
+a field for the tip percentage, and the tip and the total, updated as I type.</pre>
+
+<p>It says the form (one HTML page), the inputs, the outputs and the behaviour. A better request would also say how it will be checked (“a bill of 85.50 at 10% gives 8.55”) and the constraints a team cares about: works offline, no external libraries, labelled fields, Arabic and English. Every constraint you leave out is one the artifact may quietly break.</p>
+
+<p>A program gets the artifact from the reply’s code block, exactly as the app does:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/artifact.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> codeBlocks(text) {
+  <span class="k">return</span> [...text.matchAll(/<span class="s">``</span><span class="s">`(\w*)\n([\s\S]*?)\n`</span><span class="s">``</span>/g)].map(([, lang, code]) =&gt; ({lang, code}));
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">make.mjs (part)</div><pre class="code"><span class="k">const</span> reply = <span class="k">await</span> ask([{role: <span class="s">&quot;user&quot;</span>, content: REQUEST}]);
+<span class="k">const</span> [html] = codeBlocks(reply).filter((b) =&gt; b.lang === <span class="s">&quot;html&quot;</span>);
+save(<span class="s">&quot;tip-v1.html&quot;</span>, html.code);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node make.mjs</span>
+saved artifacts/tip-v1.html: 35 lines</pre></div>
+
+<h2><span class="sec">4.3</span> <span>A demo is not a test</span></h2>
+
+<p>Open the page, type 100, see 10.00 and 110.00, and it looks finished. Type a bill a real café prints, with piastres, and it is not. A test in a real browser, with Playwright, types what a customer would and reads what the page shows:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">check.mjs (part)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> check(file) {
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">const</span> page = <span class="k">await</span> browser.newPage();
+  <span class="k">await</span> page.goto(<span class="s">`file://${path.resolve(file)}`</span>);
+  <span class="k">await</span> page.fill(<span class="s">&quot;#bill&quot;</span>, <span class="s">&quot;85.50&quot;</span>);
+  <span class="k">await</span> page.fill(<span class="s">&quot;#tip&quot;</span>, <span class="s">&quot;10&quot;</span>);
+  <span class="k">const</span> tip = <span class="k">await</span> page.textContent(<span class="s">&quot;#tip-amount&quot;</span>);
+  <span class="k">const</span> total = <span class="k">await</span> page.textContent(<span class="s">&quot;#total&quot;</span>);
+  <span class="k">await</span> browser.close();
+  <span class="k">const</span> ok = tip === <span class="s">&quot;8.55&quot;</span> &amp;&amp; total === <span class="s">&quot;94.05&quot;</span>;
+  <span class="k">const</span> failure = <span class="s">&quot;bill 85.50 at 10% gave tip $tip and total $total; expected 8.55 and 94.05&quot;</span>.replace(<span class="s">&quot;$tip&quot;</span>, tip).replace(<span class="s">&quot;$total&quot;</span>, total);
+  <span class="k">return</span> {ok, failure: ok ? <span class="s">&quot;&quot;</span> : failure};
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node check.mjs artifacts/tip-v1.html</span>
+FAIL artifacts/tip-v1.html: bill 85.50 at 10% gave tip 8.50 and total 93.50; expected 8.55 and 94.05</pre></div>
+
+<p>A tip of 8.50 instead of 8.55. The cause is one word in the artifact:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">artifacts/tip-v1.html (part)</div><pre class="code">    function update() {
+      const amount = parseInt(bill.value);
+      const share = (amount * Number(tip.value)) / 100;
+      document.getElementById(<span class="s">&quot;tip-amount&quot;</span>).textContent = share.toFixed(2);
+      const total = amount + share;
+      document.getElementById(<span class="s">&quot;total&quot;</span>).textContent = total.toFixed(2);
+    }</pre></div>
+
+<p><code>parseInt</code> reads digits until the first character that is not one, so <code>"85.50"</code> becomes 85 and the piastres disappear. The page looked right for every round number anyone would try in a demo. This is the most common way artifacts fail: not by crashing, but by being right in the cases you thought of and wrong in the ones your users bring.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Money, dates, time zones, rounding, empty fields and very long inputs are where generated code fails most often. Before anyone relies on an artifact that touches them, test exactly those cases, with values from real life.</p></aside>
+
+<h2><span class="sec">4.4</span> <span>Fixing it in the conversation</span></h2>
+
+<p>“It doesn’t work” gives Claude nothing to work with. The failing test does: what was typed, what came out, what was expected. Send it back into the same conversation, so the reply builds on the page it made:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">fix.mjs (part)</div><pre class="code"><span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: REQUEST}];
+messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: <span class="k">await</span> ask(messages)});
+<span class="k">const</span> {failure} = <span class="k">await</span> check(<span class="s">&quot;artifacts/tip-v1.html&quot;</span>);
+messages.push({role: <span class="s">&quot;user&quot;</span>, content: failed(failure)});
+<span class="k">const</span> reply = <span class="k">await</span> ask(messages);
+<span class="k">const</span> [html] = codeBlocks(reply).filter((b) =&gt; b.lang === <span class="s">&quot;html&quot;</span>);
+save(<span class="s">&quot;tip-v2.html&quot;</span>, html.code);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node fix.mjs</span>
+saved artifacts/tip-v2.html: 36 lines</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node check.mjs artifacts/tip-v2.html</span>
+PASS artifacts/tip-v2.html</pre></div>
+
+<p>The practice server’s reply names the cause and replaces <code>parseInt</code> with <code>Number</code>; a real model would usually find it the same way, from the same evidence. The same test, run again, passes: that, not the reply’s explanation, is what tells you the fix works. In the app the loop is the same: describe the failure precisely, ask for the change, and check the new version before you share it.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Ask for the test along with the artifact: “and a list of five inputs with the results you expect”. You still check that the expected results are right, but you get a test plan for free, and the artifact is written with those cases in mind.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did the calculator pass a demo and fail the test?</li><li>What makes a failure report useful to Claude?</li><li>After the fix, what tells you it works: the explanation or the test?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>Diagrams and documents</span></h2>
+
+<p>Ask for a diagram and you usually get it as Mermaid, a text format for flowcharts and sequences that the app draws for you (Project 4.1 saves one). Because it is text, it can live in your repository next to the code it explains, and change in the same pull request. Check a diagram by reading every arrow against what really happens: a diagram that is wrong teaches the wrong thing to everyone who reads it.</p>
+
+<p>Document artifacts (plans, policies, guides) are checked like any text from Claude: against their sources, with names, numbers and dates verified. A long document drafted by Claude and edited by you is a good way to work; a long document drafted by Claude and sent unread is not.</p>
+
+<h2><span class="sec">4.6</span> <span>Sharing</span></h2>
+
+<p>A published artifact can be opened by anyone with the link. Before you publish, read it for what it contains: an internal price list, a customer’s name in sample data, a URL with a token. If the artifact calls Claude for whoever uses it, think about what they could ask it, and who pays. And decide who maintains it: a useful artifact spreads, and an unmaintained one keeps giving last quarter’s answers long after the quarter has changed.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Treat any artifact that others will rely on as code: put it in the repository, give it a test, and change it through review. The app is a fine place to draft it; it is not a place to maintain it.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Trusting a demo</td><td>Bugs in the cases nobody tried</td><td>Test with real values, especially money and dates</td></tr>
+<tr><td>“It doesn’t work” as feedback</td><td>Guesses instead of fixes</td><td>Send the input, the output and the expectation</td></tr>
+<tr><td>Believing the fix’s explanation</td><td>A plausible fix that is not one</td><td>Run the same test again</td></tr>
+<tr><td>A request without constraints</td><td>External libraries, no labels, online only</td><td>Say what must be true, and how it will be checked</td></tr>
+<tr><td>Publishing without reading</td><td>Internal data on a public link</td><td>Read it as a stranger would, then publish</td></tr>
+<tr><td>Maintaining an artifact in a chat</td><td>No history, no review, no tests</td><td>Move it to the repository once others rely on it</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Artifacts are standalone outputs (documents, code, pages, diagrams) with versions and sharing.</li>
+<li>Ask for one like a small specification: purpose, inputs, outputs, constraints, and how it will be checked.</li>
+<li>Test artifacts like code, in a real browser, with the values real users bring; the calculator was right for 100 and wrong for 85.50.</li>
+<li>Fix by sending the failing test back into the conversation, and believe the test, not the explanation.</li>
+<li>Read before you publish, and move what others rely on into the repository.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because a demo uses round numbers, and <code>parseInt</code> only loses digits after a decimal point; the test used a real bill, 85.50. 2. The exact input, what came out, and what was expected: it points at the cause, so the fix can be precise. 3. The test: the explanation is what the model says it did; the test is what the page does.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects automate what this chapter did by hand: saving artifacts from replies, checking them, and running the ask–test–fix loop.</p>
+
+<div class="project">
+<p class="project-label">Project 4.1 · Easy</p>
+<h3>Save every code block</h3>
+<p class="project-goal">Save each code block of a reply to its own file, with an extension for its language.</p>
+<p class="project-skills"><strong>You will practise:</strong> getting artifacts out of a chat and into your files.</p>
+<ol class="steps">
+<li>Find the fenced code blocks in the reply.</li>
+<li>Map each language to an extension.</li>
+<li>Save each block, and print what was saved.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">blocks.mjs (part)</div><pre class="code"><span class="k">const</span> reply = <span class="k">await</span> ask([{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;Draw a diagram of how an order flows at the café, as Mermaid.&quot;</span>}]);
+<span class="k">for</span> (<span class="k">const</span> [i, {lang, code}] <span class="k">of</span> codeBlocks(reply).entries()) {
+  save(<span class="s">`block-${i + 1}.${EXTENSIONS[lang] ?? &quot;txt&quot;}`</span>, code);
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node blocks.mjs &amp;&amp; cat artifacts/block-1.mmd</span>
+saved artifacts/block-1.mmd: 5 lines
+flowchart LR
+  A[Customer orders] --&gt; B[Barista makes drink]
+  B --&gt; C{Right drink?}
+  C -- yes --&gt; D[Served]
+  C -- no --&gt; B</pre></div>
+<p class="hint"><strong>Hint:</strong> a <code>.mmd</code> file can be rendered by many editors and documentation tools, and by GitHub inside Markdown. Read the diagram against the café: does a wrong drink really go back to the barista, or to the cashier first?</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 4.2 · Medium</p>
+<h3>Lint an artifact</h3>
+<p class="project-goal">Check that a page has a title, labels every field, and makes no network requests.</p>
+<p class="project-skills"><strong>You will practise:</strong> automatic checks for qualities a demo never shows.</p>
+<ol class="steps">
+<li>Open the page in a browser and record every request.</li>
+<li>Check the title and the labels of the inputs.</li>
+<li>Report what failed, for each version.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">lint.mjs (part)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> lint(file) {
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">const</span> page = <span class="k">await</span> browser.newPage();
+  <span class="k">const</span> requests = [];
+  page.on(<span class="s">&quot;request&quot;</span>, (r) =&gt; r.url().startsWith(<span class="s">&quot;file:&quot;</span>) || requests.push(r.url()));
+  <span class="k">await</span> page.goto(<span class="s">`file://${path.resolve(file)}`</span>);
+  <span class="k">const</span> results = {
+    <span class="s">&quot;has a title&quot;</span>: (<span class="k">await</span> page.title()).trim().length &gt; <span class="n">0</span>,
+    <span class="s">&quot;every input has a label&quot;</span>: <span class="k">await</span> page.$$eval(<span class="s">&quot;input&quot;</span>, (inputs) =&gt;
+      inputs.every((i) =&gt; i.labels.length &gt; <span class="n">0</span> || i.getAttribute(<span class="s">&quot;aria-label&quot;</span>))),
+    <span class="s">&quot;makes no network requests&quot;</span>: requests.length === <span class="n">0</span>,
+  };
+  <span class="k">await</span> browser.close();
+  <span class="k">return</span> results;
+}</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node lint.mjs</span>
+artifacts/tip-v1.html: FAIL (every input has a label)
+artifacts/tip-v2.html: PASS</pre></div>
+<p class="hint"><strong>Hint:</strong> the first version’s tip field had no label, so a screen reader announces an unnamed box. The fix added one, because the failure report asked for it. Add your team’s own rules: Arabic and English, a maximum size, no inline secrets.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 4.3 · Challenge</p>
+<h3>Ask, test, fix, with a limit</h3>
+<p class="project-goal">Run the loop of this chapter in code: ask for the artifact, test it, send the failure back, at most three times.</p>
+<p class="project-skills"><strong>You will practise:</strong> a small agent loop with a stopping rule and a hand-off to a person.</p>
+<ol class="steps">
+<li>Ask for the artifact and save the reply’s HTML.</li>
+<li>Test it; if it fails, send the failure back in the same conversation.</li>
+<li>Stop on a pass, or after three attempts, and say a person should look.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">loop.mjs (part)</div><pre class="code"><span class="k">const</span> messages = [{role: <span class="s">&quot;user&quot;</span>, content: REQUEST}];
+<span class="k">for</span> (<span class="k">let</span> attempt = <span class="n">1</span>; attempt &lt;= <span class="n">3</span>; attempt++) {
+  <span class="k">const</span> reply = <span class="k">await</span> ask(messages);
+  messages.push({role: <span class="s">&quot;assistant&quot;</span>, content: reply});
+  <span class="k">const</span> [html] = codeBlocks(reply).filter((b) =&gt; b.lang === <span class="s">&quot;html&quot;</span>);
+  save(<span class="s">`loop-${attempt}.html`</span>, html.code);
+  <span class="k">const</span> {ok, failure} = <span class="k">await</span> check(<span class="s">`artifacts/loop-${attempt}.html`</span>);
+  console.log(<span class="s">`attempt ${attempt}: ${ok ? &quot;PASS&quot; : `</span>FAIL, ${failure}<span class="s">`}`</span>);
+  <span class="k">if</span> (ok) process.exit(<span class="n">0</span>);
+  messages.push({role: <span class="s">&quot;user&quot;</span>, content: failed(failure)});
+}
+console.log(<span class="s">&quot;still failing: a person should look&quot;</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">node loop.mjs</span>
+saved artifacts/loop-1.html: 35 lines
+attempt 1: FAIL, bill 85.50 at 10% gave tip 8.50 and total 93.50; expected 8.55 and 94.05
+saved artifacts/loop-2.html: 36 lines
+attempt 2: PASS</pre></div>
+<p class="hint"><strong>Hint:</strong> the limit is the most important line. Without it, a model that cannot fix a problem will keep trying, and keep costing. A test the artifact passes is still only as good as the test: this one checks one bill; add more before you trust the loop with anything that matters.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add two cases to <code>check.mjs</code>: an empty bill, and a bill of 1,000.75. What should the page show for each? Does version 2 pass?</li>
+<li><span class="level">Easy</span> Rewrite the chapter’s artifact request with every constraint from Section 4.2. Which of them did the first version break?</li>
+<li><span class="level medium">Medium</span> Add a “split between” field to the calculator yourself, then write the test before asking anyone, human or model, to check your code. What inputs make splitting tricky?</li>
+<li><span class="level medium">Medium</span> Extend <code>lint.mjs</code> to check that the page works at a phone’s width (360 pixels) without horizontal scrolling.</li>
+<li><span class="level hard">Challenge</span> Change <code>loop.mjs</code> so the practice server never fixes the bug (remove the fix reply from <code>practice.json</code>). What does the loop print, and what should a team do with that outcome?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 5</p>
+<p>So far Claude has known only what you gave it. The next chapter gives it more: research across the web, connectors to your team’s tools, and the judgement to know which sources to trust.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1040,6 +1327,16 @@ Our rose latte costs 55 EGP. It contains rose syrup, so tell the barista if you 
 <li>Every run has a different first line, so the prefix differs and every request writes the cache again and never reads it: you pay more than with no caching at all, because a cache write costs 1.25 times the input price. A date belongs after the cached part: in the user’s message, or in a short system block after the last document marked for the cache.</li>
 <li>Parse the lines that look like “name: price” in every file, group them by name, and report names with more than one price. It is a job for code because it must be exact and complete: a model might notice one conflict and miss another, while ten lines of code check every line every time, for free, and can run before the knowledge is uploaded.</li>
 <li>Read the log, keep the questions whose answer contains the refusal sentence, and group them, by hand for a small team or with Claude for a large log (and then check the groups). The largest group is the first document to write; a question asked once is not a pattern yet. Report the count per group month by month, so the team sees the gaps closing.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 4</h2>
+<ol class="exercises">
+<li>Decide first what the page should do: for an empty bill, 0.00 and 0.00 (not “NaN”); for 1,000.75 typed without the comma, a tip of 100.08 and a total of 1,100.83. Version 2 passes the first case, because <code>Number("")</code> is 0, and passes 1000.75; but a user who types the comma, “1,000.75”, gets NaN, because <code>Number</code> does not accept thousands separators. That is a third bug, found by a test nobody wrote in the chapter.</li>
+<li>The constraints: one HTML file, works offline, no external libraries, a label for every field, Arabic and English, and the check (85.50 at 10% gives 8.55 and 94.05). The first version broke two: the label on the tip field was missing, and the check failed. Writing the check into the request would likely have prevented both.</li>
+<li>Write the test first: a bill of 100 split between 3 gives 36.67 each (110 / 3 = 36.666…), and the shares then add up to 110.01, not 110.00. Tricky inputs: zero or negative people, fractions of a person, and the rounding that makes shares not add up to the total. Decide in the test what should happen (for example, the last person pays the difference), and only then write or ask for the code.</li>
+<li>Open the page with <code>browser.newPage({viewport: {width: 360, height: 640}})</code> and check that <code>document.documentElement.scrollWidth</code> is not larger than <code>clientWidth</code>. Fixed widths, long words and wide tables are the usual causes. Add the check to the lint so every future version is held to it.</li>
+<li>With no fix in <code>practice.json</code>, the second and third attempts get the practice server’s “no reply matches” text, which has no HTML block, so the loop needs to handle a reply without code (it would crash on <code>html.code</code>): treat it as a failed attempt. After three, the loop prints that a person should look. The team should read the failures, decide whether the test or the request is wrong, and fix one of them: a loop that gives up is working as designed; one that never gives up is the bug.</li>
 </ol>
 
 </section>
