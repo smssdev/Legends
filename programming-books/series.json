@@ -1555,7 +1555,8 @@
             },
             {
               "en": "Projects and Knowledge",
-              "ar": "المشاريع والمعرفة"
+              "ar": "المشاريع والمعرفة",
+              "src": "b8/projects"
             },
             {
               "en": "Artifacts: Apps, Documents and Diagrams",

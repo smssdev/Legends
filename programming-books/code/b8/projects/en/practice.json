@@ -1,0 +1,36 @@
+{
+  "replies": [
+    {
+      "when": {
+        "text": "rose latte",
+        "system": "social media"
+      },
+      "text": "1. Spring has a new flavour: our rose latte, 55 EGP, is here. Come taste it before the season ends.\n2. Coffee, but make it bloom. Rose latte, 55 EGP, at every Bit Cafe."
+    },
+    {
+      "when": {
+        "text": "rose latte",
+        "system": "answer customers"
+      },
+      "text": "Our rose latte costs 55 EGP. It contains rose syrup, so tell the barista if you would like it less sweet."
+    },
+    {
+      "when": {
+        "text": "nuts",
+        "system": "answer customers"
+      },
+      "text": "Yes: our date cake contains nuts. For any other allergen, please ask the barista, who can check each item for you."
+    },
+    {
+      "when": {
+        "text": "parking",
+        "system": "answer customers"
+      },
+      "text": "I'm not sure: our documents don't say. I will ask a colleague and come back to you."
+    },
+    {
+      "when": "rose latte",
+      "text": "A rose latte is a latte flavoured with rose syrup or rose water. Prices vary by café; I don't know what Bit Cafe charges."
+    }
+  ]
+}

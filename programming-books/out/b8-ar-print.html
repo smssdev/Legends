@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "الفصل 2: المحادثات والملفات والصور"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "الفصل 3: المشاريع والمعرفة"; } }
+@page ch03:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
@@ -43,7 +45,7 @@
           <p>الكود في هذا الكتاب JavaScript، اختُبر على Node.js 22.23 و@anthropic-ai/sdk 1.8.0 (إصدار الواجهة 2026-10-21). وأمثلته تعمل على خادم التدريب الخاص بالكتاب، بديل محلي يتكلم بصيغة واجهة Claude البرمجية ويجيب من نص مكتوب لكل فصل؛ وتلك الأجوبة ليست أجوبة Claude، والكتاب يقول ذلك حيثما عرض واحداً منها. وكل مثال وجلسة طرفية منتَج من ملفات مستودع الكود الخاص بالكتاب. وفُحصت النماذج والأسعار والحدود في نوفمبر 2026.</p>
           <p>Claude وClaude Code وAnthropic علامات تجارية لـ Anthropic, PBC، وAmazon Bedrock علامة تجارية لـ Amazon.com, Inc.، وGoogle Cloud علامة تجارية لـ Google LLC، وMicrosoft Foundry علامة تجارية لـ Microsoft Corporation، وGitHub علامة تجارية لـ GitHub, Inc.، وNode.js علامة تجارية لـ OpenJS Foundation. وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط. وهذا الكتاب مستقل ولا تتبناه Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">36</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">6</span></li><li class="toc-part">الجزء 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">تعرّف على Claude: النماذج ونقاط القوة والحدود</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">المحادثات والملفات والصور</span><span class="toc-p">24</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">المشاريع والمعرفة</span><span class="toc-p">36</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: التطبيقات والمستندات والرسوم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">البحث والموصلات والأدوات</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code في الطرفية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">العمل على مستودع كود حقيقي</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md والمهارات والخطافات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">من المهمة إلى طلب الدمج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code للفرق والتكامل المستمر</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: البناء بـ Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">واجهة Claude البرمجية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">استخدام الأدوات والمخرجات المنظمة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: ربط Claude بأنظمتك</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">بناء الوكلاء</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">التكلفة والسرعة والتخزين المؤقت</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">الأمان والتقييم والإنتاج</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: منتج يعمل بـ Claude</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">47</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -729,6 +731,270 @@ budget  150: بقي 1 of 13 messages, 15 tokens</pre></div>
 <p>إرفاق الملفات نفسها بكل محادثة متعب. والفصل التالي يقدّم المشاريع: مكاناً تعيش فيه المستندات والتعليمات مرة واحدة، وتبدأ بها كل محادثة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b8/projects/ar">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">الفصل 3</p><h1>المشاريع والمعرفة</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">في هذا الفصل ستتعلم أن</p>
+<ul>
+<li>تُعدّ مشروعاً: التعليمات مرة، والمعرفة مرة، وكل محادثة تبدأ بهما</li>
+<li>تكتب تعليمات مشروع تصمد عبر مئات المحادثات</li>
+<li>تنظّم المعرفة ليجد Claude المستند الصحيح وتستطيع أنت إبقاءه حديثاً</li>
+<li>ترى المشروع من الداخل: أمر نظام، ومستندات، والذاكرة المؤقتة للأوامر</li>
+<li>تشارك مشروعاً مع فريق دون أن تشارك ما يجب أن يبقى خاصاً</li>
+</ul>
+</div>
+
+<p class="lead">انتهى الفصل 2 بعمل متكرر: إرفاق القائمة نفسها والسياسات نفسها والتعليمات نفسها بكل محادثة جديدة. و<dfn>المشروع</dfn> ينهيه. تضع التعليمات والمستندات في مكان واحد، فتبدأ كل محادثة داخل المشروع بها. وللفريق يصير المشروع شيئاً أكبر: الذاكرة المشتركة لطريقة عمل الفريق، يستطيع زميل جديد استخدامها في يومه الأول.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الأجوبة في هذا الفصل من خادم التدريب. أما المشاريع ومستنداتها وأعداد الـ tokens والذاكرة المؤقتة فأجزاء حقيقية من الكود؛ وقد اصطدمت النسخة الإنجليزية بحدّ من حدود الذاكرة المؤقتة يحوّله هذا الفصل إلى درس.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>ما المشروع</span></h2>
+
+<p>في تطبيقات Claude للمشروع ثلاثة أجزاء:</p>
+<ul>
+<li><strong>التعليمات</strong>، تُكتب مرة، وتنطبق على كل محادثة في المشروع: من يساعد Claude، وأي المصادر يستخدم، وكيف يجيب.</li>
+<li><strong>المعرفة</strong>: ملفات تضيفها (مستندات، وملفات PDF، وكود، وبيانات) يستطيع Claude قراءتها في كل محادثة.</li>
+<li><strong>المحادثات</strong>، كل منها محادثة عادية تبدأ والتعليمات والمعرفة في مكانهما.</li>
+</ul>
+
+<p>وفي خطط الفرق، يمكن مشاركة المشروع مع الزملاء، فيتحادثون بالتعليمات والمعرفة نفسها. وحين تكبر المعرفة عما يستطيع Claude قراءته دفعة واحدة، يبحث التطبيق فيها عن المقاطع المهمة لكل سؤال، بدل قراءة كل شيء: الاسترجاع الذي بناه الفصل 14 من الكتاب السابع باليد.</p>
+
+<p>ومثال الكتاب مشروعان لمقهى بِت: واحد للرد على الزبائن، فيه القائمة والسياسات ووصفات الباريستا ودليل لصوت المقهى؛ وواحد لكتابة منشورات وسائل التواصل، فيه القائمة وحدها:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">find support marketing -type f | sort</span>
+marketing/instructions.md
+marketing/knowledge/menu.md
+support/instructions.md
+support/knowledge/menu.md
+support/knowledge/policies.md
+support/knowledge/recipes.md
+support/knowledge/voice.md</pre></div>
+
+<h2><span class="sec">3.2</span> <span>تعليمات تصمد</span></h2>
+
+<p>تعليمات المشروع تُقرأ في بداية كل محادثة، من كل عضو في الفريق، لشهور. فهي تستحق عناية الكود:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">support/instructions.md</div><pre class="code md">أنت تجيب زبائن مقهى بِت. استخدم مستندات المشروع فقط. واتبع voice.md. وإن لم تجب المستندات، فقل إنك ستسأل زميلاً.</pre></div>
+
+<p>ثلاث جمل، وكل منها تستحق مكانها. الأولى تقول من يساعد Claude، وهذا يقرر النبرة ومستوى التفصيل. والثانية تحصر المصادر، فيأتي جواب الأسعار من القائمة لا مما تتقاضاه المقاهي عادة. والثالثة تقول ماذا يفعل حين تصمت المستندات، وهي الحالة التي تنساها التعليمات أكثر من غيرها، والتي تُنتج اختراعات واثقة حين تُنسى.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>أبقِ التعليمات قصيرة وعن السلوك؛ وضع الحقائق في المعرفة. فـ «سعر اللاتيه 45» في التعليمات يتقادم دون أن يراه أحد؛ وفي <code>menu.md</code> يجلس مع الأسعار الأخرى، حيث سيجده من يغيّر الأسعار.</p></aside>
+
+<h2><span class="sec">3.3</span> <span>معرفة تستطيع إبقاءها حديثة</span></h2>
+
+<p>المشروع لا يكون أفضل من مستنداته، والمستندات تتقادم. وبضع قواعد تُبقيها مفيدة:</p>
+<ul>
+<li><strong>موضوع واحد لكل ملف، مسمّى باسم الموضوع</strong>: <code>menu.md</code> و<code>policies.md</code>. فالأسماء الواضحة تساعد Claude والناس الذين يحافظون عليها.</li>
+<li><strong>النسخة الحالية فقط.</strong> فقائمتان، إحداهما من العام الماضي، تعطيان Claude سعرين يختار بينهما. استبدل الملفات؛ ولا تضف نسخاً جديدة بجانب القديمة.</li>
+<li><strong>النص قبل المسح الضوئي.</strong> ملف Markdown أو نص يُقرأ بدقة؛ وملف PDF ممسوح يجب أن يُقرأ من صور الصفحات، وهذا أبطأ وأقل موثوقية.</li>
+<li><strong>صاحب وتاريخ.</strong> أحدهم يحدّث القائمة حين تتغير الأسعار، والملف يقول متى فُحص آخر مرة.</li>
+</ul>
+
+<h2><span class="sec">3.4</span> <span>المشروع من الداخل</span></h2>
+
+<p>مبنياً بالواجهة البرمجية، المشروع بضعة أسطر: التعليمات تصير <dfn>أمر النظام</dfn> (system prompt)، جزء الطلب الذي يحدد دور Claude قبل أي رسالة، والمعرفة تتبعها مستندات فيه. وآخر مستند يحمل علامة <code>cache_control</code>، التي تطلب من الواجهة البرمجية حفظ كل ما حتى تلك النقطة في <dfn>الذاكرة المؤقتة للأوامر</dfn> (prompt cache)، فيقرؤه الطلب التالي الذي يبدأ بالنص نفسه بجزء من السعر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lib/project.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">function</span> loadProject(folder) {
+  <span class="k">const</span> instructions = read(folder, <span class="s">&quot;instructions.md&quot;</span>);
+  <span class="k">const</span> dir = path.join(folder, <span class="s">&quot;knowledge&quot;</span>);
+  <span class="k">const</span> knowledge = fs.readdirSync(dir).sort().map((name) =&gt; ({
+    <span class="k">type</span>: <span class="s">&quot;text&quot;</span>,
+    text: <span class="s">`&lt;document name=&quot;${name}&quot;&gt;\n${read(dir, name)}&lt;/document&gt;`</span>,
+  }));
+  knowledge.at(-<span class="n">1</span>).cache_control = {<span class="k">type</span>: <span class="s">&quot;ephemeral&quot;</span>};
+  <span class="k">return</span> {instructions, knowledge};
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">lib/project.mjs (جزء)</div><pre class="code"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> chat(project, question) {
+  <span class="k">return</span> client.messages.create({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    max_tokens: <span class="n">1000</span>,
+    system: [{<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: project.instructions}, ...project.knowledge],
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content: question}],
+  });
+}</pre></div>
+
+<p>ثلاث محادثات في مشروع الدعم:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node chats.mjs</span>
+<span class="c">&gt; </span><span class="k">كم سعر اللاتيه بالورد؟</span>
+سعر اللاتيه بالورد عندنا 55 جنيهاً. وفيه شراب الورد، فأخبر الباريستا إن أردته أقل حلاوة.
+  (المحادثة 1: 1379 كُتب في الذاكرة المؤقتة، 0 قُرئ من الذاكرة المؤقتة، 18 جديدة)
+<span class="c">&gt; </span><span class="k">هل في أي صنف مكسرات؟</span>
+نعم: كعكة التمر عندنا فيها مكسرات. ولأي مادة أخرى، اسأل الباريستا من فضلك، فهو يستطيع فحص كل صنف لك.
+  (المحادثة 2: 0 كُتب في الذاكرة المؤقتة، 1379 قُرئ من الذاكرة المؤقتة، 16 جديدة)
+<span class="c">&gt; </span><span class="k">هل يوجد موقف سيارات في فرع الزمالك؟</span>
+لست متأكداً: مستنداتنا لا تذكر ذلك. سأسأل زميلاً وأعود إليك.
+  (المحادثة 3: 0 كُتب في الذاكرة المؤقتة، 1379 قُرئ من الذاكرة المؤقتة، 23 جديدة)</pre></div>
+
+<p>الأجوبة تتبع التعليمات: الأسعار من القائمة، وتحذير المكسرات من السياسات، و«سأسأل زميلاً» أمينة عن الموقف، الذي لا يذكره أي مستند. وانظر إلى الذاكرة المؤقتة: المحادثة الأولى تكتب المعرفة، 1,379 token، والتاليتان تقرآنها. وعلى Claude Opus 5.5 تكلّف القراءة من الذاكرة المؤقتة جزءاً من عشرين من سعر المدخلات العادي، فتصير المعرفة من المحادثة الثانية شبه مجانية.</p>
+
+<p>أما في النسخة الإنجليزية، فلم يُكتب شيء ولم يُقرأ شيء: دفعت كل محادثة ثمن المعرفة كاملة. فالمستندات الأربعة نفسها بالإنجليزية 913 token، لأن النص العربي يستخدم tokens أكثر للمحتوى نفسه. والسبب قاعدة في التخزين المؤقت تطبّقها الواجهة البرمجية بلا خطأ ولا تحذير: البادئة الأقصر من حد أدنى لا تُخزَّن. والحد الأدنى يتوقف على النموذج، من 512 إلى 4,096 token؛ وخادم التدريب يستخدم 1,024.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>التخزين المؤقت يفشل بصمت: الطلب الذي يخطئ الذاكرة المؤقتة يعمل مع ذلك، لكنه يكلّف السعر كاملاً. افحص <code>cache_read_input_tokens</code> في استهلاك الطلب الثاني. فإن كان صفراً، فإما أن البادئة أقصر من اللازم، أو أن شيئاً فيها تغيّر بين الطلبين: تاريخ في التعليمات، أو مستندات بترتيب مختلف، أو قائمة أدوات تتغير. والفصل 15 يسرد الأسباب المعتادة.</p></aside>
+
+<p>وبلا المشروع، يأخذ السؤال نفسه جواباً عاماً، وأميناً: لا يعرف سعر المقهى.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node plain.mjs</span>
+اللاتيه بالورد لاتيه منكّه بشراب الورد أو ماء الورد. وتختلف الأسعار بين المقاهي؛ ولا أعرف سعره في مقهى بِت.</pre></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا لم تكتب المحادثات الإنجليزية شيئاً في الذاكرة المؤقتة؟</li><li>أي تعليمة أنتجت «سأسأل زميلاً»، وماذا قد يحدث بدونها؟</li><li>لماذا يجب أن يعيش السعر في <code>menu.md</code> لا في التعليمات؟</li></ol><p>الإجابات في آخر الفصل، بعد الملخص.</p></aside>
+
+<h2><span class="sec">3.5</span> <span>المشاريع للفريق</span></h2>
+
+<p>المشروع المشترك يعطي الفريق مكاناً واحداً لمعرفة عمله: أجوبة فريق الدعم، وأعراف فريق الهندسة، وأوراق منتجات فريق المبيعات. وقبل المشاركة، احسم ثلاثة أشياء. من يستطيع تغيير التعليمات والمعرفة: فالمشروع الذي يعدّله أي أحد ينجرف. وما في المعرفة: فكل من له وصول يستطيع سؤال Claude عن كل مستند فيها، فجدول الرواتب لا مكان له في مشروع تستخدمه الشركة كلها. وكيف تُشارك المحادثات: افحص ما تعرضه خطتك للأعضاء الآخرين، وأخبر الفريق، حتى لا يكتب أحد في مساحة مشتركة ما أراد أن يبقى خاصاً.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>اجعل لكل مشروع مشترك صاحباً وفحصاً شهرياً: هل المستندات حديثة، وهل التعليمات ما زالت صحيحة، وماذا سأل الناس مما لم تستطع المستندات إجابته؟ تلك الأسئلة هي المستندات التالية التي تُكتب.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>حقائق في التعليمات</td><td>حقائق متقادمة لا يراها أحد</td><td>الحقائق في ملفات المعرفة؛ والسلوك في التعليمات</td></tr>
+<tr><td>لا قاعدة للأجوبة المجهولة</td><td>اختراعات واثقة</td><td>قل ماذا يُفعل حين تصمت المستندات</td></tr>
+<tr><td>نسخ قديمة وجديدة جنباً إلى جنب</td><td>أجوبة من النسخة الخطأ</td><td>استبدل الملفات؛ وأبقِ نسخة حالية واحدة</td></tr>
+<tr><td>افتراض أن الذاكرة المؤقتة تعمل</td><td>السعر كاملاً في كل طلب</td><td>افحص <code>cache_read_input_tokens</code>؛ وانتبه للحد الأدنى</td></tr>
+<tr><td>تغيير نص قبل علامة الذاكرة المؤقتة</td><td>كل طلب يخطئ الذاكرة المؤقتة</td><td>أبقِ البادئة متطابقة؛ والأجزاء المتغيرة بعدها</td></tr>
+<tr><td>ملفات خاصة في مشروع مشترك</td><td>يستطيع كل من له وصول أن يسأل عنها</td><td>قرر ما يحويه كل مشروع قبل المشاركة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الملخص</h2>
+
+<ul class="summary">
+<li>المشروع يحفظ التعليمات والمعرفة مرة، وكل محادثة فيه تبدأ بهما.</li>
+<li>التعليمات تقول من يساعد Claude، وأي المصادر يستخدم، وماذا يفعل حين تصمت؛ والحقائق مكانها المعرفة.</li>
+<li>أبقِ المعرفة موضوعاً لكل ملف، حديثة، نصية، ولها صاحب.</li>
+<li>من الداخل، المشروع أمر نظام بمستندات، يُخزَّن مؤقتاً بعد المحادثة الأولى؛ والتخزين المؤقت صامت، وله حد أدنى للطول، ويجب فحصه.</li>
+<li>المشاريع المشتركة تحتاج صاحباً، وسياسة لما تحويه، وفريقاً يعرف ما يظهر لمن.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن المعرفة الإنجليزية، 913 token، أقصر من الحد الأدنى للتخزين المؤقت في خادم التدريب، 1,024 token، والبادئة تحت الحد الأدنى لا تُخزَّن ببساطة، بلا خطأ. 2. «وإن لم تجب المستندات، فقل إنك ستسأل زميلاً.» وبدونها قد يجيب Claude من المعرفة العامة، كأن يخمّن أن هناك مواقف في الشارع، فيأخذ الزبون التخمين على أنه كلام المقهى. 3. لأن الأسعار تتغير، والسعر في التعليمات يسهل نسيانه حين تُحدَّث القائمة؛ وفي <code>menu.md</code> يكون حيث سينظر من يغيّر الأسعار، بجانب الأسعار الأخرى.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع للتدريب</h2>
+
+<p class="projects-intro">تعامل المشاريع مشروع Claude على ما هو من الداخل: ملفات في مجلدات، وtokens في ميزانية، وتعليمات تغيّر السلوك.</p>
+
+<div class="project">
+<p class="project-label">المشروع 3.1 · سهل</p>
+<h3>مشروع من مجلد</h3>
+<p class="project-goal">حمّل تعليمات المشروع ومعرفته من ملفات، ليعدّلها الفريق كالكود.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المشاريع كملفات تحت إدارة النسخ.</p>
+<ol class="steps">
+<li>ضع التعليمات في <code>instructions.md</code>، وكل مستند في <code>knowledge/</code>.</li>
+<li>اقرأها بترتيب ثابت، لتكون البادئة متطابقة كل مرة.</li>
+<li>علّم آخر مستند للذاكرة المؤقتة.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">find support marketing -type f | sort</span>
+marketing/instructions.md
+marketing/knowledge/menu.md
+support/instructions.md
+support/knowledge/menu.md
+support/knowledge/policies.md
+support/knowledge/recipes.md
+support/knowledge/voice.md</pre></div>
+<p class="hint"><strong>تلميح:</strong> <code dir="ltr">sort()</code> في <code>loadProject</code> أهم مما تبدو. فسرد المجلد غير مضمون أن يأتي بالترتيب نفسه، والترتيب المختلف بادئة مختلفة: خطأ في الذاكرة المؤقتة مع كل طلب.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 3.2 · متوسط</p>
+<h3>ميزانية المعرفة</h3>
+<p class="project-goal">قِس كم token تأخذ تعليمات كل مشروع ومعرفته قبل السؤال الأول.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>countTokens</code> على أمر نظام بمستندات.</p>
+<ol class="steps">
+<li>حمّل كل مشروع.</li>
+<li>عدّ tokens طلب سؤاله حرف واحد.</li>
+<li>اطبع الحجم ونسبته من نافذة السياق.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">budget.mjs (جزء)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> name <span class="k">of</span> [<span class="s">&quot;support&quot;</span>, <span class="s">&quot;marketing&quot;</span>]) {
+  <span class="k">const</span> {instructions, knowledge} = loadProject(name);
+  <span class="k">const</span> {input_tokens: size} = <span class="k">await</span> client.messages.countTokens({
+    model: <span class="s">&quot;claude-opus-5-5&quot;</span>,
+    system: [{<span class="k">type</span>: <span class="s">&quot;text&quot;</span>, text: instructions}, ...knowledge],
+    messages: [{role: <span class="s">&quot;user&quot;</span>, content: <span class="s">&quot;?&quot;</span>}],
+  });
+  <span class="k">const</span> share = ((size / 1_000_000) * <span class="n">100</span>).toFixed(<span class="n">3</span>);
+  <span class="k">const</span> files = <span class="s">`الملفات: ${knowledge.length}`</span>;
+  console.log(<span class="s">`${name.padEnd(10)} ${files}، ${size} tokens: ${share}% من نافذة السياق`</span>);
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node budget.mjs</span>
+support    الملفات: 4، 1387 tokens: 0.139% من نافذة السياق
+marketing  الملفات: 1، 283 tokens: 0.028% من نافذة السياق</pre></div>
+<p class="hint"><strong>تلميح:</strong> عُشر بالمئة من النافذة: الحجم ليس مشكلة هذين المشروعين. ويصير مشكلة مع مئات المستندات، وقبل ذلك، الحد الأدنى للذاكرة المؤقتة والتكلفة لكل محادثة هما الرقمان اللذان يُراقبان. شغّل هذا كلما تغيرت المعرفة.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 3.3 · تحدٍّ</p>
+<h3>مشروعان، وسؤال واحد</h3>
+<p class="project-goal">اطلب الشيء نفسه من مشروع الدعم ومشروع التسويق، وقارن.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> رؤية كم تقرر التعليمات، لا السؤال، الجواب.</p>
+<ol class="steps">
+<li>حمّل المشروعين.</li>
+<li>اطلب من كل منهما منشوراً عن اللاتيه بالورد.</li>
+<li>قارن الجوابين بتعليمات كل مشروع.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">two.mjs (جزء)</div><pre class="code"><span class="k">for</span> (<span class="k">const</span> name <span class="k">of</span> [<span class="s">&quot;support&quot;</span>, <span class="s">&quot;marketing&quot;</span>]) {
+  <span class="k">const</span> response = <span class="k">await</span> chat(loadProject(name), <span class="s">&quot;اكتب منشوراً عن اللاتيه بالورد.&quot;</span>);
+  console.log(<span class="s">`[${name}]\n${text(response)}\n`</span>);
+}</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre><span class="c">$ </span><span class="k">node two.mjs</span>
+[support]
+سعر اللاتيه بالورد عندنا 55 جنيهاً. وفيه شراب الورد، فأخبر الباريستا إن أردته أقل حلاوة.
+
+[marketing]
+1. للربيع نكهة جديدة: لاتيه بالورد عندنا، بـ 55 جنيهاً. تعالَ وجرّبه قبل نهاية الموسم.
+2. قهوتك هذا الربيع تتفتح: لاتيه بالورد، 55 جنيهاً، في كل فروع بِت.</pre></div>
+<p class="hint"><strong>تلميح:</strong> أجاب مشروع الدعم سؤال الزبون الذي في الطلب وتجاهل «اكتب منشوراً»، لأن تعليماته تقول إنه يجيب الزبائن؛ وكتب مشروع التسويق خيارين، كما تطلب تعليماته. ومع النموذج الحقيقي ستختلف التفاصيل، لكن الدرس ثابت: حين يعطي مشروع أجوبة غريبة، اقرأ تعليماته قبل أن تلوم السؤال.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب تعليمات مشروع يستطيع فريقك استخدامه هذا الأسبوع: من يساعد، وأي المصادر، وشكل الأجوبة، وماذا يفعل حين تصمت المصادر. أبقِها تحت 80 كلمة.</li>
+<li><span class="level">سهل</span> أضف مستنداً قصيراً إلى معرفة مشروع الدعم الإنجليزي وشغّل <code>chats.mjs</code> مرة أخرى. كم يجب أن يكون حجمه قبل أن تبدأ الذاكرة المؤقتة بالعمل مع خادم التدريب؟</li>
+<li><span class="level medium">متوسط</span> ضع تاريخ اليوم في بداية التعليمات وشغّل <code>chats.mjs</code> مرتين، بينهما دقيقة، في المشروع العربي. ماذا يحدث للذاكرة المؤقتة، وأين يجب أن يوضع التاريخ بدلاً من ذلك؟</li>
+<li><span class="level medium">متوسط</span> اكتب فحصاً يحذّر حين يذكر ملفا معرفة الصنف نفسه بسعرين مختلفين. لماذا هذه مهمة للكود لا لـ Claude؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب تقريراً شهرياً لمشروع مشترك: الأسئلة من سجل محادثات انتهت بـ «سأسأل زميلاً»، مجمّعة حسب الموضوع. أي المستندات تكتب أولاً؟</li>
+</ol>
+
+<p class="answers-note">إجابات التمارين في آخر الكتاب وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 4</p>
+<p>بعض الأجوبة ليست نصاً بل أشياء: مستند يُحرَّر، ورسم توضيحي، وتطبيق صغير يعمل. والفصل التالي عن الـ artifacts، وكيف تبنيها وتفحصها وتشاركها.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -764,6 +1030,16 @@ budget  150: بقي 1 of 13 messages, 15 tokens</pre></div>
 <li>توجيهات Anthropic أن توضع الصور والمستندات قبل السؤال، فيقرأ النموذج المادة أولاً ثم ما يُفعل بها. وإن وُضعت بعده، يقرأ النموذج السؤال دون الشيء الذي يسأل عنه؛ وغالباً ما يجيب جيداً مع ذلك، لكن العادة لا تكلّف شيئاً، ويتبعها كل مثال في هذا الكتاب.</li>
 <li>أبقِ <code dir="ltr">messages[0]</code> واحذف رسالتين في كل مرة من الموضع 1: <code dir="ltr">kept = [kept[0], ...kept.slice(3)]</code>. فالزوج المحذوف جواب والسؤال الذي بعده، فيبقى ما تبقى يبدأ برسالة المستخدم الأولى ويتناوب: مستخدم، مساعد، مستخدم. وأياً كان ما تحذفه، أبقِ هذه القاعدة صحيحة: الرسالة الأولى للمستخدم، والأدوار تتناوب.</li>
 <li>احفظ <code>messages</code>؛ وبعد كل دور، اطبع التكلفة من <code>usage</code>؛ وحين يتجاوز <code>countTokens</code> الميزانية، أرسل النصف الأقدم إلى Claude مع «لخّص هذه المحادثة في خمسة أسطر، محتفظاً بالأسماء والأرقام والقرارات»، واستبدل ذلك النصف برسالة مستخدم واحدة فيها الملخص ورسالة مساعد تقرّ به. ومع خادم التدريب، أضف جواباً لطلب التلخيص ليُختبر المنطق من أوله لآخره؛ أما جودة الملخصات الحقيقية فتُفحص على الواجهة الحقيقية.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 3</h2>
+<ol class="exercises">
+<li>مثلاً، لفريق هندسة: «أنت تساعد مطوري تطبيق مقهى بِت. استخدم مستندات هذا المشروع فقط، واذكر الملف الذي تعتمد عليه. أجب بالأمر أو الكود أولاً، ثم سطر شرح واحد. وإن لم تغطِّه المستندات، فقل ذلك واقترح من في الفريق قد يعرف.» واقرأها كما يقرؤها زميل جديد: إن احتملت أي جملة قراءتين، فأعد كتابتها.</li>
+<li>المعرفة الإنجليزية 913 token؛ وتحتاج أن تتجاوز 1,024، فيكفي مع خادم التدريب مستند من أكثر قليلاً من 110 tokens، نحو 450 حرفاً إنجليزياً. ثم تُظهر المحادثة الثانية المعرفة مقروءة من الذاكرة المؤقتة. ومع الواجهة الحقيقية يتوقف الحد الأدنى على النموذج؛ افحص توثيقه، وافحص <code>cache_read_input_tokens</code> بدل الثقة بحساب.</li>
+<li>لكل تشغيل سطر أول مختلف، فتختلف البادئة، ويكتب كل طلب الذاكرة المؤقتة من جديد ولا يقرؤها أبداً: فتدفع أكثر مما بلا تخزين مؤقت أصلاً، لأن الكتابة في الذاكرة المؤقتة تكلّف 1.25 ضعف سعر المدخلات. ومكان التاريخ بعد الجزء المخزَّن: في رسالة المستخدم، أو في كتلة نظام قصيرة بعد آخر مستند موسوم للذاكرة المؤقتة.</li>
+<li>حلّل السطور التي تشبه «الاسم: السعر» في كل ملف، واجمعها حسب الاسم، وأبلغ عن الأسماء التي لها أكثر من سعر. وهي مهمة للكود لأنها يجب أن تكون دقيقة وكاملة: فقد يلاحظ النموذج تعارضاً ويفوته آخر، بينما تفحص عشرة أسطر من الكود كل سطر في كل مرة، مجاناً، ويمكن تشغيلها قبل رفع المعرفة.</li>
+<li>اقرأ السجل، واحتفظ بالأسئلة التي يحوي جوابها جملة الرفض، واجمعها، باليد لفريق صغير أو بـ Claude لسجل كبير (ثم افحص المجموعات). وأكبر مجموعة هي أول مستند يُكتب؛ والسؤال الذي سُئل مرة واحدة ليس نمطاً بعد. وأبلغ عن العدد لكل مجموعة شهراً بشهر، ليرى الفريق الفجوات تُسدّ.</li>
 </ol>
 
 </section>
