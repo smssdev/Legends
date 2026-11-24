@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: Claude Code in the Terminal"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Working on a Real Codebase"; } }
+@page ch07:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -51,7 +53,7 @@
           <p>The code in this book is JavaScript, tested with Node.js 22.23 and @anthropic-ai/sdk 1.8.0 (API version 2026-10-21). Its examples run against the book’s practice server, a local stand-in that speaks the Claude API’s format and answers from a script written for each chapter; those answers are not Claude’s, and the book says so wherever it shows one. Every listing and terminal session is produced from the files in the book’s code repository. Models, prices and limits were checked in November 2026.</p>
           <p>Claude, Claude Code and Anthropic are trademarks of Anthropic, PBC. Amazon Bedrock is a trademark of Amazon.com, Inc. Google Cloud is a trademark of Google LLC. Microsoft Foundry is a trademark of Microsoft Corporation. GitHub is a trademark of GitHub, Inc. Node.js is a trademark of the OpenJS Foundation. Other names mentioned in this book are trademarks of their owners and are used for identification only. This book is independent and is not endorsed by Anthropic.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">74</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">5</span></li><li class="toc-part">Part 1: Claude.ai</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Meet Claude: Models, Strengths and Limits</span><span class="toc-p">9</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Conversations, Files and Images</span><span class="toc-p">21</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Projects and Knowledge</span><span class="toc-p">32</span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Artifacts: Apps, Documents and Diagrams</span><span class="toc-p">42</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Research, Connectors and Tools</span><span class="toc-p">52</span></li><li class="toc-part">Part 2: Claude Code</li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Claude Code in the Terminal</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Working on a Real Codebase</span><span class="toc-p">74</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">CLAUDE.md, Skills and Hooks</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">From Issue to Pull Request</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Claude Code for Teams and CI</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Building with Claude</li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">The Claude API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Tool Use and Structured Output</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">MCP: Connecting Claude to Your Systems</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Building Agents</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Cost, Speed and Caching</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Safety, Evaluation and Production</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Claude-Powered Product</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">83</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b8/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -1847,6 +1849,245 @@ console.log({
 <p>Two tests and one function are a demonstration. The next chapter takes Claude Code into a real codebase: finding its way around, making a change across files, and checking it the way a reviewer would.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b8/codebase/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Working on a Real Codebase</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>prepare a repository so that every change Claude Code makes is easy to see and to undo</li>
+<li>let Claude Code find its way around before it changes anything</li>
+<li>follow a change across several files, from search to passing tests</li>
+<li>review the result the way a reviewer would: from the diff, not from the summary</li>
+<li>get a second opinion on a diff, and check it too</li>
+</ul>
+</div>
+
+<p class="lead">A real codebase has more files than anyone remembers, conventions nobody wrote down, and tests that pass for reasons nobody checked. That is where Claude Code earns its place, and where it needs the most care: the change it makes may touch files you did not think of, and its summary of what it did is only as good as its attention. This chapter makes a small change across a small project, end to end, and reviews it properly.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Claude Code in this chapter is real, and so are its searches, its edits and the test run: the files changed on disk, and <code>git diff</code> shows exactly how. The practice server plays the model, and its replies were checked against what really happened, which is how this chapter found one claim in its own script that was false.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>Before Claude Code touches anything</span></h2>
+
+<p>Start every task from a clean working tree: everything committed, the tests passing. Then whatever the agent changes is exactly what <code>git diff</code> shows, and undoing it is one command. The chapter’s project is three files and a test, in a new repository:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">git init -q &amp;&amp; git add -A &amp;&amp; git -c user.name=Bit -c user.email=bit@example.com commit -qm start &amp;&amp; git log --oneline &amp;&amp; node --test 2&gt;&amp;1 | grep -E &#x27;^# (pass|fail)&#x27;</span>
+5b6bc05 start
+<span class="c line-bidi"># pass 1</span>
+<span class="c line-bidi"># fail 0</span></pre></div>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Give each task its own branch, or its own worktree (a second checkout of the same repository in another folder), so two tasks never mix their changes. Claude Code can create worktrees for you; plain <code>git worktree add</code> works too.</p></aside>
+
+<h2><span class="sec">7.2</span> <span>A change across files</span></h2>
+
+<p>The task: add 14% VAT to receipts, with a subtotal, the VAT and the total. It touches the code that totals a receipt, the place where rates belong, and the test that checks the total. The run allows file edits for the session (<code>acceptEdits</code>) and exactly two commands, a search and the tests:</p>
+
+<pre class="plain" dir="ltr">claude -p "Add 14% VAT to receipts: ..." --permission-mode acceptEdits \
+  --allowedTools "Bash(grep -rln total src)" "Bash(node --test)"</pre>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;Add 14% VAT to receipts: a subtotal, the VAT, and the total including it. Update the test.&quot; --model claude-opus-5-5 --no-session-persistence --permission-mode acceptEdits --allowedTools &quot;Bash(grep -rln total src)&quot; &quot;Bash(node --test)&quot; --output-format stream-json --verbose | node watch.mjs</span>
+  says   I&#x27;ll find where receipts are totalled.
+  calls  Bash grep -rln total src
+  gets   src/receipt.mjs
+  says   Found src/receipt.mjs. Reading it, and the menu module beside it, before I change anything.
+  calls  Read src/receipt.mjs
+  calls  Read src/menu.mjs
+  gets   1	export const PRICES = {
+  gets   1	import {priceOf} from &quot;./menu.mjs&quot;;
+  says   I&#x27;ll add the VAT after the subtotal.
+  calls  Edit src/receipt.mjs
+  calls  Edit src/menu.mjs
+  gets   The file src/receipt.mjs has been updated successfully. (file stat
+  gets   The file src/menu.mjs has been updated successfully. (file state i
+  says   Now the test, which still expects the old total.
+  calls  Edit test/receipt.test.mjs
+  gets   The file test/receipt.test.mjs has been updated successfully.
+  says   Running the tests.
+  calls  Bash node --test
+  gets   ok 1 - a receipt adds up its lines
+  says   Done. src/receipt.mjs now returns subtotal, vat (14%, rounded to piastres) and total; VAT_RATE is exported from src/menu.mjs. The test checks all three, and it passes.
+  turns: 8, denied: 0, cost: $0.3986, success</pre></div>
+
+<p>Read it as you would watch a colleague. It searched before guessing where totals live. It read the two files before changing them, in one turn, because the two reads did not depend on each other. It edited both, then the test, which still expected the old total. It ran the tests, and the real result came back: one test, passing. Only then did it report. Eight turns, about forty cents with the practice server’s token counts; a real model on a real task may take more turns or fewer.</p>
+
+<p>One detail is worth noticing for what it says about tools. Claude Code’s set of built-in tools varies by version and settings, and the build used here had no separate search tool enabled, so the search went through <code>grep</code>, allowed as an exact command. Check what your installation offers (<code>/permissions</code>, and the documentation for your version) before you write rules that depend on it.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The practice server’s first script for this task ended with “both tests pass”. The project has one test. The run showed one, and the script was corrected. A real model can make the same slip: a summary is written after the work, from memory of it, and memory is where errors hide. Read the tool results, not just the last message.</p></aside>
+
+<h2><span class="sec">7.3</span> <span>Review the diff, not the summary</span></h2>
+
+<p>The summary says what Claude believes it did. The diff says what it did:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">git diff --stat &amp;&amp; git diff src/receipt.mjs</span>
+ src/menu.mjs          | 2 ++
+ src/receipt.mjs       | 7 ++++---
+ test/receipt.test.mjs | 4 +++-
+ 3 files changed, 9 insertions(+), 4 deletions(-)
+diff --git a/src/receipt.mjs b/src/receipt.mjs
+index 6aef014..4faec27 100644
+--- a/src/receipt.mjs
++++ b/src/receipt.mjs
+@@ -1,8 +1,9 @@
+-import {priceOf} from &quot;./menu.mjs&quot;;
++import {priceOf, VAT_RATE} from &quot;./menu.mjs&quot;;
+ 
+ // A receipt for an order: one line per item, then the total.
+ export function receipt(items) {
+   const lines = items.map(({name, qty}) =&gt; ({name, qty, amount: priceOf(name) * qty}));
+-  const total = lines.reduce((sum, line) =&gt; sum + line.amount, 0);
+-  return {lines, total};
++  const subtotal = lines.reduce((sum, line) =&gt; sum + line.amount, 0);
++  const vat = Math.round(subtotal * VAT_RATE * 100) / 100;
++  return {lines, subtotal, vat, total: subtotal + vat};
+ }</pre></div>
+
+<p>Three files, nine lines added, four removed, and in <code>receipt.mjs</code> exactly the change asked for: the rate imported from the menu module, the VAT rounded to piastres, and three fields where there was one. Review it as you would any pull request. Are the names good? Does every caller of <code>receipt</code> still work now that it returns more fields? Is rounding right? That last question has an answer you would only find by trying values, and Project 7.2 finds it.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why start from a clean, committed working tree?</li><li>Why did the agent read two files in one turn?</li><li>What is the difference between the agent’s summary and the diff?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>Habits for real repositories</span></h2>
+
+<ul>
+<li><strong>Small tasks.</strong> “Add VAT to receipts” is a task; “clean up the billing code” is a week. Small tasks give small diffs, and small diffs get real reviews.</li>
+<li><strong>Questions before changes.</strong> In an unfamiliar codebase, ask first (“where is the total computed?”, Project 7.1), or start in plan mode, and correct the plan before any file changes.</li>
+<li><strong>Tests as the contract.</strong> If the tests are weak, the agent’s “they pass” means little. Ask for the tests first, read them, then ask for the change.</li>
+<li><strong>Undo without fear.</strong> <code>git checkout -- .</code> throws away a change you do not like; a fresh attempt with a better prompt is often faster than repairing a bad one.</li>
+<li><strong>You commit.</strong> Read every line, run the tests yourself, and make the commit with your name on it. The agent wrote the change; you are the one who says it is right.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Hold changes made with Claude Code to the same review as changes from a colleague: the same tests, the same reviewer, the same standards. A team that reviews agent changes more lightly will soon have a codebase nobody understands.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Starting with uncommitted work</td><td>Your changes and the agent’s are tangled</td><td>Commit or stash first; one task per branch</td></tr>
+<tr><td>Trusting the final summary</td><td>Claims that the tool results do not support</td><td>Read the tool results and the diff</td></tr>
+<tr><td>Large, vague tasks</td><td>Diffs too large to review</td><td>Split into tasks with one outcome each</td></tr>
+<tr><td>Weak tests as the safety net</td><td>“Tests pass” proves little</td><td>Strengthen the tests before the change</td></tr>
+<tr><td>Allowing broad commands for convenience</td><td>The agent can do more than the task needs</td><td>Allow the exact commands the task uses</td></tr>
+<tr><td>Repairing a bad attempt line by line</td><td>Slow, and the result inherits the bad start</td><td>Revert, improve the prompt, try again</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Start from a clean, committed tree, so the diff is exactly the agent’s change and undoing it is one command.</li>
+<li>A good agent run searches, reads, edits, tests and only then reports; you can see every step.</li>
+<li>Tools vary by version and settings; allow exactly the commands a task needs.</li>
+<li>The summary is a claim and the diff is the fact; check one against the other.</li>
+<li>Small tasks, tests first, easy reverts, and the same review as any colleague’s change.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. So that <code>git diff</code> shows exactly what the agent changed, nothing of yours mixed in, and so that undoing it is a single command. 2. Because the two reads did not depend on each other, so both could be requested at once; it saves a turn, and every turn re-sends the context. 3. The summary is what the agent says it did, written after the work; the diff is what actually changed on disk. When they disagree, the diff is right.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">The projects are three checks a careful developer runs around an agent: asking before changing, a second review of the diff, and comparing the agent’s claims with git.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>Ask before you change</h3>
+<p class="project-goal">Ask where something happens in the code, with tools that cannot change anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> read-only exploration, with one exact command allowed.</p>
+<ol class="steps">
+<li>Give Claude Code only the reading tool and the shell.</li>
+<li>Allow exactly one search command.</li>
+<li>Ask your question, and check the answer in the files it names.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">claude -p &quot;where is the total of a receipt computed?&quot; --model claude-opus-5-5 --no-session-persistence --tools Read,Bash --allowedTools &quot;Bash(grep -rn total src)&quot;</span>
+The total is computed in src/receipt.mjs, in receipt(): the amounts of the lines are added with reduce. Prices come from priceOf in src/menu.mjs.</pre></div>
+<p class="hint"><strong>Hint:</strong> the answer names a file and a function, so it takes ten seconds to check. Ask for that every time: “answer with the file and the function”. In a large codebase, a wrong answer about where something lives costs more than no answer.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>A second review of the diff</h3>
+<p class="project-goal">Pipe the diff to Claude Code with no tools at all, and ask for a review.</p>
+<p class="project-skills"><strong>You will practise:</strong> standard input as context, and checking a reviewer’s claims.</p>
+<ol class="steps">
+<li>Send <code>git diff</code> on standard input.</li>
+<li>Turn off every tool with <code>--tools ""</code>, so the review uses only the diff.</li>
+<li>Check each point of the review yourself.</li>
+</ol>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">git diff | claude -p &quot;Review this diff.&quot; --model claude-opus-5-5 --no-session-persistence --tools &quot;&quot;</span>
+1. menu.mjs: VAT_RATE = 0.14 is a good single place for the rate.
+2. receipt.mjs: the VAT is rounded to piastres, but total is subtotal + vat without rounding; with other prices the sum can show a floating-point tail: a subtotal of 16 gives a total of 18.240000000000002.
+3. The test covers one order; add one whose VAT needs rounding.</pre></div>
+<p class="hint"><strong>Hint:</strong> the second point is the one that matters, and it is true: in JavaScript, 16 + 2.24 is 18.240000000000002, and 158 of the integer subtotals up to 2,000 give such a tail. The script’s first draft of this review gave an example that does not happen (136.80000000000001); a reviewer’s example deserves the same check as the code. Round the total too, and add a test for it.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>The agent’s claims against git</h3>
+<p class="project-goal">Compare the files the agent’s summary mentions with the files git says changed.</p>
+<p class="project-skills"><strong>You will practise:</strong> checking an agent’s report automatically.</p>
+<ol class="steps">
+<li>Undo the earlier change, and run the task again in print mode.</li>
+<li>Read the summary from standard input, and the changed files from <code>git diff --name-only</code>.</li>
+<li>Report the files changed but not mentioned.</li>
+</ol>
+<div class="listing" dir="ltr"><div class="listing-title">claims.mjs (part)</div><pre class="code"><span class="k">const</span> said = fs.readFileSync(<span class="n">0</span>, <span class="s">&quot;utf8&quot;</span>);
+<span class="k">const</span> changed = execFileSync(<span class="s">&quot;git&quot;</span>, [<span class="s">&quot;diff&quot;</span>, <span class="s">&quot;--name-only&quot;</span>], {encoding: <span class="s">&quot;utf8&quot;</span>}).split(<span class="s">&quot;\n&quot;</span>).filter(Boolean);
+<span class="k">const</span> claimed = changed.filter((file) =&gt; said.includes(file));
+console.log(<span class="s">`claimed: ${claimed.join(&quot;, &quot;) || &quot;-&quot;}`</span>);
+console.log(<span class="s">`changed in git: ${changed.join(&quot;, &quot;)}`</span>);
+<span class="k">const</span> missing = changed.filter((file) =&gt; !claimed.includes(file));
+console.log(<span class="s">`changed but not mentioned: ${missing.join(&quot;, &quot;) || &quot;-&quot;}`</span>);</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre><span class="c">$ </span><span class="k">git checkout -q -- . &amp;&amp; claude -p &quot;Add 14% VAT to receipts: a subtotal, the VAT, and the total including it. Update the test.&quot; --model claude-opus-5-5 --no-session-persistence --permission-mode acceptEdits --allowedTools &quot;Bash(grep -rln total src)&quot; &quot;Bash(node --test)&quot; | node claims.mjs</span>
+claimed: src/menu.mjs, src/receipt.mjs
+changed in git: src/menu.mjs, src/receipt.mjs, test/receipt.test.mjs
+changed but not mentioned: test/receipt.test.mjs</pre></div>
+<p class="hint"><strong>Hint:</strong> the test file changed and the summary never names it: it says “the test”. Harmless here, but the check is cheap and the habit is valuable: a file changed and not mentioned is the first place a reviewer should look, because nobody explained it.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write the prompt for a small change in one of your own projects in one sentence, with the outcome and how to check it. What would make it two tasks?</li>
+<li><span class="level">Easy</span> After the VAT change, which callers of <code>receipt</code> could break, and how would you find them in a large codebase?</li>
+<li><span class="level medium">Medium</span> Fix the rounding issue from the review yourself, with a test for a subtotal of 16, before asking any agent. Then compare your diff with what you would expect from Claude Code.</li>
+<li><span class="level medium">Medium</span> Extend <code>claims.mjs</code> to also flag files the summary mentions that did not change.</li>
+<li><span class="level hard">Challenge</span> Write a script that runs a Claude Code task on a new branch, runs the tests itself afterwards, and refuses to commit if the tests fail, the diff is larger than 200 lines, or a changed file is not mentioned in the summary.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>Every run in this chapter repeated the same rules on the command line. The next chapter writes them down once: <code>CLAUDE.md</code> for the project’s knowledge, settings for permissions, skills for repeated tasks, and hooks that run your checks automatically.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b8/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1922,6 +2163,16 @@ console.log({
 <li>For example <code>--allowedTools "Bash(npm test)" "Bash(npm run lint)"</code>: two exact commands. If your test script takes arguments you need, allow those forms explicitly too. Keep the list in the team’s settings file (Chapter 8) so everyone gets the same rules.</li>
 <li>Record <code>Date.now()</code> as each line arrives and print the difference from the previous one. With a real model, most of the time is usually in the model’s turns (thinking and writing); with a slow test suite or a large build, the tools dominate. Either answer tells you where to look when a task is slow: a smaller model or lower effort, or faster tests.</li>
 <li>Run <code>claude -p "$TASK" --output-format json &gt; runs/$(date +%Y%m%d-%H%M%S).json</code>, then read the file with a few lines of Node and append <code>date,task,subtype,num_turns,total_cost_usd</code> to <code>runs.csv</code>. After a week you would see what typical tasks cost, which tasks take many turns, and how often runs end in something other than success: the numbers to bring to a conversation about budgets, and the tasks to give clearer instructions.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 7</h2>
+<ol class="exercises">
+<li>For example: “Show prices with two decimals on receipts, in <code>src/receipt.mjs</code>; the existing test should pass and a new one for 45.5 should show 45.50.” It would be two tasks if it also said “and on the menu page”: two places, two diffs, two reviews.</li>
+<li>Anything that reads <code>total</code> still works, but anything that compares the whole object (a snapshot test, an API response checked field by field) or that expected <code>total</code> to exclude tax will change behaviour. In a large codebase, search for every use of <code>receipt(</code> and of <code>.total</code> near it, and read the callers; ask Claude Code to list them first, then check the list with your own search.</li>
+<li>Round the total as well: <code>total: Math.round((subtotal + vat) * 100) / 100</code>, or keep amounts in piastres as integers and format only for display, which avoids the problem everywhere. Add <code>test("rounding", () =&gt; assert.equal(receipt(...).total, 18.24))</code> with an order whose subtotal is 16 (the menu needs an item that makes 16, or test the calculation separately). Writing it yourself first gives you something to compare an agent’s version with.</li>
+<li>Find paths in the summary with a pattern such as <code>/[\w./-]+\.(m?js|json|md)/g</code>, and report those not in the list from <code>git diff --name-only</code>. A file mentioned and unchanged is often a sign the agent believes it made a change it did not make, the mirror image of the chapter’s check.</li>
+<li>Create a branch with <code>git switch -c task/...</code>, run the task with <code>--output-format json</code>, then run the tests yourself, measure <code>git diff --numstat</code>, and run <code>claims.mjs</code> on the result text. Commit only if all three pass; otherwise print why and leave the branch for a person. The point is that the gate is yours: the agent’s own “tests pass” is not one of the checks.</li>
 </ol>
 
 </section>
